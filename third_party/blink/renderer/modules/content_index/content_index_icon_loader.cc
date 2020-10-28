@@ -53,7 +53,7 @@ WebVector<Manifest::ImageResource> ToImageResource(
     }
     if (image_resource.sizes.empty())
       image_resource.sizes.emplace_back(0, 0);
-    image_resource.purpose.push_back(Manifest::ImageResource::Purpose::ANY);
+    image_resource.purpose.push_back(mojom::ManifestImageResource_Purpose::ANY);
     image_resources.emplace_back(std::move(image_resource));
   }
   return image_resources;
@@ -67,7 +67,7 @@ KURL FindBestIcon(WebVector<Manifest::ImageResource> image_resources,
       /* minimum_icon_size_in_px= */ 0,
       /* max_width_to_height_ratio= */ icon_size.width() * 1.0f /
           icon_size.height(),
-      Manifest::ImageResource::Purpose::ANY));
+      mojom::ManifestImageResource_Purpose::ANY));
 }
 
 }  // namespace

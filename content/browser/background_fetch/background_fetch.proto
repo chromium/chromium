@@ -76,7 +76,7 @@ message BackgroundFetchOptions {
       MASKABLE = 3;
     }
 
-    // blink::Manifest::ImageResource::Purpose enum.
+    // blink::mojom::ManifestImageResource_Purpose enum.
     repeated Purpose purpose = 4;
   }
 

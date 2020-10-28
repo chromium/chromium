@@ -79,7 +79,7 @@ void DownloadBestMatchingIcon(
       icons, payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
       ManifestIconDownloader::kMaxWidthToHeightRatio,
-      blink::Manifest::ImageResource::Purpose::ANY);
+      blink::mojom::ManifestImageResource_Purpose::ANY);
   if (!icon_url.is_valid()) {
     // If the icon url is invalid, it's better to give the information to
     // developers in advance unlike when fetching or decoding fails. We already

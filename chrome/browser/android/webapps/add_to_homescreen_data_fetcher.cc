@@ -252,7 +252,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
       blink::ManifestIconSelector::FindBestMatchingSquareIcon(
           data.manifest->icons, shortcut_info_.ideal_splash_image_size_in_px,
           shortcut_info_.minimum_splash_image_size_in_px,
-          blink::Manifest::ImageResource::Purpose::ANY);
+          blink::mojom::ManifestImageResource_Purpose::ANY);
 
   installable_manager_->GetData(
       ParamsToPerformInstallableCheck(),

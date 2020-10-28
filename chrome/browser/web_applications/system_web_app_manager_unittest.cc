@@ -115,7 +115,7 @@ class TestDataRetrieverFactory {
 
     blink::Manifest::ImageResource icon;
     icon.src = GetSystemAppDataForTask(task_index).icon_url;
-    icon.purpose.push_back(blink::Manifest::ImageResource::Purpose::ANY);
+    icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
     icon.sizes.emplace_back(gfx::Size(icon_size::k256, icon_size::k256));
     manifest->icons.push_back(std::move(icon));
     data_retriever->SetManifest(std::move(manifest),

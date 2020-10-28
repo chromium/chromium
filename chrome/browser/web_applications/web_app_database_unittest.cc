@@ -265,9 +265,9 @@ class WebAppDatabaseTest : public WebAppTest {
 
       int purpose = random.next_uint(3);
       if (purpose == 0)
-        icon.purpose = blink::Manifest::ImageResource::Purpose::ANY;
+        icon.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
       if (purpose == 1)
-        icon.purpose = blink::Manifest::ImageResource::Purpose::MASKABLE;
+        icon.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
       // if (purpose == 2), leave purpose unset. Should default to ANY.
 
       icon_infos[i] = icon;

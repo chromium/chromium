@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
@@ -181,7 +182,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     blink::Manifest::ImageResource icon;
     GURL icon_src(base::UTF16ToUTF8(shortcut_data[3]));
     icon.src = icon_src;
-    icon.purpose.push_back(blink::Manifest::ImageResource::Purpose::ANY);
+    icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
     shortcut_item.icons.push_back(std::move(icon));
 
     if (icon_src.is_valid()) {

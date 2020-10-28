@@ -152,8 +152,8 @@ struct BLINK_COMMON_EXPORT
     return icon.sizes;
   }
 
-  static const std::vector<::blink::Manifest::ImageResource::Purpose>& purpose(
-      const ::blink::Manifest::ImageResource& icon) {
+  static const std::vector<::blink::mojom::ManifestImageResource_Purpose>&
+  purpose(const ::blink::Manifest::ImageResource& icon) {
     return icon.purpose;
   }
 
@@ -323,41 +323,6 @@ struct BLINK_COMMON_EXPORT
   }
   static bool Read(blink::mojom::ManifestProtocolHandlerDataView data,
                    ::blink::Manifest::ProtocolHandler* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::ManifestImageResource_Purpose,
-               ::blink::Manifest::ImageResource::Purpose> {
-  static blink::mojom::ManifestImageResource_Purpose ToMojom(
-      ::blink::Manifest::ImageResource::Purpose purpose) {
-    switch (purpose) {
-      case ::blink::Manifest::ImageResource::Purpose::ANY:
-        return blink::mojom::ManifestImageResource_Purpose::ANY;
-      case ::blink::Manifest::ImageResource::Purpose::MONOCHROME:
-        return blink::mojom::ManifestImageResource_Purpose::MONOCHROME;
-      case ::blink::Manifest::ImageResource::Purpose::MASKABLE:
-        return blink::mojom::ManifestImageResource_Purpose::MASKABLE;
-    }
-    NOTREACHED();
-    return blink::mojom::ManifestImageResource_Purpose::ANY;
-  }
-  static bool FromMojom(blink::mojom::ManifestImageResource_Purpose input,
-                        ::blink::Manifest::ImageResource::Purpose* out) {
-    switch (input) {
-      case blink::mojom::ManifestImageResource_Purpose::ANY:
-        *out = ::blink::Manifest::ImageResource::Purpose::ANY;
-        return true;
-      case blink::mojom::ManifestImageResource_Purpose::MONOCHROME:
-        *out = ::blink::Manifest::ImageResource::Purpose::MONOCHROME;
-        return true;
-      case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
-        *out = ::blink::Manifest::ImageResource::Purpose::MASKABLE;
-        return true;
-    }
-
-    return false;
-  }
 };
 
 template <>

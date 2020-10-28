@@ -15,6 +15,7 @@
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -28,13 +29,6 @@ struct BLINK_COMMON_EXPORT Manifest {
   // Structure representing an icon as per the Manifest specification, see:
   // https://w3c.github.io/manifest/#dom-imageresource
   struct BLINK_COMMON_EXPORT ImageResource {
-    enum class Purpose {
-      ANY = 0,
-      MONOCHROME,
-      MASKABLE,
-      IMAGE_RESOURCE_PURPOSE_LAST = MASKABLE,
-    };
-
     ImageResource();
     ImageResource(const ImageResource& other);
     ~ImageResource();
@@ -57,7 +51,7 @@ struct BLINK_COMMON_EXPORT Manifest {
 
     // Never empty. Defaults to a vector with a single value, IconPurpose::ANY,
     // if not explicitly specified in the manifest.
-    std::vector<Purpose> purpose;
+    std::vector<mojom::ManifestImageResource_Purpose> purpose;
   };
 
   // Structure representing a shortcut as per the Manifest specification, see:

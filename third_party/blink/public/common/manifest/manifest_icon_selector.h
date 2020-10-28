@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -29,7 +30,7 @@ class BLINK_COMMON_EXPORT ManifestIconSelector {
       const std::vector<blink::Manifest::ImageResource>& icons,
       int ideal_icon_size_in_px,
       int minimum_icon_size_in_px,
-      blink::Manifest::ImageResource::Purpose purpose);
+      blink::mojom::ManifestImageResource_Purpose purpose);
 
   // Identical to FindBestMatchingSquareIcon, but finds landscape icons as well
   // as square icons.
@@ -38,7 +39,7 @@ class BLINK_COMMON_EXPORT ManifestIconSelector {
       int ideal_icon_height_in_px,
       int minimum_icon_height_in_px,
       float max_width_to_height_ratio,
-      blink::Manifest::ImageResource::Purpose purpose);
+      blink::mojom::ManifestImageResource_Purpose purpose);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ManifestIconSelector);

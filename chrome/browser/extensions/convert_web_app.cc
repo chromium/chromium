@@ -288,7 +288,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   for (const WebApplicationIconInfo& icon_info : web_app.icon_infos) {
     DCHECK(icon_info.url.is_valid());
     // Web apps in Extensions system supports Purpose::ANY icons only.
-    if (icon_info.purpose != blink::Manifest::ImageResource::Purpose::ANY)
+    if (icon_info.purpose != blink::mojom::ManifestImageResource_Purpose::ANY)
       continue;
     std::unique_ptr<base::DictionaryValue> linked_icon(
         new base::DictionaryValue());

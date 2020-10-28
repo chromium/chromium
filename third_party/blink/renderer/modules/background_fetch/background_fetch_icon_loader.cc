@@ -103,14 +103,14 @@ KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
       candidate_icon.sizes.emplace_back(gfx::Size(0, 0));
     if (candidate_icon.purpose.empty()) {
       candidate_icon.purpose.emplace_back(
-          Manifest::ImageResource::Purpose::ANY);
+          mojom::ManifestImageResource_Purpose::ANY);
     }
     icons.emplace_back(candidate_icon);
   }
 
   return KURL(ManifestIconSelector::FindBestMatchingSquareIcon(
       icons.ReleaseVector(), ideal_size_pixels, kMinimumIconSizeInPx,
-      Manifest::ImageResource::Purpose::ANY));
+      mojom::ManifestImageResource_Purpose::ANY));
 }
 
 void BackgroundFetchIconLoader::Stop() {

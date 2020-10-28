@@ -99,7 +99,7 @@ int GetMinimumSplashIconSizeInPx() {
 #endif
 }
 
-using IconPurpose = blink::Manifest::ImageResource::Purpose;
+using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
 struct ImageTypeDetails {
   const char* extension;
@@ -150,11 +150,11 @@ bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest,
       continue;
 
     if (!(base::Contains(icon.purpose,
-                         blink::Manifest::ImageResource::Purpose::ANY) ||
+                         blink::mojom::ManifestImageResource_Purpose::ANY) ||
           (prefer_maskable_icon &&
            base::Contains(
                icon.purpose,
-               blink::Manifest::ImageResource::Purpose::MASKABLE)))) {
+               blink::mojom::ManifestImageResource_Purpose::MASKABLE)))) {
       continue;
     }
 
@@ -162,14 +162,15 @@ bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest,
       if (size.IsEmpty())  // "any"
         return true;
       if (base::Contains(icon.purpose,
-                         blink::Manifest::ImageResource::Purpose::ANY) &&
+                         blink::mojom::ManifestImageResource_Purpose::ANY) &&
           size.width() >= kMinimumPrimaryIconSizeInPx &&
           size.height() >= kMinimumPrimaryIconSizeInPx) {
         return true;
       }
       if (prefer_maskable_icon &&
-          base::Contains(icon.purpose,
-                         blink::Manifest::ImageResource::Purpose::MASKABLE) &&
+          base::Contains(
+              icon.purpose,
+              blink::mojom::ManifestImageResource_Purpose::MASKABLE) &&
           size.height() >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx &&
           size.width() >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx) {
         return true;

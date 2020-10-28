@@ -17,7 +17,7 @@ namespace web_app {
 
 namespace {
 
-using Purpose = blink::Manifest::ImageResource::Purpose;
+using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 const char kStartUrl[] = "https://example.com/launchurl";
 const char kAppName[] = "Test name";

@@ -22,7 +22,7 @@
 
 namespace web_app {
 
-using Purpose = blink::Manifest::ImageResource::Purpose;
+using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 namespace {
 

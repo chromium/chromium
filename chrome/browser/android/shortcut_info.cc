@@ -135,7 +135,7 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
     GURL best_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
         manifest_shortcut.icons, ideal_shortcut_icons_size_px,
         /* minimum_icon_size_in_px= */ ideal_shortcut_icons_size_px / 2,
-        blink::Manifest::ImageResource::Purpose::ANY);
+        blink::mojom::ManifestImageResource_Purpose::ANY);
     best_shortcut_icon_urls.push_back(std::move(best_url));
   }
 }

@@ -207,7 +207,7 @@ TEST(ImageResourceConverter, BlinkToMojoTypeTest) {
   EXPECT_EQ(mojo_icon.type, blink::WebString("image/jpeg").Utf16());
   EXPECT_EQ(mojo_icon.sizes[1], gfx::Size(64, 64));
   EXPECT_EQ(mojo_icon.purpose[0],
-            blink::Manifest::ImageResource::Purpose::MONOCHROME);
+            blink::mojom::ManifestImageResource_Purpose::MONOCHROME);
 }
 
 }  // namespace

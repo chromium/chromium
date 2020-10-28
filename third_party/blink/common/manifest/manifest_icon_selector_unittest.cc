@@ -13,7 +13,7 @@
 
 namespace blink {
 
-using Purpose = blink::Manifest::ImageResource::Purpose;
+using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 namespace {
 const int kIdealIconSize = 144;
@@ -53,7 +53,7 @@ class ManifestIconSelectorTest : public testing::TestWithParam<bool> {
       const std::vector<blink::Manifest::ImageResource>& icons,
       int ideal_icon_size_in_px,
       int minimum_icon_size_in_px,
-      blink::Manifest::ImageResource::Purpose purpose) {
+      blink::mojom::ManifestImageResource_Purpose purpose) {
     if (selects_square_only_) {
       return ManifestIconSelector::FindBestMatchingSquareIcon(
           icons, ideal_icon_size_in_px, minimum_icon_size_in_px, purpose);

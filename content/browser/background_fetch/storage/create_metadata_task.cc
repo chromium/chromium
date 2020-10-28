@@ -260,15 +260,15 @@ void CreateMetadataTask::InitializeMetadataProto() {
 
     for (const auto& purpose : icon.purpose) {
       switch (purpose) {
-        case blink::Manifest::ImageResource::Purpose::ANY:
+        case blink::mojom::ManifestImageResource_Purpose::ANY:
           image_resource_proto->add_purpose(
               proto::BackgroundFetchOptions_ImageResource_Purpose_ANY);
           break;
-        case blink::Manifest::ImageResource::Purpose::MONOCHROME:
+        case blink::mojom::ManifestImageResource_Purpose::MONOCHROME:
           image_resource_proto->add_purpose(
               proto::BackgroundFetchOptions_ImageResource_Purpose_MONOCHROME);
           break;
-        case blink::Manifest::ImageResource::Purpose::MASKABLE:
+        case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
           image_resource_proto->add_purpose(
               proto::BackgroundFetchOptions_ImageResource_Purpose_MASKABLE);
           break;

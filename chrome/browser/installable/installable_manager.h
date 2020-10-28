@@ -100,7 +100,7 @@ class InstallableManager
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
                            CheckWebapp);
 
-  using IconPurpose = blink::Manifest::ImageResource::Purpose;
+  using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
   enum class IconUsage { kPrimary, kSplash };
 

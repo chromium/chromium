@@ -92,9 +92,9 @@ TypeConverter<blink::Manifest::ImageResource,
     output.sizes.push_back(gfx::Size(size));
 
   for (auto purpose : input->purpose) {
-    blink::Manifest::ImageResource::Purpose out_purpose;
+    blink::mojom::ManifestImageResource_Purpose out_purpose;
     if (!EnumTraits<blink::mojom::ManifestImageResource_Purpose,
-                    ::blink::Manifest::ImageResource::Purpose>::
+                    ::blink::mojom::ManifestImageResource_Purpose>::
             FromMojom(purpose, &out_purpose)) {
       NOTREACHED();
     }

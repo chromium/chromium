@@ -408,7 +408,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
     manifest_icon.src = icon_src;
     manifest_icon.type = base::UTF8ToUTF16(icon.type);
     manifest_icon.purpose.emplace_back(
-        blink::Manifest::ImageResource::Purpose::ANY);
+        blink::mojom::ManifestImageResource_Purpose::ANY);
     // TODO(crbug.com/782270): Parse icon sizes.
     manifest_icon.sizes.emplace_back(gfx::Size());
     manifest_icons.emplace_back(manifest_icon);
@@ -448,7 +448,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
       manifest_icons, IconSizeCalculator::IdealIconHeight(native_view),
       IconSizeCalculator::MinimumIconHeight(),
       content::ManifestIconDownloader::kMaxWidthToHeightRatio,
-      blink::Manifest::ImageResource::Purpose::ANY);
+      blink::mojom::ManifestImageResource_Purpose::ANY);
   if (!best_icon_url.is_valid()) {
     log_.Warn("No suitable icon found in web app manifest \"" +
               web_app_manifest_url.spec() +

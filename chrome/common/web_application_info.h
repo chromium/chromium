@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
@@ -27,7 +28,7 @@ using SquareSizePx = int;
 // Iterates in ascending order (checked in SortedSizesPxIsAscending test).
 using SortedSizesPx = base::flat_set<SquareSizePx, std::less<>>;
 using ShortcutsMenuIconsBitmaps = std::vector<std::map<SquareSizePx, SkBitmap>>;
-using IconPurpose = blink::Manifest::ImageResource::Purpose;
+using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
 // TODO(https://crbug.com/1091473): Rename WebApplication* occurrences in this
 // file to WebApp*.

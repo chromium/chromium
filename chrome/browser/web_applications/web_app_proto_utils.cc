@@ -9,7 +9,7 @@ namespace web_app {
 
 namespace {
 
-base::Optional<blink::Manifest::ImageResource::Purpose>
+base::Optional<blink::mojom::ManifestImageResource_Purpose>
 SyncPurposeToBlinkPurpose(sync_pb::WebAppIconInfo_Purpose purpose) {
   switch (purpose) {
     // Treat UNSPECIFIED purpose as invalid. It means a new purpose was added
@@ -17,22 +17,22 @@ SyncPurposeToBlinkPurpose(sync_pb::WebAppIconInfo_Purpose purpose) {
     case sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED:
       return base::nullopt;
     case sync_pb::WebAppIconInfo_Purpose_ANY:
-      return blink::Manifest::ImageResource::Purpose::ANY;
+      return blink::mojom::ManifestImageResource_Purpose::ANY;
     case sync_pb::WebAppIconInfo_Purpose_MASKABLE:
-      return blink::Manifest::ImageResource::Purpose::MASKABLE;
+      return blink::mojom::ManifestImageResource_Purpose::MASKABLE;
   }
 }
 
 sync_pb::WebAppIconInfo_Purpose BlinkPurposeToSyncPurpose(
-    blink::Manifest::ImageResource::Purpose purpose) {
+    blink::mojom::ManifestImageResource_Purpose purpose) {
   switch (purpose) {
-    case blink::Manifest::ImageResource::Purpose::ANY:
+    case blink::mojom::ManifestImageResource_Purpose::ANY:
       return sync_pb::WebAppIconInfo_Purpose_ANY;
-    case blink::Manifest::ImageResource::Purpose::MONOCHROME:
+    case blink::mojom::ManifestImageResource_Purpose::MONOCHROME:
       // Monochrome purpose icons are never stored in icon_info.
       NOTREACHED();
       return sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED;
-    case blink::Manifest::ImageResource::Purpose::MASKABLE:
+    case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
       return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
   }
 }
@@ -61,7 +61,7 @@ base::Optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
     }
 
     if (icon_info_proto.has_purpose()) {
-      base::Optional<blink::Manifest::ImageResource::Purpose> opt_purpose =
+      base::Optional<blink::mojom::ManifestImageResource_Purpose> opt_purpose =
           SyncPurposeToBlinkPurpose(icon_info_proto.purpose());
       if (!opt_purpose.has_value())
         return base::nullopt;
@@ -69,7 +69,7 @@ base::Optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
     } else {
       // Treat unset purpose as ANY so that old data without the field is
       // interpreted correctly.
-      icon_info.purpose = blink::Manifest::ImageResource::Purpose::ANY;
+      icon_info.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
     }
 
     icon_infos.push_back(std::move(icon_info));

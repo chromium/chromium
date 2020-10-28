@@ -267,7 +267,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
       ManifestIconDownloader::kMaxWidthToHeightRatio,
-      blink::Manifest::ImageResource::Purpose::ANY);
+      blink::mojom::ManifestImageResource_Purpose::ANY);
   if (!icon_url_.is_valid()) {
     WarnIfPossible(
         "No suitable payment handler icon found in the \"icons\" field defined "

@@ -4,6 +4,8 @@
 
 #include "chrome/common/web_application_info.h"
 
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+
 // WebApplicationIconInfo
 WebApplicationIconInfo::WebApplicationIconInfo() = default;
 WebApplicationIconInfo::WebApplicationIconInfo(const GURL& url,
@@ -78,21 +80,6 @@ bool operator==(const WebApplicationIconInfo& icon_info1,
                   icon_info1.purpose) == std::tie(icon_info2.url,
                                                   icon_info2.square_size_px,
                                                   icon_info2.purpose);
-}
-
-std::ostream& operator<<(std::ostream& out, IconPurpose purpose) {
-  switch (purpose) {
-    case IconPurpose::ANY:
-      out << "any";
-      break;
-    case IconPurpose::MONOCHROME:
-      out << "monochrome";
-      break;
-    case IconPurpose::MASKABLE:
-      out << "maskable";
-      break;
-  }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,

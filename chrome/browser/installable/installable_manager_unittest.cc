@@ -12,8 +12,9 @@
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-using IconPurpose = blink::Manifest::ImageResource::Purpose;
+using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
 class InstallableManagerUnitTest : public testing::Test {
  public:

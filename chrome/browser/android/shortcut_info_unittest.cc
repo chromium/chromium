@@ -10,6 +10,7 @@
 #include "chrome/browser/android/shortcut_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 blink::Manifest::ImageResource CreateImage(const std::string& url,
@@ -17,7 +18,7 @@ blink::Manifest::ImageResource CreateImage(const std::string& url,
   blink::Manifest::ImageResource image;
   image.src = GURL("https://example.com" + url);
   image.sizes.push_back(size);
-  image.purpose.push_back(blink::Manifest::ImageResource::Purpose::ANY);
+  image.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
   return image;
 }
 

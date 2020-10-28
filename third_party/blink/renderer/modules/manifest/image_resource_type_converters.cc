@@ -134,15 +134,15 @@ Manifest::ImageResource ConvertManifestImageResource(
       switch (purpose) {
         case mojo::Purpose::ANY:
           manifest_icon.purpose.emplace_back(
-              Manifest::ImageResource::Purpose::ANY);
+              mojom::ManifestImageResource_Purpose::ANY);
           break;
         case mojo::Purpose::MONOCHROME:
           manifest_icon.purpose.emplace_back(
-              Manifest::ImageResource::Purpose::MONOCHROME);
+              mojom::ManifestImageResource_Purpose::MONOCHROME);
           break;
         case mojo::Purpose::MASKABLE:
           manifest_icon.purpose.emplace_back(
-              Manifest::ImageResource::Purpose::MASKABLE);
+              mojom::ManifestImageResource_Purpose::MASKABLE);
           break;
       }
     }
