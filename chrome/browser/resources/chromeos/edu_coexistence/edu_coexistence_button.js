@@ -116,7 +116,7 @@ Polymer({
       return this.i18n('backButton');
     }
     if (buttonType === ButtonTypes.ACTION) {
-      return this.i18n('actionButton');
+      return this.i18n('nextButton');
     }
     return '';  // unreached
   },
