@@ -1,6 +1,6 @@
 <style>
   :host(:focus) {
-    outline-color: rgba(var(--mwb-background-color), 0.24);
+    outline: none;
   }
 
   :host(:hover, .selected) .button-container cr-icon-button {
@@ -15,6 +15,7 @@
 
   .button-container cr-icon-button {
     --cr-icon-button-fill-color: transparent;
+    border: 2px solid transparent;
     border-radius: 50%;
   }
 
@@ -29,7 +30,7 @@
   }
 
   .button-container cr-icon-button:focus {
-    border: 2px solid rgba(var(--google-blue-600-rgb), 0.4);
+    border-color: rgba(var(--google-blue-600-rgb), 0.4);
   }
 
   .favicon {
@@ -68,7 +69,8 @@
   cr-icon-button {
     --cr-icon-button-margin-end: calc(var(--mwb-icon-size) / 4);
     --cr-icon-button-margin-start: calc(var(--mwb-icon-size) / 4);
-    --cr-icon-button-size: var(--mwb-icon-size);
+    --cr-icon-button-icon-size: var(--mwb-icon-size);
+    --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);
   }
 
   .search-highlight-hit {
@@ -83,7 +85,7 @@
 </div>
 <div class="button-container">
   <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
-      iron-icon="mwb16:close" noink on-click="onItemClose_"
-      title="$i18n{closeTab}">
+      iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
+      no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
   </cr-icon-button>
 </div>

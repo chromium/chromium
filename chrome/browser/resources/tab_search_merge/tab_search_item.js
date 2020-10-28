@@ -32,6 +32,12 @@ export class TabSearchItem extends PolymerElement {
         type: Object,
         observer: 'dataChanged_',
       },
+
+      /** @private {boolean} */
+      buttonRipples_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('useRipples'),
+      },
     };
   }
 
