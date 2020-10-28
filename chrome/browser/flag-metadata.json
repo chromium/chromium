@@ -3435,11 +3435,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "omnibox-deferred-keyboard-popup",
-    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "omnibox-display-title-for-current-url",
     "owners": [ "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 76

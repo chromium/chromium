@@ -243,7 +243,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &offline_pages::kPrefetchingOfflinePagesFeature,
     &omnibox::kAdaptiveSuggestionsCount,
     &omnibox::kCompactSuggestions,
-    &omnibox::kDeferredKeyboardPopup,
     &omnibox::kHideVisitsFromCct,
     &omnibox::kMostVisitedTiles,
     &omnibox::kOmniboxAssistantVoiceSearch,

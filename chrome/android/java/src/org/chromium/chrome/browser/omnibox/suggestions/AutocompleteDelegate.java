@@ -31,8 +31,9 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
      * Requests the keyboard visibility update.
      *
      * @param shouldShow When true, keyboard should be made visible.
+     * @param delayHide when true, hiding will commence after brief delay.
      */
-    void setKeyboardVisibility(boolean shouldShow);
+    void setKeyboardVisibility(boolean shouldShow, boolean delayHide);
 
     /**
      * @return Reports whether keyboard (whether software or hardware) is active.

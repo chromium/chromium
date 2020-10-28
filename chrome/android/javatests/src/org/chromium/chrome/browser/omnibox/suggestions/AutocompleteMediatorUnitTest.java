@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -180,8 +181,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void updateSuggestionsList_notEffectiveWhenDisabled() {
         mMediator.onNativeInitialized();
 
@@ -198,7 +198,6 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP)
     public void updateSuggestionsList_worksWithNullList() {
         mMediator.onNativeInitialized();
 
@@ -215,7 +214,6 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP)
     public void updateSuggestionsList_worksWithEmptyList() {
         mMediator.onNativeInitialized();
 
@@ -231,39 +229,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
-    public void updateSuggestionsList_defersKeyboardPopupWhenHaveLotsOfSuggestionsToShow() {
-        mMediator.onNativeInitialized();
-        mMediator.signalPendingKeyboardShowDecision();
-        mMediator.onSuggestionsReceived(new AutocompleteResult(mSuggestionsList, null), "");
-        Assert.assertTrue(
-                mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(false));
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
-    public void updateSuggestionsList_showsKeyboardWhenHaveFewSuggestionsToShow() {
-        mMediator.onNativeInitialized();
-        mMediator.signalPendingKeyboardShowDecision();
-        mMediator.onSuggestionsReceived(
-                new AutocompleteResult(
-                        mSuggestionsList.subList(0, MINIMUM_NUMBER_OF_SUGGESTIONS_TO_SHOW), null),
-                "");
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true));
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP)
     public void updateSuggestionsList_scrolEventsWithConcealedItemsTogglesKeyboardVisibility() {
         mMediator.onNativeInitialized();
 
@@ -278,22 +244,21 @@ public class AutocompleteMediatorUnitTest {
         // With fully concealed elements, scroll should trigger keyboard hide.
         reset(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownScroll();
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(false));
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true));
+        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(false), anyBoolean());
+        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
 
         // Pretend that the user scrolled back to top with an overscroll.
         // This should bring back the soft keyboard.
         reset(mAutocompleteDelegate);
         mMediator.onSuggestionDropdownOverscrolledToTop();
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true));
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false));
+        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true), anyBoolean());
+        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false), anyBoolean());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP)
     public void updateSuggestionsList_updateHeightWhenHardwareKeyboardIsConnected() {
         // Simulates behavior of physical keyboard being attached to the device.
         // In this scenario, requesting keyboard to come up will not result with an actual
@@ -337,7 +302,6 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP)
     public void updateSuggestionsList_rejectsHeightUpdatesWhenKeyboardIsHidden() {
         // Simulates scenario where we receive dropdown height update after software keyboard is
         // explicitly hidden. In this scenario the updates should be rejected when estimating
@@ -368,29 +332,6 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP)
-    public void updateSuggestionsList_retainsKeyboardOnScrollWithFewSuggestions() {
-        mMediator.onNativeInitialized();
-        mMediator.signalPendingKeyboardShowDecision();
-        mMediator.onSuggestionsReceived(
-                new AutocompleteResult(
-                        mSuggestionsList.subList(0, MINIMUM_NUMBER_OF_SUGGESTIONS_TO_SHOW), null),
-                "");
-        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true));
-
-        // Should perform no action.
-        mMediator.onSuggestionDropdownScroll();
-        // Should perform no action.
-        mMediator.onSuggestionDropdownScroll();
-
-        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(false));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
     public void onTextChanged_emptyTextTriggersZeroSuggest() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -416,8 +357,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
@@ -440,8 +380,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onTextChanged_cancelsPendingRequests() {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
@@ -465,8 +404,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionsReceived(
@@ -482,8 +420,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void setLayoutDirection_beforeInitialization() {
         mMediator.onNativeInitialized();
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -501,8 +438,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void setLayoutDirection_afterInitialization() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
@@ -529,8 +465,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_triggersZeroSuggest_nativeInitialized() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -556,8 +491,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT,
-            ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_triggersZeroSuggest_nativeNotInitialized() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);

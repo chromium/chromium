@@ -337,7 +337,6 @@ public abstract class ChromeFeatureList {
             "OmniboxAdaptiveSuggestionsCount";
     public static final String OMNIBOX_ASSISTANT_VOICE_SEARCH = "OmniboxAssistantVoiceSearch";
     public static final String OMNIBOX_COMPACT_SUGGESTIONS = "OmniboxCompactSuggestions";
-    public static final String OMNIBOX_DEFERRED_KEYBOARD_POPUP = "OmniboxDeferredKeyboardPopup";
     public static final String OMNIBOX_ENABLE_CLIPBOARD_PROVIDER_IMAGE_SUGGESTIONS =
             "OmniboxEnableClipboardProviderImageSuggestions";
     public static final String OMNIBOX_HIDE_VISITS_FROM_CCT = "OmniboxHideVisitsFromCct";

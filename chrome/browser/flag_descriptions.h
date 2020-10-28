@@ -888,9 +888,6 @@ extern const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[];
 extern const char kOmniboxCompactSuggestionsName[];
 extern const char kOmniboxCompactSuggestionsDescription[];
 
-extern const char kOmniboxDeferredKeyboardPopupName[];
-extern const char kOmniboxDeferredKeyboardPopupDescription[];
-
 extern const char kOmniboxDisplayTitleForCurrentUrlName[];
 extern const char kOmniboxDisplayTitleForCurrentUrlDescription[];
 

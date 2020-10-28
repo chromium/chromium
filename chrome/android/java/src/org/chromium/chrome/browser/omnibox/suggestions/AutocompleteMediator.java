@@ -101,8 +101,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
     private boolean mEnableAdaptiveSuggestionsCount;
-    private boolean mEnableDeferredKeyboardPopup;
-    private boolean mPendingKeyboardShowDecision;
 
     @IntDef({SuggestionVisibilityState.DISALLOWED, SuggestionVisibilityState.PENDING_ALLOW,
             SuggestionVisibilityState.ALLOWED})
@@ -343,8 +341,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
         mEnableAdaptiveSuggestionsCount =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
-        mEnableDeferredKeyboardPopup =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_DEFERRED_KEYBOARD_POPUP);
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
             mHandler.post(deferredRunnable);
@@ -402,13 +398,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mUrlFocusTime = System.currentTimeMillis();
             setSuggestionVisibilityState(SuggestionVisibilityState.PENDING_ALLOW);
 
-            signalPendingKeyboardShowDecision();
-            // For cases where we know the feature is disabled - or those where Omnibox is running
-            // without native code loaded - make sure we present the keyboard immediately.
-            if (!mEnableDeferredKeyboardPopup) {
-                resolvePendingKeyboardShowDecision();
-            }
-
             if (mNativeInitialized) {
                 startZeroSuggest();
             } else {
@@ -420,7 +409,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             }
         } else {
             if (mNativeInitialized) mDropdownViewInfoListManager.recordSuggestionsShown();
-
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
             setSuggestionVisibilityState(SuggestionVisibilityState.DISALLOWED);
@@ -520,7 +508,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         }
 
         loadUrlForOmniboxMatch(position, suggestion, url, mLastActionUpTimestamp, true);
-        mDelegate.setKeyboardVisibility(false);
     }
 
     /**
@@ -786,39 +773,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDelegate.onUrlTextChanged();
     }
 
-    /**
-     * Set signal indicating that the AutocompleteMediator should issue request to show or hide
-     * keyboard upon receiving next batch of Suggestions.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void signalPendingKeyboardShowDecision() {
-        mPendingKeyboardShowDecision = true;
-    }
-
-    /**
-     * Issue request to show or hide keyboard after receiving fresh set of suggestions.
-     * The request is only issued if it was previously signalled as 'pending'.
-     */
-    private void resolvePendingKeyboardShowDecision() {
-        if (!mPendingKeyboardShowDecision) return;
-        mPendingKeyboardShowDecision = false;
-        mDelegate.setKeyboardVisibility(shouldShowSoftKeyboard());
-    }
-
-    /**
-     * @return True if soft keyboard should be shown.
-     */
-    private boolean shouldShowSoftKeyboard() {
-        return !(mEnableDeferredKeyboardPopup
-                && mDropdownViewInfoListBuilder.hasFullyConcealedElements());
-    }
-
     @Override
     public void onSuggestionsReceived(
             AutocompleteResult autocompleteResult, String inlineAutocompleteText) {
         if (mShouldPreventOmniboxAutocomplete
                 || getSuggestionVisibilityState() == SuggestionVisibilityState.DISALLOWED) {
-            resolvePendingKeyboardShowDecision();
             return;
         }
 
@@ -849,7 +808,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mDelegate.onSuggestionsChanged(inlineAutocompleteText);
             updateOmniboxSuggestionsVisibility();
         }
-        resolvePendingKeyboardShowDecision();
     }
 
     @Override
@@ -867,8 +825,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param eventTime The timestamp the load was triggered by the user.
      */
     void loadTypedOmniboxText(long eventTime) {
-        mDelegate.setKeyboardVisibility(false);
-
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         if (mNativeInitialized) {
             findMatchAndLoadUrl(urlText, eventTime);
@@ -1123,7 +1079,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     public void onSuggestionDropdownScroll() {
         if (mEnableAdaptiveSuggestionsCount
                 && mDropdownViewInfoListBuilder.hasFullyConcealedElements()) {
-            mDelegate.setKeyboardVisibility(false);
+            mDelegate.setKeyboardVisibility(false, false);
         }
     }
 
@@ -1153,7 +1109,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void onSuggestionDropdownOverscrolledToTop() {
         if (mEnableAdaptiveSuggestionsCount) {
-            mDelegate.setKeyboardVisibility(true);
+            mDelegate.setKeyboardVisibility(true, false);
         }
     }
 
@@ -1193,6 +1149,5 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         // object will be reset and the suggestion will fail validation.
         recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);
         mDelegate.loadUrl(updatedUrl.getSpec(), PageTransition.LINK, mLastActionUpTimestamp);
-        mDelegate.setKeyboardVisibility(false);
     }
 }

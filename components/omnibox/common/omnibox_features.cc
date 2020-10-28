@@ -282,11 +282,6 @@ const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
 const base::Feature kCompactSuggestions{"OmniboxCompactSuggestions",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, defers keyboard popup when user highlights the omnibox until
-// the user taps the Omnibox again.
-extern const base::Feature kDeferredKeyboardPopup{
-    "OmniboxDeferredKeyboardPopup", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enbaled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
 extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",

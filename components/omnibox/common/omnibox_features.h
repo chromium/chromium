@@ -80,7 +80,6 @@ extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kAdaptiveSuggestionsCount;
 extern const base::Feature kBookmarkPaths;
 extern const base::Feature kCompactSuggestions;
-extern const base::Feature kDeferredKeyboardPopup;
 extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kRichAutocompletion;
 extern const base::Feature kOmniboxSearchReadyIncognito;
