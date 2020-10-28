@@ -371,11 +371,13 @@ TEST_F(TracingObserverProtoTest, AsProtoInto) {
   base::trace_event::ProcessMemoryDump pmd =
       base::trace_event::ProcessMemoryDump(dump_args);
 
-  base::trace_event::MemoryAllocatorDump* dump = pmd.CreateAllocatorDump(
+  using MemoryAllocatorDump = base::trace_event::MemoryAllocatorDump;
+
+  MemoryAllocatorDump* dump = pmd.CreateAllocatorDump(
       "mad1", base::trace_event::MemoryAllocatorDumpGuid(421));
-  dump->AddScalar("size", "kBytes", 10);
-  dump->AddScalar("one", "kBytes", 1);
-  dump->AddString("two", "kObjects", "one");
+  dump->AddScalar("size", MemoryAllocatorDump::kUnitsBytes, 10);
+  dump->AddScalar("one", MemoryAllocatorDump::kUnitsBytes, 1);
+  dump->AddString("two", MemoryAllocatorDump::kUnitsObjects, "one");
 
   perfetto::TraceWriter::TracePacketHandle handle =
       trace_writer->NewTracePacket();

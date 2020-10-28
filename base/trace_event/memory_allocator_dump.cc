@@ -104,7 +104,7 @@ void MemoryAllocatorDump::AsProtoInto(
   for (const Entry& entry : entries_) {
     if (entry.name == "size") {
       DCHECK_EQ(entry.entry_type, Entry::EntryType::kUint64);
-      DCHECK_EQ(entry.units, "kBytes");
+      DCHECK_EQ(entry.units, kUnitsBytes);
       memory_node->set_size_bytes(entry.value_uint64);
       continue;
     }
@@ -122,11 +122,11 @@ void MemoryAllocatorDump::AsProtoInto(
         proto_memory_node_entry->set_value_string(entry.value_string);
         break;
     }
-    if (entry.units == "kBytes") {
+    if (entry.units == kUnitsBytes) {
       proto_memory_node_entry->set_units(
           perfetto::protos::pbzero::MemoryTrackerSnapshot::ProcessSnapshot::
               MemoryNode::MemoryNodeEntry::BYTES);
-    } else if (entry.units == "kObjects") {
+    } else if (entry.units == kUnitsObjects) {
       proto_memory_node_entry->set_units(
           perfetto::protos::pbzero::MemoryTrackerSnapshot::ProcessSnapshot::
               MemoryNode::MemoryNodeEntry::COUNT);
