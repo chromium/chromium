@@ -3282,7 +3282,7 @@
   {
     "name": "new-usb-backend",
     "owners": [ "reillyg@chromium.org" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "notification-scheduler-debug-options",
