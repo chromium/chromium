@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
@@ -98,6 +99,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param overviewModeBehaviorSupplier Supplier of the overview mode manager.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
+     * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      */
     public TabbedRootUiCoordinator(ChromeActivity activity,
             Callback<Boolean> onOmniboxFocusChangedListener,
@@ -110,11 +112,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, overviewModeBehaviorSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
-                intentMetadataOneshotSupplier);
+                intentMetadataOneshotSupplier, layoutStateProviderOneshotSupplier);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls = () -> {
             // These null checks prevent any exceptions that may be caused by callbacks after

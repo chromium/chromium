@@ -20,8 +20,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.KeyboardShortcuts;
@@ -29,7 +27,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
@@ -79,8 +76,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     protected Verifier mVerifier;
-    private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
-            new OneshotSupplierImpl<>();
 
     // This is to give the right package name while using the client's resources during an
     // overridePendingTransition call.
@@ -151,9 +146,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 ()
                         -> mNavigationController,
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                mOverviewModeBehaviorSupplier, this::getContextualSearchManager,
-                mTabModelSelectorSupplier, new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>());
+                this::getContextualSearchManager, mTabModelSelectorSupplier);
     }
 
     @Override

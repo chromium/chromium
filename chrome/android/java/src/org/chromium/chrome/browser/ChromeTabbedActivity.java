@@ -1475,7 +1475,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getActivityTabProvider(), mEphemeralTabCoordinatorSupplier,
                 mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier, mStartSurfaceSupplier);
+                mTabModelSelectorSupplier, mStartSurfaceSupplier,
+                mLayoutStateProviderOneshotSupplier);
     }
 
     @Override

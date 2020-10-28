@@ -6,24 +6,21 @@ package org.chromium.chrome.browser.customtabs;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.feature_engagement.Tracker;
 
 /**
@@ -39,15 +36,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             Supplier<CustomTabActivityNavigationController> customTabNavigationController,
             ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
-            OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
-                bookmarkBridgeSupplier, overviewModeBehaviorSupplier,
-                contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
-                intentMetadataOneshotSupplier);
+                bookmarkBridgeSupplier, new OneshotSupplierImpl<>(),
+                contextualSearchManagerSupplier, tabModelSelectorSupplier,
+                new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>());
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
     }
