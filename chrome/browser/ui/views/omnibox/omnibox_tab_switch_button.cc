@@ -72,6 +72,17 @@ OmniboxTabSwitchButton::OmniboxTabSwitchButton(
 
 OmniboxTabSwitchButton::~OmniboxTabSwitchButton() = default;
 
+void OmniboxTabSwitchButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  MdTextButton::OnBoundsChanged(previous_bounds);
+
+  base::string16 text = hint_;
+  if (width() <= icon_only_width_)
+    text = base::string16();
+  else if (width() <= short_text_width_)
+    text = hint_short_;
+  SetText(text);
+}
+
 void OmniboxTabSwitchButton::StateChanged(ButtonState old_state) {
   MdTextButton::StateChanged(old_state);
   if (GetState() == STATE_NORMAL && old_state == STATE_PRESSED) {
@@ -98,15 +109,33 @@ void OmniboxTabSwitchButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                               IsSelected());
 }
 
-void OmniboxTabSwitchButton::UpdateBackground() {
-  focus_ring()->SchedulePaint();
+// static
+views::FlexRule OmniboxTabSwitchButton::GetFlexRule() {
+  // The rule below snaps between full, short, icon-only, and zero widths.
+  return base::BindRepeating(
+      [](const views::View* view, const views::SizeBounds& maximum_size) {
+        gfx::Size preferred_size = view->GetPreferredSize();
+        int width;
+        if (!maximum_size.width().is_bounded()) {
+          // Until width is bounded, return 0 to allocate flex excess correctly.
+          width = 0;
+        } else if (full_text_width_ <= maximum_size.width()) {
+          width = full_text_width_;
+        } else if (short_text_width_ <= maximum_size.width()) {
+          width = short_text_width_;
+        } else if (icon_only_width_ < maximum_size.width()) {
+          width = icon_only_width_;
+        } else {
+          // Available width is too small to fit even the icon only. So don't
+          // show button at all.
+          width = 0;
+        }
+        return gfx::Size(width, preferred_size.height());
+      });
 }
 
-void OmniboxTabSwitchButton::ProvideWidthHint(int parent_width) {
-  base::string16 text;
-  int preferred_width = CalculateGoalWidth(parent_width, &text);
-  SetText(text);
-  SetPreferredSize({preferred_width, GetPreferredSize().height()});
+void OmniboxTabSwitchButton::UpdateBackground() {
+  focus_ring()->SchedulePaint();
 }
 
 bool OmniboxTabSwitchButton::IsSelected() const {
@@ -114,18 +143,4 @@ bool OmniboxTabSwitchButton::IsSelected() const {
   return result_view_->IsMatchSelected() &&
          popup_contents_view_->model()->selected_line_state() ==
              OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH;
-}
-
-int OmniboxTabSwitchButton::CalculateGoalWidth(int parent_width,
-                                               base::string16* goal_text) {
-  if (full_text_width_ * 5 <= parent_width) {
-    *goal_text = hint_;
-    return full_text_width_;
-  }
-  if (short_text_width_ * 5 <= parent_width) {
-    *goal_text = hint_short_;
-    return short_text_width_;
-  }
-  *goal_text = base::string16();
-  return (icon_only_width_ * 5 <= parent_width) ? icon_only_width_ : 0;
 }

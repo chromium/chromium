@@ -29,7 +29,7 @@ class OmniboxMatchCellView;
 class OmniboxPopupContentsView;
 class OmniboxSuggestionButtonRowView;
 class OmniboxTabSwitchButton;
-class OmniboxResultFocusBar;
+class OmniboxResultSelectionIndicator;
 enum class OmniboxPart;
 enum class OmniboxPartState;
 
@@ -96,14 +96,12 @@ class OmniboxResultView : public views::View,
   void EmitTextChangedAccessiblityEvent();
 
   // views::View:
-  void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
  private:
@@ -127,6 +125,9 @@ class OmniboxResultView : public views::View,
   // state.
   void UpdateRemoveSuggestionVisibility();
 
+  // Sets the widths of the suggestion and keyword and calls Layout().
+  void SetWidths();
+
   // views::View:
   const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -149,22 +150,25 @@ class OmniboxResultView : public views::View,
   // For sliding in the keyword search.
   std::unique_ptr<gfx::SlideAnimation> keyword_slide_animation_;
 
+  // Container for the first row (for everything expect |button_row_|).
+  views::View* suggestion_container_;
+
   // Weak pointers for easy reference.
   OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.
   OmniboxMatchCellView* keyword_view_;     // The trailing (or right) view.
   OmniboxTabSwitchButton* suggestion_tab_switch_button_;
 
-  // The blue bar used to indicate focus.  This is currently only used if
+  // The blue bar used to indicate selection. This is currently only used if
   // omnibox-refined-focus-state flag is enabled.
-  OmniboxResultFocusBar* focus_bar_ = nullptr;
-
-  // The row of buttons, only assigned and used if OmniboxSuggestionButtonRow
-  // feature is enabled. It is owned by the base view, not this raw pointer.
-  OmniboxSuggestionButtonRowView* button_row_ = nullptr;
+  OmniboxResultSelectionIndicator* selection_indicator_ = nullptr;
 
   // The "X" button at the end of the match cell, used to remove suggestions.
   views::ImageButton* remove_suggestion_button_;
   views::FocusRing* remove_suggestion_focus_ring_ = nullptr;
+
+  // The row of buttons, only assigned and used if OmniboxSuggestionButtonRow
+  // feature is enabled. It is owned by the base view, not this raw pointer.
+  OmniboxSuggestionButtonRowView* button_row_ = nullptr;
 
   // Keeps track of mouse-enter and mouse-exit events of child Views.
   OmniboxMouseEnterExitHandler mouse_enter_exit_handler_;
