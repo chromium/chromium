@@ -1241,6 +1241,8 @@ void ChromeDownloadManagerDelegate::GetFileMimeType(
 void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
     uint32_t download_id,
     safe_browsing::DownloadCheckResult result) {
+  if (!download_manager_)
+    return;
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (!item || (item->GetState() != DownloadItem::IN_PROGRESS &&
                 item->GetDangerType() !=
