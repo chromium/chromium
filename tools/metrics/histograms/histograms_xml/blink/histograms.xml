@@ -1816,11 +1816,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ThreadedIconLoader.LoadTime" units="ms"
-    expires_after="2020-12-01">
+    expires_after="2021-11-30">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
     The number of milliseconds it took to finish successfully loading an icon
+    using ThreadedIconLoader. Recorded whenever a blink module loads an icon
     using ThreadedIconLoader.
   </summary>
 </histogram>
