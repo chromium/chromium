@@ -104,7 +104,8 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
       public WindowStateObserver {
  public:
   ScopedWindowResizer(ToplevelWindowEventHandler* handler,
-                      std::unique_ptr<WindowResizer> resizer);
+                      std::unique_ptr<WindowResizer> resizer,
+                      bool grab_capture);
   ~ScopedWindowResizer() override;
 
   // Returns true if the drag moves the window and does not resize.
@@ -137,7 +138,8 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
 
 ToplevelWindowEventHandler::ScopedWindowResizer::ScopedWindowResizer(
     ToplevelWindowEventHandler* handler,
-    std::unique_ptr<WindowResizer> resizer)
+    std::unique_ptr<WindowResizer> resizer,
+    bool grab_capture)
     : handler_(handler), resizer_(std::move(resizer)), grabbed_capture_(false) {
   aura::Window* target = resizer_->GetTarget();
   target->AddObserver(this);
@@ -146,7 +148,7 @@ ToplevelWindowEventHandler::ScopedWindowResizer::ScopedWindowResizer(
   if (IsResize())
     target->NotifyResizeLoopStarted();
 
-  if (!target->HasCapture()) {
+  if (grab_capture && !target->HasCapture()) {
     grabbed_capture_ = true;
     target->SetCapture();
   }
@@ -469,7 +471,8 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
     int window_component,
     ::wm::WindowMoveSource source,
     EndClosure end_closure,
-    bool update_gesture_target) {
+    bool update_gesture_target,
+    bool grab_capture) {
   if (gesture_target_ != nullptr && update_gesture_target) {
     DCHECK_EQ(source, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
     // Transfer events for gesture if switching to new target.
@@ -477,7 +480,8 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
         gesture_target_, window, ui::TransferTouchesBehavior::kDontCancel);
   }
 
-  if (!PrepareForDrag(window, point_in_parent, window_component, source)) {
+  if (!PrepareForDrag(window, point_in_parent, window_component, source,
+                      grab_capture)) {
     // Treat failure to start as a revert.
     if (end_closure)
       std::move(end_closure).Run(DragResult::REVERT);
@@ -624,7 +628,8 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
     aura::Window* window,
     const gfx::PointF& point_in_parent,
     int window_component,
-    ::wm::WindowMoveSource source) {
+    ::wm::WindowMoveSource source,
+    bool grab_capture) {
   if (window_resizer_)
     return false;
 
@@ -632,8 +637,8 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
       CreateWindowResizer(window, point_in_parent, window_component, source));
   if (!resizer)
     return false;
-  window_resizer_ =
-      std::make_unique<ScopedWindowResizer>(this, std::move(resizer));
+  window_resizer_ = std::make_unique<ScopedWindowResizer>(
+      this, std::move(resizer), grab_capture);
   return true;
 }
 

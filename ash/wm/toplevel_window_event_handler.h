@@ -72,7 +72,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // successful. |end_closure| is run when the drag completes, including if the
   // drag is not started. If |update_gesture_target| is true, the gesture
   // target is forcefully updated and gesture events are transferred to
-  // new target if any. In general, prefer the first version.
+  // new target if any. If |grab_capture| is true, capture is set to |window|,
+  // if it is not set yet. In general, prefer the first version.
   bool AttemptToStartDrag(aura::Window* window,
                           const gfx::PointF& point_in_parent,
                           int window_component,
@@ -82,7 +83,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
                           int window_component,
                           ::wm::WindowMoveSource source,
                           EndClosure end_closure,
-                          bool update_gesture_target);
+                          bool update_gesture_target,
+                          bool grab_capture = true);
 
   // If there is a drag in progress it is reverted, otherwise does nothing.
   void RevertDrag();
@@ -121,7 +123,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
   bool PrepareForDrag(aura::Window* window,
                       const gfx::PointF& point_in_parent,
                       int window_component,
-                      ::wm::WindowMoveSource source);
+                      ::wm::WindowMoveSource source,
+                      bool grab_capture);
 
   // Completes or reverts the drag if one is in progress. Returns true if a
   // drag was completed or reverted.
