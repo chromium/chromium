@@ -262,11 +262,13 @@ bool NeuralStylusPalmDetectionFilter::IsHeuristicPalmStroke(
   const auto& config = model_->config();
   if (config.heuristic_palm_touch_limit > 0.0) {
     if (stroke.MaxMajorRadius() >= config.heuristic_palm_touch_limit) {
+      VLOG(1) << "IsHeuristicPalm: Yes major radius.";
       return true;
     }
   }
   if (config.heuristic_palm_area_limit > 0.0) {
     if (stroke.BiggestSize() >= config.heuristic_palm_area_limit) {
+      VLOG(1) << "IsHeuristicPalm: Yes area.";
       return true;
     }
     std::vector<std::pair<float, int>> biggest_strokes;
@@ -276,9 +278,11 @@ bool NeuralStylusPalmDetectionFilter::IsHeuristicPalmStroke(
     if (!biggest_strokes.empty() &&
         strokes_.find(biggest_strokes[0].second)->second.BiggestSize() >=
             config.heuristic_palm_area_limit) {
+      VLOG(1) << "IsHeuristicPalm: Yes neighbor area.";
       return true;
     }
   }
+  VLOG(1) << "IsHeuristicPalm: No.";
   return false;
 }
 
@@ -286,7 +290,15 @@ bool NeuralStylusPalmDetectionFilter::DetectSpuriousStroke(
     const std::vector<float>& features,
     int tracking_id,
     float threshold) const {
-  return model_->Inference(features) >= threshold;
+  auto inference_value = model_->Inference(features);
+  if (VLOG_IS_ON(1)) {
+    VLOG(1) << "Running Inference, features are:";
+    for (std::vector<float>::size_type i = 0; i < features.size(); ++i) {
+      VLOG(1) << "Feature " << i << " is " << features[i];
+    }
+    VLOG(1) << "Inference value is  : " << inference_value;
+  }
+  return inference_value >= threshold;
 }
 
 std::vector<float> NeuralStylusPalmDetectionFilter::ExtractFeatures(
