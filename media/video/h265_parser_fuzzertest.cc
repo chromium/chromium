@@ -31,6 +31,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         int sps_id;
         res = parser.ParseSPS(&sps_id);
         break;
+      case media::H265NALU::PPS_NUT:
+        int pps_id;
+        res = parser.ParsePPS(nalu, &pps_id);
+        break;
       default:
         // Skip any other NALU.
         break;

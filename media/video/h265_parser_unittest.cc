@@ -36,15 +36,14 @@ class H265ParserTest : public ::testing::Test {
     parser_.SetStream(stream_->data(), stream_->length());
   }
 
-  bool ParseNalusUntilNut(H265NALU::Type nalu_type) {
+  bool ParseNalusUntilNut(H265NALU* target_nalu, H265NALU::Type nalu_type) {
     while (true) {
-      H265NALU nalu;
-      H265Parser::Result res = parser_.AdvanceToNextNALU(&nalu);
+      H265Parser::Result res = parser_.AdvanceToNextNALU(target_nalu);
       if (res == H265Parser::kEOStream) {
         return false;
       }
       EXPECT_EQ(res, H265Parser::kOk);
-      if (nalu.nal_unit_type == nalu_type)
+      if (target_nalu->nal_unit_type == nalu_type)
         return true;
     }
   }
@@ -84,6 +83,11 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
           res = parser_.ParseSPS(&sps_id);
           EXPECT_TRUE(!!parser_.GetSPS(sps_id));
           break;
+        case H265NALU::PPS_NUT:
+          int pps_id;
+          res = parser_.ParsePPS(nalu, &pps_id);
+          EXPECT_TRUE(!!parser_.GetPPS(pps_id));
+          break;
         default:
           break;
       }
@@ -94,7 +98,8 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
 
 TEST_F(H265ParserTest, SpsParsing) {
   LoadParserFile("bear.hevc");
-  EXPECT_TRUE(ParseNalusUntilNut(H265NALU::SPS_NUT));
+  H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::SPS_NUT));
   int sps_id;
   EXPECT_EQ(H265Parser::kOk, parser_.ParseSPS(&sps_id));
   const H265SPS* sps = parser_.GetSPS(sps_id);
@@ -154,6 +159,47 @@ TEST_F(H265ParserTest, SpsParsing) {
   EXPECT_EQ(sps->vui_parameters.def_disp_win_right_offset, 0);
   EXPECT_EQ(sps->vui_parameters.def_disp_win_top_offset, 0);
   EXPECT_EQ(sps->vui_parameters.def_disp_win_bottom_offset, 0);
+}
+
+TEST_F(H265ParserTest, PpsParsing) {
+  LoadParserFile("bear.hevc");
+  H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::SPS_NUT));
+  int sps_id;
+  // We need to parse the SPS so the PPS can find it.
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSPS(&sps_id));
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PPS_NUT));
+  int pps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H265PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+  EXPECT_EQ(pps->pps_pic_parameter_set_id, 0);
+  EXPECT_EQ(pps->pps_seq_parameter_set_id, 0);
+  EXPECT_FALSE(pps->dependent_slice_segments_enabled_flag);
+  EXPECT_FALSE(pps->output_flag_present_flag);
+  EXPECT_EQ(pps->num_extra_slice_header_bits, 0);
+  EXPECT_TRUE(pps->sign_data_hiding_enabled_flag);
+  EXPECT_FALSE(pps->cabac_init_present_flag);
+  EXPECT_EQ(pps->num_ref_idx_l0_default_active_minus1, 0);
+  EXPECT_EQ(pps->num_ref_idx_l1_default_active_minus1, 0);
+  EXPECT_EQ(pps->init_qp_minus26, 0);
+  EXPECT_FALSE(pps->constrained_intra_pred_flag);
+  EXPECT_FALSE(pps->transform_skip_enabled_flag);
+  EXPECT_TRUE(pps->cu_qp_delta_enabled_flag);
+  EXPECT_EQ(pps->diff_cu_qp_delta_depth, 0);
+  EXPECT_EQ(pps->pps_cb_qp_offset, 0);
+  EXPECT_EQ(pps->pps_cr_qp_offset, 0);
+  EXPECT_FALSE(pps->pps_slice_chroma_qp_offsets_present_flag);
+  EXPECT_TRUE(pps->weighted_pred_flag);
+  EXPECT_FALSE(pps->weighted_bipred_flag);
+  EXPECT_FALSE(pps->transquant_bypass_enabled_flag);
+  EXPECT_FALSE(pps->tiles_enabled_flag);
+  EXPECT_TRUE(pps->entropy_coding_sync_enabled_flag);
+  EXPECT_TRUE(pps->loop_filter_across_tiles_enabled_flag);
+  EXPECT_FALSE(pps->pps_scaling_list_data_present_flag);
+  EXPECT_FALSE(pps->lists_modification_present_flag);
+  EXPECT_EQ(pps->log2_parallel_merge_level_minus2, 0);
+  EXPECT_FALSE(pps->slice_segment_header_extension_present_flag);
 }
 
 }  // namespace media

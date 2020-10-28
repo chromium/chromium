@@ -265,14 +265,69 @@ struct MEDIA_EXPORT H265SPS {
   VideoColorSpace GetColorSpace() const;
 };
 
+struct MEDIA_EXPORT H265PPS {
+  H265PPS();
+
+  enum {
+    kMaxNumTileColumnWidth = 19,  // From VAAPI.
+    kMaxNumTileRowHeight = 21,    // From VAAPI.
+  };
+
+  int temporal_id;  // calculated from NALU
+
+  // Syntax elements.
+  int pps_pic_parameter_set_id;
+  int pps_seq_parameter_set_id;
+  bool dependent_slice_segments_enabled_flag;
+  bool output_flag_present_flag;
+  int num_extra_slice_header_bits;
+  bool sign_data_hiding_enabled_flag;
+  bool cabac_init_present_flag;
+  int num_ref_idx_l0_default_active_minus1;
+  int num_ref_idx_l1_default_active_minus1;
+  int init_qp_minus26;
+  bool constrained_intra_pred_flag;
+  bool transform_skip_enabled_flag;
+  bool cu_qp_delta_enabled_flag;
+  int diff_cu_qp_delta_depth;
+  int pps_cb_qp_offset;
+  int pps_cr_qp_offset;
+  bool pps_slice_chroma_qp_offsets_present_flag;
+  bool weighted_pred_flag;
+  bool weighted_bipred_flag;
+  bool transquant_bypass_enabled_flag;
+  bool tiles_enabled_flag;
+  bool entropy_coding_sync_enabled_flag;
+  int num_tile_columns_minus1;
+  int num_tile_rows_minus1;
+  bool uniform_spacing_flag;
+  int column_width_minus1[kMaxNumTileColumnWidth];
+  int row_height_minus1[kMaxNumTileRowHeight];
+  bool loop_filter_across_tiles_enabled_flag;
+  bool pps_loop_filter_across_slices_enabled_flag;
+  bool deblocking_filter_override_enabled_flag;
+  bool pps_deblocking_filter_disabled_flag;
+  int pps_beta_offset_div2;
+  int pps_tc_offset_div2;
+  bool pps_scaling_list_data_present_flag;
+  H265ScalingListData scaling_list_data;
+  bool lists_modification_present_flag;
+  int log2_parallel_merge_level_minus2;
+  bool slice_segment_header_extension_present_flag;
+
+  // Calculated fields.
+  int qp_bd_offset_y;
+};
+
 // Class to parse an Annex-B H.265 stream.
 class MEDIA_EXPORT H265Parser {
  public:
   enum Result {
     kOk,
-    kInvalidStream,      // error in stream
-    kUnsupportedStream,  // stream not supported by the parser
-    kEOStream,           // end of stream
+    kInvalidStream,        // error in stream
+    kUnsupportedStream,    // stream not supported by the parser
+    kMissingParameterSet,  // missing PPS/SPS from what was parsed
+    kEOStream,             // end of stream
   };
 
   H265Parser();
@@ -299,16 +354,21 @@ class MEDIA_EXPORT H265Parser {
   // NALU-specific parsing functions.
   // These should be called after AdvanceToNextNALU().
 
-  // SPSes are owned by the parser class and the memory for their structures is
-  // managed here, not by the caller, as they are reused across NALUs.
+  // SPSes and PPSes are owned by the parser class and the memory for their
+  // structures is managed here, not by the caller, as they are reused across
+  // NALUs.
   //
-  // Parse an SPS NALU and save their data in the parser, returning id of the
-  // parsed structure in |*sps_id|. To get a pointer to a given SPS structure,
-  // use GetSPS(), passing the returned |*sps_id| as parameter.
+  // Parse an SPS/PPS NALU and save their data in the parser, returning id
+  // of the parsed structure in |*pps_id|/|*sps_id|. To get a pointer to a given
+  // SPS/PPS structure, use GetSPS()/GetPPS(), passing the returned
+  // |*sps_id|/|*pps_id| as parameter.
   Result ParseSPS(int* sps_id);
+  Result ParsePPS(const H265NALU& nalu, int* pps_id);
 
-  // Return a pointer to SPS with given |sps_id| or null if not present.
+  // Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or null if not
+  // present.
   const H265SPS* GetSPS(int sps_id) const;
+  const H265PPS* GetPPS(int pps_id) const;
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
@@ -351,8 +411,9 @@ class MEDIA_EXPORT H265Parser {
 
   H264BitReader br_;
 
-  // SPSes stored for future reference.
+  // PPSes and SPSes stored for future reference.
   base::flat_map<int, std::unique_ptr<H265SPS>> active_sps_;
+  base::flat_map<int, std::unique_ptr<H265PPS>> active_pps_;
 
   // Ranges of encrypted bytes in the buffer passed to SetEncryptedStream().
   Ranges<const uint8_t*> encrypted_ranges_;

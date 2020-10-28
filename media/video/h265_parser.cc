@@ -176,6 +176,10 @@ H265VUIParameters::H265VUIParameters() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265PPS::H265PPS() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
 H265Parser::H265Parser() {
   Reset();
 }
@@ -378,6 +382,7 @@ H265Parser::Result H265Parser::AdvanceToNextNALU(H265NALU* nalu) {
     return kEOStream;
   }
 
+  DCHECK(nalu);
   nalu->data = stream_ + start_code_size;
   nalu->size = nalu_size_with_start_code - start_code_size;
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
@@ -414,6 +419,7 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   DVLOG(4) << "Parsing SPS";
   Result res = kOk;
 
+  DCHECK(sps_id);
   *sps_id = -1;
 
   std::unique_ptr<H265SPS> sps = std::make_unique<H265SPS>();
@@ -692,10 +698,166 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   return res;
 }
 
+H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
+  // 7.4.3.3
+  DVLOG(4) << "Parsing PPS";
+  Result res = kOk;
+
+  DCHECK(pps_id);
+  *pps_id = -1;
+  std::unique_ptr<H265PPS> pps = std::make_unique<H265PPS>();
+
+  pps->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
+
+  // Set these defaults if they are not present here.
+  pps->loop_filter_across_tiles_enabled_flag = 1;
+
+  // 7.4.3.3.1
+  READ_UE_OR_RETURN(&pps->pps_pic_parameter_set_id);
+  IN_RANGE_OR_RETURN(pps->pps_pic_parameter_set_id, 0, 63);
+  READ_UE_OR_RETURN(&pps->pps_seq_parameter_set_id);
+  IN_RANGE_OR_RETURN(pps->pps_seq_parameter_set_id, 0, 15);
+  const H265SPS* sps = GetSPS(pps->pps_seq_parameter_set_id);
+  if (!sps) {
+    return kMissingParameterSet;
+  }
+  READ_BOOL_OR_RETURN(&pps->dependent_slice_segments_enabled_flag);
+  READ_BOOL_OR_RETURN(&pps->output_flag_present_flag);
+  READ_BITS_OR_RETURN(3, &pps->num_extra_slice_header_bits);
+  READ_BOOL_OR_RETURN(&pps->sign_data_hiding_enabled_flag);
+  READ_BOOL_OR_RETURN(&pps->cabac_init_present_flag);
+  READ_UE_OR_RETURN(&pps->num_ref_idx_l0_default_active_minus1);
+  IN_RANGE_OR_RETURN(pps->num_ref_idx_l0_default_active_minus1, 0, 14);
+  READ_UE_OR_RETURN(&pps->num_ref_idx_l1_default_active_minus1);
+  IN_RANGE_OR_RETURN(pps->num_ref_idx_l1_default_active_minus1, 0, 14);
+  READ_SE_OR_RETURN(&pps->init_qp_minus26);
+  pps->qp_bd_offset_y = 6 * sps->bit_depth_luma_minus8;
+  IN_RANGE_OR_RETURN(pps->init_qp_minus26, -(26 + pps->qp_bd_offset_y), 25);
+  READ_BOOL_OR_RETURN(&pps->constrained_intra_pred_flag);
+  READ_BOOL_OR_RETURN(&pps->transform_skip_enabled_flag);
+  READ_BOOL_OR_RETURN(&pps->cu_qp_delta_enabled_flag);
+  if (pps->cu_qp_delta_enabled_flag) {
+    READ_UE_OR_RETURN(&pps->diff_cu_qp_delta_depth);
+    IN_RANGE_OR_RETURN(pps->diff_cu_qp_delta_depth, 0,
+                       sps->log2_diff_max_min_luma_coding_block_size);
+  }
+  READ_SE_OR_RETURN(&pps->pps_cb_qp_offset);
+  IN_RANGE_OR_RETURN(pps->pps_cb_qp_offset, -12, 12);
+  READ_SE_OR_RETURN(&pps->pps_cr_qp_offset);
+  IN_RANGE_OR_RETURN(pps->pps_cr_qp_offset, -12, 12);
+  READ_BOOL_OR_RETURN(&pps->pps_slice_chroma_qp_offsets_present_flag);
+  READ_BOOL_OR_RETURN(&pps->weighted_pred_flag);
+  READ_BOOL_OR_RETURN(&pps->weighted_bipred_flag);
+  READ_BOOL_OR_RETURN(&pps->transquant_bypass_enabled_flag);
+  READ_BOOL_OR_RETURN(&pps->tiles_enabled_flag);
+  READ_BOOL_OR_RETURN(&pps->entropy_coding_sync_enabled_flag);
+  if (pps->tiles_enabled_flag) {
+    READ_UE_OR_RETURN(&pps->num_tile_columns_minus1);
+    IN_RANGE_OR_RETURN(pps->num_tile_columns_minus1, 0,
+                       sps->pic_width_in_ctbs_y - 1);
+    TRUE_OR_RETURN(pps->num_tile_columns_minus1 <
+                   H265PPS::kMaxNumTileColumnWidth);
+    READ_UE_OR_RETURN(&pps->num_tile_rows_minus1);
+    IN_RANGE_OR_RETURN(pps->num_tile_rows_minus1, 0,
+                       sps->pic_height_in_ctbs_y - 1);
+    TRUE_OR_RETURN((pps->num_tile_columns_minus1 != 0) ||
+                   (pps->num_tile_rows_minus1 != 0));
+    TRUE_OR_RETURN(pps->num_tile_rows_minus1 < H265PPS::kMaxNumTileRowHeight);
+    READ_BOOL_OR_RETURN(&pps->uniform_spacing_flag);
+    if (!pps->uniform_spacing_flag) {
+      pps->column_width_minus1[pps->num_tile_columns_minus1] =
+          sps->pic_width_in_ctbs_y - 1;
+      for (int i = 0; i < pps->num_tile_columns_minus1; ++i) {
+        READ_UE_OR_RETURN(&pps->column_width_minus1[i]);
+        pps->column_width_minus1[pps->num_tile_columns_minus1] -=
+            pps->column_width_minus1[i] + 1;
+      }
+      pps->row_height_minus1[pps->num_tile_rows_minus1] =
+          sps->pic_height_in_ctbs_y - 1;
+      for (int i = 0; i < pps->num_tile_rows_minus1; ++i) {
+        READ_UE_OR_RETURN(&pps->row_height_minus1[i]);
+        pps->row_height_minus1[pps->num_tile_rows_minus1] -=
+            pps->row_height_minus1[i] + 1;
+      }
+    }
+    READ_BOOL_OR_RETURN(&pps->loop_filter_across_tiles_enabled_flag);
+  }
+  READ_BOOL_OR_RETURN(&pps->pps_loop_filter_across_slices_enabled_flag);
+  bool deblocking_filter_control_present_flag;
+  READ_BOOL_OR_RETURN(&deblocking_filter_control_present_flag);
+  if (deblocking_filter_control_present_flag) {
+    READ_BOOL_OR_RETURN(&pps->deblocking_filter_override_enabled_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_deblocking_filter_disabled_flag);
+    if (!pps->pps_deblocking_filter_disabled_flag) {
+      READ_SE_OR_RETURN(&pps->pps_beta_offset_div2);
+      IN_RANGE_OR_RETURN(pps->pps_beta_offset_div2, -6, 6);
+      READ_SE_OR_RETURN(&pps->pps_tc_offset_div2);
+      IN_RANGE_OR_RETURN(pps->pps_tc_offset_div2, -6, 6);
+    }
+  }
+  READ_BOOL_OR_RETURN(&pps->pps_scaling_list_data_present_flag);
+  if (pps->pps_scaling_list_data_present_flag) {
+    res = ParseScalingListData(&pps->scaling_list_data);
+    if (res != kOk)
+      return res;
+  }
+  READ_BOOL_OR_RETURN(&pps->lists_modification_present_flag);
+  READ_UE_OR_RETURN(&pps->log2_parallel_merge_level_minus2);
+  IN_RANGE_OR_RETURN(pps->log2_parallel_merge_level_minus2, 0,
+                     sps->ctb_log2_size_y - 2);
+  READ_BOOL_OR_RETURN(&pps->slice_segment_header_extension_present_flag);
+  bool pps_extension_present_flag;
+  READ_BOOL_OR_RETURN(&pps_extension_present_flag);
+  bool pps_range_extension_flag = false;
+  bool pps_multilayer_extension_flag = false;
+  bool pps_3d_extension_flag = false;
+  bool pps_scc_extension_flag = false;
+  if (pps_extension_present_flag) {
+    READ_BOOL_OR_RETURN(&pps_range_extension_flag);
+    READ_BOOL_OR_RETURN(&pps_multilayer_extension_flag);
+    READ_BOOL_OR_RETURN(&pps_3d_extension_flag);
+    READ_BOOL_OR_RETURN(&pps_scc_extension_flag);
+    SKIP_BITS_OR_RETURN(4);  // pps_extension_4bits
+  }
+
+  if (pps_range_extension_flag) {
+    DVLOG(1) << "HEVC range extension not supported";
+    return kInvalidStream;
+  }
+  if (pps_multilayer_extension_flag) {
+    DVLOG(1) << "HEVC multilayer extension not supported";
+    return kInvalidStream;
+  }
+  if (pps_3d_extension_flag) {
+    DVLOG(1) << "HEVC 3D extension not supported";
+    return kInvalidStream;
+  }
+  if (pps_scc_extension_flag) {
+    DVLOG(1) << "HEVC SCC extension not supported";
+    return kInvalidStream;
+  }
+
+  // If a PPS with the same id already exists, replace it.
+  *pps_id = pps->pps_pic_parameter_set_id;
+  active_pps_[*pps_id] = std::move(pps);
+
+  return res;
+}
+
 const H265SPS* H265Parser::GetSPS(int sps_id) const {
   auto it = active_sps_.find(sps_id);
   if (it == active_sps_.end()) {
     DVLOG(1) << "Requested a nonexistent SPS id " << sps_id;
+    return nullptr;
+  }
+
+  return it->second.get();
+}
+
+const H265PPS* H265Parser::GetPPS(int pps_id) const {
+  auto it = active_pps_.find(pps_id);
+  if (it == active_pps_.end()) {
+    DVLOG(1) << "Requested a nonexistent PPS id " << pps_id;
     return nullptr;
   }
 
