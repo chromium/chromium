@@ -65,8 +65,6 @@ void LogSaveUIDismissalReason(
                                 NUM_UI_RESPONSES);
 
   if (user_state.has_value()) {
-    DCHECK(base::FeatureList::IsEnabled(
-        password_manager::features::kEnablePasswordsAccountStorage));
     std::string suffix =
         GetPasswordAccountStorageUserStateHistogramSuffix(user_state.value());
     base::UmaHistogramEnumeration(

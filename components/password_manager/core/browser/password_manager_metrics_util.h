@@ -516,8 +516,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 
 // Log the |reason| a user dismissed the save password bubble. If
 // |user_state| is set, the |reason| is also logged to a separate
-// user-state-specific histogram. |user_state| must be non-null iff the feature
-// kEnablePasswordsAccountStorage is enabled.
+// user-state-specific histogram.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
     base::Optional<PasswordAccountStorageUserState> user_state);
