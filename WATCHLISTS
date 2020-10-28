@@ -1192,9 +1192,6 @@
                   'ios/chrome/browser/widget_kit|'\
                   'ios/chrome/widget_kit_extension',
     },
-    'isolated_prefetch': {
-      'filepath': 'chrome/browser/prerender/isolated',
-    },
     'language': {
       'filepath': 'chrome/browser/language|'\
                   'components/language|'\
@@ -1587,6 +1584,9 @@
     },
     'precache': {
       'filepath': '[pP]recache'
+    },
+    'prefetch_proxy': {
+      'filepath': 'chrome/browser/prefetch/prefetch_proxy',
     },
     'prepopulated_engines': {
       'filepath': 'components/search_engines/prepopulated_engines.json',
@@ -2570,8 +2570,6 @@
     'ios_web': ['ios-reviews+web@chromium.org',
                 'eugenebut@chromium.org'],
     'ios_widget_kit': ['javierrobles+watch@chromium.org'],
-    'isolated_prefetch': ['robertogden+watch@chromium.org',
-                          'marcinjb+p4watch@google.com'],
     'language': ['language-reviews@chromium.org'],
     'libaom': ['fgalligan@chromium.org',
                'jianj@chromium.org',
@@ -2723,6 +2721,8 @@
     'polymer': ['michaelpg+watch-polymer@chromium.org'],
     'popup_blocker': ['csharrison+watch-popups@chromium.org'],
     'precache': ['wifiprefetch-reviews@google.com'],
+    'prefetch_proxy': ['robertogden+watch@chromium.org',
+                       'marcinjb+p4watch@google.com'],
     'prepopulated_engines': ['vasilii+watch@chromium.org'],
     'prerender': ['gavinp+prer@chromium.org',
                   'tburkard+watch@chromium.org'],
