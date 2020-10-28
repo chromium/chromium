@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
+
 assert(is_chromeos, "Scanning App is Chrome OS only")
 
 static_library("scanning") {
   sources = [
+    "scanning_handler.cc",
+    "scanning_handler.h",
     "scanning_ui.cc",
     "scanning_ui.h",
     "url_constants.cc",
@@ -19,11 +23,27 @@ static_library("scanning") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
+    "//ui/gfx",
     "//ui/resources",
+    "//ui/shell_dialogs",
     "//ui/webui",
   ]
 }
 
 group("closure_compile") {
   deps = [ "resources:closure_compile_module" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "scanning_handler_unittest.cc" ]
+
+  deps = [
+    ":scanning",
+    "//base",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/shell_dialogs",
+  ]
 }

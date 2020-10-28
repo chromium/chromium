@@ -4,6 +4,7 @@
 
 #include "chromeos/components/scanning/scanning_ui.h"
 
+#include <memory>
 #include <string>
 
 #include "base/containers/span.h"
@@ -69,8 +70,11 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
 
 }  // namespace
 
-ScanningUI::ScanningUI(content::WebUI* web_ui, BindScanServiceCallback callback)
-    : ui::MojoWebUIController(web_ui),
+ScanningUI::ScanningUI(
+    content::WebUI* web_ui,
+    BindScanServiceCallback callback,
+    const ScanningHandler::SelectFilePolicyCreator& select_file_policy_creator)
+    : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       bind_pending_receiver_callback_(std::move(callback)) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIScanningAppHost));
@@ -89,6 +93,8 @@ ScanningUI::ScanningUI(content::WebUI* web_ui, BindScanServiceCallback callback)
 
   AddScanningAppStrings(html_source.get());
 
+  web_ui->AddMessageHandler(
+      std::make_unique<ScanningHandler>(select_file_policy_creator));
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }

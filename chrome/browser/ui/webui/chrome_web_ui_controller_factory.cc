@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/suggestions/suggestions_ui.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/about_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
@@ -385,12 +386,17 @@ void BindScanService(
     service->BindInterface(std::move(pending_receiver));
 }
 
+std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy(
+    content::WebContents* web_contents) {
+  return std::make_unique<ChromeSelectFilePolicy>(web_contents);
+}
+
 template <>
 WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
                                                 const GURL& url) {
   return new chromeos::ScanningUI(
-      web_ui,
-      base::BindRepeating(&BindScanService, Profile::FromWebUI(web_ui)));
+      web_ui, base::BindRepeating(&BindScanService, Profile::FromWebUI(web_ui)),
+      base::BindRepeating(&CreateChromeSelectFilePolicy));
 }
 
 void BindMultiDeviceSetup(

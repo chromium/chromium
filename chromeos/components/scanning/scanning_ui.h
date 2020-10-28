@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom-forward.h"
+#include "chromeos/components/scanning/scanning_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -24,7 +25,10 @@ class ScanningUI : public ui::MojoWebUIController {
 
   // |callback| should bind the pending receiver to an implementation of
   // chromeos::scanning::mojom::ScanService.
-  ScanningUI(content::WebUI* web_ui, BindScanServiceCallback callback);
+  ScanningUI(content::WebUI* web_ui,
+             BindScanServiceCallback callback,
+             const ScanningHandler::SelectFilePolicyCreator&
+                 select_file_policy_creator);
   ~ScanningUI() override;
 
   ScanningUI(const ScanningUI&) = delete;

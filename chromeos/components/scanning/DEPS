@@ -3,7 +3,10 @@ include_rules = [
   "+chromeos/grit/chromeos_scanning_app_resources.h",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+content/public/browser",
+  "+content/public/test",
   "+ui/base",
+  "+ui/gfx",
   "+ui/resources",
+  "+ui/shell_dialogs",
   "+ui/webui",
 ]
