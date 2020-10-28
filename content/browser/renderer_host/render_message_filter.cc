@@ -77,7 +77,7 @@
 namespace content {
 namespace {
 
-const uint32_t kRenderFilteredMessageClasses[] = {ViewMsgStart};
+const uint32_t kRenderFilteredMessageClasses[] = {FrameMsgStart};
 
 }  // namespace
 

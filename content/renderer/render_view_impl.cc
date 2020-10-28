@@ -13,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "content/child/webthemeengine_impl_default.h"
 #include "content/common/page_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -345,8 +344,6 @@ bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderViewImpl, message)
-    IPC_MESSAGE_HANDLER(ViewMsg_MoveOrResizeStarted, OnMoveOrResizeStarted)
-
     // Page messages.
     IPC_MESSAGE_HANDLER(PageMsg_SetHistoryOffsetAndLength,
                         OnSetHistoryOffsetAndLength)
@@ -740,11 +737,6 @@ void RenderViewImpl::DidUpdateRendererPreferences() {
       renderer_prefs.arrow_bitmap_height_vertical_scroll_bar_in_dips,
       renderer_prefs.arrow_bitmap_width_horizontal_scroll_bar_in_dips);
 #endif
-}
-
-void RenderViewImpl::OnMoveOrResizeStarted() {
-  if (GetWebView())
-    GetWebView()->CancelPagePopup();
 }
 
 #if defined(OS_ANDROID)

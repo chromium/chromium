@@ -323,8 +323,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   static WindowOpenDisposition NavigationPolicyToDisposition(
       blink::WebNavigationPolicy policy);
 
-  void OnMoveOrResizeStarted();
-
   // Misc private functions ----------------------------------------------------
 
 #if defined(OS_ANDROID)

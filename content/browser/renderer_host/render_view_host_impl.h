@@ -131,7 +131,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   RenderViewHostDelegate* GetDelegate() override;
   SiteInstanceImpl* GetSiteInstance() override;
   bool IsRenderViewLive() override;
-  void NotifyMoveOrResizeStarted() override;
 
   void SendWebPreferencesToRenderer();
   void SendRendererPreferencesToRenderer(

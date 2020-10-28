@@ -2638,9 +2638,6 @@ void BrowserView::OnWindowBeginUserBoundsChange() {
   if (!web_contents)
     return;
   interactive_resize_in_progress_ = true;
-  web_contents->GetMainFrame()
-      ->GetRenderViewHost()
-      ->NotifyMoveOrResizeStarted();
 }
 
 void BrowserView::OnWindowEndUserBoundsChange() {

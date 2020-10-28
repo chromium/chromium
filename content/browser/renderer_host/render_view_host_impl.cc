@@ -59,7 +59,6 @@
 #include "content/common/page_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
@@ -849,10 +848,6 @@ void RenderViewHostImpl::ExecutePluginActionAtLocation(
   static_cast<RenderFrameHostImpl*>(GetMainFrame())
       ->GetAssociatedLocalMainFrame()
       ->PluginActionAt(local_location, plugin_action);
-}
-
-void RenderViewHostImpl::NotifyMoveOrResizeStarted() {
-  Send(new ViewMsg_MoveOrResizeStarted(GetRoutingID()));
 }
 
 void RenderViewHostImpl::PostRenderViewReady() {

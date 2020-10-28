@@ -28,9 +28,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case PageMsgStart:
       message_class = ChromeLegacyIpc::CLASS_PAGE;
       break;
-    case ViewMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_VIEW;
-      break;
     case TestMsgStart:
       message_class = ChromeLegacyIpc::CLASS_TEST;
       break;
@@ -51,9 +48,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
       break;
     case ChromeMsgStart:
       message_class = ChromeLegacyIpc::CLASS_CHROME;
-      break;
-    case DragMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_DRAG;
       break;
     case PrintMsgStart:
       message_class = ChromeLegacyIpc::CLASS_PRINT;

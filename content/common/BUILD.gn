@@ -154,7 +154,6 @@ source_set("common") {
     "url_schemes.cc",
     "url_schemes.h",
     "user_agent.cc",
-    "view_messages.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
   ]
@@ -583,14 +582,13 @@ mojom("mojo_bindings") {
       traits_private_headers = [
         "//content/common/frame_messages.h",
         "//content/common/input_messages.h",
-        "//content/common/view_messages.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]
 
       traits_public_deps = [
         # NOTE: These dependencies are here to satisfy gn check because
-        # common_param_traits_macros.h and/or view_messages.h include their headers.
+        # common_param_traits_macros.h include their headers.
         # Although the mojo bindings target is configured to allow direct circular
         # includes from //content/common and //content/public/common, this isn't a
         # transitive allowance, so those targets' own public_deps aren't included in
@@ -705,7 +703,6 @@ mojom("mojo_bindings") {
         ]
         traits_headers =
             [ "//third_party/blink/public/platform/mac/web_scrollbar_theme.h" ]
-        traits_private_headers = [ "//content/common/view_messages.h" ]
         traits_public_deps = [ "//third_party/blink/public:blink_headers" ]
       },
     ]

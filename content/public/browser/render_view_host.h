@@ -91,10 +91,6 @@ class CONTENT_EXPORT RenderViewHost : public IPC::Sender {
   // Returns true if the RenderView is active and has not crashed.
   virtual bool IsRenderViewLive() = 0;
 
-  // Notification that a move or resize renderer's containing window has
-  // started.
-  virtual void NotifyMoveOrResizeStarted() = 0;
-
  private:
   // This interface should only be implemented inside content.
   friend class RenderViewHostImpl;
