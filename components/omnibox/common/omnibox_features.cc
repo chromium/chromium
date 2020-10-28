@@ -355,6 +355,15 @@ const base::Feature kMaybeElideToRegistrableDomain{
     "OmniboxUIExperimentElideToRegistrableDomain",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to default typed navigations to use HTTPS instead of HTTP.
+// This only applies to navigations that don't have a scheme such as
+// "example.com". Presently, typing "example.com" in a clean browsing profile
+// loads http://example.com. When this feature is enabled, it should load
+// https://example.com instead, with fallback to http://example.com if
+// necessary.
+const base::Feature kDefaultTypedNavigationsToHttps{
+    "OmniboxDefaultTypedNavigationsToHttps", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // NOTE: while this is enabled by default, CCT visits are only tagged with the
 // necessary transition type if the intent launching CCT supplies the
 // appropriate parameter.
