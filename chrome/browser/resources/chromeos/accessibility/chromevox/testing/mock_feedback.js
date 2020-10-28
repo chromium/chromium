@@ -265,7 +265,7 @@ MockFeedback = class {
     Array.prototype.forEach.call(arguments, function(text) {
       this.pendingActions_.push({
         perform: function() {
-          if (this.pendingUtterances_.length == 0) {
+          if (this.pendingUtterances_.length === 0) {
             return false;
           }
           if (MockFeedback.matchAndConsume_(
@@ -452,7 +452,7 @@ MockFeedback = class {
           break;
         }
       }
-      if (this.pendingActions_.length == 0) {
+      if (this.pendingActions_.length === 0) {
         if (this.finishedCallback_) {
           this.finishedCallback_();
           this.finishedCallback_ = null;
@@ -518,18 +518,18 @@ MockFeedback = class {
       let i, candidate;
       for (i = 0; candidate = pending[i]; ++i) {
         let candidateText = candidate.text;
-        if (typeof (candidateText) != 'string') {
+        if (typeof (candidateText) !== 'string') {
           candidateText = candidateText.toString();
         }
 
         if (text === candidateText ||
             (text instanceof RegExp && text.test(candidateText)) ||
-            (typeof (text) == 'function' && text(candidate))) {
+            (typeof (text) === 'function' && text(candidate))) {
           let matched = true;
           for (const prop in props) {
             if (candidate[prop] !== props[prop] &&
                 (!candidate.properties ||
-                 candidate.properties[prop] != props[prop])) {
+                 candidate.properties[prop] !== props[prop])) {
               matched = false;
               break;
             }

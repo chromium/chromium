@@ -260,7 +260,7 @@ PanelMenu = class {
    */
   getCallbackForElement(element) {
     for (let i = 0; i < this.items_.length; i++) {
-      if (element == this.items_[i].element) {
+      if (element === this.items_[i].element) {
         return this.items_[i].callback;
       }
     }
@@ -276,9 +276,9 @@ PanelMenu = class {
     }
 
     const query = String.fromCharCode(evt.charCode).toLowerCase();
-    for (let i = this.activeIndex_ + 1; i != this.activeIndex_;
+    for (let i = this.activeIndex_ + 1; i !== this.activeIndex_;
          i = (i + 1) % this.items_.length) {
-      if (this.items_[i].text.toLowerCase().indexOf(query) == 0) {
+      if (this.items_[i].text.toLowerCase().indexOf(query) === 0) {
         this.activateItem(i);
         break;
       }
@@ -349,7 +349,7 @@ PanelNodeMenu = class extends PanelMenu {
     if (activateFirstItem) {
       // The active index might have been set prior to this call in
       // |findMoreNodes|. We want to start the menu there.
-      const index = this.activeIndex_ == -1 ? 0 : this.activeIndex_;
+      const index = this.activeIndex_ === -1 ? 0 : this.activeIndex_;
       this.activateItem(index);
     }
   }
@@ -408,7 +408,7 @@ PanelNodeMenu = class extends PanelMenu {
                            };
                          }()));
 
-        if (node == this.node_ && !this.async_) {
+        if (node === this.node_ && !this.async_) {
           this.activeIndex_ = this.items_.length - 1;
         }
       }

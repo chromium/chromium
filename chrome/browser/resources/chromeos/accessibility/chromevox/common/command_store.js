@@ -82,7 +82,7 @@ CommandStore.commandsForCategory = function(category) {
   const ret = [];
   for (const cmd in CommandStore.CMD_ALLOWLIST) {
     const struct = CommandStore.CMD_ALLOWLIST[cmd];
-    if (category == struct.category) {
+    if (category === struct.category) {
       ret.push(cmd);
     }
   }

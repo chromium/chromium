@@ -172,7 +172,7 @@ TtsBackground = class extends ChromeTtsBase {
     textString = this.preprocess(textString, properties);
 
     // This pref on localStorage gets set by the options page.
-    if (localStorage['numberReadingStyle'] == 'asDigits') {
+    if (localStorage['numberReadingStyle'] === 'asDigits') {
       textString = this.getNumberAsDigits_(textString);
     }
 
@@ -205,7 +205,7 @@ TtsBackground = class extends ChromeTtsBase {
       mergedProperties['voiceName'] = this.currentVoice;
     }
 
-    if (queueMode == QueueMode.CATEGORY_FLUSH &&
+    if (queueMode === QueueMode.CATEGORY_FLUSH &&
         !mergedProperties['category']) {
       queueMode = QueueMode.FLUSH;
     }
@@ -247,7 +247,7 @@ TtsBackground = class extends ChromeTtsBase {
    * @return {!Array<string>}
    */
   static splitUntilSmall(text, delimiters) {
-    if (text.length == 0) {
+    if (text.length === 0) {
       return [];
     }
 
@@ -265,11 +265,11 @@ TtsBackground = class extends ChromeTtsBase {
 
     const delimiter = delimiters[0];
     let splitIndex = text.lastIndexOf(delimiter, midIndex);
-    if (splitIndex == -1) {
+    if (splitIndex === -1) {
       splitIndex = text.indexOf(delimiter, midIndex);
     }
 
-    if (splitIndex == -1) {
+    if (splitIndex === -1) {
       delimiters = delimiters.slice(1);
       return TtsBackground.splitUntilSmall(text, delimiters);
     }
@@ -291,8 +291,9 @@ TtsBackground = class extends ChromeTtsBase {
     // First, take care of removing the current utterance and flushing
     // anything from the queue we need to. If we remove the current utterance,
     // make a note that we're going to stop speech.
-    if (queueMode == QueueMode.FLUSH || queueMode == QueueMode.CATEGORY_FLUSH ||
-        queueMode == QueueMode.INTERJECT) {
+    if (queueMode === QueueMode.FLUSH ||
+        queueMode === QueueMode.CATEGORY_FLUSH ||
+        queueMode === QueueMode.INTERJECT) {
       (new PanelCommand(PanelCommandType.CLEAR_SPEECH)).send();
 
       if (this.shouldCancel_(this.currentUtterance_, utterance)) {
@@ -313,7 +314,7 @@ TtsBackground = class extends ChromeTtsBase {
     }
 
     // Now, some special handling for interjections.
-    if (queueMode == QueueMode.INTERJECT) {
+    if (queueMode === QueueMode.INTERJECT) {
       // Move all utterances to a secondary queue to be restored later.
       this.utteranceQueueInterruptedByInterjection_ = this.utteranceQueue_;
 
@@ -358,7 +359,7 @@ TtsBackground = class extends ChromeTtsBase {
       return;
     }
 
-    if (this.utteranceQueue_.length == 0) {
+    if (this.utteranceQueue_.length === 0) {
       return;
     }
 
@@ -427,7 +428,7 @@ TtsBackground = class extends ChromeTtsBase {
     this.lastEventType = event['type'];
 
     // Ignore events sent on utterances other than the current one.
-    if (!this.currentUtterance_ || utteranceId != this.currentUtterance_.id) {
+    if (!this.currentUtterance_ || utteranceId !== this.currentUtterance_.id) {
       return;
     }
 
@@ -501,12 +502,12 @@ TtsBackground = class extends ChromeTtsBase {
       case QueueMode.QUEUE:
         return false;
       case QueueMode.INTERJECT:
-        return utteranceToCancel.queueMode == QueueMode.INTERJECT;
+        return utteranceToCancel.queueMode === QueueMode.INTERJECT;
       case QueueMode.FLUSH:
         return true;
       case QueueMode.CATEGORY_FLUSH:
         return (
-            utteranceToCancel.properties['category'] ==
+            utteranceToCancel.properties['category'] ===
             newUtterance.properties['category']);
     }
     return false;
@@ -591,7 +592,7 @@ TtsBackground = class extends ChromeTtsBase {
   removeCapturingEventListener(listener) {
     this.capturingTtsEventListeners_ =
         this.capturingTtsEventListeners_.filter((item) => {
-          return item != listener;
+          return item !== listener;
         });
   }
 
@@ -617,7 +618,7 @@ TtsBackground = class extends ChromeTtsBase {
     let punctEcho = null;
     if (properties[AbstractTts.PUNCTUATION_ECHO]) {
       for (let i = 0; punctEcho = AbstractTts.PUNCTUATION_ECHOES[i]; i++) {
-        if (properties[AbstractTts.PUNCTUATION_ECHO] == punctEcho.name) {
+        if (properties[AbstractTts.PUNCTUATION_ECHO] === punctEcho.name) {
           break;
         }
       }
@@ -650,14 +651,14 @@ TtsBackground = class extends ChromeTtsBase {
   toggleSpeechOnOrOff() {
     const previousValue = this.ttsProperties[AbstractTts.VOLUME];
     const toggle = function() {
-      if (previousValue == 0) {
+      if (previousValue === 0) {
         this.ttsProperties[AbstractTts.VOLUME] = 1;
       } else {
         this.ttsProperties[AbstractTts.VOLUME] = 0;
       }
     }.bind(this);
 
-    if (previousValue == 0) {
+    if (previousValue === 0) {
       toggle();
     } else {
       // Let the caller make any last minute announcements in the current call
@@ -665,7 +666,7 @@ TtsBackground = class extends ChromeTtsBase {
       setTimeout(toggle, 0);
     }
 
-    return previousValue == 0;
+    return previousValue === 0;
   }
 
   /**
@@ -714,7 +715,8 @@ TtsBackground = class extends ChromeTtsBase {
    */
   createPunctuationReplace_(clear) {
     return goog.bind(function(match) {
-      const retain = this.retainPunctuation_.indexOf(match) != -1 ? match : ' ';
+      const retain =
+          this.retainPunctuation_.indexOf(match) !== -1 ? match : ' ';
       return clear ? retain :
                      ' ' +
               (new goog.i18n.MessageFormat(
@@ -779,7 +781,7 @@ TtsBackground = class extends ChromeTtsBase {
       const systemVoice = {voiceName: constants.SYSTEM_VOICE};
       voices.unshift(systemVoice);
       const newVoice = voices.find((v) => {
-        return v.voiceName == voiceName;
+        return v.voiceName === voiceName;
       }) ||
           systemVoice;
       if (newVoice) {

@@ -48,7 +48,7 @@ LogStore = class {
       if (!this.logs_[index]) {
         continue;
       }
-      if (this.logs_[index].logType == LogType) {
+      if (this.logs_[index].logType === LogType) {
         returnLogs.push(this.logs_[index]);
       }
     }
@@ -112,7 +112,7 @@ LogStore = class {
 
     this.logs_[this.startIndex_] = log;
     this.startIndex_ += 1;
-    if (this.startIndex_ == LogStore.LOG_LIMIT) {
+    if (this.startIndex_ === LogStore.LOG_LIMIT) {
       this.startIndex_ = 0;
     }
   }
@@ -136,7 +136,7 @@ LogStore = class {
         ChromeVoxState.instance.currentRange.start.node.root) {
       return ChromeVoxState.instance.currentRange.start.node.root.docUrl
                  .indexOf(chrome.extension.getURL(
-                     'chromevox/background/logging/log.html')) == 0;
+                     'chromevox/background/logging/log.html')) === 0;
     }
     return false;
   }

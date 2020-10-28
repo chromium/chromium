@@ -76,7 +76,7 @@ class TestUtils {
   static waitForSpeech(textStringToWaitFor) {
     return new Promise(resolve => {
       ChromeVox.tts.speak = (textString) => {
-        if (textString == textStringToWaitFor) {
+        if (textString === textStringToWaitFor) {
           resolve();
         }
       };

@@ -17,7 +17,7 @@ OutputRulesStr = class {
     this.str = '';
     /** @type {function(): boolean} */
     this.disableLogging = function() {
-      return localStorage[enableKey] != 'true';
+      return localStorage[enableKey] !== 'true';
     };
   }
 

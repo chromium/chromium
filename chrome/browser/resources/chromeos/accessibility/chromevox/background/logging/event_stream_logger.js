@@ -73,7 +73,7 @@ EventStreamLogger = class {
    */
   notifyEventStreamFilterChangedAll(checked) {
     for (const type in chrome.automation.EventType) {
-      if (localStorage[chrome.automation.EventType[type]] == 'true') {
+      if (localStorage[chrome.automation.EventType[type]] === 'true') {
         this.notifyEventStreamFilterChanged(
             chrome.automation.EventType[type], checked);
       }
@@ -88,7 +88,7 @@ EventStreamLogger = class {
     chrome.automation.getDesktop(function(desktop) {
       EventStreamLogger.instance = new EventStreamLogger(desktop);
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(
-          localStorage['enableEventStreamLogging'] == 'true');
+          localStorage['enableEventStreamLogging'] === 'true');
     });
   }
 };

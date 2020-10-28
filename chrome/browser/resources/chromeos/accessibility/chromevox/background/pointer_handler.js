@@ -46,7 +46,7 @@ PointerHandler = class extends BaseAutomationHandler {
       this.mouseY_ = 0;
     });
 
-    if (localStorage['speakTextUnderMouse'] == String(true)) {
+    if (localStorage['speakTextUnderMouse'] === String(true)) {
       chrome.accessibilityPrivate.enableChromeVoxMouseEvents(true);
     }
   }
@@ -140,15 +140,15 @@ PointerHandler = class extends BaseAutomationHandler {
     // mouse move. This only occurs when we programmatically hit test content
     // within ARC++ for now. Mouse moves automatically trigger Android to send
     // hover events back.
-    if (target.role == RoleType.WINDOW &&
-        target.className.indexOf('ExoSurface') == 0) {
+    if (target.role === RoleType.WINDOW &&
+        target.className.indexOf('ExoSurface') === 0) {
       this.synthesizeMouseMove();
       return;
     }
 
     let targetLeaf = null;
     let targetObject = null;
-    while (target && target != target.root) {
+    while (target && target !== target.root) {
       if (!targetObject && AutomationPredicate.touchObject(target)) {
         targetObject = target;
       }
@@ -181,7 +181,7 @@ PointerHandler = class extends BaseAutomationHandler {
     }
 
     if (ChromeVoxState.instance.currentRange &&
-        target == ChromeVoxState.instance.currentRange.start.node) {
+        target === ChromeVoxState.instance.currentRange.start.node) {
       return;
     }
 

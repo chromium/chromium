@@ -17,7 +17,8 @@ const InstanceChecker = class {
     const manifest =
         /** @type {{incognito: (string|undefined)}} */ (
             chrome.runtime.getManifest());
-    if (manifest.incognito == 'split' && !chrome.extension.inIncognitoContext) {
+    if (manifest.incognito === 'split' &&
+        !chrome.extension.inIncognitoContext) {
       window.close();
     }
   }

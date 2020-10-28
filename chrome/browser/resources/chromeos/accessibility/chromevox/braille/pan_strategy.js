@@ -188,7 +188,7 @@ PanStrategy = class {
       // Increment index until brailleToText[index] points to a different char.
       // This is the cutoff point, as substring cuts up to, but not including,
       // brailleToText[index].
-      while (index < brailleToText.length && brailleToText[index] == end) {
+      while (index < brailleToText.length && brailleToText[index] === end) {
         index++;
       }
       return this.textBuffer_.substring(
@@ -246,18 +246,18 @@ PanStrategy = class {
       for (index = 0; index < translatedContent.byteLength + cellsPadded;
            index++) {
         // Is index at the beginning of a new line?
-        if (index != 0 && index % this.displaySize_.columns == 0) {
-          if (view[index - cellsPadded] == 0) {
+        if (index !== 0 && index % this.displaySize_.columns === 0) {
+          if (view[index - cellsPadded] === 0) {
             // Delete all empty cells at the beginning of this line.
             while (index - cellsPadded < view.length &&
-                   view[index - cellsPadded] == 0) {
+                   view[index - cellsPadded] === 0) {
               cellsPadded--;
             }
             index--;
             lastBreak = index;
           } else if (
-              view[index - cellsPadded - 1] != 0 &&
-              lastBreak % this.displaySize_.columns != 0) {
+              view[index - cellsPadded - 1] !== 0 &&
+              lastBreak % this.displaySize_.columns !== 0) {
             // If first cell is not empty, we need to move the whole word down
             // to this line and padd to previous line with 0's, from |lastBreak|
             // to index. The braille to text map is also updated. If lastBreak
@@ -280,7 +280,7 @@ PanStrategy = class {
                 fixedBrailleToText[index - cellsPadded]);
           }
         } else {
-          if (view[index - cellsPadded] == 0) {
+          if (view[index - cellsPadded] === 0) {
             lastBreak = index;
           }
           this.maybeSetWrappedCursor_(
@@ -328,13 +328,13 @@ PanStrategy = class {
      */
     maybeSetWrappedCursor_(unwrappedIndex, wrappedIndex) {
       // We only care about the bounds of the index start/end.
-      if (this.cursor_.start != unwrappedIndex &&
-          this.cursor_.end != unwrappedIndex) {
+      if (this.cursor_.start !== unwrappedIndex &&
+          this.cursor_.end !== unwrappedIndex) {
         return;
       }
-      if (this.cursor_.start == unwrappedIndex) {
+      if (this.cursor_.start === unwrappedIndex) {
         this.wrappedCursor_.start = wrappedIndex;
-      } else if (this.cursor_.end == unwrappedIndex) {
+      } else if (this.cursor_.end === unwrappedIndex) {
         this.wrappedCursor_.end = wrappedIndex;
       }
     }

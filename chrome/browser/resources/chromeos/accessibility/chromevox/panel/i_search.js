@@ -106,7 +106,7 @@ ISearch = class {
 
       do {
         // Ask native to search the underlying data for a performance boost.
-        result = result.getNextTextMatch(searchStr, dir == Dir.BACKWARD);
+        result = result.getNextTextMatch(searchStr, dir === Dir.BACKWARD);
       } while (result && !AutomationPredicate.object(result));
 
       if (result) {

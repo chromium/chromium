@@ -89,7 +89,7 @@ BrailleTranslatorManager = class {
     }
 
     const tables = this.tables_;
-    if (tables.length == 0) {
+    if (tables.length === 0) {
       return;
     }
 
@@ -101,13 +101,13 @@ BrailleTranslatorManager = class {
       const major = currentLocale[0];
       const minor = currentLocale[1];
       const firstPass = tables.filter(function(table) {
-        return table.locale.split(/[_-]/)[0] == major;
+        return table.locale.split(/[_-]/)[0] === major;
       });
       if (firstPass.length > 0) {
         table = firstPass[0];
         if (minor) {
           const secondPass = firstPass.filter(function(table) {
-            return table.locale.split(/[_-]/)[1] == minor;
+            return table.locale.split(/[_-]/)[1] === minor;
           });
           if (secondPass.length > 0) {
             table = secondPass[0];

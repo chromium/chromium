@@ -6,7 +6,7 @@
  * @fileoverview Public APIs to enable web applications to communicate
  * with ChromeVox.
  */
-if (typeof (goog) != 'undefined' && goog.provide) {
+if (typeof (goog) !== 'undefined' && goog.provide) {
 goog.provide('cvox.Api');
 }
 
@@ -76,7 +76,7 @@ function connect_() {
 
   channel = new MessageChannel();
   channel.port1.onmessage = function(event) {
-    if (event.data == DISCONNECT_MSG) {
+    if (event.data === DISCONNECT_MSG) {
       channel = null;
       const event = document.createEvent('UIEvents');
       event.initEvent('chromeVoxUnloaded', true, false);

@@ -190,7 +190,7 @@ class NavigationManager {
    *     nodes we can move to.
    */
   static tryMoving(node, getNext, startingNode) {
-    if (node == startingNode) {
+    if (node === startingNode) {
       // This should only happen if the desktop contains exactly one interesting
       // child and all other children are windows which are occluded.
       // Unlikely to happen since we can always access the shelf.
@@ -290,7 +290,7 @@ class NavigationManager {
    */
   onFocusChange_(event) {
     // Ignore focus changes from our own actions.
-    if (event.eventFrom == 'action') {
+    if (event.eventFrom === 'action') {
       return;
     }
 

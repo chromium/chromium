@@ -96,8 +96,8 @@ TypingEcho.cycle = function(cur) {
  * @return {boolean} Whether the character should be spoken.
  */
 TypingEcho.shouldSpeakChar = function(typingEcho) {
-  return typingEcho == TypingEcho.CHARACTER_AND_WORD ||
-      typingEcho == TypingEcho.CHARACTER;
+  return typingEcho === TypingEcho.CHARACTER_AND_WORD ||
+      typingEcho === TypingEcho.CHARACTER;
 };
 
 
@@ -230,7 +230,7 @@ ChromeVoxEditableTextBase = class {
    * @return {boolean} True if a character is whitespace.
    */
   isWhitespaceChar(ch) {
-    return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t';
+    return ch === ' ' || ch === '\n' || ch === '\r' || ch === '\t';
   }
 
   /**
@@ -248,8 +248,8 @@ ChromeVoxEditableTextBase = class {
    * should trigger description.
    */
   shouldDescribeChange(evt) {
-    if (evt.value == this.value && evt.start == this.start &&
-        evt.end == this.end) {
+    if (evt.value === this.value && evt.start === this.start &&
+        evt.end === this.end) {
       return false;
     }
     return true;
@@ -285,7 +285,7 @@ ChromeVoxEditableTextBase = class {
       return;
     }
 
-    if (evt.value == this.value) {
+    if (evt.value === this.value) {
       this.describeSelectionChanged(evt);
     } else {
       this.describeTextChanged(
@@ -316,29 +316,29 @@ ChromeVoxEditableTextBase = class {
           evt.triggeredByUser);
       return;
     }
-    if (evt.start == evt.end) {
+    if (evt.start === evt.end) {
       // It's currently a cursor.
-      if (this.start != this.end) {
+      if (this.start !== this.end) {
         // It was previously a selection, so just announce 'unselected'.
         this.speak(Msgs.getMsg('Unselected'), evt.triggeredByUser);
       } else if (
-          this.getLineIndex(this.start) != this.getLineIndex(evt.start)) {
+          this.getLineIndex(this.start) !== this.getLineIndex(evt.start)) {
         // Moved to a different line; read it.
         let lineValue = this.getLine(this.getLineIndex(evt.start));
-        if (lineValue == '') {
+        if (lineValue === '') {
           lineValue = Msgs.getMsg('text_box_blank');
-        } else if (lineValue == '\n') {
+        } else if (lineValue === '\n') {
           // Pass through the literal line value so character outputs 'new
           // line'.
         } else if (/^\s+$/.test(lineValue)) {
           lineValue = Msgs.getMsg('text_box_whitespace');
         }
         this.speak(lineValue, evt.triggeredByUser);
-      } else if (this.start == evt.start + 1 || this.start == evt.start - 1) {
+      } else if (this.start === evt.start + 1 || this.start === evt.start - 1) {
         // Moved by one character; read it.
         if (!ChromeVoxEditableTextBase.useIBeamCursor) {
-          if (evt.start == this.value.length) {
-            if (ChromeVox.verbosity == ChromeVox.VerbosityType.VERBOSE) {
+          if (evt.start === this.value.length) {
+            if (ChromeVox.verbosity === ChromeVox.VerbosityType.VERBOSE) {
               this.speak(
                   Msgs.getMsg('end_of_text_verbose'), evt.triggeredByUser);
             } else {
@@ -364,36 +364,36 @@ ChromeVoxEditableTextBase = class {
       }
     } else {
       // It's currently a selection.
-      if (this.start + 1 == evt.start && this.end == this.value.length &&
-          evt.end == this.value.length) {
+      if (this.start + 1 === evt.start && this.end === this.value.length &&
+          evt.end === this.value.length) {
         // Autocomplete: the user typed one character of autocompleted text.
-        if (ChromeVox.typingEcho == TypingEcho.CHARACTER ||
-            ChromeVox.typingEcho == TypingEcho.CHARACTER_AND_WORD) {
+        if (ChromeVox.typingEcho === TypingEcho.CHARACTER ||
+            ChromeVox.typingEcho === TypingEcho.CHARACTER_AND_WORD) {
           this.speak(this.value.substr(this.start, 1), evt.triggeredByUser);
         }
         this.speak(this.value.substr(evt.start));
-      } else if (this.start == this.end) {
+      } else if (this.start === this.end) {
         // It was previously a cursor.
         this.speak(
             this.value.substr(evt.start, evt.end - evt.start),
             evt.triggeredByUser);
         this.speak(Msgs.getMsg('selected'));
-      } else if (this.start == evt.start && this.end < evt.end) {
+      } else if (this.start === evt.start && this.end < evt.end) {
         this.speak(
             this.value.substr(this.end, evt.end - this.end),
             evt.triggeredByUser);
         this.speak(Msgs.getMsg('added_to_selection'));
-      } else if (this.start == evt.start && this.end > evt.end) {
+      } else if (this.start === evt.start && this.end > evt.end) {
         this.speak(
             this.value.substr(evt.end, this.end - evt.end),
             evt.triggeredByUser);
         this.speak(Msgs.getMsg('removed_from_selection'));
-      } else if (this.end == evt.end && this.start > evt.start) {
+      } else if (this.end === evt.end && this.start > evt.start) {
         this.speak(
             this.value.substr(evt.start, this.start - evt.start),
             evt.triggeredByUser);
         this.speak(Msgs.getMsg('added_to_selection'));
-      } else if (this.end == evt.end && this.start < evt.start) {
+      } else if (this.end === evt.end && this.start < evt.start) {
         this.speak(
             this.value.substr(this.start, evt.start - this.start),
             evt.triggeredByUser);
@@ -439,7 +439,7 @@ ChromeVoxEditableTextBase = class {
 
     // First, see if there's a selection at the end that might have been
     // added by autocomplete. If so, strip it off into a separate variable.
-    if (evt.start < evtEnd && evtEnd == newLen) {
+    if (evt.start < evtEnd && evtEnd === newLen) {
       autocompleteSuffix = evtValue.substr(evt.start);
       evtValue = evtValue.substr(0, evt.start);
       evtEnd = evt.start;
@@ -452,8 +452,8 @@ ChromeVoxEditableTextBase = class {
     let prefixLen = prev.start;
     let suffixLen = len - prev.end;
     if (newLen >= prefixLen + suffixLen + (evtEnd - evt.start) &&
-        evtValue.substr(0, prefixLen) == value.substr(0, prefixLen) &&
-        evtValue.substr(newLen - suffixLen) == value.substr(prev.end)) {
+        evtValue.substr(0, prefixLen) === value.substr(0, prefixLen) &&
+        evtValue.substr(newLen - suffixLen) === value.substr(prev.end)) {
       this.describeTextChangedHelper(
           prev, evt, prefixLen, suffixLen, autocompleteSuffix, personality);
       return;
@@ -465,13 +465,13 @@ ChromeVoxEditableTextBase = class {
     // a word or line.
     prefixLen = evt.start;
     suffixLen = newLen - evtEnd;
-    if (prev.start == prev.end && evt.start == evtEnd &&
-        evtValue.substr(0, prefixLen) == value.substr(0, prefixLen) &&
-        evtValue.substr(newLen - suffixLen) == value.substr(len - suffixLen)) {
+    if (prev.start === prev.end && evt.start === evtEnd &&
+        evtValue.substr(0, prefixLen) === value.substr(0, prefixLen) &&
+        evtValue.substr(newLen - suffixLen) === value.substr(len - suffixLen)) {
       // Forward deletions causes reading of the character immediately to the
       // right of the caret or the deleted text depending on the iBeam cursor
       // setting.
-      if (prev.start == evt.start && prev.end == evt.end &&
+      if (prev.start === evt.start && prev.end === evt.end &&
           !ChromeVoxEditableTextBase.useIBeamCursor) {
         this.speak(evt.value[evt.start], evt.triggeredByUser);
       } else {
@@ -490,15 +490,15 @@ ChromeVoxEditableTextBase = class {
     // Try to do a diff between the new and the old text. If it is a one
     // character insertion/deletion at the start or at the end, just speak that
     // character.
-    if ((evtValue.length == (value.length + 1)) ||
-        ((evtValue.length + 1) == value.length)) {
+    if ((evtValue.length === (value.length + 1)) ||
+        ((evtValue.length + 1) === value.length)) {
       // The user added text either to the beginning or the end.
       if (evtValue.length > value.length) {
         if (evtValue.startsWith(value)) {
           this.speak(
               evtValue[evtValue.length - 1], evt.triggeredByUser, personality);
           return;
-        } else if (evtValue.indexOf(value) == 1) {
+        } else if (evtValue.indexOf(value) === 1) {
           this.speak(evtValue[0], evt.triggeredByUser, personality);
           return;
         }
@@ -508,7 +508,7 @@ ChromeVoxEditableTextBase = class {
         if (value.startsWith(evtValue)) {
           this.speak(value[value.length - 1], evt.triggeredByUser, personality);
           return;
-        } else if (value.indexOf(evtValue) == 1) {
+        } else if (value.indexOf(evtValue) === 1) {
           this.speak(value[0], evt.triggeredByUser, personality);
           return;
         }
@@ -541,7 +541,7 @@ ChromeVoxEditableTextBase = class {
     // that we can speak complete words, to be minimally confusing.
     prefixLen = 0;
     while (prefixLen < len && prefixLen < newLen &&
-           value[prefixLen] == evtValue[prefixLen]) {
+           value[prefixLen] === evtValue[prefixLen]) {
       prefixLen++;
     }
     while (prefixLen > 0 && !this.isWordBreakChar(value[prefixLen - 1])) {
@@ -550,7 +550,7 @@ ChromeVoxEditableTextBase = class {
 
     suffixLen = 0;
     while (suffixLen < (len - prefixLen) && suffixLen < (newLen - prefixLen) &&
-           value[len - suffixLen - 1] == evtValue[newLen - suffixLen - 1]) {
+           value[len - suffixLen - 1] === evtValue[newLen - suffixLen - 1]) {
       suffixLen++;
     }
     while (suffixLen > 0 && !this.isWordBreakChar(value[len - suffixLen])) {
@@ -592,9 +592,9 @@ ChromeVoxEditableTextBase = class {
         return;
       }
       utterance = inserted;
-    } else if (insertedLen == 1) {
-      if ((ChromeVox.typingEcho == TypingEcho.WORD ||
-           ChromeVox.typingEcho == TypingEcho.CHARACTER_AND_WORD) &&
+    } else if (insertedLen === 1) {
+      if ((ChromeVox.typingEcho === TypingEcho.WORD ||
+           ChromeVox.typingEcho === TypingEcho.CHARACTER_AND_WORD) &&
           this.isWordBreakChar(inserted) && prefixLen > 0 &&
           !this.isWordBreakChar(evt.value.substr(prefixLen - 1, 1))) {
         // Speak previous word.
@@ -609,13 +609,13 @@ ChromeVoxEditableTextBase = class {
           triggeredByUser = false;  // Implies QUEUE_MODE_QUEUE.
         }
       } else if (
-          ChromeVox.typingEcho == TypingEcho.CHARACTER ||
-          ChromeVox.typingEcho == TypingEcho.CHARACTER_AND_WORD) {
+          ChromeVox.typingEcho === TypingEcho.CHARACTER ||
+          ChromeVox.typingEcho === TypingEcho.CHARACTER_AND_WORD) {
         utterance = inserted;
       }
     } else if (deletedLen > 1 && !autocompleteSuffix) {
       utterance = deleted + ', deleted';
-    } else if (deletedLen == 1) {
+    } else if (deletedLen === 1) {
       utterance = deleted;
       // Single-deleted characters should also use PERSONALITY_DELETED.
       opt_personality = AbstractTts.PERSONALITY_DELETED;

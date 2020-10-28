@@ -18,16 +18,16 @@ class ParagraphUtils {
     let parent = node.parent;
     const root = node.root;
     while (parent != null) {
-      if (parent == root) {
+      if (parent === root) {
         return parent;
       }
-      if (parent.role == RoleType.PARAGRAPH ||
-          parent.role == RoleType.SVG_ROOT) {
+      if (parent.role === RoleType.PARAGRAPH ||
+          parent.role === RoleType.SVG_ROOT) {
         return parent;
       }
-      if (parent.display !== undefined && parent.display != 'inline' &&
-          parent.role != RoleType.STATIC_TEXT &&
-          (parent.parent && parent.parent.role != RoleType.SVG_ROOT)) {
+      if (parent.display !== undefined && parent.display !== 'inline' &&
+          parent.role !== RoleType.STATIC_TEXT &&
+          (parent.parent && parent.parent.role !== RoleType.SVG_ROOT)) {
         return parent;
       }
       parent = parent.parent;
@@ -49,18 +49,18 @@ class ParagraphUtils {
     // TODO: Clean up this check after crbug.com/774308 is resolved.
     // At that point we will only need to check for display:block or
     // inline-block.
-    if (((first.display == 'block' || first.display == 'inline-block') &&
-         first.role != RoleType.STATIC_TEXT &&
-         first.role != RoleType.INLINE_TEXT_BOX) ||
-        ((second.display == 'block' || second.display == 'inline-block') &&
-         second.role != RoleType.STATIC_TEXT &&
-         second.role != RoleType.INLINE_TEXT_BOX)) {
+    if (((first.display === 'block' || first.display === 'inline-block') &&
+         first.role !== RoleType.STATIC_TEXT &&
+         first.role !== RoleType.INLINE_TEXT_BOX) ||
+        ((second.display === 'block' || second.display === 'inline-block') &&
+         second.role !== RoleType.STATIC_TEXT &&
+         second.role !== RoleType.INLINE_TEXT_BOX)) {
       // 'block' or 'inline-block' elements cannot be in the same paragraph.
       return false;
     }
     const firstBlock = ParagraphUtils.getFirstBlockAncestor(first);
     const secondBlock = ParagraphUtils.getFirstBlockAncestor(second);
-    return firstBlock != undefined && firstBlock == secondBlock;
+    return firstBlock !== undefined && firstBlock === secondBlock;
   }
 
   /**
@@ -69,7 +69,7 @@ class ParagraphUtils {
    * @return {boolean} whether the string is only whitespace
    */
   static isWhitespace(name) {
-    if (name === undefined || name.length == 0) {
+    if (name === undefined || name.length === 0) {
       return true;
     }
     // Search for one or more whitespace characters
@@ -210,7 +210,7 @@ class ParagraphUtils {
         boundQueryEndIndex = endIndex - charIndexInParent;
       } else {
         console.assert(
-            nodeGroupItem.node.role != RoleType.INLINE_TEXT_BOX,
+            nodeGroupItem.node.role !== RoleType.INLINE_TEXT_BOX,
             'NodeGroupItem.node should not be an inlineTextBox node');
         node = nodeGroupItem.node;
         boundQueryStartIndex = startIndex;
@@ -262,7 +262,7 @@ class ParagraphUtils {
    *    large.
    */
   static findInlineTextNodeByCharacterIndex(staticTextNode, index) {
-    if (staticTextNode.children.length == 0) {
+    if (staticTextNode.children.length === 0) {
       return null;
     }
     let textLength = 0;
@@ -304,9 +304,9 @@ class ParagraphUtils {
       const name = ParagraphUtils.getNodeName(node);
       if (!ParagraphUtils.isWhitespace(name)) {
         let newNode;
-        if (node.role == RoleType.INLINE_TEXT_BOX &&
+        if (node.role === RoleType.INLINE_TEXT_BOX &&
             node.parent !== undefined) {
-          if (node.parent.role == RoleType.STATIC_TEXT) {
+          if (node.parent.role === RoleType.STATIC_TEXT) {
             // This is an inlineTextBox node with a staticText parent. If that
             // parent is already added to the result, we can skip. This adds
             // each parent only exactly once.

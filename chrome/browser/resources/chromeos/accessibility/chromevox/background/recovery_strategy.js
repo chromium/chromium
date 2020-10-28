@@ -64,7 +64,7 @@ AncestryRecoveryStrategy = class extends RecoveryStrategy {
     while (nodeWalker) {
       this.ancestry_.push(nodeWalker);
       nodeWalker = nodeWalker.parent;
-      if (nodeWalker && nodeWalker.role == RoleType.WINDOW) {
+      if (nodeWalker && nodeWalker.role === RoleType.WINDOW) {
         break;
       }
     }
@@ -83,7 +83,7 @@ AncestryRecoveryStrategy = class extends RecoveryStrategy {
     for (let i = 0; i < this.ancestry_.length; i++) {
       const firstValidNode = this.ancestry_[i];
       if (firstValidNode != null && firstValidNode.role !== undefined &&
-          firstValidNode.root != undefined) {
+          firstValidNode.root !== undefined) {
         return i;
       }
     }
@@ -105,7 +105,7 @@ TreePathRecoveryStrategy = class extends AncestryRecoveryStrategy {
     while (nodeWalker) {
       this.recoveryChildIndex_.push(nodeWalker.indexInParent);
       nodeWalker = nodeWalker.parent;
-      if (nodeWalker && nodeWalker.role == RoleType.WINDOW) {
+      if (nodeWalker && nodeWalker.role === RoleType.WINDOW) {
         break;
       }
     }
@@ -114,7 +114,7 @@ TreePathRecoveryStrategy = class extends AncestryRecoveryStrategy {
   /** @override */
   recover() {
     const index = this.getFirstValidNodeIndex_();
-    if (index == 0) {
+    if (index === 0) {
       return this.ancestry_[index];
     }
 

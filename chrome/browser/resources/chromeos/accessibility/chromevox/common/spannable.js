@@ -75,7 +75,7 @@ Spannable = class {
       this.spans_.push({value, start, end});
       this.spans_.sort(function(a, b) {
         let ret = a.start - b.start;
-        if (ret == 0) {
+        if (ret === 0) {
           ret = a.end - b.end;
         }
         return ret;
@@ -192,7 +192,7 @@ Spannable = class {
   getSpanIntervals(value) {
     return this.spans_
         .filter(function(s) {
-          return s.value == value;
+          return s.value === value;
         })
         .map(function(s) {
           return {start: s.start, end: s.end};

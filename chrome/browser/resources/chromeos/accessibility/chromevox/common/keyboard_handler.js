@@ -95,7 +95,7 @@ ChromeVoxKbHandler.basicKeyDownActionsListener = function(evt) {
   }
 
   let functionName;
-  if (ChromeVoxKbHandler.handlerKeyMap != undefined) {
+  if (ChromeVoxKbHandler.handlerKeyMap !== undefined) {
     functionName = ChromeVoxKbHandler.handlerKeyMap.commandForKey(keySequence);
   } else {
     functionName = null;

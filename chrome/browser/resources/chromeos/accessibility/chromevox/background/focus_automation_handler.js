@@ -39,7 +39,8 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
 
     // Events on roots and web views can be very noisy due to bubling. Ignore
     // these.
-    if (evt.target.root == evt.target || evt.target.role == RoleType.WEB_VIEW) {
+    if (evt.target.root === evt.target ||
+        evt.target.role === RoleType.WEB_VIEW) {
       return;
     }
 
@@ -64,7 +65,7 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
 
     let skipFocusCheck = false;
     chrome.automation.getFocus(focus => {
-      if (focus.role == RoleType.POP_UP_BUTTON) {
+      if (focus.role === RoleType.POP_UP_BUTTON) {
         skipFocusCheck = true;
       }
     });
@@ -101,13 +102,13 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onSelectedValueChanged_(evt) {
-    if (evt.target.role != RoleType.POP_UP_BUTTON ||
+    if (evt.target.role !== RoleType.POP_UP_BUTTON ||
         evt.target.state.editable) {
       return;
     }
 
     // Focus might be on a container above the popup button.
-    if (this.node_ != evt.target) {
+    if (this.node_ !== evt.target) {
       return;
     }
 

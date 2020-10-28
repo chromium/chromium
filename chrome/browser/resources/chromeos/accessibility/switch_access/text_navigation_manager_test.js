@@ -180,8 +180,8 @@ function setUpCursorChangeListener(
     targetTextEndIndex, callback) {
   // Ensures that the text index has changed before checking the new index.
   const checkActionFinished = function(tab) {
-    if (inputNode.textSelStart != initialTextIndex ||
-        inputNode.textSelEnd != initialTextIndex) {
+    if (inputNode.textSelStart !== initialTextIndex ||
+        inputNode.textSelEnd !== initialTextIndex) {
       checkTextIndex();
       if (callback) {
         callback();

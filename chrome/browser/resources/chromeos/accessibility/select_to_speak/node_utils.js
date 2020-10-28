@@ -87,11 +87,12 @@ class NodeUtils {
    */
   static getNearestContainingWindow(node) {
     // Go upwards to root nodes' parents until we find the first window.
-    if (node.root.role == RoleType.ROOT_WEB_AREA) {
+    if (node.root.role === RoleType.ROOT_WEB_AREA) {
       let nextRootParent = node;
-      while (nextRootParent != null && nextRootParent.role != RoleType.WINDOW &&
+      while (nextRootParent != null &&
+             nextRootParent.role !== RoleType.WINDOW &&
              nextRootParent.root != null &&
-             nextRootParent.root.role == RoleType.ROOT_WEB_AREA) {
+             nextRootParent.root.role === RoleType.ROOT_WEB_AREA) {
         nextRootParent = nextRootParent.root.parent;
       }
       return nextRootParent;
@@ -99,7 +100,8 @@ class NodeUtils {
     // If the parent isn't a root web area, just walk up the tree to find the
     // nearest window.
     let parent = node;
-    while (parent != null && parent.role != chrome.automation.RoleType.WINDOW) {
+    while (parent != null &&
+           parent.role !== chrome.automation.RoleType.WINDOW) {
       parent = parent.parent;
     }
     return parent;
@@ -122,8 +124,8 @@ class NodeUtils {
    * @return {boolean} True if the node is a text field type.
    */
   static isTextField(node) {
-    return node.role == RoleType.TEXT_FIELD ||
-        node.role == RoleType.TEXT_FIELD_WITH_COMBO_BOX;
+    return node.role === RoleType.TEXT_FIELD ||
+        node.role === RoleType.TEXT_FIELD_WITH_COMBO_BOX;
   }
 
   /**
@@ -184,8 +186,8 @@ class NodeUtils {
     }
 
     if (RectUtil.overlaps(node.location, rect)) {
-      if (!node.children || node.children.length == 0 ||
-          node.children[0].role != RoleType.INLINE_TEXT_BOX) {
+      if (!node.children || node.children.length === 0 ||
+          node.children[0].role !== RoleType.INLINE_TEXT_BOX) {
         // Only add a node if it has no inlineTextBox children. If
         // it has text children, they will be more precisely bounded
         // and specific, so no need to add the parent node.
@@ -221,7 +223,7 @@ class NodeUtils {
     automationPosition.asLeafTextPosition();
 
     if (!automationPosition.node ||
-        automationPosition.node.role == RoleType.IMAGE) {
+        automationPosition.node.role === RoleType.IMAGE) {
       // TODO(accessibility): Bugs in AXPosition cause this; for example, a
       // selection on a image has incorrect text offsets.
       return this.getDeepEquivalentForSelectionDeprecated(
@@ -244,14 +246,14 @@ class NodeUtils {
    * @return {!NodeUtils.Position} The node matching the selected offset.
    */
   static getDeepEquivalentForSelectionDeprecated(parent, offset, isStart) {
-    if (parent.children.length == 0) {
+    if (parent.children.length === 0) {
       return {node: parent, offset};
     }
 
     // Non-text nodes with children.
-    if (parent.role != RoleType.STATIC_TEXT &&
-        parent.role != RoleType.INLINE_TEXT_BOX && parent.children.length > 0 &&
-        !NodeUtils.isTextField(parent)) {
+    if (parent.role !== RoleType.STATIC_TEXT &&
+        parent.role !== RoleType.INLINE_TEXT_BOX &&
+        parent.children.length > 0 && !NodeUtils.isTextField(parent)) {
       const index = isStart ? offset : offset - 1;
       if (parent.children.length > index && index >= 0) {
         let child = parent.children[index];
@@ -312,14 +314,14 @@ class NodeUtils {
         continue;
       }
       if (node.children.length > 0) {
-        if (node.role != RoleType.STATIC_TEXT) {
+        if (node.role !== RoleType.STATIC_TEXT) {
           index += 1;
         } else {
           nodesToCheck = nodesToCheck.concat(node.children.slice().reverse());
         }
       } else {
-        if (node.parent.role == RoleType.STATIC_TEXT ||
-            node.parent.role == RoleType.INLINE_TEXT_BOX) {
+        if (node.parent.role === RoleType.STATIC_TEXT ||
+            node.parent.role === RoleType.INLINE_TEXT_BOX) {
           // How many characters are in the name.
           index += NodeUtils.nameLength(node);
         } else {

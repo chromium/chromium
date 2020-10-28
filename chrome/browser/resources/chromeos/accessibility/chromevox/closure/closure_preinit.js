@@ -41,7 +41,7 @@ window.CLOSURE_IMPORT_SCRIPT = function(src) {
     }
     goog.dependencies_.written[src] = true;
     function loadNextScript() {
-      if (goog.global.queue_.length == 0) {
+      if (goog.global.queue_.length === 0) {
         return;
       }
 
@@ -70,7 +70,7 @@ window.CLOSURE_IMPORT_SCRIPT = function(src) {
       const xhr = new XMLHttpRequest();
       const url = src + '?' + new Date().getTime();
       xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
+        if (xhr.readyState === 4) {
           let scriptText = xhr.responseText;
           // Add a magic comment to the bottom of the file so that
           // Chrome knows the name of the script in the JavaScript debugger.
@@ -84,7 +84,7 @@ window.CLOSURE_IMPORT_SCRIPT = function(src) {
       xhr.send(null);
     }
     goog.global.queue_.push(src);
-    if (goog.global.queue_.length == 1) {
+    if (goog.global.queue_.length === 1) {
       loadNextScript();
     }
     return true;

@@ -55,22 +55,22 @@ chrome.accessibilityPrivate.SelectToSpeakState = {
 
 chrome.i18n = {
   getMessage(key) {
-    if (key == 'select_to_speak_checkbox_checked') {
+    if (key === 'select_to_speak_checkbox_checked') {
       return 'checked';
     }
-    if (key == 'select_to_speak_checkbox_unchecked') {
+    if (key === 'select_to_speak_checkbox_unchecked') {
       return 'unchecked';
     }
-    if (key == 'select_to_speak_checkbox_mixed') {
+    if (key === 'select_to_speak_checkbox_mixed') {
       return 'partially checked';
     }
-    if (key == 'select_to_speak_radiobutton_selected') {
+    if (key === 'select_to_speak_radiobutton_selected') {
       return 'selected';
     }
-    if (key == 'select_to_speak_radiobutton_unselected') {
+    if (key === 'select_to_speak_radiobutton_unselected') {
       return 'unselected';
     }
-    if (key == 'select_to_speak_radiobutton_mixed') {
+    if (key === 'select_to_speak_radiobutton_mixed') {
       return 'partially selected';
     }
     return '';

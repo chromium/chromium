@@ -76,7 +76,7 @@ BrailleBackground = class {
       return;
     }
 
-    if (localStorage['enableBrailleLogging'] == 'true') {
+    if (localStorage['enableBrailleLogging'] === 'true') {
       const logStr = 'Braille "' + params.text.toString() + '"';
       LogStore.getInstance().writeTextLog(logStr, LogStore.LogType.BRAILLE);
       console.log(logStr);

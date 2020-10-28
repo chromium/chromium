@@ -188,18 +188,19 @@ BluetoothBrailleDisplayManager = class {
       chrome.bluetooth.getDevices((devices) => {
         const displayList = devices.filter((device) => {
           return this.displayNames_.some((name) => {
-            return device.name && device.name.search(name) == 0;
+            return device.name && device.name.search(name) === 0;
           });
         });
-        if (displayList.length == 0) {
+        if (displayList.length === 0) {
           return;
         }
-        if (opt_device && !displayList.find((i) => i.name == opt_device.name)) {
+        if (opt_device &&
+            !displayList.find((i) => i.name === opt_device.name)) {
           return;
         }
 
         displayList.forEach((display) => {
-          if (this.preferredDisplayAddress_ == display.address) {
+          if (this.preferredDisplayAddress_ === display.address) {
             this.handlePreferredDisplayConnectionStateChanged(display);
           }
         });
@@ -214,7 +215,7 @@ BluetoothBrailleDisplayManager = class {
      * @protected
      */
     handlePairing(pairingEvent) {
-      if (pairingEvent.pairing ==
+      if (pairingEvent.pairing ===
           chrome.bluetoothPrivate.PairingEventType.REQUEST_PINCODE) {
         this.listeners_.forEach(
             (listener) => listener.onPincodeRequested(pairingEvent.device));

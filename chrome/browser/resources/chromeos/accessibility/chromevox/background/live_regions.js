@@ -66,8 +66,8 @@ LiveRegions = class {
   onTreeChange(treeChange) {
     const type = treeChange.type;
     const node = treeChange.target;
-    if ((!node.containerLiveStatus || node.containerLiveStatus == 'off') &&
-        type != TreeChangeType.SUBTREE_UPDATE_END) {
+    if ((!node.containerLiveStatus || node.containerLiveStatus === 'off') &&
+        type !== TreeChangeType.SUBTREE_UPDATE_END) {
       return;
     }
 
@@ -83,18 +83,18 @@ LiveRegions = class {
 
     if (all ||
         (additions &&
-         (type == TreeChangeType.NODE_CREATED ||
-          type == TreeChangeType.SUBTREE_CREATED))) {
+         (type === TreeChangeType.NODE_CREATED ||
+          type === TreeChangeType.SUBTREE_CREATED))) {
       this.queueLiveRegionChange_(node);
-    } else if (all || (text && type == TreeChangeType.TEXT_CHANGED)) {
+    } else if (all || (text && type === TreeChangeType.TEXT_CHANGED)) {
       this.queueLiveRegionChange_(node);
     }
 
-    if ((all || removals) && type == TreeChangeType.NODE_REMOVED) {
+    if ((all || removals) && type === TreeChangeType.NODE_REMOVED) {
       this.outputLiveRegionChange_(node, '@live_regions_removed');
     }
 
-    if (type == TreeChangeType.SUBTREE_UPDATE_END) {
+    if (type === TreeChangeType.SUBTREE_UPDATE_END) {
       this.processQueuedTreeChanges_();
     }
   }
@@ -165,8 +165,8 @@ LiveRegions = class {
     hostView = hostView ? hostView.parent : null;
     const currentRange = this.chromeVoxState_.currentRange;
     const forceQueue = !hostView || !hostView.state.focused ||
-        (currentRange && currentRange.start.node.root != node.root) ||
-        node.containerLiveStatus == 'polite';
+        (currentRange && currentRange.start.node.root !== node.root) ||
+        node.containerLiveStatus === 'polite';
 
     // Enqueue live region updates that were received at approximately
     // the same time, otherwise flush previous live region updates.
@@ -224,7 +224,7 @@ LiveRegions = class {
     }
 
     const currentRange = this.chromeVoxState_.currentRange;
-    if (currentRange && currentRange.start.node.root == node.root) {
+    if (currentRange && currentRange.start.node.root === node.root) {
       return false;
     }
 
@@ -234,7 +234,7 @@ LiveRegions = class {
       return true;
     }
 
-    if (hostView.role == RoleType.WINDOW &&
+    if (hostView.role === RoleType.WINDOW &&
         !hostView.state[StateType.INVISIBLE]) {
       return false;
     }

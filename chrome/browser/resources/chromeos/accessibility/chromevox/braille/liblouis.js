@@ -267,7 +267,7 @@ LibLouis.Translator = class {
       callback(null /*text*/);
       return;
     }
-    if (cells.byteLength == 0) {
+    if (cells.byteLength === 0) {
       // liblouis doesn't handle empty input, so handle that trivially
       // here.
       callback('');

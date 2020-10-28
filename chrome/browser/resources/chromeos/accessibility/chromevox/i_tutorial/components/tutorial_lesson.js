@@ -209,7 +209,7 @@ export const TutorialLesson = Polymer({
 
     for (const [elt, state] of Object.entries(this.practiceState)) {
       for (const [evt, performed] of Object.entries(state)) {
-        if (performed == false) {
+        if (performed === false) {
           return false;
         }
       }

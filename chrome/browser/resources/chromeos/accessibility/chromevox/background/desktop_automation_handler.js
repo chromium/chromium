@@ -126,8 +126,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         ChromeVoxState.instance.currentRange.start.node &&
         ChromeVoxState.instance.currentRange.start.node.root) {
       const cur = ChromeVoxState.instance.currentRange.start.node;
-      if (cur.role != RoleType.ROOT_WEB_AREA &&
-          AutomationUtil.getTopLevelRoot(node) ==
+      if (cur.role !== RoleType.ROOT_WEB_AREA &&
+          AutomationUtil.getTopLevelRoot(node) ===
               AutomationUtil.getTopLevelRoot(cur)) {
         return;
       }
@@ -141,7 +141,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       focus = node || focus;
       const focusedRoot = AutomationUtil.getTopLevelRoot(focus);
       const output = new Output();
-      if (focus != focusedRoot && focusedRoot) {
+      if (focus !== focusedRoot && focusedRoot) {
         output.format('$name', focusedRoot);
       }
 
@@ -167,7 +167,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
                        .withSpeechAndBraille(range, null, evt.type);
 
     // A workaround for alert nodes that contain no actual content.
-    if (output.toString() != (Msgs.getMsg('role_alert'))) {
+    if (output.toString() !== (Msgs.getMsg('role_alert'))) {
       output.go();
     }
   }
@@ -194,7 +194,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
     // A caller requested this event be ignored.
     if (this.shouldIgnoreDocumentSelectionFromAction_ &&
-        evt.eventFrom == 'action') {
+        evt.eventFrom === 'action') {
       return;
     }
 
@@ -214,8 +214,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onFocus(evt) {
-    if (evt.target.role == RoleType.ROOT_WEB_AREA &&
-        evt.eventFrom != 'action') {
+    if (evt.target.role === RoleType.ROOT_WEB_AREA &&
+        evt.eventFrom !== 'action') {
       chrome.automation.getFocus(
           this.maybeRecoverFocusAndOutput_.bind(this, evt));
       return;
@@ -229,12 +229,13 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     let node = evt.target;
 
     // Discard focus events on embeddedObject and webView.
-    if (node.role == RoleType.EMBEDDED_OBJECT ||
-        node.role == RoleType.PLUGIN_OBJECT || node.role == RoleType.WEB_VIEW) {
+    if (node.role === RoleType.EMBEDDED_OBJECT ||
+        node.role === RoleType.PLUGIN_OBJECT ||
+        node.role === RoleType.WEB_VIEW) {
       return;
     }
 
-    if (node.role == RoleType.UNKNOWN) {
+    if (node.role === RoleType.UNKNOWN) {
       // Ideally, we'd get something more meaningful than focus on an unknown
       // node, but this does sometimes occur. Sync downward to a more reasonable
       // target.
@@ -270,15 +271,15 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onLiveRegionChanged(evt) {
-    if (evt.target.root.role == RoleType.DESKTOP ||
-        evt.target.root.role == RoleType.APPLICATION) {
-      if (evt.target.containerLiveStatus != 'assertive' &&
-          evt.target.containerLiveStatus != 'polite') {
+    if (evt.target.root.role === RoleType.DESKTOP ||
+        evt.target.root.role === RoleType.APPLICATION) {
+      if (evt.target.containerLiveStatus !== 'assertive' &&
+          evt.target.containerLiveStatus !== 'polite') {
         return;
       }
 
       const output = new Output();
-      if (evt.target.containerLiveStatus == 'assertive') {
+      if (evt.target.containerLiveStatus === 'assertive') {
         output.withQueueMode(QueueMode.CATEGORY_FLUSH);
       } else {
         output.withQueueMode(QueueMode.QUEUE);
@@ -299,7 +300,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
   onLoadComplete(evt) {
     // A load complete gets fired on the desktop node when display metrics
     // change.
-    if (evt.target.role == RoleType.DESKTOP) {
+    if (evt.target.role === RoleType.DESKTOP) {
       const msg = evt.target.state[StateType.HORIZONTAL] ? 'device_landscape' :
                                                            'device_portrait';
       new Output().format('@' + msg).go();
@@ -308,7 +309,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
     // We are only interested in load completes on valid top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
-    if (!top || top != evt.target.root || !top.docUrl) {
+    if (!top || top !== evt.target.root || !top.docUrl) {
       return;
     }
 
@@ -336,8 +337,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
       // If auto read is set, skip focus recovery and start reading from the
       // top.
-      if (localStorage['autoRead'] == 'true' &&
-          AutomationUtil.getTopLevelRoot(evt.target) == evt.target) {
+      if (localStorage['autoRead'] === 'true' &&
+          AutomationUtil.getTopLevelRoot(evt.target) === evt.target) {
         ChromeVoxState.instance.setCurrentRange(
             cursors.Range.fromNode(evt.target));
         ChromeVox.tts.stop();
@@ -373,8 +374,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       return;
     }
 
-    const isInput = evt.target.htmlTag == 'input';
-    const isTextArea = evt.target.htmlTag == 'textarea';
+    const isInput = evt.target.htmlTag === 'input';
+    const isTextArea = evt.target.htmlTag === 'textarea';
     const isContentEditable = evt.target.state[StateType.RICHLY_EDITABLE];
 
     switch (evt.type) {
@@ -447,20 +448,20 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    */
   onValueChanged(evt) {
     // Skip root web areas.
-    if (evt.target.role == RoleType.ROOT_WEB_AREA) {
+    if (evt.target.role === RoleType.ROOT_WEB_AREA) {
       return;
     }
 
     // Delegate to the edit text handler if this is an editable, with the
     // exception of spin buttons.
     if (evt.target.state[StateType.EDITABLE] &&
-        evt.target.role != RoleType.SPIN_BUTTON) {
+        evt.target.role !== RoleType.SPIN_BUTTON) {
       this.onEditableChanged_(evt);
       return;
     }
 
     const t = evt.target;
-    const fromDesktop = t.root.role == RoleType.DESKTOP;
+    const fromDesktop = t.root.role === RoleType.DESKTOP;
     if (t.state.focused || fromDesktop ||
         AutomationUtil.isDescendantOf(
             ChromeVoxState.instance.currentRange.start.node, t)) {
@@ -499,7 +500,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     if (currentRange && currentRange.isValid()) {
       new Output().withLocation(currentRange, null, evt.type).go();
 
-      if (EventSourceState.get() != EventSourceType.TOUCH_GESTURE) {
+      if (EventSourceState.get() !== EventSourceType.TOUCH_GESTURE) {
         return;
       }
 
@@ -517,7 +518,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       // Ignore announcements if we've already announced something for this page
       // change. Note that this need not care about the root if it changed as
       // well.
-      if (this.currentPage_ == currentPage && this.totalPages_ == totalPages) {
+      if (this.currentPage_ === currentPage &&
+          this.totalPages_ === totalPages) {
         return;
       }
       this.currentPage_ = currentPage;
@@ -540,16 +542,16 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     chrome.automation.getFocus((focus) => {
       // Desktop tabs get "selection" when there's a focused webview during
       // tab switching. Ignore it.
-      if (evt.target.role == RoleType.TAB &&
-          evt.target.root.role == RoleType.DESKTOP) {
+      if (evt.target.role === RoleType.TAB &&
+          evt.target.root.role === RoleType.DESKTOP) {
         return;
       }
 
       // Some cases (e.g. in overview mode), require overriding the assumption
       // that focus is an ancestor of a selection target.
       const override = AutomationPredicate.menuItem(evt.target) ||
-          (evt.target.root == focus.root &&
-           focus.root.role == RoleType.DESKTOP) ||
+          (evt.target.root === focus.root &&
+           focus.root.role === RoleType.DESKTOP) ||
           evt.target.role === RoleType.IME_CANDIDATE;
       if (override || AutomationUtil.isDescendantOf(evt.target, focus)) {
         this.onEventDefault(evt);
@@ -596,7 +598,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     if (ChromeVoxState.instance.currentRange) {
       const target = evt.target;
       const current = ChromeVoxState.instance.currentRange.start.node;
-      if (AutomationUtil.getTopLevelRoot(current) !=
+      if (AutomationUtil.getTopLevelRoot(current) !==
           AutomationUtil.getTopLevelRoot(target)) {
         // Ignore this event if the root of the target differs from that of the
         // current range.
@@ -641,12 +643,12 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     // text field is focused. Only allow this when focus is on a desktop node,
     // ChromeVox is over the keyboard, or during focus events.
     if (!target || !voxTarget ||
-        (!opt_onFocus && target != voxTarget &&
-         target.root.role != RoleType.DESKTOP &&
-         voxTarget.root.role != RoleType.DESKTOP &&
+        (!opt_onFocus && target !== voxTarget &&
+         target.root.role !== RoleType.DESKTOP &&
+         voxTarget.root.role !== RoleType.DESKTOP &&
          !AutomationUtil.isDescendantOf(target, voxTarget) &&
          !AutomationUtil.getAncestors(voxTarget.root)
-              .find((n) => n.role == RoleType.KEYBOARD))) {
+              .find((n) => n.role === RoleType.KEYBOARD))) {
       return false;
     }
 
@@ -676,8 +678,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     // If initial focus was already placed inside this page (e.g. if a user
     // starts tabbing before load complete), then don't move ChromeVox's
     // position on the page.
-    if (curRoot && focusedRoot == curRoot &&
-        this.lastRootUrl_ == focusedRoot.docUrl) {
+    if (curRoot && focusedRoot === curRoot &&
+        this.lastRootUrl_ === focusedRoot.docUrl) {
       return;
     }
 
@@ -689,14 +691,14 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     const pos = ChromeVox.position[url];
 
     // Deny recovery for chrome urls.
-    if (pos && url.indexOf('chrome://') != 0) {
+    if (pos && url.indexOf('chrome://') !== 0) {
       focusedRoot.hitTestWithReply(
           pos.x, pos.y, this.onHitTestResult.bind(this));
       return;
     }
 
     // This catches initial focus (i.e. on startup).
-    if (!curRoot && focus != focusedRoot) {
+    if (!curRoot && focus !== focusedRoot) {
       o.format('$name', focusedRoot);
     }
 

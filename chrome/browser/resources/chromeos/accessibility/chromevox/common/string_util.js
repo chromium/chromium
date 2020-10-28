@@ -22,7 +22,7 @@ StringUtil = class {
     const limit = Math.min(first.length, second.length);
     let i;
     for (i = 0; i < limit; ++i) {
-      if (first.charAt(i) != second.charAt(i)) {
+      if (first.charAt(i) !== second.charAt(i)) {
         break;
       }
     }

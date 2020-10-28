@@ -37,7 +37,7 @@ ScriptInstaller.installScript = function(
   if (document.querySelector('script[' + uid + ']')) {
     ScriptInstaller.uninstallScript(uid);
   }
-  if (!srcs || srcs.length == 0) {
+  if (!srcs || srcs.length === 0) {
     return false;
   }
 
@@ -89,7 +89,7 @@ ScriptInstaller.installScriptHelper_ = function(
   const xhr = new XMLHttpRequest();
   const url = scriptSrc + '?' + new Date().getTime();
   xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
+    if (xhr.readyState === 4) {
       const scriptText = xhr.responseText;
       const apiScript = document.createElement('script');
       apiScript.type = 'text/javascript';

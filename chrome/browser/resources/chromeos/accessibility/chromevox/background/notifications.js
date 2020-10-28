@@ -76,7 +76,7 @@ Notifications.currentUpdate;
  */
 Notifications.onStartup = function() {
   // Only run on background page.
-  if (document.location.href.indexOf('background.html') == -1) {
+  if (document.location.href.indexOf('background.html') === -1) {
     return;
   }
 

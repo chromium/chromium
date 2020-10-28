@@ -21,7 +21,7 @@ AccessibilityExtensionAutomationUtilE2ETest =
 
     /** Filters nodes not rooted by desktop. */
     function filterNonDesktopRoot(node) {
-      return node.root.role != RoleType.DESKTOP;
+      return node.root.role !== RoleType.DESKTOP;
     }
 
     window.getNonDesktopAncestors = function(node) {
@@ -167,7 +167,7 @@ TEST_F(
     function() {
       this.runWithLoadedTree(toolbarDoc(), function(r) {
         const pred = function(n) {
-          return n.role != 'rootWebArea';
+          return n.role !== 'rootWebArea';
         };
 
         const toolbar = AutomationUtil.findNextNode(r, 'forward', pred);
@@ -216,7 +216,7 @@ TEST_F(
                     .findLastNode(
                         r,
                         function(n) {
-                          return n.role == RoleType.GENERIC_CONTAINER;
+                          return n.role === RoleType.GENERIC_CONTAINER;
                         })
                     .name);
           });
@@ -239,7 +239,7 @@ TEST_F(
                     .findLastNode(
                         r,
                         function(n) {
-                          return n.role == RoleType.BUTTON;
+                          return n.role === RoleType.BUTTON;
                         })
                     .name);
           });
@@ -261,7 +261,7 @@ TEST_F(
                     .findLastNode(
                         r,
                         function(n) {
-                          return n.role == RoleType.GENERIC_CONTAINER;
+                          return n.role === RoleType.GENERIC_CONTAINER;
                         })
                     .name);
           });

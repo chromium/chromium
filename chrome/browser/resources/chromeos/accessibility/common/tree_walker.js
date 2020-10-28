@@ -89,13 +89,13 @@ AutomationTreeWalker = class {
 
     this.visitPred_ = function(node) {
       if (this.skipInitialAncestry_ &&
-          this.phase_ == AutomationTreeWalkerPhase.ANCESTOR) {
+          this.phase_ === AutomationTreeWalkerPhase.ANCESTOR) {
         return false;
       }
 
       if (this.skipInitialSubtree_ &&
-          this.phase_ != AutomationTreeWalkerPhase.ANCESTOR &&
-          this.phase_ != AutomationTreeWalkerPhase.OTHER) {
+          this.phase_ !== AutomationTreeWalkerPhase.ANCESTOR &&
+          this.phase_ !== AutomationTreeWalkerPhase.OTHER) {
         return false;
       }
 
@@ -147,11 +147,11 @@ AutomationTreeWalker = class {
     }
 
     do {
-      if (this.rootPred_(this.node_) && this.dir_ == constants.Dir.BACKWARD) {
+      if (this.rootPred_(this.node_) && this.dir_ === constants.Dir.BACKWARD) {
         this.node_ = null;
         return this;
       }
-      if (this.dir_ == constants.Dir.FORWARD) {
+      if (this.dir_ === constants.Dir.FORWARD) {
         this.forward_(this.node_);
       } else {
         this.backward_(this.node_);
@@ -166,12 +166,12 @@ AutomationTreeWalker = class {
    */
   forward_(node) {
     if (!this.leafPred_(node) && node.firstChild) {
-      if (this.phase_ == AutomationTreeWalkerPhase.INITIAL) {
+      if (this.phase_ === AutomationTreeWalkerPhase.INITIAL) {
         this.phase_ = AutomationTreeWalkerPhase.DESCENDANT;
       }
 
       if (!this.skipInitialSubtree_ ||
-          this.phase_ != AutomationTreeWalkerPhase.DESCENDANT) {
+          this.phase_ !== AutomationTreeWalkerPhase.DESCENDANT) {
         this.node_ = node.firstChild;
         return;
       }
@@ -181,7 +181,7 @@ AutomationTreeWalker = class {
     while (searchNode) {
       // We have crossed out of the initial node's subtree for either a
       // sibling or parent move.
-      if (searchNode == this.initialNode_) {
+      if (searchNode === this.initialNode_) {
         this.phase_ = AutomationTreeWalkerPhase.OTHER;
       }
 
@@ -191,14 +191,14 @@ AutomationTreeWalker = class {
       }
 
       // Update the phase based on the parent if needed since we may exit below.
-      if (searchNode.parent == this.initialNode_) {
+      if (searchNode.parent === this.initialNode_) {
         this.phase_ = AutomationTreeWalkerPhase.OTHER;
       }
 
       // Exit if we encounter a root-like node and are not searching descendants
       // of the initial node.
       if (searchNode.parent && this.rootPred_(searchNode.parent) &&
-          this.phase_ != AutomationTreeWalkerPhase.DESCENDANT) {
+          this.phase_ !== AutomationTreeWalkerPhase.DESCENDANT) {
         break;
       }
 
@@ -223,7 +223,7 @@ AutomationTreeWalker = class {
       this.node_ = node;
       return;
     }
-    if (node.parent && this.backwardAncestor_ == node.parent) {
+    if (node.parent && this.backwardAncestor_ === node.parent) {
       this.phase_ = AutomationTreeWalkerPhase.ANCESTOR;
       this.backwardAncestor_ = node.parent.parent || null;
     }

@@ -183,7 +183,7 @@ EarconEngine = class {
     if (properties.pan !== undefined) {
       pan = properties.pan;
     }
-    if (pan != 0) {
+    if (pan !== 0) {
       const panNode = this.context_.createPanner();
       panNode.setPosition(pan, 0, 0);
       panNode.setOrientation(0, 0, 1);
@@ -253,7 +253,7 @@ EarconEngine = class {
     if (opt_properties.pitch) {
       pitch += opt_properties.pitch;
     }
-    if (pitch != 0) {
+    if (pitch !== 0) {
       source.playbackRate.value = Math.pow(EarconEngine.HALF_STEP, pitch);
     }
 
@@ -540,7 +540,7 @@ EarconEngine = class {
           const gain = overtoneGain * freqDecay;
           const freq = (i + 1) * 220 *
               Math.pow(EarconEngine.HALF_STEP, pitches[j] + this.sweepPitch);
-          if (j == 0) {
+          if (j === 0) {
             osc.frequency.setValueAtTime(freq, startTime);
             gainNode.gain.setValueAtTime(gain, startTime);
           } else {

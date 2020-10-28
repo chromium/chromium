@@ -106,10 +106,10 @@ ChromeVoxCursorsTest = class extends ChromeVoxNextE2ETest {
             root, FORWARD, AutomationPredicate.leaf);
 
         const cursor = new cursors.Cursor(start, 0);
-        if (!opt_testType || opt_testType == this.CURSOR) {
+        if (!opt_testType || opt_testType === this.CURSOR) {
           const cursor = new cursors.Cursor(start, 0);
           this.cursorMoveAndAssert(cursor, moves);
-        } else if (opt_testType == this.RANGE) {
+        } else if (opt_testType === this.RANGE) {
           const range = new cursors.Range(cursor, cursor);
           this.rangeMoveAndAssert(range, moves);
         }
@@ -410,14 +410,14 @@ TEST_F('ChromeVoxCursorsTest', 'SingleDocSelection', function() {
             new cursors.Cursor(p2.firstChild, 4));
 
         function verifySel() {
-          if (root.selectionStartObject == link.firstChild) {
+          if (root.selectionStartObject === link.firstChild) {
             assertEquals(link.firstChild, root.selectionStartObject);
             assertEquals(0, root.selectionStartOffset);
             assertEquals(link.firstChild, root.selectionEndObject);
             assertEquals(1, root.selectionEndOffset);
             this.listenOnce(root, 'textSelectionChanged', verifySel);
             multiSel.select();
-          } else if (root.selectionStartObject == p1.firstChild) {
+          } else if (root.selectionStartObject === p1.firstChild) {
             assertEquals(p1.firstChild, root.selectionStartObject);
             assertEquals(2, root.selectionStartOffset);
             assertEquals(p2.firstChild, root.selectionEndObject);
@@ -468,7 +468,7 @@ TEST_F('ChromeVoxCursorsTest', 'InlineElementOffset', function() {
         root.addEventListener(
             'textSelectionChanged', this.newCallback(function(evt) {
               // Test setup moves initial focus; ensure we don't test that here.
-              if (testNode != root.selectionStartObject) {
+              if (testNode !== root.selectionStartObject) {
                 return;
               }
 

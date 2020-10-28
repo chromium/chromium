@@ -49,7 +49,7 @@ function assertException(msg, fn, error) {
   try {
     fn();
   } catch (e) {
-    if (error && e.name != error) {
+    if (error && e.name !== error) {
       throw new Error(
           'Expected to throw ' + error + ' but threw ' + e.name + ' - ' + msg);
     }
@@ -66,11 +66,11 @@ function assertException(msg, fn, error) {
  */
 function assertEqualStringArrays(array1, array2) {
   let same = true;
-  if (array1.length != array2.length) {
+  if (array1.length !== array2.length) {
     same = false;
   }
   for (let i = 0; i < Math.min(array1.length, array2.length); i++) {
-    if (array1[i].trim() != array2[i].trim()) {
+    if (array1[i].trim() !== array2[i].trim()) {
       same = false;
     }
   }

@@ -42,7 +42,7 @@ ChromeVoxState = function() {
   // Only install the singleton instance if we are within the background page
   // context. Otherwise, take the instance from the background page (e.g. for
   // the panel page).
-  if (backgroundWindow == window) {
+  if (backgroundWindow === window) {
     ChromeVoxState.instance = this;
   } else {
     Object.defineProperty(ChromeVoxState, 'instance', {

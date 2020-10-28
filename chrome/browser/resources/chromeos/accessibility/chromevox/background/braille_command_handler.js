@@ -124,7 +124,7 @@ BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
   }
   actionNode.doDefault();
 
-  if (actionNode.role != RoleType.STATIC_TEXT &&
+  if (actionNode.role !== RoleType.STATIC_TEXT &&
       !actionNode.state[StateType.EDITABLE]) {
     return;
   }

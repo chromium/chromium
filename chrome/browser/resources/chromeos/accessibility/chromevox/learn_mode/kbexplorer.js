@@ -74,7 +74,7 @@ KbExplorer = class {
       KbExplorer.output(KeyUtil.getReadableNameForKeyCode(evt.keyCode));
 
       // Allow Ctrl+W or escape to be handled.
-      if ((evt.key == 'w' && evt.ctrlKey) || evt.key == 'Escape') {
+      if ((evt.key === 'w' && evt.ctrlKey) || evt.key === 'Escape') {
         KbExplorer.close_();
         return true;
       }
@@ -161,11 +161,11 @@ KbExplorer = class {
         if (mods) {
           const outputs = [];
           for (const mod in mods) {
-            if (mod == 'ctrlKey') {
+            if (mod === 'ctrlKey') {
               outputs.push('control');
-            } else if (mod == 'altKey') {
+            } else if (mod === 'altKey') {
               outputs.push('alt');
-            } else if (mod == 'shiftKey') {
+            } else if (mod === 'shiftKey') {
               outputs.push('shift');
             }
           }
@@ -213,7 +213,7 @@ KbExplorer = class {
     KbExplorer.shouldFlushSpeech_ = true;
     KbExplorer.maybeClose_();
 
-    if (gesture == 'touchExplore') {
+    if (gesture === 'touchExplore') {
       if ((new Date() - KbExplorer.lastTouchExplore_) <
           KbExplorer.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_) {
         return;
@@ -297,7 +297,7 @@ KbExplorer = class {
     chrome.windows.getLastFocused({populate: true}, (focusedWindow) => {
       if (focusedWindow && focusedWindow.focused &&
           focusedWindow.tabs.find((tab) => {
-            return tab.url == location.href;
+            return tab.url === location.href;
           })) {
         return;
       }

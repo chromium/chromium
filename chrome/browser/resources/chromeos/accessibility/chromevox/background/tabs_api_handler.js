@@ -75,7 +75,7 @@ TabsApiHandler = class {
       ChromeVox.earcons.playEarcon(Earcon.OBJECT_CLOSE);
 
       chrome.tabs.query({active: true}, function(tabs) {
-        if (tabs.length == 0 && this.isPlayingPageLoadingSound_()) {
+        if (tabs.length === 0 && this.isPlayingPageLoadingSound_()) {
           ChromeVox.earcons.cancelEarcon(Earcon.PAGE_START_LOADING);
           this.cancelPageLoadTimer_();
         }
@@ -91,7 +91,7 @@ TabsApiHandler = class {
     this.runOnlyIfTabIsActive_(activeInfo.tabId, () => {
       this.updateLoadingSoundsWhenTabFocusChanges_(activeInfo.tabId);
       chrome.tabs.get(activeInfo.tabId, function(tab) {
-        if (tab.status == 'loading') {
+        if (tab.status === 'loading') {
           return;
         }
 
@@ -115,8 +115,8 @@ TabsApiHandler = class {
    */
   updateLoadingSoundsWhenTabFocusChanges_(tabId) {
     chrome.tabs.get(tabId, function(tab) {
-      this.lastActiveTabLoaded_ = tab.status == 'complete';
-      if (tab.status == 'loading' && !this.isPlayingPageLoadingSound_()) {
+      this.lastActiveTabLoaded_ = tab.status === 'complete';
+      if (tab.status === 'loading' && !this.isPlayingPageLoadingSound_()) {
         ChromeVox.earcons.playEarcon(Earcon.PAGE_START_LOADING);
         this.startPageLoadTimer_(tabId);
       } else {
@@ -136,7 +136,7 @@ TabsApiHandler = class {
       if (!tab.active) {
         return;
       }
-      if (tab.status == 'loading') {
+      if (tab.status === 'loading') {
         this.lastActiveTabLoaded_ = false;
         if (!this.isPlayingPageLoadingSound_()) {
           ChromeVox.earcons.playEarcon(Earcon.PAGE_START_LOADING);
@@ -158,7 +158,7 @@ TabsApiHandler = class {
    */
   startPageLoadTimer_(tabId) {
     if (this.pageLoadIntervalID_) {
-      if (tabId == this.pageLoadTabID_) {
+      if (tabId === this.pageLoadTabID_) {
         return;
       }
       this.cancelPageLoadTimer_();
@@ -204,7 +204,7 @@ TabsApiHandler = class {
         }
         for (let i = 0; i < w.tabs.length; i++) {
           const tab = w.tabs[i];
-          if (tab.active && tab.id == tabId) {
+          if (tab.active && tab.id === tabId) {
             callback();
             return;
           }

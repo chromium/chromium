@@ -39,7 +39,7 @@ KeyUtil = class {
   static keyEventToKeySequence(keyEvent) {
     const util = KeyUtil;
     if (util.prevKeySequence &&
-        (util.maxSeqLength == util.prevKeySequence.length())) {
+        (util.maxSeqLength === util.prevKeySequence.length())) {
       // Reset the sequence buffer if max sequence length is reached.
       util.sequencing = false;
       util.prevKeySequence = null;
@@ -90,7 +90,7 @@ KeyUtil = class {
         util.sequencing = false;
         // Resets the search key state tracked for ChromeOS because in OOBE,
         // we never get a key up for the key down (keyCode 91).
-        if (keyEvent.keyCode == KeyUtil.getStickyKeyCode()) {
+        if (keyEvent.keyCode === KeyUtil.getStickyKeyCode()) {
           ChromeVox.searchKeyHeld = false;
         }
         return keySequence;
@@ -112,22 +112,22 @@ KeyUtil = class {
    * @return {string} A string representation of the key event.
    */
   static keyCodeToString(keyCode) {
-    if (keyCode == KeyCode.CONTROL) {
+    if (keyCode === KeyCode.CONTROL) {
       return 'Ctrl';
     }
-    if (keyCode == KeyCode.ALT) {
+    if (keyCode === KeyCode.ALT) {
       return 'Alt';
     }
-    if (keyCode == KeyCode.SHIFT) {
+    if (keyCode === KeyCode.SHIFT) {
       return 'Shift';
     }
-    if ((keyCode == KeyCode.SEARCH) || (keyCode == KeyCode.APPS)) {
+    if ((keyCode === KeyCode.SEARCH) || (keyCode === KeyCode.APPS)) {
       return 'Search';
     }
     // TODO(rshearer): This is a hack to work around the special casing of the
     // sticky mode string that used to happen in keyEventToString. We won't need
     // it once we move away from strings completely.
-    if (keyCode == KeyCode.INSERT) {
+    if (keyCode === KeyCode.INSERT) {
       return 'Insert';
     }
     if ((keyCode >= KeyCode.A && keyCode <= KeyCode.Z) ||
@@ -354,9 +354,9 @@ KeyUtil = class {
     const numKeys = keySequence.length();
 
     for (let index = 0; index < numKeys; index++) {
-      if (str != '' && !opt_modifiers) {
+      if (str !== '' && !opt_modifiers) {
         str += ', then ';
-      } else if (str != '') {
+      } else if (str !== '') {
         str += '+';
       }
 
@@ -406,20 +406,20 @@ KeyUtil = class {
               }
             }
         }
-        if (str.indexOf(modifier) == -1) {
+        if (str.indexOf(modifier) === -1) {
           tempStr += modifier + '+';
         }
       }
       str += tempStr;
 
       // Strip trailing +.
-      if (str[str.length - 1] == '+') {
+      if (str[str.length - 1] === '+') {
         str = str.slice(0, -1);
       }
     }
 
     if (keySequence.cvoxModifier || keySequence.prefixKey) {
-      if (str != '') {
+      if (str !== '') {
         str = 'Search+' + str;
       } else {
         str = 'Search+Search';

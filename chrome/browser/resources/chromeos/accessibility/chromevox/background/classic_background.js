@@ -38,7 +38,7 @@ ChromeVoxBackground = class {
 
     const consoleTts = ConsoleTts.getInstance();
     consoleTts.setEnabled(
-        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] == 'true');
+        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] === 'true');
 
     LogStore.getInstance();
 
@@ -113,10 +113,10 @@ ChromeVoxBackground = class {
    * @param {boolean} announce
    */
   static setPref(pref, value, announce) {
-    if (pref == 'earcons') {
+    if (pref === 'earcons') {
       AbstractEarcons.enabled = !!value;
-    } else if (pref == 'sticky' && announce) {
-      if (typeof (value) != 'boolean') {
+    } else if (pref === 'sticky' && announce) {
+      if (typeof (value) !== 'boolean') {
         throw new Error('Unexpected sticky mode value ' + value);
       }
       chrome.accessibilityPrivate.setKeyboardListener(true, !!value);
@@ -126,7 +126,7 @@ ChromeVoxBackground = class {
               value ? Msgs.getMsg('sticky_mode_enabled') :
                       Msgs.getMsg('sticky_mode_disabled'))
           .go();
-    } else if (pref == 'typingEcho' && announce) {
+    } else if (pref === 'typingEcho' && announce) {
       let announceStr = '';
       switch (value) {
         case TypingEcho.CHARACTER:
@@ -150,9 +150,9 @@ ChromeVoxBackground = class {
             .withString(announceStr)
             .go();
       }
-    } else if (pref == 'brailleCaptions') {
+    } else if (pref === 'brailleCaptions') {
       BrailleCaptionsBackground.setActive(!!value);
-    } else if (pref == 'position') {
+    } else if (pref === 'position') {
       ChromeVox.position =
           /** @type {Object<string, constants.Point>} */ (JSON.parse(
               /** @type {string} */ (value)));
@@ -167,8 +167,8 @@ ChromeVoxBackground = class {
   static readPrefs() {
     const prefs = ChromeVoxPrefs.instance.getPrefs();
     ChromeVoxEditableTextBase.useIBeamCursor =
-        (prefs['useIBeamCursor'] == 'true');
-    ChromeVox.isStickyPrefOn = (prefs['sticky'] == 'true');
+        (prefs['useIBeamCursor'] === 'true');
+    ChromeVox.isStickyPrefOn = (prefs['sticky'] === 'true');
   }
 
   /**
@@ -242,19 +242,19 @@ ChromeVoxBackground = class {
    * @param {Object} msg The TTS message.
    */
   onTtsMessage(msg) {
-    if (msg['action'] == 'speak') {
+    if (msg['action'] === 'speak') {
       // The only caller sending this message is a ChromeVox Classic api client.
       // Deny empty strings.
-      if (msg['text'] == '') {
+      if (msg['text'] === '') {
         return;
       }
 
       this.tts.speak(
           msg['text'],
           /** QueueMode */ msg['queueMode'], msg['properties']);
-    } else if (msg['action'] == 'stop') {
+    } else if (msg['action'] === 'stop') {
       this.tts.stop();
-    } else if (msg['action'] == 'increaseOrDecrease') {
+    } else if (msg['action'] === 'increaseOrDecrease') {
       this.tts.increaseOrDecreaseProperty(msg['property'], msg['increase']);
       const property = msg['property'];
       const engine = this.backgroundTts_;
@@ -276,7 +276,7 @@ ChromeVoxBackground = class {
         this.tts.speak(
             announcement, QueueMode.FLUSH, AbstractTts.PERSONALITY_ANNOTATION);
       }
-    } else if (msg['action'] == 'cyclePunctuationEcho') {
+    } else if (msg['action'] === 'cyclePunctuationEcho') {
       this.tts.speak(
           Msgs.getMsg(this.backgroundTts_.cyclePunctuationEcho()),
           QueueMode.FLUSH);
@@ -294,7 +294,7 @@ ChromeVoxBackground = class {
 
       switch (target) {
         case 'TTS':
-          if (msg['startCallbackId'] != undefined) {
+          if (msg['startCallbackId'] !== undefined) {
             msg['properties']['startCallback'] = function(opt_cleanupOnly) {
               port.postMessage({
                 'message': 'TTS_CALLBACK',
@@ -303,7 +303,7 @@ ChromeVoxBackground = class {
               });
             };
           }
-          if (msg['endCallbackId'] != undefined) {
+          if (msg['endCallbackId'] !== undefined) {
             msg['properties']['endCallback'] = function(opt_cleanupOnly) {
               port.postMessage({
                 'message': 'TTS_CALLBACK',

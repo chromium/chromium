@@ -61,14 +61,14 @@ Tutorial = class {
    */
   onKeyDown(evt) {
     if (document.activeElement &&
-        (document.activeElement.id == 'tutorial_previous' ||
-         document.activeElement.id == 'tutorial_next')) {
+        (document.activeElement.id === 'tutorial_previous' ||
+         document.activeElement.id === 'tutorial_next')) {
       return true;
     }
 
-    if (evt.key == 'Enter') {
+    if (evt.key === 'Enter') {
       this.nextPage();
-    } else if (evt.key == 'Backspace') {
+    } else if (evt.key === 'Backspace') {
       this.previousPage();
     } else {
       return true;
@@ -81,7 +81,7 @@ Tutorial = class {
     this.page = sessionStorage['tutorial_page_pos'] !== undefined ?
         sessionStorage['tutorial_page_pos'] :
         0;
-    if (this.page == -1) {
+    if (this.page === -1) {
       this.page = 0;
     }
     this.showCurrentPage_();
@@ -204,8 +204,8 @@ Tutorial = class {
 
   /** @private */
   finalizeDom_() {
-    const disableNext = this.page == (Tutorial.PAGES.length - 1);
-    const disablePrevious = this.page == 0;
+    const disableNext = this.page === (Tutorial.PAGES.length - 1);
+    const disablePrevious = this.page === 0;
     $('tutorial_next').setAttribute('aria-disabled', disableNext);
     $('tutorial_previous').setAttribute('aria-disabled', disablePrevious);
   }

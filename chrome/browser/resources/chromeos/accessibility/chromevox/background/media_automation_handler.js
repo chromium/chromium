@@ -73,7 +73,7 @@ MediaAutomationHandler = class extends BaseAutomationHandler {
   onMediaStartedPlaying(evt) {
     this.mediaRoots_.add(evt.target);
     const audioStrategy = localStorage['audioStrategy'];
-    if (ChromeVox.tts.isSpeaking() && audioStrategy == 'audioDuck') {
+    if (ChromeVox.tts.isSpeaking() && audioStrategy === 'audioDuck') {
       this.update_({start: true});
     }
   }
@@ -98,15 +98,15 @@ MediaAutomationHandler = class extends BaseAutomationHandler {
     while (!item.done) {
       const root = item.value;
       if (options.start) {
-        if (audioStrategy == 'audioDuck') {
+        if (audioStrategy === 'audioDuck') {
           root.startDuckingMedia();
-        } else if (audioStrategy == 'audioSuspend') {
+        } else if (audioStrategy === 'audioSuspend') {
           root.suspendMedia();
         }
       } else if (options.end) {
-        if (audioStrategy == 'audioDuck') {
+        if (audioStrategy === 'audioDuck') {
           root.stopDuckingMedia();
-        } else if (audioStrategy == 'audioSuspend') {
+        } else if (audioStrategy === 'audioSuspend') {
           root.resumeMedia();
         }
       }

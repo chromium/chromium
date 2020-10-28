@@ -126,7 +126,7 @@ BrailleCaptionsBackground.groupBrailleAndText = function(
 
   for (let i = 0; i < brailleChars.length; ++i) {
     const textSliceIndex = calculateTextIndex(i);
-    if (i != 0 && textSliceIndex != textIndex) {
+    if (i !== 0 && textSliceIndex !== textIndex) {
       groups.push(
           [text.substr(textIndex, textSliceIndex - textIndex), brailleBuf]);
       brailleBuf = '';
@@ -136,7 +136,7 @@ BrailleCaptionsBackground.groupBrailleAndText = function(
   }
 
   // Puts the rest of the text into the last group.
-  if (brailleBuf.length > 0 && text.charAt(textIndex) != ' ') {
+  if (brailleBuf.length > 0 && text.charAt(textIndex) !== ' ') {
     groups.push([text.substr(textIndex), brailleBuf]);
   }
   return groups;
@@ -150,7 +150,7 @@ BrailleCaptionsBackground.setActive = function(newValue) {
   const self = BrailleCaptionsBackground;
   const oldValue = self.isEnabled();
   window['prefs'].setPref(self.PREF_KEY, String(newValue));
-  if (oldValue != newValue) {
+  if (oldValue !== newValue) {
     if (self.stateCallback_) {
       self.stateCallback_();
     }

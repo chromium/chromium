@@ -118,7 +118,7 @@ ExtensionBridge = class {
     self.id_ = 0;
 
     const onConnectHandler = function(port) {
-      if (port.name != self.PORT_NAME) {
+      if (port.name !== self.PORT_NAME) {
         return;
       }
 
@@ -139,7 +139,7 @@ ExtensionBridge = class {
 
       port.onDisconnect.addListener(function(message) {
         for (let i = 0; i < self.portCache_.length; i++) {
-          if (self.portCache_[i] == port) {
+          if (self.portCache_[i] === port) {
             self.portCache_.splice(i, 1);
             break;
           }

@@ -423,7 +423,7 @@ function cellsToArray(cells) {
   return cells.split(/\s+/).map(function(cellString) {
     let cell = 0;
     assertTrue(cellString.length > 0);
-    if (cellString != '0') {
+    if (cellString !== '0') {
       for (let i = 0; i < cellString.length; ++i) {
         const dot = cellString.charCodeAt(i) - '0'.charCodeAt(0);
         assertTrue(dot >= 1);
@@ -504,7 +504,7 @@ ChromeVoxBrailleInputHandlerWebUITest = class extends ChromeVoxWebUITestBase {
 
   storeKeyEvent(event, opt_callback) {
     const storedCopy = {keyCode: event.keyCode};
-    if (event.type == 'keydown') {
+    if (event.type === 'keydown') {
       this.keyEvents.push(storedCopy);
     } else {
       assertEquals('keyup', event.type);

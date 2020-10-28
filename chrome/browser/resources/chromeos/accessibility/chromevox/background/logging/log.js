@@ -136,7 +136,7 @@ LogPage = class {
       p.appendChild(timeStamp);
 
       /** Add hide tree button when logType is tree. */
-      if (log[i].logType == LogStore.LogType.TREE) {
+      if (log[i].logType === LogStore.LogType.TREE) {
         const toggle = document.createElement('label');
         const toggleCheckbox = document.createElement('input');
         toggleCheckbox.type = 'checkbox';
@@ -162,7 +162,7 @@ LogPage = class {
    * @param {?string} checked
    */
   static setFilterTypeEnabled(typeFilter, checked) {
-    if (checked == null || checked == 'true') {
+    if (checked == null || checked === 'true') {
       LogPage.urlPrefs_[typeFilter] = true;
     } else {
       LogPage.urlPrefs_[typeFilter] = false;

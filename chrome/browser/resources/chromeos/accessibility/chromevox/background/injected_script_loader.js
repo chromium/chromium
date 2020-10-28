@@ -31,7 +31,7 @@ InjectedScriptLoader = class {
       const xhr = new XMLHttpRequest();
       const url = chrome.extension.getURL(src) + '?' + new Date().getTime();
       xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
+        if (xhr.readyState === 4) {
           let scriptText = xhr.responseText;
           // Add a magic comment to the bottom of the file so that
           // Chrome knows the name of the script in the JavaScript debugger.
@@ -42,7 +42,7 @@ InjectedScriptLoader = class {
               debugSrc + '\n';
           code[src] = scriptText;
           waiting--;
-          if (waiting == 0) {
+          if (waiting === 0) {
             done(code);
           }
         }

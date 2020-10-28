@@ -87,7 +87,7 @@ ChromeVoxBrailleDisplayManagerWebUITest = class extends ChromeVoxWebUITestBase {
     const content = this.writtenCells[0];
     this.writtenCells.length = 0;
     assertTrue(content instanceof ArrayBuffer);
-    assertTrue(content.byteLength == 0);
+    assertTrue(content.byteLength === 0);
   }
 
   /**
@@ -142,7 +142,7 @@ FakeTranslator.prototype = {
       brailleToText.push(i);
       buf[idx] = idx;
       idx++;
-      if ((i % 2) == 1) {
+      if ((i % 2) === 1) {
         buf[idx] = idx;
         idx++;
         brailleToText.push(i);

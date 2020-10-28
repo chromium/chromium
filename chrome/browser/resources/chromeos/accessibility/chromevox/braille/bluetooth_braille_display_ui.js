@@ -106,7 +106,7 @@ BluetoothBrailleDisplayUI = class {
     // Remove any displays that were removed.
     for (let i = 0; i < this.displaySelect_.children.length; i++) {
       const domDisplay = this.displaySelect_.children[i];
-      if (!displays.find((display) => domDisplay.id == display.address)) {
+      if (!displays.find((display) => domDisplay.id === display.address)) {
         domDisplay.remove();
       }
     }
@@ -195,14 +195,14 @@ BluetoothBrailleDisplayUI = class {
       // via a click of the Connect button or re-connection by selection via the
       // select.
       if (display.connected) {
-        if (this.selectedAndConnectedDisplayAddress_ != sel.id) {
+        if (this.selectedAndConnectedDisplayAddress_ !== sel.id) {
           this.selectedAndConnectedDisplayAddress_ = sel.id;
           chrome.metricsPrivate.recordUserAction(
               BluetoothBrailleDisplayUI.CONNECTED_METRIC_NAME_);
         }
       } else {
         // The display is no longer connected.
-        if (this.selectedAndConnectedDisplayAddress_ == sel.id) {
+        if (this.selectedAndConnectedDisplayAddress_ === sel.id) {
           this.selectedAndConnectedDisplayAddress_ = undefined;
         }
       }

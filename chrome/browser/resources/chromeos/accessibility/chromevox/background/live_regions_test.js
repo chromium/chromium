@@ -169,12 +169,12 @@ TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', function() {
         let sawFocus = false;
         let sawLive = false;
         const focusOrLive = function(candidate) {
-          sawFocus = candidate.text == 'Focus' || sawFocus;
-          sawLive = candidate.text == 'Live' || sawLive;
+          sawFocus = candidate.text === 'Focus' || sawFocus;
+          sawLive = candidate.text === 'Live' || sawLive;
           if (sawFocus && sawLive) {
-            return candidate.queueMode != QueueMode.FLUSH;
+            return candidate.queueMode !== QueueMode.FLUSH;
           } else if (sawFocus || sawLive) {
-            return candidate.queueMode == QueueMode.FLUSH;
+            return candidate.queueMode === QueueMode.FLUSH;
           }
         };
         const go = rootNode.find({role: RoleType.BUTTON});

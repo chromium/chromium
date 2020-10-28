@@ -56,11 +56,11 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
 
     // Some re-targeting is needed for cases like tables.
     let retarget = this.node_;
-    while (retarget && retarget != retarget.root) {
+    while (retarget && retarget !== retarget.root) {
       // Table headers require retargeting for events because they often have
       // event types we care about e.g. sort direction.
-      if (retarget.role == RoleType.COLUMN_HEADER ||
-          retarget.role == RoleType.ROW_HEADER) {
+      if (retarget.role === RoleType.COLUMN_HEADER ||
+          retarget.role === RoleType.ROW_HEADER) {
         this.node_ = retarget;
         break;
       }
@@ -101,7 +101,7 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
    */
   onEventIfInRange(evt) {
     if (!DesktopAutomationHandler.announceActions &&
-        evt.eventFrom == 'action') {
+        evt.eventFrom === 'action') {
       return;
     }
 
@@ -121,7 +121,7 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
       this.lastAttributeOutput_ = new Output().withRichSpeechAndBraille(
           cursors.Range.fromNode(this.lastAttributeTarget_), prev,
           Output.EventType.NAVIGATE);
-      if (this.lastAttributeTarget_ == prevTarget && prevOutput &&
+      if (this.lastAttributeTarget_ === prevTarget && prevOutput &&
           prevOutput.equals(this.lastAttributeOutput_)) {
         return;
       }
@@ -157,18 +157,18 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
     }
 
     // Don't report changes in static text nodes which can be extremely noisy.
-    if (evt.target.role == RoleType.STATIC_TEXT) {
+    if (evt.target.role === RoleType.STATIC_TEXT) {
       return;
     }
 
     // Report attribute changes for specific generated events.
-    if (evt.type == chrome.automation.EventType.SORT_CHANGED) {
+    if (evt.type === chrome.automation.EventType.SORT_CHANGED) {
       let msgId;
-      if (evt.target.sortDirection ==
+      if (evt.target.sortDirection ===
           chrome.automation.SortDirectionType.ASCENDING) {
         msgId = 'sort_ascending';
       } else if (
-          evt.target.sortDirection ==
+          evt.target.sortDirection ===
           chrome.automation.SortDirectionType.DESCENDING) {
         msgId = 'sort_descending';
       }
@@ -179,8 +179,8 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
     }
 
     // Only report attribute changes on some *Option roles if it is selected.
-    if ((evt.target.role == RoleType.MENU_LIST_OPTION ||
-         evt.target.role == RoleType.LIST_BOX_OPTION) &&
+    if ((evt.target.role === RoleType.MENU_LIST_OPTION ||
+         evt.target.role === RoleType.LIST_BOX_OPTION) &&
         !evt.target.selected) {
       return;
     }
@@ -240,8 +240,8 @@ RangeAutomationHandler = class extends BaseAutomationHandler {
    * @private
    */
   areRectsEqual_(rectA, rectB) {
-    return rectA.left == rectB.left && rectA.top == rectB.top &&
-        rectA.width == rectB.width && rectA.height == rectB.height;
+    return rectA.left === rectB.left && rectA.top === rectB.top &&
+        rectA.width === rectB.width && rectA.height === rectB.height;
   }
 };
 

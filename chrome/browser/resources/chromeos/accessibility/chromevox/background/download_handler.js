@@ -51,7 +51,7 @@ DownloadHandler.init = function() {
   chrome.downloads.search(
       {orderBy: ['-startTime'], limit: DownloadHandler.FILE_LIMIT_},
       function(results) {
-        if (!results || results.length == 0) {
+        if (!results || results.length === 0) {
           return;
         }
 
@@ -142,7 +142,7 @@ DownloadHandler.init = function() {
  */
 DownloadHandler.notifyProgress = function(id) {
   chrome.downloads.search({id}, function(results) {
-    if (!results || (results.length != 1)) {
+    if (!results || (results.length !== 1)) {
       return;
     }
     // Results should have only one item because IDs are unique.
@@ -239,7 +239,7 @@ DownloadHandler.startTrackingDownload = function(item) {
  * @param{Array<string>} optSubs Substitution strings.
  */
 DownloadHandler.speechAndBrailleOutput = function(msgId, queueMode, optSubs) {
-  if (localStorage['announceDownloadNotifications'] == 'true') {
+  if (localStorage['announceDownloadNotifications'] === 'true') {
     const msg = Msgs.getMsg(msgId, optSubs);
     new Output().withString(msg).withQueueMode(queueMode).go();
   }

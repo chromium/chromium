@@ -36,7 +36,7 @@ var MockAccessibilityPrivate = {
      * Removes the listener.
      */
     removeListener: (listener) => {
-      if (MockAccessibilityPrivate.boundsListener_ == listener) {
+      if (MockAccessibilityPrivate.boundsListener_ === listener) {
         MockAccessibilityPrivate.boundsListener_ = null;
       }
     }

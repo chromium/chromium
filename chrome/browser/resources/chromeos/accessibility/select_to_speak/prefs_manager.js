@@ -49,7 +49,7 @@ class PrefsManager {
     chrome.tts.getVoices((voices) => {
       this.validVoiceNames_ = new Set();
 
-      if (voices.length == 0) {
+      if (voices.length === 0) {
         return;
       }
 
@@ -70,10 +70,10 @@ class PrefsManager {
           }
           var lang = voice.lang.toLowerCase();
           var s = 0;
-          if (lang == uiLocale) {
+          if (lang === uiLocale) {
             s += 2;
           }
-          if (lang.substr(0, 2) == uiLocale.substr(0, 2)) {
+          if (lang.substr(0, 2) === uiLocale.substr(0, 2)) {
             s += 1;
           }
           return s;
@@ -139,13 +139,14 @@ class PrefsManager {
     Promise.all(getPrefsPromises)
         .then(
             () => {
-              const stsOptionsModified = stsRate != PrefsManager.DEFAULT_RATE ||
-                  stsPitch != PrefsManager.DEFAULT_PITCH;
+              const stsOptionsModified =
+                  stsRate !== PrefsManager.DEFAULT_RATE ||
+                  stsPitch !== PrefsManager.DEFAULT_PITCH;
               const globalOptionsModified =
-                  globalRate != PrefsManager.DEFAULT_RATE ||
-                  globalPitch != PrefsManager.DEFAULT_PITCH;
+                  globalRate !== PrefsManager.DEFAULT_RATE ||
+                  globalPitch !== PrefsManager.DEFAULT_PITCH;
               const optionsEqual =
-                  stsRate == globalRate && stsPitch == globalPitch;
+                  stsRate === globalRate && stsPitch === globalPitch;
               if (optionsEqual) {
                 // No need to write global prefs if all the prefs are the same
                 // as defaults. Just remove STS rate and pitch.

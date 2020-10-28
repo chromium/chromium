@@ -44,7 +44,7 @@ Msgs = class {
           Msgs.NAMESPACE_ + messageId.replace('_brl', ''), opt_subs);
     }
 
-    if (message == undefined || message == '') {
+    if (message === undefined || message === '') {
       throw new Error('Invalid ChromeVox message id: ' + messageId);
     }
     return message;
@@ -67,7 +67,7 @@ Msgs = class {
         throw new Error('Element has no msgid attribute: ' + elts[i]);
       }
       const val = Msgs.getMsg(msgid);
-      if (elts[i].tagName == 'INPUT') {
+      if (elts[i].tagName === 'INPUT') {
         elts[i].setAttribute('placeholder', val);
       } else {
         elts[i].textContent = val;

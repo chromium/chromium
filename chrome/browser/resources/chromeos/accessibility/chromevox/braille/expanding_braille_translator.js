@@ -76,7 +76,7 @@ ExpandingBrailleTranslator = class {
       }
     });
 
-    if (expandRanges.length == 0 && extraCellsSpans.length == 0) {
+    if (expandRanges.length === 0 && extraCellsSpans.length === 0) {
       this.defaultTranslator_.translate(
           text.toString(), formTypeMap,
           ExpandingBrailleTranslator.nullParamsToEmptyAdapter_(
@@ -215,7 +215,7 @@ ExpandingBrailleTranslator = class {
   findExpandRanges_(text, expansionType) {
     const result = [];
     if (this.uncontractedTranslator_ &&
-        expansionType != ExpandingBrailleTranslator.ExpansionType.NONE) {
+        expansionType !== ExpandingBrailleTranslator.ExpansionType.NONE) {
       const value = text.getSpanInstanceOf(ValueSpan);
       if (value) {
         const valueStart = text.getSpanStart(value);
@@ -256,12 +256,12 @@ ExpandingBrailleTranslator = class {
       return;
     }
     const expandPositions = [];
-    if (selectionStart == valueEnd) {
+    if (selectionStart === valueEnd) {
       if (selectionStart > valueStart) {
         expandPositions.push(selectionStart - 1);
       }
     } else {
-      if (selectionStart == selectionEnd && selectionStart > valueStart) {
+      if (selectionStart === selectionEnd && selectionStart > valueStart) {
         expandPositions.push(selectionStart - 1);
       }
       expandPositions.push(selectionStart);

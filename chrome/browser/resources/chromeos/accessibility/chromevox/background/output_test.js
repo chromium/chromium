@@ -350,7 +350,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
           const o = new Output().withoutHints().withSpeechAndBraille(
               range, null, 'navigate');
           let expectedSpansForValue = null;
-          if (typeof expectedValue == 'object') {
+          if (typeof expectedValue === 'object') {
             checkSpeechOutput(expectedValue[0], expectedValue[1], o);
           } else {
             expectedSpansForValue = expectedValue === '||Search' ?
@@ -621,7 +621,7 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
     const value = Output.STATE_INFO_[key];
     for (innerKey in value) {
       const innerValue = value[innerKey];
-      if (typeof (innerValue) == 'boolean') {
+      if (typeof (innerValue) === 'boolean') {
         assertEquals('isRoleSpecific', innerKey);
         continue;
       }
@@ -965,13 +965,13 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
       continue;
     }
 
-    if (speak.indexOf(stateStr) == -1) {
+    if (speak.indexOf(stateStr) === -1) {
       missingState.push(key);
     }
-    if (speak.indexOf(restrictionStr) == -1) {
+    if (speak.indexOf(restrictionStr) === -1) {
       missingRestriction.push(key);
     }
-    if (speak.indexOf(descStr) == -1) {
+    if (speak.indexOf(descStr) === -1) {
       missingDescription.push(key);
     }
   }
@@ -1013,13 +1013,13 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
     RoleType.STATIC_TEXT, RoleType.WINDOW
   ];
   missingState = missingState.filter(function(state) {
-    return notStated.indexOf(state) == -1;
+    return notStated.indexOf(state) === -1;
   });
   missingRestriction = missingRestriction.filter(function(restriction) {
-    return notRestricted.indexOf(restriction) == -1;
+    return notRestricted.indexOf(restriction) === -1;
   });
   missingDescription = missingDescription.filter(function(desc) {
-    return notDescribed.indexOf(desc) == -1;
+    return notDescribed.indexOf(desc) === -1;
   });
 
   assertEquals(

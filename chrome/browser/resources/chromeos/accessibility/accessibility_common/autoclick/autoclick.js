@@ -128,12 +128,12 @@ class Autoclick {
   onAutomationHitTestResult_(event) {
     // Walk up to the nearest scrollale area containing the point.
     let node = event.target;
-    while (node.parent && node.role != chrome.automation.RoleType.WINDOW &&
-           node.role != chrome.automation.RoleType.ROOT_WEB_AREA &&
-           node.role != chrome.automation.RoleType.DESKTOP &&
-           node.role != chrome.automation.RoleType.DIALOG &&
-           node.role != chrome.automation.RoleType.ALERT_DIALOG &&
-           node.role != chrome.automation.RoleType.TOOLBAR) {
+    while (node.parent && node.role !== chrome.automation.RoleType.WINDOW &&
+           node.role !== chrome.automation.RoleType.ROOT_WEB_AREA &&
+           node.role !== chrome.automation.RoleType.DESKTOP &&
+           node.role !== chrome.automation.RoleType.DIALOG &&
+           node.role !== chrome.automation.RoleType.ALERT_DIALOG &&
+           node.role !== chrome.automation.RoleType.TOOLBAR) {
       if (this.shouldHighlightAsScrollable_(node)) {
         break;
       }

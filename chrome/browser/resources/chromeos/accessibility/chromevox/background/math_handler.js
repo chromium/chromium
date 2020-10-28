@@ -29,7 +29,7 @@ MathHandler = class {
 
     // Math can exist either as explicit innerHtml (handled by the Blink
     // renderer for nodes with role math) or as a data attribute.
-    if (this.node_.role == chrome.automation.RoleType.MATH &&
+    if (this.node_.role === chrome.automation.RoleType.MATH &&
         this.node_.innerHtml) {
       mathml = this.node_.innerHtml;
     } else {

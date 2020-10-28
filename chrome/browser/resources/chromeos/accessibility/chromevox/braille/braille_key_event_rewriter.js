@@ -34,7 +34,7 @@ BrailleKeyEventRewriter = class {
       return false;
     }
 
-    if (evt.command == BrailleKeyCommand.CHORD) {
+    if (evt.command === BrailleKeyCommand.CHORD) {
       Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
       const modifiers = BrailleKeyEvent.brailleDotsToModifiers[dots];
 
@@ -54,7 +54,7 @@ BrailleKeyEventRewriter = class {
 
     // Check for a 'dots' command, which is typed on the keyboard with a
     // previous incremental key press.
-    if (evt.command == BrailleKeyCommand.DOTS && this.incrementalKey_) {
+    if (evt.command === BrailleKeyCommand.DOTS && this.incrementalKey_) {
       // Check if this braille pattern has a standard key mapping.
       standardKeyCode = BrailleKeyEvent.brailleDotsToStandardKeyCode[dots];
     }

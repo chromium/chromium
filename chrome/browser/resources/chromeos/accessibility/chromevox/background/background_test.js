@@ -633,7 +633,7 @@ TEST_F(
         // Return if the iframe hasn't loaded yet.
         const iframe = rootNode.find({role: RoleType.IFRAME});
         const childDoc = iframe.firstChild;
-        if (!childDoc || childDoc.children.length == 0) {
+        if (!childDoc || childDoc.children.length === 0) {
           return;
         }
 
@@ -677,7 +677,7 @@ TEST_F(
         // Return if the iframe hasn't loaded yet.
         const iframe = rootNode.find({role: 'iframe'});
         const childDoc = iframe.firstChild;
-        if (!childDoc || childDoc.children.length == 0) {
+        if (!childDoc || childDoc.children.length === 0) {
           return;
         }
 
@@ -1013,7 +1013,7 @@ TEST_F('ChromeVoxBackgroundTest', 'Selection', function() {
       function(root) {
         // Fakes a toggleSelection command.
         root.addEventListener('textSelectionChanged', function() {
-          if (root.focusOffset == 3) {
+          if (root.focusOffset === 3) {
             CommandHandler.onCommand('toggleSelection');
           }
         }, true);
@@ -2486,7 +2486,7 @@ TEST_F('ChromeVoxBackgroundTest', 'ReadWindowTitle', function() {
         const clickButtonThenReadCurrentTitle = () => {
           const desktop = root.parent.root;
           desktop.addEventListener(EventType.TREE_CHANGED, (evt) => {
-            if (evt.target.role == RoleType.WINDOW &&
+            if (evt.target.role === RoleType.WINDOW &&
                 /bar/.test(evt.target.name)) {
               doCmd('readCurrentTitle')();
             }

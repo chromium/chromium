@@ -35,7 +35,7 @@ AccessibilityExtensionAutomationTreeWalkerTest =
     while (node) {
       // Ensure proper parent/child links.
       assertTrue(node.parent.children.some(function(c) {
-        return node == c;
+        return node === c;
       }));
       this.flattenTree(node, outResult);
       node = node.nextSibling;
@@ -75,9 +75,9 @@ TEST_F(
           let cur = it.next().node;
           while (cur) {
             const isDescendant = this.isDescendant(cur, start);
-            if (it.phase == 'descendant') {
+            if (it.phase === 'descendant') {
               assertTrue(isDescendant);
-            } else if (it.phase == 'other') {
+            } else if (it.phase === 'other') {
               assertFalse(isDescendant);
             } else {
               assertNotReached();
@@ -106,9 +106,9 @@ TEST_F(
           let cur = it.next().node;
           while (cur) {
             const isAncestor = this.isAncestor(cur, start);
-            if (it.phase == 'ancestor') {
+            if (it.phase === 'ancestor') {
               assertTrue(isAncestor);
-            } else if (it.phase == 'other') {
+            } else if (it.phase === 'other') {
               assertFalse(isAncestor);
             } else {
               assertNotReached();
@@ -140,10 +140,10 @@ TEST_F(
 
             // Restrict to 2's subtree and consider 3 and 5 leaves.
             const leafP = function(n) {
-              return n.name == '3' || n.name == '5';
+              return n.name === '3' || n.name === '5';
             };
             const rootP = function(n) {
-              return n.name == '2';
+              return n.name === '2';
             };
 
             // Track the nodes we've visited.
@@ -173,7 +173,7 @@ TEST_F(
             const node5 = r.firstChild.firstChild.lastChild;
             assertEquals('5', node5.name);
             restrictions.root = function(n) {
-              return n.name == '1';
+              return n.name === '1';
             };
             restrictions.leaf = function(n) {
               return !n.firstChild;

@@ -79,7 +79,7 @@ CommandHandler.onCommand = function(command) {
         // First, try speaking the on-screen time.
         const allTime = d.findAll({role: RoleType.TIME});
         allTime.filter(function(t) {
-          return t.root.role == RoleType.DESKTOP;
+          return t.root.role === RoleType.DESKTOP;
         });
 
         let timeString = '';
@@ -223,7 +223,7 @@ CommandHandler.onCommand = function(command) {
     case 'toggleBrailleTable': {
       let brailleTableType = localStorage['brailleTableType'];
       let output = '';
-      if (brailleTableType == 'brailleTable6') {
+      if (brailleTableType === 'brailleTable6') {
         brailleTableType = 'brailleTable8';
 
         // This label reads "switch to 8 dot braille".
@@ -284,7 +284,7 @@ CommandHandler.onCommand = function(command) {
       return false;
     case 'nextGranularity':
     case 'previousGranularity': {
-      const backwards = command == 'previousGranularity';
+      const backwards = command === 'previousGranularity';
       let gran = GestureCommandHandler.granularity;
       const next = backwards ?
           (--gran >= 0 ? gran : GestureGranularity.COUNT - 1) :
@@ -335,7 +335,7 @@ CommandHandler.onCommand = function(command) {
     if (!ChromeVoxState.instance.talkBackEnabled) {
       new Output()
           .withString(Msgs.getMsg(
-              EventSourceState.get() == EventSourceType.TOUCH_GESTURE ?
+              EventSourceState.get() === EventSourceType.TOUCH_GESTURE ?
                   'no_focus_touch' :
                   'no_focus'))
           .withQueueMode(QueueMode.FLUSH)
@@ -584,7 +584,7 @@ CommandHandler.onCommand = function(command) {
       const root = AutomationUtil.getTopLevelRoot(current.start.node);
       if (root && root.scrollY !== undefined) {
         let page = Math.ceil(root.scrollY / root.location.height) || 1;
-        page = command == 'nextPage' ? page + 1 : page - 1;
+        page = command === 'nextPage' ? page + 1 : page - 1;
         ChromeVox.tts.stop();
         root.setScrollOffset(0, page * root.location.height);
       }
@@ -637,15 +637,15 @@ CommandHandler.onCommand = function(command) {
         // Scan for a clickable, which overrides the |actionNode|.
         let clickable = actionNode;
         while (clickable && !clickable.clickable &&
-               actionNode.root == clickable.root) {
+               actionNode.root === clickable.root) {
           clickable = clickable.parent;
         }
-        if (clickable && actionNode.root == clickable.root) {
+        if (clickable && actionNode.root === clickable.root) {
           clickable.doDefault();
           return false;
         }
 
-        if (EventSourceState.get() == EventSourceType.TOUCH_GESTURE &&
+        if (EventSourceState.get() === EventSourceType.TOUCH_GESTURE &&
             actionNode.state.editable) {
           // Dispatch a click to ensure the VK gets shown.
           const location = actionNode.location;
@@ -655,8 +655,8 @@ CommandHandler.onCommand = function(command) {
           return false;
         }
 
-        while (actionNode.role == RoleType.INLINE_TEXT_BOX ||
-               actionNode.role == RoleType.STATIC_TEXT) {
+        while (actionNode.role === RoleType.INLINE_TEXT_BOX ||
+               actionNode.role === RoleType.STATIC_TEXT) {
           actionNode = actionNode.parent;
         }
         if (actionNode.inPageLinkTarget) {
@@ -736,7 +736,7 @@ CommandHandler.onCommand = function(command) {
     case 'contextMenu':
       if (ChromeVoxState.instance.currentRange) {
         let actionNode = ChromeVoxState.instance.currentRange.start.node;
-        if (actionNode.role == RoleType.INLINE_TEXT_BOX) {
+        if (actionNode.role === RoleType.INLINE_TEXT_BOX) {
           actionNode = actionNode.parent;
         }
         actionNode.showContextMenu();
@@ -771,14 +771,14 @@ CommandHandler.onCommand = function(command) {
         return false;
       }
 
-      if (target.root && target.root.role == RoleType.DESKTOP) {
+      if (target.root && target.root.role === RoleType.DESKTOP) {
         // Search for the first container with a name.
         while (target && (!target.name || !AutomationPredicate.root(target))) {
           target = target.parent;
         }
       } else {
         // Search for a window with a title.
-        while (target && (!target.name || target.role != RoleType.WINDOW)) {
+        while (target && (!target.name || target.role !== RoleType.WINDOW)) {
           target = target.parent;
         }
       }
@@ -870,14 +870,14 @@ CommandHandler.onCommand = function(command) {
     case 'goToRowFirstCell':
     case 'goToRowLastCell': {
       let node = current.start.node;
-      while (node && node.role != RoleType.ROW) {
+      while (node && node.role !== RoleType.ROW) {
         node = node.parent;
       }
       if (!node) {
         break;
       }
       const end = AutomationUtil.findNodePost(
-          node, command == 'goToRowLastCell' ? Dir.BACKWARD : Dir.FORWARD,
+          node, command === 'goToRowLastCell' ? Dir.BACKWARD : Dir.FORWARD,
           AutomationPredicate.leaf);
       if (end) {
         current = cursors.Range.fromNode(end);
@@ -885,7 +885,7 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToColFirstCell': {
       let node = current.start.node;
-      while (node && node.role != RoleType.TABLE) {
+      while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
       if (!node || !node.firstChild) {
@@ -903,7 +903,7 @@ CommandHandler.onCommand = function(command) {
     case 'goToColLastCell': {
       dir = Dir.BACKWARD;
       let node = current.start.node;
-      while (node && node.role != RoleType.TABLE) {
+      while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
       if (!node || !node.lastChild) {
@@ -931,14 +931,14 @@ CommandHandler.onCommand = function(command) {
     case 'goToFirstCell':
     case 'goToLastCell': {
       let node = current.start.node;
-      while (node && node.role != RoleType.TABLE) {
+      while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
       if (!node) {
         break;
       }
       const end = AutomationUtil.findNodePost(
-          node, command == 'goToLastCell' ? Dir.BACKWARD : Dir.FORWARD,
+          node, command === 'goToLastCell' ? Dir.BACKWARD : Dir.FORWARD,
           AutomationPredicate.leaf);
       if (end) {
         current = cursors.Range.fromNode(end);
@@ -948,7 +948,7 @@ CommandHandler.onCommand = function(command) {
     // These commands are only available when invoked from touch.
     case 'nextAtGranularity':
     case 'previousAtGranularity':
-      const backwards = command == 'previousAtGranularity';
+      const backwards = command === 'previousAtGranularity';
       switch (GestureCommandHandler.granularity) {
         case GestureGranularity.CHARACTER:
           command = backwards ? 'previousCharacter' : 'nextCharacter';
@@ -1010,7 +1010,7 @@ CommandHandler.onCommand = function(command) {
 
       // Get word start and end indices.
       let wordStarts, wordEnds;
-      if (node.role == RoleType.INLINE_TEXT_BOX) {
+      if (node.role === RoleType.INLINE_TEXT_BOX) {
         wordStarts = node.wordStarts;
         wordEnds = node.wordEnds;
       } else {
@@ -1158,7 +1158,7 @@ CommandHandler.onCommand = function(command) {
           root = bound.root;
         }
 
-        if (dir == Dir.FORWARD) {
+        if (dir === Dir.FORWARD) {
           bound = root;
         } else {
           bound = AutomationUtil.findNodePost(
@@ -1222,7 +1222,7 @@ CommandHandler.onCommand = function(command) {
 
             // Otherwise, sync to the directed deepest child.
             let sync = scrollable;
-            if (dir == Dir.FORWARD) {
+            if (dir === Dir.FORWARD) {
               while (sync.firstChild) {
                 sync = sync.firstChild;
               }
@@ -1248,7 +1248,7 @@ CommandHandler.onCommand = function(command) {
         }
       };
 
-      if (dir == Dir.FORWARD) {
+      if (dir === Dir.FORWARD) {
         scrollable.scrollForward(callback);
       } else {
         scrollable.scrollBackward(callback);
@@ -1299,7 +1299,7 @@ CommandHandler.imageNode_;
  */
 CommandHandler.onImageFrameUpdated_ = function(event) {
   const target = event.target;
-  if (target != CommandHandler.imageNode_) {
+  if (target !== CommandHandler.imageNode_) {
     return;
   }
 
@@ -1374,7 +1374,7 @@ CommandHandler.onEditCommand_ = function(command) {
   }
 
   // Skip customized keys for read only text fields.
-  if (textEditHandler.node.restriction ==
+  if (textEditHandler.node.restriction ===
       chrome.automation.Restriction.READ_ONLY) {
     return true;
   }
@@ -1465,7 +1465,7 @@ CommandHandler.init = function() {
   const firstRunOrigin = 'chrome-extension://jdgcneonijmofocbhmijhacgchbihela';
   chrome.runtime.onMessageExternal.addListener(function(
       request, sender, sendResponse) {
-    if (sender.origin != firstRunOrigin) {
+    if (sender.origin !== firstRunOrigin) {
       return;
     }
 
@@ -1504,7 +1504,7 @@ CommandHandler.init = function() {
   chrome.chromeosInfoPrivate.get(['sessionType'], (result) => {
     /** @type {boolean} */
     CommandHandler.isKioskSession_ =
-        result['sessionType'] == chrome.chromeosInfoPrivate.SessionType.KIOSK;
+        result['sessionType'] === chrome.chromeosInfoPrivate.SessionType.KIOSK;
   });
 };
 

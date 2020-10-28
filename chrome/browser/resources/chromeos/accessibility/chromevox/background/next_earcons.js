@@ -58,7 +58,7 @@ NextEarcons = class extends AbstractEarcons {
     if (!AbstractEarcons.enabled) {
       return;
     }
-    if (localStorage['enableEarconLogging'] == 'true') {
+    if (localStorage['enableEarconLogging'] === 'true') {
       LogStore.getInstance().writeTextLog(earcon, LogStore.LogType.EARCON);
       console.log('Earcon ' + earcon);
     }
@@ -176,7 +176,7 @@ NextEarcons = class extends AbstractEarcons {
   updateShouldPanForDevices_(devices) {
     this.shouldPan_ = !devices.some((device) => {
       return device.isActive &&
-          device.deviceType == chrome.audio.DeviceType.INTERNAL_SPEAKER;
+          device.deviceType === chrome.audio.DeviceType.INTERNAL_SPEAKER;
     });
   }
 };

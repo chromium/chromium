@@ -65,7 +65,7 @@ class SelectToSpeakOptionsPage {
         throw new Error('Element has no msgid attribute: ' + elts[i]);
       }
       var translated = chrome.i18n.getMessage('select_to_speak_' + msgid);
-      if (elts[i].tagName == 'INPUT') {
+      if (elts[i].tagName === 'INPUT') {
         elts[i].setAttribute('placeholder', translated);
       } else {
         elts[i].textContent = translated;
@@ -176,7 +176,7 @@ class SelectToSpeakOptionsPage {
         var value = items[pref];
         element.selectedIndex = -1;
         for (var i = 0; i < element.options.length; ++i) {
-          if (element.options[i][valueKey] == value) {
+          if (element.options[i][valueKey] === value) {
             element.selectedIndex = i;
             break;
           }

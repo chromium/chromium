@@ -46,7 +46,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
 
-  if (gesture == 'touchExplore') {
+  if (gesture === 'touchExplore') {
     GestureCommandHandler.pointerHandler_.onTouchMove(x, y);
     return;
   }
@@ -71,10 +71,10 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
   if (ChromeVoxState.instance.currentRange) {
     const range = ChromeVoxState.instance.currentRange;
     if (commandData.menuKeyOverride && range.start && range.start.node &&
-        ((range.start.node.role == RoleType.MENU_ITEM &&
-          range.start.node.root.role == RoleType.DESKTOP) ||
+        ((range.start.node.role === RoleType.MENU_ITEM &&
+          range.start.node.root.role === RoleType.DESKTOP) ||
          range.start.node.root.docUrl.indexOf(
-             chrome.extension.getURL('chromevox/panel/panel.html')) == 0)) {
+             chrome.extension.getURL('chromevox/panel/panel.html')) === 0)) {
       key = commandData.menuKeyOverride;
     }
   }

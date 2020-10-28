@@ -59,9 +59,9 @@ NavDescription = class {
    */
   isEmpty() {
     return (
-        this.context.length == 0 && this.earcons.length == 0 &&
-        this.text.length == 0 && this.userValue.length == 0 &&
-        this.annotation.length == 0);
+        this.context.length === 0 && this.earcons.length === 0 &&
+        this.text.length === 0 && this.userValue.length === 0 &&
+        this.annotation.length === 0);
   }
 
   /**
@@ -131,10 +131,10 @@ NavDescription = class {
 
     const length = speakArgs.length;
     for (let i = 0; i < length; i++) {
-      if (i == 0 && opt_startCallback) {
+      if (i === 0 && opt_startCallback) {
         speakArgs[i][2]['startCallback'] = opt_startCallback;
       }
-      if (i == length - 1 && opt_endCallback) {
+      if (i === length - 1 && opt_endCallback) {
         speakArgs[i][2]['endCallback'] = opt_endCallback;
       }
       if (this.category) {
@@ -150,7 +150,8 @@ NavDescription = class {
    * @return {boolean} True if equal.
    */
   equals(that) {
-    return this.context == that.context && this.text == that.text &&
-        this.userValue == that.userValue && this.annotation == that.annotation;
+    return this.context === that.context && this.text === that.text &&
+        this.userValue === that.userValue &&
+        this.annotation === that.annotation;
   }
 };

@@ -323,7 +323,7 @@ class BrailleIme {
         var dotsToSend = this.accumulated_;
         this.accumulated_ = 0;
         if (dotsToSend & this.SPACE) {
-          if (dotsToSend != this.SPACE) {
+          if (dotsToSend !== this.SPACE) {
             // Can't combine space and actual dot keys.
             return true;
           }

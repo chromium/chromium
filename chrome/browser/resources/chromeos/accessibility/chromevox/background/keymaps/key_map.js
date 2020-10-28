@@ -102,11 +102,11 @@ KeyMap = class {
    */
   hasBinding(command, sequence) {
     if (this.commandToKey_ != null) {
-      return this.commandToKey_[command] == sequence;
+      return this.commandToKey_[command] === sequence;
     } else {
       for (let i = 0; i < this.bindings_.length; i++) {
         const binding = this.bindings_[i];
-        if (binding.command == command && binding.sequence == sequence) {
+        if (binding.command === command && binding.sequence === sequence) {
           return true;
         }
       }
@@ -121,11 +121,11 @@ KeyMap = class {
    */
   hasCommand(command) {
     if (this.commandToKey_ != null) {
-      return this.commandToKey_[command] != undefined;
+      return this.commandToKey_[command] !== undefined;
     } else {
       for (let i = 0; i < this.bindings_.length; i++) {
         const binding = this.bindings_[i];
-        if (binding.command == command) {
+        if (binding.command === command) {
           return true;
         }
       }
@@ -179,7 +179,7 @@ KeyMap = class {
       keySequenceArray = [];
       for (let i = 0; i < this.bindings_.length; i++) {
         const binding = this.bindings_[i];
-        if (binding.command == command) {
+        if (binding.command === command) {
           keySequenceArray.push(binding.sequence);
         }
       }
@@ -201,7 +201,7 @@ KeyMap = class {
     for (let i = 0; i < keys.length; ++i) {
       const key = keys[i];
       const command = inputMap.commandForKey(key);
-      if (command == 'toggleStickyMode') {
+      if (command === 'toggleStickyMode') {
         // TODO(dtseng): More uglyness because of sticky key.
         continue;
       } else if (
@@ -242,7 +242,7 @@ KeyMap = class {
     let bound = false;
     for (let i = 0; i < this.bindings_.length; i++) {
       const binding = this.bindings_[i];
-      if (binding.command == command) {
+      if (binding.command === command) {
         // Replace the key with the new key.
         delete binding.sequence;
         binding.sequence = newKey;
@@ -291,12 +291,12 @@ KeyMap = class {
     }
 
     // Validate the type of the commandsAndKeySequences array.
-    if (typeof (commandsAndKeySequences) != 'object') {
+    if (typeof (commandsAndKeySequences) !== 'object') {
       return null;
     }
     for (let i = 0; i < commandsAndKeySequences.length; i++) {
-      if (commandsAndKeySequences[i].command == undefined ||
-          commandsAndKeySequences[i].sequence == undefined) {
+      if (commandsAndKeySequences[i].command === undefined ||
+          commandsAndKeySequences[i].sequence === undefined) {
         return null;
       } else {
         commandsAndKeySequences[i].sequence = /** @type {KeySequence} */
@@ -378,7 +378,7 @@ KeyMap = class {
     // command?
     for (let i = 0; i < this.bindings_.length; i++) {
       const binding = this.bindings_[i];
-      if (this.commandToKey_[binding.command] != undefined) {
+      if (this.commandToKey_[binding.command] !== undefined) {
         // There's at least two key sequences mapped to the same
         // command. continue.
         continue;

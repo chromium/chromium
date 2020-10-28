@@ -81,7 +81,7 @@ NavBraille = class {
    * @return {boolean} true if this braille description is empty.
    */
   isEmpty() {
-    return this.text.length == 0;
+    return this.text.length === 0;
   }
 
   /**

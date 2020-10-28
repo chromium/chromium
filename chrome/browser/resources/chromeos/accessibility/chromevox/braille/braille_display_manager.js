@@ -76,10 +76,10 @@ BrailleDisplayManager = class {
     }.bind(this));
 
     chrome.storage.onChanged.addListener(function(changes, area) {
-      if (area == 'local' && 'brailleWordWrap' in changes) {
+      if (area === 'local' && 'brailleWordWrap' in changes) {
         this.updatePanStrategy_(changes.brailleWordWrap.newValue);
       }
-      if (area == 'local' &&
+      if (area === 'local' &&
           ('virtualBrailleRows' in changes ||
            'virtualBrailleColumns' in changes)) {
         this.onCaptionsStateChanged_();
@@ -235,7 +235,7 @@ BrailleDisplayManager = class {
       const newColumnCount = displayState.textColumnCount || 0;
       const newRowCount = displayState.textRowCount || 0;
 
-      if (oldColumnCount != newColumnCount || oldRowCount != newRowCount) {
+      if (oldColumnCount !== newColumnCount || oldRowCount !== newRowCount) {
         this.panStrategy_.setDisplaySize(newRowCount, newColumnCount);
       }
       this.refresh_();
@@ -279,7 +279,7 @@ BrailleDisplayManager = class {
 
     // If there's no cursor, don't schedule blinking.
     const cursor = this.panStrategy_.getCursor();
-    const hideCursor = cursor.start == -1 || cursor.end == -1;
+    const hideCursor = cursor.start === -1 || cursor.end === -1;
 
     this.refreshInternal_(!hideCursor);
     if (hideCursor) {
@@ -431,7 +431,7 @@ BrailleDisplayManager = class {
    *     braille cells, not text cells.
    */
   route(braillePosition) {
-    if (braillePosition == undefined) {
+    if (braillePosition === undefined) {
       return;
     }
     const displayPosition = this.brailleToTextPosition_(
@@ -455,7 +455,7 @@ BrailleDisplayManager = class {
       this.panStrategy_.setCursor(-1, -1);
       return;
     }
-    if (startIndex == endIndex) {
+    if (startIndex === endIndex) {
       endIndex = startIndex + 1;
     }
     this.panStrategy_.setCursor(startIndex, endIndex);

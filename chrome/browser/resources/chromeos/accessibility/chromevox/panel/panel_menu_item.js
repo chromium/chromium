@@ -55,7 +55,7 @@ PanelMenuItem = class {
     this.element.appendChild(title);
 
     const backgroundWindow = chrome.extension.getBackgroundPage();
-    if (backgroundWindow['EventSourceState']['get']() ==
+    if (backgroundWindow['EventSourceState']['get']() ===
         EventSourceType.TOUCH_GESTURE) {
       const gestureNode = document.createElement('td');
       gestureNode.className = 'menu-item-shortcut';

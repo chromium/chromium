@@ -196,7 +196,7 @@ TEST_F(
                   assertTrue(this.mockTts.currentlySpeaking());
                   this.assertEqualsCollapseWhitespace(
                       this.mockTts.pendingUtterances()[0], 'Selected text');
-                  if (this.mockTts.pendingUtterances().length == 2) {
+                  if (this.mockTts.pendingUtterances().length === 2) {
                     this.assertEqualsCollapseWhitespace(
                         this.mockTts.pendingUtterances()[1], '');
                   }

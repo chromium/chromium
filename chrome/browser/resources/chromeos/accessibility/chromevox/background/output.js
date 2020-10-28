@@ -153,10 +153,10 @@ Output = class {
       // Chrome automatically calculates these attributes.
       case 'posInSet':
         return node.htmlAttributes['aria-posinset'] ||
-            (node.root.role != RoleType.ROOT_WEB_AREA && node.posInSet);
+            (node.root.role !== RoleType.ROOT_WEB_AREA && node.posInSet);
       case 'setSize':
         return node.htmlAttributes['aria-setsize'] ||
-            (node.root.role != RoleType.ROOT_WEB_AREA && node.setSize);
+            (node.root.role !== RoleType.ROOT_WEB_AREA && node.setSize);
 
       // These attributes default to false for empty strings.
       case 'roleDescription':
@@ -521,7 +521,7 @@ Output = class {
         };
       }());
 
-      if (i == this.speechBuffer_.length - 1) {
+      if (i === this.speechBuffer_.length - 1) {
         speechProps['endCallback'] = this.speechEndCallback_;
       }
 
@@ -566,7 +566,7 @@ Output = class {
     }
 
     // Display.
-    if (this.speechCategory_ != TtsCategory.LIVE && this.drawFocusRing_) {
+    if (this.speechCategory_ !== TtsCategory.LIVE && this.drawFocusRing_) {
       ChromeVoxState.instance.setFocusBounds(this.locations_);
     }
   }
@@ -575,19 +575,20 @@ Output = class {
    * @return {boolean} True if this object is equal to |rhs|.
    */
   equals(rhs) {
-    if (this.speechBuffer_.length != rhs.speechBuffer_.length ||
-        this.brailleBuffer_.length != rhs.brailleBuffer_.length) {
+    if (this.speechBuffer_.length !== rhs.speechBuffer_.length ||
+        this.brailleBuffer_.length !== rhs.brailleBuffer_.length) {
       return false;
     }
 
     for (let i = 0; i < this.speechBuffer_.length; i++) {
-      if (this.speechBuffer_[i].toString() != rhs.speechBuffer_[i].toString()) {
+      if (this.speechBuffer_[i].toString() !==
+          rhs.speechBuffer_[i].toString()) {
         return false;
       }
     }
 
     for (let j = 0; j < this.brailleBuffer_.length; j++) {
-      if (this.brailleBuffer_[j].toString() !=
+      if (this.brailleBuffer_[j].toString() !==
           rhs.brailleBuffer_[j].toString()) {
         return false;
       }
@@ -620,7 +621,7 @@ Output = class {
     const uniqueAncestors =
         AutomationUtil.getUniqueAncestors(prevParent, parent);
     for (let i = 0; parent = uniqueAncestors[i]; i++) {
-      if (parent.role == RoleType.WINDOW) {
+      if (parent.role === RoleType.WINDOW) {
         break;
       }
       if (Output.ROLE_INFO_[parent.role] &&
@@ -673,7 +674,7 @@ Output = class {
     const args = null;
 
     // Hacky way to support args.
-    if (typeof (format) == 'string') {
+    if (typeof (format) === 'string') {
       format = format.replace(/([,:])\s+/gm, '$1');
       tokens = format.split(' ');
     } else {
@@ -688,7 +689,7 @@ Output = class {
 
       // Parse the token.
       let tree;
-      if (typeof (token) == 'string') {
+      if (typeof (token) === 'string') {
         tree = this.createParseTree_(token);
       } else {
         tree = token;
@@ -700,7 +701,7 @@ Output = class {
       // Set suffix options.
       const options = {};
       options.annotation = [];
-      options.isUnique = token[token.length - 1] == '=';
+      options.isUnique = token[token.length - 1] === '=';
       if (options.isUnique) {
         token = token.substring(0, token.length - 1);
       }
@@ -710,14 +711,14 @@ Output = class {
       token = token.slice(1);
 
       // All possible tokens based on prefix.
-      if (prefix == '$') {
+      if (prefix === '$') {
         if (this.suppressions_[token]) {
           return;
         }
 
-        if (token == 'value') {
+        if (token === 'value') {
           const text = node.value || '';
-          if (!node.state[StateType.EDITABLE] && node.name == text) {
+          if (!node.state[StateType.EDITABLE] && node.name === text) {
             return;
           }
 
@@ -742,7 +743,7 @@ Output = class {
             this.append_(buff, text, options);
             ruleStr.writeTokenWithValue(token, text);
           }
-        } else if (token == 'name') {
+        } else if (token === 'name') {
           options.annotation.push(token);
           const earcon = node ? this.findEarcon_(node, prevNode) : null;
           if (earcon) {
@@ -765,19 +766,19 @@ Output = class {
           }
 
           ruleStr.writeTokenWithValue(token, node.name);
-        } else if (token == 'description') {
-          if (node.name == node.description) {
+        } else if (token === 'description') {
+          if (node.name === node.description) {
             return;
           }
 
           options.annotation.push(token);
           this.append_(buff, node.description || '', options);
           ruleStr.writeTokenWithValue(token, node.description);
-        } else if (token == 'urlFilename') {
+        } else if (token === 'urlFilename') {
           options.annotation.push('name');
           const url = node.url || '';
           let filename = '';
-          if (url.substring(0, 4) != 'data') {
+          if (url.substring(0, 4) !== 'data') {
             filename =
                 url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
 
@@ -788,23 +789,23 @@ Output = class {
           }
           this.append_(buff, filename, options);
           ruleStr.writeTokenWithValue(token, filename);
-        } else if (token == 'nameFromNode') {
-          if (node.nameFrom == NameFromType.CONTENTS) {
+        } else if (token === 'nameFromNode') {
+          if (node.nameFrom === NameFromType.CONTENTS) {
             return;
           }
 
           options.annotation.push('name');
           this.append_(buff, node.name || '', options);
           ruleStr.writeTokenWithValue(token, node.name);
-        } else if (token == 'nameOrDescendants') {
+        } else if (token === 'nameOrDescendants') {
           // This token is similar to nameOrTextContent except it gathers rich
           // output for descendants. It also lets name from contents override
           // the descendants text if |node| has only static text children.
           options.annotation.push(token);
           if (node.name &&
-              (node.nameFrom != NameFromType.CONTENTS ||
+              (node.nameFrom !== NameFromType.CONTENTS ||
                node.children.every(function(child) {
-                 return child.role == RoleType.STATIC_TEXT;
+                 return child.role === RoleType.STATIC_TEXT;
                }))) {
             this.append_(buff, node.name || '', options);
             ruleStr.writeTokenWithValue(token, node.name);
@@ -817,7 +818,7 @@ Output = class {
               outputRuleString: ruleStr
             });
           }
-        } else if (token == 'indexInParent') {
+        } else if (token === 'indexInParent') {
           if (node.parent) {
             options.annotation.push(token);
             let roles;
@@ -840,7 +841,7 @@ Output = class {
             this.append_(buff, String(count));
             ruleStr.writeTokenWithValue(token, String(count));
           }
-        } else if (token == 'restriction') {
+        } else if (token === 'restriction') {
           const msg = Output.RESTRICTION_STATE_MAP[node.restriction];
           if (msg) {
             ruleStr.writeToken(token);
@@ -851,7 +852,7 @@ Output = class {
               outputRuleString: ruleStr
             });
           }
-        } else if (token == 'checked') {
+        } else if (token === 'checked') {
           const msg = Output.CHECKED_STATE_MAP[node.checked];
           if (msg) {
             ruleStr.writeToken(token);
@@ -862,7 +863,7 @@ Output = class {
               outputRuleString: ruleStr
             });
           }
-        } else if (token == 'pressed') {
+        } else if (token === 'pressed') {
           const msg = Output.PRESSED_STATE_MAP[node.checked];
           if (msg) {
             ruleStr.writeToken(token);
@@ -873,7 +874,7 @@ Output = class {
               outputRuleString: ruleStr
             });
           }
-        } else if (token == 'state') {
+        } else if (token === 'state') {
           if (node.state) {
             Object.getOwnPropertyNames(node.state).forEach(function(s) {
               const stateInfo = Output.STATE_INFO_[s];
@@ -888,7 +889,7 @@ Output = class {
               }
             }.bind(this));
           }
-        } else if (token == 'find') {
+        } else if (token === 'find') {
           // Find takes two arguments: JSON query string and format string.
           if (tree.firstChild) {
             const jsonQuery = tree.firstChild.value;
@@ -906,7 +907,7 @@ Output = class {
               });
             }
           }
-        } else if (token == 'descendants') {
+        } else if (token === 'descendants') {
           if (!node) {
             return;
           }
@@ -944,7 +945,7 @@ Output = class {
           ruleStr.writeToken(token);
           this.render_(
               subrange, prev, Output.EventType.NAVIGATE, buff, ruleStr);
-        } else if (token == 'joinedDescendants') {
+        } else if (token === 'joinedDescendants') {
           const unjoined = [];
           ruleStr.write('joinedDescendants {');
           this.format_({
@@ -956,8 +957,8 @@ Output = class {
           this.append_(buff, unjoined.join(' '), options);
           ruleStr.write(
               '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
-        } else if (token == 'role') {
-          if (localStorage['useVerboseMode'] == 'false') {
+        } else if (token === 'role') {
+          if (localStorage['useVerboseMode'] === 'false') {
             return;
           }
 
@@ -983,7 +984,7 @@ Output = class {
           }
           this.append_(buff, msg || '', options);
           ruleStr.writeTokenWithValue(token, msg);
-        } else if (token == 'inputType') {
+        } else if (token === 'inputType') {
           if (!node.inputType) {
             return;
           }
@@ -996,20 +997,20 @@ Output = class {
           this.append_(buff, Msgs.getMsg(msgId), options);
           ruleStr.writeTokenWithValue(token, Msgs.getMsg(msgId));
         } else if (
-            token == 'tableCellRowIndex' || token == 'tableCellColumnIndex') {
+            token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
           let value = node[token];
-          if (value == undefined) {
+          if (value === undefined) {
             return;
           }
           value = String(value + 1);
           options.annotation.push(token);
           this.append_(buff, value, options);
           ruleStr.writeTokenWithValue(token, value);
-        } else if (token == 'cellIndexText') {
+        } else if (token === 'cellIndexText') {
           if (node.htmlAttributes['aria-coltext']) {
             let value = node.htmlAttributes['aria-coltext'];
             let row = node;
-            while (row && row.role != RoleType.ROW) {
+            while (row && row.role !== RoleType.ROW) {
               row = row.parent;
             }
             if (!row || !row.htmlAttributes['aria-rowtext']) {
@@ -1030,19 +1031,19 @@ Output = class {
               outputRuleString: ruleStr
             });
           }
-        } else if (token == 'node') {
+        } else if (token === 'node') {
           if (!tree.firstChild) {
             return;
           }
 
           const relationName = tree.firstChild.value;
-          if (relationName == 'tableCellColumnHeaders') {
+          if (relationName === 'tableCellColumnHeaders') {
             // Skip output when previous position falls on the same column.
             while (prevNode && !AutomationPredicate.cellLike(prevNode)) {
               prevNode = prevNode.parent;
             }
             if (prevNode &&
-                prevNode.tableCellColumnIndex == node.tableCellColumnIndex) {
+                prevNode.tableCellColumnIndex === node.tableCellColumnIndex) {
               return;
             }
 
@@ -1056,7 +1057,7 @@ Output = class {
                 }
               }
             }
-          } else if (relationName == 'tableCellRowHeaders') {
+          } else if (relationName === 'tableCellRowHeaders') {
             const headers = node.tableCellRowHeaders;
             if (headers) {
               for (let i = 0; i < headers.length; i++) {
@@ -1072,8 +1073,8 @@ Output = class {
             this.node_(
                 related, related, Output.EventType.NAVIGATE, buff, ruleStr);
           }
-        } else if (token == 'nameOrTextContent' || token == 'textContent') {
-          if (node.name && token == 'nameOrTextContent') {
+        } else if (token === 'nameOrTextContent' || token === 'textContent') {
+          if (node.name && token === 'nameOrTextContent') {
             ruleStr.writeToken(token);
             this.format_({
               node,
@@ -1094,9 +1095,9 @@ Output = class {
             leaf: (n) => {
               // The root might be a leaf itself, but we still want to descend
               // into it.
-              return n != root && AutomationPredicate.leafOrStaticText(n);
+              return n !== root && AutomationPredicate.leafOrStaticText(n);
             },
-            root: (r) => r == root
+            root: (r) => r === root
           });
           const outputStrings = [];
           while (walker.next().node) {
@@ -1110,7 +1111,7 @@ Output = class {
         } else if (node[token] !== undefined) {
           options.annotation.push(token);
           let value = node[token];
-          if (typeof value == 'number') {
+          if (typeof value === 'number') {
             value = String(value);
           }
           this.append_(buff, value, options);
@@ -1134,7 +1135,7 @@ Output = class {
           const msg = Msgs.getMsg(msgId);
           this.append_(buff, msg, options);
           ruleStr.writeTokenWithValue(token, msg);
-        } else if (token == 'posInSet') {
+        } else if (token === 'posInSet') {
           if (node.posInSet !== undefined) {
             this.append_(buff, String(node.posInSet));
             ruleStr.writeTokenWithValue(token, String(node.posInSet));
@@ -1147,17 +1148,17 @@ Output = class {
               outputRuleString: ruleStr
             });
           }
-        } else if (token == 'setSize') {
+        } else if (token === 'setSize') {
           const size = node.setSize ? node.setSize : 0;
           this.append_(buff, String(size));
           ruleStr.writeTokenWithValue(token, String(node.setSize));
-        } else if (token == 'phoneticReading') {
+        } else if (token === 'phoneticReading') {
           const text =
               PhoneticData.forText(node.name, chrome.i18n.getUILanguage());
           this.append_(buff, text);
         } else if (tree.firstChild) {
           // Custom functions.
-          if (token == 'if') {
+          if (token === 'if') {
             ruleStr.writeToken(token);
             const cond = tree.firstChild;
             const attrib = cond.value.slice(1);
@@ -1178,7 +1179,7 @@ Output = class {
                 outputRuleString: ruleStr
               });
             }
-          } else if (token == 'nif') {
+          } else if (token === 'nif') {
             ruleStr.writeToken(token);
             const cond = tree.firstChild;
             const attrib = cond.value.slice(1);
@@ -1199,7 +1200,7 @@ Output = class {
                 outputRuleString: ruleStr
               });
             }
-          } else if (token == 'earcon') {
+          } else if (token === 'earcon') {
             // Ignore unless we're generating speech output.
             if (!this.formatOptions_.speech) {
               return;
@@ -1211,7 +1212,7 @@ Output = class {
             ruleStr.writeTokenWithValue(token, tree.firstChild.value);
           }
         }
-      } else if (prefix == '@') {
+      } else if (prefix === '@') {
         ruleStr.write(' @');
         if (this.formatOptions_.auralStyle) {
           if (!speechProps) {
@@ -1219,7 +1220,7 @@ Output = class {
           }
           speechProps.properties['relativePitch'] = -0.2;
         }
-        const isPluralized = (token[0] == '@');
+        const isPluralized = (token[0] === '@');
         if (isPluralized) {
           token = token.slice(1);
         }
@@ -1227,7 +1228,7 @@ Output = class {
         const pieces = token.split('+');
         token = pieces.reduce(function(prev, cur) {
           let lookup = cur;
-          if (cur[0] == '$') {
+          if (cur[0] === '$') {
             lookup = node[cur.slice(1)];
           }
           return prev + lookup;
@@ -1238,7 +1239,7 @@ Output = class {
         if (!isPluralized) {
           let curArg = tree.firstChild;
           while (curArg) {
-            if (curArg.value[0] != '$') {
+            if (curArg.value[0] !== '$') {
               const errorMsg = 'Unexpected value: ' + curArg.value;
               ruleStr.writeError(errorMsg);
               console.error(errorMsg);
@@ -1282,7 +1283,7 @@ Output = class {
             console.error(errorMsg);
             return;
           }
-          if (arg.value[0] != '$') {
+          if (arg.value[0] !== '$') {
             const errorMsg = 'Unexpected value: ' + arg.value;
             ruleStr.writeError(errorMsg);
             console.error(errorMsg);
@@ -1302,7 +1303,7 @@ Output = class {
 
         this.append_(buff, msg, options);
         ruleStr.write(': ' + msg + '\n');
-      } else if (prefix == '!') {
+      } else if (prefix === '!') {
         ruleStr.write(' ! ' + token + '\n');
         speechProps = new Output.SpeechProperties();
         speechProps.properties[token] = true;
@@ -1390,7 +1391,7 @@ Output = class {
 
     let lca = null;
     if (!this.outputContextFirst_) {
-      if (range.start.node != range.end.node) {
+      if (range.start.node !== range.end.node) {
         lca = AutomationUtil.getLeastCommonAncestor(
             range.end.node, range.start.node);
       }
@@ -1400,7 +1401,7 @@ Output = class {
 
     const unit = range.isInlineText() ? cursors.Unit.TEXT : cursors.Unit.NODE;
     while (cursor.node && range.end.node &&
-           AutomationUtil.getDirection(cursor.node, range.end.node) ==
+           AutomationUtil.getDirection(cursor.node, range.end.node) ===
                Dir.FORWARD) {
       const node = cursor.node;
       rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
@@ -1408,7 +1409,7 @@ Output = class {
       cursor = cursor.move(unit, cursors.Movement.DIRECTIONAL, Dir.FORWARD);
 
       // Reached a boundary.
-      if (cursor.node == prevNode) {
+      if (cursor.node === prevNode) {
         break;
       }
     }
@@ -1449,7 +1450,7 @@ Output = class {
       for (let i = 0; i < ancestors.length - 1; i++) {
         const node = ancestors[i];
         // Discard ancestors of deepest window.
-        if (node.role == RoleType.WINDOW) {
+        if (node.role === RoleType.WINDOW) {
           contextFirst = [];
           rest = [];
         }
@@ -1484,8 +1485,8 @@ Output = class {
          i++) {
       // This prevents very repetitive announcements.
       if (enteredRoleSet[formatPrevNode.role] ||
-          node.role == formatPrevNode.role ||
-          localStorage['useVerboseMode'] == 'false') {
+          node.role === formatPrevNode.role ||
+          localStorage['useVerboseMode'] === 'false') {
         continue;
       }
 
@@ -1496,7 +1497,7 @@ Output = class {
           (eventBlock[parentRole] || {}).leave !== undefined ? parentRole :
                                                                'default';
       if (eventBlock[rule.role].leave &&
-          localStorage['useVerboseMode'] == 'true') {
+          localStorage['useVerboseMode'] === 'true') {
         rule.navigation = 'leave';
         ruleStr.writeRule(rule);
         this.format_({
@@ -1659,7 +1660,8 @@ Output = class {
         // See editing_test.js for examples.
         options.annotation.push(new Output.SelectionSpan(
             selStart - rangeStart, selEnd - rangeStart));
-      } else if (rangeStart != 0 || rangeEnd != range.start.getText().length) {
+      } else if (
+          rangeStart !== 0 || rangeEnd !== range.start.getText().length) {
         // Non-editable text selection over less than the full contents
         // covered by the range. We exclude full content underlines because it
         // is distracting to read braille with all cells underlined with a
@@ -1720,12 +1722,12 @@ Output = class {
    * @private
    */
   hint_(range, uniqueAncestors, type, buff, ruleStr) {
-    if (!this.enableHints_ || localStorage['useVerboseMode'] != 'true') {
+    if (!this.enableHints_ || localStorage['useVerboseMode'] !== 'true') {
       return;
     }
 
     // No hints for alerts, which can be targeted at controls.
-    if (type == EventType.ALERT) {
+    if (type === EventType.ALERT) {
       return;
     }
 
@@ -1735,7 +1737,7 @@ Output = class {
     }
 
     const node = range.start.node;
-    if (node.restriction == chrome.automation.Restriction.DISABLED) {
+    if (node.restriction === chrome.automation.Restriction.DISABLED) {
       return;
     }
 
@@ -1788,7 +1790,7 @@ Output = class {
 
     // Provide a hint for sort direction.
     let sortDirectionNode = node;
-    while (sortDirectionNode && sortDirectionNode != sortDirectionNode.root) {
+    while (sortDirectionNode && sortDirectionNode !== sortDirectionNode.root) {
       if (!sortDirectionNode.sortDirection) {
         sortDirectionNode = sortDirectionNode.parent;
         continue;
@@ -1820,7 +1822,7 @@ Output = class {
    */
   static computeDelayedHints_(node, uniqueAncestors, type) {
     const ret = [];
-    if (EventSourceState.get() == EventSourceType.TOUCH_GESTURE) {
+    if (EventSourceState.get() === EventSourceType.TOUCH_GESTURE) {
       if (node.state[StateType.EDITABLE]) {
         ret.push({
           msgId: node.state[StateType.FOCUSED] ? 'hint_is_editing' :
@@ -1830,13 +1832,13 @@ Output = class {
       }
 
       const isWithinVirtualKeyboard = AutomationUtil.getAncestors(node).find(
-          (n) => n.role == RoleType.KEYBOARD);
+          (n) => n.role === RoleType.KEYBOARD);
       if (AutomationPredicate.clickable(node) && !isWithinVirtualKeyboard) {
         ret.push({msgId: 'hint_double_tap'});
       }
 
       const enteredVirtualKeyboard =
-          uniqueAncestors.find((n) => n.role == RoleType.KEYBOARD);
+          uniqueAncestors.find((n) => n.role === RoleType.KEYBOARD);
       if (enteredVirtualKeyboard) {
         ret.push({msgId: 'hint_touch_type'});
       }
@@ -1866,11 +1868,11 @@ Output = class {
       ret.push({msgId: 'hint_clickable'});
     }
 
-    if (node.autoComplete == 'list' || node.autoComplete == 'both' ||
+    if (node.autoComplete === 'list' || node.autoComplete === 'both' ||
         node.state[StateType.AUTOFILL_AVAILABLE]) {
       ret.push({msgId: 'hint_autocomplete_list'});
     }
-    if (node.autoComplete == 'inline' || node.autoComplete == 'both') {
+    if (node.autoComplete === 'inline' || node.autoComplete === 'both') {
       ret.push({msgId: 'hint_autocomplete_inline'});
     }
     if (node.accessKey) {
@@ -1907,7 +1909,7 @@ Output = class {
     opt_options = opt_options || {isUnique: false, annotation: []};
 
     // Reject empty values without meaningful annotations.
-    if ((!value || value.length == 0) &&
+    if ((!value || value.length === 0) &&
         opt_options.annotation.every(function(a) {
           return !(a instanceof Output.Action) &&
               !(a instanceof Output.SelectionSpan);
@@ -1936,7 +1938,7 @@ Output = class {
           const end = s.getSpanEnd(annotation);
           const substr = s.substring(start, end);
           if (substr && value) {
-            return substr.toString() == value.toString();
+            return substr.toString() === value.toString();
           } else {
             return false;
           }
@@ -1962,23 +1964,23 @@ Output = class {
     let index = 0;
     let braceNesting = 0;
     while (index < inputStr.length) {
-      if (inputStr[index] == '(') {
+      if (inputStr[index] === '(') {
         currentNode.firstChild = {value: ''};
         currentNode.firstChild.parent = currentNode;
         currentNode = currentNode.firstChild;
-      } else if (inputStr[index] == ')') {
+      } else if (inputStr[index] === ')') {
         currentNode = currentNode.parent;
-      } else if (inputStr[index] == '{') {
+      } else if (inputStr[index] === '{') {
         braceNesting++;
         currentNode.value += inputStr[index];
-      } else if (inputStr[index] == '}') {
+      } else if (inputStr[index] === '}') {
         braceNesting--;
         currentNode.value += inputStr[index];
-      } else if (inputStr[index] == ',' && braceNesting === 0) {
+      } else if (inputStr[index] === ',' && braceNesting === 0) {
         currentNode.nextSibling = {value: ''};
         currentNode.nextSibling.parent = currentNode.parent;
         currentNode = currentNode.nextSibling;
-      } else if (inputStr[index] == ' ' || inputStr[index] == '\n') {
+      } else if (inputStr[index] === ' ' || inputStr[index] === '\n') {
         // Ignored.
       } else {
         currentNode.value += inputStr[index];
@@ -1986,7 +1988,7 @@ Output = class {
       index++;
     }
 
-    if (currentNode != root) {
+    if (currentNode !== root) {
       throw 'Unbalanced parenthesis: ' + inputStr;
     }
 
@@ -2006,13 +2008,13 @@ Output = class {
     return spans.reduce(function(result, cur) {
       // Ignore empty spans except when they contain a selection.
       const hasSelection = cur.getSpanInstanceOf(Output.SelectionSpan);
-      if (cur.length == 0 && !hasSelection) {
+      if (cur.length === 0 && !hasSelection) {
         return result;
       }
 
       // For empty selections, we just add the space separator to account for
       // showing the braille cursor.
-      if (cur.length == 0 && hasSelection) {
+      if (cur.length === 0 && hasSelection) {
         result.append(cur);
         result.append(Output.SPACE);
         separator = '';
@@ -2026,8 +2028,8 @@ Output = class {
             if (!s.node) {
               return false;
             }
-            return s.node.display == 'inline' ||
-                s.node.role == RoleType.INLINE_TEXT_BOX;
+            return s.node.display === 'inline' ||
+                s.node.role === RoleType.INLINE_TEXT_BOX;
           });
 
       const isName = cur.hasSpan('name');
@@ -2041,12 +2043,12 @@ Output = class {
       // of the node's name. In all other cases, use the surrounding
       // whitespace to ensure we only have one separator between the node
       // text.
-      if (result.length == 0 ||
+      if (result.length === 0 ||
           (hasInlineNode && prevHasInlineNode && isName && prevIsName)) {
         separator = '';
       } else if (
-          result.toString()[result.length - 1] == Output.SPACE ||
-          cur.toString()[0] == Output.SPACE) {
+          result.toString()[result.length - 1] === Output.SPACE ||
+          cur.toString()[0] === Output.SPACE) {
         separator = '';
       } else {
         separator = Output.SPACE;
@@ -2099,7 +2101,7 @@ Output = class {
    */
   toString() {
     return this.speechBuffer_.reduce(function(prev, cur) {
-      if (prev === null || prev == '') {
+      if (prev === null || prev === '') {
         return cur.toString();
       }
       prev += ' ' + cur.toString();
