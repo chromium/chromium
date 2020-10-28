@@ -8,32 +8,50 @@
     position: relative;
     width: var(--container-width);
   }
+
+  .panel {
+    padding-inline: var(--panel-padding);
+    width: var(--panel-width);
+  }
+
+  .panel-container {
+    display: flex;
+    margin-bottom: var(--panel-container-margin-bottom);
+    margin-top: var(--panel-container-margin-top);
+  }
 </style>
 <div id="scanningContainer">
-  <h1 id="appTitle">[[i18n('appTitle')]]</h1>
-  <scanner-select id="scannerSelect" scanners="[[scanners_]]" loaded="[[loaded_]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-scanner-id="{{selectedScannerId}}"></scanner-select>
-  <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-source="{{selectedSource}}"></source-select>
-  <file-type-select id="fileTypeSelect" settings-disabled="[[settingsDisabled_]]"
-      selected-file-type="{{selectedFileType}}"></file-type-select>
-  <color-mode-select id="colorModeSelect"
-      color-modes="[[capabilities_.colorModes]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-color-mode="{{selectedColorMode}}"></color-mode-select>
-  <page-size-select id="pageSizeSelect" page-sizes="[[selectedSourcePageSizes_]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-page-size="{{selectedPageSize}}"></page-size-select>
-  <resolution-select id="resolutionSelect"
-      resolutions="[[capabilities_.resolutions]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-resolution="{{selectedResolution}}"></resolution-select>
-  <!-- TODO(jschettler): Replace button label with finalized i18n string. -->
-  <cr-button id="scanButton" on-click="onScanClick_"
-      disabled$="[[scanButtonDisabled_]]">
-    Scan
-  </cr-button>
-  <p id="statusText">[[statusText_]]</p>
+  <div class="panel-container">
+    <div id="leftPanel" class="panel">
+      <scan-preview></scan-preview>
+    </div>
+    <div id="rightPanel" class="panel">
+      <h1 id="appTitle">[[i18n('appTitle')]]</h1>
+      <scanner-select id="scannerSelect" scanners="[[scanners_]]" loaded="[[loaded_]]"
+          settings-disabled="[[settingsDisabled_]]"
+          selected-scanner-id="{{selectedScannerId}}"></scanner-select>
+      <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
+          settings-disabled="[[settingsDisabled_]]"
+          selected-source="{{selectedSource}}"></source-select>
+      <file-type-select id="fileTypeSelect" settings-disabled="[[settingsDisabled_]]"
+          selected-file-type="{{selectedFileType}}"></file-type-select>
+      <color-mode-select id="colorModeSelect"
+          color-modes="[[capabilities_.colorModes]]"
+          settings-disabled="[[settingsDisabled_]]"
+          selected-color-mode="{{selectedColorMode}}"></color-mode-select>
+      <page-size-select id="pageSizeSelect" page-sizes="[[selectedSourcePageSizes_]]"
+          settings-disabled="[[settingsDisabled_]]"
+          selected-page-size="{{selectedPageSize}}"></page-size-select>
+      <resolution-select id="resolutionSelect"
+          resolutions="[[capabilities_.resolutions]]"
+          settings-disabled="[[settingsDisabled_]]"
+          selected-resolution="{{selectedResolution}}"></resolution-select>
+      <!-- TODO(jschettler): Replace button label with finalized i18n string. -->
+      <cr-button id="scanButton" on-click="onScanClick_"
+          disabled$="[[scanButtonDisabled_]]">
+        Scan
+      </cr-button>
+      <p id="statusText">[[statusText_]]</p>
+    </div>
+  </div>
 </div>

@@ -330,6 +330,21 @@ suite('ScanningAppTest', () => {
               scanningApp.$$('#statusText').textContent.trim());
         });
   });
+
+  test('PanelContainerContent', () => {
+    const scanners = [];
+    const capabilities = new Map();
+    return initializeScanningApp(scanners, capabilities).then(() => {
+      const panelContainer = scanningApp.$$('.panel-container');
+      assertTrue(!!panelContainer);
+
+      const leftPanel = scanningApp.$$('.panel-container > #leftPanel');
+      const rightPanel = scanningApp.$$('.panel-container > #rightPanel');
+
+      assertTrue(!!leftPanel);
+      assertTrue(!!rightPanel);
+    });
+  });
 });
 
 suite('ScannerSelectTest', () => {

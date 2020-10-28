@@ -10,6 +10,7 @@ import './color_mode_select.js';
 import './file_type_select.js';
 import './page_size_select.js';
 import './resolution_select.js';
+import './scan_preview.js';
 import './scanner_select.js';
 import './scanning_shared_css.js';
 import './source_select.js';
