@@ -4,6 +4,7 @@
 
 #include "ash/system/media/media_tray.h"
 
+#include "ash/focus_cycler.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/media_notification_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -288,6 +289,13 @@ void MediaTray::ShowBubble(bool show_by_click) {
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
                                                 false /*is_persistent*/);
   SetIsActive(true);
+
+  // Only focus the widget if it's opened by the keyboard.
+  if (!show_by_click) {
+    views::Widget* widget = bubble_->GetBubbleWidget();
+    widget->widget_delegate()->SetCanActivate(true);
+    Shell::Get()->focus_cycler()->FocusWidget(widget);
+  }
 
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",
                             bubble_has_shown_);

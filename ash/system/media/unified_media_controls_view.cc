@@ -105,6 +105,9 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
 
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
+
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void UnifiedMediaControlsView::MediaActionButton::SetAction(
@@ -147,7 +150,9 @@ UnifiedMediaControlsView::MediaActionButton::CreateInkDropRipple() const {
 UnifiedMediaControlsView::UnifiedMediaControlsView(
     UnifiedMediaControlsController* controller)
     : views::Button(this), controller_(controller) {
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetControlsLayerColor(

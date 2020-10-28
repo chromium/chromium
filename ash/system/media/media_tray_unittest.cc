@@ -283,6 +283,11 @@ TEST_F(MediaTrayTest, PinToShelfDefaultBehavior) {
   EXPECT_TRUE(MediaTray::IsPinnedToShelf());
 }
 
+TEST_F(MediaTrayTest, BubbleGetsFocusWhenOpenWithKeyboard) {
+  media_tray()->ShowBubble(false /* show_by_click */);
+  EXPECT_TRUE(GetBubbleWrapper()->GetBubbleWidget()->IsActive());
+}
+
 TEST_F(MediaTrayTest, DialogAnchor) {
   InsertMockTray();
 
