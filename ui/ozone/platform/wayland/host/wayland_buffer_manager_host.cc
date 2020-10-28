@@ -359,25 +359,9 @@ class WaylandBufferManagerHost::Surface {
         break;
       }
     }
-    if (!buffer)
-      return;
-
-    // Some Wayland compositors (e.g. Gnome) do not send buffer.release for
-    // buffers that are discarded from a wayland subsurface's cached state. In
-    // such case, later buffer.release implies buffers attached to the same
-    // wl_surface previously are also unuesed.
-    for (const auto& buff : submitted_buffers_) {
-      auto* submitted_buffer = GetBuffer(buff.buffer_id);
-      // It's possible that the first buffer is already released because
-      // MaybeProcessSubmittedBuffers() does not erase buffers when
-      // submitted_buffers_.size() is 1.
-      DCHECK(!submitted_buffer->released ||
-             submitted_buffer->buffer_id ==
-                 submitted_buffers_.front().buffer_id);
-      submitted_buffer->released = true;
-      if (submitted_buffer == buffer)
-        break;
-    }
+    DCHECK(buffer);
+    DCHECK(!buffer->released);
+    buffer->released = true;
 
     // A release means we may be able to send OnSubmission for previously
     // submitted buffers.
