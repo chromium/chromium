@@ -133,6 +133,7 @@ class MockNavigationHandle : public NavigationHandle {
               (blink::mojom::TransferrableURLLoaderPtr));
   MOCK_METHOD(bool, FromDownloadCrossOriginRedirect, ());
   MOCK_METHOD(bool, IsSameProcess, ());
+  MOCK_METHOD(NavigationEntry*, GetNavigationEntry, ());
   MOCK_METHOD(int, GetNavigationEntryOffset, ());
   MOCK_METHOD(void,
               ForceEnableOriginTrials,

@@ -5,7 +5,13 @@
 #ifndef WEBLAYER_BROWSER_NAVIGATION_UI_DATA_IMPL_H_
 #define WEBLAYER_BROWSER_NAVIGATION_UI_DATA_IMPL_H_
 
+#include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "content/public/browser/navigation_ui_data.h"
+
+#if defined(OS_ANDROID)
+#include "components/embedder_support/android/util/web_resource_response.h"
+#endif
 
 namespace weblayer {
 
@@ -13,7 +19,7 @@ namespace weblayer {
 // and can access from content::NavigationHandle later.
 class NavigationUIDataImpl : public content::NavigationUIData {
  public:
-  explicit NavigationUIDataImpl(bool disable_network_error_auto_reload);
+  NavigationUIDataImpl();
   NavigationUIDataImpl(const NavigationUIDataImpl&) = delete;
   NavigationUIDataImpl& operator=(const NavigationUIDataImpl&) = delete;
   ~NavigationUIDataImpl() override;
@@ -21,12 +27,40 @@ class NavigationUIDataImpl : public content::NavigationUIData {
   // content::NavigationUIData implementation:
   std::unique_ptr<content::NavigationUIData> Clone() override;
 
+  void set_disable_network_error_auto_reload(bool value) {
+    disable_network_error_auto_reload_ = value;
+  }
   bool disable_network_error_auto_reload() const {
     return disable_network_error_auto_reload_;
   }
 
+#if defined(OS_ANDROID)
+  void SetResponse(
+      std::unique_ptr<embedder_support::WebResourceResponse> response);
+  std::unique_ptr<embedder_support::WebResourceResponse> TakeResponse();
+#endif
+
  private:
-  bool disable_network_error_auto_reload_;
+  bool disable_network_error_auto_reload_ = false;
+#if defined(OS_ANDROID)
+  // Even though NavigationUIData is copyable, the WebResourceResponse would
+  // only be used once since there are no network-retries applicable in this
+  // case.
+  class ResponseHolder : public base::RefCounted<ResponseHolder> {
+   public:
+    explicit ResponseHolder(
+        std::unique_ptr<embedder_support::WebResourceResponse> response_);
+    std::unique_ptr<embedder_support::WebResourceResponse> TakeResponse();
+
+   private:
+    friend class base::RefCounted<ResponseHolder>;
+    virtual ~ResponseHolder();
+
+    std::unique_ptr<embedder_support::WebResourceResponse> response_;
+  };
+
+  scoped_refptr<ResponseHolder> response_holder_;
+#endif
 };
 
 }  // namespace weblayer

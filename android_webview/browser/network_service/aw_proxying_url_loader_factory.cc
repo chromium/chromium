@@ -22,9 +22,9 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/embedder_support/android/util/input_stream.h"
+#include "components/embedder_support/android/util/response_delegate_impl.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,6 +44,9 @@ namespace android_webview {
 
 namespace {
 
+const char kResponseHeaderViaShouldInterceptRequestName[] = "Client-Via";
+const char kResponseHeaderViaShouldInterceptRequestValue[] =
+    "shouldInterceptRequest";
 const char kAutoLoginHeaderName[] = "X-Auto-Login";
 
 // Handles intercepted, in-progress requests/responses, so that they can be
@@ -166,16 +169,20 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
 // A ResponseDelegate for responses returned by shouldInterceptRequest.
 class InterceptResponseDelegate
-    : public embedder_support::AndroidStreamReaderURLLoader::ResponseDelegate {
+    : public embedder_support::ResponseDelegateImpl {
  public:
-  explicit InterceptResponseDelegate(
+  InterceptResponseDelegate(
       std::unique_ptr<embedder_support::WebResourceResponse> response,
       base::WeakPtr<InterceptedRequest> request)
-      : response_(std::move(response)), request_(request) {}
+      : ResponseDelegateImpl(std::move(response)), request_(request) {}
 
-  std::unique_ptr<embedder_support::InputStream> OpenInputStream(
-      JNIEnv* env) override {
-    return response_->GetInputStream(env);
+  // AndroidStreamReaderURLLoader::ResponseDelegate implementation:
+  void AppendResponseHeaders(JNIEnv* env,
+                             net::HttpResponseHeaders* headers) override {
+    embedder_support::ResponseDelegateImpl::AppendResponseHeaders(env, headers);
+    // Indicate that the response had been obtained via shouldInterceptRequest.
+    headers->SetHeader(kResponseHeaderViaShouldInterceptRequestName,
+                       kResponseHeaderViaShouldInterceptRequestValue);
   }
 
   bool OnInputStreamOpenFailed() override {
@@ -185,36 +192,7 @@ class InterceptResponseDelegate
                     : true;
   }
 
-  bool GetMimeType(JNIEnv* env,
-                   const GURL& url,
-                   embedder_support::InputStream* stream,
-                   std::string* mime_type) override {
-    return response_->GetMimeType(env, mime_type);
-  }
-
-  void GetCharset(JNIEnv* env,
-                  const GURL& url,
-                  embedder_support::InputStream* stream,
-                  std::string* charset) override {
-    response_->GetCharset(env, charset);
-  }
-
-  void AppendResponseHeaders(JNIEnv* env,
-                             net::HttpResponseHeaders* headers) override {
-    int status_code;
-    std::string reason_phrase;
-    if (response_->GetStatusInfo(env, &status_code, &reason_phrase)) {
-      std::string status_line("HTTP/1.1 ");
-      status_line.append(base::NumberToString(status_code));
-      status_line.append(" ");
-      status_line.append(reason_phrase);
-      headers->ReplaceStatusLine(status_line);
-    }
-    response_->GetResponseHeaders(env, headers);
-  }
-
  private:
-  std::unique_ptr<embedder_support::WebResourceResponse> response_;
   base::WeakPtr<InterceptedRequest> request_;
 };
 
@@ -256,7 +234,11 @@ class ProtocolResponseDelegate
 
   void AppendResponseHeaders(JNIEnv* env,
                              net::HttpResponseHeaders* headers) override {
-    // no-op
+    // Indicate that the response had been obtained via shouldInterceptRequest.
+    // TODO(jam): why is this added for protocol handler (e.g. content scheme
+    // and file resources?). The old path does this as well.
+    headers->SetHeader(kResponseHeaderViaShouldInterceptRequestName,
+                       kResponseHeaderViaShouldInterceptRequestValue);
   }
 
  private:

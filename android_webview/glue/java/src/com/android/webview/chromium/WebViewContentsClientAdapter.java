@@ -61,8 +61,6 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -226,13 +224,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                     mWebView, new WebResourceRequestAdapter(request));
             if (response == null) return null;
 
-            // WebResourceResponseInfo should support null headers. b/16332774.
-            Map<String, String> responseHeaders = response.getResponseHeaders();
-            if (responseHeaders == null) responseHeaders = new HashMap<String, String>();
-
             return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
                     response.getData(), response.getStatusCode(), response.getReasonPhrase(),
-                    responseHeaders);
+                    response.getResponseHeaders());
         } finally {
             TraceEvent.end("WebViewContentsClientAdapter.shouldInterceptRequest");
         }

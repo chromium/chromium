@@ -6,15 +6,46 @@
 
 namespace weblayer {
 
-NavigationUIDataImpl::NavigationUIDataImpl(
-    bool disable_network_error_auto_reload)
-    : disable_network_error_auto_reload_(disable_network_error_auto_reload) {}
+#if defined(OS_ANDROID)
+NavigationUIDataImpl::ResponseHolder::ResponseHolder(
+    std::unique_ptr<embedder_support::WebResourceResponse> response)
+    : response_(std::move(response)) {}
 
+NavigationUIDataImpl::ResponseHolder::~ResponseHolder() = default;
+
+std::unique_ptr<embedder_support::WebResourceResponse>
+NavigationUIDataImpl::ResponseHolder::TakeResponse() {
+  return std::move(response_);
+}
+
+#endif  // OS_ANDROID
+
+NavigationUIDataImpl::NavigationUIDataImpl() = default;
 NavigationUIDataImpl::~NavigationUIDataImpl() = default;
 
 std::unique_ptr<content::NavigationUIData> NavigationUIDataImpl::Clone() {
-  return std::make_unique<NavigationUIDataImpl>(
-      disable_network_error_auto_reload_);
+  auto rv = std::make_unique<NavigationUIDataImpl>();
+  rv->disable_network_error_auto_reload_ = disable_network_error_auto_reload_;
+#if defined(OS_ANDROID)
+  rv->response_holder_ = response_holder_;
+#endif  // OS_ANDROID
+  return rv;
 }
+
+#if defined(OS_ANDROID)
+void NavigationUIDataImpl::SetResponse(
+    std::unique_ptr<embedder_support::WebResourceResponse> response) {
+  DCHECK(!response_holder_);
+  response_holder_ = base::MakeRefCounted<ResponseHolder>(std::move(response));
+}
+
+std::unique_ptr<embedder_support::WebResourceResponse>
+NavigationUIDataImpl::TakeResponse() {
+  if (!response_holder_)
+    return nullptr;
+
+  return response_holder_->TakeResponse();
+}
+#endif  // OS_ANDROID
 
 }  // namespace weblayer

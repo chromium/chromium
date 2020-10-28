@@ -4,6 +4,8 @@
 
 package org.chromium.weblayer_private.interfaces;
 
+import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.INavigateParams;
 import org.chromium.weblayer_private.interfaces.NavigateParams;
 
 interface INavigationController {
@@ -43,4 +45,9 @@ interface INavigationController {
                  in boolean disableIntentProcessing,
                  in boolean disableNetworkErrorAutoReload,
                  in boolean enableAutoPlay) = 14;
+
+  // Added in 87
+  INavigateParams createNavigateParams() = 15;
+  void navigate3(in String uri,
+                 in INavigateParams params) = 16;
 }

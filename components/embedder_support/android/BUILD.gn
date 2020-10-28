@@ -61,6 +61,8 @@ static_library("util") {
     "util/input_stream.h",
     "util/input_stream_reader.cc",
     "util/input_stream_reader.h",
+    "util/response_delegate_impl.cc",
+    "util/response_delegate_impl.h",
     "util/url_utilities.cc",
     "util/web_resource_response.cc",
     "util/web_resource_response.h",

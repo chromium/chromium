@@ -128,6 +128,7 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/devtools_manager_delegate_android.h"
 #include "weblayer/browser/media/media_router_factory.h"
+#include "weblayer/browser/proxying_url_loader_factory_impl.h"
 #include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/tts_environment_android_impl.h"
@@ -900,6 +901,58 @@ std::unique_ptr<PrefService> ContentBrowserClientImpl::CreateLocalState() {
 }
 
 #if defined(OS_ANDROID)
+bool ContentBrowserClientImpl::WillCreateURLLoaderFactory(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* frame,
+    int render_process_id,
+    URLLoaderFactoryType type,
+    const url::Origin& request_initiator,
+    base::Optional<int64_t> navigation_id,
+    base::UkmSourceId ukm_source_id,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client,
+    bool* bypass_redirect_checks,
+    bool* disable_secure_dns,
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+  // The navigation API intercepting API only supports main frame navigations.
+  if (type != URLLoaderFactoryType::kNavigation || frame->GetParent())
+    return false;
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+  TabImpl* tab = TabImpl::FromWebContents(web_contents);
+  if (!tab)
+    return false;
+
+  auto* navigation_controller =
+      static_cast<NavigationControllerImpl*>(tab->GetNavigationController());
+  auto* navigation_impl =
+      navigation_controller->GetNavigationImplFromId(*navigation_id);
+  if (!navigation_impl)
+    return false;
+
+  auto response = navigation_impl->TakeResponse();
+  if (!response && !ProxyingURLLoaderFactoryImpl::HasCachedInputStream(
+                       frame->GetFrameTreeNodeId(),
+                       navigation_impl->navigation_entry_unique_id())) {
+    return false;
+  }
+
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> proxied_receiver =
+      std::move(*factory_receiver);
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote;
+  *factory_receiver = target_factory_remote.InitWithNewPipeAndPassReceiver();
+
+  // Owns itself.
+  new ProxyingURLLoaderFactoryImpl(
+      std::move(proxied_receiver), std::move(target_factory_remote),
+      navigation_impl->GetURL(), std::move(response),
+      frame->GetFrameTreeNodeId(),
+      navigation_impl->navigation_entry_unique_id());
+
+  return true;
+}
+
 content::ContentBrowserClient::WideColorGamutHeuristic
 ContentBrowserClientImpl::GetWideColorGamutHeuristic() {
   // Always match window since a mismatch can cause inefficiency in surface

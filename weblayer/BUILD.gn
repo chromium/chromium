@@ -554,6 +554,8 @@ source_set("weblayer_lib_base") {
       "browser/media/media_router_factory.h",
       "browser/new_tab_callback_proxy.cc",
       "browser/new_tab_callback_proxy.h",
+      "browser/proxying_url_loader_factory_impl.cc",
+      "browser/proxying_url_loader_factory_impl.h",
       "browser/safe_browsing/real_time_url_lookup_service_factory.cc",
       "browser/safe_browsing/real_time_url_lookup_service_factory.h",
       "browser/safe_browsing/safe_browsing_blocking_page.cc",

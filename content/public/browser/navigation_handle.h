@@ -38,6 +38,7 @@ class ProxyServer;
 namespace content {
 struct GlobalFrameRoutingId;
 struct GlobalRequestID;
+class NavigationEntry;
 class NavigationThrottle;
 class NavigationUIData;
 class RenderFrameHost;
@@ -380,6 +381,9 @@ class CONTENT_EXPORT NavigationHandle {
   // Whether the new document will be hosted in the same process as the current
   // document or not. Set only when the navigation commits.
   virtual bool IsSameProcess() = 0;
+
+  // Returns the NavigationEntry associated with this, which may be null.
+  virtual NavigationEntry* GetNavigationEntry() = 0;
 
   // Returns the offset between the indices of the previous last committed and
   // the newly committed navigation entries.

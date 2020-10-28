@@ -45,6 +45,9 @@ class NavigationControllerImpl : public NavigationController,
   NavigationImpl* GetNavigationImplFromHandle(
       content::NavigationHandle* handle);
 
+  // Returns the NavigationImpl for |navigation_id|, or null if there isn't one.
+  NavigationImpl* GetNavigationImplFromId(int64_t navigation_id);
+
 #if defined(OS_ANDROID)
   void SetNavigationControllerImpl(
       JNIEnv* env,
@@ -54,7 +57,8 @@ class NavigationControllerImpl : public NavigationController,
                 jboolean should_replace_current_entry,
                 jboolean disable_intent_processing,
                 jboolean disable_network_error_auto_reload,
-                jboolean enable_auto_play);
+                jboolean enable_auto_play,
+                const base::android::JavaParamRef<jobject>& response);
   void GoBack(JNIEnv* env) { GoBack(); }
   void GoForward(JNIEnv* env) { GoForward(); }
   bool CanGoBack(JNIEnv* env) { return CanGoBack(); }

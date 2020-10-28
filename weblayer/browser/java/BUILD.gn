@@ -416,6 +416,7 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IGoogleAccountsCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IMediaCaptureCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IMediaRouteDialogFragment.aidl",
+    "org/chromium/weblayer_private/interfaces/INavigateParams.aidl",
     "org/chromium/weblayer_private/interfaces/INavigation.aidl",
     "org/chromium/weblayer_private/interfaces/INavigationController.aidl",
     "org/chromium/weblayer_private/interfaces/INavigationControllerClient.aidl",

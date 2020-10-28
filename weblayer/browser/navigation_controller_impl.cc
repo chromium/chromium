@@ -21,6 +21,7 @@
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/trace_event/trace_event.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
 #include "weblayer/browser/java/jni/NavigationControllerImpl_jni.h"
 #endif
 
@@ -141,6 +142,16 @@ NavigationImpl* NavigationControllerImpl::GetNavigationImplFromHandle(
   return iter == navigation_map_.end() ? nullptr : iter->second.get();
 }
 
+NavigationImpl* NavigationControllerImpl::GetNavigationImplFromId(
+    int64_t navigation_id) {
+  for (const auto& iter : navigation_map_) {
+    if (iter.first->GetNavigationId() == navigation_id)
+      return iter.second.get();
+  }
+
+  return nullptr;
+}
+
 #if defined(OS_ANDROID)
 void NavigationControllerImpl::SetNavigationControllerImpl(
     JNIEnv* env,
@@ -154,7 +165,8 @@ void NavigationControllerImpl::Navigate(
     jboolean should_replace_current_entry,
     jboolean disable_intent_processing,
     jboolean disable_network_error_auto_reload,
-    jboolean enable_auto_play) {
+    jboolean enable_auto_play,
+    const base::android::JavaParamRef<jobject>& response) {
   auto params = std::make_unique<content::NavigationController::LoadURLParams>(
       GURL(base::android::ConvertJavaStringToUTF8(env, url)));
   params->should_replace_current_entry = should_replace_current_entry;
@@ -165,8 +177,18 @@ void NavigationControllerImpl::Navigate(
   params->transition_type = disable_intent_processing
                                 ? ui::PAGE_TRANSITION_TYPED
                                 : ui::PAGE_TRANSITION_LINK;
+  auto data = std::make_unique<NavigationUIDataImpl>();
+
   if (disable_network_error_auto_reload)
-    params->navigation_ui_data = std::make_unique<NavigationUIDataImpl>(true);
+    data->set_disable_network_error_auto_reload(true);
+
+  if (!response.is_null()) {
+    data->SetResponse(
+        std::make_unique<embedder_support::WebResourceResponse>(response));
+  }
+
+  params->navigation_ui_data = std::move(data);
+
   if (enable_auto_play)
     params->was_activated = content::mojom::WasActivatedOption::kYes;
 
@@ -238,8 +260,9 @@ void NavigationControllerImpl::Navigate(
   load_params->should_replace_current_entry =
       params.should_replace_current_entry;
   if (params.disable_network_error_auto_reload) {
-    load_params->navigation_ui_data =
-        std::make_unique<NavigationUIDataImpl>(true);
+    auto data = std::make_unique<NavigationUIDataImpl>();
+    data->set_disable_network_error_auto_reload(true);
+    load_params->navigation_ui_data = std::move(data);
   }
   if (params.enable_auto_play)
     load_params->was_activated = content::mojom::WasActivatedOption::kYes;
@@ -332,6 +355,14 @@ void NavigationControllerImpl::DidStartNavigation(
   navigation->set_safe_to_set_request_headers(true);
   navigation->set_safe_to_set_user_agent(true);
 #if defined(OS_ANDROID)
+  NavigationUIDataImpl* navigation_ui_data = static_cast<NavigationUIDataImpl*>(
+      navigation_handle->GetNavigationUIData());
+  if (navigation_ui_data) {
+    auto response = navigation_ui_data->TakeResponse();
+    if (response)
+      navigation->SetResponse(std::move(response));
+  }
+
   if (java_controller_) {
     JNIEnv* env = AttachCurrentThread();
     {
