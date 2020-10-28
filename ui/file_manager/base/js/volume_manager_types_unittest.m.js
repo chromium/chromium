@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertTrue} from 'chrome://test/chai_assert.js';
+import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
+const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+
 // Test that every volumeType has a rootType, and that it maps back to the same
 // volumeType.
-function testRootTypeFromVolumeTypeBijection() {
+export function testRootTypeFromVolumeTypeBijection() {
   Object.keys(VolumeManagerCommon.VolumeType).forEach((key) => {
     const volumeType = VolumeManagerCommon.VolumeType[key];
     assertTrue(volumeType !== undefined);
@@ -24,7 +28,7 @@ function testRootTypeFromVolumeTypeBijection() {
 
 // Test that all rootType have a corresponding volumeType, except for "fake"
 // root types that do not have a volume of their own.
-function testEveryRootTypeHasAVolumeType() {
+export function testEveryRootTypeHasAVolumeType() {
   Object.keys(VolumeManagerCommon.RootType).forEach((key) => {
     const rootType = VolumeManagerCommon.RootType[key];
     assertTrue(rootType !== undefined);

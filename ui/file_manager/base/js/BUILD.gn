@@ -21,7 +21,10 @@ group("closure_compile") {
 
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
-  deps = [ ":app_util.m" ]
+  deps = [
+    ":app_util.m",
+    ":volume_manager_types.m",
+  ]
 }
 
 js_type_check("closure_compile_module") {
@@ -89,20 +92,40 @@ js_library("volume_manager_types") {
   ]
 }
 
-js_unittest("volume_manager_types_unittest") {
+js_unittest("volume_manager_types_unittest.m") {
+  deps = [ ":volume_manager_types.m" ]
+}
+
+js_library("volume_manager_types.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/base/js/volume_manager_types.m.js" ]
+
   deps = [
-    ":volume_manager_types",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//ui/file_manager/externs:file_manager_private",
+    "//ui/webui/resources/js:assert.m",
   ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_test_gen_html("js_test_gen_html") {
-  deps = [ ":volume_manager_types_unittest" ]
+  deps = [ ":volume_manager_types_unittest.m" ]
+  js_module = true
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui/file_manager/base/js",
+        "js_module_root=../../ui/file_manager/base/js",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+      ]
 }
 
 js_library("mediasession_types") {
 }
 
 js_modulizer("modulize") {
-  input_files = [ "app_util.js" ]
+  input_files = [
+    "app_util.js",
+    "volume_manager_types.js",
+  ]
 }

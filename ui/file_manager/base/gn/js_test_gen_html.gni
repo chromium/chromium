@@ -114,7 +114,11 @@ template("js_test_gen_html") {
   foreach(dep, invoker.deps) {
     type_check_target_name = target_name + "_" + dep + "_type_check_auto"
     type_check_deps += [ ":$type_check_target_name" ]
+    forward_variables_from(invoker, [ "js_module" ])
     js_type_check(type_check_target_name) {
+      if (defined(js_module) && js_module) {
+        uses_js_modules = true
+      }
       testonly = true
       forward_variables_from(invoker, [ "closure_flags" ])
       deps = [ dep ]

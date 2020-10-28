@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/url_data_source.h"
@@ -120,7 +121,8 @@ class TestFilesDataSource : public content::URLDataSource {
     if (directive == network::mojom::CSPDirectiveName::ScriptSrc) {
       // Add 'unsafe-inline' to CSP to allow the inline <script> in the
       // generated HTML to run see js_test_gen_html.py.
-      return "script-src chrome://resources 'self'  'unsafe-inline'; ";
+      return "script-src chrome://resources chrome://test 'self'  "
+             "'unsafe-inline'; ";
     } else if (directive ==
                    network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
                directive == network::mojom::CSPDirectiveName::TrustedTypes) {
@@ -148,8 +150,12 @@ class TestWebUIProvider
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
                                                      const GURL& url) override {
-    content::URLDataSource::Add(Profile::FromWebUI(web_ui),
+    auto* profile = Profile::FromWebUI(web_ui);
+    content::URLDataSource::Add(profile,
                                 std::make_unique<TestFilesDataSource>());
+    content::URLDataSource::Add(profile,
+                                std::make_unique<TestDataSource>("webui"));
+
     return std::make_unique<content::WebUIController>(web_ui);
   }
 

@@ -13,5 +13,5 @@ class FileManagerBaseJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(FileManagerBaseJsTest, VolumeManagerTypesTest) {
-  RunTestURL("volume_manager_types_unittest_gen.html");
+  RunTestURL("volume_manager_types_unittest.m_gen.html");
 }
