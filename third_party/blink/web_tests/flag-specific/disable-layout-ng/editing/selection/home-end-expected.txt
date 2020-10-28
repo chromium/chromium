@@ -119,12 +119,12 @@ PASS 15-RTL forward
 PASS 15-RTL backward
 PASS 15-RTL right
 PASS 15-RTL left
-FAIL 16-LTR forward resources/testharness.js:2001:25)
+FAIL 16-LTR forward resources/testharness.js:2044:25)
 	 expected <div contenteditable style="direction:ltr">‫xyz| דהו אבג.‬</div>,
 	 but got  <div contenteditable style="direction:ltr">‫xyz דהו אבג.‬|</div>,
 	 sameupto <div contenteditable style="direction:ltr">‫xyz
 PASS 16-LTR backward
-FAIL 16-LTR right resources/testharness.js:2001:25)
+FAIL 16-LTR right resources/testharness.js:2044:25)
 	 expected <div contenteditable style="direction:ltr">‫xyz| דהו אבג.‬</div>,
 	 but got  <div contenteditable style="direction:ltr">‫xyz דהו אבג.‬|</div>,
 	 sameupto <div contenteditable style="direction:ltr">‫xyz

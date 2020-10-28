@@ -8,5 +8,6 @@ FAIL div (writing-mode: vertical-lr) assert_equals: expected "30px" but got "100
 PASS rendered legend (writing-mode: vertical-rl)
 FAIL second legend (writing-mode: vertical-rl) assert_equals: expected "30px" but got "100px"
 FAIL div (writing-mode: vertical-rl) assert_equals: expected "30px" but got "100px"
+PASS Fieldset with a percentage height should not increase the height on every reflow.
 Harness: the test ran to completion.
 

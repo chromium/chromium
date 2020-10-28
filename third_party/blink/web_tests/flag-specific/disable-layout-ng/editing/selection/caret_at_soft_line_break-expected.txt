@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL An upstream caret can be impossible to create resources/testharness.js:2001:25)
+FAIL assertSelection(inputText, tester, expectedText, options) resources/testharness.js:2044:25)
 	 expected <div contenteditable style="width:250px;">Try to create a caret after this lin<span id="clickme">e|</span> <span></span>thisshouldbeonthesecondline</div>,
 	 but got  <div contenteditable style="width:250px;">Try to create a caret after this lin<span id="clickme">e</span> |<span></span>thisshouldbeonthesecondline</div>,
 	 sameupto <div contenteditable style="width:250px;">Try to create a caret after this lin<span id="clickme">e
