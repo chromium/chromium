@@ -485,12 +485,12 @@ void InsertListCommand::UnlistifyParagraph(
     end = EndOfParagraph(start, kCanSkipOverEditingBoundary);
     // InsertListCommandTest.UnlistifyParagraphCrashOnRemoveStyle reaches here.
     ABORT_EDITING_COMMAND_IF(start.DeepEquivalent() == end.DeepEquivalent());
-    next_list_child = EnclosingListChild(
-        NextPositionOf(end).DeepEquivalent().AnchorNode(), list_element);
-    DCHECK_NE(next_list_child, list_child_node);
-    previous_list_child = EnclosingListChild(
-        PreviousPositionOf(start).DeepEquivalent().AnchorNode(), list_element);
-    DCHECK_NE(previous_list_child, list_child_node);
+    Node* next = NextPositionOf(end).DeepEquivalent().AnchorNode();
+    DCHECK_NE(next, end.DeepEquivalent().AnchorNode());
+    next_list_child = EnclosingListChild(next, list_element);
+    Node* previous = PreviousPositionOf(start).DeepEquivalent().AnchorNode();
+    DCHECK_NE(previous, start.DeepEquivalent().AnchorNode());
+    previous_list_child = EnclosingListChild(previous, list_element);
   }
 
   // Helpers for making |start| and |end| valid again after DOM changes.
