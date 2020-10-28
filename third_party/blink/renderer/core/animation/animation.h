@@ -269,6 +269,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   void SetEffectSuppressed(bool);
 
   void InvalidateKeyframeEffect(const TreeScope&);
+  void InvalidateEffectTargetStyle();
 
   void Trace(Visitor*) const override;
 

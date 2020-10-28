@@ -2261,6 +2261,19 @@ void Animation::InvalidateKeyframeEffect(const TreeScope& tree_scope) {
   }
 }
 
+void Animation::InvalidateEffectTargetStyle() {
+  auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
+  if (!keyframe_effect)
+    return;
+  Element* target = keyframe_effect->EffectTarget();
+  if (target) {
+    // TODO(andruud): Should we add a new style_change_reason?
+    target->SetNeedsStyleRecalc(kLocalStyleChange,
+                                StyleChangeReasonForTracing::Create(
+                                    style_change_reason::kScrollTimeline));
+  }
+}
+
 void Animation::ResolvePromiseMaybeAsync(AnimationPromise* promise) {
   if (ScriptForbiddenScope::IsScriptForbidden()) {
     GetExecutionContext()

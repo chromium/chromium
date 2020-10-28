@@ -90,6 +90,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // This may lead the timeline to request a new animation frame.
   virtual void Invalidate();
 
+  // Mark every effect target of every Animation attached to this timeline
+  // for style recalc.
+  void InvalidateEffectTargetStyle();
+
   CompositorAnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
 
@@ -118,6 +122,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   double GetTimeRange() const { return time_range_; }
   bool ScrollOffsetsEqual(
       const HeapVector<Member<ScrollTimelineOffset>>& other) const;
+  size_t AttachedAnimationsCount() const { return scroll_animations_.size(); }
 
  private:
   // https://wicg.github.io/scroll-animations/#avoiding-cycles

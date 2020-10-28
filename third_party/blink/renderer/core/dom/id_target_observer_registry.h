@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ID_TARGET_OBSERVER_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ID_TARGET_OBSERVER_REGISTRY_H_
 
+#include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -36,7 +38,7 @@ namespace blink {
 
 class IdTargetObserver;
 
-class IdTargetObserverRegistry final
+class CORE_EXPORT IdTargetObserverRegistry final
     : public GarbageCollected<IdTargetObserverRegistry> {
   friend class IdTargetObserver;
 

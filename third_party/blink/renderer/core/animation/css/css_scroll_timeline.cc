@@ -145,6 +145,57 @@ base::Optional<double> ComputeTimeRange(const CSSValue* value) {
   return base::nullopt;
 }
 
+class ElementReferenceObserver : public IdTargetObserver {
+ public:
+  ElementReferenceObserver(Document* document,
+                           const AtomicString& id,
+                           CSSScrollTimeline* timeline)
+      : IdTargetObserver(document->GetIdTargetObserverRegistry(), id),
+        timeline_(timeline) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(timeline_);
+    IdTargetObserver::Trace(visitor);
+  }
+
+ private:
+  void IdTargetChanged() override {
+    if (timeline_)
+      timeline_->InvalidateEffectTargetStyle();
+  }
+  WeakMember<CSSScrollTimeline> timeline_;
+};
+
+HeapVector<Member<IdTargetObserver>> CreateElementReferenceObservers(
+    Document* document,
+    StyleRuleScrollTimeline* rule,
+    CSSScrollTimeline* timeline) {
+  HeapVector<Member<IdTargetObserver>> observers;
+
+  if (const auto* id = GetIdSelectorValue(rule->GetSource())) {
+    observers.push_back(MakeGarbageCollected<ElementReferenceObserver>(
+        document, id->Id(), timeline));
+  }
+
+  // TODO(crbug.com/1094014): The 'offsets' descriptor will replace the 'start'
+  // and 'end' descriptors eventually.
+  HeapVector<Member<const CSSValue>> offsets = {rule->GetStart(),
+                                                rule->GetEnd()};
+
+  for (const CSSValue* offset : offsets) {
+    const auto* element_offset =
+        DynamicTo<cssvalue::CSSElementOffsetValue>(offset);
+    if (!element_offset)
+      continue;
+    if (const auto* id = GetIdSelectorValue(element_offset->Target())) {
+      observers.push_back(MakeGarbageCollected<ElementReferenceObserver>(
+          document, id->Id(), timeline));
+    }
+  }
+
+  return observers;
+}
+
 }  // anonymous namespace
 
 CSSScrollTimeline::Options::Options(Element* element,
@@ -154,15 +205,18 @@ CSSScrollTimeline::Options::Options(Element* element,
       offsets_(ComputeScrollOffsets(element->GetDocument(),
                                     rule.GetStart(),
                                     rule.GetEnd())),
-      time_range_(ComputeTimeRange(rule.GetTimeRange())) {}
+      time_range_(ComputeTimeRange(rule.GetTimeRange())),
+      rule_(&rule) {}
 
 CSSScrollTimeline::CSSScrollTimeline(Document* document, const Options& options)
     : ScrollTimeline(document,
                      options.source_,
                      options.direction_,
                      options.offsets_,
-                     *options.time_range_) {
+                     *options.time_range_),
+      rule_(options.rule_) {
   DCHECK(options.IsValid());
+  DCHECK(rule_);
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
@@ -170,7 +224,32 @@ bool CSSScrollTimeline::Matches(const Options& options) const {
   return (scrollSource() == options.source_) &&
          (GetOrientation() == options.direction_) &&
          (ScrollOffsetsEqual(*options.offsets_)) &&
-         (GetTimeRange() == options.time_range_);
+         (GetTimeRange() == options.time_range_) && (rule_ == options.rule_);
+}
+
+void CSSScrollTimeline::AnimationAttached(Animation* animation) {
+  ScrollTimeline::AnimationAttached(animation);
+  if (AttachedAnimationsCount() == 1)
+    SetObservers(CreateElementReferenceObservers(GetDocument(), rule_, this));
+}
+
+void CSSScrollTimeline::AnimationDetached(Animation* animation) {
+  ScrollTimeline::AnimationDetached(animation);
+  if (AttachedAnimationsCount() == 0)
+    SetObservers(HeapVector<Member<IdTargetObserver>>());
+}
+
+void CSSScrollTimeline::Trace(Visitor* visitor) const {
+  visitor->Trace(rule_);
+  visitor->Trace(observers_);
+  ScrollTimeline::Trace(visitor);
+}
+
+void CSSScrollTimeline::SetObservers(
+    HeapVector<Member<IdTargetObserver>> observers) {
+  for (IdTargetObserver* observer : observers_)
+    observer->Unregister();
+  observers_ = std::move(observers);
 }
 
 }  // namespace blink

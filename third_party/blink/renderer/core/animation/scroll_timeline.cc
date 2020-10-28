@@ -561,6 +561,11 @@ void ScrollTimeline::Invalidate(Node* node) {
   }
 }
 
+void ScrollTimeline::InvalidateEffectTargetStyle() {
+  for (Animation* animation : scroll_animations_)
+    animation->InvalidateEffectTargetStyle();
+}
+
 CompositorAnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {
   if (compositor_timeline_)
     return compositor_timeline_.get();
