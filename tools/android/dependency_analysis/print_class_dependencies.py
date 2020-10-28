@@ -28,6 +28,7 @@ class PrintMode:
     inbound: bool
     outbound: bool
     ignore_modularized: bool
+    ignore_audited_here: bool
     ignore_same_package: bool
     fully_qualified: bool
 
@@ -109,8 +110,8 @@ def is_ignored_class_dependency(class_name: str) -> bool:
 
 def categorize_dependency(from_class: class_dependency.JavaClass,
                           to_class: class_dependency.JavaClass,
-                          ignore_modularized: bool,
-                          ignore_same_package: bool) -> str:
+                          ignore_modularized: bool, print_mode: PrintMode,
+                          audited_classes: Set[str]) -> str:
     """Decides if a class dependency should be printed, cleared, or ignored."""
     if is_ignored_class_dependency(to_class.name):
         return IGNORE
@@ -118,7 +119,10 @@ def categorize_dependency(from_class: class_dependency.JavaClass,
             is_allowed_target_dependency(target)
             for target in to_class.build_targets):
         return CLEAR
-    if ignore_same_package and to_class.package == from_class.package:
+    if (print_mode.ignore_same_package
+            and to_class.package == from_class.package):
+        return IGNORE
+    if print_mode.ignore_audited_here and to_class.name in audited_classes:
         return IGNORE
     return PRINT
 
@@ -126,7 +130,8 @@ def categorize_dependency(from_class: class_dependency.JavaClass,
 def print_class_dependencies(to_classes: List[class_dependency.JavaClass],
                              print_mode: PrintMode,
                              from_class: class_dependency.JavaClass,
-                             direction: str) -> TargetDependencies:
+                             direction: str,
+                             audited_classes: Set[str]) -> TargetDependencies:
     """Prints the class dependencies to or from a class, grouped by target.
 
     If direction is OUTBOUND and print_mode.ignore_modularized is True, omits
@@ -156,8 +161,8 @@ def print_class_dependencies(to_classes: List[class_dependency.JavaClass],
         # --ignore-same-package, or due to being an ignored class.
         # Check if dependency should be listed as a cleared dep.
         ignore_allow = categorize_dependency(from_class, to_class,
-                                             ignore_modularized,
-                                             print_mode.ignore_same_package)
+                                             ignore_modularized, print_mode,
+                                             audited_classes)
         if ignore_allow == CLEAR:
             target_dependencies.update_with_class_node(to_class)
             continue
@@ -201,19 +206,20 @@ def print_class_dependencies(to_classes: List[class_dependency.JavaClass],
 
 def print_class_dependencies_for_key(
         class_graph: class_dependency.JavaClassDependencyGraph, key: str,
-        print_mode: PrintMode) -> TargetDependencies:
+        print_mode: PrintMode,
+        audited_classes: Set[str]) -> TargetDependencies:
     """Prints dependencies for a valid key into the class graph."""
     target_dependencies = TargetDependencies()
     node: class_dependency.JavaClass = class_graph.get_node_by_key(key)
 
     if print_mode.inbound:
         print_class_dependencies(graph.sorted_nodes_by_name(node.inbound),
-                                 print_mode, node, INBOUND)
+                                 print_mode, node, INBOUND, audited_classes)
 
     if print_mode.outbound:
         target_dependencies = print_class_dependencies(
             graph.sorted_nodes_by_name(node.outbound), print_mode, node,
-            OUTBOUND)
+            OUTBOUND, audited_classes)
     return target_dependencies
 
 
@@ -266,6 +272,10 @@ def main():
                             help='Do not print outbound dependencies on '
                             'allowed (modules, components, base, etc.) '
                             'dependencies.')
+    arg_parser.add_argument('--ignore-audited-here',
+                            action='store_true',
+                            help='Do not print outbound dependencies on '
+                            'other classes being audited in this run.')
     arg_parser.add_argument('--ignore-same-package',
                             action='store_true',
                             help='Do not print outbound dependencies on '
@@ -279,6 +289,7 @@ def main():
     print_mode = PrintMode(inbound=not arguments.outbound_only,
                            outbound=not arguments.inbound_only,
                            ignore_modularized=arguments.ignore_modularized,
+                           ignore_audited_here=arguments.ignore_audited_here,
                            ignore_same_package=arguments.ignore_same_package,
                            fully_qualified=arguments.fully_qualified)
 
@@ -301,7 +312,8 @@ def main():
             print()
 
         new_target_deps = print_class_dependencies_for_key(
-            class_graph, fully_qualified_class_name, print_mode)
+            class_graph, fully_qualified_class_name, print_mode,
+            set(valid_class_names))
         target_dependencies.merge(new_target_deps)
 
     target_dependencies.print()
