@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Animation with animation-timeline:none has no effect value
-PASS Animation with unknown timeline name has no effect value
-Harness: the test ran to completion.
-

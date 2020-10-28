@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Animation does not apply when timeline phase is before
-Harness: the test ran to completion.
-

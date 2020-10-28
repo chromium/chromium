@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Source none causes inactive timeline
-PASS Source auto selects scrollingElement of the document
-PASS Unspecified source behaves like auto
-PASS Source selector(<id-selector>) selects an element
-PASS Unknown source causes inactive timeline
-PASS Source with no layout box causes inactive timeline
-Harness: the test ran to completion.
-

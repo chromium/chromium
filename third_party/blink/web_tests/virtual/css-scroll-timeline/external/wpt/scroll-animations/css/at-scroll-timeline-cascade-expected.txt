@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Latest @scroll-timeline rule wins
-Harness: the test ran to completion.
-

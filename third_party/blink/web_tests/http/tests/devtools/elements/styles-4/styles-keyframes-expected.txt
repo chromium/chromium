@@ -15,6 +15,7 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -67,6 +68,7 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -119,6 +121,7 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -171,6 +174,7 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -223,6 +227,7 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)

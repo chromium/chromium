@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
-FAIL Orientation auto behaves as expected assert_equals: expected "175px" but got "100px"
-FAIL Orientation vertical behaves as expected assert_equals: expected "175px" but got "100px"
-FAIL Orientation horizontal behaves as expected assert_equals: expected "125px" but got "100px"
-FAIL Orientation block behaves as expected in horizontal writing-mode assert_equals: expected "175px" but got "100px"
-FAIL Orientation inline behaves as expected in horizontal writing-mode assert_equals: expected "125px" but got "100px"
-FAIL Orientation block behaves as expected in vertical writing-mode assert_equals: expected "125px" but got "100px"
-FAIL Orientation inline behaves as expected in vertical writing-mode assert_equals: expected "175px" but got "100px"
+PASS Orientation auto behaves as expected
+PASS Orientation vertical behaves as expected
+PASS Orientation horizontal behaves as expected
+PASS Orientation block behaves as expected in horizontal writing-mode
+PASS Orientation inline behaves as expected in horizontal writing-mode
+FAIL Orientation block behaves as expected in vertical writing-mode assert_equals: expected "125px" but got "175px"
+FAIL Orientation inline behaves as expected in vertical writing-mode assert_equals: expected "175px" but got "125px"
 Harness: the test ran to completion.
 

@@ -16,6 +16,7 @@ animationFillMode
 animationIterationCount
 animationName
 animationPlayState
+animationTimeline
 animationTimingFunction
 appearance
 ascentOverride
@@ -141,6 +142,7 @@ direction
 display
 dominantBaseline
 emptyCells
+end
 fill
 fillOpacity
 fillRule
@@ -355,8 +357,10 @@ shapeMargin
 shapeOutside
 shapeRendering
 size
+source
 speak
 src
+start
 stopColor
 stopOpacity
 stroke
@@ -390,6 +394,7 @@ textSizeAdjust
 textTransform
 textUnderlineOffset
 textUnderlinePosition
+timeRange
 top
 touchAction
 transform

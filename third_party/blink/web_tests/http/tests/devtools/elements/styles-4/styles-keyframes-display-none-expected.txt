@@ -15,6 +15,7 @@ element.style { ()
         animation-fill-mode: inherit;
         animation-play-state: inherit;
         animation-name: inherit;
+        animation-timeline: inherit;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -44,6 +45,7 @@ element.style { ()
         animation-fill-mode: none;
         animation-play-state: running;
         animation-name: animName;
+        animation-timeline: auto;
     display: none;
 
 [expanded] 

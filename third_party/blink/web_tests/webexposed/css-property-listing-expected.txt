@@ -68,6 +68,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-iteration-count
     animation-name
     animation-play-state
+    animation-timeline
     animation-timing-function
     appearance
     aspect-ratio
@@ -423,6 +424,7 @@ All changes to this list should go through Blink's feature review process: http:
         animation-iteration-count
         animation-name
         animation-play-state
+        animation-timeline
         animation-timing-function
     background
         background-attachment

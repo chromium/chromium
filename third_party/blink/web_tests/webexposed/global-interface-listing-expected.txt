@@ -820,6 +820,15 @@ interface CSSScale : CSSTransformComponent
     setter x
     setter y
     setter z
+interface CSSScrollTimelineRule : CSSRule
+    attribute @@toStringTag
+    getter end
+    getter name
+    getter orientation
+    getter source
+    getter start
+    getter timeRange
+    method constructor
 interface CSSSkew : CSSTransformComponent
     attribute @@toStringTag
     getter ax

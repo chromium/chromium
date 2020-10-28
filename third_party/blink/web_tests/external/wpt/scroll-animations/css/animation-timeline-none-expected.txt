@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Animation with animation-timeline:none has no effect value assert_equals: expected "0px" but got "100px"
-FAIL Animation with unknown timeline name has no effect value assert_equals: expected "0px" but got "100px"
-Harness: the test ran to completion.
-

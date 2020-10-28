@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL Source none causes inactive timeline assert_equals: expected "0px" but got "100px"
-FAIL Source auto selects scrollingElement of the document assert_equals: expected "125px" but got "100px"
-FAIL Unspecified source behaves like auto assert_equals: expected "125px" but got "100px"
-FAIL Source selector(<id-selector>) selects an element assert_equals: expected "175px" but got "100px"
-FAIL Unknown source causes inactive timeline assert_equals: expected "0px" but got "100px"
-FAIL Source with no layout box causes inactive timeline assert_equals: expected "0px" but got "100px"
-Harness: the test ran to completion.
-

@@ -609,11 +609,6 @@
     "args": ["--enable-blink-features=CSSModules"]
   },
   {
-    "prefix": "css-scroll-timeline",
-    "bases": ["external/wpt/scroll-animations/css"],
-    "args": ["--enable-blink-features=CSSScrollTimeline"]
-  },
-  {
     "prefix": "import-maps-disabled",
     "bases": ["external/wpt/import-maps/core/not-as-classic-script.html"],
     "args": ["--disable-blink-features=ExperimentalProductivityFeatures"]
