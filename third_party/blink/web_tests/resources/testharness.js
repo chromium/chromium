@@ -1386,13 +1386,13 @@ policies and contribution forms [3].
 
         // The epsilon math below does not place nice with NaN and Infinity
         // But in this case Infinity = Infinity and NaN = NaN
-        if (!isFinite(actual) || !isFinite(expected)) {
-            assert_equals(actual, expected)
-        } else {
+        if (isFinite(actual) || isFinite(expected)) {
             assert(Math.abs(actual - expected) <= epsilon,
                    "assert_approx_equals", description,
                    "expected ${expected} +/- ${epsilon} but got ${actual}",
                    {expected:expected, actual:actual, epsilon:epsilon});
+        } else {
+            assert_equals(actual, expected);
         }
     }
     expose(assert_approx_equals, "assert_approx_equals");
