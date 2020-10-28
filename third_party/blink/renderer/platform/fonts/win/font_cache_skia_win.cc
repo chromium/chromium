@@ -40,6 +40,7 @@
 #include <utility>
 
 #include "base/debug/alias.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -83,27 +83,22 @@ enum FallbackAgreementError {
 void LogUmaHistogramFallbackAgreemenError(
     FallbackAgreementError agreement_error,
     UBlockCode block_code) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SparseHistogram, legacy_none_found_histogram,
-                                  ("Blink.Fonts.WinFallback.LegacyNoneFound"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SparseHistogram, win_api_none_found_histogram,
-                                  ("Blink.Fonts.WinFallback.WinAPINoneFound"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      SparseHistogram, legacy_win_api_disagree_histogram,
-      ("Blink.Fonts.WinFallback.LegacyWinAPIDisagree"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SparseHistogram, none_found_histogram,
-                                  ("Blink.Fonts.WinFallback.NoFallbackFound"));
   switch (agreement_error) {
     case kLegacyNoneFound:
-      legacy_none_found_histogram.Sample(block_code);
+      base::UmaHistogramSparse("Blink.Fonts.WinFallback.LegacyNoneFound",
+                               block_code);
       break;
     case kWinAPINoneFound:
-      win_api_none_found_histogram.Sample(block_code);
+      base::UmaHistogramSparse("Blink.Fonts.WinFallback.WinAPINoneFound",
+                               block_code);
       break;
     case kLegacyWinAPIDisagree:
-      legacy_win_api_disagree_histogram.Sample(block_code);
+      base::UmaHistogramSparse("Blink.Fonts.WinFallback.LegacyWinAPIDisagree",
+                               block_code);
       break;
     case kNoneFound:
-      none_found_histogram.Sample(block_code);
+      base::UmaHistogramSparse("Blink.Fonts.WinFallback.NoFallbackFound",
+                               block_code);
       break;
   }
 }
