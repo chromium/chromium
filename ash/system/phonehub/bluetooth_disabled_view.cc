@@ -4,13 +4,19 @@
 
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/phonehub/url_constants.h"
+#include "ash/system/status_area_widget.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/layout/fill_layout.h"
@@ -21,15 +27,6 @@ namespace ash {
 using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
-
-namespace {
-
-// Tag value used to uniquely identify the "Learn More" and "Ok, got it"
-// buttons.
-constexpr int kLearnMoreButtonTag = 1;
-constexpr int kOkButtonTag = 2;
-
-}  // namespace
 
 BluetoothDisabledView::BluetoothDisabledView() {
   SetID(PhoneHubViewID::kBluetoothDisabledView);
@@ -57,16 +54,16 @@ BluetoothDisabledView::BluetoothDisabledView() {
   learn_more->SetEnabledTextColors(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
-  learn_more->set_tag(kLearnMoreButtonTag);
+  learn_more->SetID(PhoneHubViewID::kBluetoothDisabledLearnMoreButton);
   content_view_->AddButton(std::move(learn_more));
 
-  auto refresh = std::make_unique<InterstitialViewButton>(
+  auto confirm = std::make_unique<InterstitialViewButton>(
       this,
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_OK_BUTTON),
       /*paint_background=*/true);
-  refresh->set_tag(kOkButtonTag);
-  content_view_->AddButton(std::move(refresh));
+  confirm->SetID(PhoneHubViewID::kBluetoothDisabledConfirmButton);
+  content_view_->AddButton(std::move(confirm));
 
   LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
                              InterstitialScreenEvent::kShown);
@@ -76,13 +73,21 @@ BluetoothDisabledView::~BluetoothDisabledView() = default;
 
 void BluetoothDisabledView::ButtonPressed(views::Button* sender,
                                           const ui::Event& event) {
-  // TODO(crbug.com/1126208): implement button pressed actions.
-  if (sender->tag() == kLearnMoreButtonTag) {
-    LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
-                               InterstitialScreenEvent::kLearnMore);
-  } else if (sender->tag() == kOkButtonTag) {
-    LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
-                               InterstitialScreenEvent::kConfirm);
+  switch (sender->GetID()) {
+    case kBluetoothDisabledLearnMoreButton:
+      LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+                                 InterstitialScreenEvent::kLearnMore);
+      NewWindowDelegate::GetInstance()->NewTabWithUrl(
+          GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
+      return;
+    case kBluetoothDisabledConfirmButton:
+      LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+                                 InterstitialScreenEvent::kConfirm);
+      Shell::GetPrimaryRootWindowController()
+          ->GetStatusAreaWidget()
+          ->phone_hub_tray()
+          ->CloseBubble();
+      return;
   }
 }
 

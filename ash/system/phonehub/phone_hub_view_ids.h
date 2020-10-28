@@ -32,9 +32,13 @@ enum PhoneHubViewID {
   kDisconnectedLearnMoreButton,
   kDisconnectedRefreshButton,
 
+  // Bluetooth disabled view and its components.
+  kBluetoothDisabledView,
+  kBluetoothDisabledLearnMoreButton,
+  kBluetoothDisabledConfirmButton,
+
   kPhoneConnectedView,
   kInitialConnectingView,
-  kBluetoothDisabledView,
 };
 
 }  // namespace ash

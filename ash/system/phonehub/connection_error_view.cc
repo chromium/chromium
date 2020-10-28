@@ -14,6 +14,7 @@
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/phonehub/url_constants.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -25,14 +26,6 @@ namespace ash {
 using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
-
-namespace {
-
-// TODO(meilinw): replace it with the real one.
-constexpr char kLearnMoreUrl[] =
-    "https://support.google.com/chromebook/?p=multi_device";
-
-}  // namespace
 
 ConnectionErrorView::ConnectionErrorView(
     ErrorStatus error,

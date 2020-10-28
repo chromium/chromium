@@ -90,56 +90,59 @@ class PhoneHubTrayTest : public AshTestBase {
 
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
+  views::View* bubble_view() { return phone_hub_tray_->GetBubbleView(); }
+
   views::View* content_view() {
     return phone_hub_tray_->content_view_for_testing();
   }
 
   NotificationOptInView* notification_opt_in_view() {
     return static_cast<NotificationOptInView*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kNotificationOptInView));
-  }
-
-  views::Button* disconnected_refresh_button() {
-    return static_cast<views::Button*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kDisconnectedRefreshButton));
-  }
-
-  views::Button* disconnected_learn_more_button() {
-    return static_cast<views::Button*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kDisconnectedLearnMoreButton));
+        bubble_view()->GetViewByID(PhoneHubViewID::kNotificationOptInView));
   }
 
   views::View* onboarding_main_view() {
-    return static_cast<views::View*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kOnboardingMainView));
+    return bubble_view()->GetViewByID(PhoneHubViewID::kOnboardingMainView);
   }
 
   views::View* onboarding_dismiss_prompt_view() {
-    return static_cast<views::View*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kOnboardingDismissPromptView));
+    return bubble_view()->GetViewByID(
+        PhoneHubViewID::kOnboardingDismissPromptView);
   }
 
   views::Button* onboarding_get_started_button() {
-    return static_cast<views::Button*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kOnboardingGetStartedButton));
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kOnboardingGetStartedButton));
   }
 
   views::Button* onboarding_dismiss_button() {
     return static_cast<views::Button*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kOnboardingDismissButton));
+        bubble_view()->GetViewByID(PhoneHubViewID::kOnboardingDismissButton));
   }
 
   views::Button* onboarding_dismiss_ack_button() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kOnboardingDismissAckButton));
+  }
+
+  views::Button* disconnected_refresh_button() {
     return static_cast<views::Button*>(
-        phone_hub_tray_->GetBubbleView()->GetViewByID(
-            PhoneHubViewID::kOnboardingDismissAckButton));
+        bubble_view()->GetViewByID(PhoneHubViewID::kDisconnectedRefreshButton));
+  }
+
+  views::Button* disconnected_learn_more_button() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kDisconnectedLearnMoreButton));
+  }
+
+  views::Button* bluetooth_disabled_learn_more_button() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kBluetoothDisabledLearnMoreButton));
+  }
+
+  views::Button* bluetooth_disabled_confirm_button() {
+    return static_cast<views::Button*>(bubble_view()->GetViewByID(
+        PhoneHubViewID::kBluetoothDisabledConfirmButton));
   }
 
  protected:
@@ -348,6 +351,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
 
   ClickTrayButton();
   EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_TRUE(content_view());
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
 
   // Simulates a click on the "Refresh" button.
@@ -368,8 +372,32 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
 
   // Simulates a click on the "Learn more" button.
   ClickOnAndWait(disconnected_learn_more_button());
-  EXPECT_TRUE(content_view());
-  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
+}
+
+TEST_F(PhoneHubTrayTest, ClickButtonsOnBluetoothDisabledView) {
+  // Simulate a Bluetooth unavailable state.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kUnavailableBluetoothOff);
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view()->GetID());
+
+  // Clicking "Learn more" button should open the corresponding help center
+  // article in a browser tab.
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL("https://support.google.com/chromebook/?p=multi_device"),
+                  url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+  // Simulate a click on "Learn more" button.
+  ClickOnAndWait(bluetooth_disabled_learn_more_button());
+
+  // Simulate a click on "Ok, got it" button.
+  ClickOnAndWait(bluetooth_disabled_confirm_button());
+
+  // Clicking "Ok, got it" button should dimiss the bubble.
+  EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
 }
 
 }  // namespace ash

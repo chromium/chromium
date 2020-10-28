@@ -1192,6 +1192,7 @@ component("ash") {
     "system/phonehub/silence_phone_quick_action_controller.h",
     "system/phonehub/task_continuation_view.cc",
     "system/phonehub/task_continuation_view.h",
+    "system/phonehub/url_constants.h",
     "system/power/backlights_forced_off_setter.cc",
     "system/power/backlights_forced_off_setter.h",
     "system/power/battery_notification.cc",
