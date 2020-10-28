@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
-#include "chrome/browser/search/search_provider_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,11 +38,17 @@
 
 class InstantServiceObserver;
 class Profile;
+class SearchProviderObserver;
 struct CollectionImage;
 struct InstantMostVisitedInfo;
 struct NtpTheme;
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace content {
+class BrowserContext;
 class RenderProcessHost;
 }  // namespace content
 

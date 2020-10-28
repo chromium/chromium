@@ -9,7 +9,6 @@
 
 class GURL;
 class Profile;
-class TemplateURLService;
 
 namespace content {
 class BrowserContext;
@@ -21,8 +20,6 @@ namespace search {
 
 // Returns whether Google is selected as the default search engine.
 bool DefaultSearchProviderIsGoogle(Profile* profile);
-bool DefaultSearchProviderIsGoogle(
-    const TemplateURLService* template_url_service);
 
 // Returns true if |url| corresponds to a New Tab page or its service worker.
 bool IsNTPOrRelatedURL(const GURL& url, Profile* profile);

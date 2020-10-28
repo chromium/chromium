@@ -3760,8 +3760,6 @@ static_library("browser") {
       "search/recipe_tasks/recipe_tasks_service_factory.h",
       "search/search_engine_base_url_tracker.cc",
       "search/search_engine_base_url_tracker.h",
-      "search/search_provider_observer.cc",
-      "search/search_provider_observer.h",
       "search/search_suggest/search_suggest_data.cc",
       "search/search_suggest/search_suggest_data.h",
       "search/search_suggest/search_suggest_loader.h",

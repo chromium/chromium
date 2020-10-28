@@ -239,19 +239,6 @@ bool DefaultSearchProviderIsGoogle(Profile* profile) {
       TemplateURLServiceFactory::GetForProfile(profile));
 }
 
-bool DefaultSearchProviderIsGoogle(
-    const TemplateURLService* template_url_service) {
-  if (!template_url_service)
-    return false;
-  const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
-  if (!default_provider)
-    return false;
-  return default_provider->GetEngineType(
-             template_url_service->search_terms_data()) ==
-         SearchEngineType::SEARCH_ENGINE_GOOGLE;
-}
-
 bool IsNTPOrRelatedURL(const GURL& url, Profile* profile) {
   if (!url.is_valid())
     return false;

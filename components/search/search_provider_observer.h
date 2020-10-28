@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
-#define CHROME_BROWSER_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
+#ifndef COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
+#define COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 
-#include "chrome/browser/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -20,6 +19,7 @@ class SearchProviderObserver : public TemplateURLServiceObserver {
   ~SearchProviderObserver() override;
 
   bool is_google() { return is_google_; }
+  TemplateURLService* template_url_service() { return service_; }
 
  private:
   // TemplateURLServiceObserver:
@@ -31,4 +31,4 @@ class SearchProviderObserver : public TemplateURLServiceObserver {
   base::RepeatingClosure callback_;
 };
 
-#endif  // CHROME_BROWSER_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
+#endif  // COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_

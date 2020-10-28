@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/search_provider_observer.h"
+#include "components/search/search_provider_observer.h"
+#include "components/search/search.h"
 
 SearchProviderObserver::SearchProviderObserver(TemplateURLService* service,
                                                base::RepeatingClosure callback)
