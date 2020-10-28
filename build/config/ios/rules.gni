@@ -172,6 +172,11 @@ template("lipo_binary") {
 #       entitlements (must generate a single file as output); cannot be
 #       defined if entitlements_path is set.
 #
+#   has_public_headers:
+#       (optional) boolean, defaults to false; only meaningful if the bundle
+#       is a framework bundle; if true, then the frameworks includes public
+#       headers
+#
 #   disable_entitlements
 #       (optional, defaults to false) boolean, control whether entitlements willi
 #       be embedded in the application during signature. If false and no
@@ -253,6 +258,10 @@ template("create_signed_bundle") {
     _enable_embedded_mobileprovision = !invoker.disable_embedded_mobileprovision
   }
 
+  if (target_environment == "catalyst") {
+    _enable_embedded_mobileprovision = false
+  }
+
   _enable_entitlements = true
   if (defined(invoker.disable_entitlements)) {
     _enable_entitlements = !invoker.disable_entitlements
@@ -311,9 +320,21 @@ template("create_signed_bundle") {
                            ])
 
     bundle_root_dir = "$_bundle_gen_dir/$_output_name$_bundle_extension"
-    bundle_contents_dir = bundle_root_dir
-    bundle_resources_dir = bundle_contents_dir
-    bundle_executable_dir = bundle_contents_dir
+    if (target_environment == "simulator" || target_environment == "device") {
+      bundle_contents_dir = bundle_root_dir
+      bundle_resources_dir = bundle_contents_dir
+      bundle_executable_dir = bundle_contents_dir
+    } else if (target_environment == "catalyst") {
+      if (_bundle_extension != ".framework") {
+        bundle_contents_dir = "$bundle_root_dir/Contents"
+        bundle_resources_dir = "$bundle_contents_dir/Resources"
+        bundle_executable_dir = "$bundle_contents_dir/MacOS"
+      } else {
+        bundle_contents_dir = "$bundle_root_dir/Versions/A"
+        bundle_resources_dir = "$bundle_contents_dir/Resources"
+        bundle_executable_dir = bundle_contents_dir
+      }
+    }
 
     if (!defined(public_deps)) {
       public_deps = []
@@ -359,7 +380,7 @@ template("create_signed_bundle") {
       }
       code_signing_sources += [ _entitlements_path ]
     }
-    code_signing_outputs = [ "$bundle_contents_dir/$_output_name" ]
+    code_signing_outputs = [ "$bundle_executable_dir/$_output_name" ]
     if (_enable_code_signing) {
       code_signing_outputs +=
           [ "$bundle_contents_dir/_CodeSignature/CodeResources" ]
@@ -368,6 +389,23 @@ template("create_signed_bundle") {
         _enable_embedded_mobileprovision) {
       code_signing_outputs +=
           [ "$bundle_contents_dir/embedded.mobileprovision" ]
+    }
+    if (_bundle_extension == ".framework") {
+      if (target_environment == "catalyst") {
+        code_signing_outputs += [
+          "$bundle_root_dir/Versions/Current",
+          "$bundle_root_dir/$_output_name",
+        ]
+
+        if (defined(invoker.has_public_headers) && invoker.has_public_headers) {
+          code_signing_outputs += [
+            "$bundle_root_dir/Headers",
+            "$bundle_root_dir/Modules",
+          ]
+        }
+      } else {
+        not_needed(invoker, [ "has_public_headers" ])
+      }
     }
 
     if (defined(invoker.extra_system_frameworks)) {
@@ -417,7 +455,12 @@ template("create_signed_bundle") {
 
       code_signing_sources += _partial_info_plists
       code_signing_sources += [ _plist_compiler_path ]
-      code_signing_outputs += [ "$bundle_contents_dir/Info.plist" ]
+      if (target_environment != "catalyst" ||
+          _bundle_extension != ".framework") {
+        code_signing_outputs += [ "$bundle_contents_dir/Info.plist" ]
+      } else {
+        code_signing_outputs += [ "$bundle_resources_dir/Info.plist" ]
+      }
 
       code_signing_args +=
           [ "-P=" + rebase_path(_plist_compiler_path, root_build_dir) ]
@@ -1362,7 +1405,13 @@ template("ios_framework_bundle") {
   } else {
     if (_has_public_headers) {
       _public_headers = invoker.public_headers
-      _framework_root = "$root_out_dir/$_output_name.framework"
+
+      _framework_root_dir = "$root_out_dir/$_output_name.framework"
+      if (target_environment == "simulator" || target_environment == "device") {
+        _frameworks_content_dir = _framework_root_dir
+      } else if (target_environment == "catalyst") {
+        _frameworks_content_dir = "$_framework_root_dir/Versions/A"
+      }
 
       _compile_headers_map_target = _target_name + "_compile_headers_map"
       action(_compile_headers_map_target) {
@@ -1389,7 +1438,7 @@ template("ios_framework_bundle") {
 
         args = [
                  rebase_path(_header_map_filename),
-                 rebase_path(_framework_root, root_build_dir),
+                 rebase_path(_framework_root_dir, root_build_dir),
                ] + rebase_path(sources, root_build_dir)
       }
 
@@ -1397,8 +1446,11 @@ template("ios_framework_bundle") {
       action(_create_module_map_target) {
         visibility = [ ":$_framework_headers_target" ]
         script = "//build/config/ios/write_framework_modulemap.py"
-        outputs = [ "$_framework_root/Modules/module.modulemap" ]
-        args = [ rebase_path("$_framework_root", root_build_dir) ]
+        outputs = [ "$_frameworks_content_dir/Modules/module.modulemap" ]
+        args = [
+          _output_name,
+          rebase_path("$_frameworks_content_dir/Modules", root_build_dir),
+        ]
       }
 
       _copy_public_headers_target = _target_name + "_copy_public_headers"
@@ -1410,7 +1462,7 @@ template("ios_framework_bundle") {
                                ])
         visibility = [ ":$_framework_headers_target" ]
         sources = _public_headers
-        outputs = [ "$_framework_root/Headers/{{source_file_part}}" ]
+        outputs = [ "$_frameworks_content_dir/Headers/{{source_file_part}}" ]
 
         # Do not use forward_variables_from for "public_deps" as
         # we do not want to forward those dependencies.
@@ -1462,8 +1514,13 @@ template("ios_framework_bundle") {
       visibility = [ ":${_target_name}_signed_bundle" ]
       forward_variables_from(invoker, [ "testonly" ])
       sources = get_target_outputs(":$_info_plist_target")
-      outputs = [ "{{bundle_contents_dir}}/Info.plist" ]
       public_deps = [ ":$_info_plist_target" ]
+
+      if (target_environment != "catalyst") {
+        outputs = [ "{{bundle_contents_dir}}/Info.plist" ]
+      } else {
+        outputs = [ "{{bundle_resources_dir}}/Info.plist" ]
+      }
     }
 
     create_signed_bundle(_target_name + "_signed_bundle") {
@@ -1486,6 +1543,8 @@ template("ios_framework_bundle") {
       output_name = _output_name
       bundle_binary_target = ":$_lipo_shared_library_target"
       bundle_binary_output = _output_name
+
+      has_public_headers = _has_public_headers
 
       # Framework do not have entitlements nor mobileprovision because they use
       # the one from the bundle using them (.app or .appex) as they are just
@@ -1547,8 +1606,7 @@ template("ios_framework_bundle") {
                              ])
       public_deps = [ ":$_target_name" ]
       sources = [ "$root_out_dir/$_output_name.framework" ]
-      outputs =
-          [ "{{bundle_resources_dir}}/Frameworks/$_output_name.framework" ]
+      outputs = [ "{{bundle_contents_dir}}/Frameworks/$_output_name.framework" ]
     }
   }
 }
