@@ -4,6 +4,7 @@
 
 // TODO(jschettler): Use es6 module for mojo binding (crbug/1004256).
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://scanning/scan_preview.js';
 import 'chrome://scanning/scanning_app.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -715,5 +716,27 @@ suite('ResolutionSelectTest', () => {
     // Verify the dropdown is enabled when there's more than one option.
     assertEquals(2, select.length);
     assertFalse(select.disabled);
+  });
+});
+
+suite('ScanPreviewTest', () => {
+  /** @type {?ScanPreviewElement} */
+  let scanPreview = null;
+
+  setup(() => {
+    scanPreview = document.createElement('scan-preview');
+    assertTrue(!!scanPreview);
+    document.body.appendChild(scanPreview);
+  });
+
+  teardown(() => {
+    if (scanPreview) {
+      scanPreview.remove();
+    }
+    scanPreview = null;
+  });
+
+  test('initializeScanPreview', () => {
+    assertTrue(!!scanPreview.$$('.preview'));
   });
 });
