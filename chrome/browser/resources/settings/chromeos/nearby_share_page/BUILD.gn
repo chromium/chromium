@@ -69,6 +69,7 @@ js_library("nearby_share_high_visibility_page") {
   deps = [
     "../localized_link:localized_link",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:i18n_behavior",
   ]
 }
@@ -208,6 +209,7 @@ js_library("nearby_share_high_visibility_page.m") {
   deps = [
     "../localized_link:localized_link.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":nearby_share_high_visibility_page_module" ]

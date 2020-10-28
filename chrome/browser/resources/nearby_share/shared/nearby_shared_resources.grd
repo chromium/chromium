@@ -13,7 +13,7 @@
   <release seq="1">
     <includes>
       <include name="IDR_NEARBY_SHARE_PULSE_ANIMATION_JSON"
-               file="nearby_share_pulse_animation.json" type="BINDATA"/>
+               file="nearby_share_pulse_animation.json" type="BINDATA" compress="false"/>
 
       <!-- Shared Polymer 2 pages-->
       <include name="IDR_NEARBY_CONTACT_MANAGER_HTML"
