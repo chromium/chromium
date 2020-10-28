@@ -1,0 +1,14 @@
+Name: URL Pattern Library
+Short Name: liburlpattern
+URL: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/liburlpattern
+Version: 0
+License: MIT
+Security Critical: yes
+
+Description:
+This library is the underlying pattern matching engine for the URLPattern web
+API proposal being discussed in https://github.com/wicg/urlpattern.  It uses
+a pattern syntax derived from the path-to-regexp library developed at
+https://github.com/pillarjs/path-to-regexp.  It is developed by the chromium
+project, but licensed as a derivative work of path-to-regexp using an MIT
+license.  No code from path-to-regexp is directly used here.
