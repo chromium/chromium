@@ -39,6 +39,11 @@ provides the ability to remotely run A/B benchmarks using any platform available
 in our lab. It will run a benchmark for as many iterations as needed to get a
 statistically significant result, then visualize it.
 
+If your're trying to debug a test or figure out how the infrastructure works,
+the easiest way is to set up the debugger in VSCode (guide
+[here](../../docs/vscode_python.md))] and set a breakpoint in
+/tools/perf/core/benchmark_runner.py.
+
 ## Creating New Tests (stories)
 
 [This document](https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry)
