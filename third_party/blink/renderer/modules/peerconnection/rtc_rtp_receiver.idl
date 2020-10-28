@@ -10,7 +10,7 @@ interface RTCRtpReceiver {
     readonly attribute RTCDtlsTransport? rtcpTransport;
     // https://henbos.github.io/webrtc-extensions/#dom-rtcrtpreceiver-playoutdelayhint
     [RaisesException=Setter, Measure] attribute double? playoutDelayHint;
-    static RTCRtpCapabilities?            getCapabilities(DOMString kind);
+    [CallWith=ScriptState, HighEntropy, Measure] static RTCRtpCapabilities? getCapabilities(DOMString kind);
     RTCRtpReceiveParameters               getParameters();
     [CallWith=ScriptState, RaisesException] sequence<RTCRtpSynchronizationSource> getSynchronizationSources();
     [CallWith=ScriptState, RaisesException] sequence<RTCRtpContributingSource> getContributingSources();

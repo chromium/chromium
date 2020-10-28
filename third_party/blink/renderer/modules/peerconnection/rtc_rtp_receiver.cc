@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_insertable_streams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtcp_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_capabilities.h"
@@ -15,6 +19,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/peerconnection/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
@@ -30,6 +35,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
@@ -274,7 +280,8 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(const String& kind) {
+RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
+                                                    const String& kind) {
   if (kind != "audio" && kind != "video")
     return nullptr;
 
@@ -320,6 +327,17 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(const String& kind) {
   }
   capabilities->setHeaderExtensions(header_extensions);
 
+  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          IdentifiableSurface::Type::kRtcRtpReceiverGetCapabilities)) {
+    IdentifiableTokenBuilder builder;
+    IdentifiabilityAddRTCRtpCapabilitiesToBuilder(builder, *capabilities);
+    IdentifiabilityMetricBuilder(ExecutionContext::From(state)->UkmSourceID())
+        .Set(IdentifiableSurface::FromTypeAndToken(
+                 IdentifiableSurface::Type::kRtcRtpReceiverGetCapabilities,
+                 IdentifiabilityBenignStringToken(kind)),
+             builder.GetToken())
+        .Record(ExecutionContext::From(state)->UkmRecorder());
+  }
   return capabilities;
 }
 

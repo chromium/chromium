@@ -236,6 +236,14 @@ class IdentifiableSurface {
     // Represents loading a font locally. Input is the PostScript name.
     kLocalFontLoadPostScriptName = 29,
 
+    // Getting supported codecs, etc. for WebRTC sender -- key is hash of kind
+    // (audio or video).
+    kRtcRtpSenderGetCapabilities = 31,
+
+    // Getting supported codecs, etc. for WebRTC receiver -- key is hash of kind
+    // (audio or video).
+    kRtcRtpReceiverGetCapabilities = 32,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

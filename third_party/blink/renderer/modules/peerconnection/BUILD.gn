@@ -24,6 +24,8 @@ blink_modules_sources("peerconnection") {
     "byte_buffer_queue.h",
     "call_setup_state_tracker.cc",
     "call_setup_state_tracker.h",
+    "identifiability_metrics.cc",
+    "identifiability_metrics.h",
     "media_stream_remote_video_source.cc",
     "media_stream_remote_video_source.h",
     "media_stream_track_metrics.cc",

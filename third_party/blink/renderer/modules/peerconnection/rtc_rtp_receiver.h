@@ -45,7 +45,8 @@ class RTCRtpReceiver final : public ScriptWrappable {
                  bool force_encoded_audio_insertable_streams,
                  bool force_encoded_video_insertable_streams);
 
-  static RTCRtpCapabilities* getCapabilities(const String& kind);
+  static RTCRtpCapabilities* getCapabilities(ScriptState* state,
+                                             const String& kind);
 
   MediaStreamTrack* track() const;
   RTCDtlsTransport* transport();

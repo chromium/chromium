@@ -8,7 +8,7 @@ interface RTCRtpSender {
     readonly attribute MediaStreamTrack? track;
     readonly attribute RTCDtlsTransport? transport;
     readonly attribute RTCDtlsTransport? rtcpTransport;
-    static RTCRtpCapabilities? getCapabilities(DOMString kind);
+    [CallWith=ScriptState, HighEntropy, Measure] static RTCRtpCapabilities? getCapabilities(DOMString kind);
     [CallWith=ScriptState] Promise<void> setParameters(RTCRtpSendParameters parameters);
     RTCRtpSendParameters getParameters();
     [Measure, CallWith=ScriptState] Promise<void> replaceTrack(MediaStreamTrack? withTrack);

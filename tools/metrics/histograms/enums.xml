@@ -29854,8 +29854,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3507"
       label="V8PushManager_SupportedContentEncodings_AttributeGetter"/>
   <int value="3508" label="IdentifiabilityStudyReserved3508"/>
-  <int value="3509" label="IdentifiabilityStudyReserved3509"/>
-  <int value="3510" label="IdentifiabilityStudyReserved3510"/>
+  <int value="3509" label="V8RTCRtpReceiver_GetCapabilities_Method"/>
+  <int value="3510" label="V8RTCRtpSender_GetCapabilities_Method"/>
   <int value="3511" label="IdentifiabilityStudyReserved3511"/>
   <int value="3512" label="IdentifiabilityStudyReserved3512"/>
   <int value="3513" label="IdentifiabilityStudyReserved3513"/>
