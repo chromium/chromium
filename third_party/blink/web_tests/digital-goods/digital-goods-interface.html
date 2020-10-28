@@ -14,16 +14,20 @@
 <script>
 'use strict';
 
-digital_goods_test(
-    async service => assert_not_equals(service, undefined),
-    {title: 'Digital goods service exists.'});
+digital_goods_test(async service => {
+  assert_not_equals(service, undefined);
+}, {title: 'Digital goods service exists.'});
 
-digital_goods_test(
-    async service => assert_equals(service, undefined),
-    {
-      paymentMethod: 'https://not.known/payment/method',
-      title: 'Digital goods service null for unknown payment method.'
-    });
+digital_goods_test(async service => {
+  assert_not_equals(service, null);
+}, {title: 'Digital goods service is available.'});
+
+digital_goods_test(async service => {
+  assert_equals(service, null);
+}, {
+  paymentMethod: 'https://not.known/payment/method',
+  title: 'Digital goods service null for unknown payment method.'
+});
 
 digital_goods_test(async service => {
   const response = await service.getDetails(['id2']);

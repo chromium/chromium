@@ -26,7 +26,7 @@ void OnCreateDigitalGoodsResponse(
   if (code != CreateDigitalGoodsResponseCode::kOk) {
     DCHECK(!pending_remote);
     DVLOG(1) << "CreateDigitalGoodsResponseCode " << code;
-    resolver->Resolve();
+    resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   DCHECK(pending_remote);
@@ -55,11 +55,11 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   auto promise = resolver->Promise();
 
   if (payment_method.IsEmpty()) {
-    resolver->Resolve();
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
   if (payment_method != known_payment_method_) {
-    resolver->Resolve();
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
 
