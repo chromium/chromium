@@ -145,6 +145,14 @@ fuchsia::accessibility::semantics::States ConvertStates(
         node.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange));
   }
 
+  // The scroll offsets, if the element is a scrollable container.
+  const auto x_scroll_offset =
+      node.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  const auto y_scroll_offset =
+      node.GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
+  if (x_scroll_offset || y_scroll_offset)
+    states.set_viewport_offset({x_scroll_offset, y_scroll_offset});
+
   return states;
 }
 

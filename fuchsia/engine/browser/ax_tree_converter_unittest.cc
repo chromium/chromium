@@ -91,7 +91,9 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
       std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
       kLabel1, kDescription1, ax::mojom::CheckedState::kMixed);
   ax_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+  ax_node_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, 10);
   ax_node_data.RemoveState(ax::mojom::State::kIgnored);
+  ax_node_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, 20);
   ax_node_data.id = kChildId1;
 
   Attributes attributes;
@@ -107,6 +109,7 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   states.set_checked_state(CheckedState::MIXED);
   states.set_hidden(false);
   states.set_selected(false);
+  states.set_viewport_offset({10, 20});
   auto fuchsia_node = CreateSemanticNode(
       ConvertToFuchsiaNodeId(ax_node_data.id, kRootId), Role::BUTTON,
       std::move(attributes), std::move(states),
