@@ -135,8 +135,9 @@ class FrameHeader::FrameAnimatorView : public views::View,
 
     AddLayerBeneathView(old_layer);
 
-    // The old layer is on top and should fade out.
-    old_layer->SetOpacity(1.f);
+    // The old layer is on top and should fade out. Make it non opaque
+    // so that new layer gets resterized immediately.
+    old_layer->SetOpacity(0.99f);
     new_layer->SetOpacity(1.f);
     {
       ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
