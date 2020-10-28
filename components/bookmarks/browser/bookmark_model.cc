@@ -110,18 +110,6 @@ class EmptyUndoDelegate : public BookmarkUndoDelegate {
   DISALLOW_COPY_AND_ASSIGN(EmptyUndoDelegate);
 };
 
-#if DCHECK_IS_ON()
-void AddGuidsToIndexRecursive(const BookmarkNode* node,
-                              std::set<std::string>* guid_index) {
-  bool success = guid_index->insert(node->guid()).second;
-  DCHECK(success);
-
-  // Recurse through children.
-  for (size_t i = node->children().size(); i > 0; --i)
-    AddGuidsToIndexRecursive(node->children()[i - 1].get(), guid_index);
-}
-#endif  // DCHECK_IS_ON()
-
 }  // namespace
 
 // BookmarkModel --------------------------------------------------------------
@@ -779,12 +767,6 @@ void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
   if (node->is_url())
     titled_url_index_->Remove(node);
 
-  // Note that |guid_index_| is used for DCHECK-enabled builds only.
-#if DCHECK_IS_ON()
-  DCHECK(guid_index_.erase(node->guid()))
-      << "Bookmark GUID missing in index: " << node->guid();
-#endif  // DCHECK_IS_ON()
-
   CancelPendingFaviconLoadRequests(node);
 
   // Recurse through children.
@@ -817,10 +799,6 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   bookmark_bar_node_ = details->bb_node();
   other_node_ = details->other_folder_node();
   mobile_node_ = details->mobile_folder_node();
-
-#if DCHECK_IS_ON()
-  AddGuidsToIndexRecursive(root_, &guid_index_);
-#endif  // DCHECK_IS_ON()
 
   titled_url_index_->SetNodeSorter(
       std::make_unique<TypedCountSorter>(client_.get()));
@@ -865,15 +843,11 @@ BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
 void BookmarkModel::AddNodeToIndexRecursive(const BookmarkNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/1143246): add a DCHECK to validate that all nodes have
+  // unique GUID when it is guaranteed.
+
   if (node->is_url())
     titled_url_index_->Add(node);
-
-  // The node's GUID must be unique. Note that |guid_index_| is used for
-  // DCHECK-enabled builds only.
-#if DCHECK_IS_ON()
-  DCHECK(guid_index_.insert(node->guid()).second)
-      << "Duplicate bookmark GUID: " << node->guid();
-#endif  // DCHECK_IS_ON()
 
   for (const auto& child : node->children())
     AddNodeToIndexRecursive(child.get());
