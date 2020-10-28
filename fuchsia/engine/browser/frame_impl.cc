@@ -60,10 +60,11 @@
 
 namespace {
 
-// logging::LogSeverity does not define a value to disable logging so set a
-// value much lower than logging::LOG_VERBOSE here.
-const logging::LogSeverity kLogSeverityNone =
-    std::numeric_limits<logging::LogSeverity>::min();
+// logging::LogSeverity does not define a value to disable logging; define one.
+// Since this value is used to determine whether incoming log severity is above
+// a threshold, set the value much higher than logging::LOG_ERROR.
+const logging::LogSeverity kLogSeverityUnreachable =
+    std::numeric_limits<logging::LogSeverity>::max();
 
 // Simulated screen bounds to use when headless rendering is enabled.
 constexpr gfx::Size kHeadlessWindowSize = {1, 1};
@@ -126,7 +127,7 @@ logging::LogSeverity ConsoleLogLevelToLoggingSeverity(
     fuchsia::web::ConsoleLogLevel level) {
   switch (level) {
     case fuchsia::web::ConsoleLogLevel::NONE:
-      return kLogSeverityNone;
+      return kLogSeverityUnreachable;
     case fuchsia::web::ConsoleLogLevel::DEBUG:
       return logging::LOG_VERBOSE;
     case fuchsia::web::ConsoleLogLevel::INFO:
@@ -244,7 +245,7 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
     : web_contents_(std::move(web_contents)),
       context_(context),
       navigation_controller_(web_contents_.get()),
-      log_level_(kLogSeverityNone),
+      log_level_(kLogSeverityUnreachable),
       url_request_rewrite_rules_manager_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()) {
@@ -940,7 +941,8 @@ bool FrameImpl::DidAddMessageToConsole(
   logging::LogSeverity log_severity =
       blink::ConsoleMessageLevelToLogSeverity(log_level);
   if (log_level_ > log_severity) {
-    return false;
+    // Prevent the default logging mechanism from logging the message.
+    return true;
   }
 
   std::string formatted_message =
@@ -948,6 +950,8 @@ bool FrameImpl::DidAddMessageToConsole(
                          line_no, base::UTF16ToUTF8(message).data());
   switch (log_level) {
     case blink::mojom::ConsoleMessageLevel::kVerbose:
+      // TODO(crbug.com/1139396): Use a more verbose value than INFO once using
+      // fx_logger directly. LOG() does not support VERBOSE.
       LOG(INFO) << "debug:" << formatted_message;
       break;
     case blink::mojom::ConsoleMessageLevel::kInfo:
@@ -960,7 +964,10 @@ bool FrameImpl::DidAddMessageToConsole(
       LOG(ERROR) << "error:" << formatted_message;
       break;
     default:
+      // TODO(crbug.com/1139396): Eliminate this case via refactoring. All
+      // values are handled above.
       DLOG(WARNING) << "Unknown log level: " << log_severity;
+      // Let the default logging mechanism handle the message.
       return false;
   }
 
