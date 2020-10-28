@@ -1540,6 +1540,8 @@ crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-elemen
 crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-element-0/width.html [ Failure ]
 crbug.com/692560 external/wpt/html/semantics/document-metadata/styling/LinkStyle.html [ Failure Pass ]
 
+crbug.com/1143074 [ Mac ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Failure Timeout ]
+
 crbug.com/860211 [ Mac ] external/wpt/editing/run/delete.html [ Failure ]
 
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
@@ -2599,10 +2601,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/editing/other/select-all-and-delete-in-html-element-having-contenteditable.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/first-contentful-image.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/mask-image.html [ Timeout ]
