@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/sys_byteorder.h"
@@ -40,7 +42,7 @@ namespace blink {
 class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
  public:
   // Convenient alias for a span of const uint8_t.
-  using ByteBuffer = base::span<const uint8_t>;
+  using ByteSpan = IdentifiableToken::ByteSpan;
 
   // Initializes an "empty" incremental digest for the purpose of constructing
   // an identifiability sample.
@@ -48,13 +50,13 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
 
   // Initializes an incremental digest and populates it with the data contained
   // in |message|.
-  explicit IdentifiableTokenBuilder(ByteBuffer message);
+  explicit IdentifiableTokenBuilder(ByteSpan message);
 
   // Copies the intermediate state.
   IdentifiableTokenBuilder(const IdentifiableTokenBuilder&);
 
   // Feeds data contained in |buffer| to the digest.
-  IdentifiableTokenBuilder& AddBytes(ByteBuffer buffer);
+  IdentifiableTokenBuilder& AddBytes(ByteSpan buffer);
 
   // Feeds data contained in |buffer| to the digest, but precedes the buffer
   // contents with an integer indicating the length. Use this when:
@@ -73,7 +75,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // memory, then consider adding a length directly via AddValue() prior to
   // adding the contents of the buffer. Doing so will achieve the same ends as
   // AddAtomic().
-  IdentifiableTokenBuilder& AddAtomic(ByteBuffer buffer);
+  IdentifiableTokenBuilder& AddAtomic(ByteSpan buffer);
   IdentifiableTokenBuilder& AddAtomic(base::StringPiece string) {
     return AddAtomic(base::as_bytes(base::make_span(string)));
   }
@@ -135,12 +137,15 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // must always stay constant across platforms.
   static constexpr size_t kBlockAlignment = 8;
 
-  // A span of exactly |kBlockSizeInBytes| bytes.
-  using FullBlock = base::span<const uint8_t, kBlockSizeInBytes>;
+  // An array of exactly |kBlockSizeInBytes| bytes.
+  using BlockBuffer = std::array<uint8_t, kBlockSizeInBytes>;
+
+  // A view of a full block.
+  using ConstFullBlockSpan = base::span<const uint8_t, kBlockSizeInBytes>;
 
   // Returns true if the partial buffer is aligned on |kBlockAlignment|
   // boundary.
-  bool IsAligned() const { return partial_size_ % kBlockAlignment == 0; }
+  bool IsAligned() const;
 
   // Appends enough NUL bytes to |partial_| until the next insertion point is
   // aligned on a |kBlockAlignment| boundary.
@@ -154,21 +159,19 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
 
   // Captures the |kBlockSizeInBytes| bytes of data in |block| into the digest.
   // |block| must be exactly this many bytes.
-  void DigestBlock(FullBlock block);
+  void DigestBlock(ConstFullBlockSpan block);
 
   // Captures as many bytes as possible from |message| into the partial block in
   // |partial_|. It captures a maximum of |kBlockSizeInBytes - 1| bytes.
   //
   // Returns a span covering the remainder of |message| that was not consumed.
-  ByteBuffer SkimIntoPartial(ByteBuffer message);
+  ByteSpan SkimIntoPartial(ByteSpan message);
 
   // Returns a span for the contents of the partial block.
   //
   // Can be called at any point. Does not change the state of the partial
   // buffer.
-  ByteBuffer GetPartialBlock() const {
-    return base::make_span(&partial_[0], partial_size_);
-  }
+  ByteSpan GetPartialBlock() const;
 
   // Returns a span that includes the contents of the partial block and backed
   // by |partial_|.
@@ -178,13 +181,17 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   //
   // NOTE: Any subsequent AddBytes(), AddValue(), AddAtomic() calls will
   // invalidate the returned FullBlock.
-  FullBlock TakeCompletedBlock();
+  ConstFullBlockSpan TakeCompletedBlock();
+
+  // Size of partially filled buffer.
+  size_t PartialSize() const;
 
   // Accumulates smaller pieces of data until we have a full block.
-  alignas(int64_t) uint8_t partial_[kBlockSizeInBytes];
+  alignas(int64_t) BlockBuffer partial_;
 
-  // Count of bytes in |partial_|.
-  size_t partial_size_;
+  // Next available position in `partial_`. std::array iterators are never
+  // invalidated.
+  BlockBuffer::iterator position_ = partial_.begin();
 
   // Merkle-Damgård chaining.
   uint64_t chaining_value_;

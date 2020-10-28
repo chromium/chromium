@@ -39,7 +39,7 @@ IdentifiabilityDigestOfBytes(base::span<const uint8_t> in);
 
 // The zero-length digest, i.e. the digest computed for no bytes.
 static constexpr uint64_t kIdentifiabilityDigestOfNoBytes =
-    0x9ae16a3b2f90404fULL;
+    UINT64_C(0x9ae16a3b2f90404f);
 
 }  // namespace blink
 
