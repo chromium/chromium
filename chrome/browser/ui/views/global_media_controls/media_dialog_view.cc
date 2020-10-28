@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
-#include "chrome/browser/ui/views/in_product_help/new_badge_label.h"
+#include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/pref_service_syncable.h"
