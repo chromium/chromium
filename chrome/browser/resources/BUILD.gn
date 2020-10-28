@@ -333,36 +333,6 @@ if (is_chromeos) {
     output_dir = "$root_gen_dir/chrome"
   }
 
-  grit("os_settings_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    settings_gen_dir = "$root_gen_dir/chrome/browser/resources/settings"
-    source = "$settings_gen_dir/chromeos/os_settings_resources.grd"
-    deps = [
-      "//chrome/browser/resources/settings/chromeos:build_grd",
-      "//chrome/browser/ui/webui/settings/chromeos:mojom_js",
-    ]
-
-    outputs = [
-      "grit/os_settings_resources.h",
-      "grit/os_settings_resources_map.cc",
-      "grit/os_settings_resources_map.h",
-      "os_settings_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
   grit("bluetooth_pairing_dialog_resources") {
     grit_flags = [
       "-E",

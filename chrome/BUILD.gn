@@ -1368,10 +1368,10 @@ group("extra_resources") {
       "//chrome/browser/resources:nearby_share_dialog_resources",
       "//chrome/browser/resources:nearby_shared_resources",
       "//chrome/browser/resources:nearby_shared_resources_v3",
-      "//chrome/browser/resources:os_settings_resources",
       "//chrome/browser/resources/chromeos:cellular_setup_resources",
       "//chrome/browser/resources/chromeos:multidevice_setup_resources",
       "//chrome/browser/resources/chromeos/accessibility:build",
+      "//chrome/browser/resources/settings/chromeos:os_settings_resources",
       "//third_party/ink:ink_resources",
     ]
   }
