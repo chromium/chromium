@@ -11008,6 +11008,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PurgeAndSuspend.Experimental.TimeToFirstActivePaint"
     units="ms" expires_after="M81">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tasak@google.com</owner>
   <summary>
     Time elapsed from when the backgrounded and purged renderer is foregrounded
@@ -11019,6 +11022,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PurgeAndSuspend.Experimental.TimeToFirstActivePaint.AfterBackgrounded.5min"
     units="ms" expires_after="M81">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tasak@google.com</owner>
   <summary>
     Time elapsed from when the renderer, which is kept backgrounded for more

@@ -331,7 +331,6 @@ class CORE_EXPORT WebFrameWidgetBase
   // WidgetBaseClient methods.
   void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) override;
-  void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void DidCommitAndDrawCompositorFrame() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;

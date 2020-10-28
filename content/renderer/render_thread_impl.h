@@ -396,8 +396,6 @@ class CONTENT_EXPORT RenderThreadImpl
   };
   bool GetRendererMemoryMetrics(RendererMemoryMetrics* memory_metrics) const;
 
-  bool NeedsToRecordFirstActivePaint(int metric_type) const;
-
   void RecordMetricsForBackgroundedRendererPurge();
 
   // Sets the current pipeline rendering color space.
@@ -606,8 +604,6 @@ class CONTENT_EXPORT RenderThreadImpl
       agent_scheduling_groups_;
 
   RendererMemoryMetrics purge_and_suspend_memory_metrics_;
-  bool needs_to_record_first_active_paint_;
-  base::TimeTicks was_backgrounded_time_;
   int process_foregrounded_count_;
   bool online_status_ = true;
 

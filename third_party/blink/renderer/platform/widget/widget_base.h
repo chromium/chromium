@@ -347,8 +347,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   mojo::AssociatedReceiver<mojom::blink::Widget> receiver_;
   std::unique_ptr<scheduler::WebRenderWidgetSchedulingState>
       render_widget_scheduling_state_;
-  bool first_update_visual_state_after_hidden_ = false;
-  base::TimeTicks was_shown_time_ = base::TimeTicks::Now();
   bool has_focus_ = false;
   WidgetBaseInputHandler input_handler_{this};
   scoped_refptr<WidgetCompositor> widget_compositor_;

@@ -40,10 +40,6 @@ class WidgetBaseClient {
   // and dispatch rAF.
   virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
 
-  // Called to record the time between when the widget was marked visible
-  // until the compositor begain producing a frame.
-  virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) = 0;
-
   // Requests that the lifecycle of the widget be updated.
   virtual void UpdateLifecycle(WebLifecycleUpdate requested_update,
                                DocumentUpdateReason reason) = 0;

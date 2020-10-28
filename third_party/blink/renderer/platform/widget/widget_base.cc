@@ -746,10 +746,6 @@ void WidgetBase::SetCompositorVisible(bool visible) {
   if (never_composited_)
     return;
 
-  if (visible)
-    was_shown_time_ = base::TimeTicks::Now();
-  else
-    first_update_visual_state_after_hidden_ = true;
   layer_tree_view_->SetVisible(visible);
 }
 
@@ -764,11 +760,6 @@ void WidgetBase::UpdateVisualState() {
           : DocumentUpdateReason::kTest;
   client_->UpdateLifecycle(WebLifecycleUpdate::kAll, lifecycle_reason);
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(false);
-  if (first_update_visual_state_after_hidden_) {
-    client_->RecordTimeToFirstActivePaint(base::TimeTicks::Now() -
-                                          was_shown_time_);
-    first_update_visual_state_after_hidden_ = false;
-  }
 }
 
 void WidgetBase::BeginMainFrame(base::TimeTicks frame_time) {

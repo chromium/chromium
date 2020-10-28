@@ -99,12 +99,6 @@ class CONTENT_EXPORT RenderWidget
 
   ~RenderWidget() override;
 
-  // Time-To-First-Active-Paint(TTFAP) type
-  enum {
-    TTFAP_AFTER_PURGED,
-    TTFAP_5MIN_AFTER_BACKGROUNDED,
-  };
-
   // Convenience type for creation method taken by InstallCreateForFrameHook().
   // The method signature matches the RenderWidget constructor.
   using CreateRenderWidgetFunction =
@@ -186,7 +180,6 @@ class CONTENT_EXPORT RenderWidget
   void ScheduleAnimation() override;
   void BrowserClosedIpcChannelForPopupWidget() override;
   viz::FrameSinkId GetFrameSinkId() override;
-  void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
 
   void ConvertViewportToWindow(blink::WebRect* rect);
   void UpdateTextInputState();

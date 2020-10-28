@@ -120,10 +120,6 @@ class WebWidgetClient {
   // RequestMainFrameUpdate in response to a BeginMainFrame.
   virtual void DidBeginMainFrame() {}
 
-  // Record the time it took for the first paint after the widget transitioned
-  // from background inactive to active.
-  virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) {}
-
   // Called to indicate a syntehtic event was queued.
   virtual void WillQueueSyntheticEvent(const WebCoalescedInputEvent& event) {}
 

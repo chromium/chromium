@@ -16,7 +16,6 @@ namespace blink {
 class StubWidgetBaseClient : public WidgetBaseClient {
  public:
   void BeginMainFrame(base::TimeTicks) override {}
-  void RecordTimeToFirstActivePaint(base::TimeDelta) override {}
   void UpdateLifecycle(WebLifecycleUpdate, DocumentUpdateReason) override {}
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override {

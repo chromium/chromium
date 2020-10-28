@@ -174,21 +174,6 @@ void RenderWidget::ScheduleAnimation() {
     layer_tree_host_->SetNeedsAnimate();
 }
 
-void RenderWidget::RecordTimeToFirstActivePaint(base::TimeDelta duration) {
-  RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
-  if (render_thread_impl->NeedsToRecordFirstActivePaint(TTFAP_AFTER_PURGED)) {
-    UMA_HISTOGRAM_TIMES("PurgeAndSuspend.Experimental.TimeToFirstActivePaint",
-                        duration);
-  }
-  if (render_thread_impl->NeedsToRecordFirstActivePaint(
-          TTFAP_5MIN_AFTER_BACKGROUNDED)) {
-    UMA_HISTOGRAM_TIMES(
-        "PurgeAndSuspend.Experimental.TimeToFirstActivePaint."
-        "AfterBackgrounded.5min",
-        duration);
-  }
-}
-
 void RenderWidget::UpdateTextInputState() {
   GetWebWidget()->UpdateTextInputState();
 }

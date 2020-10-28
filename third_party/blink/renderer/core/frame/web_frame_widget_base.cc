@@ -1041,11 +1041,6 @@ void WebFrameWidgetBase::SetCompositorVisible(bool visible) {
   widget_base_->SetCompositorVisible(visible);
 }
 
-void WebFrameWidgetBase::RecordTimeToFirstActivePaint(
-    base::TimeDelta duration) {
-  Client()->RecordTimeToFirstActivePaint(duration);
-}
-
 void WebFrameWidgetBase::RecordDispatchRafAlignedInputTime(
     base::TimeTicks raf_aligned_input_start_time) {
   if (LocalRootImpl()) {

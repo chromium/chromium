@@ -598,10 +598,6 @@ void WebPagePopupImpl::SetSuppressFrameRequestsWorkaroundFor704763Only(
       suppress_frame_requests);
 }
 
-void WebPagePopupImpl::RecordTimeToFirstActivePaint(base::TimeDelta duration) {
-  WidgetClient()->RecordTimeToFirstActivePaint(duration);
-}
-
 void WebPagePopupImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
                                        DocumentUpdateReason reason) {
   if (!page_)
