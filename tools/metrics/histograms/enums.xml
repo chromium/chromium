@@ -29660,8 +29660,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3313" label="RubyTextWithNonDefaultTextAlign"/>
   <int value="3314" label="HTMLMetaElementReferrerPolicyOutsideHead"/>
   <int value="3315" label="HTMLMetaElementReferrerPolicyMultipleTokens"/>
-  <int value="3316" label="FetchAPINonGetOrHeadOpaqueResponse"/>
-  <int value="3317" label="FetchAPINonGetOrHeadOpaqueResponseWithRedirect"/>
   <int value="3318" label="DynamicImportModuleScriptRelativeClassicSameOrigin"/>
   <int value="3319"
       label="DynamicImportModuleScriptRelativeClassicCrossOrigin"/>

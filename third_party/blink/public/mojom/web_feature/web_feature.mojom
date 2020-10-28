@@ -2644,8 +2644,6 @@ enum WebFeature {
   kRubyTextWithNonDefaultTextAlign = 3313,
   kHTMLMetaElementReferrerPolicyOutsideHead = 3314,
   kHTMLMetaElementReferrerPolicyMultipleTokens = 3315,
-  kFetchAPINonGetOrHeadOpaqueResponse = 3316,
-  kFetchAPINonGetOrHeadOpaqueResponseWithRedirect = 3317,
   kDynamicImportModuleScriptRelativeClassicSameOrigin = 3318,
   kDynamicImportModuleScriptRelativeClassicCrossOrigin = 3319,
   kV8WasmBulkMemory = 3320,
