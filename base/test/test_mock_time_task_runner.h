@@ -174,16 +174,10 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
 
   // Returns a Clock that uses the virtual time of |this| as its time source.
   // The returned Clock will hold a reference to |this|.
-  // TODO(tzik): Remove DeprecatedGetMockClock() after updating all callers to
-  // use non-owning Clock.
-  std::unique_ptr<Clock> DeprecatedGetMockClock() const;
   Clock* GetMockClock() const;
 
   // Returns a TickClock that uses the virtual time ticks of |this| as its tick
   // source. The returned TickClock will hold a reference to |this|.
-  // TODO(tzik): Replace Remove DeprecatedGetMockTickClock() after updating all
-  // callers to use non-owning TickClock.
-  std::unique_ptr<TickClock> DeprecatedGetMockTickClock() const;
   const TickClock* GetMockTickClock() const;
 
   // Cancelled pending tasks get pruned automatically.
