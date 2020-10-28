@@ -47,6 +47,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   std::unique_ptr<ViewClass_> Build() {
+    DCHECK(!root_view_) << "Root view specified. Use BuildChildren() instead.";
     DCHECK(view_);
     SetProperties(view_.get());
     CreateChildren(view_.get());
@@ -54,6 +55,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   void BuildChildren() {
+    DCHECK(!view_) << "Default constructor called. Use Build() instead.";
     DCHECK(root_view_);
     SetProperties(root_view_);
     CreateChildren(root_view_);
@@ -70,7 +72,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property, const T& value) {
+  Builder& SetProperty(const ui::ClassProperty<T*>* property,
+                       metadata::ArgType<T> value) {
     auto setter =
         std::make_unique<internal::ClassPropertyMoveSetter<ViewClass_, T>>(
             property, value);
