@@ -2069,6 +2069,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3428419049384081277">Vous êtes connecté</translation>
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3428800329481094896">Extraction des clés SSH du conteneur Linux…</translation>
+<translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
 <translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
 <translation id="3432757130254800023">Envoyer les contenus audio et vidéo aux écrans sur le réseau local</translation>
@@ -2493,6 +2494,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante filmée avec la caméra ou lue à partir d'un fichier</translation>
+<translation id="3884152383786131369">Le contenu Web disponible dans plusieurs langues vous sera proposé dans la première langue disponible de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a bien été envoyée à <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Prise de notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Ajouter une connexion OpenVPN/L2TP…</translation>
