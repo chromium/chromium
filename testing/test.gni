@@ -231,6 +231,7 @@ template("test") {
 
     fuchsia_package_runner(target_name) {
       testonly = true
+      is_test_exe = true
       forward_variables_from(invoker,
                              [
                                "use_test_server",

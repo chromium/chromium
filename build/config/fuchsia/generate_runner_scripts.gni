@@ -42,6 +42,8 @@ declare_args() {
 #       "build/fuchsia". Defaults to "test_runner.py".
 #   install_only: If true, executing the script will only install the package
 #       on the device, but not run it.
+#   is_test_exe: If true, the generated script will run the command under
+#       test_env.py and add arguments expected to be passed to test exes.
 template("fuchsia_package_runner") {
   forward_variables_from(invoker, [ "runner_script" ])
 
@@ -70,11 +72,29 @@ template("fuchsia_package_runner") {
                              "testonly",
                            ])
 
+    _is_test_exe = defined(invoker.is_test_exe) && invoker.is_test_exe
+
     if (defined(runner_script)) {
-      executable = rebase_path(runner_script)
+      _runner_script = runner_script
     } else {
-      executable = rebase_path("//build/fuchsia/test_runner.py")
+      _runner_script = "//build/fuchsia/test_runner.py"
     }
+
+    if (_is_test_exe) {
+      executable = "//testing/test_env.py"
+      executable_args =
+          [ "@WrappedPath(" + rebase_path(_runner_script, root_out_dir) + ")" ]
+      data = [
+        _runner_script,
+        "//.vpython",
+        "//testing/test_env.py",
+      ]
+    } else {
+      executable = rebase_path(_runner_script)
+      executable_args = []
+      data = []
+    }
+
     wrapper_script = generated_run_pkg_script_path
 
     data_deps = [
@@ -95,7 +115,7 @@ template("fuchsia_package_runner") {
 
     # Declares the files that are needed for test execution on the
     # swarming test client.
-    data = [
+    data += [
       "//build/fuchsia/",
       "//build/util/lib/",
       "//third_party/fuchsia-sdk/sdk/.build-id/",
@@ -141,8 +161,6 @@ template("fuchsia_package_runner") {
     foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
       data += [ "${fuchsia_additional_boot_image}/" ]
     }
-
-    executable_args = []
 
     package_paths = [ rebase_path(_package_path, root_build_dir) ]
     if (defined(invoker.package_deps)) {
