@@ -13,7 +13,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AppBannerManagerHelper_jni.h"
+#include "chrome/android/chrome_jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -23,7 +23,6 @@
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_params.h"
-#include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -137,7 +136,7 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
 
 void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!Java_AppBannerManagerHelper_isEnabledForTab(env))
+  if (!Java_AppBannerManager_isEnabledForTab(env, java_banner_manager_))
     return;
 
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents());

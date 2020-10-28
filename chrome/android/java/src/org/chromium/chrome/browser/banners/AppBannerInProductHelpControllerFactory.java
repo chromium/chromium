@@ -7,13 +7,8 @@ package org.chromium.chrome.browser.banners;
 import android.app.Activity;
 import android.view.View;
 
-import androidx.annotation.IdRes;
-
-import org.chromium.base.Function;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -21,10 +16,8 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class AppBannerInProductHelpControllerFactory {
     public static AppBannerInProductHelpController createAppBannerInProductHelpController(
-            Activity activity, AppMenuHandler appMenuHandler, Supplier<View> menuButtonView,
-            @IdRes int higlightMenuItemId, Function<Profile, Tracker> trackerFromProfileFactory) {
-        return new AppBannerInProductHelpController(activity, appMenuHandler, menuButtonView,
-                higlightMenuItemId, trackerFromProfileFactory);
+            Activity activity, AppMenuHandler appMenuHandler, Supplier<View> menuButtonView) {
+        return new AppBannerInProductHelpController(activity, appMenuHandler, menuButtonView);
     }
 
     public static void attach(
