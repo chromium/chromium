@@ -34,15 +34,13 @@
     --iron-icon-fill-color: #999;
   }
 </style>
-<div id="container">
-  <div id="input-row">
-    <iron-icon icon="cr:search"></iron-icon>
-    <input id="input" type="text" on-input="onInput_"
-        on-keydown="onKeydown_" autofocus></input>
-  </div>
-  <template id="options" is="dom-repeat" on-dom-change="onDomChange_"
-        items="[[options_]]">
-    <commander-option class$="[[getOptionClass_(index, focusedIndex_)]]"
-          model="[[item]]" on-click="onOptionClick_"></commander-option>
-  </template>
+<div id="input-row">
+  <iron-icon icon="cr:search"></iron-icon>
+  <input id="input" type="text" on-input="onInput_"
+      on-keydown="onKeydown_" autofocus></input>
 </div>
+<template id="options" is="dom-repeat" on-dom-change="onDomChange_"
+      items="[[options_]]">
+  <commander-option class$="[[getOptionClass_(index, focusedIndex_)]]"
+        model="[[item]]" on-click="onOptionClick_"></commander-option>
+</template>

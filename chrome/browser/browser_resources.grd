@@ -49,7 +49,6 @@
     </structures>
     <includes>
       <if expr="is_win or is_macosx or desktop_linux or chromeos">
-        <include name="IDR_COMMANDER_HTML" file="resources\commander\commander.html" type="BINDATA" />
         <include name="IDR_DISCARDS_DATABASE_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\database_tab.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_DISCARDS_MAIN_JS" file="${root_gen_dir}\chrome\browser\resources\discards\discards_main.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_DISCARDS_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\discards_tab.js" use_base_dir="false" type="BINDATA" />
