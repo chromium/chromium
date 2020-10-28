@@ -1250,6 +1250,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // profile are implemented as forced incognito, we can't open a new guest
   // browser either, so we have to show the User Manager as well.
   Profile* lastProfile = [self lastProfile];
+  if (!lastProfile) {
+    // Without a profile there's nothing that can be done, but still return NO
+    // to AppKit as there's nothing that it can do either.
+    return NO;
+  }
   if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
       lastProfile->IsSystemProfile()) {
     UserManager::Show(base::FilePath(),
