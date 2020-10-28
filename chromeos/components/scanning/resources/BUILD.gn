@@ -20,6 +20,7 @@ js_type_check("closure_compile_module") {
     ":scanning_app",
     ":scanning_app_types",
     ":scanning_app_util",
+    ":scanning_browser_proxy",
     ":select_behavior",
     ":source_select",
   ]
@@ -96,6 +97,7 @@ js_library("scanning_app") {
     ":scanner_select",
     ":scanning_app_types",
     ":scanning_app_util",
+    ":scanning_browser_proxy",
     ":source_select",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -119,6 +121,10 @@ js_library("source_select") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+}
+
+js_library("scanning_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr" ]
 }
 
 js_library("mojo_interface_provider") {

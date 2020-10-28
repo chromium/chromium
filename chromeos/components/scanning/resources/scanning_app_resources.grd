@@ -43,6 +43,7 @@
     </includes>
 
     <structures>
+      <structure name="IDR_SCANNING_APP_BROWSER_PROXY_JS" file="scanning_browser_proxy.js" type="chrome_html" />
       <structure name="IDR_SCANNING_APP_MOJO_INTERFACE_PROVIDER_JS" file="mojo_interface_provider.js" type="chrome_html" />
       <structure name="IDR_SCANNING_APP_SELECT_BEHAVIOR_JS" file="select_behavior.js" type="chrome_html" />
       <structure name="IDR_SCANNING_APP_TYPES_JS" file="scanning_app_types.js" type="chrome_html" />
