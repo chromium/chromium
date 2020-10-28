@@ -556,12 +556,15 @@ static PositionTemplate<Strategy> NextVisuallyDistinctCandidateAlgorithm(
   PositionIteratorAlgorithm<Strategy> p(position);
   const PositionTemplate<Strategy> downstream_start =
       MostForwardCaretPosition(position);
+  const PositionTemplate<Strategy> upstream_start =
+      MostBackwardCaretPosition(position);
 
   p.Increment();
   while (!p.AtEnd()) {
     PositionTemplate<Strategy> candidate = p.ComputePosition();
     if (IsVisuallyEquivalentCandidate(candidate) &&
-        MostForwardCaretPosition(candidate) != downstream_start)
+        MostForwardCaretPosition(candidate) != downstream_start &&
+        MostBackwardCaretPosition(candidate) != upstream_start)
       return candidate;
 
     p.Increment();
@@ -620,12 +623,15 @@ PositionTemplate<Strategy> PreviousVisuallyDistinctCandidateAlgorithm(
   PositionIteratorAlgorithm<Strategy> p(position);
   PositionTemplate<Strategy> downstream_start =
       MostForwardCaretPosition(position);
+  const PositionTemplate<Strategy> upstream_start =
+      MostBackwardCaretPosition(position);
 
   p.Decrement();
   while (!p.AtStart()) {
     PositionTemplate<Strategy> candidate = p.ComputePosition();
     if (IsVisuallyEquivalentCandidate(candidate) &&
-        MostForwardCaretPosition(candidate) != downstream_start)
+        MostForwardCaretPosition(candidate) != downstream_start &&
+        MostBackwardCaretPosition(candidate) != upstream_start)
       return candidate;
 
     p.Decrement();

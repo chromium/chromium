@@ -578,6 +578,23 @@ TEST_F(VisibleUnitsTest, nextPositionOf) {
                 .DeepEquivalent());
 }
 
+TEST_F(VisibleUnitsTest, nextPositionOfTable) {
+  SetBodyContent("<table id='table'></table>");
+  Element* table = GetDocument().getElementById("table");
+  // Couldn't include the <br> in the HTML above since the parser would have
+  // messed up the structure in the DOM.
+  table->setInnerHTML("<br>", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  Position position(table, 0);
+  Position next =
+      NextPositionOf(CreateVisiblePosition(position)).DeepEquivalent();
+  EXPECT_NE(position, next);
+  EXPECT_NE(MostBackwardCaretPosition(position),
+            MostBackwardCaretPosition(next));
+  EXPECT_NE(MostForwardCaretPosition(position), MostForwardCaretPosition(next));
+}
+
 TEST_F(VisibleUnitsTest, previousPositionOf) {
   const char* body_content =
       "<b id=zero>0</b><p id=host><b id=one>1</b><b id=two>22</b></p><b "
