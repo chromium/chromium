@@ -179,6 +179,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // lock/login screen. See https://crbug.com/775591.
   bool IsBlurAllowedForLockState() const;
 
+  // True if the wallpaper is set.
+  bool is_wallpaper_set() const { return !!current_wallpaper_.get(); }
+
   // Sets wallpaper info for |account_id| and saves it to local state if the
   // user is not ephemeral. Returns false if it fails (which happens if local
   // state is not available).
@@ -321,6 +324,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Proxy to private ReloadWallpaper().
   void ReloadWallpaperForTesting(bool clear_cache);
+
+  void set_bypass_decode_for_testing() { bypass_decode_for_testing_ = true; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);

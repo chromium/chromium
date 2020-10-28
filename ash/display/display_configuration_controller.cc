@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "chromeos/system/devicemode.h"
@@ -140,7 +141,9 @@ void DisplayConfigurationController::SetDisplayRotation(
     display::Display::Rotation rotation,
     display::Display::RotationSource source,
     DisplayConfigurationController::RotationAnimation mode) {
-  if (display_manager_->IsDisplayIdValid(display_id)) {
+  // No need to apply animation if the wallpaper isn't set yet during startup.
+  if (display_manager_->IsDisplayIdValid(display_id) &&
+      Shell::Get()->wallpaper_controller()->is_wallpaper_set()) {
     if (GetTargetRotation(display_id) == rotation)
       return;
     if (display_animator_) {

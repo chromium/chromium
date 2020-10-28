@@ -9,6 +9,7 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "ui/display/manager/display_manager.h"
@@ -27,6 +28,13 @@ class DisplayConfigurationControllerSmoothRotationTest : public AshTestBase {
  public:
   DisplayConfigurationControllerSmoothRotationTest() = default;
   ~DisplayConfigurationControllerSmoothRotationTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // ScreenRotionAnimator skips animation if the wallpaper isn't ready.
+    Shell::Get()->wallpaper_controller()->set_bypass_decode_for_testing();
+    Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationControllerSmoothRotationTest);

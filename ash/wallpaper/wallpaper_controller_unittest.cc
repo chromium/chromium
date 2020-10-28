@@ -523,7 +523,7 @@ class WallpaperControllerTest : public AshTestBase {
     return controller_->decode_requests_for_testing_;
   }
 
-  void SetBypassDecode() { controller_->bypass_decode_for_testing_ = true; }
+  void SetBypassDecode() { controller_->set_bypass_decode_for_testing(); }
 
   void ClearWallpaperCount() { controller_->wallpaper_count_for_testing_ = 0; }
 
