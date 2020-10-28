@@ -78,8 +78,9 @@ void AccountFetcherService::Initialize(
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
       signin_client_->GetPrefs(), AccountFetcherService::kLastUpdatePref,
       kRefreshFromTokenServiceDelay,
-      base::Bind(&AccountFetcherService::RefreshAllAccountInfo,
-                 base::Unretained(this), /*only_fetch_if_invalid=*/false));
+      base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
+                          base::Unretained(this),
+                          /*only_fetch_if_invalid=*/false));
 
   // Tokens may have already been loaded and we will not receive a
   // notification-on-registration for |token_service_->AddObserver(this)| few

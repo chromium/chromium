@@ -42,8 +42,8 @@ class PersistentRepeatingTimerTest : public ::testing::Test {
 TEST_F(PersistentRepeatingTimerTest, MissingPref) {
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
-      base::Bind(&PersistentRepeatingTimerTest::RunTask,
-                 base::Unretained(this)));
+      base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
+                          base::Unretained(this)));
   CheckCallCount(0);
 
   // The task is run immediately on start.
@@ -62,8 +62,8 @@ TEST_F(PersistentRepeatingTimerTest, MissingPref) {
 TEST_F(PersistentRepeatingTimerTest, MultipleStarts) {
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
-      base::Bind(&PersistentRepeatingTimerTest::RunTask,
-                 base::Unretained(this)));
+      base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
+                          base::Unretained(this)));
   CheckCallCount(0);
 
   // The task is run immediately on start.
@@ -91,8 +91,8 @@ TEST_F(PersistentRepeatingTimerTest, RecentPref) {
 
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
-      base::Bind(&PersistentRepeatingTimerTest::RunTask,
-                 base::Unretained(this)));
+      base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
+                          base::Unretained(this)));
   CheckCallCount(0);
 
   // The task is NOT run immediately on start.
@@ -118,8 +118,8 @@ TEST_F(PersistentRepeatingTimerTest, OldPref) {
 
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
-      base::Bind(&PersistentRepeatingTimerTest::RunTask,
-                 base::Unretained(this)));
+      base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
+                          base::Unretained(this)));
   CheckCallCount(0);
 
   // The task is run immediately on start.

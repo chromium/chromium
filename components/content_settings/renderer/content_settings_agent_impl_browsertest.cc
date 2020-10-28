@@ -304,7 +304,8 @@ TEST_F(ContentSettingsAgentImplBrowserTest, JSBlockSentAfterPageLoad) {
   // has not yet been sent at the time when the navigation commits.
   CommitTimeConditionChecker checker(
       view_->GetMainRenderFrame(),
-      base::Bind(HasSentOnContentBlocked, base::Unretained(&mock_agent)),
+      base::BindRepeating(HasSentOnContentBlocked,
+                          base::Unretained(&mock_agent)),
       false);
 
   std::string url_str = "data:text/html;charset=utf-8,";

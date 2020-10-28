@@ -42,7 +42,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
     auto callback =
-        base::Bind(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
           policy_decision = decision;
           callback_called = true;
         });

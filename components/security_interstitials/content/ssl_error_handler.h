@@ -69,7 +69,8 @@ extern const base::Feature kCaptivePortalCertificateList;
 class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
                         public content::WebContentsObserver {
  public:
-  typedef base::Callback<void(content::WebContents*)> TimerStartedCallback;
+  typedef base::RepeatingCallback<void(content::WebContents*)>
+      TimerStartedCallback;
   typedef base::OnceCallback<void(
       std::unique_ptr<security_interstitials::SecurityInterstitialPage>)>
       BlockingPageReadyCallback;
@@ -116,7 +117,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
                                  GURL* suggested_url) const = 0;
     virtual void CheckSuggestedUrl(
         const GURL& suggested_url,
-        const CommonNameMismatchHandler::CheckUrlCallback& callback) = 0;
+        CommonNameMismatchHandler::CheckUrlCallback callback) = 0;
     virtual void NavigateToSuggestedURL(const GURL& suggested_url) = 0;
     virtual bool IsErrorOverridable() const = 0;
     virtual void ShowCaptivePortalInterstitial(const GURL& landing_url) = 0;

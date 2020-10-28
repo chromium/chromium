@@ -46,8 +46,8 @@ class CommonNameMismatchHandler {
     IGNORE_REQUESTS_FOR_TESTING
   };
 
-  typedef base::Callback<void(SuggestedUrlCheckResult result,
-                              const GURL& suggested_url)>
+  typedef base::OnceCallback<void(SuggestedUrlCheckResult result,
+                                  const GURL& suggested_url)>
       CheckUrlCallback;
 
   CommonNameMismatchHandler(
@@ -57,7 +57,7 @@ class CommonNameMismatchHandler {
 
   // Performs a network request to suggested URL. After completion, runs the
   // |callback|.
-  void CheckSuggestedUrl(const GURL& url, const CheckUrlCallback& callback);
+  void CheckSuggestedUrl(const GURL& url, CheckUrlCallback callback);
 
   // Determines if, for |request_url| serving a certificate that is valid for
   // the domain names |dns_names|, there is a name that the certificate is

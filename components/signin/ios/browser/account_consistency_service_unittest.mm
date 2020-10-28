@@ -135,7 +135,7 @@ class TestWebState : public web::TestWebState {
     __block web::WebStatePolicyDecider::PolicyDecision policyDecision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
     auto callback =
-        base::Bind(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
           policyDecision = decision;
         });
     decider_->ShouldAllowResponse(response, for_main_frame,

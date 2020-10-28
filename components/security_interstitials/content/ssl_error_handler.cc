@@ -377,7 +377,7 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
                        GURL* suggested_url) const override;
   void CheckSuggestedUrl(
       const GURL& suggested_url,
-      const CommonNameMismatchHandler::CheckUrlCallback& callback) override;
+      CommonNameMismatchHandler::CheckUrlCallback callback) override;
   void NavigateToSuggestedURL(const GURL& suggested_url) override;
   bool IsErrorOverridable() const override;
   void ShowCaptivePortalInterstitial(const GURL& landing_url) override;
@@ -448,14 +448,15 @@ bool SSLErrorHandlerDelegateImpl::GetSuggestedUrl(
 
 void SSLErrorHandlerDelegateImpl::CheckSuggestedUrl(
     const GURL& suggested_url,
-    const CommonNameMismatchHandler::CheckUrlCallback& callback) {
+    CommonNameMismatchHandler::CheckUrlCallback callback) {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory(
       content::BrowserContext::GetDefaultStoragePartition(browser_context_)
           ->GetURLLoaderFactoryForBrowserProcess());
   common_name_mismatch_handler_.reset(
       new CommonNameMismatchHandler(request_url_, url_loader_factory));
 
-  common_name_mismatch_handler_->CheckSuggestedUrl(suggested_url, callback);
+  common_name_mismatch_handler_->CheckSuggestedUrl(suggested_url,
+                                                   std::move(callback));
 }
 
 void SSLErrorHandlerDelegateImpl::NavigateToSuggestedURL(
@@ -773,8 +774,8 @@ void SSLErrorHandler::StartHandlingError() {
       }
       delegate_->CheckSuggestedUrl(
           suggested_url,
-          base::Bind(&SSLErrorHandler::CommonNameMismatchHandlerCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&SSLErrorHandler::CommonNameMismatchHandlerCallback,
+                         weak_ptr_factory_.GetWeakPtr()));
       timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(), this,
                    &SSLErrorHandler::ShowSSLInterstitial);
 
@@ -790,7 +791,7 @@ void SSLErrorHandler::StartHandlingError() {
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   subscription_ = captive_portal_service_->RegisterCallback(
-      base::Bind(&SSLErrorHandler::Observe, base::Unretained(this)));
+      base::BindRepeating(&SSLErrorHandler::Observe, base::Unretained(this)));
 
   captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
       captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents_);
@@ -954,8 +955,8 @@ void SSLErrorHandler::DeleteSSLErrorHandler() {
 void SSLErrorHandler::HandleCertDateInvalidError() {
   const base::TimeTicks now = base::TimeTicks::Now();
   timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(),
-               base::Bind(&SSLErrorHandler::HandleCertDateInvalidErrorImpl,
-                          base::Unretained(this), now));
+               base::BindOnce(&SSLErrorHandler::HandleCertDateInvalidErrorImpl,
+                              base::Unretained(this), now));
   // Try kicking off a time fetch to get an up-to-date estimate of the
   // true time. This will only have an effect if network time is
   // unavailable or if there is not already a query in progress.

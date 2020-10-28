@@ -112,8 +112,9 @@ ContentSettingsAgentImpl::ContentSettingsAgentImpl(
   render_frame->GetWebFrame()->SetContentSettingsClient(this);
 
   render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::Bind(&ContentSettingsAgentImpl::OnContentSettingsAgentRequest,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &ContentSettingsAgentImpl::OnContentSettingsAgentRequest,
+          base::Unretained(this)));
 
   content::RenderFrame* main_frame =
       render_frame->GetRenderView()->GetMainRenderFrame();

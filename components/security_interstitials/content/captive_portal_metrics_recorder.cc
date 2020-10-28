@@ -38,7 +38,7 @@ CaptivePortalMetricsRecorder::CaptivePortalMetricsRecorder(
       captive_portal_no_response_(false),
       captive_portal_detected_(false) {
   captive_portal_detection_enabled_ = captive_portal_service->enabled();
-  subscription_ = captive_portal_service->RegisterCallback(base::Bind(
+  subscription_ = captive_portal_service->RegisterCallback(base::BindRepeating(
       &CaptivePortalMetricsRecorder::Observe, base::Unretained(this)));
 }
 

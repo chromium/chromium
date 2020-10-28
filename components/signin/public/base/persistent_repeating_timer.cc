@@ -30,8 +30,8 @@ void PersistentRepeatingTimer::Start() {
     OnTimerFired();
   } else {
     timer_.Start(FROM_HERE, delay_ - time_since_update,
-                 base::Bind(&PersistentRepeatingTimer::OnTimerFired,
-                            base::Unretained(this)));
+                 base::BindRepeating(&PersistentRepeatingTimer::OnTimerFired,
+                                     base::Unretained(this)));
   }
   DCHECK(timer_.IsRunning());
 }

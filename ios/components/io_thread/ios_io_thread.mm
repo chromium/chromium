@@ -72,8 +72,8 @@
 #error "This file requires ARC support."
 #endif
 
-// The IOSIOThread object must outlive any tasks posted to the IO thread
-// before the Quit task, so base::Bind() calls are not refcounted.
+// The IOSIOThread object must outlive any tasks posted to the IO thread before
+// the Quit task, so base::Bind{Once,Repeating}() calls are not refcounted.
 
 namespace io_thread {
 
