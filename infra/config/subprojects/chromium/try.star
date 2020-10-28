@@ -1689,10 +1689,6 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "linux-chromeos-chrome-easwa",
-)
-
-chrome_internal_verifier(
     builder = "mac-chrome",
 )
 

@@ -38,7 +38,6 @@
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
-      'linux-chromeos-chrome-easwa': 'official_goma_chromeos',
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
@@ -847,7 +846,6 @@
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
-      'linux-chromeos-chrome-easwa': 'official_goma_chromeos_include_unwind_tables',
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
@@ -2222,10 +2220,6 @@
 
     'official_goma_linux_pgo': [
       'official', 'goma', 'static', 'no_symbols', 'pgo_phase_1',
-    ],
-
-    'official_goma_chromeos': [
-      'official', 'goma', 'chromeos',
     ],
 
     'official_goma_chromeos_include_unwind_tables': [

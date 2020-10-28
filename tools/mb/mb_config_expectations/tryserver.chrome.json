@@ -134,15 +134,6 @@
       "use_goma": true
     }
   },
-  "linux-chromeos-chrome-easwa": {
-    "gn_args": {
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "target_os": "chromeos",
-      "use_goma": true
-    }
-  },
   "mac-chrome": {
     "gn_args": {
       "ignore_missing_widevine_signing_cert": true,
