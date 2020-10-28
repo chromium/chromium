@@ -17,6 +17,8 @@ class WaitableEvent;
 
 namespace gpu {
 class ImageFactory;
+class SharedImageInterface;
+class SharedImageInterfaceInProcess;
 }
 
 namespace viz {
@@ -42,22 +44,24 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
       const DisplayCompositorMemoryAndTaskController&) = delete;
   ~DisplayCompositorMemoryAndTaskController();
 
-  SkiaOutputSurfaceDependency* get_skia_dependency() {
+  SkiaOutputSurfaceDependency* skia_dependency() {
     return skia_dependency_.get();
   }
-  gpu::GpuTaskSchedulerHelper* get_gpu_task_scheduler() {
+  gpu::GpuTaskSchedulerHelper* gpu_task_scheduler() {
     return gpu_task_scheduler_.get();
   }
 
-  gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* get_controller_on_gpu() {
+  gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* controller_on_gpu() {
     return controller_on_gpu_.get();
   }
+
+  gpu::SharedImageInterface* shared_image_interface();
 
  private:
   void InitializeOnGpuSkia(SkiaOutputSurfaceDependency* skia_dependency,
                            base::WaitableEvent* event);
-  void InitializeOnGpuSkiaWebView(base::WaitableEvent* event);
   void InitializeOnGpuGL(gpu::CommandBufferTaskExecutor* task_executor,
+                         gpu::ImageFactory* image_factory,
                          base::WaitableEvent* event);
   void DestroyOnGpu(base::WaitableEvent* event);
 
@@ -69,6 +73,11 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
   // Accessed on the gpu thread.
   std::unique_ptr<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>
       controller_on_gpu_;
+
+  // Accessed on the compositor thread.
+  // TODO(weiliangc): Move the GLRenderer's SharedImageInterface ownership here
+  // as well.
+  std::unique_ptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
 };
 
 }  // namespace viz

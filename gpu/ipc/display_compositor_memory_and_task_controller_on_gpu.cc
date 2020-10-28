@@ -27,9 +27,23 @@ CommandBufferId GenNextCommandBufferId() {
 // Used for SkiaRenderer.
 DisplayCompositorMemoryAndTaskControllerOnGpu::
     DisplayCompositorMemoryAndTaskControllerOnGpu(
-        scoped_refptr<SharedContextState> shared_context_state)
+        scoped_refptr<SharedContextState> shared_context_state,
+        MailboxManager* mailbox_manager,
+        ImageFactory* image_factory,
+        SharedImageManager* shared_image_manager,
+        SyncPointManager* sync_point_manager,
+        const GpuPreferences& gpu_preferences,
+        const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
+        const GpuFeatureInfo& gpu_feature_info)
     : shared_context_state_(std::move(shared_context_state)),
       command_buffer_id_(g_next_shared_route_id.GetNext() + 1),
+      mailbox_manager_(mailbox_manager),
+      image_factory_(image_factory),
+      shared_image_manager_(shared_image_manager),
+      sync_point_manager_(sync_point_manager),
+      gpu_preferences_(gpu_preferences),
+      gpu_driver_bug_workarounds_(gpu_driver_bug_workarounds),
+      gpu_feature_info_(gpu_feature_info),
       should_have_memory_tracker_(true) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 }
@@ -37,9 +51,19 @@ DisplayCompositorMemoryAndTaskControllerOnGpu::
 // Used for InProcessCommandBuffer.
 DisplayCompositorMemoryAndTaskControllerOnGpu::
     DisplayCompositorMemoryAndTaskControllerOnGpu(
-        CommandBufferTaskExecutor* task_executor)
+        CommandBufferTaskExecutor* task_executor,
+        ImageFactory* image_factory)
     : shared_context_state_(task_executor->GetSharedContextState()),
-      command_buffer_id_(GenNextCommandBufferId()) {
+      command_buffer_id_(GenNextCommandBufferId()),
+      mailbox_manager_(task_executor->mailbox_manager()),
+      image_factory_(image_factory),
+      shared_image_manager_(task_executor->shared_image_manager()),
+      sync_point_manager_(task_executor->sync_point_manager()),
+      gpu_preferences_(task_executor->gpu_preferences()),
+      gpu_driver_bug_workarounds_(
+          GpuDriverBugWorkarounds(task_executor->gpu_feature_info()
+                                      .enabled_gpu_driver_bug_workarounds)),
+      gpu_feature_info_(task_executor->gpu_feature_info()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // Android WebView won't have a memory tracker.

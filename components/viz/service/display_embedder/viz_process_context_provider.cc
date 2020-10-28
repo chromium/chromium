@@ -248,7 +248,7 @@ void VizProcessContextProvider::InitializeContext(
     const gpu::SharedMemoryLimits& mem_limits) {
   const bool is_offscreen = surface_handle == gpu::kNullSurfaceHandle;
   DCHECK(display_controller);
-  gpu_task_scheduler_helper_ = display_controller->get_gpu_task_scheduler();
+  gpu_task_scheduler_helper_ = display_controller->gpu_task_scheduler();
 
   command_buffer_ = std::make_unique<gpu::InProcessCommandBuffer>(
       task_executor,
@@ -258,7 +258,7 @@ void VizProcessContextProvider::InitializeContext(
       gpu_memory_buffer_manager, image_factory, gpu_channel_manager_delegate,
       base::ThreadTaskRunnerHandle::Get(),
       gpu_task_scheduler_helper_->GetTaskSequence(),
-      display_controller->get_controller_on_gpu(), nullptr, nullptr);
+      display_controller->controller_on_gpu(), nullptr, nullptr);
   if (context_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return;

@@ -132,6 +132,8 @@ RootCompositorFrameSinkImpl::Create(
   gpu::SharedImageInterface* sii = nullptr;
   if (output_surface->context_provider())
     sii = output_surface->context_provider()->SharedImageInterface();
+  else if (display_controller)
+    sii = display_controller->shared_image_interface();
 
   auto overlay_processor = OverlayProcessorInterface::CreateOverlayProcessor(
       output_surface.get(), output_surface->GetSurfaceHandle(),

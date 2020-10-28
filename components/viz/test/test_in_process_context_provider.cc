@@ -59,8 +59,8 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
         TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
         is_offscreen, gpu::kNullSurfaceHandle, attribs,
         gpu::SharedMemoryLimits(), gpu_memory_buffer_manager, image_factory,
-        display_controller->get_gpu_task_scheduler(),
-        display_controller->get_controller_on_gpu(), std::move(task_runner));
+        display_controller->gpu_task_scheduler(),
+        display_controller->controller_on_gpu(), std::move(task_runner));
 
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   } else {

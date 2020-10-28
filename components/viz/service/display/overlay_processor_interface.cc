@@ -144,8 +144,8 @@ OverlayProcessorInterface::CreateOverlayProcessor(
 
     return std::make_unique<OverlayProcessorAndroid>(
         shared_image_manager,
-        display_controller->get_controller_on_gpu()->memory_tracker(),
-        display_controller->get_gpu_task_scheduler());
+        display_controller->controller_on_gpu()->memory_tracker(),
+        display_controller->gpu_task_scheduler());
   }
 #else  // Default
   return std::make_unique<OverlayProcessorStub>();

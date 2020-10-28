@@ -11,10 +11,7 @@
 #include "gpu/ipc/in_process_command_buffer.h"
 
 namespace gpu {
-class CommandBufferTaskExecutor;
-class ImageFactory;
 class MailboxManager;
-class MemoryTracker;
 class SyncPointClientState;
 struct SyncToken;
 class SharedContextState;
@@ -22,7 +19,7 @@ class SharedImageFactory;
 class SharedImageManager;
 class SingleTaskSequence;
 
-// This is an implementation of the SharedImageInterface to be used on viz
+// This is an implementation of the SharedImageInterface to be used on the viz
 // compositor thread. This class also implements the corresponding parts
 // happening on gpu thread.
 // TODO(weiliangc): Currently this is implemented as backed by
@@ -33,12 +30,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   using CommandBufferHelper =
       InProcessCommandBuffer::SharedImageInterfaceHelper;
   SharedImageInterfaceInProcess(
-      CommandBufferTaskExecutor* task_executor,
       SingleTaskSequence* task_sequence,
-      CommandBufferId command_buffer_id,
-      MailboxManager* mailbox_manager,
-      ImageFactory* image_factory,
-      MemoryTracker* memory_tracker,
+      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller,
       std::unique_ptr<CommandBufferHelper> command_buffer_helper);
   ~SharedImageInterfaceInProcess() override;
 
@@ -154,9 +147,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
  private:
   struct SharedImageFactoryInput;
 
-  void SetUpOnGpu(CommandBufferTaskExecutor* task_executor,
-                  ImageFactory* image_factory,
-                  MemoryTracker* memory_tracker);
+  void SetUpOnGpu(
+      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller);
   void DestroyOnGpu(base::WaitableEvent* completion);
 
   SyncToken MakeSyncToken(uint64_t release_id) {

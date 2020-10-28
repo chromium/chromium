@@ -319,9 +319,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   if (result == gpu::ContextResult::kSuccess) {
     capabilities_ = capabilities;
     shared_image_interface_ = std::make_unique<SharedImageInterfaceInProcess>(
-        task_executor_, task_sequence_, gpu_dependency_->NextCommandBufferId(),
-        context_group_->mailbox_manager(), image_factory_,
-        gpu_dependency_->memory_tracker(),
+        task_sequence_, gpu_dependency_,
         std::make_unique<SharedImageInterfaceHelper>(this));
   }
 
@@ -339,7 +337,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   } else {
     gpu_dependency_holder_ =
         std::make_unique<DisplayCompositorMemoryAndTaskControllerOnGpu>(
-            task_executor_);
+            task_executor_, params.image_factory);
     gpu_dependency_ = gpu_dependency_holder_.get();
   }
 

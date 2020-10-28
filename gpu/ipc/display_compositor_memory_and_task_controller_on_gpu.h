@@ -11,11 +11,18 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 
 namespace gpu {
 class CommandBufferTaskExecutor;
+class ImageFactory;
+class MailboxManager;
+class SyncPointManager;
+class SharedImageManager;
+struct GpuFeatureInfo;
+struct GpuPreferences;
 
 // This class holds ownership of data structure that is only used on the gpu
 // thread. This class is expected to be 1:1 relationship with the display
@@ -24,11 +31,19 @@ class GL_IN_PROCESS_CONTEXT_EXPORT
     DisplayCompositorMemoryAndTaskControllerOnGpu {
  public:
   // Used for SkiaRenderer.
-  explicit DisplayCompositorMemoryAndTaskControllerOnGpu(
-      scoped_refptr<SharedContextState> shared_context_state);
+  DisplayCompositorMemoryAndTaskControllerOnGpu(
+      scoped_refptr<SharedContextState> shared_context_state,
+      MailboxManager* mailbox_manager,
+      ImageFactory* image_factory,
+      SharedImageManager* shared_image_manager,
+      SyncPointManager* sync_point_manager,
+      const GpuPreferences& gpu_preferences,
+      const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
+      const GpuFeatureInfo& gpu_feature_info);
   // Used for InProcessCommandBuffer.
-  explicit DisplayCompositorMemoryAndTaskControllerOnGpu(
-      CommandBufferTaskExecutor* task_executor);
+  DisplayCompositorMemoryAndTaskControllerOnGpu(
+      CommandBufferTaskExecutor* task_executor,
+      ImageFactory* image_factory);
   DisplayCompositorMemoryAndTaskControllerOnGpu(
       const DisplayCompositorMemoryAndTaskControllerOnGpu&) = delete;
   DisplayCompositorMemoryAndTaskControllerOnGpu& operator=(
@@ -45,10 +60,31 @@ class GL_IN_PROCESS_CONTEXT_EXPORT
   // GPU process. Not Used for cross process shared image stub.
   static gpu::CommandBufferId NextCommandBufferId();
 
+  MailboxManager* mailbox_manager() const { return mailbox_manager_; }
+  ImageFactory* image_factory() const { return image_factory_; }
+  SharedImageManager* shared_image_manager() const {
+    return shared_image_manager_;
+  }
+  SyncPointManager* sync_point_manager() const { return sync_point_manager_; }
+  const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
+  const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds() const {
+    return gpu_driver_bug_workarounds_;
+  }
+  const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
+
  private:
   scoped_refptr<SharedContextState> shared_context_state_;
 
   const CommandBufferId command_buffer_id_;
+
+  // Used for creating SharedImageFactory.
+  MailboxManager* mailbox_manager_;
+  ImageFactory* image_factory_;
+  SharedImageManager* shared_image_manager_;
+  SyncPointManager* sync_point_manager_;
+  const GpuPreferences& gpu_preferences_;
+  GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
+  const GpuFeatureInfo& gpu_feature_info_;
 
   // Only needed for InProcessCommandBuffer.
   bool should_have_memory_tracker_ = false;

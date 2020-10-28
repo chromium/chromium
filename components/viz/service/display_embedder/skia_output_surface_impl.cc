@@ -97,8 +97,8 @@ std::unique_ptr<SkiaOutputSurface> SkiaOutputSurfaceImpl::Create(
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
   DCHECK(display_controller);
-  DCHECK(display_controller->get_skia_dependency());
-  DCHECK(display_controller->get_gpu_task_scheduler());
+  DCHECK(display_controller->skia_dependency());
+  DCHECK(display_controller->gpu_task_scheduler());
   auto output_surface = std::make_unique<SkiaOutputSurfaceImpl>(
       util::PassKey<SkiaOutputSurfaceImpl>(), display_controller,
       renderer_settings, debug_settings);
@@ -113,13 +113,13 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings)
     : SkiaOutputSurface(
-          GetOutputSurfaceType(display_controller->get_skia_dependency())),
-      dependency_(display_controller->get_skia_dependency()),
+          GetOutputSurfaceType(display_controller->skia_dependency())),
+      dependency_(display_controller->skia_dependency()),
       renderer_settings_(renderer_settings),
       debug_settings_(debug_settings),
       display_compositor_controller_(display_controller),
       gpu_task_scheduler_(
-          display_compositor_controller_->get_gpu_task_scheduler()) {
+          display_compositor_controller_->gpu_task_scheduler()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -787,7 +787,7 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
 
   impl_on_gpu_ = SkiaOutputSurfaceImplOnGpu::Create(
       dependency_, renderer_settings_, gpu_task_scheduler_->GetSequenceId(),
-      display_compositor_controller_->get_controller_on_gpu(),
+      display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
       std::move(vsync_callback_runner));

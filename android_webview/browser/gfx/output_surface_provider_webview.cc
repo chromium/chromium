@@ -155,8 +155,8 @@ OutputSurfaceProviderWebview::CreateOutputSurface(
   } else {
     auto context_provider = AwRenderThreadContextProvider::Create(
         gl_surface_, DeferredGpuCommandService::GetInstance(),
-        display_compositor_controller->get_gpu_task_scheduler(),
-        display_compositor_controller->get_controller_on_gpu());
+        display_compositor_controller->gpu_task_scheduler(),
+        display_compositor_controller->controller_on_gpu());
     return std::make_unique<ParentOutputSurface>(gl_surface_,
                                                  std::move(context_provider));
   }
