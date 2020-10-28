@@ -94,11 +94,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             }
 
             @Override
-            public boolean isCurrentModel(TabModel model) {
-                return false;
-            }
-
-            @Override
             public TabModel getModel(boolean incognito) {
                 return mSelector.getModel(incognito);
             }

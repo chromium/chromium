@@ -27,12 +27,6 @@ public interface TabModelDelegate {
     boolean closeAllTabsRequest(boolean incognito);
 
     /**
-     * @param model The specified model.
-     * @return Whether the specified model is currently selected.
-     */
-    boolean isCurrentModel(TabModel model);
-
-    /**
      * @return Whether reparenting is currently in progress for this TabModel.
      */
     boolean isReparentingInProgress();

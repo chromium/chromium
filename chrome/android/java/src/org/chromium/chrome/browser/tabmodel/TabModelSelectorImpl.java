@@ -278,11 +278,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         return mCloseAllTabsDelegate.closeAllTabsRequest(incognito);
     }
 
-    @Override
-    public boolean isCurrentModel(TabModel model) {
-        return isIncognitoSelected() == model.isIncognito();
-    }
-
     /**
      * Save the current state of the tab model. Usage of this method is discouraged due to it
      * writing to disk.

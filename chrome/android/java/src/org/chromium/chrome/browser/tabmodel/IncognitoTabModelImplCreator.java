@@ -93,8 +93,4 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                 mAsyncTabParamsManager, mModelDelegate, false);
     }
 
-    @Override
-    public boolean isCurrentModel(TabModel model) {
-        return mModelDelegate.isCurrentModel(model);
-    }
 }

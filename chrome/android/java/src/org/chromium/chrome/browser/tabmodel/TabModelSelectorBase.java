@@ -88,7 +88,8 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
 
         mIncognitoTabModel.addIncognitoObserver(this);
 
-        if (mStartIncognito) incognitoModel.setActive(true);
+        incognitoModel.setActive(mStartIncognito);
+        normalModel.setActive(!mStartIncognito);
 
         notifyChanged();
     }

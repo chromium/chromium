@@ -84,6 +84,7 @@ public class TabModelImpl extends TabModelJniBridge {
      * Whether this tab model supports undoing.
      */
     private boolean mIsUndoSupported = true;
+    private boolean mActive;
 
     public TabModelImpl(@NonNull Profile profile, boolean isTabbedActivity,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
@@ -575,7 +576,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public boolean isActiveModel() {
-        return mModelDelegate.isCurrentModel(this);
+        return mActive;
     }
 
     /**
@@ -888,5 +889,10 @@ public class TabModelImpl extends TabModelJniBridge {
         mRecentlyClosedBridge.openRecentlyClosedTab();
         // If there is only one tab, select it.
         if (getCount() == 1) setIndex(0, TabSelectionType.FROM_NEW);
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        mActive = active;
     }
 }

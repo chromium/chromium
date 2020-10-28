@@ -154,10 +154,6 @@ public class TabPersistentStoreTest {
             return false;
         }
 
-        @Override
-        public boolean isCurrentModel(TabModel model) {
-            return false;
-        }
     }
 
     static class MockTabPersistentStoreObserver extends TabPersistentStoreObserver {
