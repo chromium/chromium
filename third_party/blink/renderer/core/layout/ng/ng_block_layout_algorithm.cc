@@ -489,7 +489,8 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
       ConstraintSpace(), Node(), ChildAvailableSize(), BorderScrollbarPadding(),
       BorderPadding());
 
-  container_builder_.AdjustBorderScrollbarPaddingForTableCell();
+  if (ConstraintSpace().IsLegacyTableCell())
+    container_builder_.AdjustBorderScrollbarPaddingForTableCell();
 
   DCHECK_EQ(!!inline_child_layout_context,
             Node().IsInlineFormattingContextRoot());
@@ -862,6 +863,7 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   }
 
   // Save the unconstrained intrinsic size on the builder before clamping it.
+  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   container_builder_.SetOverflowBlockSize(intrinsic_block_size_);
 
   intrinsic_block_size_ = ClampIntrinsicBlockSize(
@@ -879,13 +881,6 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
       previously_consumed_block_size + intrinsic_block_size_,
       border_box_size.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(border_box_size.block_size);
-
-  // At this point, we need to perform any final table-cell adjustments
-  // needed.
-  if (ConstraintSpace().IsTableCell()) {
-    container_builder_.SetHasCollapsedBorders(
-        ConstraintSpace().IsTableCellWithCollapsedBorders());
-  }
 
   // If our BFC block-offset is still unknown, we check:
   //  - If we have a non-zero block-size (margins don't collapse through us).
@@ -941,6 +936,10 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
     }
   }
 
+  // At this point, perform any final table-cell adjustments needed.
+  if (ConstraintSpace().IsTableCell())
+    FinalizeForTableCell(unconstrained_intrinsic_block_size);
+
   // We only finalize for fragmentation if the fragment has a BFC block offset.
   // This may occur with a zero block size fragment. We need to know the BFC
   // block offset to determine where the fragmentation line is relative to us.
@@ -970,13 +969,6 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
 
   if (ConstraintSpace().UseFirstLineStyle())
     container_builder_.SetStyleVariant(NGStyleVariant::kFirstLine);
-
-  // Table-cells with separate borders, "empty-cells: hide", and no children
-  // don't paint.
-  if (ConstraintSpace().HideTableCellIfEmpty()) {
-    container_builder_.SetIsHiddenForPaint(
-        container_builder_.Children().IsEmpty());
-  }
 
   return container_builder_.ToBoxFragment();
 }
@@ -2149,6 +2141,68 @@ LayoutUnit NGBlockLayoutAlgorithm::PositionSelfCollapsingChildWithParentBfc(
   ApplyClearance(child_space, &child_bfc_block_offset);
 
   return child_bfc_block_offset;
+}
+
+void NGBlockLayoutAlgorithm::FinalizeForTableCell(
+    LayoutUnit unconstrained_intrinsic_block_size) {
+  // Hide table-cells if:
+  //  - They are within a collapsed column(s).
+  //  - They have "empty-cells: hide", non-collapsed borders, and no children.
+  container_builder_.SetIsHiddenForPaint(
+      ConstraintSpace().IsTableCellHiddenForPaint() ||
+      (ConstraintSpace().HideTableCellIfEmpty() &&
+       container_builder_.Children().IsEmpty()));
+
+  container_builder_.SetHasCollapsedBorders(
+      ConstraintSpace().IsTableCellWithCollapsedBorders());
+
+  // Everything else within this function only applies to new table-cells.
+  if (ConstraintSpace().IsLegacyTableCell())
+    return;
+
+  container_builder_.SetTableCellColumnIndex(
+      ConstraintSpace().TableCellColumnIndex());
+
+  switch (Style().VerticalAlign()) {
+    case EVerticalAlign::kTop:
+      // Do nothing for 'top' vertical alignment.
+      break;
+    case EVerticalAlign::kBaselineMiddle:
+    case EVerticalAlign::kSub:
+    case EVerticalAlign::kSuper:
+    case EVerticalAlign::kTextTop:
+    case EVerticalAlign::kTextBottom:
+    case EVerticalAlign::kLength:
+      // All of the above are treated as 'baseline' for the purposes of
+      // table-cell vertical alignment.
+    case EVerticalAlign::kBaseline:
+      // Table-cells (with baseline vertical alignment) always produce a
+      // baseline of their end-content edge (even if the content doesn't have
+      // any baselines).
+      if (!container_builder_.Baseline() ||
+          Node().ShouldApplyLayoutContainment()) {
+        container_builder_.SetBaseline(unconstrained_intrinsic_block_size -
+                                       BorderScrollbarPadding().block_end);
+      }
+
+      if (auto alignment_baseline =
+              ConstraintSpace().TableCellAlignmentBaseline()) {
+        container_builder_.MoveChildrenInBlockDirection(
+            *alignment_baseline - *container_builder_.Baseline());
+      }
+      break;
+    case EVerticalAlign::kMiddle:
+      container_builder_.MoveChildrenInBlockDirection(
+          (container_builder_.FragmentBlockSize() -
+           unconstrained_intrinsic_block_size) /
+          2);
+      break;
+    case EVerticalAlign::kBottom:
+      container_builder_.MoveChildrenInBlockDirection(
+          container_builder_.FragmentBlockSize() -
+          unconstrained_intrinsic_block_size);
+      break;
+  };
 }
 
 LayoutUnit NGBlockLayoutAlgorithm::FragmentainerSpaceAvailable() const {

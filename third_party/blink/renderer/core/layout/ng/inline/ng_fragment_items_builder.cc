@@ -367,6 +367,19 @@ base::Optional<LogicalOffset> NGFragmentItemsBuilder::LogicalOffsetFor(
   return base::nullopt;
 }
 
+void NGFragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
+  DCHECK(!is_converted_to_physical_);
+  for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {
+    if (iter->item->Type() == NGFragmentItem::kLine) {
+      iter->offset.block_offset += delta;
+      std::advance(iter, iter->item->DescendantsCount() - 1);
+      DCHECK_LE(iter, items_.end());
+      continue;
+    }
+    iter->offset.block_offset += delta;
+  }
+}
+
 void NGFragmentItemsBuilder::ToFragmentItems(const PhysicalSize& outer_size,
                                              void* data) {
   DCHECK(text_content_);

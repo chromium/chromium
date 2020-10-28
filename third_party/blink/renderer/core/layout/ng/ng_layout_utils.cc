@@ -221,7 +221,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       // value, as the following |block_size| calculation would be incorrect.
       // TODO(dgrogan): We can hit the cache here for row flexboxes when they
       // don't have stretchy children.
-      if (layout_result.PhysicalFragment().DependsOnPercentageBlockSize()) {
+      if (physical_fragment.DependsOnPercentageBlockSize()) {
         if (new_space.PercentageResolutionBlockSize() !=
             old_space.PercentageResolutionBlockSize())
           return NGLayoutCacheStatus::kNeedsLayout;
@@ -299,7 +299,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // this false-positive by checking if we have an initial indefinite
     // block-size.
     if (is_new_initial_block_size_indefinite &&
-        layout_result.PhysicalFragment().DependsOnPercentageBlockSize()) {
+        physical_fragment.DependsOnPercentageBlockSize()) {
       DCHECK(is_old_initial_block_size_indefinite);
       if (new_space.PercentageResolutionBlockSize() !=
           old_space.PercentageResolutionBlockSize())
@@ -313,12 +313,57 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (style.MayHavePadding() && fragment_geometry.padding != fragment.Padding())
     return NGLayoutCacheStatus::kNeedsLayout;
 
-  // Table-cells with vertical alignment might shift their contents if their
+  // Table-cells with vertical alignment might shift their contents if the
   // block-size changes.
-  if (new_space.IsTableCell() && !is_block_size_equal &&
-      style.VerticalAlign() !=
-          ComputedStyleInitialValues::InitialVerticalAlign())
-    return NGLayoutCacheStatus::kNeedsLayout;
+  if (new_space.IsTableCell()) {
+    DCHECK(old_space.IsTableCell());
+
+    switch (style.VerticalAlign()) {
+      case EVerticalAlign::kTop:
+        // Do nothing special for 'top' vertical alignment.
+        break;
+      case EVerticalAlign::kBaselineMiddle:
+      case EVerticalAlign::kSub:
+      case EVerticalAlign::kSuper:
+      case EVerticalAlign::kTextTop:
+      case EVerticalAlign::kTextBottom:
+      case EVerticalAlign::kLength:
+        // All of the above are treated as 'baseline' for the purposes of
+        // table-cell vertical alignment.
+      case EVerticalAlign::kBaseline: {
+        auto new_alignment_baseline = new_space.TableCellAlignmentBaseline();
+        auto old_alignment_baseline = old_space.TableCellAlignmentBaseline();
+
+        // Do nothing if neither alignment baseline is set.
+        if (!new_alignment_baseline && !old_alignment_baseline)
+          break;
+
+        // If we only have an old alignment baseline set, we need layout, as we
+        // can't determine where the un-adjusted baseline is.
+        if (!new_alignment_baseline && old_alignment_baseline)
+          return NGLayoutCacheStatus::kNeedsLayout;
+
+        // We've been provided a new alignment baseline, just check that it
+        // matches the previously generated baseline.
+        if (!old_alignment_baseline) {
+          if (*new_alignment_baseline != physical_fragment.Baseline())
+            return NGLayoutCacheStatus::kNeedsLayout;
+          break;
+        }
+
+        // If the alignment baselines differ at this stage, we need layout.
+        if (*new_alignment_baseline != *old_alignment_baseline)
+          return NGLayoutCacheStatus::kNeedsLayout;
+        break;
+      }
+      case EVerticalAlign::kMiddle:
+      case EVerticalAlign::kBottom:
+        // 'middle', and 'bottom' vertical alignment depend on the block-size.
+        if (!is_block_size_equal)
+          return NGLayoutCacheStatus::kNeedsLayout;
+        break;
+    }
+  }
 
   // If we've reached here we know that we can potentially "stretch"/"shrink"
   // ourselves without affecting any of our children.

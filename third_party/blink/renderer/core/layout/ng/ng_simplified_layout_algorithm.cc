@@ -69,6 +69,9 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
     if (physical_fragment.LastBaseline())
       container_builder_.SetLastBaseline(*physical_fragment.LastBaseline());
+
+    // TODO(ikilpatrick): Set any fields for table-cells which are also set
+    // within the NGBlockLayoutAlgorithm.
   } else {
     // Only block-flow layout sets the following fields.
     DCHECK(physical_fragment.IsFormattingContextRoot());

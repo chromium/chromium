@@ -546,6 +546,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void CheckNoBlockFragmentation() const;
 #endif
 
+  // Moves all the children by |offset| in the block-direction. (Ensure that
+  // any baselines, OOFs, etc, are also moved by the appropriate amount).
+  void MoveChildrenInBlockDirection(LayoutUnit offset);
+
  private:
   // Update whether we have fragmented in this flow.
   void PropagateBreak(const NGLayoutResult&);

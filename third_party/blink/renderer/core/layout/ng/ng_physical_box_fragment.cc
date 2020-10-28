@@ -237,6 +237,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   is_math_fraction_ = builder->is_math_fraction_;
   is_math_operator_ = builder->is_math_operator_;
 
+  // TODO(ikilpatrick): Investigate if new table-cells should always produce a
+  // baseline.
   bool has_layout_containment = layout_object_->ShouldApplyLayoutContainment();
   if (builder->baseline_.has_value() && !has_layout_containment) {
     has_baseline_ = true;

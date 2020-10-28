@@ -339,6 +339,35 @@ EBreakBetween NGBoxFragmentBuilder::JoinedBreakBetweenValue(
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
 }
 
+void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
+  DCHECK(is_new_fc_);
+  DCHECK(!has_oof_candidate_that_needs_block_offset_adjustment_);
+  DCHECK_NE(FragmentBlockSize(), kIndefiniteSize);
+  DCHECK(oof_positioned_descendants_.IsEmpty());
+
+  if (delta == LayoutUnit())
+    return;
+
+  if (baseline_)
+    *baseline_ += delta;
+  if (last_baseline_)
+    *last_baseline_ += delta;
+
+  if (inflow_bounds_)
+    inflow_bounds_->offset.block_offset += delta;
+
+  for (auto& child : children_)
+    child.offset.block_offset += delta;
+
+  for (auto& candidate : oof_positioned_candidates_)
+    candidate.static_position.offset.block_offset += delta;
+  for (auto& descendant : oof_positioned_fragmentainer_descendants_)
+    descendant.static_position.offset.block_offset += delta;
+
+  if (NGFragmentItemsBuilder* items_builder = ItemsBuilder())
+    items_builder->MoveChildrenInBlockDirection(delta);
+}
+
 void NGBoxFragmentBuilder::PropagateBreak(
     const NGLayoutResult& child_layout_result) {
   if (LIKELY(!has_block_fragmentation_))

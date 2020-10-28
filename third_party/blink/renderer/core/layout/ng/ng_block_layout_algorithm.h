@@ -215,6 +215,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       NGInlineChildLayoutContext*,
       scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
 
+  // Performs any final adjustments for table-cells.
+  void FinalizeForTableCell(LayoutUnit unconstrained_intrinsic_block_size);
+
   // Return the amount of block space available in the current fragmentainer
   // for the node being laid out by this algorithm.
   LayoutUnit FragmentainerSpaceAvailable() const;

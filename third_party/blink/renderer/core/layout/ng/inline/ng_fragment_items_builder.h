@@ -126,6 +126,9 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   // Find |LogicalOffset| of the first |NGFragmentItem| for |LayoutObject|.
   base::Optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
 
+  // Moves all the |NGFragmentItem|s by |offset| in the block-direction.
+  void MoveChildrenInBlockDirection(LayoutUnit offset);
+
   // Converts the |NGFragmentItem| vector to the physical coordinate space and
   // returns the result. This should only be used for determining the inline
   // containing block geometry for OOF-positioned nodes.
