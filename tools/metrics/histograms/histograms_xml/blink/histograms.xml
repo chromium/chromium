@@ -1943,8 +1943,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.Allow"
-    enum="FeaturePolicyFeature" expires_after="2020-10-31">
+    enum="FeaturePolicyFeature" expires_after="2021-10-31">
   <owner>iclelland@chromium.org</owner>
+  <owner>feature-control@chromium.org</owner>
   <summary>
     Counts the use of a specific feature policy via the &quot;allow&quot;
     attribute. Each policy is counted only once per page load.
@@ -1952,7 +1953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.AttributeAllowlistType"
-    enum="FeaturePolicyAllowlistType" expires_after="2021-01-03">
+    enum="FeaturePolicyAllowlistType" expires_after="2021-10-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -1964,8 +1965,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.Header"
-    enum="FeaturePolicyFeature" expires_after="2021-03-28">
+    enum="FeaturePolicyFeature" expires_after="2021-10-31">
   <owner>iclelland@chromium.org</owner>
+  <owner>feature-control@chromium.org</owner>
   <summary>
     Counts the use of a specific feature policy via the
     &quot;Feature-Policy&quot; HTTP response header.
@@ -1973,7 +1975,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.HeaderAllowlistType"
-    enum="FeaturePolicyAllowlistType" expires_after="2021-04-18">
+    enum="FeaturePolicyAllowlistType" expires_after="2021-10-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
