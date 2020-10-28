@@ -3,16 +3,36 @@
 // found in the LICENSE file.
 
 /**
- * @param {!Array<{value:number, name:string}>} options
- * @param {number} value
- * @returns {boolean}
+ * @implements {SwitchAccessSubpageBrowserProxy}
  */
-function hasOptionWithValue(options, value) {
-  return options.filter(o => o.value === value).length > 0;
+class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    super([
+      'refreshAssignmentsFromPrefs',
+      'notifySwitchAccessActionAssignmentDialogAttached',
+      'notifySwitchAccessActionAssignmentDialogDetached',
+    ]);
+  }
+
+  /** @override */
+  refreshAssignmentsFromPrefs() {
+    this.methodCalled('refreshAssignmentsFromPrefs');
+  }
+
+  /** @override */
+  notifySwitchAccessActionAssignmentDialogAttached() {
+    this.methodCalled('notifySwitchAccessActionAssignmentDialogAttached');
+  }
+
+  /** @override */
+  notifySwitchAccessActionAssignmentDialogDetached() {
+    this.methodCalled('notifySwitchAccessActionAssignmentDialogDetached');
+  }
 }
 
 suite('ManageAccessibilityPageTests', function() {
   let page = null;
+  let browserProxy = null;
 
   function getDefaultPrefs() {
     return {
@@ -62,6 +82,9 @@ suite('ManageAccessibilityPageTests', function() {
   }
 
   setup(function() {
+    browserProxy = new TestSwitchAccessSubpageBrowserProxy();
+    SwitchAccessSubpageBrowserProxyImpl.instance_ = browserProxy;
+
     PolymerTest.clearBody();
   });
 
@@ -72,28 +95,49 @@ suite('ManageAccessibilityPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
-  test(
-      'Switch assignment option unavailable when assigned to another command',
-      function() {
-        initPage();
-        const assignedValue = SwitchAccessAssignmentValue.ONE;
+  test('Switch assignment key display', function() {
+    initPage();
 
-        // Check that the value is available in all three dropdowns.
-        assertTrue(hasOptionWithValue(page.optionsForNext_, assignedValue));
-        assertTrue(hasOptionWithValue(page.optionsForPrevious_, assignedValue));
-        assertTrue(hasOptionWithValue(page.optionsForSelect_, assignedValue));
+    assertEquals(0, page.selectAssignments_.length);
+    assertEquals(0, page.nextAssignments_.length);
+    assertEquals(0, page.previousAssignments_.length);
 
-        // Assign the value to one setting (next).
-        page.prefs.settings.a11y.switch_access.next.setting.value =
-            assignedValue;
-        page.updateOptionsForDropdowns_();
+    // Simulate a pref change for the select action.
+    cr.webUIListenerCallback(
+        'switch-access-assignments-changed',
+        {select: ['a'], next: [], previous: []});
 
-        // Check that the value no longer appears in the other two dropdowns
-        assertTrue(hasOptionWithValue(page.optionsForNext_, assignedValue));
-        assertFalse(
-            hasOptionWithValue(page.optionsForPrevious_, assignedValue));
-        assertFalse(hasOptionWithValue(page.optionsForSelect_, assignedValue));
-      });
+    assertEquals(1, page.selectAssignments_.length);
+    assertEquals('a', page.selectAssignments_[0]);
+    assertEquals(0, page.nextAssignments_.length);
+    assertEquals(0, page.previousAssignments_.length);
+  });
+
+  test('Switch access action assignment dialog', async function() {
+    initPage();
+
+    // Simulate a click on the select link row.
+    page.$.selectLinkRow.click();
+
+    await browserProxy.methodCalled(
+        'notifySwitchAccessActionAssignmentDialogAttached');
+
+    // Make sure we populate the initial |keyCodes_| state on the
+    // SwitchAccessActionAssignmentDialog.
+    cr.webUIListenerCallback(
+        'switch-access-assignments-changed',
+        {select: [], next: [], previous: []});
+
+    // Simulate pressing 'a' twice.
+    cr.webUIListenerCallback(
+        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+    cr.webUIListenerCallback(
+        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+
+    // This should cause the dialog to close.
+    await browserProxy.methodCalled(
+        'notifySwitchAccessActionAssignmentDialogDetached');
+  });
 
   test('Deep link to auto-scan keyboards', async () => {
     loadTimeData.overrideValues({

@@ -124,6 +124,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Shows floating accessibility menu if it was enabled by policy.
   virtual void ShowFloatingMenuIfEnabled() {}
 
+  // Suspends (or resumes) key handling for Switch Access.
+  virtual void SuspendSwitchAccessKeyHandling(bool suspend) {}
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();

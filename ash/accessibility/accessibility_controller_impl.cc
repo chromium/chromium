@@ -188,11 +188,8 @@ constexpr const char* const kSwitchAccessPrefsCopiedToSignin[]{
     prefs::kAccessibilitySwitchAccessAutoScanSpeedMs,
     prefs::kAccessibilitySwitchAccessEnabled,
     prefs::kAccessibilitySwitchAccessNextKeyCodes,
-    prefs::kAccessibilitySwitchAccessNextSetting,
     prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
-    prefs::kAccessibilitySwitchAccessPreviousSetting,
     prefs::kAccessibilitySwitchAccessSelectKeyCodes,
-    prefs::kAccessibilitySwitchAccessSelectSetting,
 };
 
 // Helper function that is used to verify the validity of kFeatures and
@@ -665,24 +662,13 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kAccessibilitySwitchAccessSelectKeyCodes,
       base::Value(std::vector<base::Value>()),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kAccessibilitySwitchAccessSelectSetting,
-      kSwitchAccessAssignmentNone,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
       prefs::kAccessibilitySwitchAccessNextKeyCodes,
       base::Value(std::vector<base::Value>()),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kAccessibilitySwitchAccessNextSetting, kSwitchAccessAssignmentNone,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
       prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
       base::Value(std::vector<base::Value>()),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kAccessibilitySwitchAccessPreviousSetting,
-      kSwitchAccessAssignmentNone,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kAccessibilitySwitchAccessAutoScanEnabled, false,
@@ -1395,21 +1381,6 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
                               UpdateSwitchAccessAutoScanKeyboardSpeedFromPref,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      prefs::kAccessibilitySwitchAccessNextSetting,
-      base::BindRepeating(
-          &AccessibilityControllerImpl::SyncSwitchAccessPrefsToSignInProfile,
-          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      prefs::kAccessibilitySwitchAccessPreviousSetting,
-      base::BindRepeating(
-          &AccessibilityControllerImpl::SyncSwitchAccessPrefsToSignInProfile,
-          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      prefs::kAccessibilitySwitchAccessSelectSetting,
-      base::BindRepeating(
-          &AccessibilityControllerImpl::SyncSwitchAccessPrefsToSignInProfile,
-          base::Unretained(this)));
-  pref_change_registrar_->Add(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
       base::BindRepeating(&AccessibilityControllerImpl::
                               UpdateTabletModeShelfNavigationButtonsFromPref,
@@ -1828,6 +1799,11 @@ bool AccessibilityControllerImpl::IsAccessibilityFeatureVisibleInTrayMenu(
     return false;
   }
   return true;
+}
+
+void AccessibilityControllerImpl::SuspendSwitchAccessKeyHandling(bool suspend) {
+  accessibility_event_rewriter_->set_suspend_switch_access_key_handling(
+      suspend);
 }
 
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {

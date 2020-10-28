@@ -2,7 +2,6 @@
 
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="../../controls/settings_dropdown_menu.html">
 <link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../deep_linking_behavior.html">
@@ -11,7 +10,9 @@
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="switch_access_action_assignment_dialog.html">
 <link rel="import" href="switch_access_constants.html">
++<link rel="import" href="switch_access_subpage_browser_proxy.html">
 
 <dom-module id="settings-switch-access-subpage">
   <template>
@@ -19,39 +20,62 @@
       h2 {
         padding-inline-start: var(--cr-section-padding);
       }
+
+      ul {
+        list-style-type: none
+      }
     </style>
     <h2>$i18n{switchAssignmentHeading}</h2>
     <div class="list-frame">
       <div class="settings-box continuation list-item">
-        <div class="start sub-item settings-box-text" aria-hidden="true">
-          $i18n{assignSelectSwitchLabel}
-        </div>
-        <settings-dropdown-menu label="$i18n{assignSelectSwitchLabel}"
-            pref="{{prefs.settings.a11y.switch_access.select.setting}}"
-            menu-options="[[optionsForSelect_]]" id="selectAssignmentDropdown"
+        <cr-link-row on-click="onSelectAssignClick_"
+            id="selectLinkRow"
+            label="$i18n{assignSelectSwitchLabel}"
+            sub-label="$i18n{assignSwitchSubLabel}"
             deep-link-focus-id$="[[Setting.kSwitchActionAssignment]]">
-        </settings-dropdown-menu>
+        </cr-link-row>
+        <ul id="selectAssignmentList">
+          <template is="dom-repeat"
+              items="[[selectAssignments_]]" as="assignment">
+            <li>[[assignment]]</li>
+          </template>
+        </ul>
       </div>
       <div class="settings-box continuation list-item">
-        <div class="start sub-item settings-box-text" aria-hidden="true">
-          $i18n{assignNextSwitchLabel}
-        </div>
-        <settings-dropdown-menu label="$i18n{assignNextSwitchLabel}"
-            pref="{{prefs.settings.a11y.switch_access.next.setting}}"
-            menu-options="[[optionsForNext_]]" id="nextAssignmentDropdown">
-        </settings-dropdown-menu>
+        <cr-link-row on-click="onNextAssignClick_"
+            id="nextLinkRow"
+            label="$i18n{assignNextSwitchLabel}"
+            sub-label="$i18n{assignSwitchSubLabel}">
+        </cr-link-row>
+        <ul id="nextAssignmentList">
+          <template is="dom-repeat"
+              items="[[nextAssignments_]]" as="assignment">
+            <li>[[assignment]]</li>
+          </template>
+        </ul>
       </div>
       <div class="settings-box continuation list-item">
-        <div class="start sub-item settings-box-text" aria-hidden="true">
-          $i18n{assignPreviousSwitchLabel}
-        </div>
-        <settings-dropdown-menu label="$i18n{assignPreviousSwitchLabel}"
-            pref="{{prefs.settings.a11y.switch_access.previous.setting}}"
-            menu-options="[[optionsForPrevious_]]"
-            id="previousAssignmentDropdown">
-        </settings-dropdown-menu>
+        <cr-link-row on-click="onPreviousAssignClick_"
+            id="previousLinkRow"
+            label="$i18n{assignPreviousSwitchLabel}"
+            sub-label="$i18n{assignSwitchSubLabel}">
+        </cr-link-row>
+        <ul id="previousAssignmentList">
+          <template is="dom-repeat"
+              items="[[previousAssignments_]]" as="assignment">
+            <li>[[assignment]]</li>
+          </template>
+        </ul>
       </div>
     </div>
+    <template is="dom-if"
+        if="[[showSwitchAccessActionAssignmentDialog_]]" restamp>
+      <settings-switch-access-action-assignment-dialog
+          id="switchAccessActionAssignmentDialog"
+          on-close="onSwitchAccessActionAssignmentDialogClose_"
+          action="[[action_]]">
+      </settings-switch-access-action-assignment-dialog>
+    </template>
     <h2>$i18n{switchAccessAutoScanHeading}</h2>
     <div class="list-frame">
       <settings-toggle-button class="list-item"
@@ -59,8 +83,8 @@
           label="$i18n{switchAccessAutoScanLabel}"
           deep-link-focus-id$="[[Setting.kSwitchActionAutoScan]]">
       </settings-toggle-button>
-      <div class="settings-box continuation list-item"
-          hidden$="[[!prefs.settings.a11y.switch_access.auto_scan.enabled.value]]">
+      <div class="settings-box continuation list-item" hidden$="[[
+          !prefs.settings.a11y.switch_access.auto_scan.enabled.value]]">
         <div class="start sub-item settings-box-text" id="scanSpeed"
             aria-hidden="true">
           $i18n{switchAccessAutoScanSpeedLabel}
@@ -77,7 +101,7 @@
       </div>
       <div class="settings-box continuation list-item"
           hidden$="[[!showKeyboardScanSettings_(
-          prefs.settings.a11y.switch_access.auto_scan.enabled.value)]]">
+              prefs.settings.a11y.switch_access.auto_scan.enabled.value)]]">
         <div class="start sub-item settings-box-text" id="keyboardScanSpeed"
             aria-hidden="true">
           $i18n{switchAccessAutoScanKeyboardSpeedLabel}

@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
     ":os_a11y_page_browser_proxy",
     ":switch_access_constants",
     ":switch_access_subpage",
+    ":switch_access_subpage_browser_proxy",
     ":tts_subpage",
     ":tts_subpage_browser_proxy",
     "../../a11y_page:captions_subpage",
@@ -59,9 +60,15 @@ js_library("manage_a11y_page") {
 js_library("switch_access_constants") {
 }
 
+js_library("switch_access_subpage_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
 js_library("switch_access_subpage") {
   deps = [
     ":switch_access_constants",
+    ":switch_access_subpage_browser_proxy",
     "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
@@ -109,6 +116,8 @@ js_type_check("closure_compile_module") {
     ":os_a11y_page_browser_proxy.m",
 
     #    ":switch_access_subpage.m",
+    ":switch_access_subpage_browser_proxy.m",
+
     #    ":tts_subpage.m"
     ":tts_subpage_browser_proxy.m",
   ]
@@ -158,6 +167,13 @@ js_library("switch_access_subpage.m") {
     # TODO: Fill those in.
   ]
   extra_deps = [ ":switch_access_subpage_module" ]
+}
+
+js_library("switch_access_subpage_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage_browser_proxy.m.js" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("tts_subpage.m") {
@@ -218,6 +234,7 @@ js_modulizer("modulize") {
     "externs.js",
     "manage_a11y_page_browser_proxy.js",
     "os_a11y_page_browser_proxy.js",
+    "switch_access_subpage_browser_proxy.js",
     "tts_subpage_browser_proxy.js",
   ]
 }

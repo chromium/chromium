@@ -312,6 +312,12 @@
       <structure name="IDR_OS_SETTINGS_MANAGE_A11Y_PAGE_BROWSER_PROXY_HTML"
                  file="chromeos/os_a11y_page/manage_a11y_page_browser_proxy.html"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_JS"
+                 file="chromeos/os_a11y_page/switch_access_action_assignment_dialog.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_HTML"
+                 file="chromeos/os_a11y_page/switch_access_action_assignment_dialog.html"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_CONSTANTS_JS"
                  file="chromeos/os_a11y_page/switch_access_constants.js"
                  compress="false" type="chrome_html" />
@@ -323,6 +329,12 @@
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_SUBPAGE_HTML"
                  file="chromeos/os_a11y_page/switch_access_subpage.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_SUBPAGE_BROWSER_PROXY_JS"
+                 file="chromeos/os_a11y_page/switch_access_subpage_browser_proxy.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_SUBPAGE_BROWSER_PROXY_HTML"
+                 file="chromeos/os_a11y_page/switch_access_subpage_browser_proxy.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_TTS_SUBPAGE_JS"
                  file="chromeos/os_a11y_page/tts_subpage.js"

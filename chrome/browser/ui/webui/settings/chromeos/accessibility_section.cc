@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/switch_access_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/tts_handler.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "extensions/browser/extension_system.h"
@@ -478,14 +480,23 @@ void AccessibilitySection::AddLoadTimeData(
       {"manageSwitchAccessSettings",
        IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS},
       {"switchAssignmentHeading", IDS_SETTINGS_SWITCH_ASSIGNMENT_HEADING},
-      {"switchAssignOptionPlaceholder",
-       IDS_SETTINGS_SWITCH_ASSIGN_OPTION_PLACEHOLDER},
-      {"switchAssignOptionNone", IDS_SETTINGS_SWITCH_ASSIGN_OPTION_NONE},
-      {"switchAssignOptionSpace", IDS_SETTINGS_SWITCH_ASSIGN_OPTION_SPACE},
-      {"switchAssignOptionEnter", IDS_SETTINGS_SWITCH_ASSIGN_OPTION_ENTER},
+      {"assignSwitchSubLabel", IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL},
       {"assignSelectSwitchLabel", IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL},
       {"assignNextSwitchLabel", IDS_SETTINGS_ASSIGN_NEXT_SWITCH_LABEL},
       {"assignPreviousSwitchLabel", IDS_SETTINGS_ASSIGN_PREVIOUS_SWITCH_LABEL},
+      {"switchAccessActionAssignmentDialogWarnNotConfirmedPrompt",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_NOT_CONFIRMED_PROMPT},
+      {"switchAccessActionAssignmentDialogWarnAlreadyAssignedActionPrompt",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_ALREADY_ASSIGNED_ACTION_PROMPT},
+      {"switchAccessActionAssignmentDialogWarnUnrecognizedKeyPrompt",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_UNRECOGNIZED_KEY_PROMPT},
+      {"switchAccessActionAssignmentDialogWaitForKeyPrompt",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_KEY_PROMPT},
+      {"switchAccessActionAssignmentDialogWaitForConfirmationPrompt",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_PROMPT},
+      {"switchAccessActionAssignmentDialogWaitForConfirmationRemovalPrompt",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_REMOVAL_PROMPT},
+      {"noSwitchesAssigned", IDS_SETTINGS_NO_SWITCHES_ASSIGNED},
       {"switchAccessAutoScanHeading",
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_HEADING},
       {"switchAccessAutoScanLabel", IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_LABEL},
@@ -560,6 +571,7 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION},
       {"caretBrowsingTitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE},
       {"caretBrowsingSubtitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE},
+      {"cancel", IDS_CANCEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
@@ -589,6 +601,8 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::AccessibilityMainHandler>());
   web_ui->AddMessageHandler(std::make_unique<AccessibilityHandler>(profile()));
+  web_ui->AddMessageHandler(
+      std::make_unique<SwitchAccessHandler>(profile()->GetPrefs()));
   web_ui->AddMessageHandler(std::make_unique<::settings::TtsHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<::settings::FontHandler>(profile()));
@@ -613,6 +627,8 @@ std::string AccessibilitySection::GetSectionPath() const {
 bool AccessibilitySection::LogMetric(mojom::Setting setting,
                                      base::Value& value) const {
   // Unimplemented.
+  // TODO(accessibility): Ensure to capture metrics for Switch Access's action
+  // idalog on detach.
   return false;
 }
 

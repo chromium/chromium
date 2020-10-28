@@ -973,6 +973,30 @@
   <message name="IDS_SETTINGS_DURATION_IN_SECONDS" desc="A duration in seconds. Should be short.">
     <ph name="DURATION">$1<ex>1.5</ex></ph>s
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_KEY_PROMPT" desc="A message shown to ask a suer to press a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Please press a switch key to assign.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_PROMPT" desc="A message shown to ask a user to confirm by pressing a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Press '<ph name="currentKey">$1<ex>backspace</ex></ph>' again to confirm and exit.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_REMOVAL_PROMPT" desc="A message to ask a user to confirm, by pressing a switch key, for removal of a switch key assignment. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    '<ph name="currentKey">$1<ex>backspace</ex></ph>' is already assigned. Press '<ph name="currentKey">$1<ex>backspace</ex></ph>' again to remove assignment and exit.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_NOT_CONFIRMED_PROMPT" desc="A message warning the user that the switch key pressed during confirmation did not match the initial switch key pressed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Keys do not match. '<ph name="unexpectedKey">$1<ex>enter</ex></ph>' was pressed. '<ph name="currentKey">$2<ex>backspace</ex></ph>' was pressed before. Press any key to exit.
+  </message>
+  <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Open a dialog to assign a switch key
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_ALREADY_ASSIGNED_ACTION_PROMPT" desc="A message warning the user that the switch key pressed is assigned to another action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    '<ph name="currentKey">$1<ex>enter</ex></ph>' is already assigned to the '<ph name="action">$2<ex>Select</ex></ph>' action. Press any key to exit.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_UNRECOGNIZED_KEY_PROMPT" desc="A message warning the user that the switch key pressed is not recognized. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Unrecognized key. Press any key to exit.
+  </message>
+  <message name="IDS_SETTINGS_NO_SWITCHES_ASSIGNED" desc="A label indicating no siwtches are assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    No switches assigned
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_HEADING" desc="In the settings tab, the heading for accessibility features that enable the computer to speak text from the computer screen.">
     Text-to-Speech
   </message>
