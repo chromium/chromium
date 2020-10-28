@@ -2337,6 +2337,9 @@ extern const char kEnablePlayStoreSearchDescription[];
 extern const char kEnableQuickAnswersName[];
 extern const char kEnableQuickAnswersDescription[];
 
+extern const char kEnableQuickAnswersOnEditableTextName[];
+extern const char kEnableQuickAnswersOnEditableTextDescription[];
+
 extern const char kEnableQuickAnswersRichUiName[];
 extern const char kEnableQuickAnswersRichUiDescription[];
 

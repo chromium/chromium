@@ -5001,6 +5001,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableQuickAnswersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswers)},
 
+    {"enable-quick-answers-on-editable-text",
+     flag_descriptions::kEnableQuickAnswersOnEditableTextName,
+     flag_descriptions::kEnableQuickAnswersOnEditableTextDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersOnEditableText)},
+
     {"enable-quick-answers-text-annotator",
      flag_descriptions::kEnableQuickAnswersTextAnnotatorName,
      flag_descriptions::kEnableQuickAnswersTextAnnotatorDescription, kOsCrOS,

@@ -4030,6 +4030,11 @@ const char kEnableQuickAnswersName[] = "Enable Quick Answers";
 const char kEnableQuickAnswersDescription[] =
     "Enable the Quick Answers feature";
 
+const char kEnableQuickAnswersOnEditableTextName[] =
+    "Enable Quick Answers on editable text";
+const char kEnableQuickAnswersOnEditableTextDescription[] =
+    "Enable Quick Answers on editable text.";
+
 const char kEnableQuickAnswersRichUiName[] = "Enable Quick Answers Rich UI";
 const char kEnableQuickAnswersRichUiDescription[] =
     "Enable the Quick Answers rich UI.";
