@@ -44,9 +44,17 @@
 
       <div class="section-container">
         Click the button to start logging future network activity to a file on
-        disk. The log includes details of network activity from all of Chrome,
+        disk.
+        <if expr="not(is_ios)">
+        The log includes details of network activity from all of Chrome,
         including incognito and non-incognito tabs, visited URLs, and
         information about the network configuration.
+        </if>
+        <if expr="is_ios">
+        The log includes details of network activity handled by Chrome's
+        internal network stack. Note, this does not include network requests
+        for ordinary web content, which are instead handled by WKWebView.
+        </if>
         <a href="https://dev.chromium.org/for-testers/providing-network-details"
            target="_blank">
         See the Chromium website for more detailed instructions.</a>
