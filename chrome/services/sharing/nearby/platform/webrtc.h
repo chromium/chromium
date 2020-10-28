@@ -63,6 +63,7 @@ class WebRtcMedium : public api::WebRtcMedium {
       webrtc_signaling_messenger_;
 
   std::unique_ptr<sharing::IpcPacketSocketFactory> socket_factory_;
+  std::unique_ptr<rtc::NetworkManager> network_manager_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

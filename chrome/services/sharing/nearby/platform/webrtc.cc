@@ -233,16 +233,28 @@ void WebRtcMedium::OnIceServersFetched(
         p2p_socket_manager_, kTrafficAnnotation);
   }
 
-  auto network_manager = std::make_unique<sharing::IpcNetworkManager>(
-      p2p_socket_manager_,
-      std::make_unique<sharing::MdnsResponderAdapter>(mdns_responder_));
+  if (!network_manager_) {
+    // NOTE: |network_manager_| is only created once and shared for every peer
+    // connection due to the use of the shared |p2p_socket_manager_|. See
+    // https://crbug.com/1142717 for more details.
+    network_manager_ = std::make_unique<sharing::IpcNetworkManager>(
+        p2p_socket_manager_,
+        std::make_unique<sharing::MdnsResponderAdapter>(mdns_responder_));
+
+    // NOTE: IpcNetworkManager::Initialize() does not override the empty default
+    // implementation so this doesn't actually do anything right now. However
+    // the contract of rtc::NetworkManagerBase states that it should be called
+    // before using and explicitly on the network thread (which right now is the
+    // current thread). Previously this was handled by P2PPortAllocator.
+    network_manager_->Initialize();
+  }
 
   webrtc::PeerConnectionDependencies dependencies(observer);
   sharing::P2PPortAllocator::Config port_config;
   port_config.enable_multiple_routes = true;
   port_config.enable_nonproxied_udp = true;
   dependencies.allocator = std::make_unique<sharing::P2PPortAllocator>(
-      std::move(network_manager), socket_factory_.get(), port_config);
+      network_manager_.get(), socket_factory_.get(), port_config);
   dependencies.async_resolver_factory =
       std::make_unique<ProxyAsyncResolverFactory>(socket_factory_.get());
 

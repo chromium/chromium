@@ -11,14 +11,12 @@
 
 namespace sharing {
 
-P2PPortAllocator::P2PPortAllocator(
-    std::unique_ptr<rtc::NetworkManager> network_manager,
-    rtc::PacketSocketFactory* socket_factory,
-    const Config& config)
-    : cricket::BasicPortAllocator(network_manager.get(), socket_factory),
-      network_manager_(std::move(network_manager)),
+P2PPortAllocator::P2PPortAllocator(rtc::NetworkManager* network_manager,
+                                   rtc::PacketSocketFactory* socket_factory,
+                                   const Config& config)
+    : cricket::BasicPortAllocator(network_manager, socket_factory),
       config_(config) {
-  DCHECK(network_manager_);
+  DCHECK(network_manager);
   DCHECK(socket_factory);
   uint32_t flags = 0;
   if (!config_.enable_multiple_routes) {
@@ -37,10 +35,5 @@ P2PPortAllocator::P2PPortAllocator(
 }
 
 P2PPortAllocator::~P2PPortAllocator() = default;
-
-void P2PPortAllocator::Initialize() {
-  BasicPortAllocator::Initialize();
-  network_manager_->Initialize();
-}
 
 }  // namespace sharing
