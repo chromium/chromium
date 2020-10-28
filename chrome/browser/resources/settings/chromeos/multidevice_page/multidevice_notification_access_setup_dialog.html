@@ -35,7 +35,7 @@
             $i18n{ok}
           </cr-button>
         </template>
-        <template is="dom-if" if="[[!setupState_]]" restamp>
+        <template is="dom-if" if="[[showConfirmButton_(setupState_)]]" restamp>
           <cr-button id="confirmButton" class="action-button"
               on-click="onConfirmButtonClicked_">
             $i18n{confirm}

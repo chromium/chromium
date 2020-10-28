@@ -11,11 +11,12 @@
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * notification_access_setup_operation.h, with the exception of NOT_STARTED.
+ * notification_access_setup_operation.h, with the exception of
+ * CONNECTION_REQUESTED.
  * @enum{number}
  */
 /* #export */ const NotificationAccessSetupOperationStatus = {
-  NOT_STARTED: 0,
+  CONNECTION_REQUESTED: 0,
   CONNECTING: 1,
   TIMED_OUT_CONNECTING: 2,
   CONNECTION_DISCONNECTED: 3,
@@ -32,10 +33,13 @@ Polymer({
   ],
 
   properties: {
-    /** @private {NotificationAccessSetupOperationStatus} */
+    /**
+     * A null |setupState_| indicates that the operation has not yet started.
+     * @private {?NotificationAccessSetupOperationStatus}
+     */
     setupState_: {
       type: Number,
-      value: NotificationAccessSetupOperationStatus.NOT_STARTED,
+      value: null,
     },
 
     /** @private */
@@ -77,13 +81,19 @@ Polymer({
 
   /** @private */
   showCancelButton_() {
-    return this.setupState_ ===
-        NotificationAccessSetupOperationStatus.NOT_STARTED ||
+    return this.setupState_ === null ||
+        this.setupState_ ===
+        NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED ||
         this.setupState_ ===
         NotificationAccessSetupOperationStatus.CONNECTING ||
         this.setupState_ ===
         NotificationAccessSetupOperationStatus
             .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE;
+  },
+
+  /** @private */
+  showConfirmButton_() {
+    return this.setupState_ === null;
   },
 
   /** @private */
@@ -95,6 +105,8 @@ Polymer({
   /** @private */
   onConfirmButtonClicked_() {
     this.browserProxy_.attemptNotificationSetup();
+    this.setupState_ =
+        NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED;
   },
 
   /** @private */
@@ -113,17 +125,24 @@ Polymer({
    * @private
    */
   getTitle_() {
+    if (this.setupState_ === null) {
+      return this.i18n('multideviceNotificationAccessSetupAckTitle');
+    }
+
     const Status = NotificationAccessSetupOperationStatus;
     switch (this.setupState_) {
-      case Status.NOT_STARTED:
-        return this.i18n('multideviceNotificationAccessSetupAckTitle');
+      case Status.CONNECTION_REQUESTED:
       case Status.CONNECTING:
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         return this.i18n('multideviceNotificationAccessSetupConnectingTitle');
       case Status.COMPLETED_SUCCESSFULLY:
         return this.i18n('multideviceNotificationAccessSetupCompletedTitle');
       case Status.TIMED_OUT_CONNECTING:
+        // TODO(hsuregan): Get the appropriate strings.
+        return 'Timed out connecting title';
       case Status.CONNECTION_DISCONNECTED:
+        // TODO(hsuregan): Get the appropriate strings.
+        return 'Connection disconnected title';
       default:
         return '';
     }
@@ -134,16 +153,24 @@ Polymer({
    * @private
    */
   getDescription_() {
+    if (this.setupState_ === null) {
+      return this.i18n('multideviceNotificationAccessSetupInstructions');
+    }
+
     const Status = NotificationAccessSetupOperationStatus;
     switch (this.setupState_) {
-      case Status.NOT_STARTED:
+      case Status.CONNECTION_REQUESTED:
       case Status.CONNECTING:
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         return this.i18n('multideviceNotificationAccessSetupInstructions');
       case Status.COMPLETED_SUCCESSFULLY:
         return this.i18n('multideviceNotificationAccessSetupCompletedSummary');
       case Status.TIMED_OUT_CONNECTING:
+        // TODO(hsuregan): Get the appropriate strings.
+        return 'Timed out connecting body';
       case Status.CONNECTION_DISCONNECTED:
+        // TODO(hsuregan): Get the appropriate strings.
+        return 'Connection disconnected body';
       default:
         return '';
     }
