@@ -89,7 +89,7 @@ net::CanonicalCookie CanonicalCookieFromSystemCookie(
       same_site = net::CookieSameSite::NO_RESTRICTION;
   }
 
-  return net::CanonicalCookie(
+  return *std::move(net::CanonicalCookie::FromStorage(
       base::SysNSStringToUTF8([cookie name]),
       base::SysNSStringToUTF8([cookie value]),
       base::SysNSStringToUTF8([cookie domain]),
@@ -98,7 +98,7 @@ net::CanonicalCookie CanonicalCookieFromSystemCookie(
       base::Time(), [cookie isSecure], [cookie isHTTPOnly], same_site,
       // When iOS begins to support 'Priority' attribute, pass it
       // through here.
-      net::COOKIE_PRIORITY_DEFAULT);
+      net::COOKIE_PRIORITY_DEFAULT, net::CookieSourceScheme::kUnset));
 }
 
 void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,
