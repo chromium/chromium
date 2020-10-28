@@ -45,7 +45,9 @@ bool GetCertificateRequestEqual(::attestation::GetCertificateRequest r1,
 
 }  // namespace
 
-FakeAttestationClient::FakeAttestationClient() = default;
+FakeAttestationClient::FakeAttestationClient() {
+  status_reply_.set_enrolled(true);
+}
 
 FakeAttestationClient::~FakeAttestationClient() = default;
 
@@ -143,7 +145,7 @@ void FakeAttestationClient::GetEnrollmentPreparations(
 void FakeAttestationClient::GetStatus(
     const ::attestation::GetStatusRequest& request,
     GetStatusCallback callback) {
-  NOTIMPLEMENTED();
+  PostProtoResponse(std::move(callback), status_reply_);
 }
 
 void FakeAttestationClient::Verify(const ::attestation::VerifyRequest& request,
@@ -198,8 +200,10 @@ void FakeAttestationClient::GetCertificate(
   reply.set_status(
       ::attestation::AttestationStatus::STATUS_UNEXPECTED_DEVICE_ERROR);
 
-  is_enrolled_ |= request.shall_trigger_enrollment();
-  if (!is_enrolled_) {
+  if (request.shall_trigger_enrollment()) {
+    status_reply_.set_enrolled(true);
+  }
+  if (!status_reply_.enrolled()) {
     PostProtoResponse(std::move(callback), reply);
     return;
   }
@@ -300,6 +304,10 @@ void FakeAttestationClient::ConfigureEnrollmentPreparationsStatus(
     ::attestation::AttestationStatus status) {
   CHECK_NE(status, ::attestation::STATUS_SUCCESS);
   preparations_status_ = status;
+}
+
+::attestation::GetStatusReply* FakeAttestationClient::mutable_status_reply() {
+  return &status_reply_;
 }
 
 void FakeAttestationClient::AllowlistCertificateRequest(

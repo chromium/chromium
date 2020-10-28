@@ -126,14 +126,14 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
                               CertificateCallback callback);
 
  private:
-  // Handles the result of a call to TpmAttestationIsEnrolled. Reports success
-  // if enrollment is complete and otherwise starts the process.
+  // Handles the result of a call to `GetStatus()` for enrollment status.
+  // Reports success if enrollment is complete and otherwise starts the process.
   //
   // Parameters
   //   callback - Called with the success or failure of the enrollment.
-  //   result - Result of TpmAttestationIsEnrolled().
+  //   result - Result of `GetStatus()`, which contains `enrolled` field.
   void OnEnrollmentCheckComplete(base::OnceCallback<void(bool)> callback,
-                                 base::Optional<bool> result);
+                                 const ::attestation::GetStatusReply& reply);
 
   // Asynchronously waits for attestation to be ready and start enrollment once
   // it is. If attestation is not ready by the time the flow's timeout is

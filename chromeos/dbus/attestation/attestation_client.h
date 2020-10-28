@@ -92,6 +92,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     virtual void ConfigureEnrollmentPreparationsStatus(
         ::attestation::AttestationStatus status) = 0;
 
+    // Gets the mutable |GetStatusReply| that is returned when queried.
+    virtual ::attestation::GetStatusReply* mutable_status_reply() = 0;
+
     // Allowlists |request| so the certificate requests that comes in afterwards
     // will get a fake certificate. If any alias of |request| has been
     // allowlisted this functions performs no-ops.

@@ -78,9 +78,13 @@ TEST_F(AttestationFlowTest, GetCertificate) {
   // Verify the order of calls in a sequence.
   Sequence flow_order;
 
-  // Use DBusCallbackFalse so the full enrollment flow is triggered.
-  chromeos::FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  FakeCryptohomeClient client;
+  // Set the enrollment status as `false` so the full enrollment flow is
+  // triggered.
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(true);
@@ -166,9 +170,12 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
   Sequence flow_order;
 
   FakeCryptohomeClient client;
-  // Set the enrollment status as |false| so the full enrollment flow is
+  // Set the enrollment status as `false` so the full enrollment flow is
   // triggered.
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(true);
@@ -253,7 +260,10 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
   Sequence flow_order;
 
   FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsSequence({false, true});
@@ -340,7 +350,10 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
   async_caller.SetUp(false, cryptohome::MOUNT_ERROR_NONE);
 
   chromeos::FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(false);
@@ -375,7 +388,10 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
   async_caller.SetUp(false, cryptohome::MOUNT_ERROR_NONE);
 
   chromeos::FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
@@ -413,7 +429,10 @@ TEST_F(AttestationFlowTest, GetCertificate_NoEK) {
       .Times(1);
 
   chromeos::FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(true);
@@ -444,7 +463,10 @@ TEST_F(AttestationFlowTest, GetCertificate_EKRejected) {
       .Times(1);
 
   chromeos::FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(true);
@@ -486,7 +508,10 @@ TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
       .WillOnce(WithArgs<2>(Invoke(AsyncCallbackFalse)));
 
   chromeos::FakeCryptohomeClient client;
-  client.set_tpm_attestation_is_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(true);
@@ -516,6 +541,10 @@ TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
 }
 
 TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
   async_caller.SetUp(true, cryptohome::MOUNT_ERROR_NONE);
 
@@ -569,6 +598,10 @@ TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
 }
 
 TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
   async_caller.SetUp(true, cryptohome::MOUNT_ERROR_NONE);
   chromeos::AttestationClient::Get()
@@ -621,6 +654,10 @@ TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
   async_caller.SetUp(false, cryptohome::MOUNT_ERROR_NONE);
   chromeos::AttestationClient::Get()
@@ -656,6 +693,10 @@ TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
   async_caller.SetUp(true, cryptohome::MOUNT_ERROR_NONE);
   chromeos::FakeCryptohomeClient client;
@@ -696,6 +737,10 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_CertRequestBadRequest) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
   async_caller.SetUp(true, cryptohome::MOUNT_ERROR_NONE);
 
@@ -748,7 +793,10 @@ TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
 
   chromeos::FakeCryptohomeClient client;
-  client.SetServiceIsAvailable(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_status(::attestation::STATUS_DBUS_ERROR);
 
   // We're not expecting any server calls in this case; StrictMock will verify.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -770,6 +818,10 @@ TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
   async_caller.SetUp(true, cryptohome::MOUNT_ERROR_NONE);
   chromeos::AttestationClient::Get()
@@ -821,6 +873,10 @@ TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
   // We're not expecting any async calls in this case; StrictMock will verify.
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
 

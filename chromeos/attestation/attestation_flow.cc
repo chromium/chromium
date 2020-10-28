@@ -123,25 +123,29 @@ void AttestationFlow::GetCertificate(
 
   // If this device has not enrolled with the Privacy CA, we need to do that
   // first.  Once enrolled we can proceed with the certificate request.
-  cryptohome_client_->TpmAttestationIsEnrolled(base::BindOnce(
-      &AttestationFlow::OnEnrollmentCheckComplete, weak_factory_.GetWeakPtr(),
-      std::move(start_certificate_request)));
+  attestation_client_->GetStatus(
+      ::attestation::GetStatusRequest(),
+      base::BindOnce(&AttestationFlow::OnEnrollmentCheckComplete,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(start_certificate_request)));
 }
 
 void AttestationFlow::OnEnrollmentCheckComplete(
     base::OnceCallback<void(bool)> callback,
-    base::Optional<bool> result) {
-  if (!result) {
-    LOG(ERROR) << "Attestation: Failed to check enrollment state.";
+    const ::attestation::GetStatusReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "Attestation: Failed to check enrollment state. Status: "
+               << reply.status();
     std::move(callback).Run(false);
     return;
   }
 
-  if (*result) {
+  if (reply.enrolled()) {
     std::move(callback).Run(true);
     return;
   }
 
+  // The device is not enrolled; check if it's enrollment prepared.
   base::TimeTicks end_time = base::TimeTicks::Now() + ready_timeout_;
   WaitForAttestationPrepared(end_time, std::move(callback));
 }
