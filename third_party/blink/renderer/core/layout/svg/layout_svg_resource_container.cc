@@ -240,4 +240,25 @@ void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
   }
 }
 
+static inline bool IsLayoutObjectOfResourceContainer(
+    const LayoutObject& layout_object) {
+  const LayoutObject* current = &layout_object;
+  while (current) {
+    if (current->IsSVGResourceContainer())
+      return true;
+    current = current->Parent();
+  }
+  return false;
+}
+
+void LayoutSVGResourceContainer::StyleDidChange(LayoutObject& object,
+                                                StyleDifference diff) {
+  // If this LayoutObject is the child of a resource container and
+  // it requires repainting because of changes to CSS properties
+  // such as 'visibility', upgrade to invalidate layout.
+  bool needs_layout = diff.NeedsPaintInvalidation() &&
+                      IsLayoutObjectOfResourceContainer(object);
+  MarkForLayoutAndParentResourceInvalidation(object, needs_layout);
+}
+
 }  // namespace blink

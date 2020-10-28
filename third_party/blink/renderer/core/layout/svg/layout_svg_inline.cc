@@ -141,7 +141,10 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
   SVGResources::UpdateClipPathFilterMask(To<SVGElement>(*GetNode()), old_style,
                                          StyleRef());
   SVGResources::UpdatePaints(To<SVGElement>(*GetNode()), old_style, StyleRef());
-  SVGResourcesCache::ClientStyleChanged(*this, diff);
+  if (diff.HasDifference() && Parent()) {
+    SVGResourcesCache::UpdateResources(*this);
+    LayoutSVGResourceContainer::StyleDidChange(*this, diff);
+  }
 }
 
 void LayoutSVGInline::AddChild(LayoutObject* child,

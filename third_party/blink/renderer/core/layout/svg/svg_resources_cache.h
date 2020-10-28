@@ -21,7 +21,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_RESOURCES_CACHE_H_
 
 #include <memory>
-#include "third_party/blink/renderer/core/style/style_difference.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -41,9 +40,6 @@ class SVGResourcesCache {
   ~SVGResourcesCache();
 
   static SVGResources* CachedResourcesForLayoutObject(const LayoutObject&);
-
-  // Called from all SVG layoutObjects styleDidChange() methods.
-  static void ClientStyleChanged(LayoutObject&, StyleDifference);
 
   // Called when an SVG LayoutObject has been added to the tree.
   // Returns true if an SVGResources object was created.

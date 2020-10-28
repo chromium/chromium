@@ -20,9 +20,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 
 #include <memory>
-#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
@@ -86,43 +84,6 @@ static inline bool LayoutObjectCanHaveResources(
     const LayoutObject& layout_object) {
   return layout_object.GetNode() && layout_object.GetNode()->IsSVGElement() &&
          !layout_object.IsSVGInlineText();
-}
-
-static inline bool IsLayoutObjectOfResourceContainer(
-    const LayoutObject& layout_object) {
-  const LayoutObject* current = &layout_object;
-  while (current) {
-    if (current->IsSVGResourceContainer())
-      return true;
-    current = current->Parent();
-  }
-  return false;
-}
-
-void SVGResourcesCache::ClientStyleChanged(LayoutObject& layout_object,
-                                           StyleDifference diff) {
-  DCHECK(layout_object.GetNode());
-  DCHECK(layout_object.GetNode()->IsSVGElement());
-
-  if (!diff.HasDifference() || !layout_object.Parent())
-    return;
-
-  // LayoutObjects for SVGFE*Element should not be calling this function.
-  DCHECK(!layout_object.IsSVGFilterPrimitive());
-
-  // Dynamic changes of CSS properties like 'clip-path' may require us to
-  // recompute the associated resources for a LayoutObject.
-  if (UpdateResources(layout_object))
-    layout_object.SetNeedsPaintPropertyUpdate();
-
-  // If this layoutObject is the child of ResourceContainer and it require
-  // repainting that changes of CSS properties such as 'visibility',
-  // request repainting.
-  bool needs_layout = diff.NeedsPaintInvalidation() &&
-                      IsLayoutObjectOfResourceContainer(layout_object);
-
-  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
-      layout_object, needs_layout);
 }
 
 bool SVGResourcesCache::AddResources(LayoutObject& layout_object) {
