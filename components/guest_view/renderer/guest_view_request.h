@@ -78,23 +78,6 @@ class GuestViewAttachRequest : public GuestViewRequest {
    DISALLOW_COPY_AND_ASSIGN(GuestViewAttachRequest);
 };
 
-// This class represents a DetachGuest request from Javascript. The Detach
-// operation may not execute immediately, if the container is not ready or if
-// there are other GuestViewRequests in flight.
-class GuestViewDetachRequest : public GuestViewRequest {
- public:
-  GuestViewDetachRequest(GuestViewContainer* container,
-                         v8::Local<v8::Function> callback,
-                         v8::Isolate* isolate);
-  ~GuestViewDetachRequest() override;
-
-  void PerformRequest() override;
-  void HandleResponse(const IPC::Message& message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestViewDetachRequest);
-};
-
 }  // namespace guest_view
 
 #endif  // COMPONENTS_GUEST_VIEW_RENDERER_GUEST_VIEW_CONTAINER_H_

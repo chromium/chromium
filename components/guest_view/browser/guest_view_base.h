@@ -339,7 +339,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // TODO(533069): Remove since BrowserPlugin has been removed.
   void DidAttach(int guest_proxy_routing_id);
-  void DidDetach();
   void WillAttach(content::WebContents* embedder_web_contents,
                   int browser_plugin_instance_id,
                   bool is_full_page_plugin,

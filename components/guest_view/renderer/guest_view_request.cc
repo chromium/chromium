@@ -101,23 +101,4 @@ void GuestViewAttachRequest::HandleResponse(const IPC::Message& message) {
   ExecuteCallbackIfAvailable(argc, std::move(argv));
 }
 
-GuestViewDetachRequest::GuestViewDetachRequest(
-    GuestViewContainer* container,
-    v8::Local<v8::Function> callback,
-    v8::Isolate* isolate)
-    : GuestViewRequest(container, callback, isolate) {
-}
-
-GuestViewDetachRequest::~GuestViewDetachRequest() {
-}
-
-void GuestViewDetachRequest::PerformRequest() {
-  // TODO(wjmaclean): Remove this function.
-}
-
-void GuestViewDetachRequest::HandleResponse(const IPC::Message& message) {
-  DCHECK(message.type() == GuestViewMsg_GuestDetached::ID);
-  ExecuteCallbackIfAvailable(0 /* argc */, nullptr);
-}
-
 }  // namespace guest_view

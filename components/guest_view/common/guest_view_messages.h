@@ -24,13 +24,6 @@ IPC_MESSAGE_CONTROL2(GuestViewMsg_GuestAttached,
                      int /* element_instance_id */,
                      int /* source_routing_id */)
 
-// This IPC tells the browser process to detach the provided
-// |element_instance_id| from a GuestViewBase if it is attached to one.
-// In other words, routing of input and graphics will no longer flow through
-// the container associated with the provided ID.
-IPC_MESSAGE_CONTROL1(GuestViewMsg_GuestDetached,
-                     int /* element_instance_id*/)
-
 // Messages sent from the renderer to the browser.
 
 // Sent by the renderer to set initialization parameters of a Browser Plugin
