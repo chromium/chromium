@@ -90,14 +90,9 @@ void NavigationDownloadPolicy::RecordHistogram() const {
   DCHECK(first_type_seen);
 }
 
-bool ShouldCreateNewHostForCrashedFrame() {
-  return GetRenderDocumentLevel() >= RenderDocumentLevel::kCrashedFrame;
-}
-
 bool ShouldSkipEarlyCommitPendingForCrashedFrame() {
   return base::FeatureList::IsEnabled(
-             features::kSkipEarlyCommitPendingForCrashedFrame) &&
-         ShouldCreateNewHostForCrashedFrame();
+      features::kSkipEarlyCommitPendingForCrashedFrame);
 }
 
 }  // namespace content

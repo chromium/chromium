@@ -2713,13 +2713,8 @@ int RenderFrameHostManager::GetReplacementRoutingId(
     } else {
       // The renderer crashed and there is no previous proxy or previous frame
       // in the renderer to be replaced.
-      if (current_frame_host()->must_be_replaced()) {
-        DCHECK(ShouldCreateNewHostForCrashedFrame());
-        DCHECK_NE(render_frame_host, current_frame_host());
-      } else {
-        DCHECK(!ShouldCreateNewHostForCrashedFrame());
-        DCHECK_EQ(render_frame_host, current_frame_host());
-      }
+      DCHECK(current_frame_host()->must_be_replaced());
+      DCHECK_NE(render_frame_host, current_frame_host());
       return MSG_ROUTING_NONE;
     }
   }

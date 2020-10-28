@@ -2019,7 +2019,7 @@ void RenderFrameHostImpl::RenderProcessExited(
   SetLastCommittedUrl(GURL());
   web_bundle_handle_.reset();
 
-  must_be_replaced_ = ShouldCreateNewHostForCrashedFrame();
+  must_be_replaced_ = true;
   has_committed_any_navigation_ = false;
 
 #if defined(OS_ANDROID)

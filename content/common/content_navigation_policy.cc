@@ -135,7 +135,6 @@ const char kRenderDocumentLevelParameterName[] = "level";
 
 constexpr base::FeatureParam<RenderDocumentLevel>::Option
     render_document_levels[] = {
-        {RenderDocumentLevel::kDisabled, "disabled"},
         {RenderDocumentLevel::kCrashedFrame, "crashed-frame"},
         {RenderDocumentLevel::kSubframe, "subframe"}};
 const base::FeatureParam<RenderDocumentLevel> render_document_level{
@@ -145,7 +144,7 @@ const base::FeatureParam<RenderDocumentLevel> render_document_level{
 RenderDocumentLevel GetRenderDocumentLevel() {
   if (base::FeatureList::IsEnabled(features::kRenderDocument))
     return render_document_level.Get();
-  return RenderDocumentLevel::kDisabled;
+  return RenderDocumentLevel::kCrashedFrame;
 }
 
 std::string GetRenderDocumentLevelName(RenderDocumentLevel level) {

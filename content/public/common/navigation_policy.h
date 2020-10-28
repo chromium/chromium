@@ -88,10 +88,6 @@ struct CONTENT_EXPORT NavigationDownloadPolicy {
   bool blocking_downloads_in_sandbox_enabled = false;
 };
 
-// True if feature-flags indicate that we should replace crashed RFHs with new
-// instances rather than reusing them. See http://crbug.com/981339.
-CONTENT_EXPORT bool ShouldCreateNewHostForCrashedFrame();
-
 // If this is false we continue the old behaviour of doing an early call to
 // RenderFrameHostManager::CommitPending when we are replacing a crashed
 // frame.

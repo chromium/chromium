@@ -21,7 +21,6 @@ void InitAndEnableRenderDocumentFeature(
 
 std::vector<std::string> RenderDocumentFeatureLevelValues() {
   return {
-      GetRenderDocumentLevelName(RenderDocumentLevel::kDisabled),
       GetRenderDocumentLevelName(RenderDocumentLevel::kCrashedFrame),
       GetRenderDocumentLevelName(RenderDocumentLevel::kSubframe),
   };
