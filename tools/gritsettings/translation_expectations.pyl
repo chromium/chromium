@@ -65,6 +65,7 @@
       "ios/chrome/search_widget_extension/strings/ios_search_widget_extension_chromium_strings.grd",
       "ios/chrome/search_widget_extension/strings/ios_search_widget_extension_google_chrome_strings.grd",
       "ios/chrome/share_extension/strings/ios_share_extension_strings.grd",
+      "ios/chrome/widget_kit_extension/strings/ios_widget_kit_extension_strings.grd",
       "remoting/resources/remoting_strings.grd",
       "services/services_strings.grd",
       "third_party/libaddressinput/chromium/address_input_strings.grd",

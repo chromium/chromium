@@ -463,6 +463,9 @@
     "META": {"join": 2},
     "messages": [800],
   },
+  "ios/chrome/widget_kit_extension/strings/ios_widget_kit_extension_strings.grd": {
+    "messages": [820],
+  },
 
   # END ios/ section.
 
