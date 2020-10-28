@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACADE_H_
-#define CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACADE_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_
 
 #include "base/component_export.h"
+
+namespace account_manager {
 
 // An interface to talk to |AccountManager|.
 // Implementations of this interface hide the in-process / out-of-process nature
 // of this communication.
 // Instances of this class are singletons, and are independent of a |Profile|.
 // Use |GetAccountManagerFacade()| to get an instance of this class.
-class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFacade {
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
  public:
   AccountManagerFacade();
   AccountManagerFacade(const AccountManagerFacade&) = delete;
@@ -26,4 +28,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFacade {
   virtual bool IsInitialized() = 0;
 };
 
-#endif  // CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACADE_H_
+}  // namespace account_manager
+
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_

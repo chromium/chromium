@@ -10,6 +10,8 @@ component("account_manager_core") {
   sources = [
     "account.cc",
     "account.h",
+    "account_manager_facade.cc",
+    "account_manager_facade.h",
   ]
 
   public_deps =

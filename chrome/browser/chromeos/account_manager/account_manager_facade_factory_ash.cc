@@ -30,7 +30,8 @@ chromeos::AccountManager* GetAccountManager(const std::string& profile_path) {
 
 }  // namespace
 
-AccountManagerFacade* GetAccountManagerFacade(const std::string& profile_path) {
+account_manager::AccountManagerFacade* GetAccountManagerFacade(
+    const std::string& profile_path) {
   // Map from |profile_path| to AccountManagerFacade.
   static base::NoDestructor<
       std::map<std::string, std::unique_ptr<chromeos::AccountManagerFacadeAsh>>>

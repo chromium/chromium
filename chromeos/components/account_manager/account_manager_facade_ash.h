@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACADE_ASH_H_
 #define CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACADE_ASH_H_
 
-#include "chromeos/components/account_manager/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_facade.h"
 
 namespace chromeos {
 
@@ -14,7 +14,7 @@ class AccountManager;
 // Ash-chrome specific implementation of |AccountManagerFacade| that talks to
 // |chromeos::AccountManager| in-process.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFacadeAsh
-    : public AccountManagerFacade {
+    : public ::account_manager::AccountManagerFacade {
  public:
   explicit AccountManagerFacadeAsh(AccountManager* account_manager);
   AccountManagerFacadeAsh(const AccountManagerFacadeAsh&) = delete;

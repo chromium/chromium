@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/account_manager/account_manager_facade.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
@@ -19,7 +19,7 @@ class LacrosChromeServiceImpl;
 // Lacros specific implementation of |AccountManagerFacade| that talks to
 // |chromeos::AccountManager|, residing in ash-chrome, over Mojo.
 class AccountManagerFacadeLacros
-    : public AccountManagerFacade,
+    : public account_manager::AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {
  public:
   AccountManagerFacadeLacros();

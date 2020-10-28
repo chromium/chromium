@@ -6,9 +6,10 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/lacros/account_manager_facade_lacros.h"
-#include "chromeos/components/account_manager/account_manager_facade.h"
+#include "components/account_manager_core/account_manager_facade.h"
 
-AccountManagerFacade* GetAccountManagerFacade(const std::string& profile_path) {
+account_manager::AccountManagerFacade* GetAccountManagerFacade(
+    const std::string& profile_path) {
   // Multi-Login is disabled with Lacros. Always return the same instance.
   static base::NoDestructor<AccountManagerFacadeLacros> facade;
   return facade.get();
