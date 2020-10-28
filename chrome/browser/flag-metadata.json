@@ -4400,7 +4400,7 @@
   {
     "name": "split-settings-sync",
     "owners": [ "jamescook", "cros-system-services@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 92
   },
   {
     "name": "ssl-committed-interstitials",
