@@ -47,11 +47,11 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jon Doe", "Google", "340 Main St", "California", "Los Angeles", "", "90291", "",
-                "US", "555-222-2222", "", "en-US"));
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "California",
+                "Los Angeles", "", "90291", "", "US", "555-222-2222", "", "en-US"));
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jane Smith", "Google", "340 Main St", "California", "Los Angeles", "", "90291", "",
-                "US", "555-111-1111", "", "en-US"));
+                "" /* honorific prefix */, "Jane Smith", "Google", "340 Main St", "California",
+                "Los Angeles", "", "90291", "", "US", "555-111-1111", "", "en-US"));
     }
 
     @Test

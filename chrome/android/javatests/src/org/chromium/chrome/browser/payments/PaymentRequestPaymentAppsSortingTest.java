@@ -42,9 +42,10 @@ public class PaymentRequestPaymentAppsSortingTest implements MainActivityStartCa
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
+        String billingAddressId = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
+                        "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
         // Visa card with complete set of information. This payment method is always listed
         // behind non-autofill payment apps in payment request.
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",

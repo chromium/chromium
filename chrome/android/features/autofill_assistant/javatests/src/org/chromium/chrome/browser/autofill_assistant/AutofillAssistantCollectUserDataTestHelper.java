@@ -274,7 +274,8 @@ public class AutofillAssistantCollectUserDataTestHelper {
     public PersonalDataManager.AutofillProfile createDummyProfile(
             String fullName, String email, String postcode) {
         return new PersonalDataManager.AutofillProfile(/* guid= */ "", "https://www.example.com",
-                fullName, "Acme Inc.", "123 Main", "California", "Los Angeles",
+                /* honorificPrefix= */ "", fullName, "Acme Inc.", "123 Main", "California",
+                "Los Angeles",
                 /* dependentLocality= */ "", postcode, /* sortingCode= */ "", "UZ", "555 123-4567",
                 email, /* languageCode= */ "");
     }

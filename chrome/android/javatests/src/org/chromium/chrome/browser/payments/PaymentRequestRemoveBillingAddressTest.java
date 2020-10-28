@@ -46,12 +46,14 @@ public class PaymentRequestRemoveBillingAddressTest implements MainActivityStart
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jane Smith",
-                "Google", "1600 Amphitheatre Pkwy", "CA", "Mountain View", "", "94043", "", "US",
-                "515-543-5555", "jane.smith@google.com", "en-US"));
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "515-543-5555", "jon.doe@google.com", "en-US"));
+        helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jane Smith", "Google", "1600 Amphitheatre Pkwy", "CA", "Mountain View", "",
+                        "94043", "", "US", "515-543-5555", "jane.smith@google.com", "en-US"));
+        String billingAddressId = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
+                        "US", "515-543-5555", "jon.doe@google.com", "en-US"));
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Alice",
                 "4111111111111111", "1111", "1", "2050", "visa", R.drawable.visa_card,
                 billingAddressId, "" /* serverId */));

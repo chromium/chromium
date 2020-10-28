@@ -614,10 +614,10 @@ public class AutofillAssistantCollectUserDataUiTest {
     @MediumTest
     public void testNonEmptyPaymentRequest() throws Exception {
         /* Add complete profile and credit card to the personal data manager. */
-        PersonalDataManager.AutofillProfile profile =
-                new PersonalDataManager.AutofillProfile("GUID", "https://www.example.com",
-                        "Maggie Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                        "90210", "", "UZ", "555 123-4567", "maggie@simpson.com", "");
+        PersonalDataManager.AutofillProfile profile = new PersonalDataManager.AutofillProfile(
+                "GUID", "https://www.example.com", /* honorificPrefix= */ "", "Maggie Simpson",
+                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "UZ",
+                "555 123-4567", "maggie@simpson.com", "");
         PersonalDataManager.CreditCard creditCard =
                 new PersonalDataManager.CreditCard("", "https://example.com", true, true, "Jon Doe",
                         "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
@@ -741,21 +741,22 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testContactDetailsCustomSummary() throws Exception {
-        AutofillContact contactFull = AssistantCollectUserDataModel.createAutofillContact(
-                mTestRule.getActivity(),
-                new PersonalDataManager.AutofillProfile("GUID", "https://www.example.com",
-                        "Maggie Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                        "90210", "", "UZ", "555 123-4567", "maggie@simpson.com", ""),
-                /* requestName= */ true,
-                /* requestPhone= */ true, /* requestEmail= */ true);
-
-        AutofillContact contactWithoutEmail =
+        AutofillContact contactFull =
                 AssistantCollectUserDataModel.createAutofillContact(mTestRule.getActivity(),
                         new PersonalDataManager.AutofillProfile("GUID", "https://www.example.com",
-                                "John Simpson", "Acme Inc.", "123 Main", "California",
-                                "Los Angeles", "", "90210", "", "UZ", "555 123-4567", "", ""),
+                                /* honorificPrefix= */ "", "Maggie Simpson", "Acme Inc.",
+                                "123 Main", "California", "Los Angeles", "", "90210", "", "UZ",
+                                "555 123-4567", "maggie@simpson.com", ""),
                         /* requestName= */ true,
                         /* requestPhone= */ true, /* requestEmail= */ true);
+
+        AutofillContact contactWithoutEmail = AssistantCollectUserDataModel.createAutofillContact(
+                mTestRule.getActivity(),
+                new PersonalDataManager.AutofillProfile("GUID", "https://www.example.com",
+                        /* honorificPrefix= */ "", "John Simpson", "Acme Inc.", "123 Main",
+                        "California", "Los Angeles", "", "90210", "", "UZ", "555 123-4567", "", ""),
+                /* requestName= */ true,
+                /* requestPhone= */ true, /* requestEmail= */ true);
 
         AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);

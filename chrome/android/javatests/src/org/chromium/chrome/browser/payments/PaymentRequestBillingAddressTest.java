@@ -59,41 +59,43 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         String profile1 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
-                "650-253-0000", "jon.doe@gmail.com", "en-US"));
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "jon.doe@gmail.com", "en-US"));
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "amex", R.drawable.amex_card, profile1,
                 "" /* serverId */));
         String profile2 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Rob Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
-                "650-253-0000", "jon.doe@gmail.com", "en-US"));
+                "" /* honorific prefix */, "Rob Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "jon.doe@gmail.com", "en-US"));
         String profile3 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Tom Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
-                "650-253-0000", "jon.doe@gmail.com", "en-US"));
+                "" /* honorific prefix */, "Tom Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "jon.doe@gmail.com", "en-US"));
 
         // Incomplete profile (invalid address).
         String profile4 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Bart Doe", "Google", "340 Main St", "CA", "", "", "90291", "", "US",
-                "650-253-0000", "jon.doe@gmail.com", "en-US"));
+                "" /* honorific prefix */, "Bart Doe", "Google", "340 Main St", "CA", "", "",
+                "90291", "", "US", "650-253-0000", "jon.doe@gmail.com", "en-US"));
 
         // Incomplete profile (missing phone number)
         String profile5 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Lisa Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "",
-                "jon.doe@gmail.com", "en-US"));
+                "" /* honorific prefix */, "Lisa Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "", "jon.doe@gmail.com", "en-US"));
 
         // Incomplete profile (missing recipient name).
-        String profile6 = helper.setProfile(new AutofillProfile("", "https://example.com", true, "",
-                "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "jon.doe@gmail.com", "en-US"));
+        String profile6 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "", "Google", "340 Main St", "CA", "Los Angeles", "",
+                "90291", "", "US", "650-253-0000", "jon.doe@gmail.com", "en-US"));
 
         // Incomplete profile (need more information).
-        String profile7 = helper.setProfile(new AutofillProfile("", "https://example.com", true, "",
-                "Google", "340 Main St", "CA", "", "", "90291", "", "US", "", "", "en-US"));
+        String profile7 = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */, "",
+                        "Google", "340 Main St", "CA", "", "", "90291", "", "US", "", "", "en-US"));
 
         // Profile with empty street address (should not be presented to user).
-        String profile8 = helper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jerry Doe", "Google", "" /* streetAddress */, "CA", "Los Angeles", "", "90291", "",
-                "US", "650-253-0000", "jerry.doe@gmail.com", "en-US"));
+        String profile8 = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jerry Doe", "Google", "" /* streetAddress */, "CA", "Los Angeles", "",
+                        "90291", "", "US", "650-253-0000", "jerry.doe@gmail.com", "en-US"));
 
         // This card has no billing address selected.
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jane Doe",

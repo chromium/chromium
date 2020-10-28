@@ -51,15 +51,15 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         AutofillTestHelper mHelper = new AutofillTestHelper();
         // The user has a shipping address and a credit card associated with that address on disk.
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "650-253-0000", "jondoe@email.com", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "jondoe@email.com", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 mBillingAddressId, "" /* serverId */));
         // The user also has an incomplete address and an incomplete card saved.
         String mIncompleteAddressId = mHelper.setProfile(new AutofillProfile("",
-                "https://example.com", true, "In Complete", "Google", "344 Main St", "CA", "", "",
-                "90291", "", "US", "650-253-0000", "", "en-US"));
+                "https://example.com", true, "" /* honorific prefix */, "In Complete", "Google",
+                "344 Main St", "CA", "", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "",
                 "4111111111111111", "1111", "18", "2075", "visa", R.drawable.visa_card,
                 mIncompleteAddressId, "" /* serverId */));
@@ -305,8 +305,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Add a card and an incomplete address (no region).
         AutofillTestHelper mHelper = new AutofillTestHelper();
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", /*region=*/"", "Los Angeles", "", "90291",
-                "", "US", "650-253-0000", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", /*region=*/"",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 mBillingAddressId, "" /* serverId */));
@@ -342,8 +342,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Add an incomplete card (no exp date) and an complete address.
         AutofillTestHelper mHelper = new AutofillTestHelper();
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "650-253-0000", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true,
                 /*cardholderName=*/"", "4111111111111111", "1111", "10", "2021", "visa",
                 R.drawable.visa_card, mBillingAddressId, "" /* serverId */));
@@ -378,8 +378,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Add an unsupported card (mastercard) and an complete address.
         AutofillTestHelper mHelper = new AutofillTestHelper();
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "650-253-0000", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "5187654321098765", "8765", "10", "2021", "mastercard", R.drawable.visa_card,
                 mBillingAddressId, "" /* serverId */));
@@ -412,9 +412,9 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
             throws TimeoutException {
         // Add a complete address and a working payment app.
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000", "",
-                "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
@@ -445,9 +445,9 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     public void testUserDidNotHaveCompleteSuggestions_PaymentApp_NoApps() throws TimeoutException {
         // Add an address and a factory without apps.
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000", "",
-                "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.NO_APPS, FactorySpeed.FAST_FACTORY);
 
@@ -479,9 +479,9 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
             throws TimeoutException {
         // Add an address and a payment app on file.
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000", "",
-                "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
@@ -515,8 +515,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Add a card and an incomplete address (no region).
         AutofillTestHelper mHelper = new AutofillTestHelper();
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", /*region=*/"", "Los Angeles", "", "90291",
-                "", "US", "650-253-0000", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", /*region=*/"",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 mBillingAddressId, "" /* serverId */));
@@ -552,8 +552,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Add an address and a credit card on file.
         AutofillTestHelper mHelper = new AutofillTestHelper();
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "650-253-0000", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 mBillingAddressId, "" /* serverId */));
@@ -588,9 +588,9 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
             throws TimeoutException {
         // Add an address and a payment app on file.
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000", "",
-                "en-US"));
+        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
@@ -625,8 +625,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
         // Add an address, a credit card and a payment app on file.
         AutofillTestHelper mHelper = new AutofillTestHelper();
         String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "650-253-0000", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
         mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 mBillingAddressId, "" /* serverId */));
@@ -664,8 +664,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
             throws TimeoutException {
         // Add an address on file.
         new AutofillTestHelper().setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
-                "650-253-0000", "", "en-US"));
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "", "en-US"));
 
         mPaymentRequestTestRule.triggerUIAndWait(
                 "cardsAndBobPayBuy", mPaymentRequestTestRule.getReadyForInput());

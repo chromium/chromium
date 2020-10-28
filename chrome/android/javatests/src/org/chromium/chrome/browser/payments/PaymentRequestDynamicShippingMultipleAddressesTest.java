@@ -46,43 +46,46 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // Incomplete profile_0 (missing phone number)
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Bart Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "US", "", "bart@simpson.com", ""),
+                    "" /* honorific prefix */, "Bart Simpson", "Acme Inc.", "123 Main",
+                    "California", "Los Angeles", "", "90210", "", "US", "", "bart@simpson.com", ""),
 
             // Incomplete profile_1 (missing street address).
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Homer Simpson", "Acme Inc.", "", "California", "Los Angeles", "", "90210", "",
-                    "US", "555 123-4567", "homer@simpson.com", ""),
+                    "" /* honorific prefix */, "Homer Simpson", "Acme Inc.", "", "California",
+                    "Los Angeles", "", "90210", "", "US", "555 123-4567", "homer@simpson.com", ""),
 
             // Complete profile_2.
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Lisa Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
+                    "" /* honorific prefix */, "Lisa Simpson", "Acme Inc.", "123 Main",
+                    "California", "Los Angeles", "", "90210", "", "US", "555 123-4567",
+                    "lisa@simpson.com", ""),
 
             // Complete profile_3 in another country.
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Maggie Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "Uzbekistan", "555 123-4567", "maggie@simpson.com", ""),
+                    "" /* honorific prefix */, "Maggie Simpson", "Acme Inc.", "123 Main",
+                    "California", "Los Angeles", "", "90210", "", "Uzbekistan", "555 123-4567",
+                    "maggie@simpson.com", ""),
 
             // Incomplete profile_4 (invalid address, missing city name).
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Marge Simpson", "Acme Inc.", "123 Main", "California", "", "", "90210", "",
-                    "US", "555 123-4567", "marge@simpson.com", ""),
+                    "" /* honorific prefix */, "Marge Simpson", "Acme Inc.", "123 Main",
+                    "California", "", "", "90210", "", "US", "555 123-4567", "marge@simpson.com",
+                    ""),
 
             // Incomplete profile_5 (missing recipient name).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */, "",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+                    "" /* honorific prefix */, "", "Acme Inc.", "123 Main", "California",
+                    "Los Angeles", "", "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
 
             // Incomplete profile_6 (need more information: name and address both missing/invalid).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */, "",
-                    "Acme Inc.", "123 Main", "California", "", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+                    "" /* honorific prefix */, "", "Acme Inc.", "123 Main", "California", "", "",
+                    "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
 
             // Incomplete profile_7 (missing phone number, different from AutofillProfile[0])
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */, "John Smith",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US", "",
-                    "bart@simpson.com", ""),
+            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+                    "" /* honorific prefix */, "John Smith", "Acme Inc.", "123 Main", "California",
+                    "Los Angeles", "", "90210", "", "US", "", "bart@simpson.com", ""),
     };
 
     private AutofillProfile[] mProfilesToAdd;

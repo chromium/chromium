@@ -42,10 +42,10 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_no_shipping_test.html", this);
 
-    private static final AutofillProfile AUTOFILL_PROFILE =
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Lisa Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "US", "555 123-4567", "lisa@simpson.com", "" /* languageCode */);
+    private static final AutofillProfile AUTOFILL_PROFILE = new AutofillProfile("" /* guid */,
+            "https://www.example.com" /* origin */, "" /* honorific prefix */, "Lisa Simpson",
+            "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+            "555 123-4567", "lisa@simpson.com", "" /* languageCode */);
 
     private static final CreditCard[] CREDIT_CARDS = {
             // CARD_0 missing billing address.

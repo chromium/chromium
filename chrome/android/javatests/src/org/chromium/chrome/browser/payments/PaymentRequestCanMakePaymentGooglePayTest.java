@@ -45,9 +45,10 @@ public class PaymentRequestCanMakePaymentGooglePayTest implements MainActivitySt
         // The user has a valid server credit card with a billing address on file. This is
         // sufficient for canMakePayment() to return true.
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
+        String billingAddressId = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
+                        "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
         helper.addServerCreditCard(new CreditCard("4754d21d-8773-40b6-b4be-5f7486be834f",
                 "https://example.com", false /* isLocal */, true /* isCached */, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,

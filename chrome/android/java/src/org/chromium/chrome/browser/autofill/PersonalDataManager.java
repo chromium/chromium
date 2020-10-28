@@ -111,6 +111,7 @@ public class PersonalDataManager {
         private String mGUID;
         private String mOrigin;
         private boolean mIsLocal;
+        private String mHonorificPrefix;
         private String mFullName;
         private String mCompanyName;
         private String mStreetAddress;
@@ -127,21 +128,23 @@ public class PersonalDataManager {
 
         @CalledByNative("AutofillProfile")
         public static AutofillProfile create(String guid, String origin, boolean isLocal,
-                String fullName, String companyName, String streetAddress, String region,
-                String locality, String dependentLocality, String postalCode, String sortingCode,
-                String country, String phoneNumber, String emailAddress, String languageCode) {
-            return new AutofillProfile(guid, origin, isLocal, fullName, companyName, streetAddress,
-                    region, locality, dependentLocality, postalCode, sortingCode, country,
-                    phoneNumber, emailAddress, languageCode);
+                String honorificPrefix, String fullName, String companyName, String streetAddress,
+                String region, String locality, String dependentLocality, String postalCode,
+                String sortingCode, String country, String phoneNumber, String emailAddress,
+                String languageCode) {
+            return new AutofillProfile(guid, origin, isLocal, honorificPrefix, fullName,
+                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
+                    sortingCode, country, phoneNumber, emailAddress, languageCode);
         }
 
-        public AutofillProfile(String guid, String origin, boolean isLocal, String fullName,
-                String companyName, String streetAddress, String region, String locality,
-                String dependentLocality, String postalCode, String sortingCode, String countryCode,
-                String phoneNumber, String emailAddress, String languageCode) {
+        public AutofillProfile(String guid, String origin, boolean isLocal, String honorificPrefix,
+                String fullName, String companyName, String streetAddress, String region,
+                String locality, String dependentLocality, String postalCode, String sortingCode,
+                String countryCode, String phoneNumber, String emailAddress, String languageCode) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
+            mHonorificPrefix = honorificPrefix;
             mFullName = fullName;
             mCompanyName = companyName;
             mStreetAddress = streetAddress;
@@ -162,9 +165,9 @@ public class PersonalDataManager {
          */
         public AutofillProfile() {
             this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /* origin */, true /* isLocal */,
-                    "" /* fullName */, "" /* companyName */, "" /* streetAddress */,
-                    "" /* region */, "" /* locality */, "" /* dependentLocality */,
-                    "" /* postalCode */, "" /* sortingCode */,
+                    "" /* honorificPrefix */, "" /* fullName */, "" /* companyName */,
+                    "" /* streetAddress */, "" /* region */, "" /* locality */,
+                    "" /* dependentLocality */, "" /* postalCode */, "" /* sortingCode */,
                     Locale.getDefault().getCountry() /* country */, "" /* phoneNumber */,
                     "" /* emailAddress */, "" /* languageCode */);
         }
@@ -174,6 +177,7 @@ public class PersonalDataManager {
             mGUID = profile.getGUID();
             mOrigin = profile.getOrigin();
             mIsLocal = profile.getIsLocal();
+            mHonorificPrefix = profile.getHonorificPrefix();
             mFullName = profile.getFullName();
             mCompanyName = profile.getCompanyName();
             mStreetAddress = profile.getStreetAddress();
@@ -191,13 +195,13 @@ public class PersonalDataManager {
 
         /** TODO(estade): remove this constructor. */
         @VisibleForTesting
-        public AutofillProfile(String guid, String origin, String fullName, String companyName,
-                String streetAddress, String region, String locality, String dependentLocality,
-                String postalCode, String sortingCode, String countryCode, String phoneNumber,
-                String emailAddress, String languageCode) {
-            this(guid, origin, true /* isLocal */, fullName, companyName, streetAddress, region,
-                    locality, dependentLocality, postalCode, sortingCode, countryCode, phoneNumber,
-                    emailAddress, languageCode);
+        public AutofillProfile(String guid, String origin, String honorificPrefix, String fullName,
+                String companyName, String streetAddress, String region, String locality,
+                String dependentLocality, String postalCode, String sortingCode, String countryCode,
+                String phoneNumber, String emailAddress, String languageCode) {
+            this(guid, origin, true /* isLocal */, honorificPrefix, fullName, companyName,
+                    streetAddress, region, locality, dependentLocality, postalCode, sortingCode,
+                    countryCode, phoneNumber, emailAddress, languageCode);
         }
 
         @CalledByNative("AutofillProfile")
@@ -208,6 +212,10 @@ public class PersonalDataManager {
         @CalledByNative("AutofillProfile")
         public String getOrigin() {
             return mOrigin;
+        }
+
+        public String getHonorificPrefix() {
+            return mHonorificPrefix;
         }
 
         @CalledByNative("AutofillProfile")
@@ -288,6 +296,10 @@ public class PersonalDataManager {
 
         public void setOrigin(String origin) {
             mOrigin = origin;
+        }
+
+        public void setHonorificPrefix(String honorificPrefix) {
+            mHonorificPrefix = honorificPrefix;
         }
 
         public void setFullName(String fullName) {

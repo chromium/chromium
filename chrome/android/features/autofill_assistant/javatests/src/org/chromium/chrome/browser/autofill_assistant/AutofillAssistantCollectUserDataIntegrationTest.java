@@ -507,8 +507,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     public void testIncompleteAddressOnCompleteCard() throws Exception {
         PersonalDataManager.AutofillProfile mockProfile = new PersonalDataManager.AutofillProfile(
                 /* guid= */ "",
-                /* origin= */ "https://www.example.com", "John Doe", /* companyName= */ "",
-                "Somestreet",
+                /* origin= */ "https://www.example.com", /* honorificPrefix= */ "", "John Doe",
+                /* companyName= */ "", "Somestreet",
                 /* region= */ "", "Switzerland", "", /* postalCode= */ "", /* sortingCode= */ "",
                 "CH", "+41 79 123 45 67", "johndoe@google.com", /* languageCode= */ "");
         String profileId = mHelper.setProfile(mockProfile);

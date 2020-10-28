@@ -45,9 +45,10 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
+        String billingAddressId = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
+                        "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
         // Mastercard card without a billing address.
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "5454545454545454", "", "12", "2050", "mastercard", R.drawable.mc_card,

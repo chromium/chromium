@@ -64,8 +64,8 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest implements MainActivity
     private void runCannotShipTest() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jon Doe", "Google", "51 Breithaupt St", "ON", "Kitchener", "", "N2H 5G5", "", "CA",
-                "555-222-2222", "", "en-CA"));
+                "" /* honorific prefix */, "Jon Doe", "Google", "51 Breithaupt St", "ON",
+                "Kitchener", "", "N2H 5G5", "", "CA", "555-222-2222", "", "en-CA"));
         mRule.triggerUIAndWait(mRule.getReadyForInput());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
@@ -98,8 +98,8 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest implements MainActivity
     private void runCanShipTest() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jane Smith", "Google", "340 Main St", "California", "Los Angeles", "", "90291", "",
-                "US", "555-111-1111", "", "en-US"));
+                "" /* honorific prefix */, "Jane Smith", "Google", "340 Main St", "California",
+                "Los Angeles", "", "90291", "", "US", "555-111-1111", "", "en-US"));
         mRule.triggerUIAndWait(mRule.getReadyForInput());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());

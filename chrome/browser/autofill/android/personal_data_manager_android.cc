@@ -281,6 +281,9 @@ PersonalDataManagerAndroid::CreateJavaProfileFromNative(
       ConvertUTF8ToJavaString(env, profile.origin()),
       profile.record_type() == AutofillProfile::LOCAL_PROFILE,
       ConvertUTF16ToJavaString(
+          env, profile.GetInfo(AutofillType(NAME_HONORIFIC_PREFIX),
+                               g_browser_process->GetApplicationLocale())),
+      ConvertUTF16ToJavaString(
           env, profile.GetInfo(AutofillType(NAME_FULL),
                                g_browser_process->GetApplicationLocale())),
       ConvertUTF16ToJavaString(env, profile.GetRawInfo(COMPANY_NAME)),

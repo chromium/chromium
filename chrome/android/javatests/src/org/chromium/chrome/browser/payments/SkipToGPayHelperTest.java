@@ -53,9 +53,9 @@ public final class SkipToGPayHelperTest {
     }
 
     private AutofillProfile makeCompleteProfile() {
-        return new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "jon.doe@gmail.com", "en-US");
+        return new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
+                "650-253-0000", "jon.doe@gmail.com", "en-US");
     }
 
     private CreditCard makeCreditCard(String billingAddressProfileId) {

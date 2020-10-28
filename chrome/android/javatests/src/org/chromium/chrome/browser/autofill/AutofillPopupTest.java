@@ -187,12 +187,10 @@ public class AutofillPopupTest {
 
         // Add an Autofill profile.
         mHelper = new AutofillTestHelper();
-        AutofillProfile profile = new AutofillProfile(
-                "" /* guid */, ORIGIN, FIRST_NAME + " " + LAST_NAME, COMPANY_NAME,
-                STREET_ADDRESS_TEXTAREA,
-                STATE, CITY, DEPENDENT_LOCALITY,
-                ZIP_CODE, SORTING_CODE, COUNTRY, PHONE_NUMBER, EMAIL,
-                LANGUAGE_CODE);
+        AutofillProfile profile = new AutofillProfile("" /* guid */, ORIGIN,
+                "" /* honorific prefix */, FIRST_NAME + " " + LAST_NAME, COMPANY_NAME,
+                STREET_ADDRESS_TEXTAREA, STATE, CITY, DEPENDENT_LOCALITY, ZIP_CODE, SORTING_CODE,
+                COUNTRY, PHONE_NUMBER, EMAIL, LANGUAGE_CODE);
         mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesToSuggest());
 

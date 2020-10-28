@@ -46,9 +46,9 @@ public class PaymentRequestIncompleteServerCardTest implements MainActivityStart
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
         helper.addServerCreditCard(new CreditCard("", "https://example.com", false /* isLocal */,
                 true /* isCached */, "Jon Doe", "4111111111111111", "1111", "12", "2050", "visa",
                 R.drawable.visa_card, "" /* billing address */, "" /* serverId */));
