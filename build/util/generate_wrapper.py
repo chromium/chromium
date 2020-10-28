@@ -88,10 +88,65 @@ PY_TEMPLATE = textwrap.dedent("""\
       return args
 
 
+    def FindIsolatedOutdir(raw_args):
+      outdir = None
+      i = 0
+      remaining_args = []
+      while i < len(raw_args):
+        if raw_args[i] == '--isolated-outdir' and i < len(raw_args)-1:
+          outdir = raw_args[i+1]
+          i += 2
+        elif raw_args[i].startswith('--isolated-outdir='):
+          outdir = raw_args[i][len('--isolated-outdir='):]
+          i += 1
+        else:
+          remaining_args.append(raw_args[i])
+          i += 1
+      if not outdir and 'ISOLATED_OUTDIR' in os.environ:
+        outdir = os.environ['ISOLATED_OUTDIR']
+      return outdir, remaining_args
+
+
+    def FilterIsolatedOutdirBasedArgs(outdir, args):
+      rargs = []
+      i = 0
+      while i < len(args):
+        if 'ISOLATED_OUTDIR' in args[i]:
+          if outdir:
+            # Rewrite the arg.
+            rargs.append(args[i].replace('${{ISOLATED_OUTDIR}}',
+                                         outdir).replace(
+              '$ISOLATED_OUTDIR', outdir))
+            i += 1
+          else:
+            # Simply drop the arg.
+            i += 1
+        elif (not outdir and
+              args[i].startswith('-') and
+              '=' not in args[i] and
+              i < len(args) - 1 and
+              'ISOLATED_OUTDIR' in args[i+1]):
+          # Parsing this case is ambiguous; if we're given
+          # `--foo $ISOLATED_OUTDIR` we can't tell if $ISOLATED_OUTDIR
+          # is meant to be the value of foo, or if foo takes no argument
+          # and $ISOLATED_OUTDIR is the first positional arg.
+          #
+          # We assume the former will be much more common, and so we
+          # need to drop --foo and $ISOLATED_OUTDIR.
+          i += 2
+        else:
+          rargs.append(args[i])
+          i += 1
+      return rargs
+
+
     def main(raw_args):
       executable_path = ExpandWrappedPath('{executable_path}')
-      executable_args = ExpandWrappedPaths({executable_args})
-      cmd = [executable_path] + executable_args + raw_args
+      outdir, remaining_args = FindIsolatedOutdir(raw_args)
+      args = {executable_args}
+      args = FilterIsolatedOutdirBasedArgs(outdir, args)
+      executable_args = ExpandWrappedPaths(args)
+      cmd = [executable_path] + args + remaining_args
       if executable_path.endswith('.py'):
         cmd = [sys.executable] + cmd
       return subprocess.call(cmd)
