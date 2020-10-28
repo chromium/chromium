@@ -328,14 +328,13 @@ void ChromeOSMetricsProvider::OnArcFeaturesParsed(
 }
 
 void ChromeOSMetricsProvider::UpdateUserTypeUMA() {
-  if (user_manager::UserManager::IsInitialized()) {
-    const user_manager::User* primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    if (primary_user) {
-      user_manager::UserType user_type = primary_user->GetType();
-      return base::UmaHistogramEnumeration(
-          "UMA.PrimaryUserType", user_type,
-          user_manager::UserType::NUM_USER_TYPES);
-    }
-  }
+  if (!user_manager::UserManager::IsInitialized())
+    return;
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user)
+    return;
+  user_manager::UserType user_type = primary_user->GetType();
+  base::UmaHistogramEnumeration("UMA.PrimaryUserType", user_type,
+                                user_manager::UserType::NUM_USER_TYPES);
 }

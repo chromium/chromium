@@ -2690,6 +2690,7 @@ if (!is_android) {
         "../browser/extensions/api/settings_private/settings_private_browsertest_chromeos.cc",
         "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
         "../browser/extensions/chromeos_component_extensions_browsertest.cc",
+        "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
         "../browser/metrics/family_link_user_metrics_provider_browsertest.cc",
         "../browser/metrics/family_user_metrics_provider_browsertest.cc",
         "../browser/notifications/notification_platform_bridge_chromeos_browsertest.cc",
