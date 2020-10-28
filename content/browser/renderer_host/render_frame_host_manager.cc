@@ -905,7 +905,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       !request->IsForMhtmlSubframe()) {
     base::debug::SetCrashKeyString(
         base::debug::AllocateCrashKeyString("lock_url",
-                                            base::debug::CrashKeySize::Size64),
+                                            base::debug::CrashKeySize::Size256),
         process_lock.ToString());
     base::debug::SetCrashKeyString(
         base::debug::AllocateCrashKeyString("commit_origin",
