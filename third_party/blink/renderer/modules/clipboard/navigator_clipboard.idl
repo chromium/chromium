@@ -5,8 +5,7 @@
 // https://w3c.github.io/clipboard-apis/#navigator-interface
 
 [
-  ImplementedAs=NavigatorClipboard
+  ImplementedAs=Clipboard
 ] partial interface Navigator {
-  [CallWith=ScriptState, SecureContext, SameObject]
-  readonly attribute Clipboard clipboard;
+  [SecureContext, SameObject] readonly attribute Clipboard clipboard;
 };

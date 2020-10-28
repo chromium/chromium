@@ -16,8 +16,6 @@ blink_modules_sources("clipboard") {
     "clipboard_reader.h",
     "clipboard_writer.cc",
     "clipboard_writer.h",
-    "navigator_clipboard.cc",
-    "navigator_clipboard.h",
   ]
   deps = [
     "//third_party/blink/public:blink_headers",

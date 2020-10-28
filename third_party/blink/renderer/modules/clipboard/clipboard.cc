@@ -7,15 +7,28 @@
 #include <utility>
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_item_options.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 
 namespace blink {
 
-Clipboard::Clipboard(ExecutionContext* context)
-    : ExecutionContextClient(context) {
-  DCHECK(context);
+// static
+const char Clipboard::kSupplementName[] = "Clipboard";
+
+Clipboard* Clipboard::clipboard(Navigator& navigator) {
+  if (!navigator.DomWindow())
+    return nullptr;
+
+  Clipboard* clipboard = Supplement<Navigator>::From<Clipboard>(navigator);
+  if (!clipboard) {
+    clipboard = MakeGarbageCollected<Clipboard>(navigator);
+    ProvideTo(navigator, clipboard);
+  }
+  return clipboard;
 }
+
+Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise Clipboard::read(ScriptState* script_state) {
   return read(script_state, ClipboardItemOptions::Create());
@@ -49,12 +62,12 @@ const AtomicString& Clipboard::InterfaceName() const {
 }
 
 ExecutionContext* Clipboard::GetExecutionContext() const {
-  return ExecutionContextClient::GetExecutionContext();
+  return GetSupplementable()->DomWindow();
 }
 
 void Clipboard::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink
