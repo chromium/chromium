@@ -370,6 +370,10 @@ SegmentID HistoryDatabase::GetSegmentID(VisitID visit_id) {
   return s.ColumnInt64(0);
 }
 
+bool HistoryDatabase::GetVisitsForUrl2(URLID url_id, VisitVector* visits) {
+  return GetVisitsForURL(url_id, visits);
+}
+
 base::Time HistoryDatabase::GetEarlyExpirationThreshold() {
   if (!cached_early_expiration_threshold_.is_null())
     return cached_early_expiration_threshold_;

@@ -135,8 +135,8 @@ class AndroidProviderBackendNotifier : public HistoryBackendNotifier {
                         const history::RedirectList& redirects,
                         base::Time visit_time) override {}
   void NotifyURLsModified(const history::URLRows& rows,
-                          bool is_from_expiration) override {
-    EXPECT_FALSE(is_from_expiration);
+                          history::UrlsModifiedReason reason) override {
+    EXPECT_NE(history::UrlsModifiedReason::kExpired, reason);
     modified_details_.reset(new history::URLRows(rows));
   }
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {

@@ -992,7 +992,8 @@ void HistoryBackend::AddPagesWithDetails(const URLRows& urls,
   //
   // TODO(brettw) bug 1140015: Add an "add page" notification so the history
   // views can keep in sync.
-  NotifyURLsModified(changed_urls, /*is_from_expiration=*/false);
+  // HistoryService::AddPagesWithDetails() is only called from sync.
+  NotifyURLsModified(changed_urls, UrlsModifiedReason::kSync);
   ScheduleCommit();
 }
 
@@ -1045,7 +1046,7 @@ void HistoryBackend::SetPageTitle(const GURL& url,
   // Broadcast notifications for any URLs that have changed. This will
   // update the in-memory database and the InMemoryURLIndex.
   if (!changed_urls.empty()) {
-    NotifyURLsModified(changed_urls, /*is_from_expiration=*/false);
+    NotifyURLsModified(changed_urls, UrlsModifiedReason::kTitleChanged);
     ScheduleCommit();
   }
 }
@@ -1123,7 +1124,8 @@ size_t HistoryBackend::UpdateURLs(const URLRows& urls) {
   // will update the in-memory database and the InMemoryURLIndex.
   size_t num_updated_records = changed_urls.size();
   if (num_updated_records) {
-    NotifyURLsModified(changed_urls, /*is_from_expiration=*/false);
+    // HistoryService::UpdateURLs() is only called from sync.
+    NotifyURLsModified(changed_urls, UrlsModifiedReason::kSync);
     ScheduleCommit();
   }
   return num_updated_records;
@@ -2201,11 +2203,12 @@ void HistoryBackend::NotifyURLVisited(ui::PageTransition transition,
 }
 
 void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,
-                                        bool is_from_expiration) {
+                                        UrlsModifiedReason reason) {
   for (HistoryBackendObserver& observer : observers_)
-    observer.OnURLsModified(this, changed_urls, is_from_expiration);
+    observer.OnURLsModified(this, changed_urls,
+                            reason == UrlsModifiedReason::kExpired);
 
-  delegate_->NotifyURLsModified(changed_urls);
+  delegate_->NotifyURLsModified(changed_urls, reason);
 }
 
 void HistoryBackend::NotifyURLsDeleted(DeletionInfo deletion_info) {
@@ -2351,6 +2354,11 @@ bool HistoryBackend::ProcessSetFaviconsResult(
   for (const GURL& page_url : result.updated_page_urls)
     SendFaviconChangedNotificationForPageAndRedirects(page_url);
   return true;
+}
+
+void HistoryBackend::Delegate::NotifyURLsModified(const URLRows& changed_urls,
+                                                  UrlsModifiedReason reason) {
+  NotifyURLsModified(changed_urls);
 }
 
 }  // namespace history

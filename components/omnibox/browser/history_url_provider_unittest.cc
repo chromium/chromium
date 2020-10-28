@@ -10,13 +10,17 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -26,6 +30,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_quick_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -173,6 +178,9 @@ struct TestURLInfo {
     {"https://www.zebra.com/zebras", "zebra2", 7, 7, 80},
     {"https://www.zebra.com/zebra s", "zebra3", 7, 7, 80},
     {"https://www.zebra.com/zebra  s", "zebra4", 7, 7, 80},
+
+    {"http://recentuntyped.com/x", "recentuntyped", 1, 0,
+     history::kLowQualityMatchAgeLimitInDays - 1},
 };
 
 }  // namespace
@@ -1358,4 +1366,85 @@ TEST_F(HistoryURLProviderTest, DoTrimHttpsScheme) {
 
   AutocompleteMatch match = autocomplete_->HistoryMatchToACMatch(*params, 0, 0);
   EXPECT_EQ(ASCIIToUTF16("facebook.com"), match.contents);
+}
+
+class VisitTransitionHelper : public history::HistoryDBTask {
+ public:
+  ~VisitTransitionHelper() override = default;
+
+  // Used for force all visits of a url to have a particular transition type.
+  static bool MakeVisitsHaveApiTransition(history::HistoryService* service,
+                                          const GURL& url,
+                                          ui::PageTransition transition) {
+    base::RunLoop run_loop;
+    bool success = false;
+    base::OnceCallback<void(bool)> done_callback =
+        base::BindLambdaForTesting([&](bool r) {
+          success = r;
+          run_loop.Quit();
+        });
+    // Constructor is private.
+    std::unique_ptr<VisitTransitionHelper> helper = base::WrapUnique(
+        new VisitTransitionHelper(url, transition, std::move(done_callback)));
+    base::CancelableTaskTracker tracker;
+    service->ScheduleDBTask(FROM_HERE, std::move(helper), &tracker);
+    run_loop.Run();
+    return success;
+  }
+
+ private:
+  // |done_callback| is called on the main thread with true on success.
+  VisitTransitionHelper(const GURL& url,
+                        ui::PageTransition transition,
+                        base::OnceCallback<void(bool)> done_callback)
+      : url_(url),
+        transition_(transition),
+        done_callback_(std::move(done_callback)) {}
+
+  // history::HistoryDBTask:
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    const history::URLID url_id = db->GetRowForURL(url_, nullptr);
+    history::VisitVector visits;
+    if (!db->GetVisitsForURL(url_id, &visits))
+      return true;
+    for (auto& visit : visits) {
+      visit.transition = transition_;
+      if (!db->UpdateVisitRow(visit))
+        return true;
+    }
+    success_ = !visits.empty();
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {
+    std::move(done_callback_).Run(success_);
+  }
+
+  const GURL url_;
+  const ui::PageTransition transition_;
+  bool success_ = false;
+  base::OnceCallback<void(bool)> done_callback_;
+};
+
+TEST_F(HistoryURLProviderTest, SuggestVisitsWithPageTransitionFromApi2) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kHideVisitsFromCct);
+  const UrlAndLegalDefault expected[] = {{"http://recentuntyped.com/", true},
+                                         {"http://recentuntyped.com/x", true}};
+  const GURL url("http://recentuntyped.com/x");
+  ASSERT_NO_FATAL_FAILURE(RunTest(ASCIIToUTF16("recentunt"), std::string(),
+                                  false, expected, base::size(expected)));
+
+  ASSERT_TRUE(VisitTransitionHelper::MakeVisitsHaveApiTransition(
+      client_->GetHistoryService(), url, ui::PAGE_TRANSITION_FROM_API_2));
+
+  // Now that the visits for recentuntyped.com have a transition of
+  // PAGE_TRANSITION_FROM_API_2 the url should not be returned.
+  //
+  // The db only has one url/visit for 'recentuntyped.' That two urls were
+  // returned earlier is because of the query string and how HistoryURLProvider
+  // works.
+  ASSERT_NO_FATAL_FAILURE(
+      RunTest(ASCIIToUTF16("recentunt"), std::string(), false, nullptr, 0));
 }

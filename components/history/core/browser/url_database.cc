@@ -712,6 +712,11 @@ bool URLDatabase::DeleteKeywordSearchTermForURL(URLID url_id) {
   return statement.Run();
 }
 
+bool URLDatabase::GetVisitsForUrl2(URLID url_id, VisitVector* visits) {
+  NOTREACHED();
+  return false;
+}
+
 bool URLDatabase::DropStarredIDFromURLs() {
   if (!GetDB().DoesColumnExist("urls", "starred_id"))
     return true;  // urls is already updated, no need to continue.

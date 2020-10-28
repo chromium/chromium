@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -136,6 +137,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private static final String EXTRA_TRANSLATE_LANGUAGE =
             "androidx.browser.customtabs.extra.TRANSLATE_LANGUAGE";
+
+    /**
+     * Extra that, if set, results in hiding omnibox suggestions for visits from cct. The value is
+     * a boolean, and is only considered if the feature kSuggestVisitsWithPageTransitionFromApi2 is
+     * enabled.
+     */
+    public static final String EXTRA_HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT =
+            "androidx.browser.customtabs.extra.HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT";
 
     /**
      * Extra used to provide a PendingIntent that we can launch to focus the client.
@@ -835,5 +844,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable
     public int[] getGsaExperimentIds() {
         return mGsaExperimentIds;
+    }
+
+    public static boolean shouldHideOmniboxSuggestionsForCctVisits(Intent intent) {
+        return intent.getBooleanExtra(EXTRA_HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT, false)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_HIDE_VISITS_FROM_CCT);
+    }
+
+    @Override
+    public boolean shouldHideOmniboxSuggestionsForCctVisits() {
+        return shouldHideOmniboxSuggestionsForCctVisits(mIntent);
     }
 }

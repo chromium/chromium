@@ -123,7 +123,7 @@ void RunNotifyURLsModified(HistoryBackendNotifier* notifier,
                            std::unique_ptr<URLRows> rows) {
   // All modifications from the android UI are caused by user action and not by
   // expiration.
-  notifier->NotifyURLsModified(*rows, /*is_from_expiration=*/false);
+  notifier->NotifyURLsModified(*rows, UrlsModifiedReason::kAndroidDb);
 }
 
 void RunNotifyURLsDeleted(HistoryBackendNotifier* notifier,

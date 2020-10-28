@@ -478,7 +478,15 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to override parameters when navigating. Called for both
   // opening new URLs and when transferring URLs across processes.
+  // |web_contents| is the WebContents the navigation will occur in, which is
+  // not necessarily the WebContents the navigation was initiated from. For
+  // example, a popup results in a new WebContents. In some situations
+  // |web_contents| is null. This generally only occurs when code outside of
+  // content triggers this function, such as restore.
+  // WARNING: |web_contents| is temporary, and will be removed. See
+  // https://crbug.com/1141501.
   virtual void OverrideNavigationParams(
+      WebContents* web_contents,
       SiteInstance* site_instance,
       ui::PageTransition* transition,
       bool* is_renderer_initiated,

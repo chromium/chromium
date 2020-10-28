@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
@@ -34,6 +35,7 @@
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -148,6 +150,10 @@ class InMemoryURLIndexTest : public testing::Test {
   // Pass-through function to simplify our friendship with HistoryService.
   sql::Database& GetDB();
 
+  void RebuildFromHistory() {
+    url_index_->RebuildFromHistory(history_database_);
+  }
+
   // Pass-through functions to simplify our friendship with InMemoryURLIndex.
   URLIndexPrivateData* GetPrivateData() const;
   base::CancelableTaskTracker* GetPrivateDataTracker() const;
@@ -218,9 +224,9 @@ const SchemeSet& InMemoryURLIndexTest::scheme_whitelist() {
 }
 
 bool InMemoryURLIndexTest::UpdateURL(const history::URLRow& row) {
-  return GetPrivateData()->UpdateURL(
-      history_service_.get(), row, url_index_->scheme_whitelist_,
-      GetPrivateDataTracker());
+  return GetPrivateData()->UpdateURL(history_service_.get(), row,
+                                     url_index_->scheme_whitelist_,
+                                     GetPrivateDataTracker());
 }
 
 bool InMemoryURLIndexTest::DeleteURL(const GURL& url) {
@@ -312,7 +318,7 @@ void InMemoryURLIndexTest::InitializeInMemoryURLIndex() {
       nullptr, history_service_.get(), template_url_service_.get(),
       base::FilePath(), client_schemes_to_whitelist));
   url_index_->Init();
-  url_index_->RebuildFromHistory(history_database_);
+  RebuildFromHistory();
 }
 
 void InMemoryURLIndexTest::CheckTerm(
@@ -675,6 +681,95 @@ TEST_F(InMemoryURLIndexTest, URLPrefixMatching) {
   matches = url_index_->HistoryItemsForTerms(ASCIIToUTF16("tp://www.cnn.com"),
                                              base::string16::npos,
                                              kProviderMaxMatches);
+  EXPECT_EQ(0U, matches.size());
+}
+
+TEST_F(InMemoryURLIndexTest, HideVisitsFromCct) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kHideVisitsFromCct);
+  ScoredHistoryMatches matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("QuiteUseless"), base::string16::npos, kProviderMaxMatches);
+  EXPECT_EQ(1U, matches.size());
+
+  sql::Statement s(GetDB().GetUniqueStatement(
+      "UPDATE visits SET transition = ? WHERE id = 23"));
+  s.BindInt64(0, ui::PAGE_TRANSITION_FROM_API_2);
+  ASSERT_TRUE(s.Run());
+  RebuildFromHistory();
+  matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("QuiteUseless"), base::string16::npos, kProviderMaxMatches);
+  EXPECT_EQ(0U, matches.size());
+}
+
+TEST_F(InMemoryURLIndexTest, HideVisitsFromCctNewlyAddedVisit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kHideVisitsFromCct);
+  ScoredHistoryMatches matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("urlnotindb"), base::string16::npos, kProviderMaxMatches);
+  EXPECT_EQ(0U, matches.size());
+
+  // Do this history::kLowQualityMatchVisitLimit times to ensure the visit
+  // is considered significant.
+  for (int i = 0; i < history::kLowQualityMatchVisitLimit; ++i) {
+    history_service_->AddPage(GURL("http://urlnotindb.com"), base::Time::Now(),
+                              nullptr, 101, GURL(), {},
+                              ui::PAGE_TRANSITION_FROM_API_2,
+                              history::SOURCE_BROWSED, false, false);
+    // Flush twice as the first ensures HistoryServiceObservers are run, and
+    // the second for the task scheduled by URLIndexPrivateData.
+    for (int j = 0; j < 2; ++j) {
+      base::RunLoop run_loop;
+      history_service_->FlushForTest(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+  }
+  matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("urlnotindb"), base::string16::npos, kProviderMaxMatches);
+  EXPECT_EQ(0U, matches.size());
+}
+
+TEST_F(InMemoryURLIndexTest, HideVisitsFromCctWhenTitleChanges) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kHideVisitsFromCct);
+  ScoredHistoryMatches matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("urlnotindb"), base::string16::npos, kProviderMaxMatches);
+  EXPECT_EQ(0U, matches.size());
+
+  // Add the history::kLowQualityMatchVisitLimit visits to ensure the visit
+  // count is significant.
+  for (int i = 0; i < history::kLowQualityMatchVisitLimit; ++i) {
+    history_service_->AddPage(GURL("http://urlnotindb.com"), base::Time::Now(),
+                              nullptr, 101, GURL(), {},
+                              ui::PAGE_TRANSITION_FROM_API_2,
+                              history::SOURCE_BROWSED, false, false);
+    // Flush twice as the first ensures HistoryServiceObservers are run, and
+    // the second for the task scheduled by URLIndexPrivateData.
+    for (int j = 0; j < 2; ++j) {
+      base::RunLoop run_loop;
+      history_service_->FlushForTest(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+  }
+
+  // There should not be an entry.
+  matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("urlnotindb"), base::string16::npos, kProviderMaxMatches);
+  EXPECT_EQ(0U, matches.size());
+
+  // Change the title.
+  history_service_->SetPageTitle(GURL("http://urlnotindb.com"),
+                                 ASCIIToUTF16("urlnotindb"));
+  // Flush twice as the first ensures HistoryServiceObservers are run, and
+  // the second for the task scheduled by URLIndexPrivateData.
+  for (int j = 0; j < 2; ++j) {
+    base::RunLoop run_loop;
+    history_service_->FlushForTest(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Entry should still not have been added.
+  matches = url_index_->HistoryItemsForTerms(
+      ASCIIToUTF16("urlnotindb"), base::string16::npos, kProviderMaxMatches);
   EXPECT_EQ(0U, matches.size());
 }
 

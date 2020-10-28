@@ -1032,7 +1032,8 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
               std::string() /* extra_headers */,
               controller_->GetBrowserContext(),
               nullptr /* blob_url_loader_factory */,
-              common_params.should_replace_current_entry));
+              common_params.should_replace_current_entry,
+              controller_->GetWebContents()));
   entry->set_reload_type(NavigationRequest::NavigationTypeToReloadType(
       common_params.navigation_type));
 
