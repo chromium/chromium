@@ -21,12 +21,6 @@ namespace media {
 
 namespace {
 
-std::ostream& operator<<(std::ostream& ostream,
-                         const VideoFrame::StorageType& storage_type) {
-  ostream << VideoFrame::StorageTypeToString(storage_type);
-  return ostream;
-}
-
 // Verify if the format of |frame| matches |config|.
 bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
                            const VideoFrame& frame) {
@@ -42,12 +36,6 @@ bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
   if (frame.layout().coded_size() != config.size) {
     VLOGF(1) << "Invalid frame size=" << frame.layout().coded_size().ToString()
              << ", expected=" << config.size.ToString();
-    return false;
-  }
-
-  if (frame.storage_type() != config.storage_type()) {
-    VLOGF(1) << "Invalid frame.storage_type=" << frame.storage_type()
-             << ", input_storage_type=" << config.storage_type();
     return false;
   }
 
