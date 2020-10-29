@@ -399,11 +399,12 @@ void HangWatcher::RecordHang() {
   base::debug::Alias(&line_number);
 }
 
-ScopedClosureRunner HangWatcher::RegisterThread() {
+ScopedClosureRunner HangWatcher::RegisterThread(ThreadType thread_type) {
   AutoLock auto_lock(watch_state_lock_);
 
   watch_states_.push_back(
-      internal::HangWatchState::CreateHangWatchStateForCurrentThread());
+      internal::HangWatchState::CreateHangWatchStateForCurrentThread(
+          thread_type));
 
   return ScopedClosureRunner(BindOnce(&HangWatcher::UnregisterThread,
                                       Unretained(HangWatcher::GetInstance())));
@@ -840,7 +841,8 @@ uint64_t HangWatchDeadline::SwitchBitsForTesting() {
   return switched_in_bits;
 }
 
-HangWatchState::HangWatchState() : thread_id_(PlatformThread::CurrentId()) {
+HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
+    : thread_id_(PlatformThread::CurrentId()), thread_type_(thread_type) {
   // There should not exist a state object for this thread already.
   DCHECK(!GetHangWatchStateForCurrentThread()->Get());
 
@@ -863,11 +865,11 @@ HangWatchState::~HangWatchState() {
 
 // static
 std::unique_ptr<HangWatchState>
-HangWatchState::CreateHangWatchStateForCurrentThread() {
-
+HangWatchState::CreateHangWatchStateForCurrentThread(
+    HangWatcher::ThreadType thread_type) {
   // Allocate a watch state object for this thread.
   std::unique_ptr<HangWatchState> hang_state =
-      std::make_unique<HangWatchState>();
+      std::make_unique<HangWatchState>(thread_type);
 
   // Setting the thread local worked.
   DCHECK_EQ(GetHangWatchStateForCurrentThread()->Get(), hang_state.get());

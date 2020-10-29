@@ -137,7 +137,8 @@ NOINLINE void BrowserProcessSubThread::IOThreadRun(base::RunLoop* run_loop) {
   base::ScopedClosureRunner unregister_thread_closure;
   if (base::HangWatcher::IsIOThreadHangWatchingEnabled()) {
     unregister_thread_closure =
-        base::HangWatcher::GetInstance()->RegisterThread();
+        base::HangWatcher::GetInstance()->RegisterThread(
+            base::HangWatcher::ThreadType::kIOThread);
   }
 
   Thread::Run(run_loop);

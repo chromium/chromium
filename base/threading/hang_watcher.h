@@ -136,6 +136,13 @@ class BASE_EXPORT HangWatchScopeDisabled {
 // within a single process. This instance must outlive all monitored threads.
 class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
  public:
+  // Describes the type of a thread for logging purposes.
+  enum class ThreadType {
+    kIOThread = 0,
+    kUIThread = 1,
+    kThreadPoolThread = 2,
+    kThreadForTesting = 3
+  };
 
   // The first invocation of the constructor will set the global instance
   // accessible through GetInstance(). This means that only one instance can
@@ -165,7 +172,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Sets up the calling thread to be monitored for threads. Returns a
   // ScopedClosureRunner that unregisters the thread. This closure has to be
   // called from the registered thread before it's joined.
-  ScopedClosureRunner RegisterThread()
+  ScopedClosureRunner RegisterThread(ThreadType thread_type)
       LOCKS_EXCLUDED(watch_state_lock_) WARN_UNUSED_RESULT;
 
   // Choose a closure to be run at the end of each call to Monitor(). Use only
@@ -512,7 +519,10 @@ class BASE_EXPORT HangWatchDeadline {
 // GetHangWatchStateForCurrentThread().
 class BASE_EXPORT HangWatchState {
  public:
-  HangWatchState();
+  // |thread_type| is the type of thread the watch state will
+  // be associated with. It's the responsibility of the creating
+  // code to choose the correct type.
+  explicit HangWatchState(HangWatcher::ThreadType thread_type);
   ~HangWatchState();
 
   HangWatchState(const HangWatchState&) = delete;
@@ -520,7 +530,8 @@ class BASE_EXPORT HangWatchState {
 
   // Allocates a new state object bound to the calling thread and returns an
   // owning pointer to it.
-  static std::unique_ptr<HangWatchState> CreateHangWatchStateForCurrentThread();
+  static std::unique_ptr<HangWatchState> CreateHangWatchStateForCurrentThread(
+      HangWatcher::ThreadType thread_type);
 
   // Retrieves the hang watch state associated with the calling thread.
   // Returns nullptr if no HangWatchState exists for the current thread (see
@@ -594,6 +605,9 @@ class BASE_EXPORT HangWatchState {
   // Reduce the nesting level by 1;
   void DecrementNestingLevel();
 
+  // Returns the type of the thread under watch.
+  HangWatcher::ThreadType thread_type() const { return thread_type_; }
+
  private:
   // The thread that creates the instance should be the class that updates
   // the deadline.
@@ -607,6 +621,9 @@ class BASE_EXPORT HangWatchState {
 
   // Number of active HangWatchScopeEnables on this thread.
   int nesting_level_ = 0;
+
+  // The type of the thread under watch.
+  const HangWatcher::ThreadType thread_type_;
 
 #if DCHECK_IS_ON()
   // Used to keep track of the current HangWatchScopeEnabled and detect improper

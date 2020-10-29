@@ -531,7 +531,8 @@ BrowserMainLoop::BrowserMainLoop(
   // that makes it the same as the current one.
   if (base::HangWatcher::IsUIThreadHangWatchingEnabled()) {
     unregister_thread_closure_ =
-        base::HangWatcher::GetInstance()->RegisterThread();
+        base::HangWatcher::GetInstance()->RegisterThread(
+            base::HangWatcher::ThreadType::kUIThread);
   }
 
   if (GetContentClient()->browser()->ShouldCreateThreadPool()) {
