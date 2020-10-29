@@ -35,11 +35,11 @@ void TabletState::RemoveObserver(Observer* observer) {
 }
 
 bool TabletState::InTabletMode() const {
-  return state_ == TabletState::kInTabletMode ||
-         state_ == TabletState::kEnteringTabletMode;
+  return state_ == display::TabletState::kInTabletMode ||
+         state_ == display::TabletState::kEnteringTabletMode;
 }
 
-void TabletState::SetState(State state) {
+void TabletState::SetState(display::TabletState state) {
   state_ = state;
 
   for (auto& observer : observers_)

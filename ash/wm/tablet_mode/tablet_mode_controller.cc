@@ -48,6 +48,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
@@ -492,8 +493,8 @@ bool TabletModeController::TriggerRecordLidAngleTimerForTesting() {
 void TabletModeController::MaybeObserveBoundsAnimation(aura::Window* window) {
   StopObservingAnimation(/*record_stats=*/false, /*delete_screenshot=*/false);
 
-  if (tablet_state_.state() != chromeos::TabletState::kEnteringTabletMode &&
-      tablet_state_.state() != chromeos::TabletState::kExitingTabletMode) {
+  if (tablet_state_.state() != display::TabletState::kEnteringTabletMode &&
+      tablet_state_.state() != display::TabletState::kExitingTabletMode) {
     return;
   }
 
@@ -794,7 +795,7 @@ void TabletModeController::OnLayerAnimationScheduled(
         animating_layer_->GetCompositor()->RequestNewThroughputTracker();
     transition_tracker_->Start(metrics_util::ForSmoothness(base::BindRepeating(
         &ReportTrasitionSmoothness,
-        tablet_state_.state() == chromeos::TabletState::kEnteringTabletMode)));
+        tablet_state_.state() == display::TabletState::kEnteringTabletMode)));
     return;
   }
 
@@ -840,7 +841,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   DeleteScreenshot();
 
   if (should_enable) {
-    tablet_state_.SetState(chromeos::TabletState::kEnteringTabletMode);
+    tablet_state_.SetState(display::TabletState::kEnteringTabletMode);
 
     // Take a screenshot if there is a top window that will get animated.
     // TODO(sammiequon): Handle the case where the top window is not on the
@@ -870,7 +871,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
       FinishInitTabletMode();
     }
   } else {
-    tablet_state_.SetState(chromeos::TabletState::kExitingTabletMode);
+    tablet_state_.SetState(display::TabletState::kExitingTabletMode);
 
     // We may have entered tablet mode, then tried to exit before the screenshot
     // was taken. In this case |tablet_mode_window_manager_| will be null.
@@ -886,7 +887,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
 
     base::RecordAction(base::UserMetricsAction("Touchview_Disabled"));
     RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_ACTIVE);
-    tablet_state_.SetState(chromeos::TabletState::kInClamshellMode);
+    tablet_state_.SetState(display::TabletState::kInClamshellMode);
     for (auto& observer : tablet_mode_observers_)
       observer.OnTabletModeEnded();
     VLOG(1) << "Exit tablet mode.";
@@ -1130,7 +1131,7 @@ void TabletModeController::ResetPauser() {
 }
 
 void TabletModeController::FinishInitTabletMode() {
-  DCHECK_EQ(chromeos::TabletState::kEnteringTabletMode, tablet_state_.state());
+  DCHECK_EQ(display::TabletState::kEnteringTabletMode, tablet_state_.state());
 
   for (auto& observer : tablet_mode_observers_)
     observer.OnTabletModeStarting();
@@ -1139,7 +1140,7 @@ void TabletModeController::FinishInitTabletMode() {
 
   base::RecordAction(base::UserMetricsAction("Touchview_Enabled"));
   RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_INACTIVE);
-  tablet_state_.SetState(chromeos::TabletState::kInTabletMode);
+  tablet_state_.SetState(display::TabletState::kInTabletMode);
 
   for (auto& observer : tablet_mode_observers_)
     observer.OnTabletModeStarted();

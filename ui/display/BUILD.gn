@@ -35,6 +35,7 @@ component("display") {
     "screen.h",
     "screen_base.cc",
     "screen_base.h",
+    "tablet_state.h",
     "unified_desktop_utils.cc",
     "unified_desktop_utils.h",
   ]

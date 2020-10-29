@@ -18,6 +18,7 @@
 #include "chromeos/ui/base/tablet_state.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/tablet_state.h"
 
 namespace {
 class WebAppNonClientFrameViewAshTest;
@@ -82,7 +83,7 @@ class BrowserNonClientFrameViewAsh
   gfx::ImageSkia GetFrameHeaderOverlayImage(bool active) override;
 
   // chromeos::TabletState::Observer:
-  void OnTabletStateChanged(chromeos::TabletState::State) override;
+  void OnTabletStateChanged(display::TabletState state) override;
 
   void OnTabletModeToggled(bool enabled);
 

@@ -415,16 +415,16 @@ gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderOverlayImage(
 }
 
 void BrowserNonClientFrameViewAsh::OnTabletStateChanged(
-    chromeos::TabletState::State state) {
+    display::TabletState state) {
   switch (state) {
-    case chromeos::TabletState::State::kInTabletMode:
+    case display::TabletState::kInTabletMode:
       OnTabletModeToggled(true);
       return;
-    case chromeos::TabletState::State::kInClamshellMode:
+    case display::TabletState::kInClamshellMode:
       OnTabletModeToggled(false);
       return;
-    case chromeos::TabletState::State::kEnteringTabletMode:
-    case chromeos::TabletState::State::kExitingTabletMode:
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
       break;
   }
 }

@@ -29,6 +29,7 @@ component("base") {
     "//base",
     "//skia",
     "//ui/base",
+    "//ui/display",
     "//ui/gfx/geometry",
   ]
 }

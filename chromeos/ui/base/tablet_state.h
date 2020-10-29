@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 class TabletModeController;
@@ -23,18 +24,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
   // Returns the singleton instance.
   static TabletState* Get();
 
-  // Tracks whether we are in the process of entering or exiting tablet mode.
-  // Used for logging histogram metrics.
-  enum State {
-    kInClamshellMode,
-    kEnteringTabletMode,
-    kInTabletMode,
-    kExitingTabletMode,
-  };
-
   class COMPONENT_EXPORT(CHROMEOS_UI_BASE) Observer {
    public:
-    virtual void OnTabletStateChanged(State state) = 0;
+    virtual void OnTabletStateChanged(display::TabletState state) = 0;
 
    protected:
     virtual ~Observer() = default;
@@ -51,18 +43,18 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
 
-  State state() const { return state_; }
+  display::TabletState state() const { return state_; }
 
  private:
   // The friend class declaration here is used to control classes that can set
   // the tablet state.
   friend class ash::TabletModeController;
 
-  void SetState(State state);
+  void SetState(display::TabletState state);
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  State state_ = State::kInClamshellMode;
+  display::TabletState state_ = display::TabletState::kInClamshellMode;
 };
 
 }  // namespace chromeos
