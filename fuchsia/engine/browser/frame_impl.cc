@@ -225,18 +225,21 @@ base::Optional<url::Origin> ParseAndValidateWebOrigin(
 }  // namespace
 
 // static
-FrameImpl* FrameImpl::FromRenderFrameHost(
-    content::RenderFrameHost* render_frame_host) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
+FrameImpl* FrameImpl::FromWebContents(content::WebContents* web_contents) {
   if (!web_contents)
     return nullptr;
 
   auto& map = WebContentsToFrameImplMap();
   auto it = map.find(web_contents);
-  if (it == map.end())
-    return nullptr;
+  DCHECK(it != map.end()) << "WebContents not owned by a FrameImpl.";
   return it->second;
+}
+
+// static
+FrameImpl* FrameImpl::FromRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  return FromWebContents(
+      content::WebContents::FromRenderFrameHost(render_frame_host));
 }
 
 FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,

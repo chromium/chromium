@@ -8,6 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "base/synchronization/lock.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
 #include "fuchsia/engine/url_request_rewrite.mojom.h"
@@ -25,9 +26,6 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager
     : public content::WebContentsObserver,
       public WebEngineURLLoaderThrottle::CachedRulesProvider {
  public:
-  static UrlRequestRewriteRulesManager* ForFrameTreeNodeId(
-      int frame_tree_node_id);
-
   static std::unique_ptr<UrlRequestRewriteRulesManager> CreateForTesting();
 
   explicit UrlRequestRewriteRulesManager(content::WebContents* web_contents);
@@ -45,21 +43,8 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager
   GetCachedRules() override;
 
  private:
-  // Helper struct containing a RenderFrameHost and its corresponding
-  // AssociatedRemote.
-  struct ActiveFrame {
-    ActiveFrame(content::RenderFrameHost* render_frame_host,
-                mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver>
-                    associated_remote);
-    ActiveFrame(ActiveFrame&& other);
-    ~ActiveFrame();
-
-    content::RenderFrameHost* render_frame_host;
-    mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver> associated_remote;
-  };
-
   // Test-only constructor.
-  explicit UrlRequestRewriteRulesManager();
+  UrlRequestRewriteRulesManager();
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -69,8 +54,10 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager
   scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
       cached_rules_ GUARDED_BY(lock_);
 
-  // Map of FrameTreeNode Ids to their current ActiveFrame.
-  std::map<int, ActiveFrame> active_frames_;
+  // Map of GlobalRoutingID to their current associated remote.
+  std::map<content::GlobalFrameRoutingId,
+           mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver>>
+      active_remotes_;
 
   DISALLOW_COPY_AND_ASSIGN(UrlRequestRewriteRulesManager);
 };

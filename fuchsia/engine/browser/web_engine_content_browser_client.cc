@@ -16,6 +16,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
+#include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
@@ -194,16 +195,10 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
     return {};
   }
 
-  UrlRequestRewriteRulesManager* adapter =
-      UrlRequestRewriteRulesManager::ForFrameTreeNodeId(frame_tree_node_id);
-  if (!adapter) {
-    // No popup support for rules rewriter.
-    return {};
-  }
-
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(
-      UrlRequestRewriteRulesManager::ForFrameTreeNodeId(frame_tree_node_id)));
+      FrameImpl::FromWebContents(wc_getter.Run())
+          ->url_request_rewrite_rules_manager()));
   return throttles;
 }
 

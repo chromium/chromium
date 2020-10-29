@@ -47,8 +47,12 @@ class FrameImpl : public fuchsia::web::Frame,
                   public content::WebContentsObserver,
                   public content::WebContentsDelegate {
  public:
+  // Returns FrameImpl that owns the |web_contents| or nullptr if the
+  // |web_contents| is nullptr.
+  static FrameImpl* FromWebContents(content::WebContents* web_contents);
+
   // Returns FrameImpl that owns the |render_frame_host| or nullptr if the
-  // |render_frame_host| is not owned by a FrameImpl.
+  // |render_frame_host| is nullptr.
   static FrameImpl* FromRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
@@ -64,6 +68,10 @@ class FrameImpl : public fuchsia::web::Frame,
 
   FramePermissionController* permission_controller() {
     return &permission_controller_;
+  }
+
+  UrlRequestRewriteRulesManager* url_request_rewrite_rules_manager() {
+    return &url_request_rewrite_rules_manager_;
   }
 
   zx::unowned_channel GetBindingChannelForTest() const;
