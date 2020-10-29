@@ -636,9 +636,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter',
         ],
       },
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter',
@@ -965,10 +962,6 @@
         ],
       },
       # https://crbug.com/1111979,
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
-      # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
           '--gtest_filter=-NetExportFileWriterTest*',
@@ -1275,10 +1268,6 @@
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/876615
       },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
@@ -1288,11 +1277,7 @@
     },
   },
   'extensions_unittests': {
-    # https://crbug.com/1111979
     'modifications': {
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
@@ -1589,10 +1574,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.interactive_ui_tests.filter',
         ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
       },
       # https://crbug.com/1111979
       'linux-lacros-tester-rel': {
@@ -2521,10 +2502,6 @@
           'shards': 6,
         },
       },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'experiment_percentage': 100,
@@ -2539,10 +2516,6 @@
   },
   'storage_service_extensions_browsertests': {
     'modifications': {
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
@@ -2561,10 +2534,6 @@
         'args': [
           '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
         ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
       },
     }
   },
@@ -2620,10 +2589,6 @@
         'swarming': {
           'shards': 4,
         },
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
       },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
@@ -2823,10 +2788,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.unit_tests.filter',
         ],
       },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
@@ -2853,10 +2814,6 @@
   },
   'views_unittests': {
     'modifications': {
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [

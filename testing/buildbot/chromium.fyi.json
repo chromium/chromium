@@ -58111,7 +58111,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58242,7 +58241,6 @@
         "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58302,7 +58300,6 @@
         "args": [
           "--enable-features=StorageServiceOutOfProcess"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58431,7 +58428,6 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58453,7 +58449,6 @@
         "args": [
           "--enable-features=StorageServiceOutOfProcess"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58473,7 +58468,6 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58618,7 +58612,6 @@
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -58641,7 +58634,6 @@
         "args": [
           "--enable-features=StorageServiceOutOfProcess"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -59184,7 +59176,6 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -59257,7 +59248,6 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -59294,7 +59284,6 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
-        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
