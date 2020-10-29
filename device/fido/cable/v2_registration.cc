@@ -5,6 +5,7 @@
 #include "device/fido/cable/v2_registration.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/device_event_log/device_event_log.h"
@@ -31,15 +32,17 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       : event_callback_(std::move(event_callback)),
         instance_id_driver_(instance_id_driver),
         instance_id_(instance_id_driver->GetInstanceID(kFCMAppId)) {
+    // Registering with FCM on platforms other than Android could cause large
+    // number of new registrations with the FCM service. Thus this code does not
+    // compile on other platforms. Check with //components/gcm_driver owners
+    // before changing this.
+#if !defined(OS_ANDROID)
+    CHECK(false) << "Do not use outside of Android.";
+#endif
+
     gcm::GCMDriver* const gcm_driver = instance_id_->gcm_driver();
     CHECK(gcm_driver->GetAppHandler(kFCMAppId) == nullptr);
     instance_id_->gcm_driver()->AddAppHandler(kFCMAppId, this);
-
-    instance_id_->GetToken(
-        kFCMSenderId, instance_id::kGCMScope,
-        /*time_to_live=*/base::TimeDelta(), /*options=*/{},
-        /*flags=*/{},
-        base::BindOnce(&FCMHandler::GetTokenComplete, base::Unretained(this)));
   }
 
   ~FCMHandler() override {
@@ -48,6 +51,14 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   }
 
   // Registration:
+
+  void PrepareContactID() override {
+    instance_id_->GetToken(
+        kFCMSenderId, instance_id::kGCMScope,
+        /*time_to_live=*/base::TimeDelta(), /*options=*/{},
+        /*flags=*/{},
+        base::BindOnce(&FCMHandler::GetTokenComplete, base::Unretained(this)));
+  }
 
   base::Optional<std::vector<uint8_t>> contact_id() const override {
     if (!registration_token_) {

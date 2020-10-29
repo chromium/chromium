@@ -107,37 +107,18 @@ class CableAuthenticator {
     }
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
-            long instanceIdDriver, String activityClassName, boolean isFcmNotification,
+            long registration, String activityClassName, boolean isFcmNotification,
             UsbAccessory accessory) {
         mContext = context;
         mUi = ui;
         mCallback = ui;
-
-        SharedPreferences prefs =
-                mContext.getSharedPreferences(STATE_FILE_NAME, Context.MODE_PRIVATE);
-        byte[] stateBytes;
-        try {
-            stateBytes = Base64.decode(prefs.getString(STATE_VALUE_NAME, ""), Base64.DEFAULT);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Ignoring corrupt state");
-            stateBytes = new byte[0];
-        }
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
         mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
-        byte[] newStateBytes = CableAuthenticatorJni.get().setup(
-                instanceIdDriver, activityClassName, networkContext, stateBytes);
-        if (newStateBytes.length > 0) {
-            Log.i(TAG, "Writing updated state");
-            prefs.edit()
-                    .putString(STATE_VALUE_NAME,
-                            Base64.encodeToString(
-                                    newStateBytes, Base64.NO_WRAP | Base64.NO_PADDING))
-                    .apply();
-        }
+        setup(registration, activityClassName, networkContext);
 
         if (accessory != null) {
             // USB mode can start immediately.
@@ -151,6 +132,32 @@ class CableAuthenticator {
         }
 
         // Otherwise wait for a QR scan.
+    }
+
+    // setup initialises the native code. This is idempotent.
+    private static void setup(long registration, String activityClassName, long networkContext) {
+        // SharedPreferences in Chromium is loaded and cached at startup, and
+        // applying changes is done asynchronously. Thus it's ok to do here, on
+        // the UI thread.
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        byte[] stateBytes;
+        try {
+            stateBytes = Base64.decode(prefs.getString(STATE_VALUE_NAME, ""), Base64.DEFAULT);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Ignoring corrupt state");
+            stateBytes = new byte[0];
+        }
+
+        byte[] newStateBytes = CableAuthenticatorJni.get().setup(
+                registration, activityClassName, networkContext, stateBytes);
+        if (newStateBytes.length > 0) {
+            Log.i(TAG, "Writing updated state");
+            prefs.edit()
+                    .putString(STATE_VALUE_NAME,
+                            Base64.encodeToString(
+                                    newStateBytes, Base64.NO_WRAP | Base64.NO_PADDING))
+                    .apply();
+        }
     }
 
     // Calls from native code.
@@ -457,6 +464,15 @@ class CableAuthenticator {
     }
 
     /**
+     * onCloudMessage is called by {@link CableAuthenticatorUI} when a GCM message is received.
+     */
+    public static void onCloudMessage(
+            long event, long systemNetworkContext, long registration, String activityClassName) {
+        setup(registration, activityClassName, systemNetworkContext);
+        CableAuthenticatorJni.get().onCloudMessage(event);
+    }
+
+    /**
      * showNotification is called by the C++ code to show an Android
      * notification. When pressed, the notification will activity the given
      * Activity and Fragment.
@@ -518,7 +534,7 @@ class CableAuthenticator {
          * ignored. It returns an empty byte array if the given state is valid, or the new contents
          * of the persisted state otherwise.
          */
-        byte[] setup(long instanceIdDriver, String activityClassName, long networkContext,
+        byte[] setup(long registration, String activityClassName, long networkContext,
                 byte[] stateBytes);
 
         /**
@@ -546,6 +562,13 @@ class CableAuthenticator {
          * Called to alert the C++ code to stop any ongoing transactions.
          */
         void stop();
+
+        /**
+         * Called when a GCM message is received. The argument is a pointer to a
+         * |device::cablev2::authenticator::Registration::Event| object that the native code takes
+         * ownership of.
+         */
+        void onCloudMessage(long event);
 
         /**
          * Called to alert native code of a response to a makeCredential request.

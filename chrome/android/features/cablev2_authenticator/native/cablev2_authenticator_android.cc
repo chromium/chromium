@@ -29,6 +29,7 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaByteArrayToByteVector;
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
@@ -94,8 +95,9 @@ struct GlobalData {
   std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
   network::mojom::NetworkContext* network_context = nullptr;
 
-  // registration owns the object that handles cloud messages.
-  std::unique_ptr<device::cablev2::authenticator::Registration> registration;
+  // registration is a non-owning pointer to the global |Registration|.
+  device::cablev2::authenticator::Registration* registration = nullptr;
+
   // activity_class_name is the name of a Java class that should be the target
   // of any notifications shown.
   std::string activity_class_name;
@@ -135,20 +137,6 @@ GlobalData& GetGlobalData() {
   return *global_data;
 }
 
-// OnContactEvent is called when the tunnel service alerts us to a tunnel
-// request from a paired device.
-void OnContactEvent(
-    std::unique_ptr<device::cablev2::authenticator::Registration::Event>
-        event) {
-  GlobalData& global_data = GetGlobalData();
-
-  global_data.last_event = std::move(event);
-
-  Java_CableAuthenticator_showNotification(
-      global_data.env, ConvertUTF8ToJavaString(
-                           global_data.env, global_data.activity_class_name));
-}
-
 // AndroidBLEAdvert wraps a Java |BLEAdvert| object so that
 // |authenticator::Platform| can hold it.
 class AndroidBLEAdvert
@@ -178,7 +166,7 @@ class AndroidBLEAdvert
 // implementation of FIDO operations.
 class AndroidPlatform : public device::cablev2::authenticator::Platform {
  public:
-  AndroidPlatform(JNIEnv* env, const JavaParamRef<jobject>& cable_authenticator)
+  AndroidPlatform(JNIEnv* env, const JavaRef<jobject>& cable_authenticator)
       : env_(env), cable_authenticator_(cable_authenticator) {
     DCHECK(env_->IsInstanceOf(
         cable_authenticator_.obj(),
@@ -318,7 +306,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 
 static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
     JNIEnv* env,
-    jlong instance_id_driver_long,
+    jlong registration_long,
     const JavaParamRef<jstring>& activity_class_name,
     jlong network_context_long,
     const JavaParamRef<jbyteArray>& state_bytes) {
@@ -349,10 +337,10 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
       ConvertJavaStringToUTF8(activity_class_name);
 
   static_assert(sizeof(jlong) >= sizeof(void*), "");
-  auto* instance_id_driver =
-      reinterpret_cast<instance_id::InstanceIDDriver*>(instance_id_driver_long);
-  global_data.registration = device::cablev2::authenticator::Register(
-      instance_id_driver, base::BindRepeating(OnContactEvent));
+  global_data.registration =
+      reinterpret_cast<device::cablev2::authenticator::Registration*>(
+          registration_long);
+  global_data.registration->PrepareContactID();
 
   global_data.network_context =
       reinterpret_cast<network::mojom::NetworkContext*>(network_context_long);
@@ -428,6 +416,21 @@ static void JNI_CableAuthenticator_StartFCM(
 
 static void JNI_CableAuthenticator_Stop(JNIEnv* env) {
   ResetGlobalData();
+}
+
+static void JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
+                                                  jlong event_long) {
+  static_assert(sizeof(jlong) >= sizeof(void*), "");
+  std::unique_ptr<device::cablev2::authenticator::Registration::Event> event(
+      reinterpret_cast<device::cablev2::authenticator::Registration::Event*>(
+          event_long));
+
+  GlobalData& global_data = GetGlobalData();
+  global_data.last_event = std::move(event);
+
+  Java_CableAuthenticator_showNotification(
+      global_data.env, ConvertUTF8ToJavaString(
+                           global_data.env, global_data.activity_class_name));
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(

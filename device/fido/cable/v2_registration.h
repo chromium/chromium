@@ -42,6 +42,11 @@ class Registration {
 
   virtual ~Registration();
 
+  // PrepareContactID indicates that |contact_id| will soon be called. In order
+  // to save resources for the case when |contact_id| is never used,
+  // registration will be deferred until this is called.
+  virtual void PrepareContactID() = 0;
+
   // contact_id returns an opaque token that may be placed in pairing data for
   // desktops to later connect to. |nullopt| will be returned if the value is
   // not yet ready.

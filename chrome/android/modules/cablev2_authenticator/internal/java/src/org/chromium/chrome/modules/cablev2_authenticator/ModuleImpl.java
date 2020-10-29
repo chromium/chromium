@@ -20,4 +20,11 @@ public class ModuleImpl implements Module {
     public Fragment getFragment() {
         return new CableAuthenticatorUI();
     }
+
+    @Override
+    public void onCloudMessage(
+            long event, long systemNetworkContext, long registration, String activityClassName) {
+        CableAuthenticatorUI.onCloudMessage(
+                event, systemNetworkContext, registration, activityClassName);
+    }
 }

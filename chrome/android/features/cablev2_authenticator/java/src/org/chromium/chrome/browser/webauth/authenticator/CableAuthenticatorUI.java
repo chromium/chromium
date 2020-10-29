@@ -58,8 +58,8 @@ public class CableAuthenticatorUI extends Fragment
         mCreatedByUsbIntent = (accessory != null);
         final long networkContext = arguments.getLong(
                 "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext");
-        final long instanceIdDriver = arguments.getLong(
-                "org.chromium.chrome.modules.cablev2_authenticator.InstanceIDDriver");
+        final long registration =
+                arguments.getLong("org.chromium.chrome.modules.cablev2_authenticator.Registration");
         final String activityClassName = arguments.getString(
                 "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName");
         final boolean isFcmNotification =
@@ -67,8 +67,8 @@ public class CableAuthenticatorUI extends Fragment
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
-        mAuthenticator = new CableAuthenticator(getContext(), this, networkContext,
-                instanceIdDriver, activityClassName, isFcmNotification, accessory);
+        mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
+                activityClassName, isFcmNotification, accessory);
     }
 
     @Override
@@ -221,5 +221,15 @@ public class CableAuthenticatorUI extends Fragment
     @Override
     public void onComplete() {
         getActivity().runOnUiThread(() -> { getActivity().finish(); });
+    }
+
+    /**
+     * onCloudMessage is called by {@link CableAuthenticatorModuleProvider} when a GCM message is
+     * received.
+     */
+    public static void onCloudMessage(
+            long event, long systemNetworkContext, long registration, String activityClassName) {
+        CableAuthenticator.onCloudMessage(
+                event, systemNetworkContext, registration, activityClassName);
     }
 }

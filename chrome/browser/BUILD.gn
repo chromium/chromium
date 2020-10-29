@@ -3212,6 +3212,7 @@ static_library("browser") {
       "//components/translate/core/language_detection",
       "//components/ukm/content",
       "//components/viz/common",
+      "//device/fido:cablev2_registration",
       "//ipc:param_traits",
       "//media/mojo/clients",
       "//rlz:rlz_utils",

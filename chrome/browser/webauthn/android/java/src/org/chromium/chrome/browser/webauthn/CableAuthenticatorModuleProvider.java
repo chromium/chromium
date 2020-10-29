@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
 
@@ -35,10 +36,12 @@ public class CableAuthenticatorModuleProvider extends Fragment {
     // Fragment} in the module.
     private static final String NETWORK_CONTEXT_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
-    private static final String INSTANCE_ID_DRIVER_KEY =
-            "org.chromium.chrome.modules.cablev2_authenticator.InstanceIDDriver";
-    private static final String ACTIVITY_CLASS_NAME =
+    private static final String REGISTRATION_KEY =
+            "org.chromium.chrome.modules.cablev2_authenticator.Registration";
+    private static final String ACTIVITY_CLASS_NAME_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
+    private static final String ACTIVITY_CLASS_NAME =
+            "org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity";
     private TextView mStatus;
 
     @Override
@@ -90,21 +93,42 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         }
         arguments.putLong(NETWORK_CONTEXT_KEY,
                 CableAuthenticatorModuleProviderJni.get().getSystemNetworkContext());
-        arguments.putLong(INSTANCE_ID_DRIVER_KEY,
-                CableAuthenticatorModuleProviderJni.get().getInstanceIDDriver());
-        // SettingsActivity has to be named as a string here because it cannot
-        // be depended upon without creating a cycle in the deps graph. It's
-        // used as the target of a notification and, in time we'll need our own
-        // top-level Activity in order to handle USB devices. For now, though,
-        // it serves for testing.
-        // TODO(agl): replace with custom top-level Activity.
-        arguments.putString(ACTIVITY_CLASS_NAME,
-                "org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity");
+        arguments.putLong(
+                REGISTRATION_KEY, CableAuthenticatorModuleProviderJni.get().getRegistration());
+        arguments.putString(ACTIVITY_CLASS_NAME_KEY, ACTIVITY_CLASS_NAME);
         fragment.setArguments(arguments);
         transaction.replace(getId(), fragment);
         // This fragment is deliberately not added to the back-stack here so
         // that it appears to have been "replaced" by the authenticator UI.
         transaction.commit();
+    }
+
+    /**
+     * onCloudMessage is called by native code when a GCM message is received.
+     *
+     * @param event a pointer to a |device::cablev2::authenticator::Registration::Event| which this
+     *         code takes ownership of.
+     */
+    @CalledByNative
+    public static void onCloudMessage(long event) {
+        final long networkContext =
+                CableAuthenticatorModuleProviderJni.get().getSystemNetworkContext();
+        final long registration = CableAuthenticatorModuleProviderJni.get().getRegistration();
+
+        if (Cablev2AuthenticatorModule.isInstalled()) {
+            Cablev2AuthenticatorModule.getImpl().onCloudMessage(
+                    event, networkContext, registration, ACTIVITY_CLASS_NAME);
+            return;
+        }
+
+        Cablev2AuthenticatorModule.install((success) -> {
+            if (!success) {
+                CableAuthenticatorModuleProviderJni.get().freeEvent(event);
+                return;
+            }
+            Cablev2AuthenticatorModule.getImpl().onCloudMessage(
+                    event, networkContext, registration, ACTIVITY_CLASS_NAME);
+        });
     }
 
     @NativeMethods
@@ -115,6 +139,10 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         // static_library, cannot be depended on by another component thus we
         // pass this value into the feature module.
         long getSystemNetworkContext();
-        long getInstanceIDDriver();
+        // getRegistration returns a pointer to the global
+        // device::cablev2::authenticator::Registration.
+        long getRegistration();
+        // freeEvent releases resources used by the given event.
+        void freeEvent(long event);
     }
 }
