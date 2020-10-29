@@ -96,18 +96,8 @@ const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
   return GetInternalAppListImpl(false, profile);
 }
 
-bool IsSuggestionChip(const std::string& app_id, Profile* profile) {
-  if (base::LowerCaseEqualsASCII(app_id, ash::kInternalAppIdContinueReading))
-    return true;
-
-  // We show the Help App as a release notes suggestion chip a certain
-  // number of times.
-  if (chromeos::ReleaseNotesStorage(profile).ShouldShowSuggestionChip() &&
-      base::LowerCaseEqualsASCII(app_id,
-                                 chromeos::default_web_apps::kHelpAppId)) {
-    return true;
-  }
-  return false;
+bool IsSuggestionChip(const std::string& app_id) {
+  return base::LowerCaseEqualsASCII(app_id, ash::kInternalAppIdContinueReading);
 }
 
 const InternalApp* FindInternalApp(const std::string& app_id) {

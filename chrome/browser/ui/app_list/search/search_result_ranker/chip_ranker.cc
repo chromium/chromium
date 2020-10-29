@@ -243,7 +243,7 @@ int ChipRanker::NumAvailableChips(Mixer::SortedResults* results) {
     const auto type = result.result->result_type();
     if (type == ash::AppListSearchResultType::kAssistantChip ||
         type == ash::AppListSearchResultType::kPlayStoreReinstallApp ||
-        IsSuggestionChip(result.result->id(), profile_)) {
+        IsSuggestionChip(result.result->id())) {
       --num_chips;
     }
   }

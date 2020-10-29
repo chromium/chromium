@@ -2981,6 +2981,7 @@ Unknown properties are collapsed to zero. -->
   <int value="34" label="LaCrOS"/>
   <int value="35" label="Remote App"/>
   <int value="36" label="Borealis App"/>
+  <int value="37" label="Help App"/>
 </enum>
 
 <enum name="AppListSearchResultDisplayType">

@@ -152,6 +152,7 @@ enum class AppListSearchResultType {
   kOsSettings,             // OS settings results.
   kInternalPrivacyInfo,    // Result used internally by privacy notices.
   kAssistantText,          // Assistant text results.
+  kHelpApp,                // Help App (aka Explore) results.
   // Add new values here.
 };
 

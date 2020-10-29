@@ -1749,6 +1749,8 @@ static_library("ui") {
       "app_list/search/files/file_result.h",
       "app_list/search/files/item_suggest_cache.cc",
       "app_list/search/files/item_suggest_cache.h",
+      "app_list/search/help_app_provider.cc",
+      "app_list/search/help_app_provider.h",
       "app_list/search/launcher_search/launcher_search_icon_image_loader.cc",
       "app_list/search/launcher_search/launcher_search_icon_image_loader.h",
       "app_list/search/launcher_search/launcher_search_icon_image_loader_impl.cc",

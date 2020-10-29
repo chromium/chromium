@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 #include "chrome/browser/ui/app_list/search/drive_quick_access_provider.h"
 #include "chrome/browser/ui/app_list/search/files/drive_zero_state_provider.h"
+#include "chrome/browser/ui/app_list/search/help_app_provider.h"
 #include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
@@ -204,6 +205,10 @@ std::unique_ptr<SearchController> CreateSearchController(
     controller->AddProvider(os_settings_search_group_id,
                             std::make_unique<OsSettingsProvider>(profile));
   }
+
+  size_t help_app_group_id = controller->AddGroup(kGenericMaxResults);
+  controller->AddProvider(help_app_group_id,
+                          std::make_unique<HelpAppProvider>(profile));
 
   return controller;
 }

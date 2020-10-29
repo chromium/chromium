@@ -80,7 +80,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
       break;
   }
 
-  if (IsSuggestionChip(id(), profile))
+  if (IsSuggestionChip(id()))
     HandleSuggestionChip(profile);
 }
 
@@ -153,20 +153,6 @@ void AppServiceAppResult::Launch(int event_flags,
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
-
-  if (id() == chromeos::default_web_apps::kHelpAppId &&
-      query_url().has_value()) {
-    // This matches the logging of the release notes app in
-    // chrome/browser/apps/app_service/built_in_chromeos_apps.cc.
-    // TODO(carpenterr): Have more consistent logging of the places Help App can
-    // be opened to/from.
-    base::RecordAction(
-        base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
-    proxy->LaunchAppWithUrl(app_id(), event_flags, query_url().value(),
-                            launch_source, controller()->GetAppListDisplayId());
-    chromeos::ReleaseNotesStorage(profile()).StopShowingSuggestionChip();
-    return;
-  }
 
   // For Chrome apps or Web apps, if it is non-platform app, it could be
   // selecting an existing delegate for the app, so call
@@ -250,9 +236,7 @@ void AppServiceAppResult::HandleSuggestionChip(Profile* profile) {
   SetDisplayIndex(ash::SearchResultDisplayIndex::kFirstIndex);
   SetDisplayType(ash::SearchResultDisplayType::kChip);
 
-  // Either of these apps could be shown as the release notes suggestion chip.
-  if (id() == ash::kReleaseNotesAppId ||
-      id() == chromeos::default_web_apps::kHelpAppId) {
+  if (id() == ash::kReleaseNotesAppId) {
     // TODO(b/169711884): Decrease times left only when the chip becomes
     // visible.
     chromeos::ReleaseNotesStorage(profile)

@@ -513,18 +513,6 @@ void AppSearchProvider::UpdateRecommendedResults(
         app->data_source()->CreateResult(app->id(), list_controller_, true);
     result->SetTitle(title);
 
-    if (app->id() == chromeos::default_web_apps::kHelpAppId) {
-      auto release_notes_storage =
-          std::make_unique<chromeos::ReleaseNotesStorage>(profile_);
-      // If we should show the release notes suggestion chip, change the title
-      // and url of the Help App. Otherwise leave as normal.
-      if (release_notes_storage->ShouldShowSuggestionChip()) {
-        result->SetTitle(ui::SubstituteChromeOSDeviceType(
-            IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE));
-        result->SetQueryUrl(GURL("chrome://help-app/updates"));
-      }
-    }
-
     const auto find_in_app_list = id_to_app_list_index.find(app->id());
     const base::Time time = app->GetLastActivityTime();
 

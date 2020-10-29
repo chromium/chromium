@@ -92,6 +92,8 @@ enum SearchResultType {
   REMOTE_APP,
   // A Borealis App Result.
   BOREALIS_APP,
+  // A Help App (aka Explore) Result.
+  HELP_APP,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
