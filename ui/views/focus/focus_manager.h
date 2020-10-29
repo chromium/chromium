@@ -296,6 +296,9 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   void set_arrow_key_traversal_enabled_for_widget(bool enabled) {
     arrow_key_traversal_enabled_for_widget_ = enabled;
   }
+  bool arrow_key_traversal_enabled_for_widget() const {
+    return arrow_key_traversal_enabled_for_widget_;
+  }
 
   // Returns the next focusable view. Traversal starts at |starting_view|. If
   // |starting_view| is null, |starting_widget| is consulted to determine which

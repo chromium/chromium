@@ -61,6 +61,14 @@ class VIEWS_EXPORT WidgetDelegate {
     // Widget; if false, focus cycles within this Widget.
     bool focus_traverses_out = false;
 
+    // Controls whether the user can traverse widget views using up/down and
+    // left/right arrow keys in addition to TAB.
+    // TODO(dfried): Can only be set on top-level widgets. If we need to enable
+    // this for child widgets, we'll need to move away from checking
+    // FocusManager::arrow_key_traversal_enabled_for_widget_ on arrow key press
+    // to checking the current view's widget's enable_arrow_key_traversal().
+    bool enable_arrow_key_traversal = false;
+
     // The widget's icon, if any.
     gfx::ImageSkia icon;
 
@@ -306,6 +314,7 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetCanMinimize(bool can_minimize);
   void SetCanResize(bool can_resize);
   void SetFocusTraversesOut(bool focus_traverses_out);
+  void SetEnableArrowKeyTraversal(bool enable_arrow_key_traversal);
   void SetIcon(const gfx::ImageSkia& icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::ModalType modal_type);
@@ -353,6 +362,9 @@ class VIEWS_EXPORT WidgetDelegate {
   bool ShouldCenterWindowTitleText() const;
 
   bool focus_traverses_out() const { return params_.focus_traverses_out; }
+  bool enable_arrow_key_traversal() const {
+    return params_.enable_arrow_key_traversal;
+  }
   bool owned_by_widget() const { return params_.owned_by_widget; }
 
   void set_internal_name(std::string name) { params_.internal_name = name; }

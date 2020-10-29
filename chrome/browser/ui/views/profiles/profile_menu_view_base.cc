@@ -522,7 +522,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
   DCHECK(anchor_button);
   anchor_button->AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
 
-  EnableArrowKeyTraversal();
+  SetEnableArrowKeyTraversal(true);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
 }
 

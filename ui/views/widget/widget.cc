@@ -394,6 +394,11 @@ void Widget::Init(InitParams params) {
     SetInitialBoundsForFramelessWindow(bounds);
   }
 
+  if (widget_delegate_->enable_arrow_key_traversal()) {
+    DCHECK(is_top_level());
+    focus_manager_->set_arrow_key_traversal_enabled_for_widget(true);
+  }
+
   observer_manager_.Add(GetNativeTheme());
   native_widget_initialized_ = true;
   native_widget_->OnWidgetInitDone();

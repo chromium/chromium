@@ -276,6 +276,11 @@ void WidgetDelegate::SetFocusTraversesOut(bool focus_traverses_out) {
   params_.focus_traverses_out = focus_traverses_out;
 }
 
+void WidgetDelegate::SetEnableArrowKeyTraversal(
+    bool enable_arrow_key_traversal) {
+  params_.enable_arrow_key_traversal = enable_arrow_key_traversal;
+}
+
 void WidgetDelegate::SetIcon(const gfx::ImageSkia& icon) {
   params_.icon = icon;
   if (GetWidget())

@@ -436,8 +436,6 @@ void BubbleDialogDelegateView::AddedToWidget() {
     GetWidget()->GetRootView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }
-  if (enable_arrow_key_traversal_)
-    GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
 }
 
 View* BubbleDialogDelegateView::GetContentsView() {
@@ -736,16 +734,6 @@ void BubbleDialogDelegateView::UpdateColorsFromTheme() {
   SetBackground(layer() && layer()->fills_bounds_opaquely()
                     ? CreateSolidBackground(color())
                     : nullptr);
-}
-
-void BubbleDialogDelegateView::EnableArrowKeyTraversal() {
-  if (enable_arrow_key_traversal_)
-    return;
-  enable_arrow_key_traversal_ = true;
-
-  // Can't get the focus manager for a view that hasn't been added to a widget.
-  if (GetFocusManager())
-    GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {

@@ -256,6 +256,32 @@ TEST_F(WidgetTest, GetParent) {
   // children should be automatically destroyed with |toplevel|.
 }
 
+TEST_F(WidgetWithCustomParamsTest,
+       EnableArrowKeyTraversalFalsePropagatesFromDelegate) {
+  WidgetDelegate delegate;
+  SetInitFunction(base::BindLambdaForTesting(
+      [&](Widget::InitParams* params) { params->delegate = &delegate; }));
+
+  // Setting should default to off.
+  DCHECK(!delegate.enable_arrow_key_traversal());
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+  EXPECT_FALSE(
+      widget->GetFocusManager()->arrow_key_traversal_enabled_for_widget());
+}
+
+TEST_F(WidgetWithCustomParamsTest,
+       EnableArrowKeyTraversalTruePropagatesFromDelegate) {
+  WidgetDelegate delegate;
+  SetInitFunction(base::BindLambdaForTesting(
+      [&](Widget::InitParams* params) { params->delegate = &delegate; }));
+
+  // Now set to true and create a new widget.
+  delegate.SetEnableArrowKeyTraversal(true);
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+  EXPECT_TRUE(
+      widget->GetFocusManager()->arrow_key_traversal_enabled_for_widget());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget::GetTopLevelWidget tests.
 

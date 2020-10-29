@@ -408,19 +408,12 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
   // Perform view initialization on the contents for bubble sizing.
   void Init() override;
 
-  // Allows the arrow keys to tab between items. Equivalent to calling
-  // FocusManager::set_arrow_key_traversal_enabled_for_widget(), but works even
-  // if the widget for this bubble view has not yet been created.
-  void EnableArrowKeyTraversal();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CreateDelegate);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, NonClientHitTest);
 
   // Update the bubble color from the NativeTheme unless it was explicitly set.
   void UpdateColorsFromTheme();
-
-  bool enable_arrow_key_traversal_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateView);
 };
