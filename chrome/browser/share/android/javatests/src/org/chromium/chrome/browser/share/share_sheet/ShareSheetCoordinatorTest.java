@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -34,8 +33,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.ui.base.ImmutableWeakReference;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivity;
 
@@ -71,9 +68,6 @@ public final class ShareSheetCoordinatorTest {
     @Mock
     private ShareParams mParams;
 
-    @Mock
-    private WindowAndroid mWindow;
-
     private Activity mActivity;
     private ShareSheetCoordinator mShareSheetCoordinator;
 
@@ -101,9 +95,6 @@ public final class ShareSheetCoordinatorTest {
 
         mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher, null,
                 mPropertyModelBuilder, null, null, null, false);
-
-        Mockito.when(mParams.getWindow()).thenReturn(mWindow);
-        Mockito.when(mWindow.getActivity()).thenReturn(new ImmutableWeakReference<>(mActivity));
     }
 
     @Test
@@ -113,7 +104,7 @@ public final class ShareSheetCoordinatorTest {
 
         List<PropertyModel> propertyModels = mShareSheetCoordinator.createFirstPartyPropertyModels(
                 mActivity, mParams, /*chromeShareExtras=*/null,
-                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES, /*shareStartTime=*/0);
+                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES);
         assertEquals("Property model list should be empty.", 0, propertyModels.size());
     }
 
@@ -122,7 +113,7 @@ public final class ShareSheetCoordinatorTest {
     public void testCreateThirdPartyPropertyModels() {
         List<PropertyModel> propertyModels = mShareSheetCoordinator.createThirdPartyPropertyModels(
                 mActivity, mParams, ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES,
-                /*saveLastUsed=*/false, /*shareStartTime=*/0);
+                /*saveLastUsed=*/false);
 
         assertEquals("Incorrect number of property models.", 3, propertyModels.size());
         assertEquals("First property model isn't testModel1.", "testModel1",
