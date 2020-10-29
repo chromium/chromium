@@ -2540,10 +2540,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(NTPHelper && NTPHelper->IsActive());
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
-  if (!IsRegularXRegularSizeClass(self))
+  if (!IsRegularXRegularSizeClass(self)) {
     viewportInsets.bottom = [self bottomToolbarHeight];
-  if (!IsSplitToolbarMode(self))
+  }
+
+  // Add toolbar margin to the frame for every scenario except compact-width
+  // non-otr, as that is the only case where there isn't a primary toolbar.
+  // (see crbug.com/1063173)
+  if (!IsSplitToolbarMode(self) || self.isOffTheRecord) {
     viewportInsets.top = [self expandedTopToolbarHeight];
+  }
   return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
 }
 
@@ -2987,16 +2993,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
     // If the NTP is active, then it's used as the base view for snapshotting.
-    // When the tab strip is visible, the NTP is laid out below the toolbars, so
-    // it should not be inset while snapshotting.  When the tab strip is not
-    // used, the NTP is laid out fullscreen and the top portion of the view will
-    // be obstructed by the toolbars when the snapshot is displayed in the tab
-    // grid.  In that case, the NTP should be inset by the maximum viewport
-    /// insets.
-    // The NTP always sits above the bottom toolbar (when there is one) so the
-    // insets should not take into account the bottom toolbar.
+    // When the tab strip is visible, or for the incognito NTP, the NTP is laid
+    // out between the toolbars, so it should not be inset while snapshotting.
+    if ([self canShowTabStrip] || self.isOffTheRecord) {
+      return UIEdgeInsetsZero;
+    }
+
+    // For the regular NTP without tab strip, it sits above the bottom toolbar
+    // but, since it is displayed as full-screen at the top, it requires maximum
+    // viewport insets.
     maxViewportInsets.bottom = 0;
-    return [self canShowTabStrip] ? UIEdgeInsetsZero : maxViewportInsets;
+    return maxViewportInsets;
   } else {
     // If the NTP is inactive, the WebState's view is used as the base view for
     // snapshotting.  If fullscreen is implemented by resizing the scroll view,

@@ -136,8 +136,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   UILayoutGuide* _bottomUnsafeAreaGuide;
   UILayoutGuide* _bottomUnsafeAreaGuideInSuperview;
 
-  // Height constraints for adding margins for the toolbars.
-  NSLayoutConstraint* _topToolbarMarginHeight;
+  // Height constraint for adding margins for the bottom toolbar.
   NSLayoutConstraint* _bottomToolbarMarginHeight;
 
   // Constraint ensuring that |containerView| is at least as high as the
@@ -207,38 +206,34 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     [_containerView addLayoutGuide:bottomGuide];
     [_containerView addLayoutGuide:_bottomUnsafeAreaGuide];
 
-    // Those layout guide are used to prevent the content from being displayed
-    // below the toolbars.
+    // This layout guide is used to prevent the content from being displayed
+    // below the bottom toolbar.
     UILayoutGuide* bottomToolbarMarginGuide = [[UILayoutGuide alloc] init];
-    UILayoutGuide* topToolbarMarginGuide = [[UILayoutGuide alloc] init];
     [_containerView addLayoutGuide:bottomToolbarMarginGuide];
-    [_containerView addLayoutGuide:topToolbarMarginGuide];
 
     _bottomToolbarMarginHeight =
         [bottomToolbarMarginGuide.heightAnchor constraintEqualToConstant:0];
-    _topToolbarMarginHeight =
-        [topToolbarMarginGuide.heightAnchor constraintEqualToConstant:0];
     // Updates the constraints to the correct value.
     [self updateToolbarMargins];
 
     [self addSubview:_containerView];
 
     [NSLayoutConstraint activateConstraints:@[
-      // Position the two toolbar margin guides between the two guides used to
-      // have the correct centering margin.
+      // Position the stack view's top at some margin under from the container
+      // top.
       [topGuide.topAnchor constraintEqualToAnchor:_containerView.topAnchor],
-      [topToolbarMarginGuide.topAnchor
-          constraintEqualToAnchor:topGuide.bottomAnchor
-                         constant:kLayoutGuideVerticalMargin],
+      [_stackView.topAnchor constraintEqualToAnchor:topGuide.bottomAnchor
+                                           constant:kLayoutGuideVerticalMargin],
+
+      // Position the stack view's bottom guide at some margin from the
+      // container bottom.
       [bottomGuide.topAnchor
           constraintEqualToAnchor:bottomToolbarMarginGuide.bottomAnchor
                          constant:kLayoutGuideVerticalMargin],
       [_containerView.bottomAnchor
           constraintEqualToAnchor:bottomGuide.bottomAnchor],
 
-      // Position the stack view between the two toolbar margin guides.
-      [topToolbarMarginGuide.bottomAnchor
-          constraintEqualToAnchor:_stackView.topAnchor],
+      // Position the stack view above the bottom toolbar margin guide.
       [bottomToolbarMarginGuide.topAnchor
           constraintEqualToAnchor:_stackView.bottomAnchor],
 
@@ -268,7 +263,6 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
       // Activate the height constraints.
       _bottomToolbarMarginHeight,
-      _topToolbarMarginHeight,
 
       // Set a minimum top margin and make the bottom guide twice as tall as the
       // top guide.
@@ -364,15 +358,6 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 // Updates the height of the margins for the top and bottom toolbars.
 - (void)updateToolbarMargins {
-  if (IsRegularXRegularSizeClass(self)) {
-    _topToolbarMarginHeight.constant = 0;
-  } else {
-    CGFloat topInset = self.safeAreaInsets.top;
-    _topToolbarMarginHeight.constant =
-        topInset + ToolbarExpandedHeight(
-                       self.traitCollection.preferredContentSizeCategory);
-  }
-
   if (IsSplitToolbarMode(self)) {
     _bottomToolbarMarginHeight.constant = kSecondaryToolbarHeight;
   } else {
