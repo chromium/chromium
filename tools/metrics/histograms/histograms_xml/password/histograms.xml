@@ -2225,7 +2225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchErrorCode"
-    units="NetErrorCode" expires_after="2021-01-31">
+    enum="NetErrorCodes" expires_after="2021-01-31">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2235,7 +2235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.WellKnownChangePassword.GstaticFetchHttpResponseCode"
-    units="HttpResponseCode" expires_after="2021-01-31">
+    enum="HttpResponseCode" expires_after="2021-01-31">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
