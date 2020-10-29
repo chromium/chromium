@@ -16,9 +16,12 @@ Regular users that were registered using their GAIA account.
 ## Child users
 
 Users that logged in using
-*   a child account - an account designated for children under the age of 13.
+*   a Unicorn account - an account designated for children under the age of
+    consent in their jurisdiction.
 *   a Geller account - an account with parental supervision that has no age
     restrictions.
+*   a Griffin account - similar to a Geller account, but for compliance with
+    European Union laws.
 
 In order to add a child user to the device, the user has to go through an
 adapted GAIA flow, which also requires their parent to authenticate.
