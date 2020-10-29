@@ -739,10 +739,12 @@ template("test_runner_script") {
       data_deps = []
     }
 
+    executable = "//testing/test_env.py"
+
     if (defined(android_test_runner_script)) {
-      executable = android_test_runner_script
+      _runner_script = android_test_runner_script
     } else {
-      executable = "//build/android/test_runner.py"
+      _runner_script = "//build/android/test_runner.py"
     }
 
     deps = []
@@ -753,9 +755,10 @@ template("test_runner_script") {
     if (defined(invoker.data_deps)) {
       data_deps = invoker.data_deps
     }
-    data = []
+    data = [ "//testing/test_env.py" ]
 
     executable_args = [
+      "@WrappedPath(" + rebase_path(_runner_script, root_build_dir) + ")",
       _test_type,
       "--output-directory",
       "@WrappedPath(.)",
