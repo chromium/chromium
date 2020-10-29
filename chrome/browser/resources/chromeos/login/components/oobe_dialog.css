@@ -27,10 +27,6 @@
   padding-top: var(--oobe-dialog-content-padding);
 }
 
-#header-container[android] {
-  padding: 48px 48px 0 48px;
-}
-
 #oobe-title {
   padding-top: 20px;
 }
