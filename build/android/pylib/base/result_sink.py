@@ -10,7 +10,6 @@ from pylib.base import base_test_result
 import requests  # pylint: disable=import-error
 
 # Comes from luci/resultdb/pbutil/test_result.go
-# Slightly smaller to allow prepending <pre></pres>
 MAX_REPORT_LEN = 4 * 1024
 
 # Maps base_test_results to the luci test-result.proto.
