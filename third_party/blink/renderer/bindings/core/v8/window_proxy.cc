@@ -108,14 +108,6 @@ void WindowProxy::SetGlobalProxy(v8::Local<v8::Object> global_proxy) {
 
   CHECK(global_proxy_.IsEmpty());
   global_proxy_.Set(isolate_, global_proxy);
-
-  // Initialize the window proxy now, to re-establish the connection between
-  // the global object and the v8::Context. This is really only needed for a
-  // RemoteDOMWindow, since it has no scripting environment of its own.
-  // Without this, existing script references to a swapped in RemoteDOMWindow
-  // would be broken until that RemoteDOMWindow was vended again through an
-  // interface like window.frames.
-  Initialize();
 }
 
 // Create a new environment and setup the global object.
