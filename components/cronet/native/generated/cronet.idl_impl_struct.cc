@@ -715,6 +715,13 @@ void Cronet_UrlRequestParams_request_finished_executor_set(
   self->request_finished_executor = request_finished_executor;
 }
 
+void Cronet_UrlRequestParams_idempotency_set(
+    Cronet_UrlRequestParamsPtr self,
+    const Cronet_UrlRequestParams_IDEMPOTENCY idempotency) {
+  DCHECK(self);
+  self->idempotency = idempotency;
+}
+
 // Struct Cronet_UrlRequestParams getters.
 Cronet_String Cronet_UrlRequestParams_http_method_get(
     const Cronet_UrlRequestParamsPtr self) {
@@ -799,6 +806,12 @@ Cronet_ExecutorPtr Cronet_UrlRequestParams_request_finished_executor_get(
     const Cronet_UrlRequestParamsPtr self) {
   DCHECK(self);
   return self->request_finished_executor;
+}
+
+Cronet_UrlRequestParams_IDEMPOTENCY Cronet_UrlRequestParams_idempotency_get(
+    const Cronet_UrlRequestParamsPtr self) {
+  DCHECK(self);
+  return self->idempotency;
 }
 
 // Struct Cronet_DateTime.

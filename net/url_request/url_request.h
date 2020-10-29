@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
+#include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_states.h"
@@ -711,6 +712,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     send_client_certs_ = send_client_certs;
   }
 
+  void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
+  Idempotency GetIdempotency() const { return idempotency_; }
+
   base::WeakPtr<URLRequest> GetWeakPtr();
 
  protected:
@@ -947,6 +951,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   bool upgrade_if_insecure_;
 
   bool send_client_certs_ = true;
+
+  // Idempotency of the request.
+  Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -437,6 +437,7 @@ component("net") {
       "base/host_mapping_rules.cc",
       "base/host_mapping_rules.h",
       "base/http_user_agent_settings.h",
+      "base/idempotency.h",
       "base/isolation_info.cc",
       "base/isolation_info.h",
       "base/load_flags.h",

@@ -52,6 +52,19 @@ net::RequestPriority ConvertRequestPriority(
   return net::DEFAULT_PRIORITY;
 }
 
+net::Idempotency ConvertIdempotency(
+    Cronet_UrlRequestParams_IDEMPOTENCY idempotency) {
+  switch (idempotency) {
+    case Cronet_UrlRequestParams_IDEMPOTENCY_DEFAULT_IDEMPOTENCY:
+      return net::DEFAULT_IDEMPOTENCY;
+    case Cronet_UrlRequestParams_IDEMPOTENCY_IDEMPOTENT:
+      return net::IDEMPOTENT;
+    case Cronet_UrlRequestParams_IDEMPOTENCY_NOT_IDEMPOTENT:
+      return net::NOT_IDEMPOTENT;
+  }
+  return net::DEFAULT_IDEMPOTENCY;
+}
+
 scoped_refptr<UrlResponseInfo> CreateCronet_UrlResponseInfo(
     const std::vector<std::string>& url_chain,
     int http_status_code,
@@ -363,7 +376,8 @@ Cronet_RESULT Cronet_UrlRequestImpl::InitWithParams(
           engine_->HasRequestFinishedListener() /* params->enableMetrics */,
       // TODO(pauljensen): Consider exposing TrafficStats API via C++ API.
       false /* traffic_stats_tag_set */, 0 /* traffic_stats_tag */,
-      false /* traffic_stats_uid_set */, 0 /* traffic_stats_uid */);
+      false /* traffic_stats_uid_set */, 0 /* traffic_stats_uid */,
+      ConvertIdempotency(params->idempotency));
 
   if (params->upload_data_provider) {
     upload_data_sink_ = std::make_unique<Cronet_UploadDataSinkImpl>(
