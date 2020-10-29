@@ -192,7 +192,7 @@ const googleRules = {
   // 'func-name-matching': 'off',
   // 'func-names': 'off',
   // 'func-style': 'off',
-  // 'id-blacklist': 'off',
+  // 'id-denylist': 'off',
   // 'id-length': 'off',
   // 'id-match': 'off',
   'indent': [
