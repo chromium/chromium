@@ -1414,6 +1414,42 @@ def _IsJavaFile(input_api, file_path):
 def _IsProtoFile(input_api, file_path):
   return input_api.os_path.splitext(file_path)[1] == ".proto"
 
+
+def CheckNoUpstreamDepsOnClank(input_api, output_api):
+  """Prevent additions of dependencies from the upstream repo on //clank."""
+  # clank can depend on clank
+  if input_api.change.RepositoryRoot().endswith('clank'):
+    return []
+  build_file_patterns = [
+    r'(.+/)?BUILD\.gn',
+    r'.+\.gni',
+  ]
+  excluded_files = [
+    r'build[/\\]config[/\\]android[/\\]config\.gni'
+  ]
+  bad_pattern = input_api.re.compile(r'^[^#]*//clank')
+
+  error_message = 'Disallowed import on //clank in an upstream build file:'
+
+  def FilterFile(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file,
+      files_to_check=build_file_patterns,
+      files_to_skip=excluded_files)
+
+  problems = []
+  for f in input_api.AffectedSourceFiles(FilterFile):
+    local_path = f.LocalPath()
+    for line_number, line in f.ChangedContents():
+      if (bad_pattern.search(line)):
+        problems.append(
+          '%s:%d\n    %s' % (local_path, line_number, line.strip()))
+  if problems:
+    return [output_api.PresubmitPromptOrNotify(error_message, problems)]
+  else:
+    return []
+
+
 def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
   """Attempts to prevent use of functions intended only for testing in
   non-testing code. For now this is just a best-effort implementation

@@ -1107,6 +1107,100 @@ class AndroidDeprecatedTestAnnotationTest(unittest.TestCase):
                     'UsedDeprecatedSmokeAnnotation not found in errors')
 
 
+class CheckNoDownstreamDepsTest(unittest.TestCase):
+  def testInvalidDepFromUpstream(self):
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('BUILD.gn', [
+          'deps = [',
+          '   "//clank/target:test",',
+          ']'
+        ]),
+        MockAffectedFile('chrome/android/BUILD.gn', [
+          'deps = [ "//clank/target:test" ]'
+        ]),
+        MockAffectedFile('chrome/chrome_java_deps.gni', [
+          'java_deps = [',
+          '   "//clank/target:test",',
+          ']'
+        ]),
+    ]
+    mock_input_api.change.RepositoryRoot = lambda: 'chromium/src'
+    msgs = PRESUBMIT.CheckNoUpstreamDepsOnClank(
+        mock_input_api, mock_output_api)
+    self.assertEqual(1, len(msgs),
+                     'Expected %d items, found %d: %s'
+                     % (1, len(msgs), msgs))
+    self.assertEqual(3, len(msgs[0].items),
+                     'Expected %d items, found %d: %s'
+                     % (3, len(msgs[0].items), msgs[0].items))
+    self.assertTrue(any('BUILD.gn:2' in item for item in msgs[0].items),
+                    'BUILD.gn not found in errors')
+    self.assertTrue(
+        any('chrome/android/BUILD.gn:1' in item for item in msgs[0].items),
+        'chrome/android/BUILD.gn:1 not found in errors')
+    self.assertTrue(
+        any('chrome/chrome_java_deps.gni:2' in item for item in msgs[0].items),
+        'chrome/chrome_java_deps.gni:2 not found in errors')
+
+  def testAllowsComments(self):
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('BUILD.gn', [
+          '# real implementation in //clank/target:test',
+        ]),
+    ]
+    mock_input_api.change.RepositoryRoot = lambda: 'chromium/src'
+    msgs = PRESUBMIT.CheckNoUpstreamDepsOnClank(
+        mock_input_api, mock_output_api)
+    self.assertEqual(0, len(msgs),
+                     'Expected %d items, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  def testOnlyChecksBuildFiles(self):
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('README.md', [
+          'DEPS = [ "//clank/target:test" ]'
+        ]),
+        MockAffectedFile('chrome/android/java/file.java', [
+          '//clank/ only function'
+        ]),
+    ]
+    mock_input_api.change.RepositoryRoot = lambda: 'chromium/src'
+    msgs = PRESUBMIT.CheckNoUpstreamDepsOnClank(
+        mock_input_api, mock_output_api)
+    self.assertEqual(0, len(msgs),
+                     'Expected %d items, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  def testValidDepFromDownstream(self):
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('BUILD.gn', [
+          'DEPS = [',
+          '   "//clank/target:test",',
+          ']'
+        ]),
+        MockAffectedFile('java/BUILD.gn', [
+          'DEPS = [ "//clank/target:test" ]'
+        ]),
+    ]
+    mock_input_api.change.RepositoryRoot = lambda: 'chromium/src/clank'
+    msgs = PRESUBMIT.CheckNoUpstreamDepsOnClank(
+        mock_input_api, mock_output_api)
+    self.assertEqual(0, len(msgs),
+                     'Expected %d items, found %d: %s'
+                     % (0, len(msgs), msgs))
+
 class AndroidDeprecatedJUnitFrameworkTest(unittest.TestCase):
   def testCheckAndroidTestJUnitFramework(self):
     mock_input_api = MockInputApi()
