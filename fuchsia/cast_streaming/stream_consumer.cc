@@ -13,7 +13,7 @@ namespace cast_streaming {
 namespace {
 
 // Timeout to stop the Session when no data is received.
-constexpr base::TimeDelta kNoDataTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kNoDataTimeout = base::TimeDelta::FromSeconds(15);
 
 }  // namespace
 
