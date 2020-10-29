@@ -7,12 +7,13 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/optional.h"
 
 // A report about a JavaScript error that we might want to send back to Google
 // so it can be fixed. Fill in the fields and then call
 // SendJavaScriptErrorReport.
-struct JavaScriptErrorReport {
+struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
   JavaScriptErrorReport();
   JavaScriptErrorReport(const JavaScriptErrorReport& rhs);
   JavaScriptErrorReport(JavaScriptErrorReport&& rhs) noexcept;

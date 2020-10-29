@@ -6,6 +6,7 @@
 #define COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JS_ERROR_REPORT_PROCESSOR_H_
 
 #include "base/callback_forward.h"
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -18,7 +19,7 @@ struct JavaScriptErrorReport;
 // We use RefCountedThreadSafe instead of the more normal RefCounted or WeakPtrs
 // because multiple reports can be in-flight at the same time, each on a
 // different sequence, but still using the same JsErrorReportProcessor.
-class JsErrorReportProcessor
+class COMPONENT_EXPORT(JS_ERROR_REPORTING) JsErrorReportProcessor
     : public base::RefCountedThreadSafe<JsErrorReportProcessor> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();

@@ -2,13 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("error_reporting") {
+component("error_reporting") {
   sources = [
     "javascript_error_report.cc",
     "javascript_error_report.h",
     "js_error_report_processor.cc",
     "js_error_report_processor.h",
   ]
+
+  defines = [ "IS_JS_ERROR_REPORTING_IMPL" ]
 
   deps = [ "//base" ]
 }
