@@ -77,6 +77,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       ++num_parsed_nalus;
       DVLOG(4) << "Found NALU " << nalu.nal_unit_type;
 
+      H265SliceHeader shdr;
       switch (nalu.nal_unit_type) {
         case H265NALU::SPS_NUT:
           int sps_id;
@@ -87,6 +88,24 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
           int pps_id;
           res = parser_.ParsePPS(nalu, &pps_id);
           EXPECT_TRUE(!!parser_.GetPPS(pps_id));
+          break;
+        case H265NALU::TRAIL_N:
+        case H265NALU::TRAIL_R:
+        case H265NALU::TSA_N:
+        case H265NALU::TSA_R:
+        case H265NALU::STSA_N:
+        case H265NALU::STSA_R:
+        case H265NALU::RADL_N:
+        case H265NALU::RADL_R:
+        case H265NALU::RASL_N:
+        case H265NALU::RASL_R:
+        case H265NALU::BLA_W_LP:
+        case H265NALU::BLA_W_RADL:
+        case H265NALU::BLA_N_LP:
+        case H265NALU::IDR_W_RADL:
+        case H265NALU::IDR_N_LP:
+        case H265NALU::CRA_NUT:  // fallthrough
+          res = parser_.ParseSliceHeader(nalu, &shdr);
           break;
         default:
           break;
@@ -200,6 +219,61 @@ TEST_F(H265ParserTest, PpsParsing) {
   EXPECT_FALSE(pps->lists_modification_present_flag);
   EXPECT_EQ(pps->log2_parallel_merge_level_minus2, 0);
   EXPECT_FALSE(pps->slice_segment_header_extension_present_flag);
+}
+
+TEST_F(H265ParserTest, SliceHeaderParsing) {
+  LoadParserFile("bear.hevc");
+  H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::SPS_NUT));
+  int sps_id;
+  // We need to parse the SPS/PPS so the slice header can find them.
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSPS(&sps_id));
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PPS_NUT));
+  int pps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+
+  // Do an IDR slice header first.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::IDR_W_RADL));
+  H265SliceHeader shdr;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSliceHeader(target_nalu, &shdr));
+  EXPECT_TRUE(shdr.first_slice_segment_in_pic_flag);
+  EXPECT_FALSE(shdr.no_output_of_prior_pics_flag);
+  EXPECT_EQ(shdr.slice_pic_parameter_set_id, 0);
+  EXPECT_FALSE(shdr.dependent_slice_segment_flag);
+  EXPECT_EQ(shdr.slice_type, H265SliceHeader::kSliceTypeI);
+  EXPECT_TRUE(shdr.slice_sao_luma_flag);
+  EXPECT_TRUE(shdr.slice_sao_chroma_flag);
+  EXPECT_EQ(shdr.slice_qp_delta, 8);
+  EXPECT_TRUE(shdr.slice_loop_filter_across_slices_enabled_flag);
+
+  // Then do a non-IDR slice header.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::TRAIL_R));
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseSliceHeader(target_nalu, &shdr));
+  EXPECT_TRUE(shdr.first_slice_segment_in_pic_flag);
+  EXPECT_EQ(shdr.slice_pic_parameter_set_id, 0);
+  EXPECT_FALSE(shdr.dependent_slice_segment_flag);
+  EXPECT_EQ(shdr.slice_type, H265SliceHeader::kSliceTypeP);
+  EXPECT_EQ(shdr.slice_pic_order_cnt_lsb, 4);
+  EXPECT_FALSE(shdr.short_term_ref_pic_set_sps_flag);
+  EXPECT_EQ(shdr.st_ref_pic_set.num_negative_pics, 1);
+  EXPECT_EQ(shdr.st_ref_pic_set.num_positive_pics, 0);
+  EXPECT_EQ(shdr.st_ref_pic_set.delta_poc_s0[0], -4);
+  EXPECT_EQ(shdr.st_ref_pic_set.used_by_curr_pic_s0[0], 1);
+  EXPECT_TRUE(shdr.slice_temporal_mvp_enabled_flag);
+  EXPECT_TRUE(shdr.slice_sao_luma_flag);
+  EXPECT_TRUE(shdr.slice_sao_chroma_flag);
+  EXPECT_FALSE(shdr.num_ref_idx_active_override_flag);
+  EXPECT_EQ(shdr.pred_weight_table.luma_log2_weight_denom, 0);
+  EXPECT_EQ(shdr.pred_weight_table.delta_chroma_log2_weight_denom, 7);
+  EXPECT_EQ(shdr.pred_weight_table.delta_luma_weight_l0[0], 0);
+  EXPECT_EQ(shdr.pred_weight_table.luma_offset_l0[0], -2);
+  EXPECT_EQ(shdr.pred_weight_table.delta_chroma_weight_l0[0][0], -9);
+  EXPECT_EQ(shdr.pred_weight_table.delta_chroma_weight_l0[0][1], -9);
+  EXPECT_EQ(shdr.pred_weight_table.delta_chroma_offset_l0[0][0], 0);
+  EXPECT_EQ(shdr.pred_weight_table.delta_chroma_offset_l0[0][1], 0);
+  EXPECT_EQ(shdr.five_minus_max_num_merge_cand, 3);
+  EXPECT_EQ(shdr.slice_qp_delta, 8);
+  EXPECT_TRUE(shdr.slice_loop_filter_across_slices_enabled_flag);
 }
 
 }  // namespace media

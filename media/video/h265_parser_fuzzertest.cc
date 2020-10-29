@@ -26,6 +26,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     if (res != media::H265Parser::kOk)
       break;
 
+    media::H265SliceHeader shdr;
     switch (nalu.nal_unit_type) {
       case media::H265NALU::SPS_NUT:
         int sps_id;
@@ -34,6 +35,24 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       case media::H265NALU::PPS_NUT:
         int pps_id;
         res = parser.ParsePPS(nalu, &pps_id);
+        break;
+      case media::H265NALU::TRAIL_N:
+      case media::H265NALU::TRAIL_R:
+      case media::H265NALU::TSA_N:
+      case media::H265NALU::TSA_R:
+      case media::H265NALU::STSA_N:
+      case media::H265NALU::STSA_R:
+      case media::H265NALU::RADL_N:
+      case media::H265NALU::RADL_R:
+      case media::H265NALU::RASL_N:
+      case media::H265NALU::RASL_R:
+      case media::H265NALU::BLA_W_LP:
+      case media::H265NALU::BLA_W_RADL:
+      case media::H265NALU::BLA_N_LP:
+      case media::H265NALU::IDR_W_RADL:
+      case media::H265NALU::IDR_N_LP:
+      case media::H265NALU::CRA_NUT:  // fallthrough
+        res = parser.ParseSliceHeader(nalu, &shdr);
         break;
       default:
         // Skip any other NALU.

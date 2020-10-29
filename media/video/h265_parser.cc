@@ -180,6 +180,18 @@ H265PPS::H265PPS() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265RefPicListsModifications::H265RefPicListsModifications() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H265PredWeightTable::H265PredWeightTable() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H265SliceHeader::H265SliceHeader() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
 H265Parser::H265Parser() {
   Reset();
 }
@@ -248,6 +260,18 @@ VideoColorSpace H265SPS::GetColorSpace() const {
       vui_parameters.matrix_coeffs,
       vui_parameters.video_full_range_flag ? gfx::ColorSpace::RangeID::FULL
                                            : gfx::ColorSpace::RangeID::LIMITED);
+}
+
+bool H265SliceHeader::IsISlice() const {
+  return slice_type == kSliceTypeI;
+}
+
+bool H265SliceHeader::IsPSlice() const {
+  return slice_type == kSliceTypeP;
+}
+
+bool H265SliceHeader::IsBSlice() const {
+  return slice_type == kSliceTypeB;
 }
 
 void H265Parser::Reset() {
@@ -727,9 +751,11 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   READ_BOOL_OR_RETURN(&pps->sign_data_hiding_enabled_flag);
   READ_BOOL_OR_RETURN(&pps->cabac_init_present_flag);
   READ_UE_OR_RETURN(&pps->num_ref_idx_l0_default_active_minus1);
-  IN_RANGE_OR_RETURN(pps->num_ref_idx_l0_default_active_minus1, 0, 14);
+  IN_RANGE_OR_RETURN(pps->num_ref_idx_l0_default_active_minus1, 0,
+                     kMaxRefIdxActive - 1);
   READ_UE_OR_RETURN(&pps->num_ref_idx_l1_default_active_minus1);
-  IN_RANGE_OR_RETURN(pps->num_ref_idx_l1_default_active_minus1, 0, 14);
+  IN_RANGE_OR_RETURN(pps->num_ref_idx_l1_default_active_minus1, 0,
+                     kMaxRefIdxActive - 1);
   READ_SE_OR_RETURN(&pps->init_qp_minus26);
   pps->qp_bd_offset_y = 6 * sps->bit_depth_luma_minus8;
   IN_RANGE_OR_RETURN(pps->init_qp_minus26, -(26 + pps->qp_bd_offset_y), 25);
@@ -862,6 +888,311 @@ const H265PPS* H265Parser::GetPPS(int pps_id) const {
   }
 
   return it->second.get();
+}
+
+H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
+                                                H265SliceHeader* shdr) {
+  // 7.4.7 Slice segment header
+  DVLOG(4) << "Parsing slice header";
+  Result res = kOk;
+  const H265SPS* sps;
+  const H265PPS* pps;
+
+  DCHECK(shdr);
+  shdr->nal_unit_type = nalu.nal_unit_type;
+  shdr->nalu_data = nalu.data;
+  shdr->nalu_size = nalu.size;
+
+  READ_BOOL_OR_RETURN(&shdr->first_slice_segment_in_pic_flag);
+  shdr->irap_pic = (shdr->nal_unit_type >= H265NALU::BLA_W_LP &&
+                    shdr->nal_unit_type <= H265NALU::RSV_IRAP_VCL23);
+  if (shdr->irap_pic) {
+    READ_BOOL_OR_RETURN(&shdr->no_output_of_prior_pics_flag);
+  }
+  READ_UE_OR_RETURN(&shdr->slice_pic_parameter_set_id);
+  IN_RANGE_OR_RETURN(shdr->slice_pic_parameter_set_id, 0, 63);
+  pps = GetPPS(shdr->slice_pic_parameter_set_id);
+  if (!pps) {
+    return kMissingParameterSet;
+  }
+  sps = GetSPS(pps->pps_seq_parameter_set_id);
+  DCHECK(sps);  // We already validated this when we parsed the PPS.
+
+  // Set these defaults if they are not present here.
+  shdr->pic_output_flag = 1;
+  shdr->num_ref_idx_l0_active_minus1 =
+      pps->num_ref_idx_l0_default_active_minus1;
+  shdr->num_ref_idx_l1_active_minus1 =
+      pps->num_ref_idx_l1_default_active_minus1;
+  shdr->collocated_from_l0_flag = 1;
+  shdr->slice_deblocking_filter_disabled_flag =
+      pps->pps_deblocking_filter_disabled_flag;
+  shdr->slice_beta_offset_div2 = pps->pps_beta_offset_div2;
+  shdr->slice_tc_offset_div2 = pps->pps_tc_offset_div2;
+  shdr->slice_loop_filter_across_slices_enabled_flag =
+      pps->pps_loop_filter_across_slices_enabled_flag;
+
+  if (!shdr->first_slice_segment_in_pic_flag) {
+    if (pps->dependent_slice_segments_enabled_flag)
+      READ_BOOL_OR_RETURN(&shdr->dependent_slice_segment_flag);
+    READ_BITS_OR_RETURN(base::bits::Log2Ceiling(sps->pic_size_in_ctbs_y),
+                        &shdr->slice_segment_address);
+    IN_RANGE_OR_RETURN(shdr->slice_segment_address, 0,
+                       sps->pic_size_in_ctbs_y - 1);
+  }
+  shdr->curr_rps_idx = sps->num_short_term_ref_pic_sets;
+  if (!shdr->dependent_slice_segment_flag) {
+    // slice_reserved_flag
+    SKIP_BITS_OR_RETURN(pps->num_extra_slice_header_bits);
+    READ_UE_OR_RETURN(&shdr->slice_type);
+    if ((shdr->irap_pic ||
+         sps->sps_max_dec_pic_buffering_minus1[pps->temporal_id] == 0) &&
+        nalu.nuh_layer_id == 0) {
+      TRUE_OR_RETURN(shdr->slice_type == 2);
+    }
+    if (pps->output_flag_present_flag)
+      READ_BOOL_OR_RETURN(&shdr->pic_output_flag);
+    if (sps->separate_colour_plane_flag) {
+      READ_BITS_OR_RETURN(2, &shdr->colour_plane_id);
+      IN_RANGE_OR_RETURN(shdr->colour_plane_id, 0, 2);
+    }
+    if (shdr->nal_unit_type != H265NALU::IDR_W_RADL &&
+        shdr->nal_unit_type != H265NALU::IDR_N_LP) {
+      READ_BITS_OR_RETURN(sps->log2_max_pic_order_cnt_lsb_minus4 + 4,
+                          &shdr->slice_pic_order_cnt_lsb);
+      IN_RANGE_OR_RETURN(shdr->slice_pic_order_cnt_lsb, 0,
+                         sps->max_pic_order_cnt_lsb - 1);
+      READ_BOOL_OR_RETURN(&shdr->short_term_ref_pic_set_sps_flag);
+      if (!shdr->short_term_ref_pic_set_sps_flag) {
+        off_t bits_left_prior = br_.NumBitsLeft();
+        size_t num_epb_prior = br_.NumEmulationPreventionBytesRead();
+        res = ParseStRefPicSet(sps->num_short_term_ref_pic_sets, *sps,
+                               &shdr->st_ref_pic_set);
+        if (res != kOk)
+          return res;
+        shdr->st_rps_bits =
+            (bits_left_prior - br_.NumBitsLeft()) -
+            8 * (br_.NumEmulationPreventionBytesRead() - num_epb_prior);
+      } else if (sps->num_short_term_ref_pic_sets > 1) {
+        READ_BITS_OR_RETURN(
+            base::bits::Log2Ceiling(sps->num_short_term_ref_pic_sets),
+            &shdr->short_term_ref_pic_set_idx);
+        IN_RANGE_OR_RETURN(shdr->short_term_ref_pic_set_idx, 0,
+                           sps->num_short_term_ref_pic_sets - 1);
+      }
+
+      if (shdr->short_term_ref_pic_set_sps_flag)
+        shdr->curr_rps_idx = shdr->short_term_ref_pic_set_idx;
+
+      if (sps->long_term_ref_pics_present_flag) {
+        if (sps->num_long_term_ref_pics_sps > 0) {
+          READ_UE_OR_RETURN(&shdr->num_long_term_sps);
+          IN_RANGE_OR_RETURN(shdr->num_long_term_sps, 0,
+                             sps->num_long_term_ref_pics_sps);
+        }
+        READ_UE_OR_RETURN(&shdr->num_long_term_pics);
+        if (nalu.nuh_layer_id == 0) {
+          TRUE_OR_RETURN(
+              shdr->num_long_term_pics <=
+              (sps->sps_max_dec_pic_buffering_minus1[pps->temporal_id] -
+               shdr->GetStRefPicSet(sps).num_negative_pics -
+               shdr->GetStRefPicSet(sps).num_positive_pics -
+               shdr->num_long_term_sps));
+        }
+        IN_RANGE_OR_RETURN(shdr->num_long_term_sps + shdr->num_long_term_pics,
+                           0, kMaxLongTermRefPicSets);
+        for (int i = 0; i < shdr->num_long_term_sps + shdr->num_long_term_pics;
+             ++i) {
+          if (i < shdr->num_long_term_sps) {
+            int lt_idx_sps = 0;
+            if (sps->num_long_term_ref_pics_sps > 1) {
+              READ_BITS_OR_RETURN(
+                  base::bits::Log2Ceiling(sps->num_long_term_ref_pics_sps),
+                  &lt_idx_sps);
+              IN_RANGE_OR_RETURN(lt_idx_sps, 0,
+                                 sps->num_long_term_ref_pics_sps - 1);
+            }
+            shdr->poc_lsb_lt[i] = sps->lt_ref_pic_poc_lsb_sps[lt_idx_sps];
+            shdr->used_by_curr_pic_lt[i] =
+                sps->used_by_curr_pic_lt_sps_flag[lt_idx_sps];
+          } else {
+            READ_BITS_OR_RETURN(sps->log2_max_pic_order_cnt_lsb_minus4 + 4,
+                                &shdr->poc_lsb_lt[i]);
+            READ_BOOL_OR_RETURN(&shdr->used_by_curr_pic_lt[i]);
+          }
+          READ_BOOL_OR_RETURN(&shdr->delta_poc_msb_present_flag[i]);
+          if (shdr->delta_poc_msb_present_flag[i]) {
+            READ_UE_OR_RETURN(&shdr->delta_poc_msb_cycle_lt[i]);
+            IN_RANGE_OR_RETURN(
+                shdr->delta_poc_msb_cycle_lt[i], 0,
+                std::pow(2, 32 - sps->log2_max_pic_order_cnt_lsb_minus4 - 4));
+            // Equation 7-52.
+            if (i != 0 && i != shdr->num_long_term_sps) {
+              shdr->delta_poc_msb_cycle_lt[i] =
+                  shdr->delta_poc_msb_cycle_lt[i] +
+                  shdr->delta_poc_msb_cycle_lt[i - 1];
+            }
+          }
+        }
+      }
+      if (sps->sps_temporal_mvp_enabled_flag)
+        READ_BOOL_OR_RETURN(&shdr->slice_temporal_mvp_enabled_flag);
+    }
+    if (sps->sample_adaptive_offset_enabled_flag) {
+      READ_BOOL_OR_RETURN(&shdr->slice_sao_luma_flag);
+      if (sps->chroma_array_type != 0)
+        READ_BOOL_OR_RETURN(&shdr->slice_sao_chroma_flag);
+    }
+    if (shdr->IsPSlice() || shdr->IsBSlice()) {
+      READ_BOOL_OR_RETURN(&shdr->num_ref_idx_active_override_flag);
+      if (shdr->num_ref_idx_active_override_flag) {
+        READ_UE_OR_RETURN(&shdr->num_ref_idx_l0_active_minus1);
+        IN_RANGE_OR_RETURN(shdr->num_ref_idx_l0_active_minus1, 0,
+                           kMaxRefIdxActive - 1);
+        if (shdr->IsBSlice()) {
+          READ_UE_OR_RETURN(&shdr->num_ref_idx_l1_active_minus1);
+          IN_RANGE_OR_RETURN(shdr->num_ref_idx_l1_active_minus1, 0,
+                             kMaxRefIdxActive - 1);
+        }
+      }
+
+      shdr->num_pic_total_curr = 0;
+      const H265StRefPicSet& st_ref_pic = shdr->GetStRefPicSet(sps);
+      for (int i = 0; i < st_ref_pic.num_negative_pics; ++i) {
+        if (st_ref_pic.used_by_curr_pic_s0[i])
+          shdr->num_pic_total_curr++;
+      }
+      for (int i = 0; i < st_ref_pic.num_positive_pics; ++i) {
+        if (st_ref_pic.used_by_curr_pic_s1[i])
+          shdr->num_pic_total_curr++;
+      }
+      for (int i = 0; i < shdr->num_long_term_sps + shdr->num_long_term_pics;
+           ++i) {
+        if (shdr->used_by_curr_pic_lt[i])
+          shdr->num_pic_total_curr++;
+      }
+
+      if (pps->lists_modification_present_flag &&
+          shdr->num_pic_total_curr > 1) {
+        res = ParseRefPicListsModifications(*shdr,
+                                            &shdr->ref_pic_lists_modification);
+        if (res != kOk)
+          return res;
+      }
+      if (shdr->IsBSlice())
+        READ_BOOL_OR_RETURN(&shdr->mvd_l1_zero_flag);
+      if (pps->cabac_init_present_flag)
+        READ_BOOL_OR_RETURN(&shdr->cabac_init_flag);
+      if (shdr->slice_temporal_mvp_enabled_flag) {
+        if (shdr->IsBSlice())
+          READ_BOOL_OR_RETURN(&shdr->collocated_from_l0_flag);
+        if ((shdr->collocated_from_l0_flag &&
+             shdr->num_ref_idx_l0_active_minus1 > 0) ||
+            (!shdr->collocated_from_l0_flag &&
+             shdr->num_ref_idx_l1_active_minus1 > 0)) {
+          READ_UE_OR_RETURN(&shdr->collocated_ref_idx);
+          if ((shdr->IsPSlice() || shdr->IsBSlice()) &&
+              shdr->collocated_from_l0_flag) {
+            IN_RANGE_OR_RETURN(shdr->collocated_ref_idx, 0,
+                               shdr->num_ref_idx_l0_active_minus1);
+          }
+          if (shdr->IsBSlice() && !shdr->collocated_from_l0_flag) {
+            IN_RANGE_OR_RETURN(shdr->collocated_ref_idx, 0,
+                               shdr->num_ref_idx_l1_active_minus1);
+          }
+        }
+      }
+
+      if ((pps->weighted_pred_flag && shdr->IsPSlice()) ||
+          (pps->weighted_bipred_flag && shdr->IsBSlice())) {
+        res = ParsePredWeightTable(*sps, *shdr, &shdr->pred_weight_table);
+        if (res != kOk)
+          return res;
+      }
+      READ_UE_OR_RETURN(&shdr->five_minus_max_num_merge_cand);
+      IN_RANGE_OR_RETURN(5 - shdr->five_minus_max_num_merge_cand, 1, 5);
+    }
+    READ_SE_OR_RETURN(&shdr->slice_qp_delta);
+    IN_RANGE_OR_RETURN(26 + pps->init_qp_minus26 + shdr->slice_qp_delta,
+                       -pps->qp_bd_offset_y, 51);
+
+    if (pps->pps_slice_chroma_qp_offsets_present_flag) {
+      READ_SE_OR_RETURN(&shdr->slice_cb_qp_offset);
+      IN_RANGE_OR_RETURN(shdr->slice_cb_qp_offset, -12, 12);
+      IN_RANGE_OR_RETURN(pps->pps_cb_qp_offset + shdr->slice_cb_qp_offset, -12,
+                         12);
+      READ_SE_OR_RETURN(&shdr->slice_cr_qp_offset);
+      IN_RANGE_OR_RETURN(shdr->slice_cr_qp_offset, -12, 12);
+      IN_RANGE_OR_RETURN(pps->pps_cr_qp_offset + shdr->slice_cr_qp_offset, -12,
+                         12);
+    }
+
+    // pps_slice_act_qp_offsets_present_flag is zero, we don't support SCC ext.
+
+    // chroma_qp_offset_list_enabled_flag is zero, we don't support range ext.
+
+    bool deblocking_filter_override_flag = false;
+    if (pps->deblocking_filter_override_enabled_flag)
+      READ_BOOL_OR_RETURN(&deblocking_filter_override_flag);
+    if (deblocking_filter_override_flag) {
+      READ_BOOL_OR_RETURN(&shdr->slice_deblocking_filter_disabled_flag);
+      if (!shdr->slice_deblocking_filter_disabled_flag) {
+        READ_SE_OR_RETURN(&shdr->slice_beta_offset_div2);
+        IN_RANGE_OR_RETURN(shdr->slice_beta_offset_div2, -6, 6);
+        READ_SE_OR_RETURN(&shdr->slice_tc_offset_div2);
+        IN_RANGE_OR_RETURN(shdr->slice_tc_offset_div2, -6, 6);
+      }
+    }
+    if (pps->pps_loop_filter_across_slices_enabled_flag &&
+        (shdr->slice_sao_luma_flag || shdr->slice_sao_chroma_flag ||
+         !shdr->slice_deblocking_filter_disabled_flag)) {
+      READ_BOOL_OR_RETURN(&shdr->slice_loop_filter_across_slices_enabled_flag);
+    }
+  }
+
+  if (pps->tiles_enabled_flag || pps->entropy_coding_sync_enabled_flag) {
+    int num_entry_point_offsets;
+    READ_UE_OR_RETURN(&num_entry_point_offsets);
+    if (!pps->tiles_enabled_flag) {
+      IN_RANGE_OR_RETURN(num_entry_point_offsets, 0,
+                         sps->pic_height_in_ctbs_y - 1);
+    } else if (!pps->entropy_coding_sync_enabled_flag) {
+      IN_RANGE_OR_RETURN(
+          num_entry_point_offsets, 0,
+          (pps->num_tile_columns_minus1 + 1) * (pps->num_tile_rows_minus1 + 1) -
+              1);
+    } else {  // both are true
+      IN_RANGE_OR_RETURN(
+          num_entry_point_offsets, 0,
+          (pps->num_tile_columns_minus1 + 1) * sps->pic_height_in_ctbs_y - 1);
+    }
+    if (num_entry_point_offsets > 0) {
+      int offset_len_minus1;
+      READ_UE_OR_RETURN(&offset_len_minus1);
+      IN_RANGE_OR_RETURN(offset_len_minus1, 0, 31);
+      SKIP_BITS_OR_RETURN(num_entry_point_offsets * (offset_len_minus1 + 1));
+    }
+  }
+
+  if (pps->slice_segment_header_extension_present_flag) {
+    int slice_segment_header_extension_length;
+    READ_UE_OR_RETURN(&slice_segment_header_extension_length);
+    IN_RANGE_OR_RETURN(slice_segment_header_extension_length, 0, 256);
+    SKIP_BITS_OR_RETURN(slice_segment_header_extension_length * 8);
+  }
+
+  // byte_alignment()
+  SKIP_BITS_OR_RETURN(1);  // alignment bit
+  int bits_left_to_align = br_.NumBitsLeft() % 8;
+  if (bits_left_to_align)
+    SKIP_BITS_OR_RETURN(bits_left_to_align);
+
+  shdr->header_emulation_prevention_bytes =
+      br_.NumEmulationPreventionBytesRead();
+  shdr->header_size = shdr->nalu_size -
+                      shdr->header_emulation_prevention_bytes -
+                      br_.NumBitsLeft() / 8;
+  return res;
 }
 
 // static
@@ -1338,6 +1669,124 @@ H265Parser::Result H265Parser::ParseAndIgnoreSubLayerHrdParameters(
     }
     SKIP_BITS_OR_RETURN(1);  // cbr_flag[i]
   }
+  return kOk;
+}
+
+H265Parser::Result H265Parser::ParseRefPicListsModifications(
+    const H265SliceHeader& shdr,
+    H265RefPicListsModifications* rpl_mod) {
+  READ_BOOL_OR_RETURN(&rpl_mod->ref_pic_list_modification_flag_l0);
+  if (rpl_mod->ref_pic_list_modification_flag_l0) {
+    for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
+      READ_BITS_OR_RETURN(base::bits::Log2Ceiling(shdr.num_pic_total_curr),
+                          &rpl_mod->list_entry_l0[i]);
+      IN_RANGE_OR_RETURN(rpl_mod->list_entry_l0[i], 0,
+                         shdr.num_pic_total_curr - 1);
+    }
+  }
+  if (shdr.IsBSlice()) {
+    READ_BOOL_OR_RETURN(&rpl_mod->ref_pic_list_modification_flag_l1);
+    if (rpl_mod->ref_pic_list_modification_flag_l1) {
+      for (int i = 0; i <= shdr.num_ref_idx_l1_active_minus1; ++i) {
+        READ_BITS_OR_RETURN(base::bits::Log2Ceiling(shdr.num_pic_total_curr),
+                            &rpl_mod->list_entry_l1[i]);
+        IN_RANGE_OR_RETURN(rpl_mod->list_entry_l1[i], 0,
+                           shdr.num_pic_total_curr - 1);
+      }
+    }
+  }
+  return kOk;
+}
+
+H265Parser::Result H265Parser::ParsePredWeightTable(
+    const H265SPS& sps,
+    const H265SliceHeader& shdr,
+    H265PredWeightTable* pred_weight_table) {
+  // 7.4.6.3 Weighted prediction parameters semantics
+  READ_UE_OR_RETURN(&pred_weight_table->luma_log2_weight_denom);
+  IN_RANGE_OR_RETURN(pred_weight_table->luma_log2_weight_denom, 0, 7);
+  if (sps.chroma_array_type) {
+    READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_log2_weight_denom);
+    pred_weight_table->chroma_log2_weight_denom =
+        pred_weight_table->delta_chroma_log2_weight_denom +
+        pred_weight_table->luma_log2_weight_denom;
+    IN_RANGE_OR_RETURN(pred_weight_table->chroma_log2_weight_denom, 0, 7);
+  }
+  bool luma_weight_flag[kMaxRefIdxActive];
+  bool chroma_weight_flag[kMaxRefIdxActive];
+  memset(chroma_weight_flag, 0, sizeof(chroma_weight_flag));
+  for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
+    READ_BOOL_OR_RETURN(&luma_weight_flag[i]);
+  }
+  if (sps.chroma_array_type) {
+    for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
+      READ_BOOL_OR_RETURN(&chroma_weight_flag[i]);
+    }
+  }
+  int sum_weight_l0_flags = 0;
+  for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
+    if (luma_weight_flag[i]) {
+      sum_weight_l0_flags++;
+      READ_SE_OR_RETURN(&pred_weight_table->delta_luma_weight_l0[i]);
+      IN_RANGE_OR_RETURN(pred_weight_table->delta_luma_weight_l0[i], -128, 127);
+      READ_SE_OR_RETURN(&pred_weight_table->luma_offset_l0[i]);
+      IN_RANGE_OR_RETURN(pred_weight_table->luma_offset_l0[i],
+                         -sps.wp_offset_half_range_y,
+                         sps.wp_offset_half_range_y - 1);
+    }
+    if (chroma_weight_flag[i]) {
+      sum_weight_l0_flags += 2;
+      for (int j = 0; j < 2; ++j) {
+        READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_weight_l0[i][j]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_weight_l0[i][j],
+                           -128, 127);
+        READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_offset_l0[i][j]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_offset_l0[i][j],
+                           -4 * sps.wp_offset_half_range_c,
+                           4 * sps.wp_offset_half_range_c - 1);
+      }
+    }
+  }
+  if (shdr.IsPSlice())
+    TRUE_OR_RETURN(sum_weight_l0_flags <= 24);
+  if (shdr.IsBSlice()) {
+    memset(chroma_weight_flag, 0, sizeof(chroma_weight_flag));
+    int sum_weight_l1_flags = 0;
+    for (int i = 0; i <= shdr.num_ref_idx_l1_active_minus1; ++i) {
+      READ_BOOL_OR_RETURN(&luma_weight_flag[i]);
+    }
+    if (sps.chroma_array_type) {
+      for (int i = 0; i <= shdr.num_ref_idx_l1_active_minus1; ++i) {
+        READ_BOOL_OR_RETURN(&chroma_weight_flag[i]);
+      }
+    }
+    for (int i = 0; i <= shdr.num_ref_idx_l1_active_minus1; ++i) {
+      if (luma_weight_flag[i]) {
+        sum_weight_l1_flags++;
+        READ_SE_OR_RETURN(&pred_weight_table->delta_luma_weight_l1[i]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_luma_weight_l1[i], -128,
+                           127);
+        READ_SE_OR_RETURN(&pred_weight_table->luma_offset_l1[i]);
+        IN_RANGE_OR_RETURN(pred_weight_table->luma_offset_l1[i],
+                           -sps.wp_offset_half_range_y,
+                           sps.wp_offset_half_range_y - 1);
+      }
+      if (chroma_weight_flag[i]) {
+        sum_weight_l1_flags += 2;
+        for (int j = 0; j < 2; ++j) {
+          READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_weight_l1[i][j]);
+          IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_weight_l1[i][j],
+                             -128, 127);
+          READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_offset_l1[i][j]);
+          IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_offset_l1[i][j],
+                             -4 * sps.wp_offset_half_range_c,
+                             4 * sps.wp_offset_half_range_c - 1);
+        }
+      }
+    }
+    TRUE_OR_RETURN(sum_weight_l0_flags + sum_weight_l1_flags <= 24);
+  }
+
   return kOk;
 }
 

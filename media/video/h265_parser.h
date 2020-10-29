@@ -319,6 +319,108 @@ struct MEDIA_EXPORT H265PPS {
   int qp_bd_offset_y;
 };
 
+struct MEDIA_EXPORT H265RefPicListsModifications {
+  H265RefPicListsModifications();
+
+  // Syntax elements.
+  bool ref_pic_list_modification_flag_l0;
+  int list_entry_l0[kMaxRefIdxActive];
+  bool ref_pic_list_modification_flag_l1;
+  int list_entry_l1[kMaxRefIdxActive];
+};
+
+struct MEDIA_EXPORT H265PredWeightTable {
+  H265PredWeightTable();
+
+  // Syntax elements.
+  int luma_log2_weight_denom;
+  int delta_chroma_log2_weight_denom;
+  int chroma_log2_weight_denom;
+  int delta_luma_weight_l0[kMaxRefIdxActive];
+  int luma_offset_l0[kMaxRefIdxActive];
+  int delta_chroma_weight_l0[kMaxRefIdxActive][2];
+  int delta_chroma_offset_l0[kMaxRefIdxActive][2];
+  int delta_luma_weight_l1[kMaxRefIdxActive];
+  int luma_offset_l1[kMaxRefIdxActive];
+  int delta_chroma_weight_l1[kMaxRefIdxActive][2];
+  int delta_chroma_offset_l1[kMaxRefIdxActive][2];
+};
+
+struct MEDIA_EXPORT H265SliceHeader {
+  H265SliceHeader();
+
+  enum {
+    kSliceTypeB = 0,  // Table 7-7
+    kSliceTypeP = 1,  // Table 7-7
+    kSliceTypeI = 2,  // Table 7-7
+  };
+
+  int nal_unit_type;         // from NAL header
+  const uint8_t* nalu_data;  // from NAL header
+  size_t nalu_size;          // from NAL header
+  size_t header_size;  // calculated, not including emulation prevention bytes
+  size_t header_emulation_prevention_bytes;
+
+  // Syntax elements.
+  bool first_slice_segment_in_pic_flag;
+  bool no_output_of_prior_pics_flag;
+  int slice_pic_parameter_set_id;
+  bool dependent_slice_segment_flag;
+  int slice_segment_address;
+  int slice_type;
+  bool pic_output_flag;
+  int colour_plane_id;
+  int slice_pic_order_cnt_lsb;
+  bool short_term_ref_pic_set_sps_flag;
+  H265StRefPicSet st_ref_pic_set;
+  int short_term_ref_pic_set_idx;
+  int num_long_term_sps;
+  int num_long_term_pics;
+  int poc_lsb_lt[kMaxLongTermRefPicSets];
+  bool used_by_curr_pic_lt[kMaxLongTermRefPicSets];
+  bool delta_poc_msb_present_flag[kMaxLongTermRefPicSets];
+  int delta_poc_msb_cycle_lt[kMaxLongTermRefPicSets];
+  bool slice_temporal_mvp_enabled_flag;
+  bool slice_sao_luma_flag;
+  bool slice_sao_chroma_flag;
+  bool num_ref_idx_active_override_flag;
+  int num_ref_idx_l0_active_minus1;
+  int num_ref_idx_l1_active_minus1;
+  H265RefPicListsModifications ref_pic_lists_modification;
+  bool mvd_l1_zero_flag;
+  bool cabac_init_flag;
+  bool collocated_from_l0_flag;
+  int collocated_ref_idx;
+  H265PredWeightTable pred_weight_table;
+  int five_minus_max_num_merge_cand;
+  int slice_qp_delta;
+  int slice_cb_qp_offset;
+  int slice_cr_qp_offset;
+  bool slice_deblocking_filter_disabled_flag;
+  int slice_beta_offset_div2;
+  int slice_tc_offset_div2;
+  bool slice_loop_filter_across_slices_enabled_flag;
+
+  // Calculated.
+  int curr_rps_idx;
+  int num_pic_total_curr;
+  bool irap_pic;
+  // Number of bits st_ref_pic_set takes after removing emulation prevention
+  // bytes.
+  int st_rps_bits;
+
+  bool IsISlice() const;
+  bool IsPSlice() const;
+  bool IsBSlice() const;
+
+  const H265StRefPicSet& GetStRefPicSet(const H265SPS* sps) const {
+    if (curr_rps_idx == sps->num_short_term_ref_pic_sets)
+      return st_ref_pic_set;
+
+    return sps->st_ref_pic_set[curr_rps_idx];
+  }
+};
+
 // Class to parse an Annex-B H.265 stream.
 class MEDIA_EXPORT H265Parser {
  public:
@@ -370,6 +472,14 @@ class MEDIA_EXPORT H265Parser {
   const H265SPS* GetSPS(int sps_id) const;
   const H265PPS* GetPPS(int pps_id) const;
 
+  // Slice headers and are not used across NALUs by the parser and can be
+  // discarded after current NALU, so the parser does not store them, nor does
+  // it manage their memory. The caller has to provide and manage it instead.
+
+  // Parse a slice header, returning it in |*shdr|. |*nalu| must be set to
+  // the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.
+  Result ParseSliceHeader(const H265NALU& nalu, H265SliceHeader* shdr);
+
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
  private:
@@ -402,6 +512,11 @@ class MEDIA_EXPORT H265Parser {
   Result ParseAndIgnoreSubLayerHrdParameters(
       int cpb_cnt,
       bool sub_pic_hrd_params_present_flag);
+  Result ParseRefPicListsModifications(const H265SliceHeader& shdr,
+                                       H265RefPicListsModifications* rpl_mod);
+  Result ParsePredWeightTable(const H265SPS& sps,
+                              const H265SliceHeader& shdr,
+                              H265PredWeightTable* pred_weight_table);
 
   // Pointer to the current NALU in the stream.
   const uint8_t* stream_;
