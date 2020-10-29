@@ -133,10 +133,12 @@ void RegisterSODAComponent(ComponentUpdateService* cus,
                            PrefService* prefs,
                            base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(media::kLiveCaption))
-    return;
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    if (!prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
+        !base::FeatureList::IsEnabled(media::kLiveCaption)) {
+      return;
+    }
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<SODAComponentInstallerPolicy>(base::BindRepeating(
             [](ComponentUpdateService* cus, PrefService* prefs,
@@ -148,32 +150,16 @@ void RegisterSODAComponent(ComponentUpdateService* cus,
             },
             cus, prefs)));
 
-    if (prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
       installer->Register(cus, std::move(callback));
-    } else {
-      // Register and uninstall the SODA component to delete the previously
-      // installed SODA files.
-      if (!prefs->GetFilePath(prefs::kSodaBinaryPath).empty()) {
-        installer->Register(
-            cus,
-            base::BindOnce(
-                [](ComponentUpdateService* cus, PrefService* prefs) {
-                  if (component_updater::UninstallSODAComponent(cus, prefs)) {
-                    prefs->SetFilePath(prefs::kSodaBinaryPath,
-                                       base::FilePath());
-                    prefs->SetFilePath(prefs::kSodaEnUsConfigPath,
-                                       base::FilePath());
-                  }
-                },
-                cus, prefs));
-      }
-    }
   }
 }
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(crbug.com/1143753): Clean up this component if the Live Caption
+  // feature hasn't been used for some time.
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     speech::LanguageCode language = speech::GetLanguageCode(
         prefs->GetString(prefs::kLiveCaptionLanguageCode));
@@ -197,8 +183,4 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
   }
 }
 
-bool UninstallSODAComponent(ComponentUpdateService* cus, PrefService* prefs) {
-  return cus->UnregisterComponent(
-      SODAComponentInstallerPolicy::GetExtensionId());
-}
 }  // namespace component_updater

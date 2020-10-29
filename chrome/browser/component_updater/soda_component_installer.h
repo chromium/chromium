@@ -63,8 +63,6 @@ void RegisterSODAComponent(ComponentUpdateService* cus,
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* prefs);
 
-bool UninstallSODAComponent(ComponentUpdateService* cus, PrefService* prefs);
-
 }  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_SODA_COMPONENT_INSTALLER_H_

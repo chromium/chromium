@@ -62,9 +62,6 @@ void RegisterSodaJaJpComponent(ComponentUpdateService* cus,
                                PrefService* prefs,
                                base::OnceClosure callback);
 
-bool UninstallSodaJaJpComponent(ComponentUpdateService* cus,
-                                PrefService* prefs);
-
 }  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_SODA_JA_JP_COMPONENT_INSTALLER_H_
