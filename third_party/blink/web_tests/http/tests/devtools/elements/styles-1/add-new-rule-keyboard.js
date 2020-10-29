@@ -13,7 +13,7 @@
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
 
   async function next() {
-    await Elements.StylesSidebarPane._instance._createNewRuleInViaInspectorStyleSheet();
+    await Elements.StylesSidebarPane.instance()._createNewRuleInViaInspectorStyleSheet();
     eventSender.keyDown('Tab');
     await TestRunner.addSnifferPromise(Elements.StylePropertiesSection.prototype, '_editingSelectorCommittedForTest');
 
