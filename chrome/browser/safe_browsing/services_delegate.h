@@ -110,7 +110,7 @@ class ServicesDelegate {
   virtual std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
   CreatePreferenceValidationDelegate(Profile* profile) = 0;
   virtual void RegisterDelayedAnalysisCallback(
-      const DelayedAnalysisCallback& callback) = 0;
+      DelayedAnalysisCallback callback) = 0;
   virtual void AddDownloadManager(
       content::DownloadManager* download_manager) = 0;
 

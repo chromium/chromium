@@ -242,10 +242,11 @@ LastDownloadFinder::~LastDownloadFinder() {
 
 // static
 std::unique_ptr<LastDownloadFinder> LastDownloadFinder::Create(
-    const DownloadDetailsGetter& download_details_getter,
-    const LastDownloadCallback& callback) {
-  std::unique_ptr<LastDownloadFinder> finder(base::WrapUnique(
-      new LastDownloadFinder(download_details_getter, callback)));
+    DownloadDetailsGetter download_details_getter,
+    LastDownloadCallback callback) {
+  std::unique_ptr<LastDownloadFinder> finder(
+      base::WrapUnique(new LastDownloadFinder(
+          std::move(download_details_getter), std::move(callback))));
   // Return NULL if there is no work to do.
   if (finder->profile_states_.empty())
     return std::unique_ptr<LastDownloadFinder>();
@@ -255,9 +256,10 @@ std::unique_ptr<LastDownloadFinder> LastDownloadFinder::Create(
 LastDownloadFinder::LastDownloadFinder() = default;
 
 LastDownloadFinder::LastDownloadFinder(
-    const DownloadDetailsGetter& download_details_getter,
-    const LastDownloadCallback& callback)
-    : download_details_getter_(download_details_getter), callback_(callback) {
+    DownloadDetailsGetter download_details_getter,
+    LastDownloadCallback callback)
+    : download_details_getter_(std::move(download_details_getter)),
+      callback_(std::move(callback)) {
   // Begin the search for all existing profiles.
   for (auto* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
@@ -285,10 +287,9 @@ void LastDownloadFinder::SearchInProfile(Profile* profile) {
   // Initiate a metadata search. As with IncidentReportingService, it's assumed
   // that all passed profiles will outlive |this|.
   profile_states_[profile] = WAITING_FOR_METADATA;
-  download_details_getter_.Run(profile,
-                               base::Bind(&LastDownloadFinder::OnMetadataQuery,
-                                          weak_ptr_factory_.GetWeakPtr(),
-                                          profile));
+  download_details_getter_.Run(
+      profile, base::BindOnce(&LastDownloadFinder::OnMetadataQuery,
+                              weak_ptr_factory_.GetWeakPtr(), profile));
 }
 
 void LastDownloadFinder::OnMetadataQuery(
@@ -396,7 +397,8 @@ void LastDownloadFinder::ReportResults() {
                                     non_binary_details.get());
   }
 
-  callback_.Run(std::move(binary_details), std::move(non_binary_details));
+  std::move(callback_).Run(std::move(binary_details),
+                           std::move(non_binary_details));
   // Do not touch this LastDownloadFinder after running the callback, since it
   // may have been deleted.
 }

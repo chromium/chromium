@@ -34,7 +34,7 @@ class FakeUploader : public TwoPhaseUploader {
                const GURL& base_url,
                const std::string& metadata,
                const base::FilePath& file_path,
-               const FinishCallback& finish_callback);
+               FinishCallback finish_callback);
   ~FakeUploader() override {}
 
   void Start() override { start_called_ = true; }
@@ -52,12 +52,12 @@ FakeUploader::FakeUploader(base::TaskRunner* file_task_runner,
                            const GURL& base_url,
                            const std::string& metadata,
                            const base::FilePath& file_path,
-                           const FinishCallback& finish_callback)
+                           FinishCallback finish_callback)
     : file_task_runner_(file_task_runner),
       base_url_(base_url),
       metadata_(metadata),
       file_path_(file_path),
-      finish_callback_(finish_callback),
+      finish_callback_(std::move(finish_callback)),
       start_called_(false) {}
 
 class FakeUploaderFactory : public TwoPhaseUploaderFactory {
@@ -71,7 +71,7 @@ class FakeUploaderFactory : public TwoPhaseUploaderFactory {
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& file_path,
-      const TwoPhaseUploader::FinishCallback& finish_callback,
+      TwoPhaseUploader::FinishCallback finish_callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
   FakeUploader* uploader_;
@@ -83,12 +83,12 @@ std::unique_ptr<TwoPhaseUploader> FakeUploaderFactory::CreateTwoPhaseUploader(
     const GURL& base_url,
     const std::string& metadata,
     const base::FilePath& file_path,
-    const TwoPhaseUploader::FinishCallback& finish_callback,
+    TwoPhaseUploader::FinishCallback finish_callback,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   EXPECT_FALSE(uploader_);
 
   uploader_ = new FakeUploader(file_task_runner, base_url, metadata, file_path,
-                               finish_callback);
+                               std::move(finish_callback));
   return base::WrapUnique(uploader_);
 }
 
@@ -158,8 +158,8 @@ TEST_F(DownloadFeedbackTest, CompleteUpload) {
       ping_request, ping_response);
   EXPECT_FALSE(uploader());
 
-  feedback->Start(base::Bind(&DownloadFeedbackTest::FinishCallback,
-                             base::Unretained(this)));
+  feedback->Start(base::BindOnce(&DownloadFeedbackTest::FinishCallback,
+                                 base::Unretained(this)));
   ASSERT_TRUE(uploader());
   EXPECT_FALSE(feedback_finish_called_);
   EXPECT_TRUE(uploader()->start_called_);
@@ -173,8 +173,8 @@ TEST_F(DownloadFeedbackTest, CompleteUpload) {
   EXPECT_TRUE(base::PathExists(upload_file_path_));
 
   EXPECT_FALSE(feedback_finish_called_);
-  uploader()->finish_callback_.Run(TwoPhaseUploader::STATE_SUCCESS, net::OK, 0,
-                                   "");
+  std::move(uploader()->finish_callback_)
+      .Run(TwoPhaseUploader::STATE_SUCCESS, net::OK, 0, "");
   EXPECT_TRUE(feedback_finish_called_);
   feedback.reset();
   content::RunAllTasksUntilIdle();
@@ -199,8 +199,8 @@ TEST_F(DownloadFeedbackTest, CancelUpload) {
       ping_request, ping_response);
   EXPECT_FALSE(uploader());
 
-  feedback->Start(base::Bind(&DownloadFeedbackTest::FinishCallback,
-                             base::Unretained(this)));
+  feedback->Start(base::BindOnce(&DownloadFeedbackTest::FinishCallback,
+                                 base::Unretained(this)));
   ASSERT_TRUE(uploader());
   EXPECT_FALSE(feedback_finish_called_);
   EXPECT_TRUE(uploader()->start_called_);

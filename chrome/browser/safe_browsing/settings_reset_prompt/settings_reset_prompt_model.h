@@ -69,7 +69,7 @@ class SettingsResetPromptModel {
   // NOTE: Can only be called once during the lifetime of this object.
   virtual void PerformReset(
       std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-      const base::Closure& done_callback);
+      base::OnceClosure done_callback);
   // To be called when the reset prompt dialog has been shown so that
   // preferences can be updated.
   virtual void DialogShown();

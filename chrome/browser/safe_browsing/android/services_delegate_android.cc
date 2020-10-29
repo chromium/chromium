@@ -79,7 +79,7 @@ ServicesDelegateAndroid::CreatePreferenceValidationDelegate(Profile* profile) {
 }
 
 void ServicesDelegateAndroid::RegisterDelayedAnalysisCallback(
-    const DelayedAnalysisCallback& callback) {}
+    DelayedAnalysisCallback callback) {}
 
 void ServicesDelegateAndroid::AddDownloadManager(
     content::DownloadManager* download_manager) {}

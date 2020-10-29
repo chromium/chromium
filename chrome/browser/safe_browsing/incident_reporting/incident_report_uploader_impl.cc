@@ -70,21 +70,21 @@ IncidentReportUploaderImpl::~IncidentReportUploaderImpl() {
 // static
 std::unique_ptr<IncidentReportUploader>
 IncidentReportUploaderImpl::UploadReport(
-    const OnResultCallback& callback,
+    OnResultCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const ClientIncidentReport& report) {
   std::string post_data;
   if (!report.SerializeToString(&post_data))
     return std::unique_ptr<IncidentReportUploader>();
-  return std::unique_ptr<IncidentReportUploader>(
-      new IncidentReportUploaderImpl(callback, url_loader_factory, post_data));
+  return std::unique_ptr<IncidentReportUploader>(new IncidentReportUploaderImpl(
+      std::move(callback), url_loader_factory, post_data));
 }
 
 IncidentReportUploaderImpl::IncidentReportUploaderImpl(
-    const OnResultCallback& callback,
+    OnResultCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const std::string& post_data)
-    : IncidentReportUploader(callback) {
+    : IncidentReportUploader(std::move(callback)) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetIncidentReportUrl();
   resource_request->method = "POST";
@@ -144,7 +144,7 @@ void IncidentReportUploaderImpl::OnURLLoaderCompleteInternal(
   }
   // Callbacks have a tendency to delete the uploader, so no touching anything
   // after this.
-  callback_.Run(result, std::move(response));
+  std::move(callback_).Run(result, std::move(response));
 }
 
 }  // namespace safe_browsing

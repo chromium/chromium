@@ -32,13 +32,14 @@ class IncidentReportUploader {
   // A callback run by the uploader upon success or failure. The first argument
   // indicates the result of the upload, while the second contains the response
   // received, if any.
-  typedef base::Callback<void(Result, std::unique_ptr<ClientIncidentResponse>)>
+  typedef base::OnceCallback<void(Result,
+                                  std::unique_ptr<ClientIncidentResponse>)>
       OnResultCallback;
 
   virtual ~IncidentReportUploader();
 
  protected:
-  explicit IncidentReportUploader(const OnResultCallback& callback);
+  explicit IncidentReportUploader(OnResultCallback callback);
 
   // The callback by which results are returned.
   OnResultCallback callback_;

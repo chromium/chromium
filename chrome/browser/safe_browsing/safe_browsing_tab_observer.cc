@@ -47,8 +47,9 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
     pref_change_registrar_.Init(prefs);
     pref_change_registrar_.Add(
         prefs::kSafeBrowsingEnabled,
-        base::Bind(&SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost,
+            base::Unretained(this)));
 
     ClientSideDetectionService* csd_service =
         ClientSideDetectionServiceFactory::GetForProfile(profile);

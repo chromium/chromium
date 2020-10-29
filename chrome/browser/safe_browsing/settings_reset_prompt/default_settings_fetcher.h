@@ -20,7 +20,7 @@ namespace safe_browsing {
 class DefaultSettingsFetcher {
  public:
   using SettingsCallback =
-      base::Callback<void(std::unique_ptr<BrandcodedDefaultSettings>)>;
+      base::OnceCallback<void(std::unique_ptr<BrandcodedDefaultSettings>)>;
 
   // Fetches default settings and passes the corresponding
   // |BrandcodedDefaultSettings| object to |callback| on the UI thread. This

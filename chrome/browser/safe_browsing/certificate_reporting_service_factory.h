@@ -36,7 +36,7 @@ class CertificateReportingServiceFactory
   void SetQueuedReportTTLForTesting(base::TimeDelta queued_report_ttl);
   void SetMaxQueuedReportCountForTesting(size_t max_report_count);
   void SetServiceResetCallbackForTesting(
-      const base::Callback<void()>& service_reset_callback);
+      const base::RepeatingClosure& service_reset_callback);
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 

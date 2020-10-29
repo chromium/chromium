@@ -31,13 +31,13 @@ class DelayedCallbackRunner {
 
   // Registers |callback| with the runner. A copy of |callback| is held until it
   // is run.
-  void RegisterCallback(const base::Closure& callback);
+  void RegisterCallback(base::OnceClosure callback);
 
   // Starts running the callbacks after the delay.
   void Start();
 
  private:
-  using CallbackList = base::queue<base::Closure>;
+  using CallbackList = base::queue<base::OnceClosure>;
 
   // A callback invoked by the timer to run the next callback. The timer is
   // restarted to process the next callback if there is one.

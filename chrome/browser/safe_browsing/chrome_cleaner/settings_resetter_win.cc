@@ -141,7 +141,7 @@ SettingsResetter::~SettingsResetter() {
 void SettingsResetter::Run() {
   for (Profile* profile : profiles_to_reset_) {
     delegate_->FetchDefaultSettings(
-        base::Bind(&SettingsResetter::OnFetchCompleted, this, profile));
+        base::BindOnce(&SettingsResetter::OnFetchCompleted, this, profile));
   }
 }
 
@@ -158,7 +158,7 @@ void SettingsResetter::OnFetchCompleted(
   profile_resetters_.push_back(delegate_->GetProfileResetter(profile));
   profile_resetters_.back()->Reset(
       kSettingsToReset, std::move(master_settings),
-      base::Bind(&SettingsResetter::OnResetCompleted, this, profile));
+      base::BindOnce(&SettingsResetter::OnResetCompleted, this, profile));
 }
 
 void SettingsResetter::OnResetCompleted(Profile* profile) {

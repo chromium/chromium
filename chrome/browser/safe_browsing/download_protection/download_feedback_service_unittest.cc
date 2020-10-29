@@ -43,17 +43,17 @@ class FakeDownloadFeedback : public DownloadFeedback {
   FakeDownloadFeedback(base::TaskRunner* file_task_runner,
                        const std::string& ping_request,
                        const std::string& ping_response,
-                       base::Closure deletion_callback)
+                       base::OnceClosure deletion_callback)
       : ping_request_(ping_request),
         ping_response_(ping_response),
-        deletion_callback_(deletion_callback),
+        deletion_callback_(std::move(deletion_callback)),
         start_called_(false) {}
 
-  ~FakeDownloadFeedback() override { deletion_callback_.Run(); }
+  ~FakeDownloadFeedback() override { std::move(deletion_callback_).Run(); }
 
-  void Start(const base::Closure& finish_callback) override {
+  void Start(base::OnceClosure finish_callback) override {
     start_called_ = true;
-    finish_callback_ = finish_callback;
+    finish_callback_ = std::move(finish_callback);
   }
 
   const std::string& GetPingRequestForTesting() const override {
@@ -64,7 +64,7 @@ class FakeDownloadFeedback : public DownloadFeedback {
     return ping_response_;
   }
 
-  base::Closure finish_callback() const { return finish_callback_; }
+  base::OnceClosure finish_callback() { return std::move(finish_callback_); }
 
   bool start_called() const { return start_called_; }
 
@@ -73,8 +73,8 @@ class FakeDownloadFeedback : public DownloadFeedback {
   std::string ping_request_;
   std::string ping_response_;
 
-  base::Closure finish_callback_;
-  base::Closure deletion_callback_;
+  base::OnceClosure finish_callback_;
+  base::OnceClosure deletion_callback_;
   bool start_called_;
 };
 
@@ -90,8 +90,8 @@ class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
       const std::string& ping_response) override {
     FakeDownloadFeedback* feedback = new FakeDownloadFeedback(
         file_task_runner, ping_request, ping_response,
-        base::Bind(&FakeDownloadFeedbackFactory::DownloadFeedbackSent,
-                   base::Unretained(this), feedbacks_.size()));
+        base::BindOnce(&FakeDownloadFeedbackFactory::DownloadFeedbackSent,
+                       base::Unretained(this), feedbacks_.size()));
     feedbacks_.push_back(feedback);
     return base::WrapUnique(feedback);
   }

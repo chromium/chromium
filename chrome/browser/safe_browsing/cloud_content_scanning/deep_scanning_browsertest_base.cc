@@ -109,10 +109,11 @@ void DeepScanningBrowserTestBase::SetUpDelegate() {
       base::BindRepeating(
           &enterprise_connectors::FakeContentAnalysisDelegate::Create,
           base::DoNothing(),
-          base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
-                     base::Unretained(this)),
-          base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
-                     base::Unretained(this)),
+          base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
+                              base::Unretained(this)),
+          base::BindRepeating(
+              &DeepScanningBrowserTestBase::EncryptionStatusCallback,
+              base::Unretained(this)),
           kDmToken));
 }
 
@@ -121,10 +122,11 @@ void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
           &UnresponsiveContentAnalysisDelegate::Create, base::DoNothing(),
-          base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
-                     base::Unretained(this)),
-          base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
-                     base::Unretained(this)),
+          base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
+                              base::Unretained(this)),
+          base::BindRepeating(
+              &DeepScanningBrowserTestBase::EncryptionStatusCallback,
+              base::Unretained(this)),
           kDmToken));
 }
 

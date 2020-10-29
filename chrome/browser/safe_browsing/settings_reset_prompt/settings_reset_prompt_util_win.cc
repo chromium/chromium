@@ -79,7 +79,7 @@ void MaybeShowSettingsResetPrompt(
     return;
 
   DefaultSettingsFetcher::FetchDefaultSettings(
-      base::Bind(&TryToShowSettingsResetPrompt, base::Passed(&model)));
+      base::BindOnce(&TryToShowSettingsResetPrompt, base::Passed(&model)));
 }
 
 class SettingsResetPromptDelegateImpl : public SettingsResetPromptDelegate {

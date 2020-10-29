@@ -549,9 +549,9 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     base::FilePath test_data_dir;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
     embedded_test_server()->RegisterRequestHandler(
-        base::Bind(&HandleNeverCompletingRequests));
+        base::BindRepeating(&HandleNeverCompletingRequests));
     embedded_test_server()->RegisterRequestHandler(
-        base::Bind(&HandleWebSocketRequests));
+        base::BindRepeating(&HandleWebSocketRequests));
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
   // Brute force method for waiting for the interstitial to be displayed.
   content::WindowedNotificationObserver load_stop_observer(
       content::NOTIFICATION_ALL,
-      base::Bind(
+      base::BindRepeating(
           [](V4SafeBrowsingServiceTest* self,
              const content::NotificationSource& source,
              const content::NotificationDetails& details) {

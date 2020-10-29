@@ -112,11 +112,11 @@ class MockSettingsResetPromptModel
   ~MockSettingsResetPromptModel() override {}
 
   void PerformReset(std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-                    const base::Closure& callback) override {
-    MockPerformReset(default_settings.get(), callback);
+                    base::OnceClosure callback) override {
+    MockPerformReset(default_settings.get(), std::move(callback));
   }
   MOCK_METHOD2(MockPerformReset,
-               void(BrandcodedDefaultSettings*, const base::Closure&));
+               void(BrandcodedDefaultSettings*, base::OnceClosure));
   MOCK_CONST_METHOD0(ShouldPromptForReset, bool());
   MOCK_METHOD0(DialogShown, void());
   MOCK_CONST_METHOD0(homepage, GURL());

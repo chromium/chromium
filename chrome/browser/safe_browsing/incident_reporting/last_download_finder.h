@@ -35,15 +35,15 @@ class LastDownloadFinder : public ProfileManagerObserver,
                            public ProfileObserver,
                            public history::HistoryServiceObserver {
  public:
-  typedef base::Callback<void(
+  typedef base::RepeatingCallback<void(
       content::BrowserContext* context,
-      const DownloadMetadataManager::GetDownloadDetailsCallback&)>
+      DownloadMetadataManager::GetDownloadDetailsCallback)>
       DownloadDetailsGetter;
 
   // The type of a callback run by the finder upon completion. Each argument is
   // a protobuf containing details of the respective download that was found,
   // or an empty pointer if none was found.
-  typedef base::Callback<void(
+  typedef base::OnceCallback<void(
       std::unique_ptr<ClientIncidentReport_DownloadDetails>,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>)>
       LastDownloadCallback;
@@ -56,8 +56,8 @@ class LastDownloadFinder : public ProfileManagerObserver,
   // Returns NULL without running |callback| if there are no eligible profiles
   // to search.
   static std::unique_ptr<LastDownloadFinder> Create(
-      const DownloadDetailsGetter& download_details_getter,
-      const LastDownloadCallback& callback);
+      DownloadDetailsGetter download_details_getter,
+      LastDownloadCallback callback);
 
  protected:
   // Protected constructor so that unit tests can create a fake finder.
@@ -70,8 +70,8 @@ class LastDownloadFinder : public ProfileManagerObserver,
     WAITING_FOR_NON_BINARY_HISTORY,
   };
 
-  LastDownloadFinder(const DownloadDetailsGetter& download_details_getter,
-                     const LastDownloadCallback& callback);
+  LastDownloadFinder(DownloadDetailsGetter download_details_getter,
+                     LastDownloadCallback callback);
 
   // Adds |profile| to the set of profiles to be searched if it is an
   // on-the-record profile with history that participates in safe browsing

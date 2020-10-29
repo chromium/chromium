@@ -100,7 +100,7 @@ class SettingsResetterTestDelegate
 
   void FetchDefaultSettings(
       DefaultSettingsFetcher::SettingsCallback callback) override {
-    callback.Run(std::make_unique<BrandcodedDefaultSettings>());
+    std::move(callback).Run(std::make_unique<BrandcodedDefaultSettings>());
   }
 
   // Returns a MockProfileResetter that requires Reset() be called.

@@ -20,16 +20,19 @@ GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
   user_prefs_registrar_.Init(profile->GetPrefs());
   user_prefs_registrar_.Add(
       prefs::kSafeBrowsingEnabled,
-      base::Bind(&GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
+          base::Unretained(this)));
   user_prefs_registrar_.Add(
       prefs::kSafeBrowsingEnhanced,
-      base::Bind(&GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
+          base::Unretained(this)));
   user_prefs_registrar_.Add(
       prefs::kSafeBrowsingScoutReportingEnabled,
-      base::Bind(&GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
+          base::Unretained(this)));
 }
 
 extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(

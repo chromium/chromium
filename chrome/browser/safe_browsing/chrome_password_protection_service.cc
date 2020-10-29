@@ -249,9 +249,9 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
     // Subscribe to gaia hash password changes change notifications.
     hash_password_manager_subscription_ =
         password_store->RegisterStateCallbackOnHashPasswordManager(
-            base::Bind(&ChromePasswordProtectionService::
-                           CheckGaiaPasswordChangeForAllSignedInUsers,
-                       base::Unretained(this)));
+            base::BindRepeating(&ChromePasswordProtectionService::
+                                    CheckGaiaPasswordChangeForAllSignedInUsers,
+                                base::Unretained(this)));
   }
   pref_change_registrar_->Add(
       prefs::kPasswordProtectionWarningTrigger,

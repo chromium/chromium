@@ -411,8 +411,8 @@ TEST_P(ResetStatesTest, PerformReset) {
 
   ModelPointer model = CreateModel(reset_urls, std::move(profile_resetter));
   model->PerformReset(std::make_unique<BrandcodedDefaultSettings>(),
-                      base::Bind(&SettingsResetPromptModelTest::OnResetDone,
-                                 base::Unretained(this)));
+                      base::BindOnce(&SettingsResetPromptModelTest::OnResetDone,
+                                     base::Unretained(this)));
   EXPECT_EQ(reset_callbacks_, 1);
 }
 

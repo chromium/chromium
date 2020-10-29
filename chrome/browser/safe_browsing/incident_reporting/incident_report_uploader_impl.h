@@ -39,7 +39,7 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
   // when the upload is complete. Returns NULL if |report| cannot be serialized
   // for transmission, in which case the delegate is not notified.
   static std::unique_ptr<IncidentReportUploader> UploadReport(
-      const OnResultCallback& callback,
+      OnResultCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const ClientIncidentReport& report);
 
@@ -47,7 +47,7 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
   FRIEND_TEST_ALL_PREFIXES(IncidentReportUploaderImplTest, Success);
 
   IncidentReportUploaderImpl(
-      const OnResultCallback& callback,
+      OnResultCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const std::string& post_data);
 

@@ -56,7 +56,7 @@ using content::WebContents;
 
 namespace safe_browsing {
 
-typedef base::Callback<void(bool)> ShouldClassifyUrlCallback;
+typedef base::OnceCallback<void(bool)> ShouldClassifyUrlCallback;
 
 // This class is instantiated each time a new toplevel URL loads, and
 // asynchronously checks whether the phishing classifier should run
@@ -71,7 +71,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
  public:
   ShouldClassifyUrlRequest(
       content::NavigationHandle* navigation_handle,
-      const ShouldClassifyUrlCallback& start_phishing_classification,
+      ShouldClassifyUrlCallback start_phishing_classification,
       WebContents* web_contents,
       ClientSideDetectionService* csd_service,
       SafeBrowsingDatabaseManager* database_manager,
@@ -80,7 +80,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
         csd_service_(csd_service),
         database_manager_(database_manager),
         host_(host),
-        start_phishing_classification_cb_(start_phishing_classification) {
+        start_phishing_classification_cb_(
+            std::move(start_phishing_classification)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(web_contents_);
     DCHECK(csd_service_);
@@ -194,7 +195,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       base::UmaHistogramEnumeration(
           "SBClientPhishing.PreClassificationCheckResult", reason,
           NO_CLASSIFY_MAX);
-      start_phishing_classification_cb_.Run(false);
+      std::move(start_phishing_classification_cb_).Run(false);
     }
     start_phishing_classification_cb_.Reset();
   }
@@ -212,12 +213,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
     // Query the CSD Whitelist asynchronously. We're already on the IO thread so
     // can call AllowlistCheckerClient directly.
-    base::Callback<void(bool)> result_callback =
-        base::Bind(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
-                       OnWhitelistCheckDoneOnIO,
-                   this, url, phishing_reason);
+    base::OnceCallback<void(bool)> result_callback =
+        base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
+                           OnWhitelistCheckDoneOnIO,
+                       this, url, phishing_reason);
     AllowlistCheckerClient::StartCheckCsdWhitelist(database_manager_, url,
-                                                   result_callback);
+                                                   std::move(result_callback));
   }
 
   void OnWhitelistCheckDoneOnIO(const GURL& url,
@@ -272,7 +273,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       base::UmaHistogramEnumeration(
           "SBClientPhishing.PreClassificationCheckResult", CLASSIFY,
           NO_CLASSIFY_MAX);
-      start_phishing_classification_cb_.Run(true);
+      std::move(start_phishing_classification_cb_).Run(true);
       // Reset the callback to make sure ShouldClassifyForPhishing()
       // returns false.
       start_phishing_classification_cb_.Reset();
@@ -361,8 +362,8 @@ void ClientSideDetectionHost::DidFinishNavigation(
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
       navigation_handle,
-      base::Bind(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
-                 weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
+                     weak_factory_.GetWeakPtr()),
       web_contents(), csd_service_, database_manager_.get(), this);
   classification_request_->Start();
 }

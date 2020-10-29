@@ -9,8 +9,7 @@ namespace safe_browsing {
 IncidentReportUploader::~IncidentReportUploader() {
 }
 
-IncidentReportUploader::IncidentReportUploader(const OnResultCallback& callback)
-    : callback_(callback) {
-}
+IncidentReportUploader::IncidentReportUploader(OnResultCallback callback)
+    : callback_(std::move(callback)) {}
 
 }  // namespace safe_browsing

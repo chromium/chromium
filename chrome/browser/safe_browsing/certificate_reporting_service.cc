@@ -195,7 +195,7 @@ CertificateReportingService::CertificateReportingService(
     size_t max_queued_report_count,
     base::TimeDelta max_report_age,
     base::Clock* clock,
-    const base::Callback<void()>& reset_callback)
+    const base::RepeatingClosure& reset_callback)
     : pref_service_(*profile->GetPrefs()),
       url_loader_factory_(url_loader_factory),
       max_queued_report_count_(max_queued_report_count),
@@ -210,8 +210,8 @@ CertificateReportingService::CertificateReportingService(
   // Subscribe to SafeBrowsing preference change notifications.
   safe_browsing_state_subscription_ =
       safe_browsing_service->RegisterStateCallback(
-          base::Bind(&CertificateReportingService::OnPreferenceChanged,
-                     base::Unretained(this)));
+          base::BindRepeating(&CertificateReportingService::OnPreferenceChanged,
+                              base::Unretained(this)));
 
   Reset(true);
   reset_callback_.Run();

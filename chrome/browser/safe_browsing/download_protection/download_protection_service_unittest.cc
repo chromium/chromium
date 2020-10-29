@@ -651,18 +651,19 @@ class DownloadProtectionServiceTestBase
 
  private:
   // Helper functions for FlushThreadMessageLoops.
-  void RunAllPendingAndQuitUI(const base::Closure& quit_closure) {
+  void RunAllPendingAndQuitUI(base::OnceClosure quit_closure) {
     RunLoop().RunUntilIdle();
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, quit_closure);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(quit_closure));
   }
 
   void PostRunMessageLoopTask(BrowserThread::ID thread,
-                              const base::Closure& quit_closure) {
+                              base::OnceClosure quit_closure) {
     base::PostTask(
         FROM_HERE, {thread},
         base::BindOnce(
             &DownloadProtectionServiceTestBase::RunAllPendingAndQuitUI,
-            base::Unretained(this), quit_closure));
+            base::Unretained(this), std::move(quit_closure)));
   }
 
   void FlushMessageLoop(BrowserThread::ID thread) {
@@ -693,14 +694,14 @@ class DownloadProtectionServiceTestBase
  public:
   enum ArchiveType { ZIP, DMG };
 
-  void CheckDoneCallback(const base::Closure& quit_closure,
+  void CheckDoneCallback(base::OnceClosure quit_closure,
                          DownloadCheckResult result) {
     result_ = result;
     has_result_ = true;
 
     // Scanning has not completed in this case, allow it to continue.
     if (result != DownloadCheckResult::ASYNC_SCANNING)
-      quit_closure.Run();
+      std::move(quit_closure).Run();
   }
 
   void SyncCheckDoneCallback(DownloadCheckResult result) {
@@ -3826,8 +3827,9 @@ TEST_F(DownloadSeparateNetworkContextsTest,
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
     download_service_->CheckClientDownload(
-        &item1, base::Bind(&DownloadProtectionServiceTest::CheckDoneCallback,
-                           base::Unretained(this), run_loop.QuitClosure()));
+        &item1,
+        base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -3858,8 +3860,9 @@ TEST_F(DownloadSeparateNetworkContextsTest,
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
     download_service_->CheckClientDownload(
-        &item2, base::Bind(&DownloadProtectionServiceTest::CheckDoneCallback,
-                           base::Unretained(this), run_loop.QuitClosure()));
+        &item2,
+        base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
   }
 

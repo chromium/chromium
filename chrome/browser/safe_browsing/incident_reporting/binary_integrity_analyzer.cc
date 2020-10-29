@@ -52,7 +52,7 @@ void RegisterBinaryIntegrityAnalysis() {
       g_browser_process->safe_browsing_service());
 
   safe_browsing_service->RegisterDelayedAnalysisCallback(
-      base::Bind(&VerifyBinaryIntegrity));
+      base::BindOnce(&VerifyBinaryIntegrity));
 #endif
 }
 

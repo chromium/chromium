@@ -128,9 +128,9 @@ ServicesDelegateDesktop::CreatePreferenceValidationDelegate(Profile* profile) {
 }
 
 void ServicesDelegateDesktop::RegisterDelayedAnalysisCallback(
-    const DelayedAnalysisCallback& callback) {
+    DelayedAnalysisCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  incident_service_->RegisterDelayedAnalysisCallback(callback);
+  incident_service_->RegisterDelayedAnalysisCallback(std::move(callback));
 }
 
 void ServicesDelegateDesktop::AddDownloadManager(

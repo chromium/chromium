@@ -85,9 +85,9 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
             test_helper()->server_public_key(),
             test_helper()->server_public_key_version());
     CertificateReportingServiceFactory::GetInstance()
-        ->SetServiceResetCallbackForTesting(
-            base::Bind(&CertificateReportingServiceObserver::OnServiceReset,
-                       base::Unretained(&service_observer_)));
+        ->SetServiceResetCallbackForTesting(base::BindRepeating(
+            &CertificateReportingServiceObserver::OnServiceReset,
+            base::Unretained(&service_observer_)));
     CertificateReportingServiceFactory::GetInstance()
         ->SetURLLoaderFactoryForTesting(test_helper_);
 

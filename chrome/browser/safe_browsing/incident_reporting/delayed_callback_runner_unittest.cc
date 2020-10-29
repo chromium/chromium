@@ -23,12 +23,12 @@ namespace {
 // an owned argument on callbacks given to a DelayedCallbackRunner under test.
 class CallbackArgument {
  public:
-  explicit CallbackArgument(const base::Closure& on_delete)
-      : on_delete_(on_delete) {}
-  ~CallbackArgument() { on_delete_.Run(); }
+  explicit CallbackArgument(base::OnceClosure on_delete)
+      : on_delete_(std::move(on_delete)) {}
+  ~CallbackArgument() { std::move(on_delete_).Run(); }
 
  private:
-  base::Closure on_delete_;
+  base::OnceClosure on_delete_;
 
   DISALLOW_COPY_AND_ASSIGN(CallbackArgument);
 };
@@ -70,17 +70,16 @@ class DelayedCallbackRunnerTest : public testing::Test {
   // on behalf of the given callback name.
   std::unique_ptr<CallbackArgument> MakeCallbackArgument(
       const std::string& name) {
-    return std::make_unique<CallbackArgument>(base::Bind(
+    return std::make_unique<CallbackArgument>(base::BindOnce(
         &DelayedCallbackRunnerTest::OnDelete, base::Unretained(this), name));
   }
 
   // Returns a closure that calls |OnRun| when run and |OnDelete| when deleted
   // on behalf of the given callback name.
-  base::Closure MakeCallback(const std::string& name) {
-    return base::Bind(&DelayedCallbackRunnerTest::OnRun,
-                      base::Unretained(this),
-                      name,
-                      base::Owned(MakeCallbackArgument(name).release()));
+  base::OnceClosure MakeCallback(const std::string& name) {
+    return base::BindOnce(&DelayedCallbackRunnerTest::OnRun,
+                          base::Unretained(this), name,
+                          base::Owned(MakeCallbackArgument(name).release()));
   }
 
   bool CallbackWasRun(const std::string& name) { return callbacks_[name].run; }

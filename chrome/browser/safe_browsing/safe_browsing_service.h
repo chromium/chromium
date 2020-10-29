@@ -165,7 +165,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   // Registers |callback| to be run after some delay following process launch.
   // |callback| will be dropped if the service is not applicable for the
   // process.
-  void RegisterDelayedAnalysisCallback(const DelayedAnalysisCallback& callback);
+  void RegisterDelayedAnalysisCallback(DelayedAnalysisCallback callback);
 
   // Adds |download_manager| to the set monitored by safe browsing.
   void AddDownloadManager(content::DownloadManager* download_manager);
@@ -302,7 +302,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
 
   // Callbacks when SafeBrowsing state might have changed.
   // Should only be accessed on the UI thread.
-  base::CallbackList<void(void)> state_callback_list_;
+  base::RepeatingClosureList state_callback_list_;
 
   // The UI manager handles showing interstitials.  Accessed on both UI and IO
   // thread.

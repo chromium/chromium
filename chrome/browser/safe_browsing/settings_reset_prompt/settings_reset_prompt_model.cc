@@ -123,7 +123,7 @@ bool SettingsResetPromptModel::ShouldPromptForReset() const {
 
 void SettingsResetPromptModel::PerformReset(
     std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-    const base::Closure& done_callback) {
+    base::OnceClosure done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(default_settings);
 
@@ -147,7 +147,7 @@ void SettingsResetPromptModel::PerformReset(
   }
 
   profile_resetter_->Reset(reset_flags, std::move(default_settings),
-                           done_callback);
+                           std::move(done_callback));
 }
 
 void SettingsResetPromptModel::DialogShown() {

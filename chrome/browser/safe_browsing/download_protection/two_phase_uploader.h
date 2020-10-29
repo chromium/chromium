@@ -41,10 +41,11 @@ class TwoPhaseUploader {
     UPLOAD_FILE,
     STATE_SUCCESS,
   };
-  using FinishCallback = base::Callback<void(State state,
-                                             int net_error,
-                                             int response_code,
-                                             const std::string& response_data)>;
+  using FinishCallback =
+      base::OnceCallback<void(State state,
+                              int net_error,
+                              int response_code,
+                              const std::string& response_data)>;
 
   virtual ~TwoPhaseUploader() {}
 
@@ -65,7 +66,7 @@ class TwoPhaseUploader {
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& file_path,
-      const FinishCallback& finish_callback,
+      FinishCallback finish_callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   // Makes the passed |factory| the factory used to instantiate
@@ -93,7 +94,7 @@ class TwoPhaseUploaderFactory {
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& file_path,
-      const TwoPhaseUploader::FinishCallback& finish_callback,
+      TwoPhaseUploader::FinishCallback finish_callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 };
 

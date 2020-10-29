@@ -163,7 +163,7 @@ void DownloadFeedbackService::BeginFeedbackOrDeleteFile(
 
 void DownloadFeedbackService::StartPendingFeedback() {
   DCHECK(!active_feedback_.empty());
-  active_feedback_.front()->Start(base::Bind(
+  active_feedback_.front()->Start(base::BindOnce(
       &DownloadFeedbackService::FeedbackComplete, base::Unretained(this)));
 }
 

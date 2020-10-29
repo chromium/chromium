@@ -246,8 +246,8 @@ SafeBrowsingService::CreatePreferenceValidationDelegate(
 }
 
 void SafeBrowsingService::RegisterDelayedAnalysisCallback(
-    const DelayedAnalysisCallback& callback) {
-  services_delegate_->RegisterDelayedAnalysisCallback(callback);
+    DelayedAnalysisCallback callback) {
+  services_delegate_->RegisterDelayedAnalysisCallback(std::move(callback));
 }
 
 void SafeBrowsingService::AddDownloadManager(
@@ -361,17 +361,17 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   std::unique_ptr<PrefChangeRegistrar> registrar =
       std::make_unique<PrefChangeRegistrar>();
   registrar->Init(pref_service);
-  registrar->Add(
-      prefs::kSafeBrowsingEnabled,
-      base::Bind(&SafeBrowsingService::RefreshState, base::Unretained(this)));
+  registrar->Add(prefs::kSafeBrowsingEnabled,
+                 base::BindRepeating(&SafeBrowsingService::RefreshState,
+                                     base::Unretained(this)));
   // ClientSideDetectionService will need to be refresh the models
   // renderers have if extended-reporting changes.
-  registrar->Add(
-      prefs::kSafeBrowsingScoutReportingEnabled,
-      base::Bind(&SafeBrowsingService::RefreshState, base::Unretained(this)));
-  registrar->Add(
-      prefs::kSafeBrowsingEnhanced,
-      base::Bind(&SafeBrowsingService::RefreshState, base::Unretained(this)));
+  registrar->Add(prefs::kSafeBrowsingScoutReportingEnabled,
+                 base::BindRepeating(&SafeBrowsingService::RefreshState,
+                                     base::Unretained(this)));
+  registrar->Add(prefs::kSafeBrowsingEnhanced,
+                 base::BindRepeating(&SafeBrowsingService::RefreshState,
+                                     base::Unretained(this)));
   prefs_map_[pref_service] = std::move(registrar);
   RefreshState();
 
@@ -414,7 +414,7 @@ void SafeBrowsingService::CreateServicesForProfile(Profile* profile) {
 
 std::unique_ptr<SafeBrowsingService::StateSubscription>
 SafeBrowsingService::RegisterStateCallback(
-    const base::Callback<void(void)>& callback) {
+    const base::RepeatingClosure& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return state_callback_list_.Add(callback);
 }

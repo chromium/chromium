@@ -47,7 +47,7 @@ class DownloadFeedbackImpl : public DownloadFeedback {
       const std::string& ping_response);
   ~DownloadFeedbackImpl() override;
 
-  void Start(const base::Closure& finish_callback) override;
+  void Start(base::OnceClosure finish_callback) override;
 
   const std::string& GetPingRequestForTesting() const override {
     return ping_request_;
@@ -60,7 +60,7 @@ class DownloadFeedbackImpl : public DownloadFeedback {
  private:
   // Callback for TwoPhaseUploader completion.  Relays the result to the
   // |finish_callback|.
-  void FinishedUpload(base::Closure finish_callback,
+  void FinishedUpload(base::OnceClosure finish_callback,
                       TwoPhaseUploader::State state,
                       int net_error,
                       int response_code,
@@ -114,7 +114,7 @@ DownloadFeedbackImpl::~DownloadFeedbackImpl() {
       FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_path_));
 }
 
-void DownloadFeedbackImpl::Start(const base::Closure& finish_callback) {
+void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!uploader_);
 
@@ -169,14 +169,14 @@ void DownloadFeedbackImpl::Start(const base::Closure& finish_callback) {
   uploader_ = TwoPhaseUploader::Create(
       url_loader_factory_, file_task_runner_.get(), GURL(kSbFeedbackURL),
       metadata_string, file_path_,
-      base::Bind(&DownloadFeedbackImpl::FinishedUpload, base::Unretained(this),
-                 finish_callback),
+      base::BindOnce(&DownloadFeedbackImpl::FinishedUpload,
+                     base::Unretained(this), std::move(finish_callback)),
       traffic_annotation);
   uploader_->Start();
   uploader_start_time_ = base::Time::Now();
 }
 
-void DownloadFeedbackImpl::FinishedUpload(base::Closure finish_callback,
+void DownloadFeedbackImpl::FinishedUpload(base::OnceClosure finish_callback,
                                           TwoPhaseUploader::State state,
                                           int net_error,
                                           int response_code,
@@ -189,7 +189,7 @@ void DownloadFeedbackImpl::FinishedUpload(base::Closure finish_callback,
 
   uploader_.reset();
 
-  finish_callback.Run();
+  std::move(finish_callback).Run();
   // We may be deleted here.
 }
 

@@ -59,8 +59,8 @@ class DownloadDetailsGetter {
   virtual void OnDownloadDetails(
       ClientIncidentReport_DownloadDetails* details) = 0;
   DownloadMetadataManager::GetDownloadDetailsCallback GetCallback() {
-    return base::Bind(&DownloadDetailsGetter::DownloadDetailsCallback,
-                      base::Unretained(this));
+    return base::BindOnce(&DownloadDetailsGetter::DownloadDetailsCallback,
+                          base::Unretained(this));
   }
 
  private:

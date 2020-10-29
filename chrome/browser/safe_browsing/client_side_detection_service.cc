@@ -86,16 +86,16 @@ ClientSideDetectionService::ClientSideDetectionService(Profile* profile)
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnabled,
-      base::Bind(&ClientSideDetectionService::OnPrefsUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ClientSideDetectionService::OnPrefsUpdated,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnhanced,
-      base::Bind(&ClientSideDetectionService::OnPrefsUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ClientSideDetectionService::OnPrefsUpdated,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingScoutReportingEnabled,
-      base::Bind(&ClientSideDetectionService::OnPrefsUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ClientSideDetectionService::OnPrefsUpdated,
+                          base::Unretained(this)));
 
   // Do an initial check of the prefs.
   OnPrefsUpdated();
@@ -146,7 +146,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
          it != client_phishing_reports_.end(); ++it) {
       ClientPhishingReportInfo* info = it->second.get();
       if (!info->callback.is_null())
-        info->callback.Run(info->phishing_url, false);
+        std::move(info->callback).Run(info->phishing_url, false);
     }
     client_phishing_reports_.clear();
     cache_.clear();
@@ -327,7 +327,7 @@ void ClientSideDetectionService::HandlePhishingVerdict(
     is_phishing = response.phishy();
   }
   if (!info->callback.is_null())
-    info->callback.Run(info->phishing_url, is_phishing);
+    std::move(info->callback).Run(info->phishing_url, is_phishing);
 }
 
 bool ClientSideDetectionService::IsInCache(const GURL& url) {

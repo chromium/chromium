@@ -135,13 +135,13 @@ class LastDownloadFinderTest : public testing::Test {
       std::unique_ptr<ClientIncidentReport_DownloadDetails>* result,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>*
           non_binary_result,
-      const base::Closure& quit_closure,
+      base::OnceClosure quit_closure,
       std::unique_ptr<ClientIncidentReport_DownloadDetails> download,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
           non_binary_download) {
     *result = std::move(download);
     *non_binary_result = std::move(non_binary_download);
-    quit_closure.Run();
+    std::move(quit_closure).Run();
   }
 
  protected:
@@ -200,8 +200,8 @@ class LastDownloadFinderTest : public testing::Test {
   }
 
   LastDownloadFinder::DownloadDetailsGetter GetDownloadDetailsGetter() {
-    return base::Bind(&LastDownloadFinderTest::GetDownloadDetails,
-                      base::Unretained(this));
+    return base::BindRepeating(&LastDownloadFinderTest::GetDownloadDetails,
+                               base::Unretained(this));
   }
 
   void AddDownload(Profile* profile, const history::DownloadRow& download) {
@@ -227,9 +227,9 @@ class LastDownloadFinderTest : public testing::Test {
 
     std::unique_ptr<LastDownloadFinder> finder(LastDownloadFinder::Create(
         GetDownloadDetailsGetter(),
-        base::Bind(&LastDownloadFinderTest::OnLastDownload,
-                   base::Unretained(this), last_binary_download,
-                   last_non_binary_download, run_loop.QuitClosure())));
+        base::BindOnce(&LastDownloadFinderTest::OnLastDownload,
+                       base::Unretained(this), last_binary_download,
+                       last_non_binary_download, run_loop.QuitClosure())));
 
     if (finder)
       run_loop.Run();
@@ -269,9 +269,9 @@ class LastDownloadFinderTest : public testing::Test {
  private:
   // A HistoryService::DownloadCreateCallback that asserts that the download was
   // created and runs |closure|.
-  void ContinueOnDownloadCreated(const base::Closure& closure, bool created) {
+  void ContinueOnDownloadCreated(base::OnceClosure closure, bool created) {
     ASSERT_TRUE(created);
-    closure.Run();
+    std::move(closure).Run();
   }
 
   // A HistoryService::DownloadCreateCallback that asserts that the download was
@@ -280,8 +280,9 @@ class LastDownloadFinderTest : public testing::Test {
 
   void GetDownloadDetails(
       content::BrowserContext* context,
-      const DownloadMetadataManager::GetDownloadDetailsCallback& callback) {
-    callback.Run(std::unique_ptr<ClientIncidentReport_DownloadDetails>());
+      DownloadMetadataManager::GetDownloadDetailsCallback callback) {
+    std::move(callback).Run(
+        std::unique_ptr<ClientIncidentReport_DownloadDetails>());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -396,9 +397,11 @@ TEST_F(LastDownloadFinderTest, DeleteBeforeResults) {
   AddDownload(profile, CreateTestDownloadRow(kBinaryFileName));
 
   // Start a finder and kill it before the search completes.
-  LastDownloadFinder::Create(GetDownloadDetailsGetter(),
-                             base::Bind(&LastDownloadFinderTest::NeverCalled,
-                                        base::Unretained(this))).reset();
+  LastDownloadFinder::Create(
+      GetDownloadDetailsGetter(),
+      base::BindOnce(&LastDownloadFinderTest::NeverCalled,
+                     base::Unretained(this)))
+      .reset();
 }
 
 // Tests that a download in profile added after the search is begun is found.
@@ -420,9 +423,9 @@ TEST_F(LastDownloadFinderTest, AddProfileAfterStarting) {
   // Create a finder that we expect will find a download in the second profile.
   std::unique_ptr<LastDownloadFinder> finder(LastDownloadFinder::Create(
       GetDownloadDetailsGetter(),
-      base::Bind(&LastDownloadFinderTest::OnLastDownload,
-                 base::Unretained(this), &last_binary_download,
-                 &last_non_binary_download, run_loop.QuitClosure())));
+      base::BindOnce(&LastDownloadFinderTest::OnLastDownload,
+                     base::Unretained(this), &last_binary_download,
+                     &last_non_binary_download, run_loop.QuitClosure())));
 
   run_loop.Run();
 

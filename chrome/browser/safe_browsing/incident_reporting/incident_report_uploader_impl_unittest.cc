@@ -49,8 +49,8 @@ TEST_F(IncidentReportUploaderImplTest, Success) {
 
   ClientIncidentReport report;
   auto instance(IncidentReportUploaderImpl::UploadReport(
-      base::Bind(&IncidentReportUploaderImplTest::OnReportUploadResult,
-                 base::Unretained(this)),
+      base::BindOnce(&IncidentReportUploaderImplTest::OnReportUploadResult,
+                     base::Unretained(this)),
       url_loader_factory, report));
 
   std::string response;

@@ -118,8 +118,8 @@ void SettingsResetPromptController::Accept() {
   UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.PromptAccepted", true);
   model_->PerformReset(
       std::move(default_settings_),
-      base::Bind(&SettingsResetPromptController::OnInteractionDone,
-                 base::Unretained(this)));
+      base::BindOnce(&SettingsResetPromptController::OnInteractionDone,
+                     base::Unretained(this)));
 }
 
 void SettingsResetPromptController::Cancel() {

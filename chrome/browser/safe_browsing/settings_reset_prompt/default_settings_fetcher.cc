@@ -67,8 +67,8 @@ void DefaultSettingsFetcher::Start() {
     config_fetcher_.reset(new BrandcodeConfigFetcher(
         g_browser_process->system_network_context_manager()
             ->GetURLLoaderFactory(),
-        base::Bind(&DefaultSettingsFetcher::OnSettingsFetched,
-                   base::Unretained(this)),
+        base::BindOnce(&DefaultSettingsFetcher::OnSettingsFetched,
+                       base::Unretained(this)),
         GURL(kOmahaUrl), brandcode));
     return;
   }

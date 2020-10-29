@@ -99,7 +99,7 @@ class IncidentReportingService : public ProfileManagerObserver,
   CreatePreferenceValidationDelegate(Profile* profile);
 
   // Registers |callback| to be run after some delay following process launch.
-  void RegisterDelayedAnalysisCallback(const DelayedAnalysisCallback& callback);
+  void RegisterDelayedAnalysisCallback(DelayedAnalysisCallback callback);
 
   // Adds |download_manager| to the set monitored for client download request
   // storage.
@@ -138,11 +138,11 @@ class IncidentReportingService : public ProfileManagerObserver,
   // Initiates a search for the most recent binary download. Overriden by unit
   // tests to provide a fake finder.
   virtual std::unique_ptr<LastDownloadFinder> CreateDownloadFinder(
-      const LastDownloadFinder::LastDownloadCallback& callback);
+      LastDownloadFinder::LastDownloadCallback callback);
 
   // Initiates an upload. Overridden by unit tests to provide a fake uploader.
   virtual std::unique_ptr<IncidentReportUploader> StartReportUpload(
-      const IncidentReportUploader::OnResultCallback& callback,
+      IncidentReportUploader::OnResultCallback callback,
       const ClientIncidentReport& report);
 
   // Returns true if a report is currently being processed.

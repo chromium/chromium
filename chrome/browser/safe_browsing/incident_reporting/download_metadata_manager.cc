@@ -192,13 +192,14 @@ void DeleteMetadataInBackground(const base::FilePath& metadata_path) {
 }
 
 // Runs |callback| with the DownloadDetails in |download_metadata|.
-void ReturnResults(
-    const DownloadMetadataManager::GetDownloadDetailsCallback& callback,
-    std::unique_ptr<DownloadMetadata> download_metadata) {
+void ReturnResults(DownloadMetadataManager::GetDownloadDetailsCallback callback,
+                   std::unique_ptr<DownloadMetadata> download_metadata) {
   if (!download_metadata->has_download_id())
-    callback.Run(std::unique_ptr<ClientIncidentReport_DownloadDetails>());
+    std::move(callback).Run(
+        std::unique_ptr<ClientIncidentReport_DownloadDetails>());
   else
-    callback.Run(base::WrapUnique(download_metadata->release_download()));
+    std::move(callback).Run(
+        base::WrapUnique(download_metadata->release_download()));
 }
 
 }  // namespace
@@ -238,7 +239,7 @@ class DownloadMetadataManager::ManagerContext
   // Gets the persisted DownloadDetails. |callback| will be run immediately if
   // the data is available. Otherwise, it will be run later on the caller's
   // thread.
-  void GetDownloadDetails(const GetDownloadDetailsCallback& callback);
+  void GetDownloadDetails(GetDownloadDetailsCallback callback);
 
  protected:
   // download::DownloadItem::Observer methods.
@@ -377,7 +378,7 @@ void DownloadMetadataManager::SetRequest(download::DownloadItem* item,
 
 void DownloadMetadataManager::GetDownloadDetails(
     content::BrowserContext* browser_context,
-    const GetDownloadDetailsCallback& callback) {
+    GetDownloadDetailsCallback callback) {
   DCHECK(browser_context);
   // The DownloadManager for |browser_context| may not have been created yet. In
   // this case, asking for it would cause history to load in the background and
@@ -386,7 +387,7 @@ void DownloadMetadataManager::GetDownloadDetails(
   std::unique_ptr<ClientIncidentReport_DownloadDetails> download_details;
   for (const auto& manager_context_pair : contexts_) {
     if (manager_context_pair.first->GetBrowserContext() == browser_context) {
-      manager_context_pair.second->GetDownloadDetails(callback);
+      manager_context_pair.second->GetDownloadDetails(std::move(callback));
       return;
     }
   }
@@ -397,7 +398,8 @@ void DownloadMetadataManager::GetDownloadDetails(
       FROM_HERE,
       base::BindOnce(&ReadMetadataInBackground,
                      GetMetadataPath(browser_context), metadata),
-      base::BindOnce(&ReturnResults, callback, base::WrapUnique(metadata)));
+      base::BindOnce(&ReturnResults, std::move(callback),
+                     base::WrapUnique(metadata)));
 }
 
 content::DownloadManager*
@@ -477,14 +479,15 @@ void DownloadMetadataManager::ManagerContext::SetRequest(
 }
 
 void DownloadMetadataManager::ManagerContext::GetDownloadDetails(
-    const GetDownloadDetailsCallback& callback) {
+    GetDownloadDetailsCallback callback) {
   if (state_ != LOAD_COMPLETE) {
-    get_details_callbacks_.push_back(callback);
+    get_details_callbacks_.push_back(std::move(callback));
   } else {
-    callback.Run(download_metadata_
-                     ? std::make_unique<ClientIncidentReport_DownloadDetails>(
-                           download_metadata_->download())
-                     : nullptr);
+    std::move(callback).Run(
+        download_metadata_
+            ? std::make_unique<ClientIncidentReport_DownloadDetails>(
+                  download_metadata_->download())
+            : nullptr);
   }
 }
 
@@ -588,11 +591,11 @@ void DownloadMetadataManager::ManagerContext::ClearPendingItems() {
 
 void DownloadMetadataManager::ManagerContext::RunCallbacks() {
   while (!get_details_callbacks_.empty()) {
-    const auto& callback = get_details_callbacks_.front();
-    callback.Run(download_metadata_
-                     ? std::make_unique<ClientIncidentReport_DownloadDetails>(
-                           download_metadata_->download())
-                     : nullptr);
+    std::move(get_details_callbacks_.front())
+        .Run(download_metadata_
+                 ? std::make_unique<ClientIncidentReport_DownloadDetails>(
+                       download_metadata_->download())
+                 : nullptr);
     get_details_callbacks_.pop_front();
   }
 }
