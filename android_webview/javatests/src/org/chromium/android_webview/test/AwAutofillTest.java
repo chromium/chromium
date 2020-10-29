@@ -47,7 +47,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MetricsUtils;
@@ -993,7 +992,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1142486")
     public void testAutofillTriggersAfterReload() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
@@ -1012,12 +1010,12 @@ public class AwAutofillTest {
 
         // Reload the page and check that the user clicking on the same form field ends the current
         // autofill session and starts a new session.
-        loadUrlSync(url);
+        reloadSync();
         DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "text1");
         // TODO(changwan): mock out IME interaction.
         Assert.assertTrue(DOMUtils.clickNode(mTestContainerView.getWebContents(), "text1"));
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
+                new Integer[] {AUTOFILL_VIEW_EXITED, AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED,
                         AUTOFILL_SESSION_STARTED});
     }
 
@@ -2088,6 +2086,14 @@ public class AwAutofillTest {
         int callCount = done.getCallCount();
         mRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+        done.waitForCallback(callCount);
+    }
+
+    private void reloadSync() throws Exception {
+        CallbackHelper done = mContentsClient.getOnPageCommitVisibleHelper();
+        int callCount = done.getCallCount();
+        mRule.reloadSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper());
         done.waitForCallback(callCount);
     }
 
