@@ -89,9 +89,19 @@ std::string GetWidgetName() {
 
 // Returns true if the device is currently connected to a charger.
 bool IsChargerConnected() {
-  return (PowerStatus::Get()->IsBatteryCharging() ||
-          PowerStatus::Get()->IsBatteryFull()) &&
-         PowerStatus::Get()->IsLinePowerConnected();
+  DCHECK(PowerStatus::IsInitialized());
+  auto* power_status = PowerStatus::Get();
+  if (power_status->IsBatteryPresent()) {
+    // If battery is full or battery is charging, that implies power is
+    // connected. Also return true if a power source is connected and
+    // battery is not discharging.
+    return power_status->IsBatteryCharging() || power_status->IsBatteryFull() ||
+           (power_status->IsLinePowerConnected() &&
+            !power_status->IsBatteryDischargingOnLinePower());
+  } else {
+    // Chromeboxes have no battery.
+    return power_status->IsLinePowerConnected();
+  }
 }
 
 bool IsUiHidden(AmbientUiVisibility visibility) {
