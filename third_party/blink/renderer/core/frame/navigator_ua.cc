@@ -38,7 +38,7 @@ NavigatorUAData* NavigatorUA::userAgentData() {
 void NavigatorUA::MaybeRecordMetrics(const NavigatorUAData& ua_data) {
   constexpr auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorUserAgent);
-  if (LIKELY(!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
+  if (LIKELY(!IdentifiabilityStudySettings::Get()->ShouldSample(
           identifiable_surface))) {
     return;
   }

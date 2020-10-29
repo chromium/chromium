@@ -268,7 +268,7 @@ void HTMLCanvasElement::RecordIdentifiabilityMetric(
 
 void HTMLCanvasElement::IdentifiabilityReportWithDigest(
     IdentifiableToken canvas_contents_token) const {
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(
           blink::IdentifiableSurface::Type::kCanvasReadback)) {
     RecordIdentifiabilityMetric(
         blink::IdentifiableSurface::FromTypeAndToken(
@@ -284,7 +284,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   auto* old_contents_cc_layer = ContentsCcLayer();
   auto* result = GetCanvasRenderingContextInternal(type, attributes);
 
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kCanvasRenderingContext)) {
     IdentifiabilityMetricBuilder(ukm_params_.source_id)
         .Set(IdentifiableSurface::FromTypeAndToken(

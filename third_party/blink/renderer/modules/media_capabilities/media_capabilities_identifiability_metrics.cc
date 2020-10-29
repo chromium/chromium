@@ -29,6 +29,11 @@ bool IsDecodingInfoTypeAllowed() {
       IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo);
 }
 
+bool ShouldSampleDecodingInfoType() {
+  return IdentifiabilityStudySettings::Get()->ShouldSample(
+      IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo);
+}
+
 void RecordDecodingIdentifiabilityMetric(ExecutionContext* context,
                                          IdentifiableToken input_token,
                                          IdentifiableToken output_token) {
@@ -226,7 +231,7 @@ IdentifiableToken ComputeToken(const MediaCapabilitiesDecodingInfo* info) {
 void ReportDecodingInfoResult(ExecutionContext* context,
                               const MediaDecodingConfiguration* input,
                               const MediaCapabilitiesDecodingInfo* output) {
-  if (!IsDecodingInfoTypeAllowed())
+  if (!IsDecodingInfoTypeAllowed() || !ShouldSampleDecodingInfoType())
     return;
 
   RecordDecodingIdentifiabilityMetric(context, ComputeToken(input),
@@ -237,7 +242,7 @@ void ReportDecodingInfoResult(ExecutionContext* context,
                               base::Optional<IdentifiableToken> input_token,
                               const MediaCapabilitiesDecodingInfo* output) {
   DCHECK_EQ(IsDecodingInfoTypeAllowed(), input_token.has_value());
-  if (!input_token.has_value())
+  if (!input_token.has_value() || !ShouldSampleDecodingInfoType())
     return;
 
   RecordDecodingIdentifiabilityMetric(context, input_token.value(),
@@ -246,7 +251,7 @@ void ReportDecodingInfoResult(ExecutionContext* context,
 
 base::Optional<IdentifiableToken> ComputeDecodingInfoInputToken(
     const MediaDecodingConfiguration* input) {
-  if (!IsDecodingInfoTypeAllowed())
+  if (!IsDecodingInfoTypeAllowed() || !ShouldSampleDecodingInfoType())
     return base::nullopt;
 
   return ComputeToken(input);

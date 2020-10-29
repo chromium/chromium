@@ -86,7 +86,7 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   }
 
   if (!EnsureServiceConnected()) {
-    if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
+    if (IdentifiabilityStudySettings::Get()->ShouldSample(
             kGetKeyboardLayoutMapSurface)) {
       RecordGetLayoutMapResult(ExecutionContext::From(script_state),
                                IdentifiableToken());
@@ -133,9 +133,8 @@ void KeyboardLayout::GotKeyboardLayoutMap(
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
   DCHECK(script_promise_resolver_);
 
-  bool instrumentation_on =
-      IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
-          kGetKeyboardLayoutMapSurface);
+  bool instrumentation_on = IdentifiabilityStudySettings::Get()->ShouldSample(
+      kGetKeyboardLayoutMapSurface);
 
   switch (result->status) {
     case mojom::blink::GetKeyboardLayoutMapStatus::kSuccess:

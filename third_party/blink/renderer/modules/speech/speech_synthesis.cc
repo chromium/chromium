@@ -106,7 +106,7 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature,
       WebFeature::kSpeechSynthesis_GetVoices_Method);
-  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface))
     return;
   ExecutionContext* context = GetExecutionContext();
   if (!context)

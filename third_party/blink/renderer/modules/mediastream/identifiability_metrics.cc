@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/boolean_or_constrain_boolean_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/boolean_or_double_or_constrain_double_range.h"
@@ -247,7 +248,8 @@ IdentifiableToken TokenFromConstraints(
 void RecordIdentifiabilityMetric(const IdentifiableSurface& surface,
                                  ExecutionContext* context,
                                  IdentifiableToken token) {
-  if (surface.IsValid() && context) {
+  if (surface.IsValid() && context &&
+      IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
     IdentifiabilityMetricBuilder(context->UkmSourceID())
         .Set(surface, token)
         .Record(context->UkmRecorder());

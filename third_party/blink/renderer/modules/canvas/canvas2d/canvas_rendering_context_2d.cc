@@ -698,7 +698,7 @@ ImageData* CanvasRenderingContext2D::getImageData(
     ExceptionState& exception_state) {
   const IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kCanvasReadback, GetContextType());
-  if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface)) {
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
     blink::IdentifiabilityMetricBuilder(ukm_source_id_)
         .Set(surface, 0)
         .Record(ukm_recorder_);

@@ -63,20 +63,38 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
   // true, it doesn't return false at any point after. The converse is not true.
   bool IsActive() const;
 
-  // Returns true if |surface| is allowed.
+  // Returns true if |surface| is allowed to be sampled. Be sure to check
+  // ShouldSample before actually collecting a sample.
   //
   // Will always return false if IsActive() is false. I.e. If the study is
   // inactive, all surfaces are considered to be blocked. Hence it is sufficient
   // to call this function directly instead of calling IsActive() before it.
   bool IsSurfaceAllowed(IdentifiableSurface surface) const;
 
-  // Returns true if |type| is allowed.
+  // Returns true if |type| is allowed to be sampled. Be sure to check
+  // ShouldSample before actually collecting a sample.
   //
   // Will always return false if IsActive() is false. I.e. If the study is
   // inactive, all surface types are considered to be blocked. Hence it is
   // sufficient to call this function directly instead of calling IsActive()
   // before it.
   bool IsTypeAllowed(IdentifiableSurface::Type type) const;
+
+  // Returns true if |surface| should be sampled.
+  //
+  // Will always return false if IsActive() is false or if IsSurfaceAllowed() is
+  // false. I.e. If the study is inactive, all surfaces are considered to be
+  // blocked. Hence it is sufficient to call this function directly instead of
+  // calling IsActive() before it.
+  bool ShouldSample(IdentifiableSurface surface) const;
+
+  // Returns true if |type| should be sampled.
+  //
+  // Will always return false if IsActive() is false or if IsTypeAllowed() is
+  // false. I.e. If the study is inactive, all surface types are considered to
+  // be blocked. Hence it is sufficient to call this function directly instead
+  // of calling IsActive() before it.
+  bool ShouldSample(IdentifiableSurface::Type type) const;
 
   // Convenience method for determining whether the surface constructable from
   // the type (|kWebFeature|) and the |feature| is allowed. See IsSurfaceAllowed

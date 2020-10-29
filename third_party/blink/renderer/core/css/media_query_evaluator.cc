@@ -1005,7 +1005,7 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
     bool result = func(expr.ExpValue(), kNoPrefix, *media_values_);
     Document* doc = nullptr;
     if (!skip_ukm_reporting_ && (doc = media_values_->GetDocument()) &&
-        (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+        (IdentifiabilityStudySettings::Get()->ShouldSample(
             IdentifiableSurface::Type::kMediaQuery))) {
       RecordMediaQueryResult(doc, expr, result);
     }

@@ -82,8 +82,7 @@ void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
 void RecordMimeTypes(LocalDOMWindow* window, DOMMimeTypeArray* mime_types) {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorMimeTypes);
-  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface) ||
-      !window) {
+  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface) || !window) {
     return;
   }
   IdentifiableTokenBuilder builder;

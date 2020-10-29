@@ -32,8 +32,9 @@ class ScopedPrivacyBudgetConfig {
   // These fields correspond to the equivalent features described in
   // privacy_budget_features.h
   //
-  // The default values enable the identifiability study with a sampling rate of
-  // 1, which means every surface is included in UKM reports.
+  // The default values enable the identifiability study with a selection rate
+  // of 1, which means every surface is included in UKM reports, and a sampling
+  // rate of 1, which means every report is sampled.
   struct Parameters {
     Parameters();
     Parameters(const Parameters&);
@@ -47,6 +48,8 @@ class ScopedPrivacyBudgetConfig {
     std::vector<blink::IdentifiableSurface::Type> blocked_types;
     int surface_selection_rate = 1;
     int max_surfaces = std::numeric_limits<int>::max();
+    std::map<blink::IdentifiableSurface, int> per_surface_selection_rate;
+    std::map<blink::IdentifiableSurface::Type, int> per_type_selection_rate;
     std::map<blink::IdentifiableSurface, int> per_surface_sampling_rate;
     std::map<blink::IdentifiableSurface::Type, int> per_type_sampling_rate;
   };

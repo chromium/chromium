@@ -48,6 +48,10 @@ class CountingSettingsProvider : public IdentifiabilityStudySettingsProvider {
     return state_->response_for_is_allowed;
   }
 
+  int SampleRate(IdentifiableSurface surface) const override { return 1; }
+
+  int SampleRate(IdentifiableSurface::Type type) const override { return 1; }
+
  private:
   CallCounts* state_ = nullptr;
 };

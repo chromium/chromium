@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
+#include "base/rand_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 
@@ -80,6 +81,16 @@ class ThreadsafeSettingsWrapper {
   base::AtomicFlag initialized_;
 };
 
+bool DecideSample(int sample_rate) {
+  if (sample_rate == 0)
+    return false;
+
+  if (sample_rate == 1)
+    return true;
+
+  return base::RandGenerator(sample_rate) == 0;
+}
+
 }  // namespace
 
 IdentifiabilityStudySettingsProvider::~IdentifiabilityStudySettingsProvider() =
@@ -140,6 +151,22 @@ bool IdentifiabilityStudySettings::IsWebFeatureAllowed(
     mojom::WebFeature feature) const {
   return IsSurfaceAllowed(IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, feature));
+}
+
+bool IdentifiabilityStudySettings::ShouldSample(
+    IdentifiableSurface surface) const {
+  if (LIKELY(!is_enabled_))
+    return false;
+
+  return DecideSample(provider_->SampleRate(surface));
+}
+
+bool IdentifiabilityStudySettings::ShouldSample(
+    IdentifiableSurface::Type type) const {
+  if (LIKELY(!is_enabled_))
+    return false;
+
+  return DecideSample(provider_->SampleRate(type));
 }
 
 }  // namespace blink

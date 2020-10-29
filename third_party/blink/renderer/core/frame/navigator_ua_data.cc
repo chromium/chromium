@@ -109,7 +109,7 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   DCHECK(execution_context);
 
   bool record_identifiability =
-      IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+      IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues);
   UADataValues* values = MakeGarbageCollected<UADataValues>();
   for (const String& hint : hints) {

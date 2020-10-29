@@ -88,7 +88,7 @@ MIDIAccess::MIDIAccess(
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature,
       WebFeature::kRequestMIDIAccess_ObscuredByFootprinting);
-  if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface)) {
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
     IdentifiableTokenBuilder builder;
     for (const auto& port : ports) {
       builder.AddToken(IdentifiabilityBenignStringToken(port.id));
