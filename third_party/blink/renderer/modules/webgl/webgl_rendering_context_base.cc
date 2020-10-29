@@ -1535,8 +1535,7 @@ WebGLRenderingContextBase::ClearIfComposited(GLbitfield mask) {
   if (buffers_needing_clearing == 0 || (mask && framebuffer_binding_))
     return kSkipped;
 
-  WebGLContextAttributes* context_attributes = getContextAttributes();
-  if (!context_attributes) {
+  if (isContextLost()) {
     // Unlikely, but context was lost.
     return kSkipped;
   }
@@ -1558,14 +1557,19 @@ WebGLRenderingContextBase::ClearIfComposited(GLbitfield mask) {
       true, true, true,
       !GetDrawingBuffer()->RequiresAlphaChannelToBePreserved());
   GLbitfield clear_mask = GL_COLOR_BUFFER_BIT;
-  if (context_attributes->depth()) {
+
+  const bool has_depth =
+      CreationAttributes().depth && GetDrawingBuffer()->HasDepthBuffer();
+  const bool has_stencil =
+      CreationAttributes().stencil && GetDrawingBuffer()->HasStencilBuffer();
+
+  if (has_depth) {
     if (!combined_clear || !depth_mask_ || !(mask & GL_DEPTH_BUFFER_BIT))
       ContextGL()->ClearDepthf(1.0f);
     clear_mask |= GL_DEPTH_BUFFER_BIT;
     ContextGL()->DepthMask(true);
   }
-  if (context_attributes->stencil() ||
-      GetDrawingBuffer()->HasImplicitStencilBuffer()) {
+  if (has_stencil || GetDrawingBuffer()->HasImplicitStencilBuffer()) {
     if (combined_clear && (mask & GL_STENCIL_BUFFER_BIT))
       ContextGL()->ClearStencil(clear_stencil_ & stencil_mask_);
     else
@@ -8528,8 +8532,8 @@ void WebGLRenderingContextBase::ApplyStencilTest() {
   if (framebuffer_binding_) {
     have_stencil_buffer = framebuffer_binding_->HasStencilBuffer();
   } else {
-    WebGLContextAttributes* attributes = getContextAttributes();
-    have_stencil_buffer = attributes && attributes->stencil();
+    have_stencil_buffer = !isContextLost() && CreationAttributes().stencil &&
+                          GetDrawingBuffer()->HasStencilBuffer();
   }
   EnableOrDisable(GL_STENCIL_TEST, stencil_enabled_ && have_stencil_buffer);
 }
