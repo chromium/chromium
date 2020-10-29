@@ -111,16 +111,16 @@ in files, import declarations in files, listings in BUILD.gn files, and
 internally in the XCode project. As with adding a file, different tools are used
 for each of these. Unlike creating a file, which starts with actually adding a
 file to the filesystem, a rename starts with updating git (via `git mv`), then
-using the `mass_rename` tool to update file contents.
+using the `mass-rename` tool to update file contents.
 
-`tools/git/mass_rename.py` works by looking at _uncommitted_ file moves in git,
+`tools/git/mass-rename.py` works by looking at _uncommitted_ file moves in git,
 and then updating all includes, header guards, and BUILD.gn entries to use the
 new name. It doesn't update some other files, such as `Contents.json` files for
 image assets. It also doesn't change any symbols in code, so class and variable
 names won't be changed.
 
 For many file moves, it will be simpler to use another tool,
-`tools/git/move_source_file.py`, which combines `git mv` and `mass_rename` in a
+`tools/git/move_source_file.py`, which combines `git mv` and `mass-rename` in a
 single action. For example, renaming `feature_class` to `renamed_class` would be
 done like this:
 ```bash
@@ -152,7 +152,7 @@ The step-by-step procedure for a rename is:
 1.  Commit all changes (`git commit -a -m <your comment>`).
 
 A move—where a file is moved to a different directory—is in most respects
-performed using the same steps as a rename. However, while `mass_rename.py` (and
+performed using the same steps as a rename. However, while `mass-rename.py` (and
 thus `move_source_file.py`) will update existing file names in `BUILD.gn` files,
 it won't move entries from one `BUILD.gn` file to another. To move files to a
 different directory, the preceding procedure is used, but between steps 2 and 3
@@ -165,7 +165,7 @@ being renamed within a directory, it (just like `git mv`) can move multiple
 files without renaming to a new directory in a single command:
 
 ```bash
-$ tools/git/mass_rename.py ios/chrome/browser/some_feature/feature_class.* \
+$ tools/git/mass-rename.py ios/chrome/browser/some_feature/feature_class.* \
     ios/chrome/browser/some_feature/feature_class_unittest.mm \
     ios/chrome/browser/other_feature/
 ```
