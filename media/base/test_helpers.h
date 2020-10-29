@@ -177,6 +177,18 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
                                            size_t frames,
                                            base::TimeDelta timestamp);
 
+// Similar to above, but for float types where the maximum range is limited to
+// [-1.0f, 1.0f]. Here the stored values will be divided by 65536.
+template <>
+scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
+                                                  ChannelLayout channel_layout,
+                                                  size_t channel_count,
+                                                  int sample_rate,
+                                                  float start,
+                                                  float increment,
+                                                  size_t frames,
+                                                  base::TimeDelta timestamp);
+
 // Create an AudioBuffer containing bitstream data. |start| and |increment| are
 // used to specify the values for the data. The value is determined by:
 //   start + frames * increment

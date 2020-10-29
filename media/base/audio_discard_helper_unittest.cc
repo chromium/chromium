@@ -40,7 +40,7 @@ static float ExtractDecodedData(const AudioBuffer& buffer, int index) {
   std::unique_ptr<AudioBus> temp_bus =
       AudioBus::Create(buffer.channel_count(), 1);
   buffer.ReadFrames(1, index, 0, temp_bus.get());
-  return temp_bus->channel(0)[0];
+  return temp_bus->channel(0)[0] * std::numeric_limits<uint16_t>::max();
 }
 
 TEST(AudioDiscardHelperTest, TimeDeltaToFrames) {

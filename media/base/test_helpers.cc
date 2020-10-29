@@ -350,6 +350,45 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
   return output;
 }
 
+template <>
+scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
+                                                  ChannelLayout channel_layout,
+                                                  size_t channel_count,
+                                                  int sample_rate,
+                                                  float start,
+                                                  float increment,
+                                                  size_t frames,
+                                                  base::TimeDelta timestamp) {
+  const size_t channels = ChannelLayoutToChannelCount(channel_layout);
+  scoped_refptr<AudioBuffer> output = AudioBuffer::CreateBuffer(
+      format, channel_layout, static_cast<int>(channel_count), sample_rate,
+      static_cast<int>(frames));
+  output->set_timestamp(timestamp);
+
+  const bool is_planar =
+      format == kSampleFormatPlanarS16 || format == kSampleFormatPlanarF32;
+
+  // Values in channel 0 will be:
+  //   (start) / max_value
+  //   (start + increment) / max_value
+  //   (start + 2 * increment) / max_value, ...
+  // While, values in channel 1 will be:
+  //   (start + frames * increment) / max_value
+  //   (start + (frames + 1) * increment) / max_value
+  //   (start + (frames + 2) * increment) / max_value, ...
+  for (size_t ch = 0; ch < channels; ++ch) {
+    float* buffer =
+        reinterpret_cast<float*>(output->channel_data()[is_planar ? ch : 0]);
+    const float v = static_cast<float>(start + ch * frames * increment);
+    for (size_t i = 0; i < frames; ++i) {
+      buffer[is_planar ? i : ch + i * channels] =
+          static_cast<float>(v + i * increment) /
+          std::numeric_limits<uint16_t>::max();
+    }
+  }
+  return output;
+}
+
 scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
     SampleFormat format,
     ChannelLayout channel_layout,
@@ -408,7 +447,6 @@ void VerifyBitstreamAudioBus(AudioBus* bus,
 DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(uint8_t);
 DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(int16_t);
 DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(int32_t);
-DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(float);
 
 static const char kFakeVideoBufferHeader[] = "FakeVideoBufferForTest";
 

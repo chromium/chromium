@@ -18,18 +18,24 @@
 
 namespace media {
 
-const int kSampleRate = 44100;
+constexpr int kSampleRate = 44100;
 
+enum class ValueType { kNormal, kFloat };
 static void VerifyBus(AudioBus* bus,
                       int offset,
                       int frames,
                       int buffer_size,
                       float start,
-                      float increment) {
+                      float increment,
+                      ValueType type = ValueType::kNormal) {
   for (int ch = 0; ch < bus->channels(); ++ch) {
     const float v = start + ch * buffer_size * increment;
     for (int i = offset; i < offset + frames; ++i) {
-      ASSERT_FLOAT_EQ(v + (i - offset) * increment, bus->channel(ch)[i])
+      float expected_value = v + (i - offset) * increment;
+      if (type == ValueType::kFloat)
+        expected_value /= std::numeric_limits<uint16_t>::max();
+
+      ASSERT_FLOAT_EQ(expected_value, bus->channel(ch)[i])
           << "i=" << i << ", ch=" << ch;
     }
   }
@@ -94,7 +100,7 @@ TEST(AudioBufferQueueTest, IteratorCheck) {
 
   EXPECT_EQ(4, buffer.ReadFrames(4, 0, bus.get()));
   EXPECT_EQ(4, buffer.frames());
-  VerifyBus(bus.get(), 0, 4, bus->frames(), 10, 1);
+  VerifyBus(bus.get(), 0, 4, bus->frames(), 10, 1, ValueType::kFloat);
 
   buffer.Append(MakeTestBuffer<float>(
       kSampleFormatF32, channel_layout, 20.0f, 1.0f, 8));
@@ -106,7 +112,7 @@ TEST(AudioBufferQueueTest, IteratorCheck) {
   buffer.SeekFrames(16);
   EXPECT_EQ(4, buffer.ReadFrames(4, 0, bus.get()));
   EXPECT_EQ(0, buffer.frames());
-  VerifyBus(bus.get(), 0, 4, bus->frames(), 34, 1);
+  VerifyBus(bus.get(), 0, 4, bus->frames(), 34, 1, ValueType::kFloat);
 
   buffer.Append(MakeTestBuffer<float>(
       kSampleFormatF32, channel_layout, 40.0f, 1.0f, 8));
@@ -116,13 +122,13 @@ TEST(AudioBufferQueueTest, IteratorCheck) {
   EXPECT_EQ(16, buffer.frames());
 
   EXPECT_EQ(4, buffer.ReadFrames(4, 0, bus.get()));
-  VerifyBus(bus.get(), 0, 4, bus->frames(), 40, 1);
+  VerifyBus(bus.get(), 0, 4, bus->frames(), 40, 1, ValueType::kFloat);
 
   // Read off the end of the buffer.
   EXPECT_EQ(12, buffer.frames());
   buffer.SeekFrames(8);
   EXPECT_EQ(4, buffer.ReadFrames(100, 0, bus.get()));
-  VerifyBus(bus.get(), 0, 4, bus->frames(), 54, 1);
+  VerifyBus(bus.get(), 0, 4, bus->frames(), 54, 1, ValueType::kFloat);
 }
 
 TEST(AudioBufferQueueTest, Seek) {
@@ -188,13 +194,13 @@ TEST(AudioBufferQueueTest, ReadF32) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, 100);
   EXPECT_EQ(3, buffer.ReadFrames(3, 0, bus.get()));
   EXPECT_EQ(73, buffer.frames());
-  VerifyBus(bus.get(), 0, 3, 6, 1, 1);
+  VerifyBus(bus.get(), 0, 3, 6, 1, 1, ValueType::kFloat);
 
   // Now read 5 frames, which will span buffers. Append the data into AudioBus.
   EXPECT_EQ(5, buffer.ReadFrames(5, 3, bus.get()));
   EXPECT_EQ(68, buffer.frames());
-  VerifyBus(bus.get(), 0, 6, 6, 1, 1);
-  VerifyBus(bus.get(), 6, 2, 10, 13, 1);
+  VerifyBus(bus.get(), 0, 6, 6, 1, 1, ValueType::kFloat);
+  VerifyBus(bus.get(), 6, 2, 10, 13, 1, ValueType::kFloat);
 
   // Now skip into the third buffer.
   buffer.SeekFrames(20);
@@ -202,7 +208,7 @@ TEST(AudioBufferQueueTest, ReadF32) {
 
   // Now read 2 frames, which are in the third buffer.
   EXPECT_EQ(2, buffer.ReadFrames(2, 0, bus.get()));
-  VerifyBus(bus.get(), 0, 2, 60, 45, 1);
+  VerifyBus(bus.get(), 0, 2, 60, 45, 1, ValueType::kFloat);
 }
 
 TEST(AudioBufferQueueTest, ReadU8) {
@@ -289,8 +295,8 @@ TEST(AudioBufferQueueTest, ReadF32Planar) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, 100);
   EXPECT_EQ(6, buffer.ReadFrames(6, 0, bus.get()));
   EXPECT_EQ(8, buffer.frames());
-  VerifyBus(bus.get(), 0, 4, 4, 1, 1);
-  VerifyBus(bus.get(), 4, 2, 10, 50, 1);
+  VerifyBus(bus.get(), 0, 4, 4, 1, 1, ValueType::kFloat);
+  VerifyBus(bus.get(), 4, 2, 10, 50, 1, ValueType::kFloat);
 }
 
 TEST(AudioBufferQueueTest, ReadS16Planar) {
@@ -333,9 +339,9 @@ TEST(AudioBufferQueueTest, ReadManyChannels) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, 100);
   EXPECT_EQ(30, buffer.ReadFrames(30, 0, bus.get()));
   EXPECT_EQ(46, buffer.frames());
-  VerifyBus(bus.get(), 0, 6, 6, 0, 1);
-  VerifyBus(bus.get(), 6, 10, 10, 6 * channels, 1);
-  VerifyBus(bus.get(), 16, 14, 60, 16 * channels, 1);
+  VerifyBus(bus.get(), 0, 6, 6, 0, 1, ValueType::kFloat);
+  VerifyBus(bus.get(), 6, 10, 10, 6 * channels, 1, ValueType::kFloat);
+  VerifyBus(bus.get(), 16, 14, 60, 16 * channels, 1, ValueType::kFloat);
 }
 
 TEST(AudioBufferQueueTest, Peek) {
@@ -355,17 +361,17 @@ TEST(AudioBufferQueueTest, Peek) {
   EXPECT_EQ(frames, buffer.PeekFrames(60, 0, 0, bus1.get()));
   EXPECT_EQ(30, buffer.PeekFrames(30, 0, 0, bus1.get()));
   EXPECT_EQ(frames, buffer.frames());
-  VerifyBus(bus1.get(), 0, 30, bus1->frames(), 0, 1);
+  VerifyBus(bus1.get(), 0, 30, bus1->frames(), 0, 1, ValueType::kFloat);
 
   // Now read the next 30 frames (which should be the same as those peeked at).
   std::unique_ptr<AudioBus> bus2 = AudioBus::Create(channels, frames);
   EXPECT_EQ(30, buffer.ReadFrames(30, 0, bus2.get()));
-  VerifyBus(bus2.get(), 0, 30, bus2->frames(), 0, 1);
+  VerifyBus(bus2.get(), 0, 30, bus2->frames(), 0, 1, ValueType::kFloat);
 
   // Peek 10 frames forward
   bus1->Zero();
   EXPECT_EQ(5, buffer.PeekFrames(5, 10, 0, bus1.get()));
-  VerifyBus(bus1.get(), 0, 5, bus1->frames(), 40, 1);
+  VerifyBus(bus1.get(), 0, 5, bus1->frames(), 40, 1, ValueType::kFloat);
 
   // Peek to the end of the buffer.
   EXPECT_EQ(30, buffer.frames());
