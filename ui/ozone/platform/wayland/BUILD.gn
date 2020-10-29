@@ -212,10 +212,7 @@ source_set("wayland") {
 
   # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
   if (chromeos_is_browser_only) {
-    deps += [
-      "//chromeos/crosapi/cpp",
-      "//chromeos/ui/base",
-    ]
+    deps += [ "//chromeos/crosapi/cpp" ]
   }
 
   defines = [ "OZONE_IMPLEMENTATION" ]

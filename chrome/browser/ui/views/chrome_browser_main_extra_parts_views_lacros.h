@@ -9,6 +9,10 @@
 
 #include <memory>
 
+namespace chromeos {
+class TabletState;
+}
+
 class ImmersiveContextLacros;
 
 class ChromeBrowserMainExtraPartsViewsLacros
@@ -26,6 +30,7 @@ class ChromeBrowserMainExtraPartsViewsLacros
   void PreProfileInit() override;
 
   std::unique_ptr<ImmersiveContextLacros> immersive_context_;
+  std::unique_ptr<chromeos::TabletState> tablet_state_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_BROWSER_MAIN_EXTRA_PARTS_VIEWS_LACROS_H_

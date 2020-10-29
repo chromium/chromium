@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
 
 #include "chrome/browser/lacros/immersive_context_lacros.h"
+#include "chromeos/ui/base/tablet_state.h"
 
 ChromeBrowserMainExtraPartsViewsLacros::
     ChromeBrowserMainExtraPartsViewsLacros() = default;
@@ -14,6 +15,7 @@ ChromeBrowserMainExtraPartsViewsLacros::
 
 void ChromeBrowserMainExtraPartsViewsLacros::PreProfileInit() {
   immersive_context_ = std::make_unique<ImmersiveContextLacros>();
+  tablet_state_ = std::make_unique<chromeos::TabletState>();
 
   ChromeBrowserMainExtraPartsViews::PreProfileInit();
 }
