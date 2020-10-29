@@ -65,7 +65,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               message_sender_.get(),
               connection_scheduler_.get())),
       notification_manager_(
-          std::make_unique<NotificationManagerImpl>(message_sender_.get())),
+          std::make_unique<NotificationManagerImpl>(message_sender_.get(),
+                                                    multidevice_setup_client)),
       onboarding_ui_tracker_(std::make_unique<OnboardingUiTrackerImpl>(
           pref_service,
           feature_status_provider_.get(),
@@ -143,6 +144,7 @@ void PhoneHubManagerImpl::Shutdown() {
   phone_status_processor_.reset();
   phone_model_.reset();
   onboarding_ui_tracker_.reset();
+  notification_manager_.reset();
   notification_access_manager_.reset();
   find_my_device_controller_.reset();
   connection_scheduler_.reset();

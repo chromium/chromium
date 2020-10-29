@@ -12,12 +12,23 @@
 namespace chromeos {
 namespace phonehub {
 
-NotificationManagerImpl::NotificationManagerImpl(MessageSender* message_sender)
-    : message_sender_(message_sender) {
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+
+NotificationManagerImpl::NotificationManagerImpl(
+    MessageSender* message_sender,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+    : message_sender_(message_sender),
+      multidevice_setup_client_(multidevice_setup_client) {
   DCHECK(message_sender_);
+  DCHECK(multidevice_setup_client_);
+
+  multidevice_setup_client_->AddObserver(this);
 }
 
-NotificationManagerImpl::~NotificationManagerImpl() = default;
+NotificationManagerImpl::~NotificationManagerImpl() {
+  multidevice_setup_client_->RemoveObserver(this);
+}
 
 void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
   PA_LOG(INFO) << "Dismissing notification with ID " << notification_id << ".";
@@ -45,6 +56,20 @@ void NotificationManagerImpl::SendInlineReply(
                << notification_id << ".";
   message_sender_->SendNotificationInlineReplyRequest(notification_id,
                                                       inline_reply_text);
+}
+
+void NotificationManagerImpl::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  FeatureState notifications_feature_state =
+      multidevice_setup_client_->GetFeatureState(
+          Feature::kPhoneHubNotifications);
+  if (notifications_feature_status_ == FeatureState::kEnabledByUser &&
+      notifications_feature_state != FeatureState::kEnabledByUser) {
+    ClearNotificationsInternal();
+  }
+
+  notifications_feature_status_ = notifications_feature_state;
 }
 
 }  // namespace phonehub

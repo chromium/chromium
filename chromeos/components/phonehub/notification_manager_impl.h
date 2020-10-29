@@ -9,15 +9,21 @@
 
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
 namespace phonehub {
 
 class MessageSender;
 
-class NotificationManagerImpl : public NotificationManager {
+class NotificationManagerImpl
+    : public NotificationManager,
+      public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
-  NotificationManagerImpl(MessageSender* message_sender);
+  NotificationManagerImpl(
+      MessageSender* message_sender,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   ~NotificationManagerImpl() override;
 
  private:
@@ -26,7 +32,14 @@ class NotificationManagerImpl : public NotificationManager {
   void SendInlineReply(int64_t notification_id,
                        const base::string16& inline_reply_text) override;
 
+  // MultiDeviceSetupClient::Observer:
+  void OnFeatureStatesChanged(
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_states_map) override;
+
   MessageSender* message_sender_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  multidevice_setup::mojom::FeatureState notifications_feature_status_;
 };
 
 }  // namespace phonehub

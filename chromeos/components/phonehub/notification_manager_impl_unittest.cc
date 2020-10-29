@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
+#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -34,6 +35,9 @@ Notification CreateNotification(int64_t id) {
       /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
       base::UTF8ToUTF16(kTextContent));
 }
+
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 class FakeObserver : public NotificationManager::Observer {
  public:
@@ -83,8 +87,10 @@ class NotificationManagerImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     fake_message_sender_ = std::make_unique<FakeMessageSender>();
-    manager_ =
-        std::make_unique<NotificationManagerImpl>(fake_message_sender_.get());
+    fake_multidevice_setup_client_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
+    manager_ = std::make_unique<NotificationManagerImpl>(
+        fake_message_sender_.get(), fake_multidevice_setup_client_.get());
     manager_->AddObserver(&fake_observer_);
   }
 
@@ -109,9 +115,16 @@ class NotificationManagerImplTest : public testing::Test {
     return fake_observer_.GetState(notification_id);
   }
 
+  void SetNotificationFeatureStatus(FeatureState feature_state) {
+    fake_multidevice_setup_client_->SetFeatureState(
+        Feature::kPhoneHubNotifications, feature_state);
+  }
+
  private:
   FakeObserver fake_observer_;
   std::unique_ptr<FakeMessageSender> fake_message_sender_;
+  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
+      fake_multidevice_setup_client_;
   std::unique_ptr<NotificationManager> manager_;
 };
 
@@ -236,6 +249,21 @@ TEST_F(NotificationManagerImplTest, SendInlineReply) {
   pair = fake_message_sender().GetRecentNotificationInlineReplyRequest();
   EXPECT_EQ(expected_id1, pair.first);
   EXPECT_EQ(expected_reply, pair.second);
+}
+
+TEST_F(NotificationManagerImplTest, ClearNotificationsOnFeatureStatusChanged) {
+  // Simulate enabling notification feature state.
+  SetNotificationFeatureStatus(FeatureState::kEnabledByUser);
+
+  // Set an internal notification.
+  SetNotificationsInternal(
+      base::flat_set<Notification>{CreateNotification(/*notification_id=*/1)});
+  EXPECT_EQ(1u, GetNumNotifications());
+
+  // Change notification feature state to disabled, expect internal
+  // notifications to be cleared.
+  SetNotificationFeatureStatus(FeatureState::kDisabledByUser);
+  EXPECT_EQ(0u, GetNumNotifications());
 }
 }  // namespace phonehub
 }  // namespace chromeos
