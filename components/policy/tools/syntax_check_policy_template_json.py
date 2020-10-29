@@ -274,7 +274,8 @@ class PolicyTemplateChecker(object):
       Error: Value of |key| must be a |value_type|.
       Offending snippet: |container[key]|
 
-    Returns: |container[key]| if the key is present, None otherwise.
+    Returns: |container[key]| if the key is present and there are no errors,
+             None otherwise.
     '''
     if identifier is None:
       try:
@@ -302,10 +303,12 @@ class PolicyTemplateChecker(object):
           'Value of "%s" must be one of [ %s ].' % (key, ', '.join(
               [type.__name__ for type in value_types])), container_name,
           identifier, value)
+      return None
     if str in value_types and regexp_check and not regexp_check.match(value):
       self._Error(
           'Value of "%s" must match "%s".' % (key, regexp_check.pattern),
           container_name, identifier, value)
+      return None
     return value
 
   def _AddPolicyID(self, id, policy_ids, policy, deleted_policy_ids):
