@@ -39800,6 +39800,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Migration stopped"/>
 </enum>
 
+<enum name="KeyPermissionsManagerMigrationStatus">
+  <int value="0" label="kStarted"/>
+  <int value="1" label="kSucceeded"/>
+  <int value="2" label="kFailed"/>
+</enum>
+
 <enum name="KidsManagementURLCheckerResponseStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Network Error"/>

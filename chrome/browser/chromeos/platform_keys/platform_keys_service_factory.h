@@ -40,6 +40,18 @@ class PlatformKeysServiceFactory : public BrowserContextKeyedServiceFactory {
   void SetDeviceWideServiceForTesting(
       PlatformKeysService* device_wide_service_for_testing);
 
+  // If |is_testing_mode| is true, the factory will return platform keys service
+  // instances ready to be used in tests.
+  // Note: Softoken NSS PKCS11 module (used for testing) allows only predefined
+  // key attributes to be set and retrieved. Chaps supports setting and
+  // retrieving custom attributes. If |map_to_softoken_attrs_for_testing_| is
+  // true, the factory will return services that will use fake KeyAttribute
+  // mappings predefined in softoken module for testing. Otherwise, the real
+  // mappings to constants in
+  // third_party/cros_system_api/constants/pkcs11_custom_attributes.h will be
+  // used.
+  void SetTestingMode(bool is_testing_mode);
+
  private:
   friend struct base::DefaultSingletonTraits<PlatformKeysServiceFactory>;
 
@@ -54,6 +66,7 @@ class PlatformKeysServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 
   PlatformKeysService* GetOrCreateDeviceWideService();
 
@@ -63,6 +76,8 @@ class PlatformKeysServiceFactory : public BrowserContextKeyedServiceFactory {
   std::unique_ptr<PlatformKeysService> device_wide_service_;
 
   PlatformKeysService* device_wide_service_for_testing_ = nullptr;
+
+  bool map_to_softoken_attrs_for_testing_ = false;
 };
 }  // namespace platform_keys
 }  // namespace chromeos

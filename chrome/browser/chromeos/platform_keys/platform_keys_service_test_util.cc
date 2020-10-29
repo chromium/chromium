@@ -10,17 +10,6 @@ namespace chromeos {
 namespace platform_keys {
 namespace test_util {
 
-ScopedSoftokenAttrsMapping::ScopedSoftokenAttrsMapping(
-    PlatformKeysService* platform_keys_service)
-    : platform_keys_service_(platform_keys_service) {
-  platform_keys_service_->SetMapToSoftokenAttrsForTesting(true);
-}
-
-ScopedSoftokenAttrsMapping::~ScopedSoftokenAttrsMapping() {
-  DCHECK(platform_keys_service_);
-  platform_keys_service_->SetMapToSoftokenAttrsForTesting(false);
-}
-
 GetTokensExecutionWaiter::GetTokensExecutionWaiter() = default;
 GetTokensExecutionWaiter::~GetTokensExecutionWaiter() = default;
 

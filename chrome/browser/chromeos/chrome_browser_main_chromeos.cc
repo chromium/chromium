@@ -95,6 +95,7 @@
 #include "chrome/browser/chromeos/network_change_manager_client.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/lock_to_single_user_manager.h"
@@ -584,6 +585,9 @@ void ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   // Initialize NSS database for system token.
   system_token_certdb_initializer_ =
       std::make_unique<SystemTokenCertDBInitializer>();
+
+  system_token_key_permissions_manager_ = platform_keys::
+      KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager();
 
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>
       media_controller_manager;

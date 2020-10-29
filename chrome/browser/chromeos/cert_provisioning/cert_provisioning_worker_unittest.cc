@@ -22,9 +22,11 @@
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_test_helpers.h"
 #include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_invalidator.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/fake_user_private_token_kpm_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -380,13 +382,20 @@ class CertProvisioningWorkerTest : public ::testing::Test {
     platform_keys::PlatformKeysServiceFactory::GetInstance()
         ->SetDeviceWideServiceForTesting(platform_keys_service_);
 
-    key_permissions_service_ =
-        static_cast<platform_keys::MockKeyPermissionsService*>(
-            platform_keys::KeyPermissionsServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    GetProfile(),
-                    base::BindRepeating(
-                        &platform_keys::BuildMockKeyPermissionsService)));
+    key_permissions_manager_ =
+        std::make_unique<platform_keys::MockKeyPermissionsManager>();
+
+    platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
+        GetInstance()
+            ->SetTestingFactory(
+                GetProfile(),
+                base::BindRepeating(
+                    &platform_keys::
+                        BuildFakeUserPrivateTokenKeyPermissionsManagerService,
+                    key_permissions_manager_.get()));
+    platform_keys::KeyPermissionsManagerImpl::
+        SetSystemTokenKeyPermissionsManagerForTesting(
+            key_permissions_manager_.get());
 
     // Only explicitly expected removals are allowed.
     EXPECT_CALL(*platform_keys_service_, RemoveCertificate).Times(0);
@@ -449,7 +458,8 @@ class CertProvisioningWorkerTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
-  platform_keys::MockKeyPermissionsService* key_permissions_service_ = nullptr;
+  std::unique_ptr<platform_keys::MockKeyPermissionsManager>
+      key_permissions_manager_ = nullptr;
 };
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -494,8 +504,10 @@ TEST_F(CertProvisioningWorkerTest, Success) {
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), /*callback=*/_));
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -570,8 +582,10 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
         /*callback=*/_));
 
-    EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), /*callback=*/_));
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -652,9 +666,10 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    // Note: No call to KeyPermissionsService::SetCorporateKey, because it is
-    // only performed for platform_keys::TokenId::kUser, but this test works
-    // with the system token.
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kSystem, GetPublicKey(),
@@ -766,8 +781,10 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), /*callback=*/_));
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -1059,8 +1076,10 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(*key_permissions_service_,
-                SetCorporateKey(GetPublicKey(), /*callback=*/_));
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -1217,8 +1236,10 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(*key_permissions_service_, SetCorporateKey(GetPublicKey(),
-                                                           /*callback=*/_));
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),

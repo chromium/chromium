@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/browser.h"
@@ -69,6 +70,9 @@ void PlatformKeysTestBase::SetUp() {
   ASSERT_TRUE(gaia_https_forwarder_.Initialize(
       GaiaUrls::GetInstance()->gaia_url().host(),
       embedded_test_server()->base_url()));
+
+  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
+      ->SetTestingMode(true);
 
   extensions::ExtensionApiTest::SetUp();
 }
@@ -166,6 +170,9 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 
 void PlatformKeysTestBase::TearDownOnMainThread() {
   extensions::ExtensionApiTest::TearDownOnMainThread();
+
+  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
+      ->SetTestingMode(false);
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
