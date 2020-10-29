@@ -51,29 +51,34 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 };
 
-TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
-  const site = `
+// Disabled - flaky: https://crbug.com/1139939
+TEST_F(
+    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToFocusedElement',
+    function() {
+      const site = `
         <button id="apple">Apple</button>
         <button id="banana">Banana</button>
       `;
-  this.runWithLoadedTree(site, async function(root) {
-    // Validate magnifier wants to move to root.
-    const rootLocation = await getNextMagnifierLocation();
-    assertTrue(RectUtil.equal(rootLocation, root.location));
+      this.runWithLoadedTree(site, async function(root) {
+        // Validate magnifier wants to move to root.
+        const rootLocation = await getNextMagnifierLocation();
+        assertTrue(RectUtil.equal(rootLocation, root.location));
 
-    // Focus banana node.
-    const banana =
-        root.find({role: RoleType.BUTTON, attributes: {name: 'Banana'}});
-    banana.focus();
+        // Focus banana node.
+        const banana =
+            root.find({role: RoleType.BUTTON, attributes: {name: 'Banana'}});
+        banana.focus();
 
-    // Validate magnifier wants to move to banana.
-    const bananaLocation = await getNextMagnifierLocation();
-    assertTrue(RectUtil.equal(bananaLocation, banana.location));
-  });
-});
+        // Validate magnifier wants to move to banana.
+        const bananaLocation = await getNextMagnifierLocation();
+        assertTrue(RectUtil.equal(bananaLocation, banana.location));
+      });
+    });
 
+// Disabled - flaky: https://crbug.com/1139939
 TEST_F(
-    'MagnifierE2ETest', 'MovesScreenMagnifierToActiveDescendant', function() {
+    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToActiveDescendant',
+    function() {
       const site = `
     <div role="group" id="parent" aria-activedescendant="apple">
       <div id="apple" role="treeitem">Apple</div>
