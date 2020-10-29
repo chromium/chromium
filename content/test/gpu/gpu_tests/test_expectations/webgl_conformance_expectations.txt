@@ -245,6 +245,9 @@ crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/fract/fract_001_to_006.html [
 crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/build/build_009_to_016.html [ Skip ]
 crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/mat/mat_009_to_016.html [ Skip ]
 
+# Anti-aliasing disabled on Fuchsia
+[ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+
 ####################
 # Win failures     #
 ####################
