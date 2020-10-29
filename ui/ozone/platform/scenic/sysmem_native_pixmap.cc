@@ -88,7 +88,7 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     return false;
   }
   surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
-                                     display_bounds);
+                                     display_bounds, crop_rect);
   overlay_view->SetBlendMode(enable_blend);
   overlay_view->PresentImage(handle_.buffer_index);
   return true;

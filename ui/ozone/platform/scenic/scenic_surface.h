@@ -13,6 +13,7 @@
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
@@ -55,7 +56,8 @@ class ScenicSurface : public ui::PlatformWindowSurface {
   // |id| to be added by PresentOverlayView() before.
   bool UpdateOverlayViewPosition(gfx::SysmemBufferCollectionId id,
                                  int plane_z_order,
-                                 const gfx::Rect& display_bounds);
+                                 const gfx::Rect& display_bounds,
+                                 const gfx::RectF& crop_rect);
 
   // Remove ViewHolder specified by |id|.
   bool RemoveOverlayView(gfx::SysmemBufferCollectionId id);
@@ -90,11 +92,14 @@ class ScenicSurface : public ui::PlatformWindowSurface {
   const gfx::AcceleratedWidget window_;
 
   struct OverlayViewInfo {
-    OverlayViewInfo(scenic::EntityNode node) : entity_node(std::move(node)) {}
+    OverlayViewInfo(scenic::ViewHolder holder, scenic::EntityNode node)
+        : view_holder(std::move(holder)), entity_node(std::move(node)) {}
 
+    scenic::ViewHolder view_holder;
     scenic::EntityNode entity_node;
     int plane_z_order = 0;
     gfx::Rect display_bounds;
+    gfx::RectF crop_rect;
   };
   std::unordered_map<gfx::SysmemBufferCollectionId,
                      OverlayViewInfo,

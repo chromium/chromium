@@ -98,6 +98,12 @@ bool ScenicSurface::PresentOverlayView(
   scenic::ViewHolder view_holder(&scenic_session_, std::move(view_holder_token),
                                  "OverlayViewHolder");
   scenic::EntityNode entity_node(&scenic_session_);
+  fuchsia::ui::gfx::ViewProperties view_properties;
+  view_properties.bounding_box = {{-0.5f, -0.5f, 0.f}, {0.5f, 0.5f, 0.f}};
+  view_properties.focus_change = false;
+  view_holder.SetViewProperties(std::move(view_properties));
+  view_holder.SetHitTestBehavior(fuchsia::ui::gfx::HitTestBehavior::kSuppress);
+
   entity_node.AddChild(view_holder);
   parent_->AddChild(entity_node);
   scenic_session_.Present2(
@@ -106,24 +112,34 @@ bool ScenicSurface::PresentOverlayView(
       [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
 
   DCHECK(!overlays_.count(id));
-  overlays_.emplace(id, std::move(entity_node));
+  overlays_.emplace(
+      std::piecewise_construct, std::forward_as_tuple(id),
+      std::forward_as_tuple(std::move(view_holder), std::move(entity_node)));
 
   return true;
 }
 
 bool ScenicSurface::UpdateOverlayViewPosition(gfx::SysmemBufferCollectionId id,
                                               int plane_z_order,
-                                              const gfx::Rect& display_bounds) {
+                                              const gfx::Rect& display_bounds,
+                                              const gfx::RectF& crop_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(overlays_.count(id));
   auto& overlay_view_info = overlays_.at(id);
+
   if (overlay_view_info.plane_z_order == plane_z_order &&
-      overlay_view_info.display_bounds == display_bounds) {
+      overlay_view_info.display_bounds == display_bounds &&
+      overlay_view_info.crop_rect == crop_rect) {
     return false;
   }
+
   overlay_view_info.plane_z_order = plane_z_order;
   overlay_view_info.display_bounds = display_bounds;
+  overlay_view_info.crop_rect = crop_rect;
+  // TODO(crbug.com/1143514): Only queue commands for the affected overlays
+  // instead of the whole scene.
   UpdateViewHolderScene();
+
   return true;
 }
 
@@ -160,25 +176,43 @@ mojo::PlatformHandle ScenicSurface::CreateView() {
 }
 
 void ScenicSurface::UpdateViewHolderScene() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   // |plane_z_order| for main surface is 0.
   int min_z_order = 0;
   for (const auto& overlay : overlays_) {
     min_z_order = std::min(overlay.second.plane_z_order, min_z_order);
   }
   for (auto& overlay : overlays_) {
+    auto& info = overlay.second;
+
+    // Apply view bound clipping around the ImagePipe that has size 1x1 and
+    // centered at (0, 0).
+    fuchsia::ui::gfx::ViewProperties view_properties;
+    const float left_bound = -0.5f + info.crop_rect.x();
+    const float top_bound = -0.5f + info.crop_rect.y();
+    view_properties.bounding_box = {{left_bound, top_bound, 0.f},
+                                    {left_bound + info.crop_rect.width(),
+                                     top_bound + info.crop_rect.height(), 0.f}};
+    view_properties.focus_change = false;
+    info.view_holder.SetViewProperties(std::move(view_properties));
+
+    // Scale ImagePipe based on the display bounds and clip rect given.
     const float scaled_width =
-        overlay.second.display_bounds.width() / main_shape_size_.width();
+        info.display_bounds.width() /
+        (info.crop_rect.width() * main_shape_size_.width());
     const float scaled_height =
-        overlay.second.display_bounds.height() / main_shape_size_.height();
-    overlay.second.entity_node.SetScale(scaled_width, scaled_height, 1.f);
-    const float scaled_x =
-        overlay.second.display_bounds.x() / main_shape_size_.width();
-    const float scaled_y =
-        overlay.second.display_bounds.y() / main_shape_size_.height();
-    overlay.second.entity_node.SetTranslation(
+        info.display_bounds.height() /
+        (info.crop_rect.height() * main_shape_size_.height());
+    info.entity_node.SetScale(scaled_width, scaled_height, 1.f);
+
+    // Position ImagePipe based on the display bounds given.
+    const float scaled_x = info.display_bounds.x() / main_shape_size_.width();
+    const float scaled_y = info.display_bounds.y() / main_shape_size_.height();
+    info.entity_node.SetTranslation(
         scaled_x - (0.5f - scaled_width / 2),
         scaled_y - (0.5f - scaled_height / 2),
-        (min_z_order - overlay.second.plane_z_order) * kElevationStep);
+        (min_z_order - info.plane_z_order) * kElevationStep);
   }
 
   main_material_.SetColor(255, 255, 255, 0 > min_z_order ? 254 : 255);
