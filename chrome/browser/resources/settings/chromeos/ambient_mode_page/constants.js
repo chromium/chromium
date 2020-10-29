@@ -40,6 +40,7 @@
  *   description: string,
  *   title: string,
  *   url: string,
+ *   recentHighlightsUrls: Array<string>,
  * }}
  */
 /* #export */ let AmbientModeAlbum;

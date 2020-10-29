@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
@@ -275,7 +276,6 @@ void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
         value.SetKey("checked", base::Value(album.selected));
         value.SetKey("description", base::Value(GetAlbumDescription(album)));
         value.SetKey("title", base::Value(album.album_name));
-        value.SetKey("url", base::Value(album.png_data_url));
         albums.Append(std::move(value));
       }
       break;
@@ -288,7 +288,6 @@ void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
         value.SetKey("checked", base::Value(setting.enabled));
         value.SetKey("description", base::Value(setting.description));
         value.SetKey("title", base::Value(setting.title));
-        value.SetKey("url", base::Value(setting.png_data_url));
         albums.Append(std::move(value));
       }
       break;
@@ -309,6 +308,32 @@ void AmbientModeHandler::SendAlbumPreview(
   album.SetKey("albumId", base::Value(album_id));
   album.SetKey("topicSource", base::Value(static_cast<int>(topic_source)));
   album.SetKey("url", base::Value(png_data_url));
+  FireWebUIListener("album-preview-changed", std::move(album));
+}
+
+void AmbientModeHandler::SendRecentHighlightsPreviews() {
+  if (!FindPersonalAlbumById(ash::kAmbientModeRecentHighlightsAlbumId))
+    return;
+
+  base::Value png_data_urls(base::Value::Type::LIST);
+  for (const auto& image : recent_highlights_preview_images_) {
+    if (image.isNull())
+      continue;
+
+    std::vector<unsigned char> encoded_image_bytes;
+    EncodeImage(image, &encoded_image_bytes);
+    if (!encoded_image_bytes.empty()) {
+      png_data_urls.Append(base::Value(webui::GetPngDataUrl(
+          &encoded_image_bytes.front(), encoded_image_bytes.size())));
+    }
+  }
+
+  base::Value album(base::Value::Type::DICTIONARY);
+  album.SetKey("albumId",
+               base::Value(ash::kAmbientModeRecentHighlightsAlbumId));
+  album.SetKey("topicSource", base::Value(static_cast<int>(
+                                  ash::AmbientModeTopicSource::kGooglePhotos)));
+  album.SetKey("recentHighlightsUrls", std::move(png_data_urls));
   FireWebUIListener("album-preview-changed", std::move(album));
 }
 
@@ -516,6 +541,11 @@ void AmbientModeHandler::DownloadAlbumPreviewImage(
       // TODO(b/163413738): Slow down the downloading when there are too many
       // albums.
       for (const auto& album : personal_albums_.albums) {
+        if (album.album_id == ash::kAmbientModeRecentHighlightsAlbumId) {
+          DownloadRecentHighlightsPreviewImages(album.preview_image_urls);
+          continue;
+        }
+
         ash::ImageDownloader::Get()->Download(
             GURL(album.banner_image_url), NO_TRAFFIC_ANNOTATION_YET,
             base::BindOnce(&AmbientModeHandler::OnAlbumPreviewImageDownloaded,
@@ -559,6 +589,40 @@ void AmbientModeHandler::OnAlbumPreviewImageDownloaded(
   SendAlbumPreview(topic_source, album_id,
                    webui::GetPngDataUrl(&encoded_image_bytes.front(),
                                         encoded_image_bytes.size()));
+}
+
+void AmbientModeHandler::DownloadRecentHighlightsPreviewImages(
+    const std::vector<std::string>& urls) {
+  recent_highlights_previews_weak_factory_.InvalidateWeakPtrs();
+
+  // Only show up to 4 previews.
+  constexpr int kMaxRecentHighlightsPreviews = 4;
+  const int total_previews =
+      std::min(kMaxRecentHighlightsPreviews, static_cast<int>(urls.size()));
+  recent_highlights_preview_images_.resize(total_previews);
+  auto on_done = base::BarrierClosure(
+      total_previews,
+      base::BindOnce(&AmbientModeHandler::SendRecentHighlightsPreviews,
+                     recent_highlights_previews_weak_factory_.GetWeakPtr()));
+
+  for (int url_index = 0; url_index < total_previews; ++url_index) {
+    const auto& url = urls[url_index];
+    ash::ImageDownloader::Get()->Download(
+        GURL(url), NO_TRAFFIC_ANNOTATION_YET,
+        base::BindOnce(
+            [](std::vector<gfx::ImageSkia>* preview_images, int url_index,
+               base::RepeatingClosure on_done,
+               base::WeakPtr<AmbientModeHandler> weak_ptr,
+               const gfx::ImageSkia& image) {
+              if (!weak_ptr)
+                return;
+
+              (*preview_images)[url_index] = image;
+              on_done.Run();
+            },
+            &recent_highlights_preview_images_, url_index, on_done,
+            recent_highlights_previews_weak_factory_.GetWeakPtr()));
+  }
 }
 
 ash::PersonalAlbum* AmbientModeHandler::FindPersonalAlbumById(

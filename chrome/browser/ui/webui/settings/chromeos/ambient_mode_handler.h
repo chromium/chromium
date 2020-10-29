@@ -75,6 +75,10 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
                         const std::string& album_id,
                         std::string&& png_data_url);
 
+  // Send the "album-preview-changed" WebUIListener event with Recent Highlights
+  // previews in the |topic_source|.
+  void SendRecentHighlightsPreviews();
+
   // Update the local |settings_| to server.
   void UpdateSettings();
 
@@ -112,6 +116,8 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
 
   void DownloadAlbumPreviewImage(ash::AmbientModeTopicSource topic_source);
+  void DownloadRecentHighlightsPreviewImages(
+      const std::vector<std::string>& urls);
 
   void OnAlbumPreviewImageDownloaded(ash::AmbientModeTopicSource topic_source,
                                      const std::string& album_id,
@@ -154,8 +160,12 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   // Backoff retries for UpdateSettings().
   net::BackoffEntry update_settings_retry_backoff_;
 
+  std::vector<gfx::ImageSkia> recent_highlights_preview_images_;
+
   base::WeakPtrFactory<AmbientModeHandler> backend_weak_factory_{this};
   base::WeakPtrFactory<AmbientModeHandler> ui_update_weak_factory_{this};
+  base::WeakPtrFactory<AmbientModeHandler>
+      recent_highlights_previews_weak_factory_{this};
 };
 
 }  // namespace settings

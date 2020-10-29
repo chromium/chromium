@@ -300,7 +300,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('artPhotosCheckIconHasCorrectPosition', function() {
-    assertCheckPosition(AmbientModeTopicSource.GOOGLE_PHOTOS);
+    assertCheckPosition(AmbientModeTopicSource.ART_GALLERY);
   });
 
   test('setSelectedAlbums', async () => {
@@ -405,7 +405,7 @@ suite('AmbientModeHandler', function() {
 
   test('updateAlbumURL', function() {
     ambientModePhotosPage.albums = [
-      {albumId: 'id0', checked: true, title: 'album0', url: ''},
+      {albumId: 'id0', checked: true, title: 'album0'},
     ];
     ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
     Polymer.dom.flush();
@@ -416,10 +416,9 @@ suite('AmbientModeHandler', function() {
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];
-    assertEquals('', album0.album.url);
 
     // Update album URL.
-    const url = 'chrome://ambient';
+    const url = 'url';
     cr.webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.ART_GALLERY,
       albumId: 'id0',
@@ -430,7 +429,7 @@ suite('AmbientModeHandler', function() {
 
   test('notUpdateAlbumURL', function() {
     ambientModePhotosPage.albums = [
-      {albumId: 'id0', checked: true, title: 'album0', url: ''},
+      {albumId: 'id0', checked: true, title: 'album0'},
     ];
     ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
     Polymer.dom.flush();
@@ -441,7 +440,6 @@ suite('AmbientModeHandler', function() {
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];
-    assertEquals('', album0.album.url);
 
     // Different topic source will no update album URL.
     const url = 'chrome://ambient';
@@ -450,12 +448,12 @@ suite('AmbientModeHandler', function() {
       albumId: 'id0',
       url: url
     });
-    assertEquals('', album0.album.url);
+    assertFalse(!!album0.album.url);
   });
 
   test('updateImgVisibility', function() {
     ambientModePhotosPage.albums = [
-      {albumId: 'id0', checked: true, title: 'album0', url: ''},
+      {albumId: 'id0', checked: true, title: 'album0'},
     ];
     ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
     Polymer.dom.flush();
@@ -466,13 +464,12 @@ suite('AmbientModeHandler', function() {
     assertEquals(1, albumItems.length);
 
     const album0 = albumItems[0];
-    assertEquals('', album0.album.url);
 
     let img = album0.$$('#image');
     assertFalse(!!img);
 
     // Update album URL.
-    const url = 'https://ambient-art-gallery-preview-url';
+    const url = 'url';
     cr.webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.ART_GALLERY,
       albumId: 'id0',
@@ -483,5 +480,102 @@ suite('AmbientModeHandler', function() {
     img = album0.$$('#image');
     assertTrue(!!img);
     assertFalse(img.hidden);
+
+    const images = album0.$$('#rhImages');
+    assertFalse(!!images);
+  });
+
+  test('updateRecentHighlightsImagesVisibility', function() {
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0'},
+    ];
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.GOOGLE_PHOTOS;
+    Polymer.dom.flush();
+
+    const albumList = ambientModePhotosPage.$$('album-list');
+    const ironList = albumList.$$('iron-list');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
+    assertEquals(1, albumItems.length);
+
+    const album0 = albumItems[0];
+    let images = album0.$$('#rhImages');
+    assertFalse(!!images);
+
+    // Update Recent Highlights album URLs.
+    const url = 'url';
+    cr.webUIListenerCallback('album-preview-changed', {
+      topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
+      albumId: 'id0',
+      recentHighlightsUrls: [url, url, url, url]
+    });
+    assertEquals(url, album0.album.recentHighlightsUrls[0]);
+    assertEquals(url, album0.album.recentHighlightsUrls[1]);
+    assertEquals(url, album0.album.recentHighlightsUrls[2]);
+    assertEquals(url, album0.album.recentHighlightsUrls[3]);
+    images = album0.$$('#rhImages');
+    assertTrue(!!images);
+    assertFalse(images.hidden);
+    const image_top_left = album0.$$('.image-rh.top-left');
+    const image_top_right = album0.$$('.image-rh.top-right');
+    const image_bottom_left = album0.$$('.image-rh.bottom-left');
+    const image_bottom_right = album0.$$('.image-rh.bottom-right');
+    assertTrue(!!image_top_left);
+    assertFalse(image_top_left.hidden);
+    assertTrue(!!image_top_right);
+    assertFalse(image_top_right.hidden);
+    assertTrue(!!image_bottom_left);
+    assertFalse(image_bottom_left.hidden);
+    assertTrue(!!image_bottom_right);
+    assertFalse(image_bottom_right.hidden);
+
+    const img = album0.$$('#image');
+    assertFalse(!!img);
+  });
+
+  test('updateRecentHighlightsImagesVisibilityWithThreeImages', function() {
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0'},
+    ];
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.GOOGLE_PHOTOS;
+    Polymer.dom.flush();
+
+    const albumList = ambientModePhotosPage.$$('album-list');
+    const ironList = albumList.$$('iron-list');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
+    assertEquals(1, albumItems.length);
+
+    const album0 = albumItems[0];
+    let images = album0.$$('#rhImages');
+    assertFalse(!!images);
+
+    // Only update 3 images.
+    const url = 'url';
+    cr.webUIListenerCallback('album-preview-changed', {
+      topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
+      albumId: 'id0',
+      recentHighlightsUrls: [url, url, url]
+    });
+    assertEquals(url, album0.album.recentHighlightsUrls[0]);
+    assertEquals(url, album0.album.recentHighlightsUrls[1]);
+    assertEquals(url, album0.album.recentHighlightsUrls[2]);
+    assertFalse(!!album0.album.recentHighlightsUrls[3]);
+    images = album0.$$('#rhImages');
+    assertTrue(!!images);
+    assertFalse(images.hidden);
+    const image_top_left = album0.$$('.image-rh.top-left');
+    const image_top_right = album0.$$('.image-rh.top-right');
+    const image_bottom_left = album0.$$('.image-rh.bottom-left');
+    const image_bottom_right = album0.$$('.image-rh.bottom-right');
+    assertTrue(!!image_top_left);
+    assertFalse(image_top_left.hidden);
+    assertTrue(!!image_top_right);
+    assertFalse(image_top_right.hidden);
+    assertTrue(!!image_bottom_left);
+    assertFalse(image_bottom_left.hidden);
+    assertTrue(!!image_bottom_right);
+    assertTrue(image_bottom_right.hidden);
+
+    const img = album0.$$('#image');
+    assertFalse(!!img);
   });
 });

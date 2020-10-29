@@ -28,7 +28,7 @@
 
       #imageContainer {
         background-color: rgba(var(--google-blue-50-rgb), .8);
-        border-radius: 4px;
+        border-radius: 8px;
         display: block;
         margin: 0 12px;
         position: relative;
@@ -49,7 +49,7 @@
       }
 
       #image {
-        border-radius: 4px;
+        border-radius: 8px;
         display: block;
         height: 160px;
         object-fit: cover;
@@ -64,6 +64,44 @@
 
       #image.art-album {
         width: 256px;
+      }
+
+      #rhImages {
+        border-radius: 8px;
+        display: block;
+        height: 160px;
+        position: absolute;
+        transform: scale(1.0);
+        transition: transform 240ms;
+        width: 160px;
+      }
+
+      .image-rh {
+        border-radius: 8px;
+        display: block;
+        height: 78px;
+        position: absolute;
+        width: 78px;
+      }
+
+      .top-left {
+        left: 0;
+        top: 0;
+      }
+
+      .top-right {
+        left: 82px;
+        top: 0;
+      }
+
+      .bottom-left {
+        left: 0;
+        top: 82px;
+      }
+
+      .bottom-right {
+        left: 82px;
+        top: 82px;
       }
 
       .check {
@@ -83,9 +121,7 @@
       }
 
       :host([checked]) #image {
-        border-radius: 6px;
         box-shadow: 0 4px 8px rgba(32, 33, 36, 0.17);
-        transform: scale(0.9);
         transition: transform 240ms;
       }
 
@@ -96,13 +132,41 @@
       :host([checked]) #image.art-album {
         transform: scale(0.875);
       }
+
+      :host([checked]) #rhImages {
+        transform: scale(0.8);
+      }
     </style>
     <div id="albumContainer"
         class$="layout vertical left flex [[computeClass_(topicSource)]]">
       <div id="imageContainer" class$="[[computeClass_(topicSource)]]"
           aria-hidden="true">
-        <!-- Only shows the image and icon when the URL is successfully
+        <!-- Only shows the images and icon when the URLs are successfully
              fetched -->
+        <template is="dom-if" if="[[album.recentHighlightsUrls]]">
+          <div id="rhImages" actionable on-click="onImageClick_">
+            <img class="image-rh top-left"
+                src="[[album.recentHighlightsUrls.0]]"
+                hidden="[[!album.recentHighlightsUrls.0]]">
+            </img>
+            <img class="image-rh top-right"
+                src="[[album.recentHighlightsUrls.1]]"
+                hidden="[[!album.recentHighlightsUrls.1]]">
+            </img>
+            <img class="image-rh bottom-left"
+                src="[[album.recentHighlightsUrls.2]]"
+                hidden="[[!album.recentHighlightsUrls.2]]">
+            </img>
+            <img class="image-rh bottom-right"
+                src="[[album.recentHighlightsUrls.3]]"
+                hidden="[[!album.recentHighlightsUrls.3]]">
+            </img>
+          </div>
+          <iron-icon icon="os-settings:ic-checked-filled"
+              class$="check [[computeClass_(topicSource)]]"
+              hidden="[[!album.checked]]">
+          </iron-icon>
+        </template>
         <template is="dom-if" if="[[album.url]]">
           <img id="image" class$="[[computeClass_(topicSource)]]" actionable
               src="[[album.url]]" on-click="onImageClick_">

@@ -115,7 +115,13 @@ Polymer({
 
     for (let i = 0; i < this.albums.length; ++i) {
       if (this.albums[i].albumId === album.albumId) {
-        this.set('albums.' + i + '.url', album.url);
+        if (album.url) {
+          this.set('albums.' + i + '.url', album.url);
+          continue;
+        }
+        this.set(
+            'albums.' + i + '.recentHighlightsUrls',
+            album.recentHighlightsUrls);
       }
     }
   },
