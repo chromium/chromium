@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
@@ -133,7 +134,9 @@ const char kManagementPageURL[] = "chrome://management";
       break;
 #endif  // !defined(NDEBUG)
     case PopupMenuActionOpenNewWindow:
-      [self.dispatcher openNewWindowWithActivity:nil];
+      [self.dispatcher openNewWindowWithActivity:ActivityToLoadURL(
+                                                     WindowActivityToolsOrigin,
+                                                     GURL(kChromeUINewTabURL))];
       break;
     case PopupMenuActionBookmarks:
       RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
