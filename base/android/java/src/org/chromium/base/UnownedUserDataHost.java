@@ -248,6 +248,11 @@ public final class UnownedUserDataHost {
     public void destroy() {
         mThreadChecker.assertOnValidThread();
 
+        if (isDestroyed()) {
+            // Protect against potential races.
+            return;
+        }
+
         // Create a shallow copy of all keys to ensure each held object can safely remove itself
         // from the map while iterating over their keys.
         Set<UnownedUserDataKey<?>> keys = new HashSet<>(mUnownedUserDataMap.keySet());
