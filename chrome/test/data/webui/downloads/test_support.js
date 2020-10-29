@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DangerType, States} from 'chrome://downloads/downloads.js';
+import {DangerType, PageCallbackRouter, PageHandlerInterface, PageInterface, PageRemote, States} from 'chrome://downloads/downloads.js';
 
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
 export class TestDownloadsProxy {
   constructor() {
-    /** @type {downloads.mojom.PageCallbackRouter} */
-    this.callbackRouter = new downloads.mojom.PageCallbackRouter();
+    /** @type {PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!downloads.mojom.PageRemote} */
+    /** @type {!PageRemote} */
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    /** @type {downloads.mojom.PageHandlerInterface} */
+    /** @type {PageHandlerInterface} */
     this.handler = new FakePageHandler(this.callbackRouterRemote);
   }
 }
 
-/** @implements {downloads.mojom.PageHandlerInterface} */
+/** @implements {PageHandlerInterface} */
 class FakePageHandler {
-  /** @param {downloads.mojom.PageInterface} */
+  /** @param {PageInterface} */
   constructor(callbackRouterRemote) {
-    /** @private {downloads.mojom.PageInterface} */
+    /** @private {PageInterface} */
     this.callbackRouterRemote_ = callbackRouterRemote;
 
     /** @private {TestBrowserProxy} */

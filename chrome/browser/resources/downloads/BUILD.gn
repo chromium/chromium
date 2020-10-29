@@ -26,7 +26,7 @@ if (optimize_webui) {
     out_manifest = "$target_gen_dir/$build_manifest"
     excludes = [
       "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
 
     deps = [
@@ -93,11 +93,11 @@ preprocess_grit("preprocess_web_components") {
 }
 
 preprocess_grit("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_js" ]
-  in_folder = get_path_info("../../ui/webui/downloads/", "gen_dir")
+  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads/"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
-  in_files = [ "downloads.mojom-lite.js" ]
+  in_files = [ "downloads.mojom-webui.js" ]
 }
 
 grit("downloads_resources") {
@@ -135,11 +135,12 @@ js_type_check("closure_compile") {
     ":search_service",
     ":toolbar",
   ]
+  closure_flags = mojom_js_args
 }
 
 js_library("browser_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/downloads:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "externs.js" ]

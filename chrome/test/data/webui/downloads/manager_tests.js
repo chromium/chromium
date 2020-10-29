@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../mojo_webui_test_support.js';
+
 import {BrowserProxy, DangerType, States} from 'chrome://downloads/downloads.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';

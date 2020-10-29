@@ -26,6 +26,7 @@ import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/p
 
 import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
+import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {IconLoader} from './icon_loader.js';
 
 Polymer({
@@ -137,7 +138,7 @@ Polymer({
     'restoreFocusAfterCancelIfNeeded_(data)',
   ],
 
-  /** @private {downloads.mojom.PageHandlerInterface} */
+  /** @private {PageHandlerInterface} */
   mojoHandler_: null,
 
   /** @private {boolean} */

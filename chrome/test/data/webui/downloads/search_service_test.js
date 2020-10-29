@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../mojo_webui_test_support.js';
+
 import {BrowserProxy, SearchService} from 'chrome://downloads/downloads.js';
 import {TestDownloadsProxy} from 'chrome://test/downloads/test_support.js';
 

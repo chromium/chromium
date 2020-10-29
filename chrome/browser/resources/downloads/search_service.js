@@ -6,13 +6,14 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {PageHandlerInterface} from './downloads.mojom-webui.js';
 
 export class SearchService {
   constructor() {
     /** @private {!Array<string>} */
     this.searchTerms_ = [];
 
-    /** @private {downloads.mojom.PageHandlerInterface} */
+    /** @private {PageHandlerInterface} */
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
 

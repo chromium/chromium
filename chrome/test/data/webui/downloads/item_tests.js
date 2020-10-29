@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../mojo_webui_test_support.js';
+
 import {BrowserProxy, DangerType, IconLoader, States} from 'chrome://downloads/downloads.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDownload, TestDownloadsProxy, TestIconLoader} from 'chrome://test/downloads/test_support.js';

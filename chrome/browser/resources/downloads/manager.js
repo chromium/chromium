@@ -23,6 +23,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
+import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 
 Polymer({
@@ -84,10 +85,10 @@ Polymer({
     'itemsChanged_(items_.*)',
   ],
 
-  /** @private {downloads.mojom.PageCallbackRouter} */
+  /** @private {PageCallbackRouter} */
   mojoEventTarget_: null,
 
-  /** @private {downloads.mojom.PageHandlerInterface} */
+  /** @private {PageHandlerInterface} */
   mojoHandler_: null,
 
   /** @private {?SearchService} */

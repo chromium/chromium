@@ -6,5 +6,6 @@ import './manager.js';
 
 export {BrowserProxy} from './browser_proxy.js';
 export {DangerType, States} from './constants.js';
+export {PageCallbackRouter, PageHandlerInterface, PageInterface, PageRemote} from './downloads.mojom-webui.js';
 export {IconLoader} from './icon_loader.js';
 export {SearchService} from './search_service.js';

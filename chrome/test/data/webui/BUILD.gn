@@ -353,7 +353,6 @@ if (include_js_tests) {
     sources = [
       "bluetooth_internals_browsertest.js",
       "cr_components/cr_components_mojo_browsertest.js",
-      "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
       "interventions_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
@@ -381,25 +380,18 @@ if (include_js_tests) {
       deps += [ "//chromeos/services/machine_learning/public/cpp:test_support" ]
     }
 
-    extra_js_files = [ "//chrome/browser/resources/downloads/constants.js" ]
-
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    # discards_browsertest.js is the only test suite here for now, and it's
-    # desktop-only. When more test suites are converted to type "mojo_webui",
-    # this target should be defined unconditionally and this outer condition
-    # used only to constrain the inclusion of discards_browsertest.js.
-    js2gtest("browser_tests_js_mojo_webui") {
-      test_type = "mojo_webui"
-      sources = [ "discards/discards_browsertest.js" ]
-      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-      data = [ "mojo_webui_test_support.js" ]
+  js2gtest("browser_tests_js_mojo_webui") {
+    test_type = "mojo_webui"
+    sources = [ "downloads/downloads_browsertest.js" ]
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [ "discards/discards_browsertest.js" ]
     }
-  } else {
-    group("browser_tests_js_mojo_webui") {
-    }
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    data = [ "mojo_webui_test_support.js" ]
+    extra_js_files = [ "//chrome/browser/resources/downloads/constants.js" ]
   }
 
   js2gtest("interactive_ui_tests_js_mojo_lite_webui") {
