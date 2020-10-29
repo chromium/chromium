@@ -53,6 +53,9 @@ constexpr char kEduCoexistenceLoginDefaultURL[] =
 constexpr char kOobe[] = "oobe";
 constexpr char kInSession[] = "in_session";
 
+constexpr char kFetchAccessTokenResultHistogram[] =
+    "AccountManager.EduCoexistence.FetchAccessTokenResult";
+
 signin::IdentityManager* GetIdentityManager() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
@@ -197,6 +200,9 @@ void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
 void EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo info) {
+  base::UmaHistogramEnumeration(kFetchAccessTokenResultHistogram, error.state(),
+                                GoogleServiceAuthError::NUM_STATES);
+
   if (error.state() != GoogleServiceAuthError::State::NONE) {
     // TODO(yilkal) call on to the ui to show error screen.
     return;
