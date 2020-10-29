@@ -39,6 +39,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
     kClientEdgeThickness = 1,
   };
 
+  NonClientFrameView();
   ~NonClientFrameView() override;
 
   // Used to determine if the frame should be painted as active. Keyed off the
@@ -59,10 +60,10 @@ class VIEWS_EXPORT NonClientFrameView : public View,
 
   // Returns the bounds (in this View's parent's coordinates) that the client
   // view should be laid out within.
-  virtual gfx::Rect GetBoundsForClientView() const = 0;
+  virtual gfx::Rect GetBoundsForClientView() const;
 
   virtual gfx::Rect GetWindowBoundsForClientBounds(
-      const gfx::Rect& client_bounds) const = 0;
+      const gfx::Rect& client_bounds) const;
 
   // Gets the clip mask (in this View's parent's coordinates) that should be
   // applied to the client view. Returns false if no special clip should be
@@ -80,26 +81,24 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // hittests for regions that are partially obscured by the ClientView, e.g.
   // HTSYSMENU.
   // Return value is one of the windows HT constants (see ui/base/hit_test.h).
-  virtual int NonClientHitTest(const gfx::Point& point) = 0;
+  virtual int NonClientHitTest(const gfx::Point& point);
 
   // Used to make the hosting widget shaped (non-rectangular). For a
   // rectangular window do nothing. For a shaped window update |window_mask|
   // accordingly. |size| is the size of the widget.
-  virtual void GetWindowMask(const gfx::Size& size, SkPath* window_mask) = 0;
-  virtual void ResetWindowControls() = 0;
-  virtual void UpdateWindowIcon() = 0;
-  virtual void UpdateWindowTitle() = 0;
+  virtual void GetWindowMask(const gfx::Size& size, SkPath* window_mask) {}
+  virtual void ResetWindowControls() {}
+  virtual void UpdateWindowIcon() {}
+  virtual void UpdateWindowTitle() {}
 
   // Whether the widget can be resized or maximized has changed.
-  virtual void SizeConstraintsChanged() = 0;
+  virtual void SizeConstraintsChanged() {}
 
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
  protected:
-  NonClientFrameView();
-
   // ViewTargeterDelegate:
   bool DoesIntersectRect(const View* target,
                          const gfx::Rect& rect) const override;

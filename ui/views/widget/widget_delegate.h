@@ -30,6 +30,12 @@ class View;
 // Handles events on Widgets in context-specific ways.
 class VIEWS_EXPORT WidgetDelegate {
  public:
+  using ClientViewFactory =
+      base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
+  using NonClientFrameViewFactory =
+      base::OnceCallback<std::unique_ptr<NonClientFrameView>(Widget*)>;
+  using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
+
   struct Params {
     Params();
     ~Params();
@@ -351,6 +357,10 @@ class VIEWS_EXPORT WidgetDelegate {
   void RegisterWindowClosingCallback(base::OnceClosure callback);
   void RegisterDeleteDelegateCallback(base::OnceClosure callback);
 
+  void SetClientViewFactory(ClientViewFactory factory);
+  void SetNonClientFrameViewFactory(NonClientFrameViewFactory factory);
+  void SetOverlayViewFactory(OverlayViewFactory factory);
+
   // Called to notify the WidgetDelegate of changes to the state of its Widget.
   // It is not usually necessary to call these from client code.
   void WidgetInitializing(Widget* widget);
@@ -393,6 +403,10 @@ class VIEWS_EXPORT WidgetDelegate {
   std::vector<base::OnceClosure> window_will_close_callbacks_;
   std::vector<base::OnceClosure> window_closing_callbacks_;
   std::vector<base::OnceClosure> delete_delegate_callbacks_;
+
+  ClientViewFactory client_view_factory_;
+  NonClientFrameViewFactory non_client_frame_view_factory_;
+  OverlayViewFactory overlay_view_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetDelegate);
 };

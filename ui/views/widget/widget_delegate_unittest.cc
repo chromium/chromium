@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/test/bind_test_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -64,6 +65,52 @@ TEST_F(WidgetDelegateTest, GetContentsViewDoesNotTransferOwnership) {
   delegate.reset();
 
   EXPECT_FALSE(tracker.view());
+}
+
+TEST_F(WidgetDelegateTest, ClientViewFactoryCanReplaceClientView) {
+  ViewTracker tracker;
+
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetClientViewFactory(
+      base::BindLambdaForTesting([&tracker](Widget* widget) {
+        auto view = std::make_unique<ClientView>(widget, nullptr);
+        tracker.SetView(view.get());
+        return view;
+      }));
+
+  auto client =
+      base::WrapUnique<ClientView>(delegate->CreateClientView(nullptr));
+  EXPECT_EQ(tracker.view(), client.get());
+}
+
+TEST_F(WidgetDelegateTest,
+       NonClientFrameViewFactoryCanReplaceNonClientFrameView) {
+  ViewTracker tracker;
+
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetNonClientFrameViewFactory(
+      base::BindLambdaForTesting([&tracker](Widget* widget) {
+        auto view = std::make_unique<NonClientFrameView>();
+        tracker.SetView(view.get());
+        return view;
+      }));
+
+  auto nonclient = delegate->CreateNonClientFrameView(nullptr);
+  EXPECT_EQ(tracker.view(), nonclient.get());
+}
+
+TEST_F(WidgetDelegateTest, OverlayViewFactoryCanReplaceOverlayView) {
+  ViewTracker tracker;
+
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetOverlayViewFactory(base::BindLambdaForTesting([&tracker]() {
+    auto view = std::make_unique<View>();
+    tracker.SetView(view.get());
+    return view;
+  }));
+
+  auto overlay = base::WrapUnique<View>(delegate->CreateOverlayView());
+  EXPECT_EQ(tracker.view(), overlay.get());
 }
 
 }  // namespace

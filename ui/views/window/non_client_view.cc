@@ -91,6 +91,15 @@ int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
   return can_resize ? component : HTBORDER;
 }
 
+gfx::Rect NonClientFrameView::GetBoundsForClientView() const {
+  return gfx::Rect();
+}
+
+gfx::Rect NonClientFrameView::GetWindowBoundsForClientBounds(
+    const gfx::Rect& client_bounds) const {
+  return client_bounds;
+}
+
 bool NonClientFrameView::GetClientMask(const gfx::Size& size,
                                        SkPath* mask) const {
   return false;
@@ -106,6 +115,10 @@ gfx::Point NonClientFrameView::GetSystemMenuScreenPixelLocation() const {
   return point - gfx::Vector2d(0, 1);
 }
 #endif
+
+int NonClientFrameView::NonClientHitTest(const gfx::Point& point) {
+  return HTNOWHERE;
+}
 
 void NonClientFrameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kClient;

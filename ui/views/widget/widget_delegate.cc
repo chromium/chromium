@@ -22,13 +22,37 @@
 
 namespace views {
 
+namespace {
+
+std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
+                                                    Widget* widget) {
+  return std::make_unique<ClientView>(
+      widget, delegate->TransferOwnershipOfContentsView());
+}
+
+std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
+    Widget* widget) {
+  return nullptr;
+}
+
+std::unique_ptr<View> CreateDefaultOverlayView() {
+  return nullptr;
+}
+
+}  // namespace
+
 ////////////////////////////////////////////////////////////////////////////////
 // WidgetDelegate:
 
 WidgetDelegate::Params::Params() = default;
 WidgetDelegate::Params::~Params() = default;
 
-WidgetDelegate::WidgetDelegate() = default;
+WidgetDelegate::WidgetDelegate()
+    : client_view_factory_(
+          base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
+      non_client_frame_view_factory_(
+          base::BindOnce(&CreateDefaultNonClientFrameView)),
+      overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 WidgetDelegate::~WidgetDelegate() {
   CHECK(can_delete_this_) << "A WidgetDelegate must outlive its Widget";
 }
@@ -216,16 +240,19 @@ View* WidgetDelegate::TransferOwnershipOfContentsView() {
 }
 
 ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
-  return new ClientView(widget, TransferOwnershipOfContentsView());
+  DCHECK(client_view_factory_);
+  return std::move(client_view_factory_).Run(widget).release();
 }
 
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
-  return nullptr;
+  DCHECK(non_client_frame_view_factory_);
+  return std::move(non_client_frame_view_factory_).Run(widget);
 }
 
 View* WidgetDelegate::CreateOverlayView() {
-  return nullptr;
+  DCHECK(overlay_view_factory_);
+  return std::move(overlay_view_factory_).Run().release();
 }
 
 bool WidgetDelegate::WidgetHasHitTestMask() const {
@@ -347,6 +374,22 @@ void WidgetDelegate::RegisterWindowClosingCallback(base::OnceClosure callback) {
 void WidgetDelegate::RegisterDeleteDelegateCallback(
     base::OnceClosure callback) {
   delete_delegate_callbacks_.emplace_back(std::move(callback));
+}
+
+void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
+  DCHECK(!GetWidget());
+  client_view_factory_ = std::move(factory);
+}
+
+void WidgetDelegate::SetNonClientFrameViewFactory(
+    NonClientFrameViewFactory factory) {
+  DCHECK(!GetWidget());
+  non_client_frame_view_factory_ = std::move(factory);
+}
+
+void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {
+  DCHECK(!GetWidget());
+  overlay_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetContentsViewImpl(View* contents) {
