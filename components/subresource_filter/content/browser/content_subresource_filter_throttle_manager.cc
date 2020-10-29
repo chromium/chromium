@@ -191,7 +191,8 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
   if (navigation_handle->GetNetErrorCode() != net::OK)
     return;
 
-  auto it = ongoing_activation_throttles_.find(navigation_handle);
+  auto it =
+      ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
   if (it == ongoing_activation_throttles_.end())
     return;
 
@@ -245,7 +246,8 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
 void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   ActivationStateComputingNavigationThrottle* throttle = nullptr;
-  auto throttle_it = ongoing_activation_throttles_.find(navigation_handle);
+  auto throttle_it =
+      ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
   if (throttle_it != ongoing_activation_throttles_.end()) {
     throttle = throttle_it->second;
 
@@ -392,7 +394,8 @@ void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
   DCHECK(navigation_handle->IsInMainFrame());
   DCHECK(!navigation_handle->HasCommitted());
 
-  auto it = ongoing_activation_throttles_.find(navigation_handle);
+  auto it =
+      ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
   if (it == ongoing_activation_throttles_.end())
     return;
 
@@ -453,10 +456,11 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
     throttles->push_back(std::move(filtering_throttle));
   }
 
-  DCHECK(!base::Contains(ongoing_activation_throttles_, navigation_handle));
+  DCHECK(!base::Contains(ongoing_activation_throttles_,
+                         navigation_handle->GetNavigationId()));
   if (auto activation_throttle =
           MaybeCreateActivationStateComputingThrottle(navigation_handle)) {
-    ongoing_activation_throttles_[navigation_handle] =
+    ongoing_activation_throttles_[navigation_handle->GetNavigationId()] =
         activation_throttle.get();
     throttles->push_back(std::move(activation_throttle));
   }

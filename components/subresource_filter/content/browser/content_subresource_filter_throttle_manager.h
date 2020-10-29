@@ -241,10 +241,9 @@ class ContentSubresourceFilterThrottleManager
 
   // For each ongoing navigation that requires activation state computation,
   // keeps track of the throttle that is carrying out that computation, so that
-  // the result can be retrieved when the navigation is ready to commit.
-  // TODO(crbug.com/1134311): Key with navigation IDs instead of raw pointers.
-  std::map<content::NavigationHandle*,
-           ActivationStateComputingNavigationThrottle*>
+  // the result can be retrieved when the navigation is ready to commit. Keyed
+  // by navigation id.
+  std::map<int64_t, ActivationStateComputingNavigationThrottle*>
       ongoing_activation_throttles_;
 
   // Set of RenderFrameHosts that have been identified as ads. An RFH is an ad
