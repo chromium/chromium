@@ -649,7 +649,7 @@
   {
     "name": "cookies-without-same-site-must-be-secure",
     "owners": [ "chlily", "morlovich" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "copy-link-to-text",
@@ -4132,7 +4132,7 @@
   {
     "name": "same-site-by-default-cookies",
     "owners": [ "chlily", "morlovich" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "scanning-ui",
