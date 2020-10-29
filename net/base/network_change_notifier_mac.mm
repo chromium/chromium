@@ -113,6 +113,10 @@ NetworkChangeNotifierMac::CalculateConnectionType(
                               CTRadioAccessTechnologyeHRPD, nil];
     NSSet<NSString*>* technologies_4g =
         [NSSet setWithObjects:CTRadioAccessTechnologyLTE, nil];
+    // TODO: Use constants from CoreTelephony once Cronet builds with XCode 12.1
+    NSSet<NSString*>* technologies_5g =
+        [NSSet setWithObjects:@"CTRadioAccessTechnologyNRNSA",
+                              @"CTRadioAccessTechnologyNR", nil];
     int best_network = 0;
     for (NSString* service in service_current_radio_access_technology) {
       if (!service_current_radio_access_technology[service]) {
@@ -128,6 +132,8 @@ NetworkChangeNotifierMac::CalculateConnectionType(
         current_network = 3;
       } else if ([technologies_4g containsObject:network_type]) {
         current_network = 4;
+      } else if ([technologies_5g containsObject:network_type]) {
+        current_network = 5;
       } else {
         // New technology?
         NOTREACHED();
@@ -145,6 +151,8 @@ NetworkChangeNotifierMac::CalculateConnectionType(
         return CONNECTION_3G;
       case 4:
         return CONNECTION_4G;
+      case 5:
+        return CONNECTION_5G;
       default:
         // Default to CONNECTION_3G to not change existing behavior.
         return CONNECTION_3G;
