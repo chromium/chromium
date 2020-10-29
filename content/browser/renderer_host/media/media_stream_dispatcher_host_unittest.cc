@@ -138,11 +138,13 @@ class MockMediaStreamDispatcherHost
                        const blink::MediaStreamDevice& device) override {
     OnDeviceStoppedInternal(label, device);
   }
-
-  // mojom::MediaStreamDeviceObserver implementation.
   void OnDeviceChanged(const std::string& label,
                        const blink::MediaStreamDevice& old_device,
                        const blink::MediaStreamDevice& new_device) override {}
+  void OnDeviceRequestStateChange(
+      const std::string& label,
+      const blink::MediaStreamDevice& device,
+      const blink::mojom::MediaStreamStateChange new_state) override {}
 
   mojo::PendingRemote<blink::mojom::MediaStreamDeviceObserver>
   BindNewPipeAndPassRemote() {

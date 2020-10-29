@@ -121,6 +121,25 @@ void MediaStreamDeviceObserver::OnDeviceChanged(
   }
 }
 
+void MediaStreamDeviceObserver::OnDeviceRequestStateChange(
+    const String& label,
+    const MediaStreamDevice& device,
+    const mojom::blink::MediaStreamStateChange new_state) {
+  DVLOG(1) << __func__ << " label=" << label << " device_id=" << device.id;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto it = label_stream_map_.find(label);
+  if (it == label_stream_map_.end()) {
+    // This can happen if a user stops a device from JS at the same
+    // time as the underlying media device is unplugged from the system.
+    return;
+  }
+  Stream* stream = &it->value;
+
+  if (stream->on_device_request_state_change_cb)
+    stream->on_device_request_state_change_cb.Run(device, new_state);
+}
+
 void MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver(
     mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver) {
   receiver_.reset();
@@ -132,12 +151,16 @@ void MediaStreamDeviceObserver::AddStream(
     const blink::MediaStreamDevices& audio_devices,
     const blink::MediaStreamDevices& video_devices,
     WebMediaStreamDeviceObserver::OnDeviceStoppedCb on_device_stopped_cb,
-    WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb) {
+    WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb,
+    WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
+        on_device_request_state_change_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   Stream stream;
   stream.on_device_stopped_cb = std::move(on_device_stopped_cb);
   stream.on_device_changed_cb = std::move(on_device_changed_cb);
+  stream.on_device_request_state_change_cb =
+      std::move(on_device_request_state_change_cb);
   stream.audio_devices = audio_devices;
   stream.video_devices = video_devices;
 

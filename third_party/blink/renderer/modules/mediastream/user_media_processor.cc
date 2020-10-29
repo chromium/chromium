@@ -1188,6 +1188,47 @@ void UserMediaProcessor::OnDeviceChanged(const MediaStreamDevice& old_device,
   source_impl->ChangeSource(new_device);
 }
 
+void UserMediaProcessor::OnDeviceRequestStateChange(
+    const MediaStreamDevice& device,
+    const mojom::blink::MediaStreamStateChange new_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  SendLogMessage(base::StringPrintf(
+      "OnDeviceRequestStateChange({session_id=%s}, {device_id=%s}, "
+      "{new_state=%s})",
+      device.session_id().ToString().c_str(), device.id.c_str(),
+      (new_state == mojom::blink::MediaStreamStateChange::PAUSE ? "PAUSE"
+                                                                : "PLAY")));
+
+  MediaStreamSource* source = FindLocalSource(device);
+  if (!source) {
+    // This happens if the same device is used in several guM requests or
+    // if a user happens to stop a track from JS at the same time
+    // as the underlying media device is unplugged from the system.
+    return;
+  }
+
+  WebPlatformMediaStreamSource* const source_impl = source->GetPlatformSource();
+  source_impl->SetSourceMuted(new_state ==
+                              mojom::blink::MediaStreamStateChange::PAUSE);
+  MediaStreamVideoSource* video_source =
+      static_cast<blink::MediaStreamVideoSource*>(source_impl);
+  if (!video_source) {
+    return;
+  }
+  if (new_state == mojom::blink::MediaStreamStateChange::PAUSE) {
+    if (video_source->IsRunning()) {
+      video_source->StopForRestart(base::DoNothing());
+    }
+  } else if (new_state == mojom::blink::MediaStreamStateChange::PLAY) {
+    if (video_source->IsStoppedForRestart()) {
+      video_source->Restart(*video_source->GetCurrentFormat(),
+                            base::DoNothing());
+    }
+  } else {
+    NOTREACHED();
+  }
+}
+
 void UserMediaProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(dispatcher_host_);
   visitor->Trace(frame_);
@@ -1383,6 +1424,8 @@ void UserMediaProcessor::StartTracks(const String& label) {
         WTF::BindRepeating(&UserMediaProcessor::OnDeviceStopped,
                            WrapWeakPersistent(this)),
         WTF::BindRepeating(&UserMediaProcessor::OnDeviceChanged,
+                           WrapWeakPersistent(this)),
+        WTF::BindRepeating(&UserMediaProcessor::OnDeviceRequestStateChange,
                            WrapWeakPersistent(this)));
   }
 

@@ -70,6 +70,12 @@ enum StreamSelectionStrategy {
   FORCE_NEW_STREAM,
 };
 
+// Type of state change for the corresponding requests.
+enum MediaStreamStateChange {
+  PLAY,
+  PAUSE,
+};
+
 // See MediaStreamDispatcherHost below for information.
 struct StreamSelectionInfo {
   StreamSelectionStrategy strategy;
@@ -108,12 +114,14 @@ struct StreamControls {
 };
 
 // Per-frame renderer-side interface that receives device stopped/change
-// notifications from the browser process.
+// notifications or pause requests from the browser process.
 interface MediaStreamDeviceObserver {
   OnDeviceStopped(string label, MediaStreamDevice device);
   OnDeviceChanged(string label,
                   MediaStreamDevice old_device,
                   MediaStreamDevice new_device);
+  // Requests to pause or resume the corresponding media stream device.
+  OnDeviceRequestStateChange(string label, MediaStreamDevice device, MediaStreamStateChange new_state);
 };
 
 // Per-frame browser-side interface that is used by the renderer process to

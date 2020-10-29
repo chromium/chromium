@@ -90,6 +90,16 @@ void MediaStreamDispatcherHost::OnDeviceChanged(
                                                   new_device);
 }
 
+void MediaStreamDispatcherHost::OnDeviceRequestStateChange(
+    const std::string& label,
+    const blink::MediaStreamDevice& device,
+    const blink::mojom::MediaStreamStateChange new_state) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetMediaStreamDeviceObserver()->OnDeviceRequestStateChange(label, device,
+                                                             new_state);
+}
+
 const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
 MediaStreamDispatcherHost::GetMediaStreamDeviceObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -171,7 +181,10 @@ void MediaStreamDispatcherHost::DoGenerateStream(
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceChanged,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &MediaStreamDispatcherHost::OnDeviceRequestStateChange,
+          weak_factory_.GetWeakPtr()));
 }
 
 void MediaStreamDispatcherHost::CancelRequest(int page_request_id) {

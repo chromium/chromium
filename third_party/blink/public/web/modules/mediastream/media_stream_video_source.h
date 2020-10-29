@@ -169,6 +169,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   bool IsRunning() const { return state_ == STARTED; }
 
+  bool IsStoppedForRestart() const { return state_ == STOPPED_FOR_RESTART; }
+
   size_t NumTracks() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return tracks_.size();

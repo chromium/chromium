@@ -664,6 +664,8 @@ class MediaStreamManager::DeviceRequest {
 
   DeviceChangedCallback device_changed_cb;
 
+  DeviceRequestStateChangeCallback device_request_state_change_cb;
+
   std::unique_ptr<MediaStreamUIProxy> ui_proxy;
 
   std::string tab_capture_device_id;
@@ -882,7 +884,8 @@ void MediaStreamManager::GenerateStream(
     StreamSelectionInfoPtr audio_stream_selection_info_ptr,
     GenerateStreamCallback generate_stream_cb,
     DeviceStoppedCallback device_stopped_cb,
-    DeviceChangedCallback device_changed_cb) {
+    DeviceChangedCallback device_changed_cb,
+    DeviceRequestStateChangeCallback device_request_state_change_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SendLogMessage(GetGenerateStreamLogString(render_process_id, render_frame_id,
                                             requester_id, page_request_id));
@@ -893,6 +896,8 @@ void MediaStreamManager::GenerateStream(
       blink::MEDIA_GENERATE_STREAM, controls, std::move(salt_and_origin),
       std::move(device_stopped_cb));
   request->device_changed_cb = std::move(device_changed_cb);
+  request->device_request_state_change_cb =
+      std::move(device_request_state_change_cb);
 
   const std::string& label = AddRequest(base::WrapUnique(request));
 

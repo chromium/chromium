@@ -204,4 +204,33 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChangedChangesDeviceAfterRebind) {
   EXPECT_EQ(video_devices[0].id, "video_device-456");
 }
 
+TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {
+  const int kRequestId = 5;
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
+
+  // OpenDevice request.
+  base::RunLoop run_loop1;
+  mock_dispatcher_host_.OpenDevice(
+      kRequestId, "device_path",
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                     base::Unretained(this), run_loop1.QuitClosure()));
+  run_loop1.Run();
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
+
+  observer_->OnDeviceRequestStateChange(
+      stream_label_, current_device_,
+      mojom::blink::MediaStreamStateChange::PAUSE);
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
+
+  observer_->OnDeviceRequestStateChange(
+      stream_label_, current_device_,
+      mojom::blink::MediaStreamStateChange::PLAY);
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
+}
+
 }  // namespace blink

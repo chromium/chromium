@@ -109,6 +109,11 @@ class CONTENT_EXPORT MediaStreamManager
                                    const blink::MediaStreamDevice& old_device,
                                    const blink::MediaStreamDevice& new_device)>;
 
+  using DeviceRequestStateChangeCallback = base::RepeatingCallback<void(
+      const std::string& label,
+      const blink::MediaStreamDevice& device,
+      const blink::mojom::MediaStreamStateChange new_state)>;
+
   // Callback for testing.
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;
@@ -190,7 +195,8 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
       GenerateStreamCallback generate_stream_cb,
       DeviceStoppedCallback device_stopped_cb,
-      DeviceChangedCallback device_changed_cb);
+      DeviceChangedCallback device_changed_cb,
+      DeviceRequestStateChangeCallback device_request_state_change_cb);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
   // Must be called on the IO thread.

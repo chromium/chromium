@@ -95,6 +95,10 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void OnDeviceChanged(const std::string& label,
                        const blink::MediaStreamDevice& old_device,
                        const blink::MediaStreamDevice& new_device);
+  void OnDeviceRequestStateChange(
+      const std::string& label,
+      const blink::MediaStreamDevice& device,
+      const blink::mojom::MediaStreamStateChange new_state);
 
   static int next_requester_id_;
 
