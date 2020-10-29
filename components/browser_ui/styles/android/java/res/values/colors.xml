@@ -32,6 +32,6 @@
     <color name="default_favicon_background_color">@color/default_control_color_normal_light</color>
 
     <!-- Navigation bar colors -->
-    <color name="bottom_system_nav_color">@color/modern_white</color>
-    <color name="bottom_system_nav_divider_color">@color/black_alpha_12</color>
+    <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
+    <color name="bottom_system_nav_divider_color">@color/hairline_stroke_color</color>
 </resources>

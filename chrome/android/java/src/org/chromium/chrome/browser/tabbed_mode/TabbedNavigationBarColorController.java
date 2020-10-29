@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -53,7 +51,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
     private @Nullable OverviewModeObserver mOverviewModeObserver;
     private CallbackController mCallbackController = new CallbackController();
 
-    private boolean mUseLightNavigation;
+    private boolean mForceDarkNavigationBarColor;
     private boolean mOverviewModeHiding;
     private float mNavigationBarScrimFraction;
 
@@ -74,15 +72,13 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         mResources = mRootView.getResources();
         mDefaultScrimColor = ApiCompatibilityUtils.getColor(mResources, R.color.black_alpha_65);
 
-        // If we're not using a light navigation bar, it will always be black so there's no need
-        // to register observers and manipulate coloring.
+        // If we're not using a light navigation bar, it will always be the same dark color so
+        // there's no need to register observers and manipulate coloring.
         if (!mResources.getBoolean(R.bool.window_light_navigation_bar)) {
             mTabModelSelector = null;
             mTabModelSelectorObserver = null;
             return;
         }
-
-        mUseLightNavigation = true;
 
         mTabModelSelector = tabModelSelector;
         mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
@@ -155,7 +151,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
     public void onExitVr() {
         // The platform ignores the light navigation bar system UI flag when launching an Activity
         // in VR mode, so we need to restore it when VR is exited.
-        UiUtils.setNavigationBarIconColor(mRootView, mUseLightNavigation);
+        UiUtils.setNavigationBarIconColor(mRootView, !mForceDarkNavigationBarColor);
     }
 
     @Override
@@ -166,57 +162,44 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         boolean overviewVisible = mOverviewModeBehavior != null
                 && mOverviewModeBehavior.overviewVisible() && !mOverviewModeHiding;
 
-        boolean useLightNavigation;
-        if (ChromeFeatureList.isInitialized()
-                && (ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)
-                        || DeviceClassManager.enableAccessibilityLayout()
-                        || TabUiFeatureUtilities.isGridTabSwitcherEnabled())) {
-            useLightNavigation = !mTabModelSelector.isIncognitoSelected();
+        boolean forceDarkNavigation;
+        if (DeviceClassManager.enableAccessibilityLayout()
+                || TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
+            forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
         } else {
-            useLightNavigation = !mTabModelSelector.isIncognitoSelected() || overviewVisible;
+            forceDarkNavigation = mTabModelSelector.isIncognitoSelected() && !overviewVisible;
         }
 
-        useLightNavigation &= !UiUtils.isSystemUiThemingDisabled();
+        forceDarkNavigation &= !UiUtils.isSystemUiThemingDisabled();
 
-        if (mUseLightNavigation == useLightNavigation) return;
+        if (mForceDarkNavigationBarColor == forceDarkNavigation) return;
 
-        mUseLightNavigation = useLightNavigation;
+        mForceDarkNavigationBarColor = forceDarkNavigation;
 
-        mWindow.setNavigationBarColor(useLightNavigation ? ApiCompatibilityUtils.getColor(
-                                              mResources, R.color.bottom_system_nav_color)
-                                                         : Color.BLACK);
-
-        setNavigationBarColor(useLightNavigation);
-
-        UiUtils.setNavigationBarIconColor(mRootView, useLightNavigation);
+        mWindow.setNavigationBarColor(getNavigationBarColor(mForceDarkNavigationBarColor));
+        setNavigationBarDividerColor();
+        UiUtils.setNavigationBarIconColor(mRootView, !mForceDarkNavigationBarColor);
     }
 
     @SuppressLint("NewApi")
-    private void setNavigationBarColor(boolean useLightNavigation) {
+    private void setNavigationBarDividerColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mWindow.setNavigationBarDividerColor(useLightNavigation
-                            ? ApiCompatibilityUtils.getColor(
-                                    mResources, R.color.bottom_system_nav_divider_color)
-                            : Color.BLACK);
+            mWindow.setNavigationBarDividerColor(
+                    getNavigationBarDividerColor(mForceDarkNavigationBarColor));
         }
     }
 
     /**
-     * Update the scrim amount on the navigation bar. Note that we only update when the navigation
-     * bar color is in light mode.
+     * Update the scrim amount on the navigation bar.
      * @param fraction The scrim fraction in range [0, 1].
      */
     public void setNavigationBarScrimFraction(float fraction) {
-        if (!mUseLightNavigation) {
-            return;
-        }
         mNavigationBarScrimFraction = fraction;
-        mWindow.setNavigationBarColor(applyCurrentScrimToColor(
-                ApiCompatibilityUtils.getColor(mResources, R.color.bottom_system_nav_color)));
+        mWindow.setNavigationBarColor(
+                applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor)));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mWindow.setNavigationBarDividerColor(
-                    applyCurrentScrimToColor(ApiCompatibilityUtils.getColor(
-                            mResources, R.color.bottom_system_nav_divider_color)));
+            mWindow.setNavigationBarDividerColor(applyCurrentScrimToColor(
+                    getNavigationBarDividerColor(mForceDarkNavigationBarColor)));
         }
 
         // Adjust the color of navigation bar icons based on color state of the navigation bar.
@@ -225,6 +208,18 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         } else if (MathUtils.areFloatsEqual(0f, fraction)) {
             UiUtils.setNavigationBarIconColor(mRootView, true);
         }
+    }
+
+    private @ColorInt int getNavigationBarColor(boolean forceDarkNavigationBar) {
+        return ApiCompatibilityUtils.getColor(mResources,
+                forceDarkNavigationBar ? R.color.toolbar_background_primary_dark
+                                       : R.color.bottom_system_nav_color);
+    }
+
+    private @ColorInt int getNavigationBarDividerColor(boolean forceDarkNavigationBar) {
+        return ApiCompatibilityUtils.getColor(mResources,
+                forceDarkNavigationBar ? R.color.hairline_stroke_color_dark
+                                       : R.color.bottom_system_nav_divider_color);
     }
 
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {

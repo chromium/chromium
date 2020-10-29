@@ -10,8 +10,4 @@
     <color name="control_highlight_color">@color/default_control_color_highlight_dark</color>
 
     <color name="text_highlight_color">@color/highlight_color_on_light_text</color>
-
-    <!-- Navigation bar colors -->
-    <color name="bottom_system_nav_color">@android:color/black</color>
-    <color name="bottom_system_nav_divider_color">@android:color/black</color>
 </resources>
