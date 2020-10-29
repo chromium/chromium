@@ -27,12 +27,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
+import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
@@ -80,6 +83,11 @@ public class BookmarkPersonalizedPromoRenderTest {
         // Native side needs to loaded before signing in test account.
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BookmarkModel bookmarkModel = new BookmarkModel(Profile.getLastUsedRegularProfile());
+            bookmarkModel.loadFakePartnerBookmarkShimForTesting();
+        });
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 
     @After
@@ -107,7 +115,6 @@ public class BookmarkPersonalizedPromoRenderTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1136534")
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testPersonalizedSyncPromoInBookmarkPage(boolean nightModeEnabled) throws Exception {
