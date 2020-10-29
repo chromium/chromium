@@ -271,7 +271,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   // VaapiVEA supports temporal layers for VP9 only, but we also allow VP8 to
   // support VP8 simulcast.
   if (config.HasSpatialLayer()) {
-    VLOGF(1) << "Spatial layer encoding is supported";
+    VLOGF(1) << "Spatial layer encoding is not yet supported";
     return false;
   }
 
