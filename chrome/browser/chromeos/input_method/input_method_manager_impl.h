@@ -20,6 +20,8 @@
 #include "chrome/browser/chromeos/input_method/candidate_window_controller.h"
 #include "chrome/browser/chromeos/input_method/ime_service_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
@@ -38,7 +40,8 @@ class ImeKeyboard;
 // The implementation of InputMethodManager.
 class InputMethodManagerImpl : public InputMethodManager,
                                public CandidateWindowController::Observer,
-                               public AssistiveWindowControllerDelegate {
+                               public AssistiveWindowControllerDelegate,
+                               public content::NotificationObserver {
  public:
   class StateImpl : public InputMethodManager::State {
    public:
@@ -117,6 +120,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     void EnableInputView() override;
     void DisableInputView() override;
     const GURL& GetInputViewUrl() const override;
+    InputMethodManager::UIStyle GetUIStyle() const override;
+    void SetUIStyle(InputMethodManager::UIStyle ui_style) override;
 
     // Override the input view URL used to explicitly display some keyset.
     void OverrideInputViewUrl(const GURL& url);
@@ -180,6 +185,9 @@ class InputMethodManagerImpl : public InputMethodManager,
     // specific keyset.
     bool input_view_url_overridden = false;
 
+    InputMethodManager::UIStyle ui_style_ =
+        InputMethodManager::UIStyle::kNormal;
+
     std::unique_ptr<ImeServiceConnector> ime_service_connector_;
   };
 
@@ -190,11 +198,7 @@ class InputMethodManagerImpl : public InputMethodManager,
                          bool enable_extension_loading);
   ~InputMethodManagerImpl() override;
 
-  // Receives notification of an InputMethodManager::UISessionState transition.
-  void SetUISessionState(UISessionState new_ui_session);
-
   // InputMethodManager override:
-  UISessionState GetUISessionState() override;
   void AddObserver(InputMethodManager::Observer* observer) override;
   void AddCandidateWindowObserver(
       InputMethodManager::CandidateWindowObserver* observer) override;
@@ -253,6 +257,11 @@ class InputMethodManagerImpl : public InputMethodManager,
   void InitializeComponentExtensionForTesting(
       std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
 
+  // content::NotificationObserver overrides:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
  private:
   friend class InputMethodManagerImplTest;
 
@@ -277,11 +286,9 @@ class InputMethodManagerImpl : public InputMethodManager,
       const std::string& input_method_id,
       StateImpl* state);
 
-  // Change system input method.
-  void ChangeInputMethodInternal(const InputMethodDescriptor& descriptor,
-                                 Profile* profile,
-                                 bool show_message,
-                                 bool notify_menu);
+  // Change system input method to the one specified in the active state.
+  void ChangeInputMethodInternalFromActiveState(bool show_message,
+                                                bool notify_menu);
 
   // Loads necessary component extensions.
   // TODO(nona): Support dynamical unloading.
@@ -303,9 +310,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   void ReloadKeyboard();
 
   std::unique_ptr<InputMethodDelegate> delegate_;
-
-  // The current UI session status.
-  UISessionState ui_session_;
 
   // A list of objects that monitor the manager.
   base::ObserverList<InputMethodManager::Observer>::Unchecked observers_;
@@ -347,6 +351,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   typedef std::map<std::string, ui::IMEEngineHandlerInterface*> EngineMap;
   typedef std::map<Profile*, EngineMap, ProfileCompare> ProfileEngineMap;
   ProfileEngineMap engine_map_;
+
+  content::NotificationRegistrar notification_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(InputMethodManagerImpl);
 };

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/chromeos/input_method/accessibility.h"
-#include "chrome/browser/chromeos/input_method/browser_state_monitor.h"
 #include "chrome/browser/chromeos/input_method/input_method_delegate_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_manager_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_persistence.h"
@@ -19,12 +18,6 @@ namespace chromeos {
 namespace input_method {
 
 namespace {
-void OnSessionStateChange(InputMethodManagerImpl* input_method_manager_impl,
-                          InputMethodPersistence* input_method_persistence,
-                          InputMethodManager::UISessionState new_ui_session) {
-  input_method_persistence->OnSessionStateChange(new_ui_session);
-  input_method_manager_impl->SetUISessionState(new_ui_session);
-}
 
 bool g_disable_extension_loading = false;
 
@@ -45,10 +38,6 @@ class InputMethodConfiguration {
 
     accessibility_.reset(new Accessibility(impl));
     input_method_persistence_.reset(new InputMethodPersistence(impl));
-    browser_state_monitor_.reset(new BrowserStateMonitor(
-        base::Bind(&OnSessionStateChange,
-                   impl,
-                   input_method_persistence_.get())));
 
     DVLOG(1) << "InputMethodManager initialized";
   }
@@ -60,7 +49,7 @@ class InputMethodConfiguration {
 
   void Shutdown() {
     accessibility_.reset();
-    browser_state_monitor_.reset();
+
     input_method_persistence_.reset();
 
     InputMethodManager::Shutdown();
@@ -72,7 +61,6 @@ class InputMethodConfiguration {
 
  private:
   std::unique_ptr<Accessibility> accessibility_;
-  std::unique_ptr<BrowserStateMonitor> browser_state_monitor_;
   std::unique_ptr<InputMethodPersistence> input_method_persistence_;
 };
 

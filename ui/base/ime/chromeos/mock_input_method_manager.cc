@@ -112,16 +112,21 @@ const GURL& MockInputMethodManager::State::GetInputViewUrl() const {
   return GURL::EmptyGURL();
 }
 
+InputMethodManager::UIStyle MockInputMethodManager::State::GetUIStyle() const {
+  return ui_style_;
+}
+
+void MockInputMethodManager::State::SetUIStyle(
+    InputMethodManager::UIStyle ui_style) {
+  ui_style_ = ui_style;
+}
+
 MockInputMethodManager::State::~State() = default;
 
 MockInputMethodManager::MockInputMethodManager()
     : features_enabled_state_(InputMethodManager::FEATURE_ALL) {}
 
 MockInputMethodManager::~MockInputMethodManager() = default;
-
-InputMethodManager::UISessionState MockInputMethodManager::GetUISessionState() {
-  return InputMethodManager::STATE_BROWSER_SCREEN;
-}
 
 void MockInputMethodManager::AddObserver(
     InputMethodManager::Observer* observer) {}

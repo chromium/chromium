@@ -237,8 +237,8 @@ void USER_MANAGER_EXPORT SetAccountManager(const AccountId& account_id,
 bool USER_MANAGER_EXPORT GetAccountManager(const AccountId& account_id,
                                            std::string* manager);
 void USER_MANAGER_EXPORT
-SetUserLastInputMethod(const AccountId& account_id,
-                       const std::string& input_method);
+SetUserLastLoginInputMethod(const AccountId& account_id,
+                            const std::string& input_method);
 
 bool USER_MANAGER_EXPORT GetUserLastInputMethod(const AccountId& account_id,
                                                 std::string* input_method);

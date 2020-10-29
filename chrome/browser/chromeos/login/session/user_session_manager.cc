@@ -2099,6 +2099,9 @@ UserSessionManager::GetDefaultIMEState(Profile* profile) {
   if (!state.get()) {
     // Profile can be NULL in tests.
     state = input_method::InputMethodManager::Get()->CreateNewState(profile);
+    if (ProfileHelper::Get()->IsSigninProfile(profile))
+      state->SetUIStyle(input_method::InputMethodManager::UIStyle::kLogin);
+
     default_ime_states_[profile] = state;
   }
   return state;

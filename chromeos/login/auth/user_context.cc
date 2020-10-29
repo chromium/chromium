@@ -40,7 +40,8 @@ bool UserContext::operator==(const UserContext& context) const {
          context.is_using_oauth_ == is_using_oauth_ &&
          context.auth_flow_ == auth_flow_ && context.user_type_ == user_type_ &&
          context.public_session_locale_ == public_session_locale_ &&
-         context.public_session_input_method_ == public_session_input_method_;
+         context.public_session_input_method_ == public_session_input_method_ &&
+         context.login_input_method_used_ == login_input_method_used_;
 }
 
 bool UserContext::operator!=(const UserContext& context) const {
@@ -248,6 +249,15 @@ void UserContext::SetManagedGuestSessionLaunchExtensionId(
     const std::string& managed_guest_session_launch_extension_id) {
   managed_guest_session_launch_extension_id_ =
       managed_guest_session_launch_extension_id;
+}
+
+void UserContext::SetLoginInputMethodUsed(const std::string& input_method_id) {
+  DCHECK(login_input_method_used_.empty());
+  login_input_method_used_ = input_method_id;
+}
+
+const std::string& UserContext::GetLoginInputMethodUsed() const {
+  return login_input_method_used_;
 }
 
 void UserContext::ClearSecrets() {

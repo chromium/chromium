@@ -65,6 +65,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
     void EnableInputView() override;
     void DisableInputView() override;
     const GURL& GetInputViewUrl() const override;
+    InputMethodManager::UIStyle GetUIStyle() const override;
+    void SetUIStyle(InputMethodManager::UIStyle ui_style) override;
 
     // The active input method ids cache (actually default only)
     std::vector<std::string> active_input_method_ids;
@@ -77,6 +79,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
     // Allowed input methods ids
     std::vector<std::string> allowed_input_method_ids_;
 
+    InputMethodManager::UIStyle ui_style_ =
+        InputMethodManager::UIStyle::kNormal;
+
     DISALLOW_COPY_AND_ASSIGN(State);
   };
 
@@ -84,7 +89,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
   ~MockInputMethodManager() override;
 
   // InputMethodManager:
-  UISessionState GetUISessionState() override;
   void AddObserver(InputMethodManager::Observer* observer) override;
   void AddCandidateWindowObserver(
       InputMethodManager::CandidateWindowObserver* observer) override;

@@ -199,6 +199,11 @@ void ScreenLocker::Init() {
       input_method::InputMethodManager::Get();
   saved_ime_state_ = imm->GetActiveIMEState();
   imm->SetState(saved_ime_state_->Clone());
+  input_method::InputMethodManager::Get()->GetActiveIMEState()->SetUIStyle(
+      input_method::InputMethodManager::UIStyle::kLock);
+  input_method::InputMethodManager::Get()
+      ->GetActiveIMEState()
+      ->EnableLockScreenLayouts();
 
   authenticator_ = UserSessionManager::GetInstance()->CreateAuthenticator(this);
   extended_authenticator_ = ExtendedAuthenticator::Create(this);
@@ -755,10 +760,6 @@ void ScreenLocker::ScreenLockReady() {
 
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
-
-  input_method::InputMethodManager::Get()
-      ->GetActiveIMEState()
-      ->EnableLockScreenLayouts();
 
   // Start a fingerprint authentication session if fingerprint is available for
   // the primary user. Only the primary user can use fingerprint.

@@ -86,7 +86,6 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
     void ChangeInputMethod(const std::string& input_method_id,
                            bool show_message) override {
       manager_->last_input_method_id_ = input_method_id;
-      // Do the same thing as BrowserStateMonitor::UpdateUserPreferences.
       const std::string current_input_method_on_pref =
           manager_->current_->GetValue();
       if (current_input_method_on_pref == input_method_id)

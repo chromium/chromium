@@ -137,6 +137,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   // created. Setting this pref indicates that this Managed Guest Session is
   // lockable.
   void SetManagedGuestSessionLaunchExtensionId(const std::string& extension_id);
+  // We need to pull input method used to log in into the user session to make
+  // it consistent. This method will remember given input method to be used
+  // when session starts.
+  void SetLoginInputMethodUsed(const std::string& input_method_id);
+  const std::string& GetLoginInputMethodUsed() const;
 
   void ClearSecrets();
 
@@ -161,6 +166,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   std::string gaps_cookie_;
   bool is_under_advanced_protection_ = false;
   std::string managed_guest_session_launch_extension_id_;
+  // |login_input_method_used_| is non-empty if login password/code was used,
+  // i.e. user used some input method to log in.
+  std::string login_input_method_used_;
 
   // For password reuse detection use.
   base::Optional<password_manager::PasswordHashData> sync_password_data_;

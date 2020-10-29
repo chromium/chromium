@@ -30,6 +30,7 @@
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/first_run/help_app_first_run_field_trial.h"
+#include "chrome/browser/chromeos/input_method/input_method_persistence.h"
 #include "chrome/browser/chromeos/input_method/input_method_syncer.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
@@ -583,6 +584,17 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
 
   // Initialize preferences to currently saved state.
   ApplyPreferences(REASON_INITIALIZATION, "");
+
+  const std::string& login_input_method_used =
+      session_manager->user_context().GetLoginInputMethodUsed();
+
+  if (user_is_primary_ && !login_input_method_used.empty()) {
+    // Persist input method when transitioning from Login screen into the
+    // session.
+    input_method::InputMethodPersistence::SetUserLastLoginInputMethod(
+        login_input_method_used, input_method::InputMethodManager::Get(),
+        profile);
+  }
 
   // Note that |ime_state_| was modified by ApplyPreferences(), and
   // SetState() is modifying |current_input_method_| (via

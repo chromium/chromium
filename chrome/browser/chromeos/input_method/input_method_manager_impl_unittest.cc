@@ -398,8 +398,7 @@ TEST_F(InputMethodManagerImplTest, TestCandidateWindowObserver) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestObserver) {
-  // For http://crbug.com/19655#c11 - (3). browser_state_monitor_unittest.cc is
-  // also for the scenario.
+  // For http://crbug.com/19655#c11 - (3).
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.emplace_back("xkb:us::eng");
 
@@ -579,7 +578,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableTwoLayouts) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId("xkb:us:colemak:eng"));
@@ -607,7 +605,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -640,7 +637,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId(kNaclMozcUsId));
@@ -669,7 +665,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme2) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId(kNaclMozcUsId));
@@ -693,7 +688,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableImes) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId(kExt2Engine1Id));
   ids.emplace_back("mozc-dv");
@@ -709,7 +703,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableUnknownIds) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.emplace_back("xkb:tl::tlh");  // Klingon, which is not supported.
   ids.emplace_back("unknown-super-cool-ime");
@@ -727,7 +720,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -750,7 +742,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
-  manager_->SetUISessionState(InputMethodManager::STATE_LOCK_SCREEN);
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
   EXPECT_EQ(ImeIdFromEngineId(ids[1]),  // still Dvorak
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
@@ -763,7 +754,8 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
 
   // Unlock screen. The original state, Dvorak, is restored.
   manager_->SetState(saved_ime_state);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
+  EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
+            InputMethodManager::UIStyle::kNormal);
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
   EXPECT_EQ(ImeIdFromEngineId(ids[1]),
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
@@ -777,7 +769,6 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId(kExt2Engine2Id));
@@ -801,7 +792,6 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
-  manager_->SetUISessionState(InputMethodManager::STATE_LOCK_SCREEN);
   EXPECT_EQ(2U,
             manager_->GetActiveIMEState()
                 ->GetNumActiveInputMethods());  // Qwerty+Dvorak.
@@ -815,7 +805,8 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
 
   // Unlock screen. The original state, pinyin-dv, is restored.
   manager_->SetState(saved_ime_state);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
+  EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
+            InputMethodManager::UIStyle::kNormal);
   EXPECT_EQ(3U,
             manager_->GetActiveIMEState()
                 ->GetNumActiveInputMethods());  // Dvorak and 2 IMEs.
@@ -831,7 +822,6 @@ TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
   // For http://crbug.com/19655#c11 - (8), step 7-11.
   InitComponentExtension();
   EXPECT_EQ(1, keyboard_->set_current_keyboard_layout_by_name_count_);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId("xkb:us:colemak:eng"));
@@ -881,7 +871,6 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodProperties) {
   InitComponentExtension();
   EXPECT_TRUE(menu_manager_->GetCurrentInputMethodMenuItemList().empty());
 
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
   ids.push_back(ImeIdFromEngineId(kNaclMozcUsId));
@@ -909,7 +898,6 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
   InitComponentExtension();
   EXPECT_TRUE(menu_manager_->GetCurrentInputMethodMenuItemList().empty());
 
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId(kNaclMozcUsId));   // Japanese
   ids.push_back(ImeIdFromEngineId(kExt2Engine1Id));  // T-Chinese
@@ -1079,7 +1067,6 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
@@ -1167,7 +1154,6 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
@@ -1220,7 +1206,6 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
-  manager_->SetUISessionState(InputMethodManager::STATE_LOCK_SCREEN);
   EXPECT_EQ(1U,
             manager_->GetActiveIMEState()
                 ->GetNumActiveInputMethods());  // Qwerty. No Ext. IME
@@ -1230,7 +1215,8 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
 
   // Unlock the screen.
   manager_->SetState(saved_ime_state);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
+  EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
+            InputMethodManager::UIStyle::kNormal);
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
   EXPECT_EQ(ext_id,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
@@ -1249,7 +1235,6 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
 TEST_F(InputMethodManagerImplTest,
        ChangeInputMethod_ComponenteExtensionOneIME) {
   InitComponentExtension();
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   const std::string ext_id = extension_ime_util::GetComponentInputMethodID(
       ime_list_[1].id,
       ime_list_[1].engines[0].engine_id);
@@ -1264,7 +1249,6 @@ TEST_F(InputMethodManagerImplTest,
 TEST_F(InputMethodManagerImplTest,
        ChangeInputMethod_ComponenteExtensionTwoIME) {
   InitComponentExtension();
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   const std::string ext_id1 = extension_ime_util::GetComponentInputMethodID(
       ime_list_[1].id,
       ime_list_[1].engines[0].engine_id);
@@ -1540,7 +1524,6 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
 
   // Setup 3 IMEs.
   InitComponentExtension();
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId(kExt2Engine2Id));
@@ -1560,7 +1543,6 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
-  manager_->SetUISessionState(InputMethodManager::STATE_LOCK_SCREEN);
   EXPECT_EQ(2u, ime_controller.available_imes_.size());  // Qwerty+Dvorak.
   EXPECT_EQ(ImeIdFromEngineId("xkb:us:dvorak:eng"),
             ime_controller.current_ime_id_);
@@ -1571,7 +1553,8 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
 
   // Unlock screen. The original state, pinyin-dv, is restored.
   manager_->SetState(saved_ime_state);
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
+  EXPECT_EQ(manager_->GetActiveIMEState()->GetUIStyle(),
+            InputMethodManager::UIStyle::kNormal);
   ASSERT_EQ(3u, ime_controller.available_imes_.size());  // Dvorak and 2 IMEs.
   EXPECT_EQ(ImeIdFromEngineId(ids[1]), ime_controller.current_ime_id_);
 }
@@ -1616,7 +1599,6 @@ TEST_F(InputMethodManagerImplTest, SetFeaturesDisabled) {
 
 TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   InitComponentExtension();
-  manager_->SetUISessionState(InputMethodManager::STATE_BROWSER_SCREEN);
 
   // There is one default IME
   EXPECT_EQ(1u, manager_->GetActiveIMEState()->GetNumActiveInputMethods());

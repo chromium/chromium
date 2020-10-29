@@ -401,20 +401,17 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   // won't open new windows/pages. See crbug.com/395621.
   std::string GetCurrentScreenType() override {
     switch (chromeos::input_method::InputMethodManager::Get()
-                ->GetUISessionState()) {
-      case chromeos::input_method::InputMethodManager::STATE_LOGIN_SCREEN:
+                ->GetActiveIMEState()
+                ->GetUIStyle()) {
+      case chromeos::input_method::InputMethodManager::UIStyle::kLogin:
         return "login";
-      case chromeos::input_method::InputMethodManager::STATE_LOCK_SCREEN:
-        return "lock";
-      case chromeos::input_method::InputMethodManager::
-          STATE_SECONDARY_LOGIN_SCREEN:
+      case chromeos::input_method::InputMethodManager::UIStyle::kSecondaryLogin:
         return "secondary-login";
-      case chromeos::input_method::InputMethodManager::STATE_BROWSER_SCREEN:
-      case chromeos::input_method::InputMethodManager::STATE_TERMINATING:
+      case chromeos::input_method::InputMethodManager::UIStyle::kLock:
+        return "lock";
+      case chromeos::input_method::InputMethodManager::UIStyle::kNormal:
         return "normal";
     }
-    NOTREACHED() << "New screen type is added. Please add new entry above.";
-    return "normal";
   }
 
   std::string ConvertInputContextFocusReason(
@@ -590,8 +587,12 @@ bool InputImeEventRouter::RegisterImeExtension(
 
   Profile* profile = GetProfile();
 
-  if (chromeos::input_method::InputMethodManager::Get()->GetUISessionState() ==
-          chromeos::input_method::InputMethodManager::STATE_LOGIN_SCREEN &&
+  // TODO(https://crbug.com/1140236): Investigate whether profile selection
+  // is really needed.
+  if (chromeos::input_method::InputMethodManager::Get()
+              ->GetActiveIMEState()
+              ->GetUIStyle() ==
+          chromeos::input_method::InputMethodManager::UIStyle::kLogin &&
       profile->HasPrimaryOTRProfile()) {
     profile = profile->GetPrimaryOTRProfile();
   }

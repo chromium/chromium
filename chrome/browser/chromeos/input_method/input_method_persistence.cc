@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/input_method/input_method_persistence.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/language_preferences.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -45,26 +47,8 @@ static void SetUserLastInputMethodPreference(const AccountId& account_id,
                                              const std::string& input_method) {
   if (!account_id.is_valid())
     return;
-  user_manager::known_user::SetUserLastInputMethod(account_id, input_method);
-}
-
-// Update user Last keyboard layout for login screen
-static void SetUserLastInputMethod(
-    const std::string& input_method,
-    const chromeos::input_method::InputMethodManager* const manager,
-    Profile* profile) {
-  // Skip if it's not a keyboard layout. Drop input methods including
-  // extension ones.
-  if (!manager->IsLoginKeyboard(input_method))
-    return;
-
-  if (profile == NULL)
-    return;
-
-  // TODO(https://crbug.com/1121565): Create more general fix for all the data
-  // that is required on the lock screen.
-  profile->GetPrefs()->SetString(prefs::kLastLoginInputMethod, input_method);
-  SetUserLastInputMethodPreference(GetUserAccount(profile), input_method);
+  user_manager::known_user::SetUserLastLoginInputMethod(account_id,
+                                                        input_method);
 }
 
 void PersistUserInputMethod(const std::string& input_method,
@@ -78,7 +62,9 @@ void PersistUserInputMethod(const std::string& input_method,
     user_prefs = profile->GetPrefs();
   if (!user_prefs)
     return;
-  SetUserLastInputMethod(input_method, manager, profile);
+
+  InputMethodPersistence::SetUserLastLoginInputMethod(input_method, manager,
+                                                      profile);
 
   const std::string current_input_method_on_pref =
       user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
@@ -94,8 +80,7 @@ void PersistUserInputMethod(const std::string& input_method,
 
 InputMethodPersistence::InputMethodPersistence(
     InputMethodManager* input_method_manager)
-    : input_method_manager_(input_method_manager),
-      ui_session_(InputMethodManager::STATE_LOGIN_SCREEN) {
+    : input_method_manager_(input_method_manager) {
   input_method_manager_->AddObserver(this);
 }
 
@@ -106,18 +91,15 @@ InputMethodPersistence::~InputMethodPersistence() {
 void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
                                                 Profile* profile,
                                                 bool show_message) {
-  DCHECK_EQ(input_method_manager_, manager);
-  // We might get here during the locking process. When locker is already
-  // created but session state has not changed yet.
-  if (ScreenLocker::default_screen_locker()) {
-    // We use a special set of input methods on the lock screen. Do not update.
+  if (!g_browser_process || g_browser_process->IsShuttingDown())
     return;
-  }
+
+  DCHECK_EQ(input_method_manager_, manager);
   const std::string current_input_method =
       manager->GetActiveIMEState()->GetCurrentInputMethod().id();
   // Save the new input method id depending on the current browser state.
-  switch (ui_session_) {
-    case InputMethodManager::STATE_LOGIN_SCREEN:
+  switch (manager->GetActiveIMEState()->GetUIStyle()) {
+    case InputMethodManager::UIStyle::kLogin:
       if (!manager->IsLoginKeyboard(current_input_method)) {
         DVLOG(1) << "Only keyboard layouts are supported: "
                  << current_input_method;
@@ -125,34 +107,38 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
       }
       PersistSystemInputMethod(current_input_method);
       return;
-    case InputMethodManager::STATE_BROWSER_SCREEN:
+    case InputMethodManager::UIStyle::kNormal:
       PersistUserInputMethod(current_input_method, manager, profile);
       return;
-    case InputMethodManager::STATE_LOCK_SCREEN:
-    case InputMethodManager::STATE_SECONDARY_LOGIN_SCREEN:
-      // We use a special set of input methods on the screen. Do not update.
+    case InputMethodManager::UIStyle::kLock:
+      // We are either in unit test, or screen should be locked.
+      DCHECK(!LoginScreenClient::HasInstance() ||
+             ScreenLocker::default_screen_locker());
       return;
-    case InputMethodManager::STATE_TERMINATING:
+    case InputMethodManager::UIStyle::kSecondaryLogin:
+      // We use a special set of input methods on the screen. Do not update.
       return;
   }
   NOTREACHED();
 }
 
-void InputMethodPersistence::OnSessionStateChange(
-    InputMethodManager::UISessionState new_ui_session) {
-  InputMethodManager::UISessionState previous_ui_session = ui_session_;
-  ui_session_ = new_ui_session;
+// static
+void InputMethodPersistence::SetUserLastLoginInputMethod(
+    const std::string& input_method_id,
+    const chromeos::input_method::InputMethodManager* const manager,
+    Profile* profile) {
+  if (!profile)
+    return;
 
-  // Persist input method when transitioning from Login screen into the session.
-  if (previous_ui_session == InputMethodManager::STATE_LOGIN_SCREEN &&
-      ui_session_ == InputMethodManager::STATE_BROWSER_SCREEN) {
-    const std::string current_input_method =
-        input_method_manager_->GetActiveIMEState()
-            ->GetCurrentInputMethod()
-            .id();
-    SetUserLastInputMethod(current_input_method, input_method_manager_,
-                           ProfileManager::GetActiveUserProfile());
-  }
+  // Skip if it's not a keyboard layout. Drop input methods including
+  // extension ones.
+  if (!manager->IsLoginKeyboard(input_method_id))
+    return;
+
+  // TODO(https://crbug.com/1121565): Create more general fix for all the data
+  // that is required on the lock screen.
+  profile->GetPrefs()->SetString(prefs::kLastLoginInputMethod, input_method_id);
+  SetUserLastInputMethodPreference(GetUserAccount(profile), input_method_id);
 }
 
 void SetUserLastInputMethodPreferenceForTesting(

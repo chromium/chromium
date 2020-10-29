@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
@@ -28,17 +27,19 @@ class InputMethodPersistence : public InputMethodManager::Observer {
   explicit InputMethodPersistence(InputMethodManager* input_method_manager);
   ~InputMethodPersistence() override;
 
-  // Receives notification of session state changes.
-  void OnSessionStateChange(InputMethodManager::UISessionState new_session);
-
   // InputMethodManager::Observer overrides.
   void InputMethodChanged(InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
+  // Update user last keyboard layout for login screen.
+  static void SetUserLastLoginInputMethod(
+      const std::string& input_method_id,
+      const chromeos::input_method::InputMethodManager* const manager,
+      Profile* profile);
+
  private:
   InputMethodManager* input_method_manager_;
-  InputMethodManager::UISessionState ui_session_;
   DISALLOW_COPY_AND_ASSIGN(InputMethodPersistence);
 };
 

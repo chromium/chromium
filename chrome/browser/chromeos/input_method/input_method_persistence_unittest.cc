@@ -88,37 +88,45 @@ TEST_F(InputMethodPersistenceTest, TestLifetime) {
 TEST_F(InputMethodPersistenceTest, TestPrefPersistenceByState) {
   InputMethodPersistence persistence(&mock_manager_);
 
-  persistence.OnSessionStateChange(InputMethodManager::STATE_LOGIN_SCREEN);
+  mock_manager_.GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kLogin);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
   persistence.InputMethodChanged(&mock_manager_,
                                  ProfileManager::GetActiveUserProfile(), false);
   VerifyPrefs("", "", kInputId1);
 
-  persistence.OnSessionStateChange(InputMethodManager::STATE_BROWSER_SCREEN);
+  mock_manager_.GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kNormal);
   mock_manager_.SetCurrentInputMethodId(kInputId2);
   persistence.InputMethodChanged(&mock_manager_,
                                  ProfileManager::GetActiveUserProfile(), false);
   VerifyPrefs(kInputId2, "", kInputId1);
 
-  persistence.OnSessionStateChange(InputMethodManager::STATE_LOCK_SCREEN);
+  mock_manager_.GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kLock);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
   persistence.InputMethodChanged(&mock_manager_,
                                  ProfileManager::GetActiveUserProfile(), false);
   VerifyPrefs(kInputId2, "", kInputId1);
 
-  persistence.OnSessionStateChange(InputMethodManager::STATE_TERMINATING);
+  mock_manager_.GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kNormal);
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
   persistence.InputMethodChanged(&mock_manager_,
                                  ProfileManager::GetActiveUserProfile(), false);
   VerifyPrefs(kInputId2, "", kInputId1);
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(false);
 
-  persistence.OnSessionStateChange(InputMethodManager::STATE_LOGIN_SCREEN);
+  mock_manager_.GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kLogin);
   mock_manager_.SetCurrentInputMethodId(kInputId2);
   persistence.InputMethodChanged(&mock_manager_,
                                  ProfileManager::GetActiveUserProfile(), false);
   VerifyPrefs(kInputId2, "", kInputId2);
 
-  persistence.OnSessionStateChange(InputMethodManager::STATE_BROWSER_SCREEN);
+  mock_manager_.GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kNormal);
   mock_manager_.SetCurrentInputMethodId(kInputId1);
   persistence.InputMethodChanged(&mock_manager_,
                                  ProfileManager::GetActiveUserProfile(), false);

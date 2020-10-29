@@ -692,8 +692,8 @@ bool GetAccountManager(const AccountId& account_id, std::string* manager) {
   return GetStringPref(account_id, kAccountManager, manager);
 }
 
-void SetUserLastInputMethod(const AccountId& account_id,
-                            const std::string& input_method) {
+void SetUserLastLoginInputMethod(const AccountId& account_id,
+                                 const std::string& input_method) {
   SetStringPref(account_id, kLastInputMethod, input_method);
 }
 

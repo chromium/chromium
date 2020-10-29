@@ -1399,6 +1399,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
   scoped_refptr<input_method::InputMethodManager::State> gaia_ime_state =
       imm->GetActiveIMEState()->Clone();
   imm->SetState(gaia_ime_state);
+  gaia_ime_state->SetUIStyle(input_method::InputMethodManager::UIStyle::kLogin);
 
   // Set Least Recently Used input method for the user.
   if (populated_account_id_.is_valid()) {
