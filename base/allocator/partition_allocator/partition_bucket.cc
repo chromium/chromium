@@ -96,7 +96,7 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
       reinterpret_cast<PartitionFreelistEntry*>(slot));
 
   auto* next_entry = reinterpret_cast<PartitionFreelistEntry*>(slot);
-  next_entry->next = PartitionFreelistEntry::Encode(nullptr);
+  next_entry->SetNext(nullptr);
 
   PA_DCHECK(!metadata->bucket.active_slot_spans_head);
   PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
@@ -476,10 +476,10 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
       freelist_pointer += size;
       auto* next_entry =
           reinterpret_cast<PartitionFreelistEntry*>(freelist_pointer);
-      entry->next = PartitionFreelistEntry::Encode(next_entry);
+      entry->SetNext(next_entry);
       entry = next_entry;
     }
-    entry->next = PartitionFreelistEntry::Encode(nullptr);
+    entry->SetNext(nullptr);
   } else {
     slot_span->SetFreelistHead(nullptr);
   }

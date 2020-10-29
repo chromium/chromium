@@ -28,6 +28,13 @@ struct PartitionFreelistEntry {
     return reinterpret_cast<EncodedPartitionFreelistEntry*>(Transform(ptr));
   }
 
+  ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
+    PA_DCHECK(!ptr ||
+              (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
+                  (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask));
+    next = Encode(ptr);
+  }
+
  private:
   friend struct EncodedPartitionFreelistEntry;
   static ALWAYS_INLINE void* Transform(void* ptr) {

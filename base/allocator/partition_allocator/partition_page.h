@@ -419,7 +419,7 @@ ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
   PA_DCHECK(!freelist_head ||
             ptr != EncodedPartitionFreelistEntry::Decode(freelist_head->next));
   auto* entry = static_cast<internal::PartitionFreelistEntry*>(ptr);
-  entry->next = internal::PartitionFreelistEntry::Encode(freelist_head);
+  entry->SetNext(freelist_head);
   SetFreelistHead(entry);
   --num_allocated_slots;
   if (UNLIKELY(num_allocated_slots <= 0)) {

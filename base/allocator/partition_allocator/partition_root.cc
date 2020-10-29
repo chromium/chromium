@@ -129,7 +129,7 @@ static size_t PartitionPurgeSlotSpan(
           head = entry;
           back = entry;
         } else {
-          back->next = internal::PartitionFreelistEntry::Encode(entry);
+          back->SetNext(entry);
           back = entry;
         }
         num_new_entries++;
@@ -140,7 +140,7 @@ static size_t PartitionPurgeSlotSpan(
 
       slot_span->SetFreelistHead(head);
       if (back)
-        back->next = internal::PartitionFreelistEntry::Encode(nullptr);
+        back->SetNext(nullptr);
 
       PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
       // Discard the memory.
