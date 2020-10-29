@@ -6695,6 +6695,10 @@ const FeatureEntry kFeatureEntries[] = {
              kAutofillEnablePasswordInfoBarAccountIndicationFooter)},
 #endif
 
+    {"check-offline-capability", flag_descriptions::kCheckOfflineCapabilityName,
+     flag_descriptions::kCheckOfflineCapabilityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCheckOfflineCapability)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

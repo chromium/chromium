@@ -456,6 +456,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "check-offline-capability",
+    "owners": [ "asamidoi", "//content/browser/service_worker/OWNERS" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "chrome-cleanup-scan-completed-notification",
     "owners": ["rainhard", "msramek",
       "chrome-friendly-settings@google.com"],

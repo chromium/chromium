@@ -41782,6 +41782,7 @@ from previous Chrome versions.
       label="ProcessSharingWithStrictSiteInstances:disabled"/>
   <int value="-1898386671" label="PasswordCheck:enabled"/>
   <int value="-1896871201" label="CrossOriginOpenerPolicyReporting:enabled"/>
+  <int value="-1896733769" label="CheckOfflineCapability:disabled"/>
   <int value="-1896394207" label="PasswordChange:disabled"/>
   <int value="-1895719323" label="VrBrowsingTabsView:enabled"/>
   <int value="-1895050832" label="GlobalMediaControlsCastStartStop:disabled"/>
@@ -43484,6 +43485,7 @@ from previous Chrome versions.
   <int value="-250543540" label="DeferAllScript:enabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
+  <int value="-247542772" label="CheckOfflineCapability:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
   <int value="-241353344" label="MidiManagerWinrt:disabled"/>
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>

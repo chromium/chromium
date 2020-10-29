@@ -200,6 +200,9 @@ extern const char kBackForwardCacheDescription[];
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
+extern const char kCheckOfflineCapabilityName[];
+extern const char kCheckOfflineCapabilityDescription[];
+
 extern const char kContextMenuGoogleLensChipName[];
 extern const char kContextMenuGoogleLensChipDescription[];
 

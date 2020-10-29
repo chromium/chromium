@@ -329,6 +329,11 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "eligibility requirements for showing app banners, such as having a "
     "manifest, are met.";
 
+const char kCheckOfflineCapabilityName[] = "Check offline capability for PWAs";
+const char kCheckOfflineCapabilityDescription[] =
+    "Use advanced offline capability check to decide whether the browser "
+    "displays install prompts for PWAs.";
+
 const char kContextMenuGoogleLensChipName[] =
     "Google Lens powered image search for surfaced as a chip below the context "
     "menu.";
