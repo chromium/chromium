@@ -4,11 +4,13 @@
 
 // https://github.com/WICG/sanitizer-api
 
+typedef (DOMString or DocumentFragment or Document) SanitizerInput;
+
 [
   Exposed=Window,
   RuntimeEnabled=SanitizerAPI
 ] interface Sanitizer {
   [RaisesException] constructor(optional SanitizerConfig config = {});
-  [CallWith=ScriptState, RaisesException] DOMString sanitizeToString(DOMString input);
-  [CallWith=ScriptState, RaisesException] DocumentFragment sanitize(DOMString input);
+  [CallWith=ScriptState, RaisesException] DOMString sanitizeToString(SanitizerInput input);
+  [CallWith=ScriptState, RaisesException] DocumentFragment sanitize(SanitizerInput input);
 };

@@ -5,7 +5,9 @@
 #include "sanitizer.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_filter.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -84,25 +86,35 @@ void Sanitizer::AttrFormatter(
 Sanitizer::~Sanitizer() = default;
 
 String Sanitizer::sanitizeToString(ScriptState* script_state,
-                                   const String& input,
+                                   StringOrDocumentFragmentOrDocument& input,
                                    ExceptionState& exception_state) {
   return CreateMarkup(sanitize(script_state, input, exception_state),
                       kChildrenOnly);
 }
 
 DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
-                                      const String& input,
+                                      StringOrDocumentFragmentOrDocument& input,
                                       ExceptionState& exception_state) {
+  DocumentFragment* fragment = nullptr;
+
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  if (!window) {
+  if (input.IsDocumentFragment()) {
+    fragment = input.GetAsDocumentFragment();
+  } else if (window) {
+    Document* document = window->document();
+    if (input.IsString() || input.IsNull()) {
+      fragment = document->createDocumentFragment();
+      DCHECK(document->QuerySelector("body"));
+      fragment->ParseHTML(input.GetAsString(), document->QuerySelector("body"));
+    } else {
+      fragment = document->createDocumentFragment();
+      fragment->appendChild(input.GetAsDocument()->documentElement());
+    }
+  } else {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot find current DOM window.");
     return nullptr;
   }
-  Document* document = window->document();
-  DocumentFragment* fragment = document->createDocumentFragment();
-  DCHECK(document->QuerySelector("body"));
-  fragment->ParseHTML(input, document->QuerySelector("body"));
 
   Node* node = fragment->firstChild();
 
@@ -155,6 +167,8 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
         }
       } else {
         for (const auto& name : element->getAttributeNames()) {
+          // Attributes in drop list or not in allow list while allow list
+          // exists will be dropped.
           bool drop = (drop_attributes_.Contains(name) &&
                        (drop_attributes_.at(name).Contains("*") ||
                         drop_attributes_.at(name).Contains(node_name))) ||

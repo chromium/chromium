@@ -13,10 +13,38 @@
       assert_throws_js(TypeError, _ => s.sanitizeToString());
     }, "SanitizerAPI sanitize function without argument should throw an error.");
 
+    test(t => {
+      let s = new Sanitizer({});
+      fragment = s.sanitize(null);
+        assert_equals(s.sanitizeToString(null), "null");
+    }, "SanitizerAPI sanitizeToString function for null.");
+
     testcases.forEach(c => test(t => {
         let s = new Sanitizer(c.config_input);
         assert_equals(s.sanitizeToString(c.value), c.result);
-    }, "SanitizerAPI config: " + c.message + ", sanitizeToString function for " + c.message));
+    }, "SanitizerAPI config: " + c.message + ", sanitizeToString from string function for " + c.message));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        var dom = document.implementation.createHTMLDocument();
+        dom.documentElement.innerHTML = c.value;
+        let result = s.sanitizeToString(dom);
+        // Remove <html> and </html>
+        if (c.message != "document" && result.slice(0,12) == "<html><body>" && result.slice(result.length-14, result.length) == "</body></html>")
+          result = result.substr(12, result.length - 26);
+        if (c.message == "document") {
+          assert_equals(result, "<html><body>test</body></html>");
+        } else {
+          assert_equals(result, c.result);
+        }
+    }, "SanitizerAPI with config: " + c.message + ", sanitizeToString from document function for " + c.message));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        let tpl = document.createElement("template");
+        tpl.innerHTML = c.value;
+        assert_equals(s.sanitizeToString(tpl.content), c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitizeToString from document fragment function for " + c.message));
 </script>
 </body>
 </html>

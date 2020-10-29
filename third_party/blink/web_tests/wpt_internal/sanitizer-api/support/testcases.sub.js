@@ -8,7 +8,6 @@ const testcases = [
   {config_input: {}, value: 1+2, result: "3", message: "arithmetic"},
   {config_input: {}, value: "", result: "", message: "empty string"},
   {config_input: {}, value: undefined, result: "undefined", message: "undefined"},
-  {config_input: {}, value: null, result: "null", message: "null"},
   {config_input: {}, value: "<html><head></head><body>test</body></html>", result: "test", message: "document"},
   {config_input: {}, value: "<div>test", result: "<div>test</div>", message: "html without close tag"},
   {config_input: {}, value: "<script>alert('i am a test')<\/script>", result: "", message: "scripts for default configs"},

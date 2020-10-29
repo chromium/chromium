@@ -11,10 +11,12 @@
 
 namespace blink {
 
+class Document;
 class DocumentFragment;
 class ExceptionState;
 class SanitizerConfig;
 class ScriptState;
+class StringOrDocumentFragmentOrDocument;
 
 class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -24,8 +26,12 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   explicit Sanitizer(const SanitizerConfig*);
   ~Sanitizer() override;
 
-  String sanitizeToString(ScriptState*, const String&, ExceptionState&);
-  DocumentFragment* sanitize(ScriptState*, const String&, ExceptionState&);
+  String sanitizeToString(ScriptState*,
+                          StringOrDocumentFragmentOrDocument&,
+                          ExceptionState&);
+  DocumentFragment* sanitize(ScriptState*,
+                             StringOrDocumentFragmentOrDocument&,
+                             ExceptionState&);
 
   void Trace(Visitor*) const override;
 

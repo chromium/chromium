@@ -97,6 +97,8 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/string_or_array_buffer_or_array_buffer_view_or_ndef_message_init.h",
   "$bindings_modules_v8_output_dir/string_or_canvas_gradient_or_canvas_pattern.cc",
   "$bindings_modules_v8_output_dir/string_or_canvas_gradient_or_canvas_pattern.h",
+  "$bindings_modules_v8_output_dir/string_or_document_fragment_or_document.cc",
+  "$bindings_modules_v8_output_dir/string_or_document_fragment_or_document.h",
   "$bindings_modules_v8_output_dir/string_or_string_sequence_or_constrain_dom_string_parameters.cc",
   "$bindings_modules_v8_output_dir/string_or_string_sequence_or_constrain_dom_string_parameters.h",
   "$bindings_modules_v8_output_dir/string_or_unsigned_long.cc",

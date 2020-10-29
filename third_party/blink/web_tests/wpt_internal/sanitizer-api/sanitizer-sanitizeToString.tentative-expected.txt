@@ -1,39 +1,108 @@
 This is a testharness.js-based test.
+Found 104 tests; 101 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
-PASS SanitizerAPI config: string, sanitizeToString function for string
-PASS SanitizerAPI config: html fragment, sanitizeToString function for html fragment
-PASS SanitizerAPI config: broken html, sanitizeToString function for broken html
-PASS SanitizerAPI config: empty object, sanitizeToString function for empty object
-PASS SanitizerAPI config: number, sanitizeToString function for number
-PASS SanitizerAPI config: zeros, sanitizeToString function for zeros
-PASS SanitizerAPI config: arithmetic, sanitizeToString function for arithmetic
-PASS SanitizerAPI config: empty string, sanitizeToString function for empty string
-PASS SanitizerAPI config: undefined, sanitizeToString function for undefined
-PASS SanitizerAPI config: null, sanitizeToString function for null
-PASS SanitizerAPI config: document, sanitizeToString function for document
-PASS SanitizerAPI config: html without close tag, sanitizeToString function for html without close tag
-PASS SanitizerAPI config: scripts for default configs, sanitizeToString function for scripts for default configs
-PASS SanitizerAPI config: onclick scripts, sanitizeToString function for onclick scripts
-PASS SanitizerAPI config: invalid config_input, sanitizeToString function for invalid config_input
-PASS SanitizerAPI config: empty dropElements list, sanitizeToString function for empty dropElements list
-PASS SanitizerAPI config: test html without close tag with dropElements list ['div'], sanitizeToString function for test html without close tag with dropElements list ['div']
-PASS SanitizerAPI config: test script with ["script"] as dropElements list, sanitizeToString function for test script with ["script"] as dropElements list
-PASS SanitizerAPI config: dropElements list ["test", "i"]}, sanitizeToString function for dropElements list ["test", "i"]}
-PASS SanitizerAPI config: dropElements list ["I", "AM"]}, sanitizeToString function for dropElements list ["I", "AM"]}
-PASS SanitizerAPI config: dropElements list ["am", "p"]}, sanitizeToString function for dropElements list ["am", "p"]}
-PASS SanitizerAPI config: dropElements list with invalid values}, sanitizeToString function for dropElements list with invalid values}
-PASS SanitizerAPI config: blockElements list with invalid values}, sanitizeToString function for blockElements list with invalid values}
-PASS SanitizerAPI config: allowElements list ["p"]., sanitizeToString function for allowElements list ["p"].
-PASS SanitizerAPI config: allowElements list has no influence to dropElements., sanitizeToString function for allowElements list has no influence to dropElements.
-PASS SanitizerAPI config: dropAttributes list {"style": ["p"]} with style attribute, sanitizeToString function for dropAttributes list {"style": ["p"]} with style attribute
-PASS SanitizerAPI config: dropAttributes list {"*": ["a"]} with style attribute, sanitizeToString function for dropAttributes list {"*": ["a"]} with style attribute
-PASS SanitizerAPI config: empty dropAttributes list with id attribute, sanitizeToString function for empty dropAttributes list with id attribute
-PASS SanitizerAPI config: dropAttributes list {"id": ["*"]} with id attribute, sanitizeToString function for dropAttributes list {"id": ["*"]} with id attribute
-PASS SanitizerAPI config: dropAttributes list {"ID": ["*"]} with id attribute, sanitizeToString function for dropAttributes list {"ID": ["*"]} with id attribute
-FAIL SanitizerAPI config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access., sanitizeToString function for dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
-PASS SanitizerAPI config: allowAttributes list {"id": ["div"]} with id attribute, sanitizeToString function for allowAttributes list {"id": ["div"]} with id attribute
-PASS SanitizerAPI config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitizeToString function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
-PASS SanitizerAPI config: allowAttributes list {"*": ["a"]} with style attribute, sanitizeToString function for allowAttributes list {"*": ["a"]} with style attribute
-PASS SanitizerAPI config: allowAttributes list has no influence to dropAttributes, sanitizeToString function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI sanitizeToString function for null.
+PASS SanitizerAPI config: string, sanitizeToString from string function for string
+PASS SanitizerAPI config: html fragment, sanitizeToString from string function for html fragment
+PASS SanitizerAPI config: broken html, sanitizeToString from string function for broken html
+PASS SanitizerAPI config: empty object, sanitizeToString from string function for empty object
+PASS SanitizerAPI config: number, sanitizeToString from string function for number
+PASS SanitizerAPI config: zeros, sanitizeToString from string function for zeros
+PASS SanitizerAPI config: arithmetic, sanitizeToString from string function for arithmetic
+PASS SanitizerAPI config: empty string, sanitizeToString from string function for empty string
+PASS SanitizerAPI config: undefined, sanitizeToString from string function for undefined
+PASS SanitizerAPI config: document, sanitizeToString from string function for document
+PASS SanitizerAPI config: html without close tag, sanitizeToString from string function for html without close tag
+PASS SanitizerAPI config: scripts for default configs, sanitizeToString from string function for scripts for default configs
+PASS SanitizerAPI config: onclick scripts, sanitizeToString from string function for onclick scripts
+PASS SanitizerAPI config: invalid config_input, sanitizeToString from string function for invalid config_input
+PASS SanitizerAPI config: empty dropElements list, sanitizeToString from string function for empty dropElements list
+PASS SanitizerAPI config: test html without close tag with dropElements list ['div'], sanitizeToString from string function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI config: test script with ["script"] as dropElements list, sanitizeToString from string function for test script with ["script"] as dropElements list
+PASS SanitizerAPI config: dropElements list ["test", "i"]}, sanitizeToString from string function for dropElements list ["test", "i"]}
+PASS SanitizerAPI config: dropElements list ["I", "AM"]}, sanitizeToString from string function for dropElements list ["I", "AM"]}
+PASS SanitizerAPI config: dropElements list ["am", "p"]}, sanitizeToString from string function for dropElements list ["am", "p"]}
+PASS SanitizerAPI config: dropElements list with invalid values}, sanitizeToString from string function for dropElements list with invalid values}
+PASS SanitizerAPI config: blockElements list with invalid values}, sanitizeToString from string function for blockElements list with invalid values}
+PASS SanitizerAPI config: allowElements list ["p"]., sanitizeToString from string function for allowElements list ["p"].
+PASS SanitizerAPI config: allowElements list has no influence to dropElements., sanitizeToString from string function for allowElements list has no influence to dropElements.
+PASS SanitizerAPI config: dropAttributes list {"style": ["p"]} with style attribute, sanitizeToString from string function for dropAttributes list {"style": ["p"]} with style attribute
+PASS SanitizerAPI config: dropAttributes list {"*": ["a"]} with style attribute, sanitizeToString from string function for dropAttributes list {"*": ["a"]} with style attribute
+PASS SanitizerAPI config: empty dropAttributes list with id attribute, sanitizeToString from string function for empty dropAttributes list with id attribute
+PASS SanitizerAPI config: dropAttributes list {"id": ["*"]} with id attribute, sanitizeToString from string function for dropAttributes list {"id": ["*"]} with id attribute
+PASS SanitizerAPI config: dropAttributes list {"ID": ["*"]} with id attribute, sanitizeToString from string function for dropAttributes list {"ID": ["*"]} with id attribute
+FAIL SanitizerAPI config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access., sanitizeToString from string function for dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
+PASS SanitizerAPI config: allowAttributes list {"id": ["div"]} with id attribute, sanitizeToString from string function for allowAttributes list {"id": ["div"]} with id attribute
+PASS SanitizerAPI config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitizeToString from string function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
+PASS SanitizerAPI config: allowAttributes list {"*": ["a"]} with style attribute, sanitizeToString from string function for allowAttributes list {"*": ["a"]} with style attribute
+PASS SanitizerAPI config: allowAttributes list has no influence to dropAttributes, sanitizeToString from string function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI with config: string, sanitizeToString from document function for string
+PASS SanitizerAPI with config: html fragment, sanitizeToString from document function for html fragment
+PASS SanitizerAPI with config: broken html, sanitizeToString from document function for broken html
+PASS SanitizerAPI with config: empty object, sanitizeToString from document function for empty object
+PASS SanitizerAPI with config: number, sanitizeToString from document function for number
+PASS SanitizerAPI with config: zeros, sanitizeToString from document function for zeros
+PASS SanitizerAPI with config: arithmetic, sanitizeToString from document function for arithmetic
+PASS SanitizerAPI with config: empty string, sanitizeToString from document function for empty string
+PASS SanitizerAPI with config: undefined, sanitizeToString from document function for undefined
+PASS SanitizerAPI with config: document, sanitizeToString from document function for document
+PASS SanitizerAPI with config: html without close tag, sanitizeToString from document function for html without close tag
+PASS SanitizerAPI with config: scripts for default configs, sanitizeToString from document function for scripts for default configs
+PASS SanitizerAPI with config: onclick scripts, sanitizeToString from document function for onclick scripts
+PASS SanitizerAPI with config: invalid config_input, sanitizeToString from document function for invalid config_input
+PASS SanitizerAPI with config: empty dropElements list, sanitizeToString from document function for empty dropElements list
+PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitizeToString from document function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitizeToString from document function for test script with ["script"] as dropElements list
+PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitizeToString from document function for dropElements list ["test", "i"]}
+PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitizeToString from document function for dropElements list ["I", "AM"]}
+PASS SanitizerAPI with config: dropElements list ["am", "p"]}, sanitizeToString from document function for dropElements list ["am", "p"]}
+PASS SanitizerAPI with config: dropElements list with invalid values}, sanitizeToString from document function for dropElements list with invalid values}
+PASS SanitizerAPI with config: blockElements list with invalid values}, sanitizeToString from document function for blockElements list with invalid values}
+PASS SanitizerAPI with config: allowElements list ["p"]., sanitizeToString from document function for allowElements list ["p"].
+PASS SanitizerAPI with config: allowElements list has no influence to dropElements., sanitizeToString from document function for allowElements list has no influence to dropElements.
+PASS SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitizeToString from document function for dropAttributes list {"style": ["p"]} with style attribute
+PASS SanitizerAPI with config: dropAttributes list {"*": ["a"]} with style attribute, sanitizeToString from document function for dropAttributes list {"*": ["a"]} with style attribute
+PASS SanitizerAPI with config: empty dropAttributes list with id attribute, sanitizeToString from document function for empty dropAttributes list with id attribute
+PASS SanitizerAPI with config: dropAttributes list {"id": ["*"]} with id attribute, sanitizeToString from document function for dropAttributes list {"id": ["*"]} with id attribute
+PASS SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with id attribute, sanitizeToString from document function for dropAttributes list {"ID": ["*"]} with id attribute
+FAIL SanitizerAPI with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access., sanitizeToString from document function for dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
+PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attribute, sanitizeToString from document function for allowAttributes list {"id": ["div"]} with id attribute
+PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitizeToString from document function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
+PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitizeToString from document function for allowAttributes list {"*": ["a"]} with style attribute
+PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitizeToString from document function for allowAttributes list has no influence to dropAttributes
+PASS SanitizerAPI with config: string, sanitizeToString from document fragment function for string
+PASS SanitizerAPI with config: html fragment, sanitizeToString from document fragment function for html fragment
+PASS SanitizerAPI with config: broken html, sanitizeToString from document fragment function for broken html
+PASS SanitizerAPI with config: empty object, sanitizeToString from document fragment function for empty object
+PASS SanitizerAPI with config: number, sanitizeToString from document fragment function for number
+PASS SanitizerAPI with config: zeros, sanitizeToString from document fragment function for zeros
+PASS SanitizerAPI with config: arithmetic, sanitizeToString from document fragment function for arithmetic
+PASS SanitizerAPI with config: empty string, sanitizeToString from document fragment function for empty string
+PASS SanitizerAPI with config: undefined, sanitizeToString from document fragment function for undefined
+PASS SanitizerAPI with config: document, sanitizeToString from document fragment function for document
+PASS SanitizerAPI with config: html without close tag, sanitizeToString from document fragment function for html without close tag
+PASS SanitizerAPI with config: scripts for default configs, sanitizeToString from document fragment function for scripts for default configs
+PASS SanitizerAPI with config: onclick scripts, sanitizeToString from document fragment function for onclick scripts
+PASS SanitizerAPI with config: invalid config_input, sanitizeToString from document fragment function for invalid config_input
+PASS SanitizerAPI with config: empty dropElements list, sanitizeToString from document fragment function for empty dropElements list
+PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitizeToString from document fragment function for test html without close tag with dropElements list ['div']
+PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitizeToString from document fragment function for test script with ["script"] as dropElements list
+PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitizeToString from document fragment function for dropElements list ["test", "i"]}
+PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitizeToString from document fragment function for dropElements list ["I", "AM"]}
+PASS SanitizerAPI with config: dropElements list ["am", "p"]}, sanitizeToString from document fragment function for dropElements list ["am", "p"]}
+PASS SanitizerAPI with config: dropElements list with invalid values}, sanitizeToString from document fragment function for dropElements list with invalid values}
+PASS SanitizerAPI with config: blockElements list with invalid values}, sanitizeToString from document fragment function for blockElements list with invalid values}
+PASS SanitizerAPI with config: allowElements list ["p"]., sanitizeToString from document fragment function for allowElements list ["p"].
+PASS SanitizerAPI with config: allowElements list has no influence to dropElements., sanitizeToString from document fragment function for allowElements list has no influence to dropElements.
+PASS SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitizeToString from document fragment function for dropAttributes list {"style": ["p"]} with style attribute
+PASS SanitizerAPI with config: dropAttributes list {"*": ["a"]} with style attribute, sanitizeToString from document fragment function for dropAttributes list {"*": ["a"]} with style attribute
+PASS SanitizerAPI with config: empty dropAttributes list with id attribute, sanitizeToString from document fragment function for empty dropAttributes list with id attribute
+PASS SanitizerAPI with config: dropAttributes list {"id": ["*"]} with id attribute, sanitizeToString from document fragment function for dropAttributes list {"id": ["*"]} with id attribute
+PASS SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with id attribute, sanitizeToString from document fragment function for dropAttributes list {"ID": ["*"]} with id attribute
+FAIL SanitizerAPI with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access., sanitizeToString from document fragment function for dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
+PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attribute, sanitizeToString from document fragment function for allowAttributes list {"id": ["div"]} with id attribute
+PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitizeToString from document fragment function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
+PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitizeToString from document fragment function for allowAttributes list {"*": ["a"]} with style attribute
+PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitizeToString from document fragment function for allowAttributes list has no influence to dropAttributes
 Harness: the test ran to completion.
 
