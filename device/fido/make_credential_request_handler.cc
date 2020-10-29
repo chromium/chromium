@@ -810,7 +810,6 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
   switch (options_.resident_key) {
     case ResidentKeyRequirement::kRequired:
       request->resident_key_required = true;
-      request->user_verification = UserVerificationRequirement::kRequired;
       break;
     case ResidentKeyRequirement::kPreferred: {
       // Create a resident key if the authenticator supports it, has sufficient
@@ -848,7 +847,8 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       break;
   }
 
-  request->user_verification = request->resident_key_required
+  request->user_verification = request->resident_key_required ||
+                                       (auth_options && auth_options->always_uv)
                                    ? UserVerificationRequirement::kRequired
                                    : options_.user_verification;
 

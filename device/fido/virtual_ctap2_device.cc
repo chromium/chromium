@@ -472,6 +472,8 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   Init({ProtocolVersion::kCtap2});
   std::vector<ProtocolVersion> versions = {ProtocolVersion::kCtap2};
   if (config.u2f_support) {
+    // Devices with alwaysUv may disable u2f. Let's be strict here.
+    DCHECK(!config.always_uv);
     versions.emplace_back(ProtocolVersion::kU2f);
     u2f_device_ = std::make_unique<VirtualU2fDevice>(NewReferenceToState());
   }
@@ -570,6 +572,12 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
            "uv-enabled authenticators";
     options_updated = true;
     options.supports_large_blobs = true;
+  }
+
+  if (config.always_uv) {
+    DCHECK(config.pin_support || config.internal_uv_support);
+    options_updated = true;
+    options.always_uv = true;
   }
 
   if (options_updated) {
@@ -745,6 +753,7 @@ VirtualCtap2Device::CheckUserVerification(
     base::span<const uint8_t> pin_token,
     base::span<const uint8_t> client_data_hash,
     UserVerificationRequirement user_verification,
+    bool user_presence_required,
     bool* out_user_verified) {
   const AuthenticatorSupportedOptions& options = authenticator_info.options;
 
@@ -785,9 +794,6 @@ VirtualCtap2Device::CheckUserVerification(
     return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
 
-  // 3. "If authenticator is not protected by some form of user verification and
-  // platform has set "uv" or pinAuth to get the user verification, return
-  // CTAP2_ERR_INVALID_OPTION."
   const bool can_do_uv =
       options.user_verification_availability ==
           AuthenticatorSupportedOptions::UserVerificationAvailability::
@@ -795,6 +801,45 @@ VirtualCtap2Device::CheckUserVerification(
       options.client_pin_availability ==
           AuthenticatorSupportedOptions::ClientPinAvailability::
               kSupportedAndPinSet;
+
+  // (CTAP2.1) 5. "If the alwaysUv option ID is present and true and the "up"
+  // option is present and true then:"
+  if (options.always_uv && user_presence_required) {
+    // 5.1 "If the authenticator is not protected by some form of user
+    // verification:"
+    if (!can_do_uv) {
+      // 5.1.1 "If the clientPin option ID is present: (clientPin is supported)"
+      if (options.client_pin_availability ==
+          AuthenticatorSupportedOptions::ClientPinAvailability::
+              kSupportedAndPinSet) {
+        return CtapDeviceResponseCode::kCtap2ErrPinRequired;
+      } else {
+        return CtapDeviceResponseCode::kCtap2ErrOperationDenied;
+      }
+    }
+    // 5.4 "If the "uv" option is false and the authenticator supports a
+    // built-in user verification method, and the user verification method is
+    // enabled then:"
+    if (user_verification == UserVerificationRequirement::kDiscouraged &&
+        options.user_verification_availability ==
+            AuthenticatorSupportedOptions::UserVerificationAvailability::
+                kSupportedAndConfigured) {
+      user_verification = UserVerificationRequirement::kRequired;
+    }
+    // 5.5 "If the clientPin option ID is present and the pinUvAuthParam
+    // parameter is not present, then end the operation by returning
+    // CTAP2_ERR_PIN_REQUIRED."
+    if (options.client_pin_availability !=
+            AuthenticatorSupportedOptions::ClientPinAvailability::
+                kNotSupported &&
+        !pin_auth) {
+      return CtapDeviceResponseCode::kCtap2ErrPinRequired;
+    }
+  }
+
+  // 3. "If authenticator is not protected by some form of user verification and
+  // platform has set "uv" or pinAuth to get the user verification, return
+  // CTAP2_ERR_INVALID_OPTION."
   if (!can_do_uv &&
       (user_verification == UserVerificationRequirement::kRequired ||
        pin_auth)) {
@@ -896,7 +941,8 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       /*is_make_credential=*/true, *device_info_, request.rp.id,
       request.pin_auth, request.pin_protocol, mutable_state()->pin_token,
-      request.client_data_hash, request.user_verification, &user_verified);
+      request.client_data_hash, request.user_verification,
+      /*user_presence_required=*/true, &user_verified);
   if (uv_error != CtapDeviceResponseCode::kSuccess) {
     return uv_error;
   }
@@ -1187,7 +1233,8 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       /*is_make_credential=*/false, *device_info_, request.rp_id,
       request.pin_auth, request.pin_protocol, mutable_state()->pin_token,
-      request.client_data_hash, request.user_verification, &user_verified);
+      request.client_data_hash, request.user_verification,
+      request.user_presence_required, &user_verified);
   if (uv_error != CtapDeviceResponseCode::kSuccess) {
     return uv_error;
   }
@@ -1398,7 +1445,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     }
 
     AuthenticatorData authenticator_data(
-        rp_id_hash, /*user_present=*/true, user_verified,
+        rp_id_hash, request.user_presence_required, user_verified,
         registration.second->counter, std::move(opt_attested_cred_data),
         std::move(extensions));
 
@@ -1415,8 +1462,15 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
                                       *opt_android_client_data_json)
                                 : request.client_data_hash);
 
-    std::vector<uint8_t> signature =
-        registration.second->private_key->Sign(signature_buffer);
+    std::vector<uint8_t> signature;
+    if (config_.always_uv && !user_verified) {
+      // Requests without user presence and with up=0 produce bogus signatures.
+      DCHECK(!request.user_presence_required);
+      signature =
+          registration.second->private_key->Sign(std::vector<uint8_t>{0});
+    } else {
+      signature = registration.second->private_key->Sign(signature_buffer);
+    }
 
     AuthenticatorGetAssertionResponse assertion(
         std::move(authenticator_data),
@@ -2335,13 +2389,15 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
       return CtapDeviceResponseCode::kCtap1ErrInvalidSeq;
     }
 
-    // If the device is protected by some sort of user verification:
+    // If the device is protected by some sort of user verification or alwaysUv
+    // is true.
     if (device_info_->options.client_pin_availability ==
             AuthenticatorSupportedOptions::ClientPinAvailability::
                 kSupportedAndPinSet ||
         device_info_->options.user_verification_availability ==
             AuthenticatorSupportedOptions::UserVerificationAvailability::
-                kSupportedAndConfigured) {
+                kSupportedAndConfigured ||
+        config_.always_uv) {
       // verify(pinUvAuthToken,
       //        32×0xff || h’0c00' || uint32LittleEndian(offset) || SHA-256(
       //          contents of set byte string, i.e. not including an outer CBOR

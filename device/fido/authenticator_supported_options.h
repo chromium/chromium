@@ -100,6 +100,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   // Indicates whether the authenticator supports the authenticatorLargeBlobs
   // command.
   bool supports_large_blobs = false;
+  // Indicates whether user verification must be used for make credential, final
+  // (i.e. not pre-flight) get assertion requests, and writing large blobs. An
+  // |always_uv| value of true will make uv=0 get assertion requests return
+  // invalid signatures, which is okay for pre-flighting.
+  bool always_uv = false;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

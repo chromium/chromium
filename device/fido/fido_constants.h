@@ -335,6 +335,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPinUvTokenMapKey[];
 extern const char kDefaultCredProtectKey[];
 extern const char kEnterpriseAttestationKey[];
 extern const char kLargeBlobsKey[];
+extern const char kAlwaysUvKey[];
 
 // HID transport specific constants.
 constexpr uint32_t kHidBroadcastChannel = 0xffffffff;

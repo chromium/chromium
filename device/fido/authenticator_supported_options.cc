@@ -100,6 +100,10 @@ cbor::Value AsCBOR(const AuthenticatorSupportedOptions& options) {
     option_map.emplace(kLargeBlobsKey, true);
   }
 
+  if (options.always_uv) {
+    option_map.emplace(kAlwaysUvKey, true);
+  }
+
   return cbor::Value(std::move(option_map));
 }
 

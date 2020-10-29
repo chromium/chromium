@@ -269,6 +269,10 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     specialized_request.large_blob_read = false;
     specialized_request.large_blob_write.reset();
   }
+  if (authenticator.Options() && authenticator.Options()->always_uv) {
+    specialized_request.user_verification =
+        UserVerificationRequirement::kRequired;
+  }
   return specialized_request;
 }
 
@@ -335,7 +339,9 @@ void GetAssertionRequestHandler::DispatchRequest(
     return;
   }
 
-  switch (authenticator->WillNeedPINToGetAssertion(request_, observer())) {
+  CtapGetAssertionRequest request =
+      SpecializeRequestForAuthenticator(request_, *authenticator);
+  switch (authenticator->WillNeedPINToGetAssertion(request, observer())) {
     case PINDisposition::kUsePIN:
       // Skip asking for touch if this is the only available authenticator.
       if (active_authenticators().size() == 1 && allow_skipping_pin_touch_) {
@@ -364,7 +370,7 @@ void GetAssertionRequestHandler::DispatchRequest(
       break;
   }
 
-  if (request_.user_verification != UserVerificationRequirement::kDiscouraged &&
+  if (request.user_verification != UserVerificationRequirement::kDiscouraged &&
       authenticator->CanGetUvToken()) {
     authenticator->GetUvRetries(
         base::BindOnce(&GetAssertionRequestHandler::OnStartUvTokenOrFallback,
@@ -376,8 +382,6 @@ void GetAssertionRequestHandler::DispatchRequest(
 
   FIDO_LOG(DEBUG) << "Asking for assertion from "
                   << authenticator->GetDisplayName();
-  CtapGetAssertionRequest request =
-      SpecializeRequestForAuthenticator(request_, *authenticator);
   CtapGetAssertionRequest request_copy(request);
   authenticator->GetAssertion(
       std::move(request_copy), options_,
@@ -613,9 +617,10 @@ void GetAssertionRequestHandler::CollectPINThenSendRequest(
   if (state_ != State::kWaitingForTouch) {
     return;
   }
-  DCHECK(authenticator->WillNeedPINToGetAssertion(request_, observer()) !=
-         PINDisposition::kNoPIN);
-
+  DCHECK_NE(authenticator->WillNeedPINToGetAssertion(
+                SpecializeRequestForAuthenticator(request_, *authenticator),
+                observer()),
+            PINDisposition::kNoPIN);
   DCHECK(observer());
   state_ = State::kGettingRetries;
   CancelActiveAuthenticators(authenticator->GetId());
@@ -627,8 +632,10 @@ void GetAssertionRequestHandler::CollectPINThenSendRequest(
 
 void GetAssertionRequestHandler::StartPINFallbackForInternalUv(
     FidoAuthenticator* authenticator) {
-  DCHECK(authenticator->WillNeedPINToGetAssertion(request_, observer()) ==
-         PINDisposition::kUsePINForFallback);
+  DCHECK_EQ(authenticator->WillNeedPINToGetAssertion(
+                SpecializeRequestForAuthenticator(request_, *authenticator),
+                observer()),
+            PINDisposition::kUsePINForFallback);
   observer()->OnInternalUserVerificationLocked();
   CollectPINThenSendRequest(authenticator);
 }
@@ -740,7 +747,9 @@ void GetAssertionRequestHandler::OnStartUvTokenOrFallback(
   }
 
   if (retries == 0) {
-    if (authenticator->WillNeedPINToGetAssertion(request_, observer()) ==
+    CtapGetAssertionRequest request =
+        SpecializeRequestForAuthenticator(request_, *authenticator);
+    if (authenticator->WillNeedPINToGetAssertion(request, observer()) ==
         PINDisposition::kUsePINForFallback) {
       authenticator->GetTouch(base::BindOnce(
           &GetAssertionRequestHandler::StartPINFallbackForInternalUv,
@@ -772,7 +781,9 @@ void GetAssertionRequestHandler::OnUvRetriesResponse(
   }
   state_ = State::kWaitingForTouch;
   if (response->retries == 0) {
-    if (authenticator_->WillNeedPINToGetAssertion(request_, observer()) ==
+    CtapGetAssertionRequest request =
+        SpecializeRequestForAuthenticator(request_, *authenticator_);
+    if (authenticator_->WillNeedPINToGetAssertion(request, observer()) ==
         PINDisposition::kUsePINForFallback) {
       // Fall back to PIN.
       StartPINFallbackForInternalUv(authenticator_);
@@ -805,7 +816,9 @@ void GetAssertionRequestHandler::OnHaveUvToken(
       status == CtapDeviceResponseCode::kCtap2ErrOperationDenied ||
       status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
     if (status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
-      if (authenticator->WillNeedPINToGetAssertion(request_, observer()) ==
+      CtapGetAssertionRequest request =
+          SpecializeRequestForAuthenticator(request_, *authenticator_);
+      if (authenticator->WillNeedPINToGetAssertion(request, observer()) ==
           PINDisposition::kUsePINForFallback) {
         StartPINFallbackForInternalUv(authenticator);
         return;

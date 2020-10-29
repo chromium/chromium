@@ -70,6 +70,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool cred_protect_support = false;
     bool hmac_secret_support = false;
     bool large_blob_support = false;
+    bool always_uv = false;
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this
     // as a fixed size area for the large blob.
@@ -215,6 +216,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       base::span<const uint8_t> pin_token,
       base::span<const uint8_t> client_data_hash,
       UserVerificationRequirement user_verification,
+      bool user_presence_required,
       bool* out_user_verified);
   base::Optional<CtapDeviceResponseCode> OnMakeCredential(
       base::span<const uint8_t> request,

@@ -37,6 +37,7 @@ const char kPinUvTokenMapKey[] = "pinUvAuthToken";
 const char kDefaultCredProtectKey[] = "defaultCredProtect";
 const char kEnterpriseAttestationKey[] = "ep";
 const char kLargeBlobsKey[] = "largeBlobs";
+const char kAlwaysUvKey[] = "alwaysUv";
 
 const base::TimeDelta kDeviceTimeout = base::TimeDelta::FromSeconds(20);
 const base::TimeDelta kU2fRetryDelay = base::TimeDelta::FromMilliseconds(200);

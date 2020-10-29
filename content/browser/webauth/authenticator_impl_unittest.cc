@@ -3872,6 +3872,23 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialWrongPINFirst) {
             virtual_device_factory_->mutable_state()->pin_retries);
 }
 
+TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUv) {
+  // Test that if an authenticator is reporting alwaysUv = 1, UV is attempted
+  // even if the user verification requirement is discouraged.
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.always_uv = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
+
+  MakeCredentialResult result =
+      AuthenticatorMakeCredential(make_credential_options(
+          device::UserVerificationRequirement::kDiscouraged));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(HasUV(result.response));
+}
+
 TEST_F(PINAuthenticatorImplTest, GetAssertion) {
   typedef int Expectations[3][3];
   // kExpectedWithUISupport enumerates the expected behaviour when the embedder
@@ -4002,6 +4019,25 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionHardLock) {
   ASSERT_TRUE(test_client_.failure_reason.has_value());
   EXPECT_EQ(InterestingFailureReason::kHardPINBlock,
             *test_client_.failure_reason);
+}
+
+TEST_F(PINAuthenticatorImplTest, GetAssertionAlwaysUv) {
+  // Test that if an authenticator is reporting alwaysUv = 1, UV is attempted
+  // even if the user verification requirement is discouraged.
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.always_uv = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  PublicKeyCredentialRequestOptionsPtr options =
+      get_credential_options(device::UserVerificationRequirement::kDiscouraged);
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id(), kTestRelyingPartyId));
+  test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
+
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(HasUV(result.response));
 }
 
 TEST_F(PINAuthenticatorImplTest, MakeCredentialNoSupportedAlgorithm) {
