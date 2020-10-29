@@ -15,7 +15,11 @@ namespace switches {
 const base::Feature kReadLater{"ReadLater", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsReadingListEnabled() {
+#if defined(OS_IOS)
   return BUILDFLAG(ENABLE_READING_LIST);
+#else
+  return base::FeatureList::IsEnabled(kReadLater);
+#endif
 }
 }  // namespace switches
 }  // namespace reading_list

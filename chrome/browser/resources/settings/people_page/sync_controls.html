@@ -117,6 +117,17 @@
         </cr-toggle>
       </div>
 
+      <div class="list-item" hidden="[[!syncPrefs.readingListRegistered]]">
+        <div id="readingListCheckboxLabel">
+          $i18n{readingListCheckboxLabel}
+        </div>
+        <cr-toggle checked="{{syncPrefs.readingListSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[syncPrefs.syncAllDataTypes]]"
+            aria-labelledby="readingListCheckboxLabel">
+        </cr-toggle>
+      </div>
+
       <div class="list-item" hidden="[[!syncPrefs.tabsRegistered]]">
         <div id="openTabsCheckboxLabel">
           $i18n{openTabsCheckboxLabel}

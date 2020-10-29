@@ -17,6 +17,7 @@ const SyncPrefsIndividualDataTypes = [
   'typedUrlsSynced',
   'themesSynced',
   'bookmarksSynced',
+  'readingListSynced',
   'passwordsSynced',
   'tabsSynced',
   'paymentsIntegrationEnabled',

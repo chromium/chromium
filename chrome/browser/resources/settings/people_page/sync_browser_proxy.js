@@ -57,7 +57,8 @@ cr.define('settings', function() {
   /**
    * The state of sync. This is the data structure sent back and forth between
    * C++ and JS. Its naming and structure is not optimal, but changing it would
-   * require changes to the C++ handler, which is already functional.
+   * require changes to the C++ handler, which is already functional. See
+   * PeopleHandler::PushSyncPrefs() for more details.
    * @typedef {{
    *   appsRegistered: boolean,
    *   appsSynced: boolean,
@@ -78,6 +79,8 @@ cr.define('settings', function() {
    *   paymentsIntegrationEnabled: boolean,
    *   preferencesRegistered: boolean,
    *   preferencesSynced: boolean,
+   *   readingListRegistered: boolean,
+   *   readingListSynced: boolean,
    *   setNewPassphrase: (boolean|undefined),
    *   syncAllDataTypes: boolean,
    *   tabsRegistered: boolean,

@@ -34,6 +34,8 @@ cr.define('sync_test_util', function() {
       paymentsIntegrationEnabled: true,
       preferencesRegistered: true,
       preferencesSynced: true,
+      readingListRegistered: true,
+      readingListSynced: true,
       setNewPassphrase: false,
       syncAllDataTypes: true,
       tabsRegistered: true,

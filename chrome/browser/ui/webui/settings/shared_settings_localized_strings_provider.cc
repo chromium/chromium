@@ -188,6 +188,7 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
       {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
       {"passphraseConfirmationPlaceholder",
        IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
+      {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
       {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
       {"themesAndWallpapersCheckboxLabel",
        IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL},

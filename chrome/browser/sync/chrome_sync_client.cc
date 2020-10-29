@@ -41,6 +41,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -67,6 +68,8 @@
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -629,10 +632,13 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
   switch (type) {
-    case syncer::READING_LIST:
-      // Reading List is only supported on iOS at the moment.
-      NOTREACHED();
-      return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
+    case syncer::READING_LIST: {
+      DCHECK(reading_list::switches::IsReadingListEnabled());
+      return ReadingListModelFactory::GetForBrowserContext(profile_)
+          ->GetModelTypeSyncBridge()
+          ->change_processor()
+          ->GetControllerDelegate();
+    }
 #if defined(OS_CHROMEOS)
     case syncer::PRINTERS:
       return chromeos::SyncedPrintersManagerFactory::GetForBrowserContext(
