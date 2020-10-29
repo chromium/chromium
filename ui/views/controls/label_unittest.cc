@@ -1062,6 +1062,26 @@ TEST_F(LabelTest, TextChangedCallback) {
   EXPECT_TRUE(text_changed);
 }
 
+// Verify that GetSubstringBounds returns the correct bounds, accounting for
+// label insets.
+TEST_F(LabelTest, GetSubstringBounds) {
+  label()->SetText(ASCIIToUTF16("abc"));
+  auto substring_bounds = label()->GetSubstringBounds(gfx::Range(0, 3));
+  EXPECT_EQ(1u, substring_bounds.size());
+
+  gfx::Insets insets{2, 3, 4, 5};
+  label()->SetBorder(CreateEmptyBorder(insets));
+  auto substring_bounds_with_inset =
+      label()->GetSubstringBounds(gfx::Range(0, 3));
+  EXPECT_EQ(1u, substring_bounds_with_inset.size());
+  EXPECT_EQ(substring_bounds[0].x() + 3, substring_bounds_with_inset[0].x());
+  EXPECT_EQ(substring_bounds[0].y() + 2, substring_bounds_with_inset[0].y());
+  EXPECT_EQ(substring_bounds[0].width(),
+            substring_bounds_with_inset[0].width());
+  EXPECT_EQ(substring_bounds[0].height(),
+            substring_bounds_with_inset[0].height());
+}
+
 // TODO(crbug.com/1139395): Enable on ChromeOS along with the DCHECK in Label.
 #if !defined(OS_CHROMEOS)
 // Ensures DCHECK for subpixel rendering on transparent layer is working.

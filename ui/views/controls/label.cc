@@ -473,6 +473,14 @@ void Label::SelectRange(const gfx::Range& range) {
     SchedulePaint();
 }
 
+std::vector<gfx::Rect> Label::GetSubstringBounds(const gfx::Range& range) {
+  auto substring_bounds = full_text_->GetSubstringBounds(range);
+  for (auto& bound : substring_bounds) {
+    bound.Offset(GetInsets().left(), GetInsets().top());
+  }
+  return substring_bounds;
+}
+
 views::PropertyChangedSubscription Label::AddTextChangedCallback(
     views::PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&full_text_ + kLabelText,

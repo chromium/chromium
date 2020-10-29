@@ -569,8 +569,8 @@ class GFX_EXPORT RenderText {
   // guaranteed not to be smaller. These bounds could be visually discontinuous
   // if the substring is split by a LTR/RTL level change. These bounds are in
   // local coordinates, but may be outside the visible region if the text is
-  // longer than the textfield. Subsequent text, cursor, or bounds changes may
-  // invalidate returned values.
+  // larger than the available space. Subsequent text, cursor, or bounds changes
+  // may invalidate returned values.
   virtual std::vector<Rect> GetSubstringBounds(const Range& range) = 0;
 
   // Gets the horizontal span (relative to the left of the text, not the view)

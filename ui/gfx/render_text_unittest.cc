@@ -7650,6 +7650,17 @@ TEST_F(RenderTextTest, MergeIntersectingRects) {
   test::RenderTextTestApi::MergeIntersectingRects(test_rects);
   ASSERT_EQ(1u, test_rects.size());
   EXPECT_EQ(Rect(0, 0, 17, 10), test_rects[0]);
+
+  // The first 3 rects are adjacent horizontally. The 4th rect is adjacent to
+  // the 3rd rect vertically, but is not merged. The last rect is adjacent to
+  // the 4th rect.
+  test_rects = std::vector<Rect>{Rect(0, 0, 10, 10), Rect(10, 0, 10, 10),
+                                 Rect(20, 0, 10, 10), Rect(20, 10, 10, 10),
+                                 Rect(30, 10, 10, 10)};
+  test::RenderTextTestApi::MergeIntersectingRects(test_rects);
+  ASSERT_EQ(2u, test_rects.size());
+  EXPECT_EQ(Rect(0, 0, 30, 10), test_rects[0]);
+  EXPECT_EQ(Rect(20, 10, 20, 10), test_rects[1]);
 }
 
 // Ensures that text is centered vertically and consistently when either the

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 #include "ui/native_theme/caption_style.h"
@@ -122,6 +123,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
       views::Button::PressedCallback callback,
       const gfx::VectorIcon& icon,
       const int tooltip_text_id);
+  void AddVirtualChildView(const std::string& name,
+                           const size_t i,
+                           const gfx::Range& range);
+  std::vector<std::string> GetVirtualChildrenTextForTesting();
 
   // Unowned. Owned by views hierarchy.
   views::Label* label_;

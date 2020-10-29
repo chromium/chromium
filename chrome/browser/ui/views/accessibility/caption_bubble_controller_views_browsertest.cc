@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -150,6 +151,10 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void OnError(int tab_index = 0) {
     GetController()->OnError(
         browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+  }
+
+  std::vector<std::string> GetVirtualChildrenText() {
+    return GetBubble()->GetVirtualChildrenTextForTesting();
   }
 
  private:
@@ -869,6 +874,144 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
 
   OnFinalTranscription("猫も大丈夫");
   EXPECT_EQ("猫も大丈夫", GetLabelText());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextComputedWhenAccessibilityModeEnabled) {
+  // If accessibility is disabled, virtual children aren't computed.
+  content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
+  OnFinalTranscription("A dog's nose print");
+  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+
+  // When accessibility is enabled, virtual children are computed.
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnFinalTranscription("is unique");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("A dog's nose print is unique", GetVirtualChildrenText()[0]);
+
+  // When accessibility is disabled, virtual children are no longer being
+  // updated.
+  content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
+  OnFinalTranscription("like a fingerprint");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("A dog's nose print is unique", GetVirtualChildrenText()[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextSplitsIntoNodesByLine) {
+  // Make a line of 500 characters.
+  std::string line(499, 'a');
+  line.push_back(' ');
+
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnPartialTranscription(line);
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ(line, GetVirtualChildrenText()[0]);
+  OnPartialTranscription(line + line);
+  EXPECT_EQ(2u, GetVirtualChildrenText().size());
+  EXPECT_EQ(line, GetVirtualChildrenText()[0]);
+  EXPECT_EQ(line, GetVirtualChildrenText()[1]);
+  OnPartialTranscription(line);
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ(line, GetVirtualChildrenText()[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextClearsWhenBubbleCloses) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnFinalTranscription("Dogs' noses are wet to help them smell.");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("Dogs' noses are wet to help them smell.",
+            GetVirtualChildrenText()[0]);
+  ClickButton(GetCloseButton());
+  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextClearsWhenTabRefreshes) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnFinalTranscription("Newfoundlands are amazing lifeguards.");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("Newfoundlands are amazing lifeguards.",
+            GetVirtualChildrenText()[0]);
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextChangesWhenTabChanges) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnFinalTranscription("3 dogs survived the Titanic sinking.");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("3 dogs survived the Titanic sinking.",
+            GetVirtualChildrenText()[0]);
+
+  InsertNewTab();
+  ActivateTabAt(1);
+  OnFinalTranscription("30% of Dalmations are deaf in one ear.", 1);
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("30% of Dalmations are deaf in one ear.",
+            GetVirtualChildrenText()[0]);
+
+  ActivateTabAt(0);
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("3 dogs survived the Titanic sinking. ",
+            GetVirtualChildrenText()[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextClearsOnError) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnFinalTranscription("The Saluki is the oldest dog breed.");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("The Saluki is the oldest dog breed.", GetVirtualChildrenText()[0]);
+  OnError();
+  EXPECT_EQ(0u, GetVirtualChildrenText().size());
+
+  // Clear the error by refreshing.
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  OnFinalTranscription("Chow Chows have black tongues.");
+  EXPECT_EQ(1u, GetVirtualChildrenText().size());
+  EXPECT_EQ("Chow Chows have black tongues.", GetVirtualChildrenText()[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AccessibleTextTruncates) {
+  // Make a string with 30 lines of 500 characters each.
+  std::string text;
+  std::string line(497, 'a');
+  for (int i = 10; i < 40; i++) {
+    text += base::NumberToString(i) + line + " ";
+  }
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnFinalTranscription(text);
+  EXPECT_EQ(9u, GetVirtualChildrenText().size());
+  for (int i = 0; i < 9; i++) {
+    EXPECT_EQ(base::NumberToString(i + 31) + line + " ",
+              GetVirtualChildrenText()[i]);
+  }
+  OnPartialTranscription(text);
+  EXPECT_EQ(39u, GetVirtualChildrenText().size());
+  for (int i = 0; i < 9; i++) {
+    EXPECT_EQ(base::NumberToString(i + 31) + line + " ",
+              GetVirtualChildrenText()[i]);
+  }
+  for (int i = 10; i < 40; i++) {
+    EXPECT_EQ(base::NumberToString(i) + line + " ",
+              GetVirtualChildrenText()[i - 1]);
+  }
+  OnFinalTranscription("a ");
+  EXPECT_EQ(9u, GetVirtualChildrenText().size());
+  for (int i = 0; i < 8; i++) {
+    EXPECT_EQ(base::NumberToString(i + 32) + line + " ",
+              GetVirtualChildrenText()[i]);
+  }
+  EXPECT_EQ("a ", GetVirtualChildrenText()[8]);
 }
 
 }  // namespace captions

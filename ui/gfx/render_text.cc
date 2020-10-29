@@ -1968,7 +1968,8 @@ void RenderText::MergeIntersectingRects(std::vector<Rect>& rects) {
 
   size_t merge_candidate = 0;
   for (size_t i = 1; i < rects.size(); i++) {
-    if (rects[i].Intersects(rects[merge_candidate])) {
+    if (rects[i].Intersects(rects[merge_candidate]) ||
+        rects[i].SharesEdgeWith(rects[merge_candidate])) {
       DCHECK_EQ(rects[i].y(), rects[merge_candidate].y());
       DCHECK_EQ(rects[i].height(), rects[merge_candidate].height());
       rects[merge_candidate].Union(rects[i]);

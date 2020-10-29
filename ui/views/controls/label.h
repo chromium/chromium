@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_LABEL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
@@ -263,6 +264,10 @@ class VIEWS_EXPORT Label : public View,
   // Selects the given text range. NO-OP if the label is not selectable or the
   // |range| endpoints don't lie on grapheme boundaries.
   void SelectRange(const gfx::Range& range);
+
+  // Get the visual bounds containing the logical substring of the full text
+  // within the |range|. See gfx::RenderText.
+  std::vector<gfx::Rect> GetSubstringBounds(const gfx::Range& range);
 
   views::PropertyChangedSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;

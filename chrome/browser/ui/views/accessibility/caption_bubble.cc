@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -471,22 +472,12 @@ void CaptionBubble::OnBlur() {
   frame_->UpdateFocusRing(false);
 }
 
-// TODO(crbug.com/1055150): Determine how this should be best exposed for screen
-// readers without over-verbalizing. Currently it reads the full text when
-// focused and does not announce when text changes.
 void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (model_ && model_->HasError()) {
-    node_data->SetName(error_text_->GetText());
-    node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
-  } else if (model_ && !model_->GetFullText().empty()) {
-    node_data->SetName(model_->GetFullText());
-    node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
-  } else {
-    node_data->SetName(title_->GetText());
-    node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
-  }
-  node_data->SetDescription(title_->GetText());
+  node_data->SetName(title_->GetText());
   node_data->role = ax::mojom::Role::kCaption;
+  if (model_ && model_->HasError()) {
+    node_data->SetDescription(error_text_->GetText());
+  }
 }
 
 void CaptionBubble::AddedToWidget() {
@@ -533,8 +524,67 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
 
 void CaptionBubble::OnTextChanged() {
   DCHECK(model_);
-  label_->SetText(base::UTF8ToUTF16(model_->GetFullText()));
+  std::string text = model_->GetFullText();
+  label_->SetText(base::UTF8ToUTF16(text));
   UpdateBubbleAndTitleVisibility();
+
+  // Only update ViewAccessibility if accessibility is enabled.
+  if (content::BrowserAccessibilityState::GetInstance()
+          ->GetAccessibilityMode()
+          .is_mode_off() ||
+      model_->HasError()) {
+    return;
+  }
+
+  auto& virtual_children = GetViewAccessibility().virtual_children();
+  if (text.empty() && !virtual_children.empty()) {
+    GetViewAccessibility().RemoveAllVirtualChildViews();
+    return;
+  }
+
+  const size_t num_lines = GetNumLinesInLabel();
+  size_t start = 0;
+  for (size_t i = 0; i < num_lines - 1; ++i) {
+    size_t end = GetTextIndexOfLineInLabel(i + 1);
+    std::string substring = text.substr(start, end - start);
+    AddVirtualChildView(substring, i, gfx::Range(start, end));
+    start = end;
+  }
+  std::string substring = text.substr(start, text.size() - start);
+  if (!substring.empty()) {
+    AddVirtualChildView(substring, num_lines - 1,
+                        gfx::Range(start, text.size()));
+  }
+
+  // Remove all virtual children that don't have a corresponding line.
+  size_t num_virtual_children = virtual_children.size();
+  for (size_t i = num_lines; i < num_virtual_children; ++i) {
+    GetViewAccessibility().RemoveVirtualChildView(
+        virtual_children.back().get());
+  }
+}
+
+void CaptionBubble::AddVirtualChildView(const std::string& name,
+                                        const size_t line_index,
+                                        const gfx::Range& range) {
+  auto& virtual_children = GetViewAccessibility().virtual_children();
+
+  // Add a new virtual child for a new line of text.
+  DCHECK(line_index <= virtual_children.size());
+  if (line_index == virtual_children.size()) {
+    auto view = std::make_unique<views::AXVirtualView>();
+    GetViewAccessibility().AddVirtualChildView(std::move(view));
+  }
+
+  // Set the virtual child's name as the content of the line.
+  ui::AXNodeData& ax_node_data = virtual_children[line_index]->GetCustomData();
+  if (ax_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName) !=
+      name) {
+    ax_node_data.SetName(name);
+    std::vector<gfx::Rect> bounds = label_->GetSubstringBounds(range);
+    DCHECK_EQ(bounds.size(), 1u);
+    ax_node_data.relative_bounds.bounds = gfx::RectF(bounds[0]);
+  }
 }
 
 void CaptionBubble::OnErrorChanged() {
@@ -545,6 +595,14 @@ void CaptionBubble::OnErrorChanged() {
 
   // The error is only 1 line, so redraw the bubble.
   Redraw();
+
+  if (has_error &&
+      !content::BrowserAccessibilityState::GetInstance()
+           ->GetAccessibilityMode()
+           .is_mode_off() &&
+      !GetViewAccessibility().virtual_children().empty()) {
+    GetViewAccessibility().RemoveAllVirtualChildViews();
+  }
 }
 
 void CaptionBubble::OnIsExpandedChanged() {
@@ -669,6 +727,16 @@ const char* CaptionBubble::GetClassName() const {
 
 std::string CaptionBubble::GetLabelTextForTesting() {
   return base::UTF16ToUTF8(label_->GetText());
+}
+
+std::vector<std::string> CaptionBubble::GetVirtualChildrenTextForTesting() {
+  auto& virtual_children = GetViewAccessibility().virtual_children();
+  std::vector<std::string> texts;
+  for (auto& virtual_child : virtual_children) {
+    texts.push_back(virtual_child->GetCustomData().GetStringAttribute(
+        ax::mojom::StringAttribute::kName));
+  }
+  return texts;
 }
 
 }  // namespace captions
