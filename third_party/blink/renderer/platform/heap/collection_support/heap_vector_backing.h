@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/heap/finalizer_traits.h"
-#include "third_party/blink/renderer/platform/heap/gc_info.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/impl/finalizer_traits.h"
+#include "third_party/blink/renderer/platform/heap/impl/gc_info.h"
+#include "third_party/blink/renderer/platform/heap/impl/threading_traits.h"
+#include "third_party/blink/renderer/platform/heap/impl/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/heap/threading_traits.h"
-#include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

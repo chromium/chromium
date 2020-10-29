@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/name_traits.h"
+#include "third_party/blink/renderer/platform/heap/impl/name_traits.h"
 
 namespace blink {
 

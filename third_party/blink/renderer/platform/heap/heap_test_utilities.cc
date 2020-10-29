@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_compact.h"
+#include "third_party/blink/renderer/platform/heap/impl/heap_compact.h"
 
 namespace blink {
 
