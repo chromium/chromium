@@ -65,6 +65,7 @@ js_library("compile_resources") {
     "toast.js",
     "tooltip.js",
     "type.js",
+    "untrusted_script_loader.js",
     "util.js",
     "views/camera.js",
     "views/camera/layout.js",

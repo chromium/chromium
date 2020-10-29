@@ -3,6 +3,7 @@ include_rules = [
   "+components/arc/intent_helper",
   "+components/content_settings/core/common",
   "+content/public/browser",
+  "+content/public/common",
   "+media/capture/video/chromeos",
   "+ui/aura",
   "+ui/display",

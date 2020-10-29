@@ -15,6 +15,7 @@ import {assert} from '../chrome_util.js';
 import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
 import {NativeDirectoryEntry} from '../models/native_file_system_entry.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
+import {UntrustedOrigin} from '../type.js';
 
 // eslint-disable-next-line no-unused-vars
 import {BrowserProxy} from './browser_proxy_interface.js';
@@ -171,6 +172,11 @@ class WebUIBrowserProxy {
   /** @override */
   async setLaunchingFromWindowCreationStartTime(callback) {
     await callback();
+  }
+
+  /** @override */
+  getUntrustedOrigin() {
+    return UntrustedOrigin.CHROME_UNTRUSTED;
   }
 }
 

@@ -7,6 +7,8 @@ import {
   AbstractFileEntry,        // eslint-disable-line no-unused-vars
   AbstractFileSystemEntry,  // eslint-disable-line no-unused-vars
 } from '../models/file_system_entry.js';
+// eslint-disable-next-line no-unused-vars
+import {UntrustedOrigin} from '../type.js';
 
 /**
  * The abstract interface for the CCA's interaction with the browser.
@@ -138,4 +140,10 @@ export class BrowserProxy {
    * @abstract
    */
   async setLaunchingFromWindowCreationStartTime(callback) {}
+
+  /**
+   * @return {!UntrustedOrigin}
+   * @abstract
+   */
+  getUntrustedOrigin() {}
 }

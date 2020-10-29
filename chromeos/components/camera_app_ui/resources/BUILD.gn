@@ -103,6 +103,7 @@ copy("chrome_camera_app_js") {
     "js/background_ops.js",
     "js/chrome_util.js",
     "js/dom.js",
+    "js/dynamic_import.js",
     "js/error.js",
     "js/gallerybutton.js",
     "js/init.js",
@@ -117,6 +118,7 @@ copy("chrome_camera_app_js") {
     "js/toast.js",
     "js/tooltip.js",
     "js/type.js",
+    "js/untrusted_script_loader.js",
     "js/util.js",
     "js/waitable_event.js",
   ]
@@ -250,6 +252,7 @@ copy("chrome_camera_app_views") {
   sources = [
     "views/background.html",
     "views/main.html",
+    "views/untrusted_script_loader.html",
   ]
 
   outputs = [ "$out_camera_app_dir/views/{{source_file_part}}" ]

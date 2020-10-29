@@ -242,3 +242,12 @@ export class NotImplementedError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+/**
+ * The possible scheme to load untrusted context.
+ * @enum {string}
+ */
+export const UntrustedOrigin = {
+  CHROME_EXTENSION: 'chrome-extension://hfhhnacclhffhdffklopdkcgdhifgngh',
+  CHROME_UNTRUSTED: 'chrome-untrusted://camera-app',
+};

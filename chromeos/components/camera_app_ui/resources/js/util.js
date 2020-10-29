@@ -6,9 +6,16 @@ import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
+import * as Comlink from './lib/comlink.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {ErrorLevel, ErrorType, Facing} from './type.js';
+import {
+  ErrorLevel,
+  ErrorType,
+  Facing,
+  UntrustedOrigin,  // eslint-disable-line no-unused-vars
+} from './type.js';
+import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Creates a canvas element for 2D drawing.
@@ -453,4 +460,27 @@ export function instantiateTemplate(selector) {
   const node = document.importNode(tpl.content, true);
   setupI18nElements(node);
   return node;
+}
+
+/**
+ * Creates JS module by given |scriptUrl| under untrusted context with given
+ * origin and returns its proxy.
+ * @param {string} scriptUrl The URL of the script to load.
+ * @param {!UntrustedOrigin} origin The origin of the untrusted context.
+ * @return {!Promise<!Object>}
+ */
+export async function createUntrustedJSModule(scriptUrl, origin) {
+  const untrustedPageReady = new WaitableEvent();
+  const iFrame =
+      /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));
+  iFrame.addEventListener('load', () => untrustedPageReady.signal());
+  iFrame.setAttribute('src', `${origin}/views/untrusted_script_loader.html`);
+  iFrame.hidden = true;
+  document.body.appendChild(iFrame);
+  await untrustedPageReady.wait();
+
+  const untrustedRemote =
+      await Comlink.wrap(Comlink.windowEndpoint(iFrame.contentWindow, self));
+  await untrustedRemote.loadScript(scriptUrl);
+  return untrustedRemote;
 }

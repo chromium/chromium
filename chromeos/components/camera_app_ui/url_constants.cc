@@ -9,5 +9,6 @@ namespace chromeos {
 const char kChromeUICameraAppHost[] = "camera-app";
 const char kChromeUICameraAppMainURL[] = "chrome://camera-app/views/main.html";
 const char kChromeUICameraAppURL[] = "chrome://camera-app/";
+const char kChromeUIUntrustedCameraAppURL[] = "chrome-untrusted://camera-app/";
 
 }  // namespace chromeos

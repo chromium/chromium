@@ -18,6 +18,7 @@
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "media/capture/video/chromeos/camera_app_device_provider_impl.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -58,8 +59,23 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       std::string("worker-src 'self';"));
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ChildSrc,
+      std::string("frame-src ") + kChromeUIUntrustedCameraAppURL + ";");
 
   return source;
+}
+
+content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
+  content::WebUIDataSource* untrusted_source =
+      content::WebUIDataSource::Create(kChromeUIUntrustedCameraAppURL);
+  for (size_t i = 0; i < kChromeosCameraAppResourcesSize; i++) {
+    untrusted_source->AddResourcePath(kChromeosCameraAppResources[i].name,
+                                      kChromeosCameraAppResources[i].value);
+  }
+  untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
+
+  return untrusted_source;
 }
 
 // Translates the renderer-side source ID to video device id.
@@ -182,9 +198,13 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   delegate_->SetLaunchDirectory();
 
   // Set up the data source.
-  content::WebUIDataSource* source =
-      CreateCameraAppUIHTMLSource(delegate_.get());
-  content::WebUIDataSource::Add(browser_context, source);
+  content::WebUIDataSource::Add(browser_context,
+                                CreateCameraAppUIHTMLSource(delegate_.get()));
+  content::WebUIDataSource::Add(browser_context,
+                                CreateUntrustedCameraAppUIHTMLSource());
+
+  // Add ability to request chrome-untrusted: URLs
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
 
 CameraAppUI::~CameraAppUI() = default;

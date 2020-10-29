@@ -5,7 +5,7 @@
 import {promisify} from '../chrome_util.js';
 import {ChromeDirectoryEntry} from '../models/chrome_file_system_entry.js';
 import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
-import {Resolution} from '../type.js';
+import {Resolution, UntrustedOrigin} from '../type.js';
 
 // eslint-disable-next-line no-unused-vars
 import {BrowserProxy} from './browser_proxy_interface.js';
@@ -236,6 +236,11 @@ class ChromeAppBrowserProxy {
   async setLaunchingFromWindowCreationStartTime(callback) {
     // For platform app, the start time of window creation is recorded by
     // background page so we don't need to trigger it here.
+  }
+
+  /** @override */
+  getUntrustedOrigin() {
+    return UntrustedOrigin.CHROME_EXTENSION;
   }
 }
 
