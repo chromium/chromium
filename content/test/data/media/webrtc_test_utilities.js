@@ -46,6 +46,15 @@ function cancelTestTimeout() {
   gPendingTimeout = null;
 }
 
+function detectVideoPlayingWithExpectedResolution(
+    videoElementName, video_width, video_height) {
+  return detectVideo(
+      videoElementName, function(pixels, previous_pixels, videoElement) {
+        return hasExpectedResolution(videoElement, video_width, video_height) &&
+            isVideoPlaying(pixels, previous_pixels);
+      });
+}
+
 function detectVideoPlaying(videoElementName) {
   return detectVideo(videoElementName, isVideoPlaying);
 }
@@ -110,7 +119,8 @@ function detectVideoWithDimension(
       // that case.
       // There's a failure(?) mode here where the video generated claims to
       // have size 2x2. Don't consider that a valid video.
-      if (oldPixels.length == pixels.length && predicate(pixels, oldPixels)) {
+      if (oldPixels.length == pixels.length &&
+          predicate(pixels, oldPixels, videoElement)) {
         console.log('Done looking at video in element ' + videoElementName);
         console.log('DEBUG: video.width = ' + videoElement.videoWidth);
         console.log('DEBUG: video.height = ' + videoElement.videoHeight);
@@ -153,6 +163,11 @@ function waitForConnectionToStabilizeIfNeeded(peerConnection) {
     }
     return waitForConnectionToStabilize(peerConnection).then(resolve);
   });
+}
+
+function hasExpectedResolution(videoElement, expected_width, expected_height) {
+  return videoElement.videoWidth == expected_width &&
+      videoElement.videoHeight == expected_height;
 }
 
 // This very basic video verification algorithm will be satisfied if any

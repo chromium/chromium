@@ -90,18 +90,9 @@
         .then(addStreamToBothConnectionsAndNegotiate)
         .catch(failTest);
 
-    function hasExpectedResolution(elementName) {
-      // Returns a promise that video is playing and has the expected
-      // resolution.
-      return detectVideoPlaying('remote-view-1').then(resolution => {
-        assertEquals(expected_width, resolution.width);
-        assertEquals(expected_height, resolution.height);
-      });
-    }
-
     Promise.all([
-      hasExpectedResolution('remote-view-1'),
-      hasExpectedResolution('remote-view-2')
+      detectVideoPlayingWithExpectedResolution('remote-view-1', expected_width, expected_height),
+      detectVideoPlayingWithExpectedResolution('remote-view-2', expected_width, expected_height)
     ]).then(reportTestSuccess);
   }
 
