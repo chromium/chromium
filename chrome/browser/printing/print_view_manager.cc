@@ -188,7 +188,7 @@ bool PrintViewManager::RejectPrintPreviewRequestIfRestricted(
     return false;
   GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
 #if defined(OS_CHROMEOS)
-  policy::ShowDlpPrintDisabledToast();
+  policy::ShowDlpPrintDisabledNotification();
 #endif
   return true;
 }
@@ -225,7 +225,7 @@ bool PrintViewManager::PrintPreview(
 
   if (IsPrintingRestricted()) {
 #if defined(OS_CHROMEOS)
-    policy::ShowDlpPrintDisabledToast();
+    policy::ShowDlpPrintDisabledNotification();
 #endif
     return false;
   }

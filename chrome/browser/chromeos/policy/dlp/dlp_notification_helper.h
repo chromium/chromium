@@ -8,7 +8,7 @@
 namespace policy {
 
 // Shows a notification that printing is not allowed due to DLP rules.
-void ShowDlpPrintDisabledToast();
+void ShowDlpPrintDisabledNotification();
 
 }  // namespace policy
 

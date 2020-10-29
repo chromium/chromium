@@ -585,8 +585,11 @@ Additional details:
   <message name="IDS_POLICY_DLP_ANDROID_APPS" desc="Name shown for ARC in data leak prevention toasts.">
     Android apps
   </message>
-  <message name="IDS_POLICY_DLP_PRINTING_BLOCKED" desc="A toast informing the user that printing is blocked.">
-    Printing of this content is blocked by your administrator
+  <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE" desc="The title for notification informing the user that printing is blocked.">
+    Printing is blocked
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE" desc="The message for notification informing the user that printing is blocked.">
+    Printing of this content is blocked by your administrator.
   </message>
 
 </grit-part>
