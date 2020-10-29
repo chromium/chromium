@@ -4324,8 +4324,8 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest,
 
 // Verify that if the second request fails after the beginning request takes
 // over and completes its slice, download should complete.
-// Flaky on Linux.  http://crbug.com/1106059
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Flaky on Windows and Linux.  http://crbug.com/1106059
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_MiddleSliceDelayedError DISABLED_MiddleSliceDelayedError
 #else
 #define MAYBE_MiddleSliceDelayedError MiddleSliceDelayedError
