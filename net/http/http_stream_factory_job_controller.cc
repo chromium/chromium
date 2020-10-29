@@ -36,12 +36,12 @@ namespace {
 // Returns parameters associated with the proxy resolution.
 base::Value NetLogHttpStreamJobProxyServerResolved(
     const ProxyServer& proxy_server) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
 
-  dict.SetString("proxy_server", proxy_server.is_valid()
-                                     ? proxy_server.ToPacString()
-                                     : std::string());
-  return std::move(dict);
+  dict.SetStringKey("proxy_server", proxy_server.is_valid()
+                                        ? proxy_server.ToPacString()
+                                        : std::string());
+  return dict;
 }
 
 }  // namespace
@@ -51,18 +51,18 @@ base::Value NetLogHttpStreamJobProxyServerResolved(
 const int kMaxDelayTimeForMainJobSecs = 3;
 
 base::Value NetLogJobControllerParams(const GURL& url, bool is_preconnect) {
-  base::DictionaryValue dict;
-  dict.SetString("url", url.possibly_invalid_spec());
-  dict.SetBoolean("is_preconnect", is_preconnect);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("url", url.possibly_invalid_spec());
+  dict.SetBoolKey("is_preconnect", is_preconnect);
+  return dict;
 }
 
 base::Value NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
                                bool is_broken) {
-  base::DictionaryValue dict;
-  dict.SetString("alt_svc", alt_svc_info->ToString());
-  dict.SetBoolean("is_broken", is_broken);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("alt_svc", alt_svc_info->ToString());
+  dict.SetBoolKey("is_broken", is_broken);
+  return dict;
 }
 
 HttpStreamFactory::JobController::JobController(

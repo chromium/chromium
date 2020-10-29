@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -108,10 +109,8 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
   ~MockPrefDelegate() override = default;
 
   // HttpServerProperties::PrefDelegate implementation:
-  const base::DictionaryValue* GetServerProperties() const override {
-    return nullptr;
-  }
-  void SetServerProperties(const base::DictionaryValue& value,
+  const base::Value* GetServerProperties() const override { return nullptr; }
+  void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override {}
   void WaitForPrefLoad(base::OnceClosure pref_loaded_callback) override {}
 

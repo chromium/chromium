@@ -727,6 +727,10 @@ bool Value::DictEmpty() const {
   return dict().empty();
 }
 
+void Value::DictClear() {
+  dict().clear();
+}
+
 void Value::MergeDictionary(const Value* dictionary) {
   for (const auto& pair : dictionary->dict()) {
     const auto& key = pair.first;
@@ -1030,7 +1034,7 @@ bool DictionaryValue::HasKey(StringPiece key) const {
 }
 
 void DictionaryValue::Clear() {
-  dict().clear();
+  DictClear();
 }
 
 Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {

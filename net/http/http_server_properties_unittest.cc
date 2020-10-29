@@ -25,10 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace net {
 
 const base::TimeDelta BROKEN_ALT_SVC_EXPIRE_DELAYS[10] = {
@@ -2343,10 +2339,10 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       "}"
       "]";
 
-  std::unique_ptr<base::Value> alternative_service_info_value =
+  base::Value alternative_service_info_value =
       impl_.GetAlternativeServiceInfoAsValue();
   std::string alternative_service_info_json;
-  base::JSONWriter::Write(*alternative_service_info_value,
+  base::JSONWriter::Write(alternative_service_info_value,
                           &alternative_service_info_json);
   EXPECT_EQ(expected_json, alternative_service_info_json);
 }

@@ -110,11 +110,11 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   ~PrefServiceAdapter() override {}
 
   // PrefDelegate implementation.
-  const base::DictionaryValue* GetServerProperties() const override {
-    return pref_service_->GetDictionary(path_);
+  const base::Value* GetServerProperties() const override {
+    return pref_service_->Get(path_);
   }
 
-  void SetServerProperties(const base::DictionaryValue& value,
+  void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override {
     pref_service_->Set(path_, value);
     if (callback)

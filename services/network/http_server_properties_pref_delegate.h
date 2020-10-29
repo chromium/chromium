@@ -25,8 +25,8 @@ class HttpServerPropertiesPrefDelegate
   static void RegisterPrefs(PrefRegistrySimple* pref_registry);
 
   // net::HttpServerProperties::PrefDelegate implementation.
-  const base::DictionaryValue* GetServerProperties() const override;
-  void SetServerProperties(const base::DictionaryValue& value,
+  const base::Value* GetServerProperties() const override;
+  void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override;
   void WaitForPrefLoad(base::OnceClosure callback) override;
 

@@ -73,24 +73,24 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
                                       bool expect_spdy,
                                       bool using_quic,
                                       RequestPriority priority) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   if (source.IsValid())
     source.AddToEventParameters(&dict);
-  dict.SetString("original_url", original_url.GetOrigin().spec());
-  dict.SetString("url", url.GetOrigin().spec());
-  dict.SetBoolean("expect_spdy", expect_spdy);
-  dict.SetBoolean("using_quic", using_quic);
-  dict.SetString("priority", RequestPriorityToString(priority));
-  return std::move(dict);
+  dict.SetStringKey("original_url", original_url.GetOrigin().spec());
+  dict.SetStringKey("url", url.GetOrigin().spec());
+  dict.SetBoolKey("expect_spdy", expect_spdy);
+  dict.SetBoolKey("using_quic", using_quic);
+  dict.SetStringKey("priority", RequestPriorityToString(priority));
+  return dict;
 }
 
 // Returns parameters associated with the Proto (with NPN negotiation) of a HTTP
 // stream.
 base::Value NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
 
-  dict.SetString("proto", NextProtoToString(negotiated_protocol));
-  return std::move(dict);
+  dict.SetStringKey("proto", NextProtoToString(negotiated_protocol));
+  return dict;
 }
 
 HttpStreamFactory::Job::Job(Delegate* delegate,

@@ -111,12 +111,12 @@ class NET_EXPORT HttpServerProperties
 
     // Returns the branch of the preferences system for the server properties.
     // Returns nullptr if the pref system has no data for the server properties.
-    virtual const base::DictionaryValue* GetServerProperties() const = 0;
+    virtual const base::Value* GetServerProperties() const = 0;
 
     // Sets the server properties to the given value. If |callback| is
     // non-empty, flushes data to persistent storage and invokes |callback|
     // asynchronously when complete.
-    virtual void SetServerProperties(const base::DictionaryValue& value,
+    virtual void SetServerProperties(const base::Value& value,
                                      base::OnceClosure callback) = 0;
 
     // Starts listening for prefs to be loaded. If prefs are already loaded,
@@ -362,7 +362,7 @@ class NET_EXPORT HttpServerProperties
 
   // Returns all alternative service mappings as human readable strings.
   // Empty alternative service hostnames will be printed as such.
-  std::unique_ptr<base::Value> GetAlternativeServiceInfoAsValue() const;
+  base::Value GetAlternativeServiceInfoAsValue() const;
 
   // Tracks the last local address when QUIC was known to work. The address
   // cannot be set to an empty address - use

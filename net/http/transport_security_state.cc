@@ -91,21 +91,20 @@ void RecordUMAForHPKPReportFailure(const GURL& report_uri,
   base::UmaHistogramSparse("Net.PublicKeyPinReportSendingFailure2", -net_error);
 }
 
-std::unique_ptr<base::ListValue> GetPEMEncodedChainAsList(
-    const net::X509Certificate* cert_chain) {
+base::Value GetPEMEncodedChainAsList(const net::X509Certificate* cert_chain) {
   if (!cert_chain)
-    return std::make_unique<base::ListValue>();
+    return base::Value(base::Value::Type::LIST);
 
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value result(base::Value::Type::LIST);
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
   for (const std::string& cert : pem_encoded_chain)
-    result->Append(std::make_unique<base::Value>(cert));
+    result.Append(cert);
 
   return result;
 }
 
-bool HashReportForCache(const base::DictionaryValue& report,
+bool HashReportForCache(const base::Value& report,
                         const GURL& report_uri,
                         std::string* cache_key) {
   char hashed[crypto::kSHA256Length];
@@ -129,23 +128,23 @@ bool GetHPKPReport(const HostPortPair& host_port_pair,
   if (pkp_state.report_uri.is_empty())
     return false;
 
-  base::DictionaryValue report;
+  base::Value report(base::Value::Type::DICTIONARY);
   base::Time now = base::Time::Now();
-  report.SetString("hostname", host_port_pair.host());
-  report.SetInteger("port", host_port_pair.port());
-  report.SetBoolean("include-subdomains", pkp_state.include_subdomains);
-  report.SetString("noted-hostname", pkp_state.domain);
+  report.SetStringKey("hostname", host_port_pair.host());
+  report.SetIntKey("port", host_port_pair.port());
+  report.SetBoolKey("include-subdomains", pkp_state.include_subdomains);
+  report.SetStringKey("noted-hostname", pkp_state.domain);
 
-  std::unique_ptr<base::ListValue> served_certificate_chain_list =
+  auto served_certificate_chain_list =
       GetPEMEncodedChainAsList(served_certificate_chain);
-  std::unique_ptr<base::ListValue> validated_certificate_chain_list =
+  auto validated_certificate_chain_list =
       GetPEMEncodedChainAsList(validated_certificate_chain);
-  report.Set("served-certificate-chain",
-             std::move(served_certificate_chain_list));
-  report.Set("validated-certificate-chain",
-             std::move(validated_certificate_chain_list));
+  report.SetKey("served-certificate-chain",
+                std::move(served_certificate_chain_list));
+  report.SetKey("validated-certificate-chain",
+                std::move(validated_certificate_chain_list));
 
-  std::unique_ptr<base::ListValue> known_pin_list(new base::ListValue());
+  base::Value known_pin_list(base::Value::Type::LIST);
   for (const auto& hash_value : pkp_state.spki_hashes) {
     std::string known_pin;
 
@@ -166,11 +165,10 @@ bool GetHPKPReport(const HostPortPair& host_port_pair,
         &base64_value);
     known_pin += "\"" + base64_value + "\"";
 
-    known_pin_list->Append(
-        std::unique_ptr<base::Value>(new base::Value(known_pin)));
+    known_pin_list.Append(known_pin);
   }
 
-  report.Set("known-pins", std::move(known_pin_list));
+  report.SetKey("known-pins", std::move(known_pin_list));
 
   // For the sent reports cache, do not include the effective expiration
   // date. The expiration date will likely change every time the user
@@ -181,9 +179,9 @@ bool GetHPKPReport(const HostPortPair& host_port_pair,
     return false;
   }
 
-  report.SetString("date-time", base::TimeToISO8601(now));
-  report.SetString("effective-expiration-date",
-                   base::TimeToISO8601(pkp_state.expiry));
+  report.SetStringKey("date-time", base::TimeToISO8601(now));
+  report.SetStringKey("effective-expiration-date",
+                      base::TimeToISO8601(pkp_state.expiry));
   if (!base::JSONWriter::Write(report, serialized_report)) {
     LOG(ERROR) << "Failed to serialize HPKP violation report.";
     return false;

@@ -39,23 +39,23 @@ namespace {
 
 base::Value NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
                                 NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("headers",
               ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  return std::move(dict);
+  return dict;
 }
 
 base::Value NetLogParams(const GURL& url,
                          const std::string& method,
                          const HttpRequestHeaders* headers,
                          NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
-  dict.SetString("url", url.possibly_invalid_spec());
-  dict.SetString("method", method);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("url", url.possibly_invalid_spec());
+  dict.SetStringKey("method", method);
   std::string empty;
   base::Value headers_param(headers->NetLogParams(empty, capture_mode));
   dict.SetKey("headers", std::move(headers_param));
-  return std::move(dict);
+  return dict;
 }
 
 }  // namespace

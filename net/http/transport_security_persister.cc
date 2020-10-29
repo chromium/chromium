@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -198,7 +199,7 @@ base::Value SerializeExpectCTData(TransportSecurityState* state) {
     const TransportSecurityState::ExpectCTState& expect_ct_state =
         expect_ct_iterator.domain_state();
 
-    base::DictionaryValue ct_entry;
+    base::Value ct_entry(base::Value::Type::DICTIONARY);
 
     base::Value network_isolation_key_value;
     // Don't serialize entries with transient NetworkIsolationKeys.
@@ -300,36 +301,32 @@ void DeserializeExpectCTData(const base::Value& ct_list,
 //
 // TODO(mmenke): Remove once the obsolete format is no longer supported.
 bool DeserializeObsoleteExpectCTState(
-    const base::DictionaryValue* parsed,
+    const base::Value* parsed,
     TransportSecurityState::ExpectCTState* state) {
-  const base::DictionaryValue* expect_ct_subdictionary;
-  if (!parsed->GetDictionary(kExpectCTSubdictionary,
-                             &expect_ct_subdictionary)) {
+  const base::Value* expect_ct_subdictionary =
+      parsed->FindDictKey(kExpectCTSubdictionary);
+  if (!expect_ct_subdictionary) {
     // Expect-CT data is not required, so this item is not malformed.
     return true;
   }
-  double observed;
-  bool has_observed =
-      expect_ct_subdictionary->GetDouble(kExpectCTObserved, &observed);
-  double expiry;
-  bool has_expiry =
-      expect_ct_subdictionary->GetDouble(kExpectCTExpiry, &expiry);
-  bool enforce;
-  bool has_enforce =
-      expect_ct_subdictionary->GetBoolean(kExpectCTEnforce, &enforce);
-  std::string report_uri_str;
-  bool has_report_uri =
-      expect_ct_subdictionary->GetString(kExpectCTReportUri, &report_uri_str);
+  base::Optional<double> observed =
+      expect_ct_subdictionary->FindDoubleKey(kExpectCTObserved);
+  base::Optional<double> expiry =
+      expect_ct_subdictionary->FindDoubleKey(kExpectCTExpiry);
+  base::Optional<bool> enforce =
+      expect_ct_subdictionary->FindBoolKey(kExpectCTEnforce);
+  const std::string* report_uri_str =
+      expect_ct_subdictionary->FindStringKey(kExpectCTReportUri);
 
   // If an Expect-CT subdictionary is present, it must have the required keys.
-  if (!has_observed || !has_expiry || !has_enforce)
+  if (!observed.has_value() || !expiry.has_value() || !enforce.has_value())
     return false;
 
-  state->last_observed = base::Time::FromDoubleT(observed);
-  state->expiry = base::Time::FromDoubleT(expiry);
-  state->enforce = enforce;
-  if (has_report_uri) {
-    GURL report_uri(report_uri_str);
+  state->last_observed = base::Time::FromDoubleT(*observed);
+  state->expiry = base::Time::FromDoubleT(*expiry);
+  state->enforce = *enforce;
+  if (report_uri_str) {
+    GURL report_uri(*report_uri_str);
     if (report_uri.is_valid())
       state->report_uri = report_uri;
   }
@@ -457,24 +454,19 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
 }
 
 bool TransportSecurityPersister::DeserializeObsoleteData(
-    const base::Value& value,
+    const base::Value& dict_value,
     bool* dirty,
     TransportSecurityState* state) {
   const base::Time current_time(base::Time::Now());
   bool dirtied = false;
 
-  const base::DictionaryValue* dict_value = nullptr;
-  int rv = value.GetAsDictionary(&dict_value);
-  // The one caller ensures |value| is of Value::Type::DICTIONARY already,
-  // though it doesn't extract a DictionaryValue*, since that is the deprecated
-  // way to use dictionaries.
-  DCHECK(rv);
+  // The one caller ensures |dict_value| is of Value::Type::DICTIONARY already.
+  DCHECK(dict_value.is_dict());
 
-  for (base::DictionaryValue::Iterator i(*dict_value);
-       !i.IsAtEnd(); i.Advance()) {
-    const base::DictionaryValue* parsed = nullptr;
-    if (!i.value().GetAsDictionary(&parsed)) {
-      LOG(WARNING) << "Could not parse entry " << i.key() << "; skipping entry";
+  for (const auto& i : dict_value.DictItems()) {
+    const base::Value& parsed = i.second;
+    if (!parsed.is_dict()) {
+      LOG(WARNING) << "Could not parse entry " << i.first << "; skipping entry";
       continue;
     }
 
@@ -483,45 +475,48 @@ bool TransportSecurityPersister::DeserializeObsoleteData(
 
     // kIncludeSubdomains is a legacy synonym for kStsIncludeSubdomains. Parse
     // at least one of these properties, preferably the new one.
-    bool include_subdomains = false;
-    bool parsed_include_subdomains = parsed->GetBoolean(kIncludeSubdomains,
-                                                        &include_subdomains);
-    sts_state.include_subdomains = include_subdomains;
-    if (parsed->GetBoolean(kStsIncludeSubdomains, &include_subdomains)) {
-      sts_state.include_subdomains = include_subdomains;
+    bool parsed_include_subdomains = false;
+    base::Optional<bool> include_subdomains =
+        parsed.FindBoolKey(kIncludeSubdomains);
+    if (include_subdomains.has_value()) {
+      sts_state.include_subdomains = include_subdomains.value();
+      parsed_include_subdomains = true;
+    }
+    include_subdomains = parsed.FindBoolKey(kStsIncludeSubdomains);
+    if (include_subdomains.has_value()) {
+      sts_state.include_subdomains = include_subdomains.value();
       parsed_include_subdomains = true;
     }
 
-    std::string mode_string;
-    double expiry = 0;
-    if (!parsed_include_subdomains ||
-        !parsed->GetString(kMode, &mode_string) ||
-        !parsed->GetDouble(kExpiry, &expiry)) {
-      LOG(WARNING) << "Could not parse some elements of entry " << i.key()
+    const std::string* mode_string = parsed.FindStringKey(kMode);
+    base::Optional<double> expiry = parsed.FindDoubleKey(kExpiry);  // 0;
+    if (!parsed_include_subdomains || !mode_string || !expiry.has_value()) {
+      LOG(WARNING) << "Could not parse some elements of entry " << i.first
                    << "; skipping entry";
       continue;
     }
 
-    if (mode_string == kForceHTTPS || mode_string == kStrict) {
+    if (*mode_string == kForceHTTPS || *mode_string == kStrict) {
       sts_state.upgrade_mode =
           TransportSecurityState::STSState::MODE_FORCE_HTTPS;
-    } else if (mode_string == kDefault || mode_string == kPinningOnly) {
+    } else if (*mode_string == kDefault || *mode_string == kPinningOnly) {
       sts_state.upgrade_mode = TransportSecurityState::STSState::MODE_DEFAULT;
     } else {
       LOG(WARNING) << "Unknown TransportSecurityState mode string "
-                   << mode_string << " found for entry " << i.key()
+                   << mode_string << " found for entry " << i.first
                    << "; skipping entry";
       continue;
     }
 
-    sts_state.expiry = base::Time::FromDoubleT(expiry);
+    sts_state.expiry = base::Time::FromDoubleT(expiry.value());
 
-    double sts_observed;
-    if (parsed->GetDouble(kStsObserved, &sts_observed)) {
-      sts_state.last_observed = base::Time::FromDoubleT(sts_observed);
-    } else if (parsed->GetDouble(kCreated, &sts_observed)) {
+    base::Optional<double> sts_observed = parsed.FindDoubleKey(kStsObserved);
+    if (sts_observed.has_value()) {
+      sts_state.last_observed = base::Time::FromDoubleT(sts_observed.value());
+    } else if (parsed.FindDoubleKey(kCreated)) {
       // kCreated is a legacy synonym for both kStsObserved.
-      sts_state.last_observed = base::Time::FromDoubleT(sts_observed);
+      sts_observed = parsed.FindDoubleKey(kCreated);
+      sts_state.last_observed = base::Time::FromDoubleT(sts_observed.value());
     } else {
       // We're migrating an old entry with no observation date. Make sure we
       // write the new date back in a reasonable time frame.
@@ -529,7 +524,7 @@ bool TransportSecurityPersister::DeserializeObsoleteData(
       sts_state.last_observed = base::Time::Now();
     }
 
-    if (!DeserializeObsoleteExpectCTState(parsed, &expect_ct_state)) {
+    if (!DeserializeObsoleteExpectCTState(&parsed, &expect_ct_state)) {
       continue;
     }
 
@@ -546,7 +541,7 @@ bool TransportSecurityPersister::DeserializeObsoleteData(
       continue;
     }
 
-    std::string hashed = ExternalStringToHashedDomain(i.key());
+    std::string hashed = ExternalStringToHashedDomain(i.first);
     if (hashed.empty()) {
       dirtied = true;
       continue;

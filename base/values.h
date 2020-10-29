@@ -463,10 +463,11 @@ class BASE_EXPORT Value {
   dict_iterator_proxy DictItems();
   const_dict_iterator_proxy DictItems() const;
 
-  // Returns the size of the dictionary, and if the dictionary is empty.
-  // Note: These CHECK that type() is Type::DICTIONARY.
+  // Returns the size of the dictionary, if the dictionary is empty, and clears
+  // the dictionary. Note: These CHECK that type() is Type::DICTIONARY.
   size_t DictSize() const;
   bool DictEmpty() const;
+  void DictClear();
 
   // Merge |dictionary| into this value. This is done recursively, i.e. any
   // sub-dictionaries will be merged as well. In case of key collisions, the
@@ -597,6 +598,7 @@ class BASE_EXPORT DictionaryValue : public Value {
   bool empty() const { return dict().empty(); }
 
   // Clears any current contents of this dictionary.
+  // DEPRECATED, use Value::DictClear() instead.
   void Clear();
 
   // Sets the Value associated with the given path starting from this object.

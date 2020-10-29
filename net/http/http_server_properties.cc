@@ -375,16 +375,14 @@ void HttpServerProperties::OnDefaultNetworkChanged() {
     MaybeQueueWriteProperties();
 }
 
-std::unique_ptr<base::Value>
-HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
+base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
   const base::Time now = clock_->Now();
   const base::TimeTicks now_ticks = tick_clock_->NowTicks();
-  std::unique_ptr<base::ListValue> dict_list(new base::ListValue);
+  base::Value dict_list(base::Value::Type::LIST);
   for (const auto& server_info : server_info_map_) {
     if (!server_info.second.alternative_services.has_value())
       continue;
-    std::unique_ptr<base::ListValue> alternative_service_list(
-        new base::ListValue);
+    base::Value alternative_service_list(base::Value::Type::LIST);
     const ServerInfoMapKey& key = server_info.first;
     for (const AlternativeServiceInfo& alternative_service_info :
          server_info.second.alternative_services.value()) {
@@ -415,19 +413,18 @@ HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
             ")";
         alternative_service_string.append(broken_info_string);
       }
-      alternative_service_list->AppendString(alternative_service_string);
+      alternative_service_list.Append(std::move(alternative_service_string));
     }
-    if (alternative_service_list->empty())
+    if (alternative_service_list.GetList().empty())
       continue;
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetString("server", key.server.Serialize());
-    dict->SetString("network_isolation_key",
-                    key.network_isolation_key.ToDebugString());
-    dict->Set("alternative_service", std::unique_ptr<base::Value>(
-                                         std::move(alternative_service_list)));
-    dict_list->Append(std::move(dict));
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetStringKey("server", key.server.Serialize());
+    dict.SetStringKey("network_isolation_key",
+                      key.network_isolation_key.ToDebugString());
+    dict.SetKey("alternative_service", std::move(alternative_service_list));
+    dict_list.Append(std::move(dict));
   }
-  return std::move(dict_list);
+  return dict_list;
 }
 
 bool HttpServerProperties::WasLastLocalAddressWhenQuicWorked(

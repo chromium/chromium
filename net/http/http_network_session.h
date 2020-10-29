@@ -248,7 +248,7 @@ class NET_EXPORT HttpNetworkSession {
 
   // Creates a Value summary of the state of the QUIC sessions and
   // configuration.
-  std::unique_ptr<base::Value> QuicInfoToValue() const;
+  base::Value QuicInfoToValue() const;
 
   void CloseAllConnections(int net_error, const char* net_log_reason_utf8);
   void CloseIdleConnections(const char* net_log_reason_utf8);

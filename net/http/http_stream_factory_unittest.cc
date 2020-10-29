@@ -98,7 +98,6 @@ using net::test::IsOk;
 
 namespace base {
 class Value;
-class DictionaryValue;
 }  // namespace base
 
 namespace net {
@@ -1041,10 +1040,9 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
 int GetSpdySessionCount(HttpNetworkSession* session) {
   std::unique_ptr<base::Value> value(
       session->spdy_session_pool()->SpdySessionPoolInfoToValue());
-  base::ListValue* session_list;
-  if (!value || !value->GetAsList(&session_list))
+  if (!value || !value->is_list())
     return -1;
-  return session_list->GetSize();
+  return value->GetList().size();
 }
 
 // Return count of sockets handed out by a given socket pool.
@@ -1057,12 +1055,11 @@ int GetHandedOutSocketCount(ClientSocketPool* pool) {
 #if defined(OS_ANDROID)
 // Return count of distinct QUIC sessions.
 int GetQuicSessionCount(HttpNetworkSession* session) {
-  std::unique_ptr<base::DictionaryValue> dict(
-      base::DictionaryValue::From(session->QuicInfoToValue()));
-  base::ListValue* session_list;
-  if (!dict->GetList("sessions", &session_list))
+  base::Value dict(session->QuicInfoToValue());
+  base::Value* session_list = dict.FindListKey("sessions");
+  if (!session_list)
     return -1;
-  return session_list->GetSize();
+  return session_list->GetList().size();
 }
 #endif
 

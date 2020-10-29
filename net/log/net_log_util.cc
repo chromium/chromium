@@ -63,25 +63,19 @@ struct StringToConstant {
 };
 
 const StringToConstant kCertStatusFlags[] = {
-#define CERT_STATUS_FLAG(label, value) \
-  { #label, value }                    \
-  ,
+#define CERT_STATUS_FLAG(label, value) {#label, value},
 #include "net/cert/cert_status_flags_list.h"
 #undef CERT_STATUS_FLAG
 };
 
 const StringToConstant kLoadFlags[] = {
-#define LOAD_FLAG(label, value) \
-  { #label, value }             \
-  ,
+#define LOAD_FLAG(label, value) {#label, value},
 #include "net/base/load_flags_list.h"
 #undef LOAD_FLAG
 };
 
 const StringToConstant kLoadStateTable[] = {
-#define LOAD_STATE(label, value) \
-  { #label, LOAD_STATE_##label } \
-  ,
+#define LOAD_STATE(label, value) {#label, LOAD_STATE_##label},
 #include "net/base/load_states_list.h"
 #undef LOAD_STATE
 };
@@ -412,15 +406,12 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
         *context->http_server_properties();
     net_info_dict.SetKey(
         kNetInfoAltSvcMappings,
-        base::Value::FromUniquePtrValue(
-            http_server_properties.GetAlternativeServiceInfoAsValue()));
+        http_server_properties.GetAlternativeServiceInfoAsValue());
   }
 
   // Log QUIC info.
   {
-    net_info_dict.SetKey(kNetInfoQuic,
-                         base::Value::FromUniquePtrValue(
-                             http_network_session->QuicInfoToValue()));
+    net_info_dict.SetKey(kNetInfoQuic, http_network_session->QuicInfoToValue());
   }
 
   // Log HTTP Cache info.

@@ -71,11 +71,11 @@ bool HeadersContainMultipleCopiesOfField(const HttpResponseHeaders& headers,
 base::Value NetLogSendRequestBodyParams(uint64_t length,
                                         bool is_chunked,
                                         bool did_merge) {
-  base::DictionaryValue dict;
-  dict.SetInteger("length", static_cast<int>(length));
-  dict.SetBoolean("is_chunked", is_chunked);
-  dict.SetBoolean("did_merge", did_merge);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("length", static_cast<int>(length));
+  dict.SetBoolKey("is_chunked", is_chunked);
+  dict.SetBoolKey("did_merge", did_merge);
+  return dict;
 }
 
 void NetLogSendRequestBody(const NetLogWithSource& net_log,
