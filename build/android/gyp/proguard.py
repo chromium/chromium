@@ -29,45 +29,6 @@ _API_LEVEL_VERSION_CODE = [
     (29, 'Q'),
     (30, 'R'),
 ]
-_CHECKDISCARD_RE = re.compile(r'^[ \t\r\f\v]*-checkdiscard[^\n{]*({[\s\S]*?})?',
-                              re.MULTILINE)
-# Ignore remaining directives that start with -check, as they're not supported
-# by R8 anyway.
-_DIRECTIVE_RE = re.compile(r'^\s*-(?<!check)[a-zA-Z].*')
-
-
-def _ValidateAndFilterCheckDiscards(configs):
-  """Check for invalid -checkdiscard rules and filter out -checkdiscards.
-
-  -checkdiscard assertions often don't work for test APKs and are not actually
-  helpful. Additionally, test APKs may pull in dependency proguard configs which
-  makes filtering out these rules difficult in GN. Instead, we enforce that
-  configs that use -checkdiscard do not contain any other rules so that we can
-  filter out the undesired -checkdiscard rule files here.
-
-  Args:
-    configs: List of paths to proguard configuration files.
-
-  Returns:
-    A list of configs with -checkdiscard-containing-configs removed.
-  """
-  valid_configs = []
-  for config_path in configs:
-    with open(config_path) as f:
-      contents = f.read()
-      if _CHECKDISCARD_RE.search(contents):
-        contents = _CHECKDISCARD_RE.sub('', contents)
-        directive_match = _DIRECTIVE_RE.search(contents)
-        if directive_match:
-          raise Exception(
-              'Proguard configs containing -checkdiscards cannot '
-              'contain other directives so that they can be '
-              'disabled in test APKs ({}). Directive "{}" found.'.format(
-                  config_path, directive_match.group()))
-      else:
-        valid_configs.append(config_path)
-
-  return valid_configs
 
 
 def _ParseOptions():
@@ -270,6 +231,15 @@ def _OptimizeWithR8(options,
         tmp_mapping_path,
     ]
 
+    if options.disable_checkdiscard:
+      # Info level priority logs are not printed by default.
+      cmd += [
+          '--map-diagnostics:'
+          'com.android.tools.r8.errors.CheckDiscardDiagnostic',
+          'error',
+          'info',
+      ]
+
     if options.desugar_jdk_libs_json:
       cmd += [
           '--desugared-lib',
@@ -461,8 +431,6 @@ def main():
   _VerifyNoEmbeddedConfigs(options.input_paths + libraries)
 
   proguard_configs = options.proguard_configs
-  if options.disable_checkdiscard:
-    proguard_configs = _ValidateAndFilterCheckDiscards(proguard_configs)
 
   # ProGuard configs that are derived from flags.
   dynamic_config_data = _CreateDynamicConfig(options)

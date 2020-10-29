@@ -4258,10 +4258,6 @@ if (enable_java_templates) {
         if (_scanned_files.has_proguard_flags) {
           outputs += [ "${_output_path}/proguard.txt" ]
         }
-        if (defined(_scanned_files.has_proguard_check_flags) &&
-            _scanned_files.has_proguard_check_flags) {
-          outputs += [ "${_output_path}/proguard-checks.txt" ]
-        }
       }
 
       if (_extract_native_libraries && _scanned_files.has_native_libraries) {
@@ -4417,10 +4413,6 @@ if (enable_java_templates) {
           }
           if (_scanned_files.has_proguard_flags) {
             proguard_configs += [ "$_output_path/proguard.txt" ]
-          }
-          if (defined(_scanned_files.has_proguard_check_flags) &&
-              _scanned_files.has_proguard_check_flags) {
-            proguard_configs += [ "$_output_path/proguard-checks.txt" ]
           }
         }
         public_target_label = invoker.target_name

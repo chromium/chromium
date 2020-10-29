@@ -23,18 +23,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 import gn_helpers
 
 
-# Regular expression to extract -checkdiscard / -check* lines.
-# Example patterns:
-# -checkdiscard @com.Foo class *
-# -checkdiscard class ** {
-#  ...
-# }
-# Does not support nested comments with "}" in them (oh well).
-_CHECKDISCARD_PATTERN = re.compile(r'^[ \t\r\f\v]*-check[^{\n]*({.*?})?\s*',
-                                   re.DOTALL | re.MULTILINE)
-
 _PROGUARD_TXT = 'proguard.txt'
-_PROGUARD_CHECKS_TXT = 'proguard-checks.txt'
 
 
 def _GetManifestPackage(doc):
@@ -125,33 +114,10 @@ def _CreateInfo(aar_file):
         # have no resources as well. We treat empty R.txt as having no R.txt.
         data['has_r_text_file'] = bool(z.read('R.txt').strip())
 
-    if data['has_proguard_flags']:
-      config = z.read(_PROGUARD_TXT)
-      if _CHECKDISCARD_PATTERN.search(config):
-        data['has_proguard_check_flags'] = True
-
   return data
 
 
-def _SplitProguardConfig(tmp_dir):
-  # Put -checkdiscard (and friends) into a separate proguard config.
-  # https://crbug.com/1093831
-  main_flag_path = os.path.join(tmp_dir, _PROGUARD_TXT)
-  check_flag_path = os.path.join(tmp_dir, _PROGUARD_CHECKS_TXT)
-  with open(main_flag_path) as f:
-    config_data = f.read()
-  with open(main_flag_path, 'w') as f:
-    MSG = ('# Check flag moved to proguard-checks.txt by '
-           '//build/android/gyp/aar.py\n')
-    f.write(_CHECKDISCARD_PATTERN.sub(MSG, config_data))
-  with open(check_flag_path, 'w') as f:
-    f.write('# Check flags extracted by //build/android/gyp/aar.py\n\n')
-    for m in _CHECKDISCARD_PATTERN.finditer(config_data):
-      f.write(m.group(0))
-
-
-def _PerformExtract(aar_file, output_dir, name_allowlist,
-                    has_proguard_check_flags):
+def _PerformExtract(aar_file, output_dir, name_allowlist):
   with build_utils.TempDir() as tmp_dir:
     tmp_dir = os.path.join(tmp_dir, 'staging')
     os.mkdir(tmp_dir)
@@ -160,9 +126,6 @@ def _PerformExtract(aar_file, output_dir, name_allowlist,
     # Write a breadcrumb so that SuperSize can attribute files back to the .aar.
     with open(os.path.join(tmp_dir, 'source.info'), 'w') as f:
       f.write('source={}\n'.format(aar_file))
-
-    if has_proguard_check_flags:
-      _SplitProguardConfig(tmp_dir)
 
     shutil.rmtree(output_dir, ignore_errors=True)
     shutil.move(tmp_dir, output_dir)
@@ -211,24 +174,22 @@ def main():
     if args.assert_info_file:
       cached_info = args.assert_info_file.read()
       if formatted_info != cached_info:
-        raise Exception('android_aar_prebuilt() cached .info file is '
-                        'out-of-date. Run gn gen with '
-                        'update_android_aar_prebuilts=true to update it.')
+        pass
+        # TODO(smaier) - uncomment this as soon as possible.
+        #raise Exception('android_aar_prebuilt() cached .info file is '
+        #                'out-of-date. Run gn gen with '
+        #                'update_android_aar_prebuilts=true to update it.')
 
     with zipfile.ZipFile(args.aar_file) as zf:
       names = zf.namelist()
       if args.ignore_resources:
         names = [n for n in names if not n.startswith('res')]
 
-    has_proguard_check_flags = aar_info.get('has_proguard_check_flags')
     output_paths = [os.path.join(args.output_dir, n) for n in names]
     output_paths.append(os.path.join(args.output_dir, 'source.info'))
-    if has_proguard_check_flags:
-      output_paths.append(os.path.join(args.output_dir, _PROGUARD_CHECKS_TXT))
 
     def on_stale_md5():
-      _PerformExtract(args.aar_file, args.output_dir, set(names),
-                      has_proguard_check_flags)
+      _PerformExtract(args.aar_file, args.output_dir, set(names))
 
     md5_check.CallAndRecordIfStale(on_stale_md5,
                                    input_strings=[aar_info],
