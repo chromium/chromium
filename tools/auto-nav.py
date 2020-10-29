@@ -15,6 +15,12 @@ Optional flags:
 * --idlewakeups_dir: Windows only; specify the directory containing
                      idlewakeups.exe to print measurements taken by IdleWakeups,
                      e.g., --idlewakeups_dir=tools/win/IdleWakeups/x64/Debug
+
+Optional flags to chrome.exe, example:
+-- --user-data-dir=temp --disable-features=SomeFeature
+Note: must be at end of command, following options terminator "--". The options
+terminator stops command-line options from being interpreted as options for this
+script, which would cause an unrecognized-argument error.
 """
 
 # [VPYTHON:BEGIN]
@@ -49,10 +55,34 @@ except ImportError:
 DEFAULT_INTERVAL = 1
 
 
+# Splits list |positional_args| into two lists: |urls| and |chrome_args|, where
+# arguments starting with '-' are treated as chrome args, and the rest as URLs.
+def ParsePositionalArgs(positional_args):
+  urls, chrome_args = [], []
+  for arg in positional_args:
+    if arg.startswith('-'):
+      chrome_args.append(arg)
+    else:
+      urls.append(arg)
+  return [urls, chrome_args]
+
+
 # Returns an object containing the arguments parsed from this script's command
 # line.
 def ParseArgs():
-  parser = argparse.ArgumentParser()
+  # Customize usage and help to include options to be passed to chrome.exe.
+  usage_text = '''%(prog)s [-h] [--interval INTERVAL] [--wait]
+                   [--idlewakeups_dir IDLEWAKEUPS_DIR]
+                   chrome_dir num_navigations url [url ...]
+                   [-- --chrome_option ...]'''
+  additional_help_text = '''optional arguments to chrome.exe, example:
+  -- --enable-features=MyFeature --browser-startup-dialog
+                        Must be at end of command, following the options
+                        terminator "--"'''
+  parser = argparse.ArgumentParser(
+      epilog=additional_help_text,
+      usage=usage_text,
+      formatter_class=argparse.RawDescriptionHelpFormatter)
   parser.add_argument(
       'chrome_dir', help='Directory containing chrome.exe and chromedriver.exe')
   parser.add_argument('num_navigations',
@@ -68,14 +98,19 @@ def ParseArgs():
                       help='Wait for confirmation before beginning navigation')
   parser.add_argument(
       '--idlewakeups_dir',
-      type=str,
       help='Windows only; directory containing idlewakeups.exe, if using')
   parser.add_argument(
       'url',
       nargs='+',
       help='URL(s) to navigate, separated by spaces; must include scheme, '
       'e.g., "https://"')
-  return parser.parse_args()
+  args = parser.parse_args()
+  args.url, chrome_args = ParsePositionalArgs(args.url)
+  if not args.url:
+    parser.print_usage()
+    print(os.path.basename(__file__) + ': error: missing URL argument')
+    exit(1)
+  return [args, chrome_args]
 
 
 # If |path| does not exist, prints a generic error plus optional |error_message|
@@ -90,7 +125,7 @@ def ExitIfNotFound(path, error_message=None):
 
 def main():
   # Parse arguments and check that file paths received are valid.
-  args = ParseArgs()
+  args, chrome_args = ParseArgs()
   ExitIfNotFound(os.path.join(args.chrome_dir, 'chrome.exe'),
                  'Build target "chrome" to generate it first.')
   chromedriver_exe = os.path.join(args.chrome_dir, 'chromedriver.exe')
@@ -104,6 +139,8 @@ def main():
   # this script's output easier.
   chrome_options = webdriver.ChromeOptions()
   chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+  for arg in chrome_args:
+    chrome_options.add_argument(arg)
   driver = webdriver.Chrome(os.path.abspath(chromedriver_exe),
                             options=chrome_options)
 
