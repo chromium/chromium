@@ -12,8 +12,6 @@
 #import "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/xpc_transaction_handler.h"
 
-@class NSUserNotificationCenter;
-
 @implementation ServiceDelegate {
   // Helper to manage the XPC transaction reference count with respect to
   // still-visible notifications.
@@ -26,14 +24,12 @@
 
 - (instancetype)init {
   if ((self = [super init])) {
-    [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
     _transactionHandler.reset([[XPCTransactionHandler alloc] init]);
   }
   return self;
 }
 
 - (void)dealloc {
-  [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:nil];
   [super dealloc];
 }
 
@@ -52,7 +48,8 @@
 
   base::scoped_nsobject<AlertNotificationService> object(
       [[AlertNotificationService alloc]
-          initWithTransactionHandler:_transactionHandler]);
+          initWithTransactionHandler:_transactionHandler
+                       xpcConnection:newConnection]);
   newConnection.exportedObject = object.get();
   newConnection.remoteObjectInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(NotificationReply)];
@@ -60,34 +57,6 @@
   [newConnection resume];
 
   return YES;
-}
-
-// NSUserNotificationCenterDelegate:
-- (void)userNotificationCenter:(NSUserNotificationCenter*)center
-       didActivateNotification:(NSUserNotification*)notification {
-  NSDictionary* response =
-      [NotificationResponseBuilder buildActivatedDictionary:notification];
-  [[_connection remoteObjectProxy] notificationClick:response];
-}
-
-// _NSUserNotificationCenterDelegatePrivate:
-- (void)userNotificationCenter:(NSUserNotificationCenter*)center
-               didDismissAlert:(NSUserNotification*)notification {
-  NSDictionary* response =
-      [NotificationResponseBuilder buildDismissedDictionary:notification];
-  [[_connection remoteObjectProxy] notificationClick:response];
-  [_transactionHandler closeTransactionIfNeeded];
-}
-
-// _NSUserNotificationCenterDelegatePrivate:
-- (void)userNotificationCenter:(NSUserNotificationCenter*)center
-    didRemoveDeliveredNotifications:(NSArray*)notifications {
-  for (NSUserNotification* notification in notifications) {
-    NSDictionary* response =
-        [NotificationResponseBuilder buildDismissedDictionary:notification];
-    [[_connection remoteObjectProxy] notificationClick:response];
-  }
-  [_transactionHandler closeTransactionIfNeeded];
 }
 
 @end

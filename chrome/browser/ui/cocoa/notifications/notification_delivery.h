@@ -15,8 +15,11 @@
 // Protocol for the XPC notification service.
 @protocol NotificationDelivery
 
-// Sets the Mach exception handler port to use for the XPCService.
-- (void)setMachExceptionPort:(CrXPCMachPort*)port;
+// Sets the Mach exception handler port to use for the XPCService, and sets
+// which notification API to be used. This method must be called first before
+// using the other methods in this protocol.
+- (void)setUseUNNotification:(BOOL)useUNNotification
+           machExceptionPort:(CrXPCMachPort*)port;
 
 // |notificationData| is generated using a NofiticationBuilder object.
 - (void)deliverNotification:(NSDictionary*)notificationData;

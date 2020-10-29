@@ -4,19 +4,14 @@
 
 #import "chrome/browser/ui/cocoa/notifications/alert_notification_service.h"
 
-#include <unistd.h>
-
-#import "base/mac/scoped_nsobject.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#import "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#import "chrome/browser/ui/cocoa/notifications/alert_nsnotification_service.h"
 #import "chrome/browser/ui/cocoa/notifications/xpc_transaction_handler.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/simple_string_dictionary.h"
-
-@class NSUserNotificationCenter;
 
 namespace {
 
@@ -33,7 +28,9 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
 }  // namespace
 
 @implementation AlertNotificationService {
-  XPCTransactionHandler* _transactionHandler;
+  base::scoped_nsobject<XPCTransactionHandler> _transactionHandler;
+  base::scoped_nsobject<NSXPCConnection> _connection;
+  base::scoped_nsobject<NSObject<NotificationDelivery>> _notificationDelivery;
 
   // Ensures that the XPC service has been configured for crash reporting.
   // Other messages should not be sent to a new instance of the service
@@ -43,14 +40,17 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
   BOOL _didSetExceptionPort;
 }
 
-- (instancetype)initWithTransactionHandler:(XPCTransactionHandler*)handler {
+- (instancetype)initWithTransactionHandler:(XPCTransactionHandler*)handler
+                             xpcConnection:(NSXPCConnection*)connection {
   if ((self = [super init])) {
-    _transactionHandler = handler;
+    _transactionHandler.reset([handler retain]);
+    _connection.reset([connection retain]);
   }
   return self;
 }
 
-- (void)setMachExceptionPort:(CrXPCMachPort*)port {
+- (void)setUseUNNotification:(BOOL)useUNNotification
+           machExceptionPort:(CrXPCMachPort*)port {
   base::mac::ScopedMachSendRight sendRight([port takeRight]);
   if (!sendRight.is_valid()) {
     NOTREACHED();
@@ -61,6 +61,11 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
     if (_didSetExceptionPort) {
       return;
     }
+
+    [_transactionHandler setUseUNNotification:useUNNotification];
+    _notificationDelivery.reset([[AlertNSNotificationService alloc]
+        initWithTransactionHandler:_transactionHandler
+                     xpcConnection:_connection]);
 
     crashpad::CrashpadClient client;
     _didSetExceptionPort = client.SetHandlerMachPort(std::move(sendRight));
@@ -73,68 +78,35 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
 
 - (void)deliverNotification:(NSDictionary*)notificationData {
   DCHECK(_didSetExceptionPort);
+  DCHECK(_notificationDelivery);
 
-  base::scoped_nsobject<NotificationBuilder> builder(
-      [[NotificationBuilder alloc] initWithDictionary:notificationData]);
-
-  NSUserNotification* toast = [builder buildUserNotification];
-  [[NSUserNotificationCenter defaultUserNotificationCenter]
-      deliverNotification:toast];
-  [_transactionHandler openTransactionIfNeeded];
+  [_notificationDelivery deliverNotification:notificationData];
 }
 
 - (void)closeNotificationWithId:(NSString*)notificationId
                   withProfileId:(NSString*)profileId {
   DCHECK(_didSetExceptionPort);
+  DCHECK(_notificationDelivery);
 
-  NSUserNotificationCenter* notificationCenter =
-      [NSUserNotificationCenter defaultUserNotificationCenter];
-  for (NSUserNotification* candidate in
-       [notificationCenter deliveredNotifications]) {
-    NSString* candidateId = [candidate.userInfo
-        objectForKey:notification_constants::kNotificationId];
-
-    NSString* candidateProfileId = [candidate.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-
-    if ([candidateId isEqualToString:notificationId] &&
-        [profileId isEqualToString:candidateProfileId]) {
-      [notificationCenter removeDeliveredNotification:candidate];
-      [_transactionHandler closeTransactionIfNeeded];
-      break;
-    }
-  }
+  [_notificationDelivery closeNotificationWithId:notificationId
+                                   withProfileId:profileId];
 }
 
 - (void)closeAllNotifications {
   DCHECK(_didSetExceptionPort);
+  DCHECK(_notificationDelivery);
 
-  [[NSUserNotificationCenter defaultUserNotificationCenter]
-      removeAllDeliveredNotifications];
-  [_transactionHandler closeTransactionIfNeeded];
+  [_notificationDelivery closeAllNotifications];
 }
 
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
                           andIncognito:(BOOL)incognito
                              withReply:(void (^)(NSArray*))reply {
-  NSUserNotificationCenter* notificationCenter =
-      [NSUserNotificationCenter defaultUserNotificationCenter];
-  NSMutableArray* notificationIds = [NSMutableArray
-      arrayWithCapacity:[[notificationCenter deliveredNotifications] count]];
-  for (NSUserNotification* toast in
-       [notificationCenter deliveredNotifications]) {
-    NSString* candidateProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL incognitoNotification = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
-    if ([candidateProfileId isEqualToString:profileId] &&
-        incognito == incognitoNotification) {
-      [notificationIds
-          addObject:[toast.userInfo
-                        objectForKey:notification_constants::kNotificationId]];
-    }
-  }
-  reply(notificationIds);
+  DCHECK(_notificationDelivery);
+
+  [_notificationDelivery getDisplayedAlertsForProfileId:profileId
+                                           andIncognito:incognito
+                                              withReply:reply];
 }
 
 @end

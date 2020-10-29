@@ -10,6 +10,9 @@
 // Keeps track of whether a XPC transaction is opened.
 @interface XPCTransactionHandler : NSObject
 
+// Sets which API to use, NSUserNotificationCenter or UNUserNotificationCenter.
+- (void)setUseUNNotification:(BOOL)useUNNotification;
+
 // Only open a new transaction if one is not already opened.
 - (void)openTransactionIfNeeded;
 

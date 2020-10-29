@@ -457,7 +457,7 @@ getDisplayedAlertsForProfileId:(NSString*)profileId
         crash_reporter::GetCrashpadClient().GetHandlerMachPort());
     base::scoped_nsobject<CrXPCMachPort> xpcPort(
         [[CrXPCMachPort alloc] initWithMachSendRight:std::move(exceptionPort)]);
-    [proxy setMachExceptionPort:xpcPort];
+    [proxy setUseUNNotification:NO machExceptionPort:xpcPort];
     _setExceptionPort = YES;
   }
 

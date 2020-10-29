@@ -7,8 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ServiceDelegate
-    : NSObject<NSXPCListenerDelegate, NSUserNotificationCenterDelegate>
+@interface ServiceDelegate : NSObject <NSXPCListenerDelegate>
 @end
 
 #endif  // CHROME_BROWSER_UI_COCOA_NOTIFICATIONS_NOTIFICATION_SERVICE_DELEGATE_H_
