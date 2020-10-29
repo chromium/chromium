@@ -449,6 +449,7 @@ public class CardUnmaskPrompt
         InputMethodManager imm =
                 (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         View view = mShouldRequestExpirationDate ? mMonthInput : mCardUnmaskInput;
+        view.requestFocus();
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
         if (sObserverForTest != null) {
