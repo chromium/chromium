@@ -710,6 +710,7 @@ crbug.com/995652 [ android ] conformance/uniforms/out-of-bounds-uniform-array-ac
 crbug.com/981579 [ android angle-opengles ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ RetryOnFailure ]
 crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1143323 [ android angle-opengles ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 
 # Misc failures
 crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/context-size-change.html [ Failure ]
