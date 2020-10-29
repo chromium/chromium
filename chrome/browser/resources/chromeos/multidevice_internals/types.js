@@ -142,9 +142,7 @@ export let BrowserTabsMetadataModel;
  * @typedef {{
  *   isTabSyncEnabled: boolean,
  *   browserTabOneMetadata: ?BrowserTabsMetadataModel,
- *   browserTabTwoMetadata: ?BrowserTabsMetadataModel,
- *   browserTabThreeMetadata: ?BrowserTabsMetadataModel,
- *   browserTabFourMetadata: ?BrowserTabsMetadataModel,
+ *   browserTabTwoMetadata: ?BrowserTabsMetadataModel
  * }}
  */
 export let BrowserTabsModel;

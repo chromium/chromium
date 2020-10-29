@@ -34,23 +34,12 @@ Polymer({
       type: Object,
     },
 
-    /** @private{BrowserTabsMetadataModel} */
-    browserTabThreeMetadata_: {
-      type: Object,
-    },
-
-    /** @private{BrowserTabsMetadataModel} */
-    browserTabFourMetadata_: {
-      type: Object,
-    },
-
     /** @type{number} */
     nValidTabs_: {
       type: Number,
       computed:
           'computeNValidTabs_(isTabSyncEnabled_, browserTabOneMetadata_, ' +
-          'browserTabTwoMetadata_, browserTabThreeMetadata_, ' +
-          'browserTabFourMetadata_)',
+          'browserTabTwoMetadata_)',
     },
   },
 
@@ -67,10 +56,7 @@ Polymer({
    * @private
    */
   getAllBrowserTabMetadatas_() {
-    return [
-      this.browserTabOneMetadata_, this.browserTabTwoMetadata_,
-      this.browserTabThreeMetadata_, this.browserTabFourMetadata_
-    ];
+    return [this.browserTabOneMetadata_, this.browserTabTwoMetadata_];
   },
 
   /**
@@ -93,9 +79,7 @@ Polymer({
       const syncDisabledBrowserTabsModel = {
         isTabSyncEnabled: false,
         browserTabOneMetadata: null,
-        browserTabTwoMetadata: null,
-        browserTabThreeMetadata: null,
-        browserTabFourMetadata: null,
+        browserTabTwoMetadata: null
       };
       this.browserProxy_.setBrowserTabs(syncDisabledBrowserTabsModel);
       return;
@@ -104,9 +88,7 @@ Polymer({
     const browserTabsModel = {
       isTabSyncEnabled: this.isTabSyncEnabled_,
       browserTabOneMetadata: this.browserTabOneMetadata_,
-      browserTabTwoMetadata: this.browserTabTwoMetadata_,
-      browserTabThreeMetadata: this.browserTabThreeMetadata_,
-      browserTabFourMetadata: this.browserTabFourMetadata_,
+      browserTabTwoMetadata: this.browserTabTwoMetadata_
     };
     this.browserProxy_.setBrowserTabs(browserTabsModel);
   },

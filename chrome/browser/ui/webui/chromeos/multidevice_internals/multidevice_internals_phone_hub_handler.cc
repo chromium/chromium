@@ -460,10 +460,6 @@ void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
                     metadatas);
   TryAddingMetadata("browserTabTwoMetadata", browser_tab_status_dict,
                     metadatas);
-  TryAddingMetadata("browserTabThreeMetadata", browser_tab_status_dict,
-                    metadatas);
-  TryAddingMetadata("browserTabFourMetadata", browser_tab_status_dict,
-                    metadatas);
 
   fake_phone_hub_manager_->mutable_phone_model()->SetBrowserTabsModel(
       phonehub::BrowserTabsModel(is_tab_sync_enabled, metadatas));

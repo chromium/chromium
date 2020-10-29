@@ -208,19 +208,15 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, NewFetchDuringOldFetchInProgress) {
 
   ExpectFaviconUrlFetchAttempt(kUrlD);
   ExpectFaviconUrlFetchAttempt(kUrlC);
-  ExpectFaviconUrlFetchAttempt(kUrlB);
-  ExpectFaviconUrlFetchAttempt(kUrlA);
 
   AttemptFetch();
   EXPECT_FALSE(actual_browser_tabs_metadata());
 
-  // 5 callbacks called accounting for the additional missed one for tab A.
-  InvokeNextFaviconCallbacks(/*num_successful_fetches=*/5);
+  // 3 callbacks called accounting for the additional missed one for tab A.
+  InvokeNextFaviconCallbacks(/*num_successful_fetches=*/3);
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
       BrowserTabMetadata(kUrlC, kTitleC, kTimeC, GetDummyImage()),
-      BrowserTabMetadata(kUrlB, kTitleB, kTimeB, GetDummyImage()),
-      BrowserTabMetadata(kUrlA, kTitleA, kTimeA, GetDummyImage()),
   }));
 }
 
@@ -282,21 +278,17 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   AddTab(synced_session_window.get(), kTitleC, kUrlC, kTimeC);
   AddWindow(std::move(synced_session_window));
 
-  ExpectFaviconUrlFetchAttempt(kUrlB);
-  ExpectFaviconUrlFetchAttempt(kUrlC);
   ExpectFaviconUrlFetchAttempt(kUrlD);
   ExpectFaviconUrlFetchAttempt(kUrlE);
 
   AttemptFetch();
-  InvokeNextFaviconCallbacks(/*num_successful_fetches=*/4);
+  InvokeNextFaviconCallbacks(/*num_successful_fetches=*/2);
 
   // Tab A is not present because it has the oldest timestamp, and the maximum
   // number of BrowserTabMetadata has been met.
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
       BrowserTabMetadata(kUrlE, kTitleE, kTimeE, GetDummyImage()),
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
-      BrowserTabMetadata(kUrlC, kTitleC, kTimeC, GetDummyImage()),
-      BrowserTabMetadata(kUrlB, kTitleB, kTimeB, GetDummyImage()),
   }));
 }
 
@@ -325,18 +317,14 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, MultipleWindows) {
   AddTab(synced_session_window_two.get(), kTitleC, kUrlC, kTimeC);
   AddWindow(std::move(synced_session_window_two));
 
-  ExpectFaviconUrlFetchAttempt(kUrlB);
-  ExpectFaviconUrlFetchAttempt(kUrlC);
   ExpectFaviconUrlFetchAttempt(kUrlD);
   ExpectFaviconUrlFetchAttempt(kUrlE);
 
   AttemptFetch();
-  InvokeNextFaviconCallbacks(/*num_successful_fetches=*/4);
+  InvokeNextFaviconCallbacks(/*num_successful_fetches=*/2);
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
       BrowserTabMetadata(kUrlE, kTitleE, kTimeE, GetDummyImage()),
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
-      BrowserTabMetadata(kUrlC, kTitleC, kTimeC, GetDummyImage()),
-      BrowserTabMetadata(kUrlB, kTitleB, kTimeB, GetDummyImage()),
   }));
 }
 

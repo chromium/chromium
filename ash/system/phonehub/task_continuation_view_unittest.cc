@@ -110,18 +110,6 @@ TEST_F(TaskContinuationViewTest, TaskChipsView) {
   expected_tabs = 2;
   EXPECT_EQ(expected_tabs, task_view()->chips_view_->children().size());
 
-  tabs.push_back(metadata);
-  phone_model()->SetBrowserTabsModel(BrowserTabsModel(true, tabs));
-  // The chips view should contains 3 tab.
-  expected_tabs = 3;
-  EXPECT_EQ(expected_tabs, task_view()->chips_view_->children().size());
-
-  tabs.push_back(metadata);
-  phone_model()->SetBrowserTabsModel(BrowserTabsModel(true, tabs));
-  // The chips view should contains 4 tab.
-  expected_tabs = 4;
-  EXPECT_EQ(expected_tabs, task_view()->chips_view_->children().size());
-
   for (auto* child : task_view()->chips_view_->children()) {
     ContinueBrowsingChip* chip = static_cast<ContinueBrowsingChip*>(child);
     // NewTabWithUrl is expected to call after button pressed simulation.
