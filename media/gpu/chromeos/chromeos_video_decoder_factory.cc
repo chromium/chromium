@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/sequenced_task_runner.h"
-#include "media/base/media_log.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
