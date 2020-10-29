@@ -138,16 +138,16 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
   int restart_factor = kRestartFactor;
   int max_extra_cycles_before_kill = kMaxExtraCyclesBeforeKill;
 
+#if defined(OS_WIN)
+  gpu_watchdog_timeout = GetGpuWatchdogTimeoutBasedOnCpuCores();
+#endif
+
   if (base::FeatureList::IsEnabled(features::kGpuWatchdogV2NewTimeout)) {
     const char kNewTimeOutParam[] = "new_time_out";
     const char kMaxExtraCyclesBeforeKillParam[] =
         "max_extra_cycles_before_kill";
 
 #if defined(OS_WIN)
-    // The purpose of finch on Windows is to know the impact of the number of
-    // CPU cores while the rest of platforms are to try a different watchdog
-    // timeout length.
-    gpu_watchdog_timeout = GetGpuWatchdogTimeoutBasedOnCpuCores();
     constexpr int kFinchMaxExtraCyclesBeforeKill = 0;
 #elif defined(OS_ANDROID)
     constexpr int kFinchMaxExtraCyclesBeforeKill = 0;
