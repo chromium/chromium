@@ -109,7 +109,18 @@ public class Module<T> {
                 ensureNativeLoaded();
             }
 
-            mImpl = mInterfaceClass.cast(instantiateReflectively(mName, mImplClassName));
+            Object impl = instantiateReflectively(mName, mImplClassName);
+            try {
+                mImpl = mInterfaceClass.cast(impl);
+            } catch (ClassCastException e) {
+                ClassLoader interfaceClassLoader = mInterfaceClass.getClassLoader();
+                ClassLoader implClassLoader = impl.getClass().getClassLoader();
+                throw new RuntimeException("Failure casting " + mName
+                                + " module class, interface ClassLoader: " + interfaceClassLoader
+                                + ", impl ClassLoader: " + implClassLoader
+                                + ", equal: " + interfaceClassLoader.equals(implClassLoader),
+                        e);
+            }
             return mImpl;
         }
     }
