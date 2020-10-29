@@ -14153,9 +14153,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 
 // Verify that hidden tabs with a crashed subframe are not marked for reload
 // when the crashed subframe is hidden with "display:none".
-// TODO(crbug.com/1135595): Flaky.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       DISABLED_DoNotReloadHiddenTabWithHiddenCrashedSubframe) {
+                       DoNotReloadHiddenTabWithHiddenCrashedSubframe) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
   // case when we hide it later.
   web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
@@ -14165,7 +14164,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   EXPECT_TRUE(NavigateToURL(shell(), hidden_iframe_url));
   NavigateIframeToURL(web_contents(), "test_iframe",
                       embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Ensure that the parent frame has propagated the OOPIF's hidden visibility
+  // to the browser process by forcing requestAnimationFrame and
+  // waiting for layout to finish.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  EXPECT_EQ(true,
+            EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
+
+  // The OOPIF should be hidden at this point.
   RenderFrameProxyHost* proxy_to_parent =
       root->child_at(0)->render_manager()->GetProxyToParent();
   EXPECT_TRUE(proxy_to_parent->cross_process_frame_connector()->IsHidden());
