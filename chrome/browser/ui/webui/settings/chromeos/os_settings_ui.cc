@@ -69,7 +69,7 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
 
   int default_resource =
       base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)
-          ? IDR_OS_SETTINGS_CHROMEOS_OS_SETTINGS_V3_HTML
+          ? IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML
 #if BUILDFLAG(OPTIMIZE_WEBUI)
           : IDR_OS_SETTINGS_VULCANIZED_HTML;
 #else

@@ -180,15 +180,16 @@ generate_grd("build_grd") {
   grd_prefix = "os_settings"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
-    "chromeos/os_settings_v3.html",
-    "chromeos/images/icon_add_circle.svg",
-    "chromeos/images/icon_add_wifi.svg",
-    "chromeos/images/icon_add_cellular.svg",
+    "os_settings_v3.html",
+    "images/icon_add_circle.svg",
+    "images/icon_add_wifi.svg",
+    "images/icon_add_cellular.svg",
   ]
-  input_files_base_dir = rebase_path("..", "//")
+  input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_external_mojo" ]
   manifest_files = [ "$target_gen_dir/$preprocess_external_mojo_manifest" ]
   resource_path_rewrites = [
+    "os_settings_v3.html|chromeos/os_settings_v3.html",
     "mojo/public/mojom/base/file_path.mojom-lite.js|app-management/file_path.mojom-lite.js",
     "ui/gfx/image/mojom/image.mojom-lite.js|app-management/image.mojom-lite.js",
     "chrome/browser/ui/webui/app_management/app_management.mojom-lite.js|app-management/app_management.mojom-lite.js",
@@ -204,9 +205,9 @@ generate_grd("build_grd") {
       "$target_gen_dir/$build_manifest_v2",
       "$target_gen_dir/$build_manifest_v3",
     ]
-    input_files += [ "../nearby_share/shared/nearby_shared_icons.html" ]
+    input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
-      "../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
+      "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
       "lazy_load.vulcanized.html|chromeos/lazy_load.html",
       "os_settings.rollup.js|chromeos/os_settings.js",
       "shared.rollup.js|chromeos/shared.rollup.js",
