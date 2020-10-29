@@ -18,6 +18,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -477,7 +478,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
         drag_controller_->event_source() == EventSourceFromEvent(event)) {
       gfx::Point screen_location(event.location());
       views::View::ConvertPointToScreen(view, &screen_location);
+
+      // Note: |tab_strip_| can be destroyed during drag, also destroying
+      // |this|.
+      base::WeakPtr<TabDragContext> weak_ptr(weak_factory_.GetWeakPtr());
       drag_controller_->Drag(screen_location);
+
+      if (!weak_ptr)
+        return;
     }
 
     // Note: |drag_controller| can be set to null during the drag above.
@@ -1026,6 +1034,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   // The controller for a drag initiated from a Tab. Valid for the lifetime of
   // the drag session.
   std::unique_ptr<TabDragController> drag_controller_;
+
+  base::WeakPtrFactory<TabDragContext> weak_factory_{this};
 };
 
 ///////////////////////////////////////////////////////////////////////////////
