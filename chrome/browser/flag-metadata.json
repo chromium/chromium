@@ -2365,7 +2365,7 @@
   {
     "name": "enable-webrtc-hide-local-ips-with-mdns",
     "owners": [ "qingsi" ],
-    "expiry_milestone": 85
+    "expiry_milestone": 90 
   },
   {
     "name": "enable-webrtc-hybrid-agc",
