@@ -1131,13 +1131,19 @@ public class LocationBarLayout extends FrameLayout
                     MarginLayoutParamsCompat.getMarginStart(urlActionContainerLayoutParams)
                     + MarginLayoutParamsCompat.getMarginEnd(urlActionContainerLayoutParams);
         }
+        // Include the space which the URL bar will be translated post-layout into the end
+        // margin so the URL bar doesn't overlap with the URL actions container when focused.
+        if (mStatusCoordinator.isSearchEngineStatusIconVisible() && hasFocus()) {
+            urlContainerMarginEnd += mStatusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
+        }
         return urlContainerMarginEnd;
     }
 
     /**
      * Updates the layout params for the location bar start aligned views.
      */
-    protected void updateLayoutParams() {
+    @VisibleForTesting
+    void updateLayoutParams() {
         int startMargin = 0;
         for (int i = 0; i < getChildCount(); i++) {
             View childView = getChildAt(i);
@@ -1179,12 +1185,6 @@ public class LocationBarLayout extends FrameLayout
         int urlContainerMarginEnd = getUrlContainerMarginEnd();
         LayoutParams urlLayoutParams = (LayoutParams) mUrlBar.getLayoutParams();
         if (MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams) != urlContainerMarginEnd) {
-            // Include the space which the URL bar will be translated post-layout into the
-            // end-margin so the URL bar doesn't overlap with the URL actions container.
-            if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mToolbarDataProvider.isIncognito())) {
-                urlContainerMarginEnd += mStatusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
-            }
             MarginLayoutParamsCompat.setMarginEnd(urlLayoutParams, urlContainerMarginEnd);
             mUrlBar.setLayoutParams(urlLayoutParams);
         }

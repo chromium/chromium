@@ -16,10 +16,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -624,6 +626,43 @@ public class LocationBarLayoutTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             locationBar.destroy();
             locationBar.onUrlFocusChange(false);
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testUpdateLayoutParams() {
+        LocationBarLayout locationBar = (LocationBarLayout) getLocationBar();
+        View statusIcon = getStatusIconView();
+        View urlContainer = getUrlBar();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getUrlBar().requestFocus();
+
+            MarginLayoutParams urlLayoutParams =
+                    (MarginLayoutParams) urlContainer.getLayoutParams();
+            MarginLayoutParamsCompat.setMarginEnd(
+                    urlLayoutParams, /* very random, and only used to fail a check */ 13047);
+            urlContainer.setLayoutParams(urlLayoutParams);
+
+            statusIcon.setVisibility(GONE);
+            locationBar.updateLayoutParams();
+            urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
+            int endMarginNoIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
+
+            MarginLayoutParamsCompat.setMarginEnd(
+                    urlLayoutParams, /* very random, and only used to fail a check */ 13047);
+            urlContainer.setLayoutParams(urlLayoutParams);
+
+            statusIcon.setVisibility(VISIBLE);
+            locationBar.updateLayoutParams();
+            urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
+            int endMarginWithIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
+
+            Assert.assertEquals(endMarginNoIcon
+                            + locationBar.getStatusCoordinatorForTesting()
+                                      .getEndPaddingPixelSizeOnFocusDelta(),
+                    endMarginWithIcon);
         });
     }
 
