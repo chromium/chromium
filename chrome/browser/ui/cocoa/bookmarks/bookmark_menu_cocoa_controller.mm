@@ -96,7 +96,8 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
 - (void)openURLForNode:(const BookmarkNode*)node {
   Browser* browser = chrome::FindTabbedBrowser(_bridge->GetProfile(), true);
   if (!browser) {
-    browser = new Browser(Browser::CreateParams(_bridge->GetProfile(), true));
+    browser =
+        Browser::Create(Browser::CreateParams(_bridge->GetProfile(), true));
   }
   WindowOpenDisposition disposition =
       ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);

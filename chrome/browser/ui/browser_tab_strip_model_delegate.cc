@@ -61,7 +61,7 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithContents(
   params.initial_bounds = window_bounds;
   params.initial_show_state =
       maximize ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_NORMAL;
-  Browser* browser = new Browser(params);
+  Browser* browser = Browser::Create(params);
   TabStripModel* new_model = browser->tab_strip_model();
 
   for (size_t i = 0; i < contentses.size(); ++i) {

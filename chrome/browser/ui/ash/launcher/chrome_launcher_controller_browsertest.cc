@@ -2038,7 +2038,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   // Create a new browser - without activating it - and load an "app" into it.
   Browser::CreateParams params = Browser::CreateParams(profile(), true);
   params.initial_show_state = ui::SHOW_STATE_INACTIVE;
-  Browser* browser2 = new Browser(params);
+  Browser* browser2 = Browser::Create(params);
   controller_->SetRefocusURLPatternForTest(
       shortcut_id, GURL("http://www.example.com/path/*"));
   std::string url = "http://www.example.com/path/bla";

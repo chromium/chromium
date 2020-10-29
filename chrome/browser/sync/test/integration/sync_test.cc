@@ -525,7 +525,7 @@ Browser* SyncTest::GetBrowser(int index) {
 
 Browser* SyncTest::AddBrowser(int profile_index) {
   Profile* profile = GetProfile(profile_index);
-  browsers_.push_back(new Browser(Browser::CreateParams(profile, true)));
+  browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
   profiles_.push_back(profile);
 
   return browsers_[browsers_.size() - 1];

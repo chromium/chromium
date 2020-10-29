@@ -119,7 +119,7 @@ void TabsApiUnitTest::SetUp() {
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_.reset(new Browser(params));
+  browser_.reset(Browser::Create(params));
   scoped_screen_override_ =
       std::make_unique<ScopedScreenOverride>(&test_screen_);
 }

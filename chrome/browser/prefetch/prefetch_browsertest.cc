@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PreferenceWorks) {
 IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, IncognitoTest) {
   Profile* incognito_profile = browser()->profile()->GetPrimaryOTRProfile();
   Browser* incognito_browser =
-      new Browser(Browser::CreateParams(incognito_profile, true));
+      Browser::Create(Browser::CreateParams(incognito_profile, true));
 
   // Navigate just to have a tab in this window, otherwise there is no
   // WebContents for the incognito browser.

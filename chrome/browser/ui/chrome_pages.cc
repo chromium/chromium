@@ -338,7 +338,7 @@ void ShowSettingsSubPageForProfile(Profile* profile,
 #endif
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
   if (!browser)
-    browser = new Browser(Browser::CreateParams(profile, true));
+    browser = Browser::Create(Browser::CreateParams(profile, true));
   ShowSettingsSubPageInTabbedBrowser(browser, sub_page);
 }
 

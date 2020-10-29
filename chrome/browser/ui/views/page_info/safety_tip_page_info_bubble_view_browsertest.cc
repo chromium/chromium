@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure normal sites with low engagement are not blocked in incognito.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnLowEngagementIncognito) {
-  Browser* incognito_browser = new Browser(Browser::CreateParams(
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
   auto kNavigatedUrl = GetURL("site1.com");
   SetEngagementScore(incognito_browser, kNavigatedUrl, kLowEngagement);
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure blocked sites with high engagement are not blocked in incognito.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnHighEngagementIncognito) {
-  Browser* incognito_browser = new Browser(Browser::CreateParams(
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
   auto kNavigatedUrl = GetURL("site1.com");
   reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
 // Ensure blocked sites get blocked in incognito.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        ShowOnBlockIncognito) {
-  Browser* incognito_browser = new Browser(Browser::CreateParams(
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
   auto kNavigatedUrl = GetURL("site1.com");
   reputation::SetSafetyTipBadRepPatterns({"site1.com/"});

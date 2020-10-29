@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
       "test_browser_app", true /* trusted_source */, gfx::Rect(0, 0, 300, 300),
       browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser = new Browser(params);
+  Browser* browser = Browser::Create(params);
   ASSERT_TRUE(browser->is_type_app());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser2 = new Browser(params);
+  Browser* browser2 = Browser::Create(params);
   AddBlankTabAndShow(browser2);
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
   Widget* widget2 = browser_view2->GetWidget();
@@ -1376,7 +1376,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, AppFrameColor) {
   browser()->window()->Close();
 
   // Open a new app window.
-  Browser* app_browser = new Browser(Browser::CreateParams::CreateForApp(
+  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true /* user_gesture */));
   aura::Window* window = app_browser->window()->GetNativeWindow();
@@ -1398,7 +1398,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser = new Browser(params);
+  Browser* browser = Browser::Create(params);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   ImmersiveModeController* immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -1499,7 +1499,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewAshTest,
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser = new Browser(params);
+  Browser* browser = Browser::Create(params);
   ASSERT_TRUE(browser->is_type_app());
   browser->window()->Show();
 

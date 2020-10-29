@@ -221,8 +221,8 @@ WebContents* OpenApplicationTab(Profile* profile,
     //
     // TODO(erg): AppLaunchParams should pass user_gesture from the extension
     // system to here.
-    browser =
-        new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+    browser = Browser::Create(
+        Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
     browser->window()->Show();
     // There's no current tab in this browser window, so add a new one.
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -443,7 +443,7 @@ Browser* CreateApplicationWindow(Profile* profile,
       DetermineWindowShowState(profile, params.container, extension);
   browser_params.can_resize = can_resize;
 
-  return new Browser(browser_params);
+  return Browser::Create(browser_params);
 }
 
 WebContents* NavigateApplicationWindow(Browser* browser,

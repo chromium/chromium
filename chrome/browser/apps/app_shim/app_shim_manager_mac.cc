@@ -753,8 +753,8 @@ void AppShimManager::OpenAppURLInBrowserWindow(
     profile = profile_manager_->GetLastUsedProfile();
   if (!profile)
     return;
-  Browser* browser =
-      new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  Browser* browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
   browser->window()->Show();
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;

@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
 
   // Open a new browser window.
   Browser* background_browser =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::AddTabAt(background_browser, GURL(), -1, true);
   background_browser->window()->Show();
 

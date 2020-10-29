@@ -27,9 +27,9 @@ typedef InProcessBrowserTest BrowserCrApplicationAppleScriptTest;
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
   // Create additional |Browser*| objects of different type.
   Profile* profile = browser()->profile();
-  Browser* b1 =
-      new Browser(Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
-  Browser* b2 = new Browser(Browser::CreateParams::CreateForApp(
+  Browser* b1 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+  Browser* b2 = Browser::Create(Browser::CreateParams::CreateForApp(
       "Test", true /* trusted_source */, gfx::Rect(), profile, true));
 
   EXPECT_EQ(3U, [[NSApp appleScriptWindows] count]);

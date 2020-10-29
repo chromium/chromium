@@ -83,8 +83,8 @@ bool WebAppControllerBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
 Browser*
 WebAppControllerBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
     const GURL& url) {
-  Browser* new_browser =
-      new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile(), true));
+  Browser* new_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile(), true));
   AddBlankTabAndShow(new_browser);
   NavigateAndAwaitInstallabilityCheck(new_browser, url);
   return new_browser;

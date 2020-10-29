@@ -241,7 +241,7 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   create_params->initial_show_state = show_state;
   create_params->initial_workspace = workspace;
   create_params->user_title = user_title;
-  Browser* browser = new Browser(*create_params.get());
+  Browser* browser = Browser::Create(*create_params.get());
   return browser->live_tab_context();
 }
 

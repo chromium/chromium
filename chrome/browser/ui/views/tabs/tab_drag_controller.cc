@@ -2034,7 +2034,7 @@ Browser* TabDragController::CreateBrowserForDrag(
   // Don't copy the initial workspace since the *current* workspace might be
   // different and copying the workspace will move the tab to the initial one.
   create_params.initial_workspace = "";
-  Browser* browser = new Browser(create_params);
+  Browser* browser = Browser::Create(create_params);
   is_dragging_new_browser_ = true;
   // If the window is created maximized then the bounds we supplied are ignored.
   // We need to reset them again so they are honored.

@@ -78,7 +78,7 @@ class ChromeCleanerRebootFlowTest : public InProcessBrowserTest {
   }
 
   Browser* CreateBrowserShowingUrl(const GURL& gurl) {
-    Browser* browser = new Browser(
+    Browser* browser = Browser::Create(
         Browser::CreateParams(ProfileManager::GetActiveUserProfile(), true));
     OpenPage(gurl, browser);
     browser->window()->Show();

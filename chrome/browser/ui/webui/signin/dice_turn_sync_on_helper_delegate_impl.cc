@@ -33,7 +33,7 @@ Browser* EnsureBrowser(Browser* browser, Profile* profile) {
     // create a new one.
     browser = chrome::FindLastActiveWithProfile(profile);
     if (!browser) {
-      browser = new Browser(Browser::CreateParams(profile, true));
+      browser = Browser::Create(Browser::CreateParams(profile, true));
       chrome::AddTabAt(browser, GURL(), -1, true);
     }
     browser->window()->Show();

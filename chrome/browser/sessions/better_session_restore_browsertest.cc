@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnExit) {
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
                        SessionCookiesBrowserCloseWithPopupOpen) {
   StoreDataWithPage("session_cookies.html");
-  Browser* popup = new Browser(
+  Browser* popup = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   popup->window()->Show();
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
                        SessionCookiesBrowserClosePopupLast) {
   StoreDataWithPage("session_cookies.html");
-  Browser* popup = new Browser(
+  Browser* popup = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   popup->window()->Show();
   CloseBrowserSynchronously(browser());

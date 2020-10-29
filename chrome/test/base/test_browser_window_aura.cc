@@ -84,7 +84,7 @@ gfx::Rect TestBrowserWindowAura::GetBounds() const {
 std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
     Browser::CreateParams* params) {
   params->window = this;
-  browser_ = new Browser(*params);
+  browser_ = Browser::Create(*params);
   return base::WrapUnique(browser_);
 }
 

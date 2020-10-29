@@ -2826,7 +2826,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Create a browser window whose initial show state is MAXIMIZED.
   Browser::CreateParams params(browser()->profile(), /*user_gesture=*/false);
   params.initial_show_state = ui::SHOW_STATE_MAXIMIZED;
-  Browser* browser = new Browser(params);
+  Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
   TabStrip* tab_strip = GetTabStripForBrowser(browser);
   AddTabsAndResetBrowser(browser, 1);
@@ -3779,7 +3779,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   Browser::CreateParams params(browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_NORMAL;
   params.initial_bounds = work_area;
-  Browser* browser2 = new Browser(params);
+  Browser* browser2 = Browser::Create(params);
   AddBlankTabAndShow(browser2);
 
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);

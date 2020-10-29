@@ -112,7 +112,7 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
 
 Browser* CreateBrowserWithNewTabPage(Profile* profile) {
   Browser::CreateParams create_params(profile, /*user_gesture=*/false);
-  Browser* browser = new Browser(create_params);
+  Browser* browser = Browser::Create(create_params);
 
   NavigateParams params(browser, GURL(chrome::kChromeUINewTabURL),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

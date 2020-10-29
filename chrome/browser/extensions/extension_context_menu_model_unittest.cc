@@ -324,7 +324,7 @@ Browser* ExtensionContextMenuModelTest::GetBrowser() {
     Browser::CreateParams params(profile(), true);
     test_window_.reset(new TestBrowserWindow());
     params.window = test_window_.get();
-    browser_.reset(new Browser(params));
+    browser_.reset(Browser::Create(params));
   }
   return browser_.get();
 }

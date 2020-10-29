@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   OpenURLsPopupObserver observer;
   BrowserList::AddObserver(&observer);
 
-  Browser* popup = new Browser(
+  Browser* popup = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   ASSERT_TRUE(popup->is_type_popup());
   ASSERT_EQ(popup, observer.added_browser_);
@@ -729,15 +729,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
   DisableWelcomePages({profile1, profile2});
 
   // Open some urls with the browsers, and close them.
-  Browser* browser1 =
-      new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile1, true));
+  Browser* browser1 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile1, true));
   chrome::NewTab(browser1);
   ui_test_utils::NavigateToURL(browser1,
                                embedded_test_server()->GetURL("/empty.html"));
   CloseBrowserSynchronously(browser1);
 
-  Browser* browser2 =
-      new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile2, true));
+  Browser* browser2 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile2, true));
   chrome::NewTab(browser2);
   ui_test_utils::NavigateToURL(browser2,
                                embedded_test_server()->GetURL("/form.html"));
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   SessionStartupPref::SetStartupPref(profile_urls, pref_urls);
 
   // Open a page with profile_last.
-  Browser* browser_last = new Browser(
+  Browser* browser_last = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile_last, true));
   chrome::NewTab(browser_last);
   ui_test_utils::NavigateToURL(browser_last,

@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
 #if defined(OS_WIN)
   // Open a new browser window.
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   ASSERT_TRUE(browser2);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->window()->Show();

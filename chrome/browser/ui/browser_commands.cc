@@ -185,11 +185,11 @@ void CreateAndShowNewWindowWithContents(
     const Browser* original_browser) {
   Browser* new_browser = nullptr;
   if (original_browser->deprecated_is_app()) {
-    new_browser = new Browser(Browser::CreateParams::CreateForApp(
+    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
         original_browser->app_name(), original_browser->is_trusted_source(),
         gfx::Rect(), original_browser->profile(), true));
   } else {
-    new_browser = new Browser(Browser::CreateParams(
+    new_browser = Browser::Create(Browser::CreateParams(
         original_browser->type(), original_browser->profile(), true));
   }
   // Preserve the size of the original window. The new window has already
@@ -281,7 +281,7 @@ WebContents* GetTabAndRevertIfNecessaryHelper(Browser* browser,
       std::unique_ptr<WebContents> new_tab = current_tab->Clone();
       WebContents* raw_new_tab = new_tab.get();
       Browser* new_browser =
-          new Browser(Browser::CreateParams(browser->profile(), true));
+          Browser::Create(Browser::CreateParams(browser->profile(), true));
       new_browser->tab_strip_model()->AddWebContents(std::move(new_tab), -1,
                                                      ui::PAGE_TRANSITION_LINK,
                                                      TabStripModel::ADD_ACTIVE);
@@ -447,8 +447,8 @@ void NewEmptyWindow(Profile* profile) {
 }
 
 Browser* OpenEmptyWindow(Profile* profile) {
-  Browser* browser =
-      new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  Browser* browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
   AddTabAt(browser, GURL(), -1, true);
   browser->window()->Show();
   return browser;
@@ -780,7 +780,7 @@ void MoveTabsToNewWindow(Browser* browser,
     return;
 
   Browser* new_browser =
-      new Browser(Browser::CreateParams(browser->profile(), true));
+      Browser::Create(Browser::CreateParams(browser->profile(), true));
 
   if (group.has_value()) {
     const tab_groups::TabGroupVisualData* old_visual_data =
@@ -944,7 +944,7 @@ void ConvertPopupToTabbedBrowser(Browser* browser) {
   TabStripModel* tab_strip = browser->tab_strip_model();
   std::unique_ptr<content::WebContents> contents =
       tab_strip->DetachWebContentsAt(tab_strip->active_index());
-  Browser* b = new Browser(Browser::CreateParams(browser->profile(), true));
+  Browser* b = Browser::Create(Browser::CreateParams(browser->profile(), true));
   b->tab_strip_model()->AppendWebContents(std::move(contents), true);
   b->window()->Show();
 }
@@ -1514,8 +1514,8 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
       chrome::FindTabbedBrowser(hosted_app_browser->profile(), false);
 
   if (!target_browser) {
-    target_browser =
-        new Browser(Browser::CreateParams(hosted_app_browser->profile(), true));
+    target_browser = Browser::Create(
+        Browser::CreateParams(hosted_app_browser->profile(), true));
   }
 
   TabStripModel* source_tabstrip = hosted_app_browser->tab_strip_model();

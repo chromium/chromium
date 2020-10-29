@@ -155,7 +155,7 @@ void ManagementApiUnitTest::SetUp() {
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_.reset(new Browser(params));
+  browser_.reset(Browser::Create(params));
 }
 
 void ManagementApiUnitTest::TearDown() {

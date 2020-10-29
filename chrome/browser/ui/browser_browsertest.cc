@@ -1350,7 +1350,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInRegularWindows) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInPopups) {
-  Browser* popup_browser = new Browser(
+  Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   ASSERT_TRUE(popup_browser->is_type_popup());
   EXPECT_TRUE(popup_browser->CanOverscrollContent());
@@ -1601,7 +1601,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
                                                browser()->profile(), true)};
   for (size_t i = 0; i < base::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MAXIMIZED;
-    AddBlankTabAndShow(new Browser(params[i]));
+    AddBlankTabAndShow(Browser::Create(params[i]));
   }
 }
 
@@ -1618,7 +1618,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
                                                browser()->profile(), true)};
   for (size_t i = 0; i < base::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MINIMIZED;
-    AddBlankTabAndShow(new Browser(params[i]));
+    AddBlankTabAndShow(Browser::Create(params[i]));
   }
 }
 
@@ -1681,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_NEW_INCOGNITO_WINDOW));
 
   // Create a new browser.
-  Browser* new_browser = new Browser(Browser::CreateParams(
+  Browser* new_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
   CommandUpdater* new_command_updater = new_browser->command_controller();
   // It should have Bookmarks & Settings commands disabled by default.
@@ -1696,7 +1696,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
 
 #if defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserTest, ArcBrowserWindowFeaturesSetCorrectly) {
-  Browser* new_browser = new Browser(
+  Browser* new_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_CUSTOM_TAB, browser()->profile(),
                             /* user_gesture= */ true));
   ASSERT_TRUE(new_browser);
@@ -1736,7 +1736,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
 
   // Create a new browser.
   Browser* new_browser =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   CommandUpdater* new_command_updater = new_browser->command_controller();
   EXPECT_FALSE(new_command_updater->IsCommandEnabled(IDC_NEW_INCOGNITO_WINDOW));
   EXPECT_TRUE(new_command_updater->IsCommandEnabled(IDC_NEW_WINDOW));
@@ -1782,7 +1782,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithExtensionsDisabled,
 
   // Create a popup (non-main-UI-type) browser. Settings command as well
   // as Extensions should be disabled.
-  Browser* popup_browser = new Browser(
+  Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   CommandUpdater* popup_command_updater = popup_browser->command_controller();
   EXPECT_FALSE(popup_command_updater->IsCommandEnabled(IDC_MANAGE_EXTENSIONS));
@@ -1797,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithExtensionsDisabled,
 IN_PROC_BROWSER_TEST_F(BrowserTest,
                        DisableOptionsAndImportMenuItemsConsistently) {
   // Create a popup browser.
-  Browser* popup_browser = new Browser(
+  Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   CommandUpdater* command_updater = popup_browser->command_controller();
   // OPTIONS and IMPORT_SETTINGS are disabled for a non-normal UI.
@@ -1921,7 +1921,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest2, NoTabsInPopups) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Open a popup browser with a single blank foreground tab.
-  Browser* popup_browser = new Browser(
+  Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile()));
   chrome::AddTabAt(popup_browser, GURL(), -1, true);
   EXPECT_EQ(1, popup_browser->tab_strip_model()->count());
@@ -1938,7 +1938,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest2, NoTabsInPopups) {
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // Open an app frame browser with a single blank foreground tab.
-  Browser* app_browser = new Browser(Browser::CreateParams::CreateForApp(
+  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
       L"Test", browser()->profile(), false));
   chrome::AddTabAt(app_browser, GURL(), -1, true);
   EXPECT_EQ(1, app_browser->tab_strip_model()->count());
@@ -1956,8 +1956,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest2, NoTabsInPopups) {
   EXPECT_EQ(3, browser()->tab_strip_model()->count());
 
   // Open an app frame popup browser with a single blank foreground tab.
-  Browser* app_popup_browser = new Browser(Browser::CreateParams::CreateForApp(
-      L"Test", browser()->profile(), false));
+  Browser* app_popup_browser = Browser::Create(
+      Browser::CreateParams::CreateForApp(
+          L"Test", browser()->profile(), false));
   chrome::AddTabAt(app_popup_browser, GURL(), -1, true);
   EXPECT_EQ(1, app_popup_browser->tab_strip_model()->count());
 
@@ -2697,7 +2698,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     Browser::CreateParams params(Browser::TYPE_POPUP, browser()->profile(),
                                  true);
     params.initial_bounds = gfx::Rect(0, 0, 100, 122);
-    Browser* browser = new Browser(params);
+    Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->window()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
@@ -2716,7 +2717,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
                                  true);
     params.initial_bounds = gfx::Rect(0, 0, 100, 122);
     params.trusted_source = true;
-    Browser* browser = new Browser(params);
+    Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->window()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
@@ -2732,7 +2733,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         "app-name", false, gfx::Rect(0, 0, 100, 122), browser()->profile(),
         true);
-    Browser* browser = new Browser(params);
+    Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->window()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
@@ -2748,7 +2749,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         "app-name", true, gfx::Rect(0, 0, 100, 122), browser()->profile(),
         true);
-    Browser* browser = new Browser(params);
+    Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->window()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
@@ -2764,7 +2765,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     Browser::CreateParams params =
         Browser::CreateParams::CreateForDevTools(browser()->profile());
     params.initial_bounds = gfx::Rect(0, 0, 100, 122);
-    Browser* browser = new Browser(params);
+    Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->window()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.

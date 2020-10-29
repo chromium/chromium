@@ -89,7 +89,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                 /*user_gesture=*/true);
   browser_params.initial_show_state = DetermineWindowShowState();
   browser_params.can_resize = can_resize;
-  return new Browser(browser_params);
+  return Browser::Create(browser_params);
 }
 
 content::WebContents* NavigateWebApplicationWindow(
@@ -159,8 +159,8 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       disposition = params.disposition;
     } else {
       browser =
-          new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile_,
-                                            /*user_gesture=*/true));
+          Browser::Create(Browser::CreateParams(Browser::TYPE_NORMAL, profile_,
+                                                /*user_gesture=*/true));
     }
   } else {
     if (params.disposition == WindowOpenDisposition::CURRENT_TAB &&

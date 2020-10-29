@@ -1061,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice) {
 
 // Checks that Dice is disabled in incognito mode.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Incognito) {
-  Browser* incognito_browser = new Browser(Browser::CreateParams(
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
 
   // Check that Dice is disabled.

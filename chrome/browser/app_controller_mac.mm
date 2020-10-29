@@ -881,7 +881,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         // downloads page if the user chooses to wait.
         Browser* browser = chrome::FindBrowserWithProfile(profiles[i]);
         if (!browser) {
-          browser = new Browser(Browser::CreateParams(profiles[i], true));
+          browser = Browser::Create(Browser::CreateParams(profiles[i], true));
           browser->window()->Show();
         }
         DCHECK(browser);
@@ -1398,7 +1398,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   // if no browser window exists then create one with no tabs to be filled in
   if (!browser) {
-    browser = new Browser(
+    browser = Browser::Create(
         Browser::CreateParams([self safeLastProfileForNewWindows], true));
     browser->window()->Show();
   }

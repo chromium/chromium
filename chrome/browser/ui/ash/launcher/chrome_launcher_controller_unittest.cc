@@ -4833,7 +4833,7 @@ TEST_F(ChromeLauncherControllerTest, CrostiniBrowserWindowsRecogniseShelfItem) {
       true /* user_gesture */);
   params.window = browser()->window();
   params.type = Browser::TYPE_NORMAL;
-  Browser* b = new Browser(params);
+  Browser* b = Browser::Create(params);
   set_browser(b);
   chrome::NewTab(browser());
   browser()->window()->Show();

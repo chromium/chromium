@@ -1232,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(LocalNTPTest, ProcessPerSite) {
 // Just like LocalNTPTest.ProcessPerSite, but for an incognito window.
 IN_PROC_BROWSER_TEST_F(LocalNTPTest, ProcessPerSite_Incognito) {
   GURL ntp_url("chrome://newtab");
-  Browser* incognito_browser = new Browser(Browser::CreateParams(
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
 
   // Open NTP in |tab1|.

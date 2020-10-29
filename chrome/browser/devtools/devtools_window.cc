@@ -1584,7 +1584,8 @@ void DevToolsWindow::CreateDevToolsBrowser() {
     wp_prefs->SetKey(kDevToolsApp, std::move(dev_tools_defaults));
   }
 
-  browser_ = new Browser(Browser::CreateParams::CreateForDevTools(profile_));
+  browser_ =
+      Browser::Create(Browser::CreateParams::CreateForDevTools(profile_));
   browser_->tab_strip_model()->AddWebContents(
       OwnedMainWebContents::TakeWebContents(
           std::move(owned_main_web_contents_)),

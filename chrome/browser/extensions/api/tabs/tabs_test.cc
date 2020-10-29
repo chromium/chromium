@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   // minimize/maximize programmatically?
 
   // Popup.
-  Browser* popup_browser = new Browser(
+  Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   function = new WindowsGetFunction();
   function->set_extension(extension.get());
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DontCreateTabInClosingPopupWindow) {
   // Test creates new popup window, closes it right away and then tries to open
   // a new tab in it. Tab should not be opened in the popup window, but in a
   // tabbed browser window.
-  Browser* popup_browser = new Browser(
+  Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   int window_id = ExtensionTabUtil::GetWindowId(popup_browser);
   chrome::CloseWindow(popup_browser);
@@ -855,11 +855,11 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
     bool as_popup) {
   Browser* new_browser;
   if (as_popup)
-    new_browser = new Browser(
+    new_browser = Browser::Create(
         Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   else
     new_browser =
-        new Browser(Browser::CreateParams(browser()->profile(), true));
+        Browser::Create(Browser::CreateParams(browser()->profile(), true));
   AddBlankTabAndShow(new_browser);
   return new_browser;
 }
@@ -1240,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_FilteredEvents) {
       " \"maxWidth\": 400, \"maxHeight\": 400}}");
 
   Browser* browser_window =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   AddBlankTabAndShow(browser_window);
 
   DevToolsWindow* devtools_window =

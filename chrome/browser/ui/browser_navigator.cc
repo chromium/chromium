@@ -165,7 +165,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     if (app_id) {
       std::string app_name = web_app::GenerateApplicationNameFromAppId(*app_id);
       return {
-          new Browser(Browser::CreateParams::CreateForApp(
+          Browser::Create(Browser::CreateParams::CreateForApp(
               app_name,
               true,  // trusted_source. Installed PWAs are considered trusted.
               params.window_bounds, profile, params.user_gesture)),
@@ -235,17 +235,18 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
                                              params.user_gesture);
         browser_params.trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_bounds;
-        return {new Browser(browser_params), -1};
+        return {Browser::Create(browser_params), -1};
       }
-      return {new Browser(Browser::CreateParams::CreateForAppPopup(
+      return {Browser::Create(Browser::CreateParams::CreateForAppPopup(
                   app_name, params.trusted_source, params.window_bounds,
                   profile, params.user_gesture)),
               -1};
     }
     case WindowOpenDisposition::NEW_WINDOW:
       // Make a new normal browser window.
-      return {new Browser(Browser::CreateParams(profile, params.user_gesture)),
-              -1};
+      return {
+          Browser::Create(Browser::CreateParams(profile, params.user_gesture)),
+          -1};
     case WindowOpenDisposition::OFF_THE_RECORD:
       // Make or find an incognito window.
       return {GetOrCreateBrowser(profile->GetPrimaryOTRProfile(),

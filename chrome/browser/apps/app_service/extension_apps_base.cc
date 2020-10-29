@@ -715,7 +715,7 @@ void ExtensionAppsBase::OpenNativeSettings(const std::string& app_id) {
                  *extension)) {
     Browser* browser = chrome::FindTabbedBrowser(profile_, false);
     if (!browser) {
-      browser = new Browser(Browser::CreateParams(profile_, true));
+      browser = Browser::Create(Browser::CreateParams(profile_, true));
     }
 
     chrome::ShowExtensions(browser, extension->id());

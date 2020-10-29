@@ -208,9 +208,9 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     bool use_new_window = disposition == WindowOpenDisposition::NEW_WINDOW;
 
-    Browser* browser = use_new_window
-                           ? new Browser(Browser::CreateParams(profile_, true))
-                           : browser_;
+    Browser* browser =
+        use_new_window ? Browser::Create(Browser::CreateParams(profile_, true))
+                       : browser_;
 
     RecordAppLaunchForTab(browser, tab, selected_index);
 
@@ -282,7 +282,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                                std::vector<RestoredTab>* contents_created) {
     Browser* browser = nullptr;
     if (!created_tabbed_browser && always_create_tabbed_browser_) {
-      browser = new Browser(Browser::CreateParams(profile_, false));
+      browser = Browser::Create(Browser::CreateParams(profile_, false));
       if (urls_to_open_.empty()) {
         // No tab browsers were created and no URLs were supplied on the command
         // line. Open the new tab page.
@@ -662,7 +662,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.initial_show_state = show_state;
     params.initial_workspace = workspace;
     params.is_session_restore = true;
-    return new Browser(params);
+    return Browser::Create(params);
   }
 
   void ShowBrowser(Browser* browser, int selected_tab_index) {

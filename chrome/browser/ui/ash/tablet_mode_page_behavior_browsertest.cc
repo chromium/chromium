@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
       "test_browser_app", true /* trusted_source */, gfx::Rect(),
       browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser = new Browser(params);
+  Browser* browser = Browser::Create(params);
   AddBlankTabAndShow(browser);
 
   ASSERT_TRUE(browser->is_type_app());

@@ -574,7 +574,7 @@ void ChromeNewWindowClient::OpenArcCustomTab(
   // |custom_tab_browser| will be destroyed when its tab strip becomes empty,
   // either due to the user opening the custom tab page in a tabbed browser or
   // because of the CustomTabSessionImpl object getting destroyed.
-  auto* custom_tab_browser = new Browser(Browser::CreateParams(
+  auto* custom_tab_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_CUSTOM_TAB, profile, /* user_gesture= */ true));
 
   custom_tab_browser->tab_strip_model()->AppendWebContents(

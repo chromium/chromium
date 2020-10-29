@@ -54,7 +54,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
   }
 
   Browser* CreateBrowserWithParams(Browser::CreateParams params) {
-    Browser* browser = new Browser(params);
+    Browser* browser = Browser::Create(params);
     AddBlankTabAndShow(browser);
     return browser;
   }
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
 
   auto app_params = Browser::CreateParams::CreateForApp(
       test_app_name1, true, gfx::Rect(), browser()->profile(), true);
-  Browser* app_browser = new Browser(app_params);
+  Browser* app_browser = Browser::Create(app_params);
   AddBlankTabAndShow(app_browser);
 
   // There should be three browsers:

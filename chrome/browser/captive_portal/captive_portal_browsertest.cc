@@ -2661,7 +2661,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, ReloadTimeout) {
 // Disabled:  http://crbug.com/134357
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   // Navigate the new browser window so it'll be shown and we can pick the
   // active window.
   ui_test_utils::NavigateToURL(browser2, GURL(url::kAboutBlankURL));

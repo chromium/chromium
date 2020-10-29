@@ -123,7 +123,7 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
 // is invoked on the other.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   TestWebContentsObserver observer(
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabs) {
 // BrowserView will destroy.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->tab_strip_model()->ActivateTabAt(

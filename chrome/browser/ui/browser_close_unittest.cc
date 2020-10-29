@@ -167,7 +167,7 @@ class BrowserCloseTest : public testing::Test {
       Browser::CreateParams params(profile, true);
       params.type = Browser::TYPE_NORMAL;
       params.window = window;
-      Browser* browser = new Browser(params);
+      Browser* browser = Browser::Create(params);
 
       windows.push_back(window);
       browsers.push_back(browser);

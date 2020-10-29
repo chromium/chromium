@@ -119,7 +119,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
       /*trusted_source=*/true, browser()->window()->GetBounds(), profile(),
       /*user_gesture=*/true);
   params.window = browser()->window();
-  set_browser(new Browser(params));
+  set_browser(Browser::Create(params));
 
   ASSERT_TRUE(browser()->is_type_app());
 
@@ -193,7 +193,7 @@ TEST_F(BrowserCommandControllerTest, AppFullScreen) {
       /*trusted_source=*/true, browser()->window()->GetBounds(), profile(),
       /*user_gesture=*/true);
   params.window = browser()->window();
-  set_browser(new Browser(params));
+  set_browser(Browser::Create(params));
   ASSERT_TRUE(browser()->is_type_app());
   browser()->command_controller()->FullscreenStateChanged();
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FULLSCREEN));

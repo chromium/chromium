@@ -43,7 +43,7 @@ class SystemWebAppLinkCaptureBrowserTest
 
  protected:
   Browser* CreateIncognitoBrowser() {
-    Browser* incognito = new Browser(Browser::CreateParams(
+    Browser* incognito = Browser::Create(Browser::CreateParams(
         browser()->profile()->GetPrimaryOTRProfile(), true));
 
     content::WindowedNotificationObserver observer(

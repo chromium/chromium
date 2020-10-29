@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Open second browser window.
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
   ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Open second browser window.
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
   ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
 
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Open second browser window.
   Browser* browser2 =
-      new Browser(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
   ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
 
