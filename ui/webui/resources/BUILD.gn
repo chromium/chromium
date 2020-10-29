@@ -41,6 +41,7 @@ group("preprocess") {
   deps = [
     ":preprocess_generated",
     ":preprocess_src",
+    "cr_components:preprocess",
     "cr_elements:preprocess",
   ]
 }
