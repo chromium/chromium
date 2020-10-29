@@ -172,6 +172,11 @@ void UtilityThreadImpl::Shutdown() {
 }
 
 void UtilityThreadImpl::ReleaseProcess() {
+  // Ensure all main-thread services are destroyed before releasing the process.
+  // This limits the risk of services incorrectly attempting to post
+  // shutdown-blocking tasks once shutdown has already begun.
+  main_thread_services_.reset();
+
   if (!IsInBrowserProcess()) {
     ChildProcess::current()->ReleaseProcess();
     return;
