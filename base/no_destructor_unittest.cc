@@ -31,6 +31,16 @@ TEST(NoDestructorTest, SkipsDestructors) {
   NoDestructor<CheckOnDestroy> destructor_should_not_run;
 }
 
+struct UncopyableUnmovable {
+  UncopyableUnmovable() = default;
+  explicit UncopyableUnmovable(int value) : value(value) {}
+
+  UncopyableUnmovable(const UncopyableUnmovable&) = delete;
+  UncopyableUnmovable& operator=(const UncopyableUnmovable&) = delete;
+
+  int value = 1;
+};
+
 struct CopyOnly {
   CopyOnly() = default;
 
@@ -54,6 +64,14 @@ struct MoveOnly {
 struct ForwardingTestStruct {
   ForwardingTestStruct(const CopyOnly&, MoveOnly&&) {}
 };
+
+TEST(NoDestructorTest, UncopyableUnmovable) {
+  static NoDestructor<UncopyableUnmovable> default_constructed;
+  EXPECT_EQ(1, default_constructed->value);
+
+  static NoDestructor<UncopyableUnmovable> constructed_with_arg(-1);
+  EXPECT_EQ(-1, constructed_with_arg->value);
+}
 
 TEST(NoDestructorTest, ForwardsArguments) {
   CopyOnly copy_only;
