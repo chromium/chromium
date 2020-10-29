@@ -12,7 +12,14 @@ namespace cast_streaming {
 
 namespace {
 
-// Timeout to stop the Session when no data is received.
+// Timeout to stop the Session when no data is received. This is also used for
+// the frames duration because Senders may not send a new frame for ~10s.
+// When that happens, the Chromium media pipeline may end up deciding it does
+// not have enough data, resulting in the stream being stalled. Setting the
+// frame duration to this value prevents the media pipeline from considering the
+// stream as being stalled. As a result, we end up with overlapping frames but
+// this is fine since the media pipeline mostly considers the playout time when
+// deciding which frame to present or play.
 constexpr base::TimeDelta kNoDataTimeout = base::TimeDelta::FromSeconds(15);
 
 }  // namespace
@@ -159,8 +166,10 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
            << "Received new frame. Timestamp: " << playout_time
            << ", is_key_frame: " << is_key_frame;
 
+  // See the |kNoDataTimeout| definition for why it is used for the frame
+  // duration here.
   frame_received_cb_.Run(media::mojom::DecoderBuffer::New(
-      playout_time /* timestamp */, base::TimeDelta() /* duration */,
+      playout_time /* timestamp */, kNoDataTimeout /* duration */,
       false /* is_end_of_stream */, buffer_size, is_key_frame,
       media::EmptyExtraData(), media::mojom::DecryptConfigPtr(),
       base::TimeDelta() /* front_discard */,
