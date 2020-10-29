@@ -619,7 +619,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   main_window_->ActivateContents(main_window_->web_contents());
 
   RenderViewHost* main_render_view_host =
-      main_window_->web_contents()->GetRenderViewHost();
+      main_window_->web_contents()->GetMainFrame()->GetRenderViewHost();
   {
     TRACE_EVENT0("shell", "WebTestControlHost::PrepareForWebTest::Flush");
     // Round-trip through the InputHandler mojom interface to the compositor
@@ -836,8 +836,10 @@ void WebTestControlHost::InitiateCaptureDump(
 }
 
 void WebTestControlHost::TestFinishedInSecondaryRenderer() {
-  GetWebTestRenderThreadRemote(
-      main_window_->web_contents()->GetRenderViewHost()->GetProcess())
+  GetWebTestRenderThreadRemote(main_window_->web_contents()
+                                   ->GetMainFrame()
+                                   ->GetRenderViewHost()
+                                   ->GetProcess())
       ->TestFinishedFromSecondaryRenderer();
 }
 
@@ -1768,8 +1770,10 @@ void WebTestControlHost::ResetRendererAfterWebTest() {
   if (main_window_) {
     main_window_->web_contents()->Stop();
 
-    RenderProcessHost* main_frame_process =
-        main_window_->web_contents()->GetRenderViewHost()->GetProcess();
+    RenderProcessHost* main_frame_process = main_window_->web_contents()
+                                                ->GetMainFrame()
+                                                ->GetRenderViewHost()
+                                                ->GetProcess();
     GetWebTestRenderThreadRemote(main_frame_process)
         ->ResetRendererAfterWebTest(
             base::BindOnce(&WebTestControlHost::ResetRendererAfterWebTestDone,
@@ -1789,7 +1793,8 @@ void WebTestControlHost::ResetRendererAfterWebTestDone() {
     if (!check_for_leaked_windows_)
       CloseTestOpenedWindows();
 
-    RenderViewHost* rvh = main_window_->web_contents()->GetRenderViewHost();
+    RenderViewHost* rvh =
+        main_window_->web_contents()->GetMainFrame()->GetRenderViewHost();
     RenderProcessHost* rph = rvh->GetProcess();
     CHECK(rph->GetProcess().IsValid());
     leak_detector_->TryLeakDetection(
