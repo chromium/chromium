@@ -1310,6 +1310,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="WebRTC.PeerConnection.SdpFormatReceived"
     enum="PeerConnectionSdpFormatReceived" expires_after="2021-04-04">
   <owner>steveanton@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
   <summary>
     What SDP format is received in the remote offer. The value &quot;no
     tracks&quot; means that no audio or video tracks were received. The value
@@ -1318,6 +1319,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     or more than one video track was received, and how this was signaled is
     indicated (&quot;Plan B&quot; meaning with a=ssrc lines within the same m=
     section and &quot;Unified Plan&quot; meaning with a separate m= section).
+    This is recorded when calling setRemoteDescription with an SDP Offer.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.SdpFormatReceivedAnswer"
+    enum="PeerConnectionSdpFormatReceived" expires_after="2021-04-04">
+  <owner>steveanton@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <summary>
+    What SDP format is received in the remote answer. See
+    WebRTC.PeerConnection.SdpFormatReceived for the description of the values.
+    This is recorded when calling setRemoteDescription with an SDP Answer.
   </summary>
 </histogram>
 
