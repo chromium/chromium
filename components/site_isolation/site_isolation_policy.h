@@ -45,6 +45,10 @@ class SiteIsolationPolicy {
   // memory threshold.
   static bool ShouldDisableSiteIsolationDueToMemoryThreshold();
 
+  // Returns true if the PDF compositor should be enabled to allow out-of-
+  // process iframes (OOPIF's) to print properly.
+  static bool ShouldPdfCompositorBeEnabledForOopifs();
+
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(SiteIsolationPolicy);
 };

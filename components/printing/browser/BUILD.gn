@@ -56,6 +56,7 @@ static_library("browser") {
     "//components/printing/common:mojo_interfaces",
     "//components/services/print_compositor/public/cpp",
     "//components/services/print_compositor/public/mojom",
+    "//components/site_isolation",
     "//components/strings:components_strings_grit",
     "//printing",
     "//printing/common:common",

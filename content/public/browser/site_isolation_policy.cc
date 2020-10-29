@@ -114,17 +114,6 @@ bool SiteIsolationPolicy::IsErrorPageIsolationEnabled(bool in_main_frame) {
 }
 
 // static
-bool SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() {
-  // TODO(weili): We only create pdf compositor client and use pdf compositor
-  // service when site-per-process or isolate-origins flag/feature is enabled,
-  // or top-document-isolation feature is enabled. This may not cover all cases
-  // where OOPIF is used such as isolate-extensions, but should be good for
-  // feature testing purpose. Eventually, we will remove this check and use pdf
-  // compositor service by default for printing.
-  return AreIsolatedOriginsEnabled() || UseDedicatedProcessesForAllSites();
-}
-
-// static
 bool SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() {
   return !IsSiteIsolationDisabled();
 }

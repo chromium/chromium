@@ -130,4 +130,19 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
       "SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size", origins.size());
 }
 
+// static
+bool SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() {
+  // We only create pdf compositor client and use pdf compositor service when
+  // one of the site isolation modes that forces OOPIFs is on. This includes
+  // full site isolation on desktop, password-triggered site isolation on
+  // Android for high-memory devices, and/or isolated origins specified via
+  // command line, enterprise policy, or field trials.
+  //
+  // TODO(weili, thestig): Eventually, we should remove this check and use pdf
+  // compositor service by default for printing.
+  return content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+         IsIsolationForPasswordSitesEnabled() ||
+         content::SiteIsolationPolicy::AreIsolatedOriginsEnabled();
+}
+
 }  // namespace site_isolation
