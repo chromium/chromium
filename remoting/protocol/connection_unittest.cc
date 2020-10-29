@@ -650,7 +650,9 @@ TEST_P(ConnectionTest, MAYBE_Audio) {
   client_audio_player_.Verify();
 }
 
-TEST_P(ConnectionTest, FirstCaptureFailed) {
+// Flaky on multiple platforms
+// https://crbug.com/1143671
+TEST_P(ConnectionTest, DISABLED_FirstCaptureFailed) {
   Connect();
 
   auto capturer = std::make_unique<TestScreenCapturer>();
@@ -660,7 +662,9 @@ TEST_P(ConnectionTest, FirstCaptureFailed) {
   WaitNextVideoFrame();
 }
 
-TEST_P(ConnectionTest, SecondCaptureFailed) {
+// Flaky on multiple platforms
+// https://crbug.com/1143671
+TEST_P(ConnectionTest, DISABLED_SecondCaptureFailed) {
   Connect();
 
   auto capturer = std::make_unique<TestScreenCapturer>();
