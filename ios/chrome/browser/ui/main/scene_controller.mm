@@ -2390,9 +2390,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   NSMutableArray<SceneController*>* sceneControllers =
       [[NSMutableArray alloc] init];
-  for (SceneState* sceneState in self.sceneState.appState.connectedScenes) {
+  for (SceneState* sceneState in [self.sceneState.appState connectedScenes]) {
     SceneController* sceneController = sceneState.controller;
-    [sceneControllers addObject:sceneController];
+    // In some circumstances, the scene state may still exist while the
+    // corresponding scene controller has been deallocated.
+    // (see crbug.com/1142782).
+    if (sceneController) {
+      [sceneControllers addObject:sceneController];
+    }
   }
 
   for (SceneController* sceneController in sceneControllers) {

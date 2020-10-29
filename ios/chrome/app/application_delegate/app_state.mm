@@ -200,7 +200,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)setMainSceneState:(SceneState*)mainSceneState {
   DCHECK(!_mainSceneState);
-
   _mainSceneState = mainSceneState;
   [self.observers appState:self sceneConnected:mainSceneState];
 }
@@ -577,7 +576,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
       for (UIWindowScene* scene in connectedScenes) {
         if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
           // This might happen in tests.
-          // TODO(crbug.com/1113097): This shouldn't be needed.
+          // TODO(crbug.com/1113097): This shouldn't be needed. (It might also
+          // be the cause of crbug.com/1142782).
           [sceneStates addObject:[[SceneState alloc] initWithAppState:self]];
           continue;
         }
