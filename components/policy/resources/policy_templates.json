@@ -14778,7 +14778,7 @@
     },
     {
       'name': 'PacHttpsUrlStrippingEnabled',
-      'owners': ['eroman@chromium.org'],
+      'owners': ['net-dev@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [ 'chrome.*:52-74', 'chrome_os:52-74' ],

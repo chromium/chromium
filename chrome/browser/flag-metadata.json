@@ -1842,7 +1842,7 @@
   },
   {
     "name": "enable-network-logging-to-file",
-    "owners": [ "eroman", "net-dev" ],
+    "owners": [ "net-dev" ],
     // This flag is used to capture early-browser network logging on platforms
     // without easy access to startup time configuration.
     "expiry_milestone": -1
