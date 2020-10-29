@@ -180,10 +180,20 @@ gfx::Point LoginBaseBubbleView::CalculatePosition() {
   // calculated by using the root view's coordinates system. kShowAbove and
   // kShowBelow are less complicated, they only use the coordinate system of the
   // the anchor view's parent.
+
+  // In RTL case, we are doing mirroring in `ConvertPointToTarget` when finding
+  // the position of the bubble. However, there's no need to mirror since the
+  // coordinate system is from right to left and the origin is the right upper
+  // corner. `GetMirroredXWithWidthInView` is called to cancel out the mirroring
+  // effect and returning the correct position for the bubble.
   gfx::Point anchor_position = GetAnchorView()->bounds().origin();
+  gfx::Point origin;
   ConvertPointToTarget(GetAnchorView()->parent() /*source*/,
                        GetAnchorView()->GetWidget()->GetRootView() /*target*/,
-                       &anchor_position);
+                       &origin);
+  origin.set_x(parent()->GetMirroredXWithWidthInView(
+      origin.x(), GetAnchorView()->parent()->width()));
+  anchor_position += origin.OffsetFromOrigin();
   auto bounds = GetBoundsAvailableToShowBubble();
   gfx::Size bubble_size(width() + 2 * horizontal_padding_,
                         height() + vertical_padding_);
