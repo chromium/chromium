@@ -44,7 +44,7 @@ struct BASE_EXPORT TraceSourceLocation {
 namespace std {
 
 template <>
-struct ::std::hash<base::trace_event::TraceSourceLocation> {
+struct hash<base::trace_event::TraceSourceLocation> {
   std::size_t operator()(
       const base::trace_event::TraceSourceLocation& loc) const {
     static_assert(sizeof(base::trace_event::TraceSourceLocation) ==
