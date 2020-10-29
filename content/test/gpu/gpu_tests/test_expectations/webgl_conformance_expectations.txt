@@ -523,7 +523,7 @@ crbug.com/965594 [ linux amd angle-opengl passthrough ] conformance/more/conform
 crbug.com/1028639 [ linux amd angle-opengl passthrough ] conformance/ogles/GL/mat/mat_009_to_016.html [ Failure ]
 crbug.com/1028639 [ linux amd angle-opengl passthrough ] conformance/ogles/GL/log2/log2_009_to_012.html [ Failure ]
 crbug.com/1060632 [ linux amd angle-opengl passthrough ] conformance/more/functions/bindBuffer.html [ RetryOnFailure ]
-crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/context/deleted-object-behavior.html [ RetryOnFailure ]
+crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/context/deleted-object-behavior.html [ Failure ]
 crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/renderbuffers/renderbuffer-initialization.html [ Failure ]
 
 ####################
