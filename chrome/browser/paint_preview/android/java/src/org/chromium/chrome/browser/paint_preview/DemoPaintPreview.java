@@ -37,8 +37,6 @@ public class DemoPaintPreview implements PlayerManager.Listener {
     }
 
     private void show() {
-        if (mTabbedPaintPreview.maybeShow(this)) return;
-
         PaintPreviewCompositorUtils.warmupCompositor();
         mTabbedPaintPreview.capture(success
                 -> PostTask.runOrPostTask(

@@ -76,25 +76,6 @@ public class DemoPaintPreviewTest {
     }
 
     /**
-     * Tests the demo mode is accessible from app menu and works successfully when the page has been
-     * captured before.
-     */
-    @Test
-    @MediumTest
-    public void testWithExistingCapture() throws UiObjectNotFoundException, ExecutionException {
-        Mockito.doReturn(true).when(sMockService).hasCaptureForTab(Mockito.anyInt());
-
-        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        uiDevice.pressMenu();
-        uiDevice.findObject(new UiSelector().text("Show Paint Preview")).click();
-
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        TabbedPaintPreview tabbedPaintPreview =
-                TestThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
-        assertAttachedAndShown(tabbedPaintPreview, true, true);
-    }
-
-    /**
      * Tests the demo mode is accessible from app menu and works successfully when the page has not
      * been captured before.
      */
