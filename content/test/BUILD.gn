@@ -1967,6 +1967,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_context_wrapper_unittest.cc",
     "../browser/service_worker/service_worker_controllee_request_handler_unittest.cc",
     "../browser/service_worker/service_worker_database_unittest.cc",
+    "../browser/service_worker/service_worker_disk_cache_unittest.cc",
     "../browser/service_worker/service_worker_installed_scripts_sender_unittest.cc",
     "../browser/service_worker/service_worker_job_unittest.cc",
     "../browser/service_worker/service_worker_main_resource_loader_interceptor_unittest.cc",

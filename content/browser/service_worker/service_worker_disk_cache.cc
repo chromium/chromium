@@ -172,15 +172,16 @@ void ServiceWorkerDiskCache::CreateEntry(int64_t key, EntryCallback callback) {
     return;
   }
 
-  DCHECK(!base::Contains(active_entry_calls_, key));
-  active_entry_calls_.emplace(key, std::move(callback));
+  uint64_t call_id = GetNextCallId();
+  DCHECK(!base::Contains(active_entry_calls_, call_id));
+  active_entry_calls_.emplace(call_id, std::move(callback));
 
   disk_cache::EntryResult result = disk_cache_->CreateEntry(
       base::NumberToString(key), net::HIGHEST,
       base::BindOnce(&ServiceWorkerDiskCache::DidGetEntryResult,
-                     weak_factory_.GetWeakPtr(), key));
+                     weak_factory_.GetWeakPtr(), call_id));
   if (result.net_error() != net::ERR_IO_PENDING) {
-    DidGetEntryResult(key, std::move(result));
+    DidGetEntryResult(call_id, std::move(result));
   }
 }
 
@@ -206,15 +207,16 @@ void ServiceWorkerDiskCache::OpenEntry(int64_t key, EntryCallback callback) {
     return;
   }
 
-  DCHECK(!base::Contains(active_entry_calls_, key));
-  active_entry_calls_.emplace(key, std::move(callback));
+  uint64_t call_id = GetNextCallId();
+  DCHECK(!base::Contains(active_entry_calls_, call_id));
+  active_entry_calls_.emplace(call_id, std::move(callback));
 
   disk_cache::EntryResult result = disk_cache_->OpenEntry(
       base::NumberToString(key), net::HIGHEST,
       base::BindOnce(&ServiceWorkerDiskCache::DidGetEntryResult,
-                     weak_factory_.GetWeakPtr(), key));
+                     weak_factory_.GetWeakPtr(), call_id));
   if (result.net_error() != net::ERR_IO_PENDING) {
-    DidGetEntryResult(key, std::move(result));
+    DidGetEntryResult(call_id, std::move(result));
   }
 }
 
@@ -241,15 +243,16 @@ void ServiceWorkerDiskCache::DoomEntry(int64_t key,
     return;
   }
 
-  DCHECK(!base::Contains(active_doom_calls_, key));
-  active_doom_calls_.emplace(key, std::move(callback));
+  uint64_t call_id = GetNextCallId();
+  DCHECK(!base::Contains(active_doom_calls_, call_id));
+  active_doom_calls_.emplace(call_id, std::move(callback));
 
   net::Error net_error = disk_cache_->DoomEntry(
       base::NumberToString(key), net::HIGHEST,
       base::BindOnce(&ServiceWorkerDiskCache::DidDoomEntry,
-                     weak_factory_.GetWeakPtr(), key));
+                     weak_factory_.GetWeakPtr(), call_id));
   if (net_error != net::ERR_IO_PENDING) {
-    DidDoomEntry(key, net_error);
+    DidDoomEntry(call_id, net_error);
   }
 }
 
@@ -304,9 +307,13 @@ void ServiceWorkerDiskCache::OnCreateBackendComplete(int return_value) {
   pending_calls_.clear();
 }
 
-void ServiceWorkerDiskCache::DidGetEntryResult(int64_t key,
+uint64_t ServiceWorkerDiskCache::GetNextCallId() {
+  return next_call_id_++;
+}
+
+void ServiceWorkerDiskCache::DidGetEntryResult(uint64_t call_id,
                                                disk_cache::EntryResult result) {
-  auto it = active_entry_calls_.find(key);
+  auto it = active_entry_calls_.find(call_id);
   DCHECK(it != active_entry_calls_.end());
   EntryCallback callback = std::move(it->second);
   active_entry_calls_.erase(it);
@@ -321,8 +328,8 @@ void ServiceWorkerDiskCache::DidGetEntryResult(int64_t key,
   std::move(callback).Run(net_error, std::move(entry));
 }
 
-void ServiceWorkerDiskCache::DidDoomEntry(int64_t key, int net_error) {
-  auto it = active_doom_calls_.find(key);
+void ServiceWorkerDiskCache::DidDoomEntry(uint64_t call_id, int net_error) {
+  auto it = active_doom_calls_.find(call_id);
   DCHECK(it != active_doom_calls_.end());
   net::CompletionOnceCallback callback = std::move(it->second);
   active_doom_calls_.erase(it);

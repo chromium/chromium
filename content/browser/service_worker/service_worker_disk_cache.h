@@ -87,8 +87,7 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
       base::OnceCallback<void(int rv,
                               std::unique_ptr<ServiceWorkerDiskCacheEntry>)>;
 
-  // Creates/opens/dooms a disk cache entry associated with `key`. These calls
-  // should not overlap.
+  // Creates/opens/dooms a disk cache entry associated with `key`.
   void CreateEntry(int64_t key, EntryCallback callback);
   void OpenEntry(int64_t key, EntryCallback callback);
   void DoomEntry(int64_t key, net::CompletionOnceCallback callback);
@@ -118,8 +117,10 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
                   net::CompletionOnceCallback callback);
   void OnCreateBackendComplete(int return_value);
 
-  void DidGetEntryResult(int64_t key, disk_cache::EntryResult result);
-  void DidDoomEntry(int64_t key, int net_error);
+  uint64_t GetNextCallId();
+
+  void DidGetEntryResult(uint64_t call_id, disk_cache::EntryResult result);
+  void DidDoomEntry(uint64_t call_id, int net_error);
 
   // Called by ServiceWorkerDiskCacheEntry constructor.
   void AddOpenEntry(ServiceWorkerDiskCacheEntry* entry);
@@ -131,8 +132,10 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
   net::CompletionOnceCallback init_callback_;
   scoped_refptr<CreateBackendCallbackShim> create_backend_callback_;
   std::vector<base::OnceClosure> pending_calls_;
-  std::map</*key=*/int64_t, EntryCallback> active_entry_calls_;
-  std::map</*key=*/int64_t, net::CompletionOnceCallback> active_doom_calls_;
+  uint64_t next_call_id_ = 0;
+  std::map</*call_id=*/uint64_t, EntryCallback> active_entry_calls_;
+  std::map</*call_id=*/uint64_t, net::CompletionOnceCallback>
+      active_doom_calls_;
   std::set<ServiceWorkerDiskCacheEntry*> open_entries_;
   std::unique_ptr<disk_cache::Backend> disk_cache_;
 
