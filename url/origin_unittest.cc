@@ -109,6 +109,11 @@ class OriginTest : public ::testing::Test {
     return origin.SerializeWithNonce();
   }
 
+  base::Optional<std::string> SerializeWithNonceAndInitIfNeeded(
+      Origin& origin) {
+    return origin.SerializeWithNonceAndInitIfNeeded();
+  }
+
   base::Optional<Origin> Deserialize(const std::string& value) {
     return Origin::Deserialize(value);
   }
@@ -933,6 +938,19 @@ TEST_F(OriginTest, SerializeTBDNonce) {
   // Can't use DoEqualityComparisons here since empty nonces are never == unless
   // they are the same object.
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+
+  // Now force initialization of the nonce prior to serialization.
+  for (const GURL& url : invalid_urls) {
+    SCOPED_TRACE(url.spec());
+    Origin origin = Origin::Create(url);
+    base::Optional<std::string> serialized =
+        SerializeWithNonceAndInitIfNeeded(origin);
+    base::Optional<Origin> deserialized = Deserialize(std::move(*serialized));
+    ASSERT_TRUE(deserialized.has_value());
+
+    // The nonce should have been initialized prior to Serialization().
+    EXPECT_EQ(origin, deserialized.value());
+  }
 }
 
 TEST_F(OriginTest, DeserializeValidNonce) {

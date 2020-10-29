@@ -287,11 +287,20 @@ Origin::Origin(const Nonce& nonce, SchemeHostPort precursor)
   DCHECK_EQ(0U, port());
 }
 
+base::Optional<std::string> Origin::SerializeWithNonce() const {
+  return SerializeWithNonceImpl();
+}
+
+base::Optional<std::string> Origin::SerializeWithNonceAndInitIfNeeded() {
+  GetNonceForSerialization();
+  return SerializeWithNonceImpl();
+}
+
 // The pickle is saved in the following format, in order:
 // string - tuple_.GetURL().spec().
 // uint64_t (if opaque) - high bits of nonce if opaque. 0 if not initialized.
 // uint64_t (if opaque) - low bits of nonce if opaque. 0 if not initialized.
-base::Optional<std::string> Origin::SerializeWithNonce() const {
+base::Optional<std::string> Origin::SerializeWithNonceImpl() const {
   if (!opaque() && !tuple_.IsValid())
     return base::nullopt;
 
