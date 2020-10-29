@@ -200,12 +200,12 @@ INSTANTIATE_TEST_SUITE_P(All, SnapshotAuraTest, ::testing::Bool());
 #define MAYBE_FullScreenWindow FullScreenWindow
 #endif
 TEST_P(SnapshotAuraTest, MAYBE_FullScreenWindow) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // TODO(https://crbug.com/1002716): Fix this test to run in < action_timeout()
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+  // TODO(https://crbug.com/1143031): Fix this test to run in < action_timeout()
   // on the Linux Debug & TSAN bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 #if defined(OS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.
