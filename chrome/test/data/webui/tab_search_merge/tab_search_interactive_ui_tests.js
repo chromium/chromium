@@ -34,6 +34,11 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   }
 };
 
-TEST_F('TabSearchInteractiveUITest', 'All', function() {
+GEN('#if defined(OS_MAC)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('TabSearchInteractiveUITest', 'MAYBE_All', function() {
   mocha.run();
 });
