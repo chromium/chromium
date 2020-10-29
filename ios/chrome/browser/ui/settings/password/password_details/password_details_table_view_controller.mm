@@ -462,12 +462,15 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // Called when user tapped Delete button during editing. It means presented
 // password should be deleted.
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
-  // Pass origin only if password is compromised as confirmation message makes
+  // Pass origin only if password is present as confirmation message makes
   // sense only in this case.
-  if (self.password.isCompromised) {
-    [self.handler showPasswordDeleteDialogWithOrigin:self.password.origin];
+  if ([self.password.password length]) {
+    [self.handler
+        showPasswordDeleteDialogWithOrigin:self.password.origin
+                       compromisedPassword:self.password.isCompromised];
   } else {
-    [self.handler showPasswordDeleteDialogWithOrigin:nil];
+    [self.handler showPasswordDeleteDialogWithOrigin:nil
+                                 compromisedPassword:NO];
   }
 }
 

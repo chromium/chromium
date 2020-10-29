@@ -17,8 +17,10 @@
 
 // Called when the user wants to delete password. |origin| is a short website
 // version. It is displayed inside dialog. If |origin| is nil dialog is
-// displayed without message.
-- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin;
+// displayed without message. |compromisedPassword| indicates whether password
+// is compromised.
+- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
+                       compromisedPassword:(BOOL)compromisedPassword;
 
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;

@@ -148,13 +148,17 @@
   [self.alertCoordinator start];
 }
 
-- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin {
+- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
+                       compromisedPassword:(BOOL)compromisedPassword {
   NSString* message;
 
-  if (origin.length > 0)
+  if (origin.length > 0) {
+    int stringID = compromisedPassword
+                       ? IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION
+                       : IDS_IOS_DELETE_PASSWORD_DESCRIPTION;
     message =
-        l10n_util::GetNSStringF(IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION,
-                                base::SysNSStringToUTF16(origin));
+        l10n_util::GetNSStringF(stringID, base::SysNSStringToUTF16(origin));
+  }
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -168,9 +172,8 @@
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_DELETION)
                 action:^{
-                  [weakSelf
-                      passwordDeletionConfirmedForCompromised:origin.length >
-                                                              0];
+                  [weakSelf passwordDeletionConfirmedForCompromised:
+                                compromisedPassword];
                 }
                  style:UIAlertActionStyleDestructive];
 

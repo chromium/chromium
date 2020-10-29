@@ -50,6 +50,8 @@ constexpr char kPassword[] = "test";
 
 @property(nonatomic, assign) BOOL deletionCalled;
 
+@property(nonatomic, assign) BOOL deletionCalledOnCompromisedPassword;
+
 @property(nonatomic, assign) BOOL editingCalled;
 
 @end
@@ -62,8 +64,10 @@ constexpr char kPassword[] = "test";
 - (void)showPasscodeDialog {
 }
 
-- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin {
+- (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
+                       compromisedPassword:(BOOL)compromisedPassword {
   self.deletionCalled = YES;
+  self.deletionCalledOnCompromisedPassword = compromisedPassword;
 }
 
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
@@ -336,6 +340,25 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPasswordDelete) {
             from:nil
         forEvent:nil];
   EXPECT_TRUE(handler().deletionCalled);
+  EXPECT_FALSE(handler().deletionCalledOnCompromisedPassword);
+}
+
+// Tests compromised password deletion trigger showing password delete dialog.
+TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPasswordDelete) {
+  SetPassword(kExampleCom, kUsername, kPassword, true);
+
+  EXPECT_FALSE(handler().deletionCalled);
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  [[UIApplication sharedApplication]
+      sendAction:passwordDetails.deleteButton.action
+              to:passwordDetails.deleteButton.target
+            from:nil
+        forEvent:nil];
+  EXPECT_TRUE(handler().deletionCalled);
+  EXPECT_TRUE(handler().deletionCalledOnCompromisedPassword);
 }
 
 // Tests password editing. User confirmed this action.
