@@ -32,6 +32,7 @@ class DecoderEngine : public InputEngine {
 
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
+  void OnInputMethodChanged(const std::string& engine_id) override;
   void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;
   void OnBlur() override;
   void OnKeyEvent(mojom::PhysicalKeyEventPtr event,

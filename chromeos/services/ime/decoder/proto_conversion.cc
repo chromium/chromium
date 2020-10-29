@@ -63,6 +63,15 @@ InputFieldInfo::PersonalizationMode PersonalizationModeToProto(
 
 }  // namespace
 
+ime::PublicMessage OnInputMethodChangedToProto(uint64_t seq_id,
+                                               const std::string& engine_id) {
+  ime::PublicMessage message;
+  message.set_seq_id(seq_id);
+
+  message.mutable_on_input_method_changed()->set_engine_id(engine_id);
+  return message;
+}
+
 ime::PublicMessage OnFocusToProto(uint64_t seq_id,
                                   mojom::InputFieldInfoPtr input_field_info) {
   ime::PublicMessage message;

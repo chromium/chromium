@@ -13,6 +13,11 @@
 namespace chromeos {
 namespace ime {
 
+// Converts arguments of a Mojo call to InputChannel::OnInputMethodChanged into
+// a proto.
+ime::PublicMessage OnInputMethodChangedToProto(uint64_t seq_id,
+                                               const std::string& engine_id);
+
 // Converts arguments of a Mojo call to InputChannel::OnFocus into a proto.
 ime::PublicMessage OnFocusToProto(uint64_t seq_id,
                                   mojom::InputFieldInfoPtr input_field_info);

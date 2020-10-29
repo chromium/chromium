@@ -10,6 +10,20 @@
 namespace chromeos {
 namespace ime {
 
+TEST(ProtoConversionTest, OnInputMethodChangedToProto) {
+  ime::PublicMessage expected_message;
+  expected_message.set_seq_id(42);
+  ime::OnInputMethodChanged& args =
+      *expected_message.mutable_on_input_method_changed();
+  args.set_engine_id("xkb:us::eng");
+
+  ime::PublicMessage actual_message =
+      OnInputMethodChangedToProto(/*seq_id=*/42, "xkb:us::eng");
+
+  EXPECT_EQ(actual_message.SerializeAsString(),
+            expected_message.SerializeAsString());
+}
+
 TEST(ProtoConversionTest, OnFocusToProto) {
   auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
                                          mojom::AutocorrectMode::kEnabled,

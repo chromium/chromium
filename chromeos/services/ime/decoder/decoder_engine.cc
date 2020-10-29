@@ -138,6 +138,15 @@ bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
          engine_main_entry_->IsImeSupported(ime_spec.c_str());
 }
 
+void DecoderEngine::OnInputMethodChanged(const std::string& engine_id) {
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
+
+  ProcessMessage(
+      WrapAndSerializeMessage(OnInputMethodChangedToProto(seq_id, engine_id)),
+      base::DoNothing());
+}
+
 void DecoderEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
   const uint64_t seq_id = current_seq_id_;
   ++current_seq_id_;

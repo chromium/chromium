@@ -35,6 +35,7 @@ message PublicMessage {
     OnSurroundingTextChanged on_surrounding_text_changed = 5;
     OnBlur on_blur = 6;
     OnCompositionCanceled on_composition_canceled = 7;
+    OnInputMethodChanged on_input_method_changed = 8;
   }
 }
 
@@ -68,6 +69,12 @@ message InputFieldInfo {
   optional InputFieldType type = 1;
   optional AutocorrectMode autocorrect = 2;
   optional PersonalizationMode personalization = 3;
+}
+
+// Protobuf version of InputEngine::OnInputMethodChanged in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnInputMethodChanged {
+  optional string engine_id = 1;
 }
 
 // Protobuf version of InputEngine::OnFocus in

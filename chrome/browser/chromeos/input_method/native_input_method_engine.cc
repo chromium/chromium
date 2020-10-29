@@ -395,6 +395,9 @@ void NativeInputMethodEngine::ImeObserver::OnConnected(base::Time start,
                  : ImeServiceEvent::kActivateImeSuccess);
 
   active_engine_id_ = engine_id;
+  if (ShouldUseFstMojoEngine(engine_id)) {
+    remote_to_engine_->OnInputMethodChanged(engine_id);
+  }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {

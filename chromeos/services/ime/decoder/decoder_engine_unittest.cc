@@ -53,6 +53,7 @@ class StubInputChannel : public mojom::InputChannel {
                       ProcessMessageCallback callback) final {
     std::move(callback).Run({});
   }
+  void OnInputMethodChanged(const std::string& engine_id) final {}
   void OnFocus(mojom::InputFieldInfoPtr input_field_info) final {}
   void OnBlur() final {}
   void ProcessKeypressForRulebased(
@@ -101,6 +102,23 @@ TEST_F(DecoderEngineTest, BindRequestBindsInterfaces) {
 
   EXPECT_TRUE(client.is_bound());
   EXPECT_TRUE(receiver.is_bound());
+}
+
+TEST_F(DecoderEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
+  DecoderEngine engine(/*platform=*/nullptr);
+  StubInputChannel stub_channel;
+  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 receiver.BindNewPipeAndPassRemote(), {}));
+  ime::Wrapper expected_proto;
+  *expected_proto.mutable_public_message() =
+      OnInputMethodChangedToProto(/*seq_id=*/0, "xkb:us::eng");
+
+  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+
+  client->OnInputMethodChanged("xkb:us::eng");
+  client.FlushForTesting();
 }
 
 TEST_F(DecoderEngineTest, OnFocusSendsMessageToSharedLib) {
