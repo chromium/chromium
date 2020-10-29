@@ -4321,6 +4321,18 @@
   <message name="IDS_ASSISTANT_READY_SCREEN_MESSAGE" desc="Message for Assistant ready screen.">
     When your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is set up, press the Assistant button or say "Ok Google" to get help anytime. Go to Assistant settings to make changes.
   </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE" desc="Title for assistant related info screen.">
+    Just say or type what you need
+  </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_MESSAGE" desc="Message for assistant related info screen.">
+    Get better, quicker answers with Assistant
+  </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE" desc="Title for assistant related info screen for returned users.">
+    Your Google Assistant works here too
+  </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE" desc="Message for assistant related info screen for returned users.">
+    Looks like you've already set up Assistant on a different device. Get even more out of your Assistant by turning on the following setting.
+  </message>
   <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
     Continue
   </message>

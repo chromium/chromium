@@ -86,6 +86,7 @@ class AssistantOptInFlowScreenHandler
 
   // Handle user opt-in result.
   void OnActivityControlOptInResult(bool opted_in);
+  void OnScreenContextOptInResult(bool opted_in);
   void OnEmailOptInResult(bool opted_in);
 
   // Called when the UI dialog is closed.
@@ -116,11 +117,13 @@ class AssistantOptInFlowScreenHandler
 
   // Handler for JS WebUI message.
   void HandleValuePropScreenUserAction(const std::string& action);
+  void HandleRelatedInfoScreenUserAction(const std::string& action);
   void HandleThirdPartyScreenUserAction(const std::string& action);
   void HandleVoiceMatchScreenUserAction(const std::string& action);
   void HandleGetMoreScreenUserAction(const bool screen_context,
                                      const bool email_opted_in);
   void HandleValuePropScreenShown();
+  void HandleRelatedInfoScreenShown();
   void HandleThirdPartyScreenShown();
   void HandleVoiceMatchScreenShown();
   void HandleGetMoreScreenShown();

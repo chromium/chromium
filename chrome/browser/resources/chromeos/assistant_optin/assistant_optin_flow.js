@@ -8,6 +8,7 @@
 // <include src="browser_proxy.js">
 // <include src="assistant_get_more.js">
 // <include src="assistant_loading.js">
+// <include src="assistant_related_info.js">
 // <include src="assistant_third_party.js">
 // <include src="assistant_value_prop.js">
 // <include src="assistant_voice_match.js">
@@ -70,18 +71,18 @@ Polymer({
     this.boundOnScreenLoadingError = this.onScreenLoadingError.bind(this);
     this.boundOnScreenLoaded = this.onScreenLoaded.bind(this);
 
-    this.$['loading'].onBeforeShow();
-    this.$['loading'].addEventListener('reload', this.onReload.bind(this));
+    this.$.loading.onBeforeShow();
+    this.$.loading.addEventListener('reload', this.onReload.bind(this));
 
     switch (this.flowType) {
       case this.FlowType.SPEAKER_ID_ENROLLMENT:
       case this.FlowType.SPEAKER_ID_RETRAIN:
-        this.$['value-prop'].hidden = true;
-        this.$['voice-match'].isFirstScreen = true;
-        this.showScreen(this.$['voice-match']);
+        this.$.valueProp.hidden = true;
+        this.$.voiceMatch.isFirstScreen = true;
+        this.showScreen(this.$.voiceMatch);
         break;
       default:
-        this.showScreen(this.$['value-prop']);
+        this.showScreen(this.$.valueProp);
     }
     this.browserProxy_.initialized([this.flowType]);
   },
@@ -93,10 +94,13 @@ Polymer({
   reloadContent(data) {
     this.voiceMatchEnforcedOff = data['voiceMatchEnforcedOff'];
     this.voiceMatchDisabled = loadTimeData.getBoolean('voiceMatchDisabled');
+    this.betterAssistantEnabled =
+        loadTimeData.getBoolean('betterAssistantEnabled');
     data['flowType'] = this.flowType;
-    this.$['value-prop'].reloadContent(data);
-    this.$['third-party'].reloadContent(data);
-    this.$['get-more'].reloadContent(data);
+    this.$.valueProp.reloadContent(data);
+    this.$.relatedInfo.reloadContent(data);
+    this.$.thirdParty.reloadContent(data);
+    this.$.getMore.reloadContent(data);
   },
 
   /**
@@ -107,13 +111,13 @@ Polymer({
   addSettingZippy(type, data) {
     switch (type) {
       case 'settings':
-        this.$['value-prop'].addSettingZippy(data);
+        this.$.valueProp.addSettingZippy(data);
         break;
       case 'disclosure':
-        this.$['third-party'].addSettingZippy(data);
+        this.$.thirdParty.addSettingZippy(data);
         break;
       case 'get-more':
-        this.$['get-more'].addSettingZippy(data);
+        this.$.getMore.addSettingZippy(data);
         break;
       default:
         console.error('Undefined zippy data type: ' + type);
@@ -125,26 +129,38 @@ Polymer({
    */
   showNextScreen() {
     switch (this.currentScreen) {
-      case this.$['value-prop']:
-        this.showScreen(this.$['third-party']);
-        break;
-      case this.$['third-party']:
-        if (this.voiceMatchEnforcedOff || this.voiceMatchDisabled) {
-          this.showScreen(this.$['get-more']);
+      case this.$.valueProp:
+        if (this.betterAssistantEnabled) {
+          this.showScreen(this.$.relatedInfo);
         } else {
-          this.showScreen(this.$['voice-match']);
+          this.showScreen(this.$.thirdParty);
         }
         break;
-      case this.$['voice-match']:
-        if (this.flowType == this.FlowType.SPEAKER_ID_ENROLLMENT ||
-            this.flowType == this.FlowType.SPEAKER_ID_RETRAIN) {
+      case this.$.relatedInfo:
+        if (this.voiceMatchEnforcedOff || this.voiceMatchDisabled) {
           this.browserProxy_.flowFinished();
         } else {
-          this.showScreen(this.$['get-more']);
+          this.showScreen(this.$.voiceMatch);
         }
         break;
-      case this.$['get-more']:
-        this.showScreen(this.$['ready']);
+      case this.$.thirdParty:
+        if (this.voiceMatchEnforcedOff || this.voiceMatchDisabled) {
+          this.showScreen(this.$.getMore);
+        } else {
+          this.showScreen(this.$.voiceMatch);
+        }
+        break;
+      case this.$.voiceMatch:
+        if (this.flowType == this.FlowType.SPEAKER_ID_ENROLLMENT ||
+            this.flowType == this.FlowType.SPEAKER_ID_RETRAIN ||
+            this.betterAssistantEnabled) {
+          this.browserProxy_.flowFinished();
+        } else {
+          this.showScreen(this.$.getMore);
+        }
+        break;
+      case this.$.getMore:
+        this.browserProxy_.flowFinished();
         break;
       default:
         console.error('Undefined');
@@ -157,18 +173,18 @@ Polymer({
    * @param {string} state the voice match state.
    */
   onVoiceMatchUpdate(state) {
-    if (!this.currentScreen == this.$['voice-match']) {
+    if (!this.currentScreen == this.$.voiceMatch) {
       return;
     }
     switch (state) {
       case 'listen':
-        this.$['voice-match'].listenForHotword();
+        this.$.voiceMatch.listenForHotword();
         break;
       case 'process':
-        this.$['voice-match'].processingHotword();
+        this.$.voiceMatch.processingHotword();
         break;
       case 'done':
-        this.$['voice-match'].voiceMatchDone();
+        this.$.voiceMatch.voiceMatchDone();
         break;
       case 'failure':
         this.onScreenLoadingError();
@@ -188,7 +204,7 @@ Polymer({
       return;
     }
 
-    this.$['loading'].hidden = true;
+    this.$.loading.hidden = true;
     screen.hidden = false;
     screen.addEventListener('loading', this.boundShowLoadingScreen);
     screen.addEventListener('error', this.boundOnScreenLoadingError);
@@ -211,18 +227,18 @@ Polymer({
    * Show the loading screen.
    */
   showLoadingScreen() {
-    this.$['loading'].hidden = false;
+    this.$.loading.hidden = false;
     this.currentScreen.hidden = true;
-    this.$['loading'].onShow();
+    this.$.loading.onShow();
   },
 
   /**
    * Called when the screen failed to load.
    */
   onScreenLoadingError() {
-    this.$['loading'].hidden = false;
+    this.$.loading.hidden = false;
     this.currentScreen.hidden = true;
-    this.$['loading'].onErrorOccurred();
+    this.$.loading.onErrorOccurred();
   },
 
   /**
@@ -230,8 +246,8 @@ Polymer({
    */
   onScreenLoaded() {
     this.currentScreen.hidden = false;
-    this.$['loading'].hidden = true;
-    this.$['loading'].onPageLoaded();
+    this.$.loading.hidden = true;
+    this.$.loading.onPageLoaded();
   },
 
   /**

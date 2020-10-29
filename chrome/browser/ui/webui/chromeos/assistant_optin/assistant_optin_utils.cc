@@ -184,6 +184,9 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
   auto third_party_disclosure_ui = consent_ui.third_party_disclosure_ui();
   base::Value dictionary(base::Value::Type::DICTIONARY);
 
+  dictionary.SetKey("activityControlNeeded",
+                    base::Value(activity_control_needed));
+
   // Add activity control string constants.
   if (activity_control_needed) {
     scoped_refptr<base::RefCountedMemory> image =

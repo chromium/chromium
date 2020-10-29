@@ -1,0 +1,58 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<dom-module id="assistant-related-info">
+<template>
+  <style include="oobe-dialog-host">
+    oobe-dialog {
+      --oobe-dialog-content-padding-top: 48px;
+    }
+
+    #image {
+      display: block;
+      height: 186px;
+      margin: auto;
+    }
+
+    .vertical-line {
+      background-color: var(--google-grey-300);
+      height: 186px;
+      margin: 0 24px 0 24px;
+      width: 1px;
+    }
+  </style>
+  <link rel="stylesheet" href="assistant_shared_styles.css">
+  <oobe-dialog id="related-info-dialog" role="dialog" has-buttons hide-shadow
+      title-key="[[titleKey]]" subtitle-key="[[contentKey]]"
+      aria-label$="[[i18nDynamic(locale, titleKey)]]">
+    <img id="logo" slot="oobe-icon" src="assistant_logo.png"
+        aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+    <div slot="footer" class="layout horizontal">
+      <div id="image-container" class="flex">
+        <img id="image" class="oobe-illustration" aria-hidden="true"
+            src="assistant_ready.svg">
+      </div>
+      <div class="vertical-line"></div>
+      <div id="contents-container" class="flex">
+        <setting-zippy id="zippy-context" hide-line popup-style>
+          <div id="title-context" slot="title" aria-hidden="true">
+            [[i18nDynamic(locale, 'assistantScreenContextTitle')]]
+          </div>
+          <div id="description-context" slot="content" aria-hidden="true">
+            [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
+          </div>
+        </setting-zippy>
+      </div>
+    </div>
+    <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <oobe-text-button id="skip-button" disabled="[[loading]]"
+          text-key="assistantOptinNoThanksButton" on-click="onSkipTap_">
+      </oobe-text-button>
+      <oobe-text-button id="next-button" inverse disabled="[[loading]]"
+          text-key="assistantOptinAgreeButton" on-click="onNextTap_">
+      </oobe-text-button>
+    </div>
+  </oobe-dialog>
+</template>
+</dom-module>

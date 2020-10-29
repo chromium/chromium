@@ -62,10 +62,10 @@ constexpr char kAssistantUiAuditKey[] = "ui_audit_key";
 constexpr char kAssistantOptInId[] = "assistant-optin-flow";
 constexpr char kAssistantOptInFlowCard[] = "card";
 constexpr char kLoading[] = "loading";
-constexpr char kValueProp[] = "value-prop";
-constexpr char kVoiceMatch[] = "voice-match";
-constexpr char kThirdParty[] = "third-party";
-constexpr char kGetMore[] = "get-more";
+constexpr char kValueProp[] = "valueProp";
+constexpr char kVoiceMatch[] = "voiceMatch";
+constexpr char kThirdParty[] = "thirdParty";
+constexpr char kGetMore[] = "getMore";
 
 const test::UIPath kAssistantLoading = {kAssistantOptInId,
                                         kAssistantOptInFlowCard, kLoading};

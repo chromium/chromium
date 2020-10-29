@@ -74,6 +74,17 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("assistantOptinSkipButton", IDS_ASSISTANT_OPT_IN_SKIP_BUTTON);
   builder->Add("assistantOptinRetryButton", IDS_ASSISTANT_OPT_IN_RETRY_BUTTON);
   builder->Add("assistantUserImage", IDS_ASSISTANT_OOBE_USER_IMAGE);
+  builder->Add("assistantRelatedInfoTitle",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE);
+  builder->Add("assistantRelatedInfoMessage",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_MESSAGE);
+  builder->Add("assistantRelatedInfoReturnedUserTitle",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE);
+  builder->Add("assistantRelatedInfoReturnedUserMessage",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE);
+  builder->Add("assistantScreenContextTitle",
+               IDS_ASSISTANT_SCREEN_CONTEXT_TITLE);
+  builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);
   builder->Add("assistantVoiceMatchTitle", IDS_ASSISTANT_VOICE_MATCH_TITLE);
   builder->Add("assistantVoiceMatchMessage", IDS_ASSISTANT_VOICE_MATCH_MESSAGE);
   builder->Add("assistantVoiceMatchNoDspMessage",
@@ -122,6 +133,9 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
       "login.AssistantOptInFlowScreen.ValuePropScreen.userActed",
       &AssistantOptInFlowScreenHandler::HandleValuePropScreenUserAction);
   AddCallback(
+      "login.AssistantOptInFlowScreen.RelatedInfoScreen.userActed",
+      &AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenUserAction);
+  AddCallback(
       "login.AssistantOptInFlowScreen.ThirdPartyScreen.userActed",
       &AssistantOptInFlowScreenHandler::HandleThirdPartyScreenUserAction);
   AddCallback(
@@ -131,6 +145,8 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
               &AssistantOptInFlowScreenHandler::HandleGetMoreScreenUserAction);
   AddCallback("login.AssistantOptInFlowScreen.ValuePropScreen.screenShown",
               &AssistantOptInFlowScreenHandler::HandleValuePropScreenShown);
+  AddCallback("login.AssistantOptInFlowScreen.RelatedInfoScreen.screenShown",
+              &AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenShown);
   AddCallback("login.AssistantOptInFlowScreen.ThirdPartyScreen.screenShown",
               &AssistantOptInFlowScreenHandler::HandleThirdPartyScreenShown);
   AddCallback("login.AssistantOptInFlowScreen.VoiceMatchScreen.screenShown",
@@ -151,6 +167,8 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
   dict->SetBoolean("deviceHasNoBattery", !DeviceHasBattery());
   dict->SetBoolean("voiceMatchDisabled",
                    chromeos::assistant::features::IsVoiceMatchDisabled());
+  dict->SetBoolean("betterAssistantEnabled",
+                   chromeos::assistant::features::IsBetterAssistantEnabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
@@ -252,6 +270,14 @@ void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
                                     assistant::prefs::ConsentStatus::kUnknown);
     HandleFlowFinished();
   }
+}
+
+void AssistantOptInFlowScreenHandler::OnScreenContextOptInResult(
+    bool opted_in) {
+  RecordAssistantOptInStatus(opted_in ? RELATED_INFO_ACCEPTED
+                                      : RELATED_INFO_SKIPPED);
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetBoolean(assistant::prefs::kAssistantContextEnabled, opted_in);
 }
 
 void AssistantOptInFlowScreenHandler::OnEmailOptInResult(bool opted_in) {
@@ -499,6 +525,17 @@ void AssistantOptInFlowScreenHandler::HandleValuePropScreenUserAction(
   }
 }
 
+void AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenUserAction(
+    const std::string& action) {
+  if (action == kSkipPressed) {
+    OnScreenContextOptInResult(false);
+    ShowNextScreen();
+  } else if (action == kNextPressed) {
+    OnScreenContextOptInResult(true);
+    ShowNextScreen();
+  }
+}
+
 void AssistantOptInFlowScreenHandler::HandleThirdPartyScreenUserAction(
     const std::string& action) {
   if (action == kNextPressed) {
@@ -548,6 +585,10 @@ void AssistantOptInFlowScreenHandler::HandleGetMoreScreenUserAction(
 
 void AssistantOptInFlowScreenHandler::HandleValuePropScreenShown() {
   RecordAssistantOptInStatus(ACTIVITY_CONTROL_SHOWN);
+}
+
+void AssistantOptInFlowScreenHandler::HandleRelatedInfoScreenShown() {
+  RecordAssistantOptInStatus(RELATED_INFO_SHOWN);
 }
 
 void AssistantOptInFlowScreenHandler::HandleThirdPartyScreenShown() {
