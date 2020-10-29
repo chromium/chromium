@@ -512,4 +512,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean shouldHideOmniboxSuggestionsForCctVisits() {
         return false;
     }
+
+    /**
+     * Returns true if visits from cct should be hidden.
+     */
+    public boolean shouldHideCctVisits() {
+        return false;
+    }
 }

@@ -272,4 +272,11 @@ public interface Tab extends TabLifecycle {
      */
     void setAddApi2TransitionToFutureNavigations(boolean shouldAdd);
     boolean getAddApi2TransitionToFutureNavigations();
+
+    /**
+     * If true, all future navigations are hidden. See |HistoryTabHelper::hide_navigations_|
+     * for the specifics on this.
+     */
+    public void setHideFutureNavigations(boolean hide);
+    public boolean getHideFutureNavigations();
 }

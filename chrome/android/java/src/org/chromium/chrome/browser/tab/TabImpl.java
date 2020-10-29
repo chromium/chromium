@@ -729,6 +729,19 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 && TabImplJni.get().getAddApi2TransitionToFutureNavigations(mNativeTabAndroid);
     }
 
+    @Override
+    public void setHideFutureNavigations(boolean hide) {
+        if (mNativeTabAndroid != 0) {
+            TabImplJni.get().setHideFutureNavigations(mNativeTabAndroid, hide);
+        }
+    }
+
+    @Override
+    public boolean getHideFutureNavigations() {
+        return (mNativeTabAndroid != 0)
+                && TabImplJni.get().getHideFutureNavigations(mNativeTabAndroid);
+    }
+
     // TabObscuringHandler.Observer
 
     @Override
@@ -1533,5 +1546,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         void loadOriginalImage(long nativeTabAndroid, TabImpl caller);
         void setAddApi2TransitionToFutureNavigations(long nativeTabAndroid, boolean shouldAdd);
         boolean getAddApi2TransitionToFutureNavigations(long nativeTabAndroid);
+        void setHideFutureNavigations(long nativeTabAndroid, boolean hide);
+        boolean getHideFutureNavigations(long nativeTabAndroid);
     }
 }

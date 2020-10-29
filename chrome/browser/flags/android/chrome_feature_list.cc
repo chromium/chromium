@@ -27,6 +27,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/history/core/browser/features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/messages/android/messages_feature.h"
@@ -105,6 +106,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedV2,
     &feed::kReportFeedUserActions,
+    &history::kHideFromApi3Transitions,
     &kAdjustWebApkInstallationSpace,
     &kAllowNewIncognitoTabIntents,
     &kAllowRemoteContextForNotifications,

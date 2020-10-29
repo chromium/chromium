@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_database.h"
 #include "sql/database.h"
@@ -431,6 +433,50 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
   EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
   EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[0]));
+}
+
+TEST_F(VisitDatabaseTest, Api3HandledCorrectly) {
+  const ui::PageTransition transition_link_and_api3 = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_API_3 |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  const URLID url_id = 1;
+  VisitRow visit(url_id, Time::Now(), 0, transition_link_and_api3, 0, false,
+                 false);
+  EXPECT_TRUE(AddVisit(&visit, SOURCE_BROWSED));
+
+  // Query the visits for the first url id. FROM_API_3 is not considered visible
+  // and should be excluded.
+  VisitVector results;
+  QueryOptions options;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(0u, results.size());
+
+  GetVisitsForURL(url_id, &results);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], visit));
+}
+
+TEST_F(VisitDatabaseTest, Api3TransitionFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kHideFromApi3Transitions);
+  const ui::PageTransition transition_link_and_api3 = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_API_3 |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  const URLID url_id = 1;
+  VisitRow visit(url_id, Time::Now(), 0, transition_link_and_api3, 0, false,
+                 false);
+  EXPECT_TRUE(AddVisit(&visit, SOURCE_BROWSED));
+
+  // Query the visits for the first url id, as kHideFromApi3Transitions is
+  // disabled FROM_API_3 should not be excluded.
+  VisitVector results;
+  QueryOptions options;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(1u, results.size());
+
+  GetVisitsForURL(url_id, &results);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], visit));
 }
 
 TEST_F(VisitDatabaseTest, GetHistoryCount) {
