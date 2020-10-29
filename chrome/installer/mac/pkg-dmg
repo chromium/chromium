@@ -98,6 +98,10 @@ The format to create the disk image in.  Valid values for I<format> are:
      - UDRO - uncompressed, read-only; extension I<.dmg>
      - UDRW - uncompressed, read-write; extension I<.dmg>
      - UDSP - uncompressed, read-write, sparse; extension I<.sparseimage>
+     - ULFO - LZFSE/LZVN-compressed, read-only; extension I<.dmg>;
+              create and use on 10.11 ("El Capitan") and later only
+     - ULMO - LZMA-compressed, read-only; extension I<.dmg>;
+              create and use on 10.15 ("Catalina") and later only
 
 UDZO is the default format.
 
@@ -154,11 +158,11 @@ or to use formatted text, prepare a resource and use L<--resource>.
 =item B<--resource> I<file>
 
 A resource file to merge into I<target-image>.  If I<format> is UDZO, UDBZ,
-or UDRO, the disk image will be flattened to a single-fork file that contains
-the resource but may be freely transferred without any special encodings.
-I<file> must be in a format suitable for L<Rez(1)>.  See L<Rez(1)> for a
-description of the format, and L<hdiutil(1)> for a discussion on flattened
-disk images.  B<--resource> may appear multiple times.
+UDRO, ULFO, or ULMO, the disk image will be flattened to a single-fork file
+that contains the resource but may be freely transferred without any special
+encodings.  I<file> must be in a format suitable for L<Rez(1)>.  See
+L<Rez(1)> for a description of the format, and L<hdiutil(1)> for a discussion
+on flattened disk images.  B<--resource> may appear multiple times.
 
 This option is useful for adding license agreements and other messages
 to disk images.
@@ -1324,7 +1328,8 @@ sub hdidMountImage($@) {
 sub isFormatReadOnly($) {
   my($format);
   ($format) = @_;
-  return $format eq 'UDZO' || $format eq 'UDBZ' || $format eq 'UDRO';
+  return $format eq 'UDZO' || $format eq 'UDBZ' || $format eq 'UDRO' ||
+         $format eq 'ULFO' || $format eq 'ULMO';
 }
 
 # licenseMaker($text, $resource)
