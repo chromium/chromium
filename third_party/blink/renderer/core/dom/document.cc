@@ -40,6 +40,7 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
@@ -3995,6 +3996,23 @@ bool Document::CheckCompletedInternal() {
   return true;
 }
 
+namespace {
+
+enum class BeforeUnloadUse {
+  kNoDialogNoText,
+  kNoDialogNoUserGesture,
+  kNoDialogMultipleConfirmationForNavigation,
+  kShowDialog,
+  kNoDialogAutoCancelTrue,
+  kMaxValue = kNoDialogAutoCancelTrue,
+};
+
+void RecordBeforeUnloadUse(BeforeUnloadUse metric) {
+  base::UmaHistogramEnumeration("Document.BeforeUnloadDialog", metric);
+}
+
+}  // namespace
+
 bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
                                          bool is_reload,
                                          bool& did_allow_navigation) {
@@ -4033,24 +4051,14 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (!before_unload_event.defaultPrevented())
     DefaultEventHandler(before_unload_event);
 
-  enum BeforeUnloadDialogHistogramEnum {
-    kNoDialogNoText,
-    kNoDialogNoUserGesture,
-    kNoDialogMultipleConfirmationForNavigation,
-    kShowDialog,
-    kNoDialogAutoCancelTrue,
-    kDialogEnumMax
-  };
-  DEFINE_STATIC_LOCAL(EnumerationHistogram, beforeunload_dialog_histogram,
-                      ("Document.BeforeUnloadDialog", kDialogEnumMax));
   if (before_unload_event.returnValue().IsNull()) {
-    beforeunload_dialog_histogram.Count(kNoDialogNoText);
+    RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogNoText);
   }
   if (!GetFrame() || before_unload_event.returnValue().IsNull())
     return true;
 
   if (!GetFrame()->HasStickyUserActivation()) {
-    beforeunload_dialog_histogram.Count(kNoDialogNoUserGesture);
+    RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogNoUserGesture);
     String message =
         "Blocked attempt to show a 'beforeunload' confirmation panel for a "
         "frame that never had a user gesture since its load. "
@@ -4060,8 +4068,8 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   }
 
   if (did_allow_navigation) {
-    beforeunload_dialog_histogram.Count(
-        kNoDialogMultipleConfirmationForNavigation);
+    RecordBeforeUnloadUse(
+        BeforeUnloadUse::kNoDialogMultipleConfirmationForNavigation);
     String message =
         "Blocked attempt to show multiple 'beforeunload' confirmation panels "
         "for a single navigation.";
@@ -4072,14 +4080,13 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   // If |chrome_client| is null simply indicate that the navigation should
   // not proceed.
   if (!chrome_client) {
-    beforeunload_dialog_histogram.Count(kNoDialogAutoCancelTrue);
+    RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogAutoCancelTrue);
     did_allow_navigation = false;
     return false;
   }
 
   String text = before_unload_event.returnValue();
-  beforeunload_dialog_histogram.Count(
-      BeforeUnloadDialogHistogramEnum::kShowDialog);
+  RecordBeforeUnloadUse(BeforeUnloadUse::kShowDialog);
   const base::TimeTicks beforeunload_confirmpanel_start =
       base::TimeTicks::Now();
   did_allow_navigation =
