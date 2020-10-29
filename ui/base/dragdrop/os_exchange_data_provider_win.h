@@ -191,6 +191,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   gfx::ImageSkia GetDragImage() const override;
   gfx::Vector2d GetDragImageOffset() const override;
 
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
+  DataTransferEndpoint* GetSource() const override;
+
  private:
   void SetVirtualFileContentAtIndexForTesting(base::span<const uint8_t> data,
                                               DWORD tymed,

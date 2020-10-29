@@ -34,6 +34,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_util_win.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
@@ -752,6 +753,13 @@ gfx::Vector2d OSExchangeDataProviderWin::GetDragImageOffset() const {
   // OSExchangeDataProvider should be used.
   NOTREACHED();
   return gfx::Vector2d();
+}
+
+void OSExchangeDataProviderWin::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {}
+
+DataTransferEndpoint* OSExchangeDataProviderWin::GetSource() const {
+  return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

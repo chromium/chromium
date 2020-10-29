@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/pickle.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "url/gurl.h"
 
@@ -159,5 +160,14 @@ bool OSExchangeData::GetHtml(base::string16* html, GURL* base_url) const {
   return provider_->GetHtml(html, base_url);
 }
 #endif
+
+void OSExchangeData::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {
+  provider_->SetSource(std::move(data_source));
+}
+
+DataTransferEndpoint* OSExchangeData::GetSource() const {
+  return provider_->GetSource();
+}
 
 }  // namespace ui

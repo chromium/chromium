@@ -32,6 +32,7 @@ class Pickle;
 namespace ui {
 
 class ClipboardFormatType;
+class DataTransferEndpoint;
 struct FileInfo;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -185,6 +186,12 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool GetHtml(base::string16* html, GURL* base_url) const;
   bool HasHtml() const;
 #endif
+
+  // Adds a DataTransferEndpoint to represent the source of the data.
+  // TODO(crbug.com/1142406): Update all drag-and-drop references to set the
+  // source of the data.
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source);
+  DataTransferEndpoint* GetSource() const;
 
  private:
   // Provides the actual data.

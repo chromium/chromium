@@ -92,6 +92,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   gfx::ImageSkia GetDragImage() const override;
   gfx::Vector2d GetDragImageOffset() const override;
 
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
+  DataTransferEndpoint* GetSource() const override;
+
  protected:
   friend class OSExchangeDataProviderX11Test;
   using PickleData = std::map<ClipboardFormatType, base::Pickle>;

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
@@ -236,6 +237,15 @@ bool OSExchangeDataProviderNonBacked::GetPlainTextURL(GURL* url) const {
   if (url)
     *url = test_url;
   return true;
+}
+
+void OSExchangeDataProviderNonBacked::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {
+  source_ = std::move(data_source);
+}
+
+DataTransferEndpoint* OSExchangeDataProviderNonBacked::GetSource() const {
+  return source_.get();
 }
 
 }  // namespace ui

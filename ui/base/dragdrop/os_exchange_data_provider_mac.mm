@@ -17,6 +17,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #import "ui/base/dragdrop/cocoa_dnd_util.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "url/gurl.h"
@@ -335,6 +336,13 @@ NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
     NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
     NSFilenamesPboardType, kWebCustomDataPboardType, NSPasteboardTypeString
   ];
+}
+
+void OSExchangeDataProviderMac::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {}
+
+DataTransferEndpoint* OSExchangeDataProviderMac::GetSource() const {
+  return nullptr;
 }
 
 }  // namespace ui

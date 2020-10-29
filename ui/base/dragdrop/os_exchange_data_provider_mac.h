@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   // OSExchangeData.
   static NSArray* SupportedPasteboardTypes();
 
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
+  DataTransferEndpoint* GetSource() const override;
+
  protected:
   OSExchangeDataProviderMac();
   OSExchangeDataProviderMac(const OSExchangeDataProviderMac&);

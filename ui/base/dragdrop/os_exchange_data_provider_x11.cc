@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/x11_atom_cache.h"
@@ -44,6 +45,13 @@ bool OSExchangeDataProviderX11::DispatchXEvent(x11::Event* xev) {
     return true;
   }
   return false;
+}
+
+void OSExchangeDataProviderX11::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {}
+
+DataTransferEndpoint* OSExchangeDataProviderX11::GetSource() const {
+  return nullptr;
 }
 
 }  // namespace ui

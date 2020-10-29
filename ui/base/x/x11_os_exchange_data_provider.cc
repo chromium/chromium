@@ -13,6 +13,7 @@
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
@@ -473,6 +474,13 @@ void XOSExchangeDataProvider::InsertData(
     x11::Atom format,
     const scoped_refptr<base::RefCountedMemory>& data) {
   format_map_.Insert(format, data);
+}
+
+void XOSExchangeDataProvider::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {}
+
+DataTransferEndpoint* XOSExchangeDataProvider::GetSource() const {
+  return nullptr;
 }
 
 }  // namespace ui

@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
   // XEventDispatcher:
   bool DispatchXEvent(x11::Event* xev) override;
 
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
+  DataTransferEndpoint* GetSource() const override;
+
  private:
   friend class OSExchangeDataProviderX11Test;
 };

@@ -31,6 +31,8 @@
 
 namespace ui {
 
+class DataTransferEndpoint;
+
 // Controls whether or not filenames should be converted to file: URLs when
 // getting a URL.
 enum class FilenameToURLPolicy {
@@ -105,6 +107,10 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual gfx::ImageSkia GetDragImage() const = 0;
   virtual gfx::Vector2d GetDragImageOffset() const = 0;
 #endif
+
+  // These functions are only implemented on Chrome OS currently.
+  virtual void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) = 0;
+  virtual DataTransferEndpoint* GetSource() const = 0;
 };
 
 }  // namespace ui

@@ -6,6 +6,7 @@
 #define UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_NON_BACKED_H_
 
 #include <map>
+#include <memory>
 
 #include "base/component_export.h"
 #include "base/pickle.h"
@@ -72,6 +73,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   gfx::ImageSkia GetDragImage() const override;
   gfx::Vector2d GetDragImageOffset() const override;
 
+  void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
+  DataTransferEndpoint* GetSource() const override;
+
  private:
   // Returns true if |formats_| contains a file format and the file name can be
   // parsed as a URL.
@@ -107,6 +111,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   GURL base_url_;
 
   bool originated_from_renderer_ = false;
+
+  // Data source.
+  std::unique_ptr<DataTransferEndpoint> source_;
 };
 
 }  // namespace ui
