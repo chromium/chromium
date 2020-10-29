@@ -602,6 +602,11 @@ template("ios_app_bundle") {
     _output_name = invoker.output_name
   }
 
+  _primary_toolchain = current_toolchain
+  if (is_fat_secondary_toolchain) {
+    _primary_toolchain = primary_fat_toolchain_name
+  }
+
   assert(
       !defined(invoker.bundle_extension),
       "bundle_extension must not be set for ios_app_bundle template for $target_name")
@@ -681,11 +686,10 @@ template("ios_app_bundle") {
     visibility = [ ":$_arch_executable_target" ]
   }
 
-  if (current_toolchain == default_toolchain ||
-      target_environment == "simulator") {
+  if (!is_fat_secondary_toolchain || target_environment == "simulator") {
     _generate_entitlements_target = _target_name + "_gen_entitlements"
     _generate_entitlements_output =
-        get_label_info(":$_generate_entitlements_target($default_toolchain)",
+        get_label_info(":$_generate_entitlements_target($_primary_toolchain)",
                        "target_out_dir") + "/$_output_name.xcent"
   }
 
@@ -724,8 +728,8 @@ template("ios_app_bundle") {
                              "visibility",
                            ])
 
-    visibility = [ ":$_lipo_executable_target($default_toolchain)" ]
-    if (current_toolchain != default_toolchain) {
+    visibility = [ ":$_lipo_executable_target($_primary_toolchain)" ]
+    if (is_fat_secondary_toolchain) {
       visibility += [ ":$_target_name" ]
     }
 
@@ -740,7 +744,7 @@ template("ios_app_bundle") {
     frameworks += [ "UIKit.framework" ]
 
     if (target_environment == "simulator") {
-      deps += [ ":$_generate_entitlements_target($default_toolchain)" ]
+      deps += [ ":$_generate_entitlements_target($_primary_toolchain)" ]
 
       if (!defined(inputs)) {
         inputs = []
@@ -759,7 +763,7 @@ template("ios_app_bundle") {
     output_dir = "$target_out_dir/$current_cpu"
   }
 
-  if (current_toolchain != default_toolchain) {
+  if (is_fat_secondary_toolchain) {
     # For fat builds, only the default toolchain will generate an application
     # bundle. For the other toolchains, the template is only used for building
     # the arch-specific binary, thus the default target is just a group().
@@ -802,7 +806,7 @@ template("ios_app_bundle") {
       executable_name = _output_name
     }
 
-    if (current_toolchain == default_toolchain) {
+    if (!is_fat_secondary_toolchain) {
       if (!defined(invoker.entitlements_target)) {
         _entitlements_path = "//build/config/ios/entitlements.plist"
         if (defined(invoker.entitlements_path)) {
@@ -942,7 +946,7 @@ template("ios_app_bundle") {
     }
   }
 
-  if (current_toolchain != default_toolchain) {
+  if (is_fat_secondary_toolchain) {
     not_needed("*")
   }
 }
@@ -1247,13 +1251,18 @@ template("ios_framework_bundle") {
   _has_public_headers =
       defined(invoker.public_headers) && invoker.public_headers != []
 
+  _primary_toolchain = current_toolchain
+  if (is_fat_secondary_toolchain) {
+    _primary_toolchain = primary_fat_toolchain_name
+  }
+
   # Public configs are not propagated across toolchain (see crbug.com/675224)
   # so some configs have to be defined for both default_toolchain and all others
   # toolchains when performing a fat build. Use "get_label_info" to construct
   # the path since they need to be relative to the default_toolchain.
 
   _default_toolchain_root_out_dir =
-      get_label_info("$_target_name($default_toolchain)", "root_out_dir")
+      get_label_info("$_target_name($_primary_toolchain)", "root_out_dir")
 
   _arch_shared_library_source = _target_name + "_arch_shared_library_sources"
   _arch_shared_library_target = _target_name + "_arch_shared_library"
@@ -1262,7 +1271,7 @@ template("ios_framework_bundle") {
 
   if (_has_public_headers) {
     _default_toolchain_target_gen_dir =
-        get_label_info("$_target_name($default_toolchain)", "target_gen_dir")
+        get_label_info("$_target_name($_primary_toolchain)", "target_gen_dir")
 
     _framework_headers_target = _target_name + "_framework_headers"
 
@@ -1313,7 +1322,7 @@ template("ios_framework_bundle") {
       if (!defined(deps)) {
         deps = []
       }
-      deps += [ ":$_framework_headers_target($default_toolchain)" ]
+      deps += [ ":$_framework_headers_target($_primary_toolchain)" ]
     }
   }
 
@@ -1334,8 +1343,8 @@ template("ios_framework_bundle") {
                              "visibility",
                            ])
 
-    visibility = [ ":$_lipo_shared_library_target($default_toolchain)" ]
-    if (current_toolchain != default_toolchain) {
+    visibility = [ ":$_lipo_shared_library_target($_primary_toolchain)" ]
+    if (is_fat_secondary_toolchain) {
       visibility += [
         ":${_target_name}",
         ":${_target_name}_signed_bundle",
@@ -1347,7 +1356,7 @@ template("ios_framework_bundle") {
     }
     deps += [ ":$_arch_shared_library_source" ]
     if (_has_public_headers) {
-      deps += [ ":$_framework_headers_target($default_toolchain)" ]
+      deps += [ ":$_framework_headers_target($_primary_toolchain)" ]
     }
     if (!defined(ldflags)) {
       ldflags = []
@@ -1361,7 +1370,7 @@ template("ios_framework_bundle") {
     output_dir = "$target_out_dir/$current_cpu"
   }
 
-  if (current_toolchain != default_toolchain) {
+  if (is_fat_secondary_toolchain) {
     # For fat builds, only the default toolchain will generate a framework
     # bundle. For the other toolchains, the template is only used for building
     # the arch-specific binary, thus the default target is just a group().
@@ -1382,7 +1391,7 @@ template("ios_framework_bundle") {
                                "visibility",
                                "testonly",
                              ])
-      public_deps = [ ":$_link_target_name($default_toolchain)" ]
+      public_deps = [ ":$_link_target_name($_primary_toolchain)" ]
 
       if (_has_public_headers) {
         if (!defined(public_configs)) {
@@ -1398,7 +1407,7 @@ template("ios_framework_bundle") {
 
     group("$_target_name+bundle") {
       forward_variables_from(invoker, [ "testonly" ])
-      public_deps = [ ":$_target_name+bundle($default_toolchain)" ]
+      public_deps = [ ":$_target_name+bundle($_primary_toolchain)" ]
     }
 
     not_needed(invoker, "*")
@@ -1658,7 +1667,7 @@ template("ios_xctest_bundle") {
   # Silence "assignment had no effect" error for non-default toolchains as
   # following variables are only used in the expansion of the template for the
   # default toolchain.
-  if (current_toolchain != default_toolchain) {
+  if (is_fat_secondary_toolchain) {
     not_needed(invoker, "*")
   }
 
@@ -1673,6 +1682,11 @@ template("ios_xctest_bundle") {
   _arch_loadable_module_target = _target_name + "_arch_loadable_module"
   _lipo_loadable_module_target = _target_name + "_loadable_module"
 
+  _primary_toolchain = current_toolchain
+  if (is_fat_secondary_toolchain) {
+    _primary_toolchain = primary_fat_toolchain_name
+  }
+
   source_set(_arch_loadable_module_source) {
     forward_variables_from(invoker, [ "deps" ])
 
@@ -1682,8 +1696,8 @@ template("ios_xctest_bundle") {
 
   loadable_module(_arch_loadable_module_target) {
     testonly = true
-    visibility = [ ":$_lipo_loadable_module_target($default_toolchain)" ]
-    if (current_toolchain != default_toolchain) {
+    visibility = [ ":$_lipo_loadable_module_target($_primary_toolchain)" ]
+    if (is_fat_secondary_toolchain) {
       visibility += [ ":$_target_name" ]
     }
 
@@ -1696,7 +1710,7 @@ template("ios_xctest_bundle") {
     output_extension = ""
   }
 
-  if (current_toolchain != default_toolchain) {
+  if (is_fat_secondary_toolchain) {
     # For fat builds, only the default toolchain will generate a test bundle.
     # For the other toolchains, the template is only used for building the
     # arch-specific binary, thus the default target is just a group().
@@ -1888,7 +1902,7 @@ template("ios_xctest_test") {
     ]
 
     _xctest_bundle = _xctest_target + "_bundle"
-    if (current_toolchain == default_toolchain) {
+    if (!is_fat_secondary_toolchain) {
       if (!defined(bundle_deps)) {
         bundle_deps = []
       }

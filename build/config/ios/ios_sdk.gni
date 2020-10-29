@@ -68,6 +68,16 @@ declare_args() {
   target_environment = ""
 }
 
+declare_args() {
+  # This variable is set by the toolchain. It is set to true if the toolchain
+  # is a secondary toolchain as part of a "fat" build.
+  is_fat_secondary_toolchain = false
+
+  # This variable is set by the toolchain. It is the name of the primary
+  # toolchain for the fat build (could be current_toolchain).
+  primary_fat_toolchain_name = ""
+}
+
 if (target_environment == "") {
   if (current_cpu == "x86" || current_cpu == "x64") {
     target_environment = "simulator"
@@ -108,7 +118,7 @@ if (additional_target_cpus != []) {
     assert(_additional_target_cpu != target_cpu,
            "target_cpu must not be listed in additional_target_cpus")
 
-    _toolchain = "//build/toolchain/mac:ios_clang_$_additional_target_cpu"
+    _toolchain = "//build/toolchain/mac:ios_clang_${_additional_target_cpu}_fat"
     foreach(_additional_toolchain, additional_toolchains) {
       assert(_toolchain != _additional_toolchain,
              "additional_target_cpus must not contains duplicate values")

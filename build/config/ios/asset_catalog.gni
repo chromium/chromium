@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/ios_sdk.gni")
+
 # This template declares a bundle_data target that references an asset
 # catalog so that it is compiled to the asset catalog of the generated
 # bundle.
@@ -46,9 +48,9 @@ template("asset_catalog") {
   assert(defined(invoker.asset_type) && invoker.asset_type != "",
          "asset_type must be defined and not empty for $target_name")
 
-  if (current_toolchain != default_toolchain) {
+  if (is_fat_secondary_toolchain) {
     group(target_name) {
-      public_deps = [ ":$target_name($default_toolchain)" ]
+      public_deps = [ ":$target_name($primary_fat_toolchain_name)" ]
     }
   } else {
     _copy_target_name = target_name + "__copy"
