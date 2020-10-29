@@ -174,6 +174,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
+#include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
+#include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
 #include "chromeos/components/help_app_ui/help_app_ui.mojom.h"
 #include "chromeos/components/local_search_service/mojom/local_search_service_proxy.mojom.h"
@@ -741,6 +743,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines,
       chromeos::NetworkUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      chromeos::diagnostics::mojom::SystemDataProvider,
+      chromeos::DiagnosticsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<chromeos::scanning::mojom::ScanService,
                                          chromeos::ScanningUI>(map);
