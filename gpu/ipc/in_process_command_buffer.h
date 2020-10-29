@@ -247,10 +247,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   // and |surface_handle| provided in Initialize outlive this callback.
   base::ScopedClosureRunner GetCacheBackBufferCb();
 
-  gpu::SharedImageManager* GetSharedImageManager() {
-    return task_executor_->shared_image_manager();
-  }
-
  private:
   struct InitializeOnGpuThreadParams {
     SurfaceHandle surface_handle;

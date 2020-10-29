@@ -339,10 +339,6 @@ base::ScopedClosureRunner VizProcessContextProvider::GetCacheBackBufferCb() {
   return command_buffer_->GetCacheBackBufferCb();
 }
 
-gpu::SharedImageManager* VizProcessContextProvider::GetSharedImageManager() {
-  return command_buffer_->GetSharedImageManager();
-}
-
 void VizProcessContextProvider::SetNeedsMeasureNextDrawLatency() {
   return command_buffer_->SetNeedsMeasureNextDrawLatency();
 }

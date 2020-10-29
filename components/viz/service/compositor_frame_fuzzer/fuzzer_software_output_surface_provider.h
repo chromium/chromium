@@ -34,8 +34,6 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
 
-  gpu::SharedImageManager* GetSharedImageManager() override;
-
  private:
   base::Optional<base::FilePath> png_dir_path_;
 

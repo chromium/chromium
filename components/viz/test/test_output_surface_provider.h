@@ -9,10 +9,6 @@
 
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 
-namespace gpu {
-class SharedImageManager;
-}
-
 namespace viz {
 
 // Test implementation that creates a FakeOutputSurface.
@@ -33,8 +29,6 @@ class TestOutputSurfaceProvider : public OutputSurfaceProvider {
       DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
-
-  gpu::SharedImageManager* GetSharedImageManager() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestOutputSurfaceProvider);

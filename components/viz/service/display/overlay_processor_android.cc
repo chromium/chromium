@@ -10,6 +10,7 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -18,10 +19,9 @@
 
 namespace viz {
 OverlayProcessorAndroid::OverlayProcessorAndroid(
-    gpu::SharedImageManager* shared_image_manager,
-    gpu::MemoryTracker* memory_tracker,
-    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler)
-    : OverlayProcessorUsingStrategy(), gpu_task_scheduler_(gpu_task_scheduler) {
+    DisplayCompositorMemoryAndTaskController* display_controller)
+    : OverlayProcessorUsingStrategy(),
+      gpu_task_scheduler_(display_controller->gpu_task_scheduler()) {
   // In unittests, we don't have the gpu_task_scheduler_ set up, but still want
   // to test ProcessForOverlays functionalities where we are making overlay
   // candidates correctly.
@@ -33,7 +33,8 @@ OverlayProcessorAndroid::OverlayProcessorAndroid(
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
     auto callback = base::BindOnce(
         &OverlayProcessorAndroid::InitializeOverlayProcessorOnGpu,
-        base::Unretained(this), shared_image_manager, memory_tracker, &event);
+        base::Unretained(this), display_controller->controller_on_gpu(),
+        &event);
     gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
     event.Wait();
   }
@@ -67,11 +68,11 @@ OverlayProcessorAndroid::~OverlayProcessorAndroid() {
 }
 
 void OverlayProcessorAndroid::InitializeOverlayProcessorOnGpu(
-    gpu::SharedImageManager* shared_image_manager,
-    gpu::MemoryTracker* memory_tracker,
+    gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+        display_controller_on_gpu,
     base::WaitableEvent* event) {
-  processor_on_gpu_ = std::make_unique<OverlayProcessorOnGpu>(
-      shared_image_manager, memory_tracker);
+  processor_on_gpu_ =
+      std::make_unique<OverlayProcessorOnGpu>(display_controller_on_gpu);
   DCHECK(event);
   event->Signal();
 }

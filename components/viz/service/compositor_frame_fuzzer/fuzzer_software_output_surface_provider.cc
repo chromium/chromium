@@ -108,12 +108,4 @@ FuzzerSoftwareOutputSurfaceProvider::CreateOutputSurface(
   return std::make_unique<SoftwareOutputSurface>(
       std::move(software_output_device));
 }
-
-gpu::SharedImageManager*
-FuzzerSoftwareOutputSurfaceProvider::GetSharedImageManager() {
-  // This is used for creating overlay processor. Software compositor does not
-  // support overlay.
-  return nullptr;
-}
-
 }  // namespace viz

@@ -138,7 +138,6 @@ RootCompositorFrameSinkImpl::Create(
   auto overlay_processor = OverlayProcessorInterface::CreateOverlayProcessor(
       output_surface.get(), output_surface->GetSurfaceHandle(),
       output_surface->capabilities(),
-      output_surface_provider->GetSharedImageManager(),
       display_controller.get(), sii, params->renderer_settings, debug_settings);
 
   auto display = std::make_unique<Display>(

@@ -12,10 +12,6 @@
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 
-namespace gpu {
-class SharedImageManager;
-}
-
 namespace viz {
 
 struct DebugRendererSettings;
@@ -44,12 +40,6 @@ class OutputSurfaceProvider {
       DisplayCompositorMemoryAndTaskController* gpu_dependency,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) = 0;
-
-  // TODO(weiliangc): This API is unfortunately located since this is the
-  // overlapping place that both GLOutputSurface and SkiaOutputSurface code path
-  // has access to SharedImageManager. Refactor so that OverlayProcessor and
-  // OutputSurface could be initialized together at appropriate place.
-  virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
 };
 
 }  // namespace viz

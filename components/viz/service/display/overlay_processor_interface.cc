@@ -78,7 +78,6 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     OutputSurface* output_surface,
     gpu::SurfaceHandle surface_handle,
     const OutputSurface::Capabilities& capabilities,
-    gpu::SharedImageManager* shared_image_manager,
     DisplayCompositorMemoryAndTaskController* display_controller,
     gpu::SharedImageInterface* shared_image_interface,
     const RendererSettings& renderer_settings,
@@ -142,10 +141,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     if (capabilities.android_surface_control_feature_enabled)
       return std::make_unique<OverlayProcessorStub>();
 
-    return std::make_unique<OverlayProcessorAndroid>(
-        shared_image_manager,
-        display_controller->controller_on_gpu()->memory_tracker(),
-        display_controller->gpu_task_scheduler());
+    return std::make_unique<OverlayProcessorAndroid>(display_controller);
   }
 #else  // Default
   return std::make_unique<OverlayProcessorStub>();

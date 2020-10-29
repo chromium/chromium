@@ -38,8 +38,4 @@ std::unique_ptr<OutputSurface> TestOutputSurfaceProvider::CreateOutputSurface(
         std::make_unique<SoftwareOutputDevice>());
   }
 }
-
-gpu::SharedImageManager* TestOutputSurfaceProvider::GetSharedImageManager() {
-  return nullptr;
-}
 }  // namespace viz

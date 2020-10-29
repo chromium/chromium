@@ -237,13 +237,6 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
   return output_surface;
 }
 
-gpu::SharedImageManager* OutputSurfaceProviderImpl::GetSharedImageManager() {
-  if (!gpu_service_impl_)
-    return nullptr;
-
-  return gpu_service_impl_->shared_image_manager();
-}
-
 std::unique_ptr<SoftwareOutputDevice>
 OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
     gpu::SurfaceHandle surface_handle,

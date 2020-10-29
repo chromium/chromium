@@ -18,7 +18,7 @@ class WaitableEvent;
 }
 
 namespace gpu {
-class MemoryTracker;
+class DisplayCompositorMemoryAndTaskControllerOnGpu;
 }
 
 namespace viz {
@@ -36,9 +36,8 @@ class OverlayProcessorOnGpu;
 class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
     : public OverlayProcessorUsingStrategy {
  public:
-  OverlayProcessorAndroid(gpu::SharedImageManager* shared_image_manager,
-                          gpu::MemoryTracker* memory_tracker,
-                          gpu::GpuTaskSchedulerHelper* gpu_task_scheduler);
+  explicit OverlayProcessorAndroid(
+      DisplayCompositorMemoryAndTaskController* display_controller);
   ~OverlayProcessorAndroid() override;
 
   bool IsOverlaySupported() const override;
@@ -64,8 +63,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
   // thread. These two methods are scheduled on the gpu thread to setup and
   // teardown the gpu side receiver.
   void InitializeOverlayProcessorOnGpu(
-      gpu::SharedImageManager* shared_image_manager,
-      gpu::MemoryTracker* memory_tracker,
+      gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+          display_controller_on_gpu,
       base::WaitableEvent* event);
   void DestroyOverlayProcessorOnGpu(base::WaitableEvent* event);
   void TakeOverlayCandidates(CandidateList* candidate_list) override;

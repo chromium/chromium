@@ -5,17 +5,18 @@
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
 
 OverlayProcessorOnGpu::OverlayProcessorOnGpu(
-    gpu::SharedImageManager* shared_image_manager,
-    gpu::MemoryTracker* memory_tracker)
+    gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+        display_controller_on_gpu)
     : shared_image_representation_factory_(
           std::make_unique<gpu::SharedImageRepresentationFactory>(
-              shared_image_manager,
-              memory_tracker)) {
+              display_controller_on_gpu->shared_image_manager(),
+              display_controller_on_gpu->memory_tracker())) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 

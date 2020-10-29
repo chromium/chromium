@@ -101,7 +101,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       OutputSurface* output_surface,
       gpu::SurfaceHandle surface_handle,
       const OutputSurface::Capabilities& capabilities,
-      gpu::SharedImageManager* shared_image_manager,
       DisplayCompositorMemoryAndTaskController* display_controller,
       gpu::SharedImageInterface* shared_image_interface,
       const RendererSettings& renderer_settings,

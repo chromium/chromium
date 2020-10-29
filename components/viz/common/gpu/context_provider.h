@@ -29,7 +29,6 @@ namespace gpu {
 class ContextSupport;
 struct GpuFeatureInfo;
 class SharedImageInterface;
-class SharedImageManager;
 
 namespace gles2 {
 class GLES2Interface;
@@ -110,9 +109,6 @@ class VIZ_COMMON_EXPORT ContextProvider {
   // Get a GLES2 interface to the 3d context.  The context provider must have
   // been successfully bound to a thread before calling this.
   virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
-
-  // Returns the SharedImageManager. Only available inside the GPU process.
-  virtual gpu::SharedImageManager* GetSharedImageManager();
 
  protected:
   virtual ~ContextProvider() = default;
