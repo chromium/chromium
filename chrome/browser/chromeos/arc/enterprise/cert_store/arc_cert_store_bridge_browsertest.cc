@@ -19,7 +19,6 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_context.h"
@@ -133,13 +132,6 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
         chromeos::switches::kWaitForInitialPolicyFetchForTest, "true");
   }
 
-  void SetUp() override {
-    chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-        ->SetTestingMode(true);
-
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
@@ -176,13 +168,6 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
     ArcServiceLauncher::Get()->Shutdown();
     chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  void TearDown() override {
-    MixinBasedInProcessBrowserTest::TearDown();
-
-    chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-        ->SetTestingMode(false);
   }
 
   ArcBridgeService* arc_bridge() {

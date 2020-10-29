@@ -13,8 +13,8 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/attestation/attestation_ca_client.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -574,24 +574,20 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
     return;
   }
 
-  DCHECK(key_type_ == KEY_DEVICE || profile_);
-
-  platform_keys::KeyPermissionsManager* key_permissions_manager = nullptr;
-  switch (key_type_) {
-    case AttestationKeyType::KEY_USER:
-      key_permissions_manager = platform_keys::KeyPermissionsManagerImpl::
-          GetUserPrivateTokenKeyPermissionsManager(profile_);
-      break;
-    case AttestationKeyType::KEY_DEVICE:
-      key_permissions_manager = platform_keys::KeyPermissionsManagerImpl::
-          GetSystemTokenKeyPermissionsManager();
-      break;
+  if (!profile_ || (key_type_ == AttestationKeyType::KEY_DEVICE)) {
+    std::move(callback_).Run(Result::MakeSuccess());
+    return;
   }
 
-  key_permissions_manager->AllowKeyForUsage(
-      base::BindOnce(&TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback,
-                     weak_factory_.GetWeakPtr()),
-      platform_keys::KeyUsage::kCorporate, public_key_);
+  // TODO(1082459, 1113115): For now only user keys are being explicitly marked
+  // as corporate. All device keys are assumed to be corporate as well. It is
+  // better to mark device keys as well, when there is a way to get
+  // KeyPermissionsService without a profile.
+  platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(profile_)
+      ->SetCorporateKey(
+          public_key_,
+          base::BindOnce(&TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback(

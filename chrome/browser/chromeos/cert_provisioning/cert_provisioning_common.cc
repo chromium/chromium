@@ -8,8 +8,6 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
@@ -239,19 +237,6 @@ platform_keys::PlatformKeysService* GetPlatformKeysService(CertScope scope,
     case CertScope::kDevice:
       return platform_keys::PlatformKeysServiceFactory::GetInstance()
           ->GetDeviceWideService();
-  }
-}
-
-platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
-    CertScope scope,
-    Profile* profile) {
-  switch (scope) {
-    case CertScope::kUser:
-      return platform_keys::KeyPermissionsManagerImpl::
-          GetUserPrivateTokenKeyPermissionsManager(profile);
-    case CertScope::kDevice:
-      return platform_keys::KeyPermissionsManagerImpl::
-          GetSystemTokenKeyPermissionsManager();
   }
 }
 

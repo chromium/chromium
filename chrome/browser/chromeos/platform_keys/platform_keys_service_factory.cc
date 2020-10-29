@@ -148,22 +148,12 @@ PlatformKeysService* PlatformKeysServiceFactory::GetDeviceWideService() {
     device_wide_service_ = std::make_unique<PlatformKeysServiceImpl>(
         std::make_unique<DelegateForDevice>());
   }
-
-  device_wide_service_->SetMapToSoftokenAttrsForTesting(
-      map_to_softoken_attrs_for_testing_);
-
   return device_wide_service_.get();
 }
 
 void PlatformKeysServiceFactory::SetDeviceWideServiceForTesting(
     PlatformKeysService* device_wide_service_for_testing) {
   device_wide_service_for_testing_ = device_wide_service_for_testing;
-  device_wide_service_for_testing_->SetMapToSoftokenAttrsForTesting(
-      map_to_softoken_attrs_for_testing_);
-}
-
-void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
-  map_to_softoken_attrs_for_testing_ = is_testing_mode;
 }
 
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
@@ -184,24 +174,7 @@ KeyedService* PlatformKeysServiceFactory::BuildServiceInstanceFor(
     delegate = std::make_unique<DelegateForUser>(context);
   }
 
-  PlatformKeysServiceImpl* const platform_keys_service_impl =
-      new PlatformKeysServiceImpl(std::move(delegate));
-  platform_keys_service_impl->SetMapToSoftokenAttrsForTesting(
-      map_to_softoken_attrs_for_testing_);
-
-  return platform_keys_service_impl;
-}
-
-void PlatformKeysServiceFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  PlatformKeysService* platform_keys_service =
-      static_cast<PlatformKeysService*>(
-          GetServiceForBrowserContext(context, false));
-  if (platform_keys_service) {
-    platform_keys_service->SetMapToSoftokenAttrsForTesting(false);
-  }
-
-  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
+  return new PlatformKeysServiceImpl(std::move(delegate));
 }
 
 content::BrowserContext* PlatformKeysServiceFactory::GetBrowserContextToUse(

@@ -24,6 +24,27 @@ namespace platform_keys {
 class PlatformKeysService;
 
 namespace test_util {
+
+// Softoken NSS PKCS11 module (used for testing) allows only predefined key
+// attributes to be set and retrieved. Chaps supports setting and retrieving
+// custom attributes.
+// This helper is created to allow setting and retrieving attributes
+// supported by PlatformKeysService. For the lifetime of an instance of this
+// helper, PlatformKeysService will be configured to use softoken key attribute
+// mapping for the lifetime of the helper.
+class ScopedSoftokenAttrsMapping {
+ public:
+  explicit ScopedSoftokenAttrsMapping(
+      PlatformKeysService* platform_keys_service);
+  ScopedSoftokenAttrsMapping(const ScopedSoftokenAttrsMapping& other) = delete;
+  ScopedSoftokenAttrsMapping& operator=(
+      const ScopedSoftokenAttrsMapping& other) = delete;
+  ~ScopedSoftokenAttrsMapping();
+
+ private:
+  PlatformKeysService* const platform_keys_service_;
+};
+
 // A helper that waits until execution of an asynchronous PlatformKeysService
 // operation has finished and provides access to the results.
 // Note: all PlatformKeysService operations have a trailing status argument that

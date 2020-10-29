@@ -120,8 +120,6 @@ class PlatformKeysServiceBrowserTestBase
       user_policy_update->policy_data()->add_user_affiliation_ids(
           kTestAffiliationId);
     }
-
-    PlatformKeysServiceFactory::GetInstance()->SetTestingMode(true);
   }
 
   void SetUpOnMainThread() override {
@@ -146,10 +144,18 @@ class PlatformKeysServiceBrowserTestBase
     platform_keys_service_ =
         PlatformKeysServiceFactory::GetForBrowserContext(profile_);
     ASSERT_TRUE(platform_keys_service_);
+
+    scoped_softoken_attrs_mapping_ =
+        std::make_unique<test_util::ScopedSoftokenAttrsMapping>(
+            platform_keys_service_);
   }
 
   void TearDownOnMainThread() override {
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+
+    // Destroy |scoped_softoken_attrs_mapping_| before |platform_keys_service_|
+    // is destroyed.
+    scoped_softoken_attrs_mapping_.reset();
   }
 
  protected:
@@ -234,6 +240,10 @@ class PlatformKeysServiceBrowserTestBase
   // The private slot for the profile under test. This should be null if the
   // test parameter mandates testing with the sign-in profile.
   crypto::ScopedPK11Slot user_slot_;
+  // Owned pointer to a ScopedSoftokenAttrsMapping object that is created after
+  // |platform_keys_service_| is valid.
+  std::unique_ptr<test_util::ScopedSoftokenAttrsMapping>
+      scoped_softoken_attrs_mapping_;
 };
 
 class PlatformKeysServicePerProfileBrowserTest

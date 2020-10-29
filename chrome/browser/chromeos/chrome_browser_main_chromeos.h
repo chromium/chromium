@@ -77,10 +77,6 @@ namespace internal {
 class DBusServices;
 }  // namespace internal
 
-namespace platform_keys {
-class KeyPermissionsManager;
-}
-
 namespace power {
 class SmartChargingManager;
 namespace ml {
@@ -208,9 +204,6 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<arc::data_snapshotd::ArcDataSnapshotdManager>
       arc_data_snapshotd_manager_;
-
-  std::unique_ptr<platform_keys::KeyPermissionsManager>
-      system_token_key_permissions_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsChromeos);
 };

@@ -16,7 +16,8 @@
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_serializer.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
@@ -113,7 +114,7 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
   return res;
 }
 
-void OnAllowKeyForUsageDone(platform_keys::Status status) {
+void OnSetCoporateKeyDone(platform_keys::Status status) {
   if (status != platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Cannot mark key corporate: "
                << platform_keys::StatusToString(status);
@@ -124,12 +125,18 @@ void OnAllowKeyForUsageDone(platform_keys::Status status) {
 void MarkKeyAsCorporate(CertScope scope,
                         Profile* profile,
                         const std::string& public_key_spki_der) {
-  CHECK(profile || scope == CertScope::kDevice);
+  // Device-wide keys are implicitly corporate, and there is currently no
+  // device-wide KeyPermissionsManager.
+  // TODO(https://crbug.com/1127284): Use the device-wide KeyPermissionsManager
+  // when it exists.
+  if (scope == CertScope::kDevice) {
+    return;
+  }
+  DCHECK(profile);
 
-  GetKeyPermissionsManager(scope, profile)
-      ->AllowKeyForUsage(base::BindOnce(&OnAllowKeyForUsageDone),
-                         platform_keys::KeyUsage::kCorporate,
-                         public_key_spki_der);
+  platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(profile)
+      ->SetCorporateKey(public_key_spki_der,
+                        base::BindOnce(&OnSetCoporateKeyDone));
 }
 
 }  // namespace

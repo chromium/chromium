@@ -30,7 +30,6 @@ class PolicyService;
 namespace chromeos {
 namespace platform_keys {
 
-class KeyPermissionsManager;
 class PlatformKeysService;
 
 // TODO(crbug.com/1130949): Convert KeyPermissionsServiceImpl operations into
@@ -43,13 +42,11 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   // |profile_policies| must not be null and must outlive this object.
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
-  KeyPermissionsServiceImpl(
-      bool profile_is_managed,
-      PrefService* profile_prefs,
-      policy::PolicyService* profile_policies,
-      extensions::StateStore* extensions_state_store,
-      PlatformKeysService* platform_keys_service,
-      KeyPermissionsManager* profile_key_permissions_manager);
+  KeyPermissionsServiceImpl(bool profile_is_managed,
+                            PrefService* profile_prefs,
+                            policy::PolicyService* profile_policies,
+                            extensions::StateStore* extensions_state_store,
+                            PlatformKeysService* platform_keys_service);
 
   ~KeyPermissionsServiceImpl() override;
 
@@ -93,17 +90,17 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
                                    const std::vector<TokenId>& key_locations,
                                    Status key_locations_retrieval_status) const;
 
-  void SetCorporateKeyWithLocations(const std::string& public_key_spki_der,
-                                    SetCorporateKeyCallback callback,
-                                    const std::vector<TokenId>& key_locations,
-                                    Status key_locations_retrieval_status);
+  void SetCorporateKeyWithLocations(
+      const std::string& public_key_spki_der,
+      SetCorporateKeyCallback callback,
+      const std::vector<TokenId>& key_locations,
+      Status key_locations_retrieval_status) const;
 
   const bool profile_is_managed_;
   PrefService* const profile_prefs_;
   policy::PolicyService* const profile_policies_;
   extensions::StateStore* const extensions_state_store_;
   PlatformKeysService* const platform_keys_service_;
-  KeyPermissionsManager* const profile_key_permissions_manager_;
   base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};
 };
 
