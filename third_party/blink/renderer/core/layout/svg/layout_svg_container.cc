@@ -189,10 +189,7 @@ void LayoutSVGContainer::Paint(const PaintInfo& paint_info) const {
 
 bool LayoutSVGContainer::UpdateCachedBoundaries() {
   NOT_DESTROYED();
-  auto old_object_bounding_box = object_bounding_box_;
-  content_.ComputeBoundingBoxes(
-      object_bounding_box_, object_bounding_box_valid_, stroke_bounding_box_);
-  return old_object_bounding_box != object_bounding_box_;
+  return content_.UpdateBoundingBoxes(object_bounding_box_valid_);
 }
 
 bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
@@ -205,7 +202,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
                                             LocalToSVGParentTransform());
   if (!local_location)
     return false;
-  if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box_,
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, content_.ObjectBoundingBox(),
                                             *local_location))
     return false;
 

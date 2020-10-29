@@ -535,9 +535,7 @@ const LayoutObject* LayoutSVGRoot::PushMappingToContainer(
 void LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   bool ignore;
-  content_.ComputeBoundingBoxes(object_bounding_box_,
-                                /* object_bounding_box_valid */ ignore,
-                                stroke_bounding_box_);
+  content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
 }
 
 bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,

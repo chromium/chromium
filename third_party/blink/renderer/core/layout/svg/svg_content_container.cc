@@ -135,13 +135,8 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject* object) {
   return true;
 }
 
-void SVGContentContainer::ComputeBoundingBoxes(
-    FloatRect& object_bounding_box,
-    bool& object_bounding_box_valid,
-    FloatRect& stroke_bounding_box) const {
-  object_bounding_box = FloatRect();
+bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
   object_bounding_box_valid = false;
-  stroke_bounding_box = FloatRect();
 
   // When computing the strokeBoundingBox, we use the visualRects of
   // the container's children so that the container's stroke includes the
@@ -149,6 +144,8 @@ void SVGContentContainer::ComputeBoundingBoxes(
   // filters applied to containers to correctly bound the children, and also
   // improves inlining of SVG content, as the stroke bound is used in that
   // situation also.
+  FloatRect object_bounding_box;
+  FloatRect stroke_bounding_box;
   for (LayoutObject* current = children_.FirstChild(); current;
        current = current->NextSibling()) {
     // Don't include elements that are not rendered in the union.
@@ -162,6 +159,13 @@ void SVGContentContainer::ComputeBoundingBoxes(
     stroke_bounding_box.Unite(
         transform.MapRect(current->VisualRectInLocalSVGCoordinates()));
   }
+
+  bool changed = false;
+  changed |= object_bounding_box_ != object_bounding_box;
+  object_bounding_box_ = object_bounding_box;
+  changed |= stroke_bounding_box_ != stroke_bounding_box;
+  stroke_bounding_box_ = stroke_bounding_box;
+  return changed;
 }
 
 bool SVGContentContainer::ComputeHasNonIsolatedBlendingDescendants() const {

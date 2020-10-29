@@ -76,7 +76,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
   FloatRect ObjectBoundingBox() const final {
     NOT_DESTROYED();
-    return object_bounding_box_;
+    return content_.ObjectBoundingBox();
   }
 
  protected:
@@ -103,7 +103,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
   FloatRect StrokeBoundingBox() const final {
     NOT_DESTROYED();
-    return stroke_bounding_box_;
+    return content_.StrokeBoundingBox();
   }
 
   bool NodeAtPoint(HitTestResult&,
@@ -120,9 +120,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
  private:
   SVGContentContainer content_;
-  // TODO(fs): Some of this state can move to the "child list" object.
-  FloatRect object_bounding_box_;
-  FloatRect stroke_bounding_box_;
   bool object_bounding_box_valid_;
   bool needs_boundaries_update_ : 1;
   bool did_screen_scale_factor_change_ : 1;

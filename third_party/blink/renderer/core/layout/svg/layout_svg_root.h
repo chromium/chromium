@@ -161,15 +161,15 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   FloatRect ObjectBoundingBox() const override {
     NOT_DESTROYED();
-    return object_bounding_box_;
+    return content_.ObjectBoundingBox();
   }
   FloatRect StrokeBoundingBox() const override {
     NOT_DESTROYED();
-    return stroke_bounding_box_;
+    return content_.StrokeBoundingBox();
   }
   FloatRect VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return stroke_bounding_box_;
+    return content_.StrokeBoundingBox();
   }
 
   bool NodeAtPoint(HitTestResult&,
@@ -213,9 +213,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   SVGContentContainer content_;
   LayoutSize container_size_;
-  // TODO(fs): Some of this state can move to the "child list" object.
-  FloatRect object_bounding_box_;
-  FloatRect stroke_bounding_box_;
   AffineTransform local_to_border_box_transform_;
   bool is_layout_size_changed_ : 1;
   bool did_screen_scale_factor_change_ : 1;
