@@ -347,7 +347,6 @@ static_library("test_support") {
       "//components/crash/core/app",
       "//third_party/wtl",
     ]
-    libs = [ "runtimeobject.lib" ]
   }
 
   if (is_chromeos) {
