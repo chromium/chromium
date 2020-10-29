@@ -6229,3 +6229,6 @@ crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Pass Failure
 
 #Sheriff 2020-10-26
 crbug.com/1142877 external/wpt/mediacapture-fromelement/capture.html [ Pass Failure Crash ]
+
+#Sheriff 2020-10-29
+crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ Pass Failure ]
