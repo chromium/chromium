@@ -1812,7 +1812,7 @@
   },
   {
     "name": "enable-mygoogle",
-    "owners": [ "fernandex", "chrome-ios-signin@google.com" ],
+    "owners": [ "fernandex", "chrome-signin-ios@google.com" ],
     "expiry_milestone": 87
   },
   {
