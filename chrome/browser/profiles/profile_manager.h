@@ -224,6 +224,10 @@ class ProfileManager : public content::NotificationObserver,
   static void CleanUpGuestProfile();
 #endif
 
+  // Returns if profile is marked for deletion.
+  static bool IsProfileDirectoryMarkedForDeletion(
+      const base::FilePath& profile_dir);
+
   // Autoloads profiles if they are running background apps.
   void AutoloadProfiles();
 

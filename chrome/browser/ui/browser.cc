@@ -73,6 +73,7 @@
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/repost_form_warning_controller.h"
@@ -326,7 +327,9 @@ const extensions::Extension* GetExtensionForOrigin(
 bool CanCreateBrowserForProfile(Profile* profile) {
   return IncognitoModePrefs::CanOpenBrowser(profile) &&
          (!profile->IsGuestSession() || profile->IsOffTheRecord()) &&
-         profile->AllowsBrowserWindows();
+         profile->AllowsBrowserWindows() &&
+         !ProfileManager::IsProfileDirectoryMarkedForDeletion(
+             profile->GetPath());
 }
 bool IsOnKioskSplashScreen() {
 #if defined(OS_CHROMEOS)

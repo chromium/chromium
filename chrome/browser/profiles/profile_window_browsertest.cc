@@ -309,9 +309,17 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
 
   // Open a new guest browser window. Since this is a separate session, the find
   // in page text should have been cleared (along with all other browsing data).
-  profiles::FindOrCreateNewWindowForProfile(
-      guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-      chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
+  // For ephemeral Guest profiles, after closing the last Guest browser the
+  // Guest profile is scheduled for deletion and is not considered a Guest
+  // profile anymore. Therefore the next Guest window requires opening a new
+  // browser and refreshing the profile object.
+  if (IsEphemeral()) {
+    guest_profile = CreateGuestBrowser()->profile();
+  } else {
+    profiles::FindOrCreateNewWindowForProfile(
+        guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
+        chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
+  }
   EXPECT_EQ(base::string16(),
             FindBarStateFactory::GetForBrowserContext(guest_profile)
                 ->GetSearchPrepopulateText());

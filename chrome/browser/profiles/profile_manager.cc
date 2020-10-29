@@ -269,12 +269,6 @@ void CancelProfileDeletion(const base::FilePath& path) {
 }
 #endif
 
-bool IsProfileDirectoryMarkedForDeletion(const base::FilePath& profile_path) {
-  auto it = ProfilesToDelete().find(profile_path);
-  return it != ProfilesToDelete().end() &&
-         it->second == ProfileDeletionStage::MARKED;
-}
-
 // Physically remove deleted profile directories from disk.
 void NukeProfileFromDisk(const base::FilePath& profile_path) {
   // Delete both the profile directory and its corresponding cache.
@@ -380,6 +374,14 @@ ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
 
 ProfileManager::~ProfileManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+// static
+bool ProfileManager::IsProfileDirectoryMarkedForDeletion(
+    const base::FilePath& profile_path) {
+  const auto it = ProfilesToDelete().find(profile_path);
+  return it != ProfilesToDelete().end() &&
+         it->second == ProfileDeletionStage::MARKED;
 }
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
