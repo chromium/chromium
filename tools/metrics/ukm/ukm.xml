@@ -10540,12 +10540,12 @@ be describing additional metrics about the same event.
       when a probe was required.
     </summary>
   </metric>
-  <metric name="SRPClickPrefetchStatus" enum="IsolatedPrerenderPrefetchStatus">
+  <metric name="SRPClickPrefetchStatus" enum="PrefetchProxyPrefetchStatus">
     <summary>
       The outcome of the prefetch eligibility check and possible attempt to
       prefetch the resource. The prefetched url is always the committed URL of
-      the page. See |IsolatedPrerenderPrefetchStatus| for a mapping of enum
-      values and their meanings.
+      the page. See |PrefetchProxyPrefetchStatus| for a mapping of enum values
+      and their meanings.
     </summary>
   </metric>
   <metric name="SRPPrefetchEligibleCount">
@@ -10610,12 +10610,12 @@ be describing additional metrics about the same event.
       Always set when the event is recorded.
     </summary>
   </metric>
-  <metric name="Status" enum="IsolatedPrerenderPrefetchStatus">
+  <metric name="Status" enum="PrefetchProxyPrefetchStatus">
     <summary>
       The outcome of the prefetch eligibility check and possible attempt to
-      prefetch the resource and reuse it. See |IsolatedPrerenderPrefetchStatus|
-      for a mapping of enum values and their meanings. Always set when the event
-      is recorded.
+      prefetch the resource and reuse it. See |PrefetchProxyPrefetchStatus| for
+      a mapping of enum values and their meanings. Always set when the event is
+      recorded.
     </summary>
   </metric>
 </event>

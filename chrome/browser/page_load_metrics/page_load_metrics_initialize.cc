@@ -19,7 +19,6 @@
 #include "chrome/browser/page_load_metrics/observers/foreground_duration_ukm_observer.h"
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/isolated_prerender_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/javascript_frameworks_ukm_observer.h"
 #include "chrome/browser/page_load_metrics/observers/live_tab_count_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/loading_predictor_page_load_metrics_observer.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/optimization_guide_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/portal_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/prefetch_proxy_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/previews_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/previews_ukm_observer.h"
 #include "chrome/browser/page_load_metrics/observers/protocol_page_load_metrics_observer.h"
@@ -105,7 +105,7 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(
         std::make_unique<DocumentWritePageLoadMetricsObserver>());
     tracker->AddObserver(
-        std::make_unique<IsolatedPrerenderPageLoadMetricsObserver>());
+        std::make_unique<PrefetchProxyPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<LiveTabCountPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<MediaPageLoadMetricsObserver>());

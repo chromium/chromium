@@ -39175,109 +39175,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Subresource"/>
 </enum>
 
-<enum name="IsolatedPrerenderPrefetchStatus">
-  <int value="0" label="Prefetch Used, No Probe">
-    The interceptor used a prefetch.
-  </int>
-  <int value="1" label="Prefetch Used, Probe Success">
-    The interceptor used a prefetch after successfully probing the origin.
-  </int>
-  <int value="2" label="Prefetch Not Used, Probe Failed">
-    The interceptor was not able to use an available prefetch because the origin
-    probe failed.
-  </int>
-  <int value="3" label="Prefetch Not Started">
-    The url was eligible to be prefetched, but the network request was never
-    made.
-  </int>
-  <int value="4" label="Prefetch Not,Eligible: Google Domain">
-    The url was not eligible to be prefetched because it is a Google-owned
-    domain.
-  </int>
-  <int value="5" label="Prefetch Not Eligible: User Has Cookies">
-    The url was not eligible to be prefetched because the user had cookies for
-    that origin.
-  </int>
-  <int value="6" label="Prefetch Not Eligible: User Has ServiceWorker">
-    The url was not eligible to be prefetched because there was a registered
-    service worker for that origin.
-  </int>
-  <int value="7" label="Prefetch Not Eligible: Scheme Is Not HTTPS">
-    The url was not eligible to be prefetched because its scheme was not
-    https://.
-  </int>
-  <int value="8" label="Prefetch Not Eligible: Host Is IP Address">
-    The url was not eligible to be prefetched because its host was an IP
-    address.
-  </int>
-  <int value="9" label="Prefetch Not Eligible: Non-Default Storage Partition">
-    The url was not eligible to be prefetched because it uses a non-default
-    storage partition.
-  </int>
-  <int value="10" label="Prefetch Not Finished In Time">
-    The network request was cancelled before it finished. This happens when
-    there is a new navigation.
-  </int>
-  <int value="11" label="Prefetch Failed: Net Error">
-    The prefetch failed because of a net error.
-  </int>
-  <int value="12" label="Prefetch Failed: Non 2XX Status">
-    The prefetch failed with a non-2XX HTTP response code.
-  </int>
-  <int value="13" label="Prefetch Failed: Not HTML">
-    The prefetch's Content-Type header was not html.
-  </int>
-  <int value="14" label="Prefetch Successful">
-    The prefetch finished successfully but was never used.
-  </int>
-  <int value="15" label="Navigated To Link Not On SRP">
-    The navigation off of the Google SRP was to a url that was not on the SRP.
-  </int>
-  <int value="16" label="Prefetch Used, No Probe, Did NoStatePrefetch">
-    The url was prefetched and No State Prerendered and committed without a
-    probe to the origin.
-  </int>
-  <int value="17" label="Prefetch Used, Probe Success, Did NoStatePrefetch">
-    The url was prefetched and No State Prerendered and committed with a
-    successful probe to the origin.
-  </int>
-  <int value="18" label="Prefetch Not Used, Probe Failed, Did NoStatePrefetch">
-    The url was prefetched and No State Prerendered but the origin probe failed
-    and the prefetch was not used.
-  </int>
-  <int value="19"
-      label="Prefetch Used, No Probe, NoStatePrefetch Attempt Denied">
-    The url was prefetched but was not No State Prerendered despite attempting
-    to do so and committed without a probe to the origin.
-  </int>
-  <int value="20"
-      label="Prefetch Used, Probe Success, NoStatePrefetch Attempt Denied">
-    The url was prefetched but was not No State Prerendered despite attempting
-    to do so and committed with a successful probe to the origin.
-  </int>
-  <int value="21"
-      label="Prefetch Not Used, Probe Failed, NoStatePrefetch Attempt Denied">
-    The url was prefetched but was not No State Prerendered despite attempting
-    to do so, and the origin probe failed and the prefetch was not used.
-  </int>
-  <int value="22" label="Prefetch Used, No Probe, NoStatePrefetch Not Started">
-    The url was prefetched and eligible for NoStatePrerender but wasn't started
-    and committed without a probe to the origin.
-  </int>
-  <int value="23"
-      label="Prefetch Used, Probe Success, NoStatePrefetch Not Started">
-    The url was prefetched and eligible for NoStatePrerender but wasn't started
-    and committed with a successful probe to the origin.
-  </int>
-  <int value="24"
-      label="Prefetch Not Used, Probe Failed, NoStatePrefetch Not Started">
-    The url was prefetched and eligible for NoStatePrerender but wasn't started
-    and the origin probe failed and the prefetch was not used.
-  </int>
-  <int value="25" label="Subresource throttled"/>
-  <int value="26" label="Prediction position not eligible"/>
-</enum>
-
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>
@@ -58758,6 +58655,109 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Delete preferred app"/>
   <int value="2" label="Delete preferred app for an app id"/>
   <int value="3" label="Upgrade preferred app to newer version"/>
+</enum>
+
+<enum name="PrefetchProxyPrefetchStatus">
+  <int value="0" label="Prefetch Used, No Probe">
+    The interceptor used a prefetch.
+  </int>
+  <int value="1" label="Prefetch Used, Probe Success">
+    The interceptor used a prefetch after successfully probing the origin.
+  </int>
+  <int value="2" label="Prefetch Not Used, Probe Failed">
+    The interceptor was not able to use an available prefetch because the origin
+    probe failed.
+  </int>
+  <int value="3" label="Prefetch Not Started">
+    The url was eligible to be prefetched, but the network request was never
+    made.
+  </int>
+  <int value="4" label="Prefetch Not,Eligible: Google Domain">
+    The url was not eligible to be prefetched because it is a Google-owned
+    domain.
+  </int>
+  <int value="5" label="Prefetch Not Eligible: User Has Cookies">
+    The url was not eligible to be prefetched because the user had cookies for
+    that origin.
+  </int>
+  <int value="6" label="Prefetch Not Eligible: User Has ServiceWorker">
+    The url was not eligible to be prefetched because there was a registered
+    service worker for that origin.
+  </int>
+  <int value="7" label="Prefetch Not Eligible: Scheme Is Not HTTPS">
+    The url was not eligible to be prefetched because its scheme was not
+    https://.
+  </int>
+  <int value="8" label="Prefetch Not Eligible: Host Is IP Address">
+    The url was not eligible to be prefetched because its host was an IP
+    address.
+  </int>
+  <int value="9" label="Prefetch Not Eligible: Non-Default Storage Partition">
+    The url was not eligible to be prefetched because it uses a non-default
+    storage partition.
+  </int>
+  <int value="10" label="Prefetch Not Finished In Time">
+    The network request was cancelled before it finished. This happens when
+    there is a new navigation.
+  </int>
+  <int value="11" label="Prefetch Failed: Net Error">
+    The prefetch failed because of a net error.
+  </int>
+  <int value="12" label="Prefetch Failed: Non 2XX Status">
+    The prefetch failed with a non-2XX HTTP response code.
+  </int>
+  <int value="13" label="Prefetch Failed: Not HTML">
+    The prefetch's Content-Type header was not html.
+  </int>
+  <int value="14" label="Prefetch Successful">
+    The prefetch finished successfully but was never used.
+  </int>
+  <int value="15" label="Navigated To Link Not On SRP">
+    The navigation off of the Google SRP was to a url that was not on the SRP.
+  </int>
+  <int value="16" label="Prefetch Used, No Probe, Did NoStatePrefetch">
+    The url was prefetched and No State Prerendered and committed without a
+    probe to the origin.
+  </int>
+  <int value="17" label="Prefetch Used, Probe Success, Did NoStatePrefetch">
+    The url was prefetched and No State Prerendered and committed with a
+    successful probe to the origin.
+  </int>
+  <int value="18" label="Prefetch Not Used, Probe Failed, Did NoStatePrefetch">
+    The url was prefetched and No State Prerendered but the origin probe failed
+    and the prefetch was not used.
+  </int>
+  <int value="19"
+      label="Prefetch Used, No Probe, NoStatePrefetch Attempt Denied">
+    The url was prefetched but was not No State Prerendered despite attempting
+    to do so and committed without a probe to the origin.
+  </int>
+  <int value="20"
+      label="Prefetch Used, Probe Success, NoStatePrefetch Attempt Denied">
+    The url was prefetched but was not No State Prerendered despite attempting
+    to do so and committed with a successful probe to the origin.
+  </int>
+  <int value="21"
+      label="Prefetch Not Used, Probe Failed, NoStatePrefetch Attempt Denied">
+    The url was prefetched but was not No State Prerendered despite attempting
+    to do so, and the origin probe failed and the prefetch was not used.
+  </int>
+  <int value="22" label="Prefetch Used, No Probe, NoStatePrefetch Not Started">
+    The url was prefetched and eligible for NoStatePrerender but wasn't started
+    and committed without a probe to the origin.
+  </int>
+  <int value="23"
+      label="Prefetch Used, Probe Success, NoStatePrefetch Not Started">
+    The url was prefetched and eligible for NoStatePrerender but wasn't started
+    and committed with a successful probe to the origin.
+  </int>
+  <int value="24"
+      label="Prefetch Not Used, Probe Failed, NoStatePrefetch Not Started">
+    The url was prefetched and eligible for NoStatePrerender but wasn't started
+    and the origin probe failed and the prefetch was not used.
+  </int>
+  <int value="25" label="Subresource throttled"/>
+  <int value="26" label="Prediction position not eligible"/>
 </enum>
 
 <enum name="PrefetchRedirect">

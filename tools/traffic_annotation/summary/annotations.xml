@@ -162,9 +162,6 @@ Refer to README.md for content description and update process.
  <item id="interest_feedv2_send" added_in_milestone="83" hash_code="85742023" type="0" content_hash_code="49706671" os_list="linux,windows" file_path="components/feed/core/v2/feed_network_impl.cc"/>
  <item id="intranet_redirect_detector" added_in_milestone="62" hash_code="21785164" type="0" content_hash_code="62025595" os_list="linux,windows" file_path="chrome/browser/intranet_redirect_detector.cc"/>
  <item id="invalidation_service" added_in_milestone="62" hash_code="72354423" type="0" deprecated="2020-01-23" content_hash_code="78425687" file_path=""/>
- <item id="isolated_prerender_canary_check" added_in_milestone="85" hash_code="60914954" type="0" content_hash_code="2991117" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/isolated_prerender_origin_prober.cc"/>
- <item id="isolated_prerender_loader" added_in_milestone="81" hash_code="2181152" type="0" content_hash_code="113933667" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/isolated_prerender_url_loader.cc"/>
- <item id="isolated_prerender_probe" added_in_milestone="83" hash_code="115160522" type="0" content_hash_code="75211055" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/isolated_prerender_origin_prober.cc"/>
  <item id="javascript_report_error" added_in_milestone="87" hash_code="109607776" type="0" content_hash_code="30837893" os_list="linux,windows" file_path="components/crash/content/browser/error_reporting/send_javascript_error_report.cc"/>
  <item id="kaleidoscope_service" added_in_milestone="87" hash_code="49759694" type="0" content_hash_code="14307563" os_list="linux,windows" file_path="chrome/browser/media/kaleidoscope/kaleidoscope_service.cc"/>
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="77" hash_code="109987793" type="0" deprecated="2019-07-30" content_hash_code="112740597" file_path=""/>
@@ -181,7 +178,7 @@ Refer to README.md for content description and update process.
  <item id="mirroring_get_setup_info" added_in_milestone="68" hash_code="78447809" type="0" content_hash_code="64839410" os_list="windows,linux" file_path="components/mirroring/service/receiver_setup_querier.cc"/>
  <item id="missing" added_in_milestone="62" hash_code="77012883" type="0" reserved="1" os_list="linux,windows" file_path=""/>
  <item id="mojo_context_state" added_in_milestone="63" hash_code="93232258" type="0" deprecated="2017-10-20" content_hash_code="124821232" file_path=""/>
- <item id="navigation_predictor_srp_prefetch" added_in_milestone="81" hash_code="57773453" type="0" content_hash_code="38811322" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/isolated_prerender_tab_helper.cc"/>
+ <item id="navigation_predictor_srp_prefetch" added_in_milestone="81" hash_code="57773453" type="0" content_hash_code="38811322" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.cc"/>
  <item id="navigation_url_loader" added_in_milestone="62" hash_code="63171670" type="0" content_hash_code="129352907" os_list="linux,windows" file_path="content/browser/loader/navigation_url_loader_impl.cc"/>
  <item id="nearby_share_contacts" added_in_milestone="86" hash_code="91999155" type="1" second_id="29188932" deprecated="2020-09-21" content_hash_code="74684570" file_path=""/>
  <item id="nearby_share_list_public_certificates" added_in_milestone="86" hash_code="123714070" type="1" second_id="29188932" deprecated="2020-09-21" content_hash_code="24145546" file_path=""/>
@@ -239,6 +236,9 @@ Refer to README.md for content description and update process.
  <item id="ppapi_download_request" added_in_milestone="62" hash_code="135967426" type="0" content_hash_code="110461402" os_list="linux,windows" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc"/>
  <item id="predictive_prefetch" added_in_milestone="85" hash_code="72157052" type="0" content_hash_code="28097398" os_list="linux,windows" file_path="chrome/browser/predictors/prefetch_manager.cc"/>
  <item id="prefetch_download" added_in_milestone="62" hash_code="44583172" type="0" content_hash_code="21424542" os_list="linux,windows" file_path="components/offline_pages/core/prefetch/prefetch_downloader_impl.cc"/>
+ <item id="prefetch_proxy_canary_check" added_in_milestone="88" hash_code="9229948" type="0" content_hash_code="53040767" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc"/>
+ <item id="prefetch_proxy_loader" added_in_milestone="88" hash_code="119210936" type="0" content_hash_code="39561111" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader.cc"/>
+ <item id="prefetch_proxy_probe" added_in_milestone="88" hash_code="123387409" type="0" content_hash_code="1909853" os_list="linux,windows" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc"/>
  <item id="prefetch_visuals" added_in_milestone="75" hash_code="91068704" type="0" content_hash_code="90439946" os_list="linux,windows" file_path="components/offline_pages/core/prefetch/visuals_fetch_by_url.cc"/>
  <item id="previews_litepage_origin_prober" added_in_milestone="78" hash_code="33703614" type="0" deprecated="2020-04-23" content_hash_code="116235355" file_path="chrome/browser/previews/previews_lite_page_redirect_url_loader.cc"/>
  <item id="previews_litepage_prober" added_in_milestone="78" hash_code="33813109" type="0" deprecated="2020-04-23" content_hash_code="52572789" file_path="chrome/browser/previews/previews_lite_page_redirect_decider.cc"/>

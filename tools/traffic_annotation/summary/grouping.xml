@@ -16,7 +16,7 @@ hidden="true" so that these annotations don't show up in the document.
     <sender name="Unsorted Sender">
       <!-- TODO(nicolaso): do a pass through some of the recent ones, and find
            them a new home -->
-      <traffic_annotation unique_id="isolated_prerender_canary_check"/>
+      <traffic_annotation unique_id="prefetch_proxy_canary_check"/>
       <traffic_annotation unique_id="nearby_webrtc_connection"/>
       <traffic_annotation unique_id="proxy_config_windows_resolver"/>
       <traffic_annotation unique_id="remoting_directory_delete_host"/>
@@ -41,12 +41,12 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="devtools_cdp_network_resource"/>
       <traffic_annotation unique_id="downloads_api_run_async"/>
       <traffic_annotation unique_id="media_feeds_checker"/>
-      <traffic_annotation unique_id="isolated_prerender_loader"/>
+      <traffic_annotation unique_id="prefetch_proxy_loader"/>
       <traffic_annotation unique_id="intranet_redirect_detector"/>
       <traffic_annotation unique_id="dial_url_fetcher"/>
       <traffic_annotation unique_id="send_message_express"/>
       <traffic_annotation unique_id="browser_switcher_ieem_sitelist"/>
-      <traffic_annotation unique_id="isolated_prerender_probe"/>
+      <traffic_annotation unique_id="prefetch_proxy_probe"/>
       <traffic_annotation unique_id="enterprise_safe_browsing_realtime_url_lookup"/>
       <traffic_annotation unique_id="remote_copy_message_handler"/>
       <traffic_annotation unique_id="chrome_HaTS_service"/>

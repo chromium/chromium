@@ -91,10 +91,10 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/plugins/plugin_utils.h"
-#include "chrome/browser/prefetch/prefetch_proxy/isolated_prerender_features.h"
-#include "chrome/browser/prefetch/prefetch_proxy/isolated_prerender_service.h"
-#include "chrome/browser/prefetch/prefetch_proxy/isolated_prerender_service_factory.h"
-#include "chrome/browser/prefetch/prefetch_proxy/isolated_prerender_url_loader_interceptor.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -4719,12 +4719,11 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
       frame, type == URLLoaderFactoryType::kNavigation, request_initiator,
       factory_receiver);
 
-  auto* isolated_prerender_service =
-      IsolatedPrerenderServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+  auto* prefetch_proxy_service = PrefetchProxyServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
   // |frame| is null when |type| is service worker.
-  if (frame && isolated_prerender_service) {
-    use_proxy |= isolated_prerender_service->MaybeProxyURLLoaderFactory(
+  if (frame && prefetch_proxy_service) {
+    use_proxy |= prefetch_proxy_service->MaybeProxyURLLoaderFactory(
         frame, render_process_id, type, factory_receiver);
   }
 
@@ -4757,9 +4756,8 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
 #endif
 
   if (base::FeatureList::IsEnabled(features::kIsolatePrerenders)) {
-    interceptors.push_back(
-        std::make_unique<IsolatedPrerenderURLLoaderInterceptor>(
-            frame_tree_node_id));
+    interceptors.push_back(std::make_unique<PrefetchProxyURLLoaderInterceptor>(
+        frame_tree_node_id));
   }
 
   if (SearchPrefetchServiceIsEnabled()) {
