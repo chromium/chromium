@@ -4,6 +4,7 @@
 
 // <include src="../../../../../../ui/webui/resources/js/cr.js">
 // <include src="../../../../../../ui/webui/resources/js/event_tracker.js">
+// <include src="../../../../../../ui/webui/resources/js/assert.js">
 // <include src="../../../../../../ui/webui/resources/js/load_time_data.js">
 // <include
 // src="../../../../../../ui/webui/resources/js/i18n_template_no_process.js">
