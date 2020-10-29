@@ -1490,8 +1490,6 @@ static_library("browser") {
     "resource_coordinator/utils.h",
     "resources_util.cc",
     "resources_util.h",
-    "search/ntp_features.cc",
-    "search/ntp_features.h",
     "search/search.cc",
     "search/search.h",
     "search/suggestions/suggestions_service_factory.cc",

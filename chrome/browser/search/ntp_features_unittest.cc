@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/ntp_features.h"
+#include "components/search/ntp_features.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
