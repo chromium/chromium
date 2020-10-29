@@ -32,9 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Handles initialization of the Paint Preview tab observers.
+ * Glue code for the Paint Preview show-on-startup feature.
  */
-public class PaintPreviewHelper {
+public class StartupPaintPreviewHelper {
     /**
      * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt
      * to display a paint preview on the first tab restoration that happens on Chrome startup when
@@ -44,11 +44,11 @@ public class PaintPreviewHelper {
 
     /**
      * A map for keeping Activity-specific variables and classes. New entries are added on calls to
-     * {@link #initialize(ChromeActivity, TabModelSelector)}. Entries are automatically removed when
-     * their respective Activity is destroyed.
+     * {@link #initialize}. Entries are automatically removed when their respective Activity is
+     * destroyed.
      */
-    private static Map<WindowAndroid, PaintPreviewWindowAndroidHelper> sWindowAndroidHelperMap =
-            new HashMap<>();
+    private static final Map<WindowAndroid, PaintPreviewWindowAndroidHelper>
+            sWindowAndroidHelperMap = new HashMap<>();
 
     /**
      * Sets whether a Paint Preview should attempt to be shown on restoration of a tab. If the
@@ -162,10 +162,10 @@ public class PaintPreviewHelper {
         /**
          * Tracks the activity creation time in ms from {@link SystemClock#elapsedRealtime}.
          */
-        private long mActivityCreationTime;
-        private WindowAndroid mWindowAndroid;
-        private BrowserControlsManager mBrowserControlsManager;
-        private Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
+        private final long mActivityCreationTime;
+        private final WindowAndroid mWindowAndroid;
+        private final BrowserControlsManager mBrowserControlsManager;
+        private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
 
         PaintPreviewWindowAndroidHelper(ChromeActivity<?> chromeActivity,
                 Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
@@ -197,5 +197,5 @@ public class PaintPreviewHelper {
         }
     }
 
-    private PaintPreviewHelper() {}
+    private StartupPaintPreviewHelper() {}
 }

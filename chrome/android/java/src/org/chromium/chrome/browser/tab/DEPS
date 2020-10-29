@@ -57,7 +57,7 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/native_page/NativePage.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/native_page/NativePageAssassin.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewHelper.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelper.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/night_mode",
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/UrlConstants.java",

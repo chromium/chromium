@@ -1192,7 +1192,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfoControllerDelegate.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePermissionParamsListBuilderDelegate.java",
   "java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
-  "java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewHelper.java",
+  "java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelper.java",
   "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmark.java",
   "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottle.java",
   "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksProviderIterator.java",

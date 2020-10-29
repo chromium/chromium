@@ -49,3 +49,42 @@ android_library("java") {
 android_resources("java_resources") {
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/paint_preview/DemoPaintPreviewTest.java",
+    "javatests/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewTest.java",
+    "javatests/src/org/chromium/chrome/browser/paint_preview/TabbedPaintPreviewTest.java",
+    "javatests/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabServiceTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/paint_preview/browser/android:java",
+    "//components/paint_preview/player/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//third_party/ub-uiautomator:ub_uiautomator_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+}

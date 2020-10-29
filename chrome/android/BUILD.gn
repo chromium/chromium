@@ -1035,6 +1035,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:javatests",
     "//chrome/browser/paint_preview/android:java",
+    "//chrome/browser/paint_preview/android:javatests",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android_test_helpers:test_support_java",

@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.paint_preview.PaintPreviewHelper;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -1387,7 +1387,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private final void restoreIfNeeded() {
         // Attempts to display the Paint Preview representation of this Tab. Please note that this
         // is behind an experimental flag (crbug.com/1008520).
-        if (isFrozen()) PaintPreviewHelper.showPaintPreviewOnRestore(this);
+        if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
 
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
