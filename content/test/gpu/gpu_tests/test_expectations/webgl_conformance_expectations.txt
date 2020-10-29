@@ -218,16 +218,16 @@ crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/c
 ####################
 
 # GPU process crashes / Timed out tests
-crbug.com/1136367 [ fuchsia ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Skip ]
-crbug.com/1136367 [ fuchsia ] conformance/textures/misc/texture-size.html [ Skip ]
-crbug.com/1136367 [ fuchsia ] conformance/textures/misc/texture-size-cube-maps.html [ Skip ]
-crbug.com/1136367 [ fuchsia ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Skip ]
-crbug.com/1136367 [ fuchsia ] conformance/uniforms/uniform-default-values.html [ Skip ]
-crbug.com/1136369 [ fuchsia ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
-crbug.com/1136369 [ fuchsia ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
-crbug.com/1136369 [ fuchsia ] deqp/data/gles2/shaders/conversions.html [ Skip ]
-crbug.com/1136369 [ fuchsia ] deqp/data/gles2/shaders/functions.html [ Skip ]
-crbug.com/1136369 [ fuchsia ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
+crbug.com/1143408 [ fuchsia ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Skip ]
+crbug.com/1143408 [ fuchsia ] conformance/textures/misc/texture-size.html [ Skip ]
+crbug.com/angleproject/2930 [ fuchsia ] conformance/textures/misc/texture-size-cube-maps.html [ Skip ]
+crbug.com/angleproject/3481 [ fuchsia ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Skip ]
+crbug.com/angleproject/5259 [ fuchsia ] conformance/uniforms/uniform-default-values.html [ Skip ]
+crbug.com/1143392 [ fuchsia ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
+crbug.com/871352 [ fuchsia ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
+crbug.com/1143424 [ fuchsia ] deqp/data/gles2/shaders/conversions.html [ Skip ]
+crbug.com/478572 [ fuchsia ] deqp/data/gles2/shaders/functions.html [ Skip ]
+crbug.com/angleproject/3111 [ fuchsia ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 
 # Video not supported on Fuchsia qemu boards.
 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
@@ -283,7 +283,7 @@ crbug.com/951628 [ win no-passthrough no-swiftshader-gl ] conformance/rendering/
 crbug.com/626524 [ win nvidia no-passthrough ] conformance/textures/misc/texture-npot-video.html [ RetryOnFailure ]
 crbug.com/630860 [ win nvidia ] conformance/textures/misc/texture-upload-size.html [ RetryOnFailure ]
 crbug.com/1045339 [ win10 debug-x64 nvidia ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1109977 [ win nvidia passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
+crbug.com/1143392 [ win nvidia passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
 
 # Win10 / NVIDIA Quadro P400 / D3D11 failures
 crbug.com/898674 [ win10 nvidia-0x1cb3 angle-d3d11 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
@@ -514,7 +514,7 @@ crbug.com/642822 [ linux amd ] conformance/rendering/clipping-wide-points.html [
 crbug.com/1018028 [ linux amd-0x6613 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 
 # Linux passthrough AMD
-crbug.com/960808 [ linux amd passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/1143392 [ linux amd passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
 crbug.com/998498 [ linux amd passthrough ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 
 # Linux passthrough AMD OpenGL
