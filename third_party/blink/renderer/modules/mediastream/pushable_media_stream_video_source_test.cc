@@ -91,15 +91,18 @@ class PushableMediaStreamVideoSourceTest : public testing::Test {
 TEST_F(PushableMediaStreamVideoSourceTest, StartAndStop) {
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
+  EXPECT_FALSE(pushable_video_source_->running());
 
   WebMediaStreamTrack track = StartSource();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
+  EXPECT_TRUE(pushable_video_source_->running());
 
   // If the pushable source stops, the MediaStreamSource should stop.
   pushable_video_source_->StopSource();
   EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
             stream_source_->GetReadyState());
+  EXPECT_FALSE(pushable_video_source_->running());
 }
 
 TEST_F(PushableMediaStreamVideoSourceTest, FramesPropagateToSink) {

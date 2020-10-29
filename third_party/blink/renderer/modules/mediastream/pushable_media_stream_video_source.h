@@ -26,9 +26,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   // media::VideoFrame::timestamp().
   void PushFrame(scoped_refptr<media::VideoFrame> video_frame,
                  base::TimeTicks estimated_capture_time);
-  // TODO(crbug.com/1142955): Remove this method. StopSource() should be used
-  // instead.
-  void Stop();
+  bool running() const { return running_; }
 
   // MediaStreamVideoSource
   void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,

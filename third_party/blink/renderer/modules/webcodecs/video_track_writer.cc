@@ -65,13 +65,13 @@ class VideoTrackWritableStreamSink final : public UnderlyingSinkBase {
   ScriptPromise abort(ScriptState* script_state,
                       ScriptValue reason,
                       ExceptionState& exception_state) override {
-    source_->Stop();
+    source_->StopSource();
     return ScriptPromise::CastUndefined(script_state);
   }
 
   ScriptPromise close(ScriptState* script_state,
                       ExceptionState& exception_state) override {
-    source_->Stop();
+    source_->StopSource();
     return ScriptPromise::CastUndefined(script_state);
   }
 

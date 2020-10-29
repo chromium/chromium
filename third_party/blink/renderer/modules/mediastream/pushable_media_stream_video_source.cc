@@ -33,12 +33,6 @@ void PushableMediaStreamVideoSource::PushFrame(
                           estimated_capture_time));
 }
 
-void PushableMediaStreamVideoSource::Stop() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DoStopSource();
-  running_ = false;
-}
-
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback) {
