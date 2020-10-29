@@ -264,9 +264,16 @@ var CrSettingsPasswordsCheckV3Test = class extends CrSettingsV3BrowserTest {
   }
 };
 
-TEST_F('CrSettingsPasswordsCheckV3Test', 'All', function() {
+// Flaky on Mac builds https://crbug.com/1143801
+GEN('#if defined(OS_MAC)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('CrSettingsPasswordsCheckV3Test', 'MAYBE_All', function() {
   mocha.run();
 });
+GEN('#undef MAYBE_All');
 
 // eslint-disable-next-line no-var
 var CrSettingsSafetyCheckPageV3Test = class extends CrSettingsV3BrowserTest {
