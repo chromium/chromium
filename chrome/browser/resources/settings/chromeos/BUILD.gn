@@ -4,7 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
@@ -175,32 +174,6 @@ preprocess_grit("preprocess_external_mojo") {
     "chrome/browser/ui/webui/app_management/app_management.mojom-lite.js",
     "components/services/app_service/public/mojom/types.mojom-lite.js",
   ]
-}
-
-grit("os_settings_resources") {
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    "-E",
-    "root_src_dir=" + rebase_path("//", root_build_dir),
-  ]
-
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  defines +=
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-  source = "$target_gen_dir/os_settings_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/os_settings_resources.h",
-    "grit/os_settings_resources_map.cc",
-    "grit/os_settings_resources_map.h",
-    "os_settings_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
 }
 
 generate_grd("build_grd") {
