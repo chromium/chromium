@@ -1417,9 +1417,9 @@ template("ios_framework_bundle") {
 
       _framework_root_dir = "$root_out_dir/$_output_name.framework"
       if (target_environment == "simulator" || target_environment == "device") {
-        _frameworks_content_dir = _framework_root_dir
+        _framework_contents_dir = _framework_root_dir
       } else if (target_environment == "catalyst") {
-        _frameworks_content_dir = "$_framework_root_dir/Versions/A"
+        _framework_contents_dir = "$_framework_root_dir/Versions/A"
       }
 
       _compile_headers_map_target = _target_name + "_compile_headers_map"
@@ -1455,10 +1455,10 @@ template("ios_framework_bundle") {
       action(_create_module_map_target) {
         visibility = [ ":$_framework_headers_target" ]
         script = "//build/config/ios/write_framework_modulemap.py"
-        outputs = [ "$_frameworks_content_dir/Modules/module.modulemap" ]
+        outputs = [ "$_framework_contents_dir/Modules/module.modulemap" ]
         args = [
           _output_name,
-          rebase_path("$_frameworks_content_dir/Modules", root_build_dir),
+          rebase_path("$_framework_contents_dir/Modules", root_build_dir),
         ]
       }
 
@@ -1471,7 +1471,7 @@ template("ios_framework_bundle") {
                                ])
         visibility = [ ":$_framework_headers_target" ]
         sources = _public_headers
-        outputs = [ "$_frameworks_content_dir/Headers/{{source_file_part}}" ]
+        outputs = [ "$_framework_contents_dir/Headers/{{source_file_part}}" ]
 
         # Do not use forward_variables_from for "public_deps" as
         # we do not want to forward those dependencies.
