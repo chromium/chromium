@@ -125,6 +125,7 @@ class MetricsReporter {
 
   static void ActivityLoggingEnabled(bool response_has_logging_enabled);
   static void NoticeCardFulfilled(bool response_has_notice_card);
+  static void NoticeCardFulfilledObsolete(bool response_has_notice_card);
 
  private:
   base::WeakPtr<MetricsReporter> GetWeakPtr() {

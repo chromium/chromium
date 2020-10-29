@@ -307,7 +307,7 @@ RefreshResponseData TranslateWireResponse(
       response_metadata.privacy_notice_fulfilled());
 
   MetricsReporter::ActivityLoggingEnabled(response_metadata.logging_enabled());
-  MetricsReporter::NoticeCardFulfilled(
+  MetricsReporter::NoticeCardFulfilledObsolete(
       response_metadata.privacy_notice_fulfilled());
 
   RefreshResponseData response_data;
