@@ -5,13 +5,16 @@
 #include "services/network/cookie_access_delegate_impl.h"
 
 #include "net/cookies/cookie_util.h"
+#include "services/network/first_party_sets/preloaded_first_party_sets.h"
 
 namespace network {
 
 CookieAccessDelegateImpl::CookieAccessDelegateImpl(
     mojom::CookieAccessDelegateType type,
+    const PreloadedFirstPartySets* preloaded_first_party_sets,
     const CookieSettings* cookie_settings)
     : type_(type), cookie_settings_(cookie_settings) {
+  // TODO(crbug.com/1143756): Save and use the PreloadedFirstPartySets.
   if (type == mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS) {
     DCHECK(cookie_settings);
   }

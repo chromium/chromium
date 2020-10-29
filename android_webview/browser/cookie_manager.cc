@@ -52,8 +52,8 @@
 #include "url/url_constants.h"
 
 using base::WaitableEvent;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -352,7 +352,8 @@ net::CookieStore* CookieManager::GetCookieStore() {
     // compatibility reasons.
     cookie_store_->SetCookieAccessDelegate(
         std::make_unique<network::CookieAccessDelegateImpl>(
-            network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY));
+            network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY,
+            nullptr /* preloaded_first_party_sets */));
   }
 
   return cookie_store_.get();

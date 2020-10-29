@@ -279,6 +279,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return legacy_tls_config_distributor_.get();
   }
 
+  const PreloadedFirstPartySets* preloaded_first_party_sets() const {
+    return preloaded_first_party_sets_.get();
+  }
+
   bool os_crypt_config_set() const { return os_crypt_config_set_; }
 
   void set_host_resolver_factory_for_testing(

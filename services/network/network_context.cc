@@ -408,7 +408,8 @@ NetworkContext::NetworkContext(
                             session_cleanup_cookie_store);
   url_request_context_ = url_request_context_owner_.url_request_context.get();
   cookie_manager_ = std::make_unique<CookieManager>(
-      url_request_context_, std::move(session_cleanup_cookie_store),
+      url_request_context_, network_service_->preloaded_first_party_sets(),
+      std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 
   network_service_->RegisterNetworkContext(this);
@@ -464,9 +465,11 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
-      cookie_manager_(std::make_unique<CookieManager>(url_request_context,
-                                                      nullptr,
-                                                      nullptr)),
+      cookie_manager_(std::make_unique<CookieManager>(
+          url_request_context,
+          nullptr,
+          nullptr /* preloaded_first_party_sets */,
+          nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),
