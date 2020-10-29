@@ -70,7 +70,8 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   class WindowOcclusionCalculator {
    public:
     using UpdateOcclusionStateCallback = base::RepeatingCallback<void(
-        const base::flat_map<HWND, Window::OcclusionState>&)>;
+        const base::flat_map<HWND, Window::OcclusionState>&,
+        bool show_all_windows)>;
 
     // Creates WindowOcclusionCalculator instance. Must be called on UI thread.
     static void CreateInstance(
@@ -234,6 +235,10 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // windows from |unoccluded_desktop_region_|.
     int num_root_windows_with_unknown_occlusion_state_;
 
+    // This is true if the task bar thumbnails or the alt tab thumbnails are
+    // showing.
+    bool showing_thumbnails_ = false;
+
     // Only used on Win10+.
     Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager_;
 
@@ -253,9 +258,12 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // window rectangle in |window_rect|.
   static bool IsWindowVisibleAndFullyOpaque(HWND hwnd, gfx::Rect* window_rect);
 
-  // Updates root windows occclusion state.
+  // Updates root windows occclusion state. If |show_all_windows| is true,
+  // all non-hidden windows will be marked visible.  This is used to force
+  // rendering of thumbnails.
   void UpdateOcclusionState(const base::flat_map<HWND, Window::OcclusionState>&
-                                root_window_hwnds_occlusion_state);
+                                root_window_hwnds_occlusion_state,
+                            bool show_all_windows);
 
   // This is called with session changed notifications. If the screen is locked
   // by the current session, it marks app windows as occluded.

@@ -7,10 +7,12 @@
 #include <dwmapi.h>
 #include <powersetting.h>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -20,6 +22,7 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_version.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/gfx/win/hwnd_util.h"
 
 namespace aura {
 
@@ -227,7 +230,8 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
 
 void NativeWindowOcclusionTrackerWin::UpdateOcclusionState(
     const base::flat_map<HWND, Window::OcclusionState>&
-        root_window_hwnds_occlusion_state) {
+        root_window_hwnds_occlusion_state,
+    bool show_all_windows) {
   num_visible_root_windows_ = 0;
   for (const auto& root_window_pair : root_window_hwnds_occlusion_state) {
     auto it = hwnd_root_window_map_.find(root_window_pair.first);
@@ -243,11 +247,15 @@ void NativeWindowOcclusionTrackerWin::UpdateOcclusionState(
           Window::OcclusionState::HIDDEN);
       continue;
     }
+    Window::OcclusionState occl_state = root_window_pair.second;
     // If the screen is locked or off, ignore occlusion state results and
     // mark the window as occluded.
-    it->second->GetHost()->SetNativeWindowOcclusionState(
-        screen_locked_ || !display_on_ ? Window::OcclusionState::OCCLUDED
-                                       : root_window_pair.second);
+    if (screen_locked_ || !display_on_)
+      occl_state = Window::OcclusionState::OCCLUDED;
+    else if (show_all_windows)
+      occl_state = Window::OcclusionState::VISIBLE;
+
+    it->second->GetHost()->SetNativeWindowOcclusionState(occl_state);
     num_visible_root_windows_++;
   }
 }
@@ -487,8 +495,9 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   // Post a task to the browser ui thread to update the window occlusion state
   // on the root windows.
   ui_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(update_occlusion_state_callback_,
-                                root_window_hwnds_occlusion_state_));
+      FROM_HERE,
+      base::BindOnce(update_occlusion_state_callback_,
+                     root_window_hwnds_occlusion_state_, showing_thumbnails_));
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
@@ -532,6 +541,10 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 
   // Detects foreground window changing.
   RegisterGlobalEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND);
+
+  // Detects objects getting shown and hidden. Used to know when the task bar
+  // and alt tab are showing preview windows so we can unocclude Chrome windows.
+  RegisterGlobalEventHook(EVENT_OBJECT_SHOW, EVENT_OBJECT_HIDE);
 
   // Detects object state changes, e.g., enable/disable state, native window
   // maximize and native window restore events.
@@ -643,6 +656,38 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   // about OBJID_CARET, which is spammy.
   if (id_object != OBJID_WINDOW)
     return;
+
+  // Detect if either the alt tab view or the task list thumbnail is being
+  // shown. If so, mark all non-hidden windows as occluded, and remember that
+  // we're in the showing_thumbnails state. This lasts until we get told that
+  // either the alt tab view or task list thumbnail are hidden.
+  if (event == EVENT_OBJECT_SHOW) {
+    // Avoid getting the hwnd's class name, and recomputing occlusion, if not
+    // needed.
+    if (showing_thumbnails_)
+      return;
+    std::string hwnd_class_name = base::UTF16ToUTF8(gfx::GetClassName(hwnd));
+    if ((hwnd_class_name == "MultitaskingViewFrame" ||
+         hwnd_class_name == "TaskListThumbnailWnd")) {
+      showing_thumbnails_ = true;
+      ui_thread_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(update_occlusion_state_callback_,
+                                    root_window_hwnds_occlusion_state_,
+                                    showing_thumbnails_));
+      return;
+    }
+  } else if (event == EVENT_OBJECT_HIDE) {
+    // Avoid getting the hwnd's class name, and recomputing occlusion, if not
+    // needed.
+    if (!showing_thumbnails_)
+      return;
+    std::string hwnd_class_name = base::UTF16ToUTF8(gfx::GetClassName(hwnd));
+    if (hwnd_class_name == "MultitaskingViewFrame" ||
+        hwnd_class_name == "TaskListThumbnailWnd") {
+      showing_thumbnails_ = false;
+      // Let occlusion calculation fix occlusion state.
+    }
+  }
 
   // Don't continually calculate occlusion while a window is moving, but rather
   // once at the beginning and once at the end.
