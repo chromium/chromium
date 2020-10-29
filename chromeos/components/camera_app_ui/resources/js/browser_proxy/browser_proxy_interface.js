@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
-import {BackgroundOps} from '../background_ops.js';
 import {
   AbstractDirectoryEntry,   // eslint-disable-line no-unused-vars
   AbstractFileEntry,        // eslint-disable-line no-unused-vars
@@ -116,12 +114,6 @@ export class BrowserProxy {
    * @abstract
    */
   isMp4RecordingEnabled() {}
-
-  /**
-   * @return {!BackgroundOps}
-   * @abstract
-   */
-  getBackgroundOps() {}
 
   /**
    * @return {!Promise}

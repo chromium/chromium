@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../chrome_util.js';
-import {NotImplementedError} from '../error.js';
+import {NotImplementedError} from '../type.js';
 
 import {AsyncWriter} from './async_writer.js';
 import {

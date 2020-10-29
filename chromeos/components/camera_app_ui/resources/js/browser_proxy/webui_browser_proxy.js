@@ -11,14 +11,10 @@
  */
 import '/strings.m.js';
 
-// eslint-disable-next-line no-unused-vars
-import {BackgroundOps} from '../background_ops.js';
 import {assert} from '../chrome_util.js';
-import {Intent} from '../intent.js';
 import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
 import {NativeDirectoryEntry} from '../models/native_file_system_entry.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
-import {PerfLogger} from '../perf.js';
 
 // eslint-disable-next-line no-unused-vars
 import {BrowserProxy} from './browser_proxy_interface.js';
@@ -154,24 +150,6 @@ class WebUIBrowserProxy {
   /** @override */
   isMp4RecordingEnabled() {
     return false;
-  }
-
-  /** @override */
-  getBackgroundOps() {
-    // TODO(crbug.com/980846): Refactor after migrating to SWA since there is no
-    // background page for SWA.
-    const perfLogger = new PerfLogger();
-    const url = window.location.href;
-    const intent = url.includes('intent') ? Intent.create(new URL(url)) : null;
-    return /** @type {!BackgroundOps} */ ({
-      bindForegroundOps: (ops) => {},
-      bindAppWindow: (appWindow) => {},
-      getIntent: () => intent,
-      getPerfLogger: () => perfLogger,
-      getTestingErrorCallback: () => null,
-      notifyActivation: () => {},
-      notifySuspension: () => {},
-    });
   }
 
   /** @override */

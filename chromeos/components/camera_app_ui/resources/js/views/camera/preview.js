@@ -109,7 +109,7 @@ export class Preview {
    * @return {!Promise} Promise for the operation.
    */
   async setSource_(stream) {
-    const node = dom.instantiateTemplate('#preview-video-template');
+    const node = util.instantiateTemplate('#preview-video-template');
     const video = dom.getFrom(node, 'video', HTMLVideoElement);
     await new Promise((resolve) => {
       const handler = () => {

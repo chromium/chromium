@@ -9,12 +9,13 @@ import {
   ForegroundOps,  // eslint-disable-line no-unused-vars
 } from './background_ops.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
-// eslint-disable-next-line no-unused-vars
-import {TestingErrorCallback} from './error.js';
 import {Intent} from './intent.js';
 import {initMetrics, setMetricsEnabled} from './metrics.js';
 import {PerfLogger} from './perf.js';
-import {PerfEvent} from './type.js';
+import {
+  PerfEvent,
+  TestingErrorCallback,  // eslint-disable-line no-unused-vars
+} from './type.js';
 
 /**
  * Fixed minimum width of the window inner-bounds in pixels.

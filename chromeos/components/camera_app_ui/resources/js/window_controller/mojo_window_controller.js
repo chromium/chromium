@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
-import {NotImplementedError} from '../error.js';
+import {NotImplementedError} from '../type.js';
 
 // eslint-disable-next-line no-unused-vars
 import {WindowController} from './window_controller_interface.js';

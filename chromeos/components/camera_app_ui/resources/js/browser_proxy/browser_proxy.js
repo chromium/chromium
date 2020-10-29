@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, promisify} from '../chrome_util.js';
+import {promisify} from '../chrome_util.js';
 import {ChromeDirectoryEntry} from '../models/chrome_file_system_entry.js';
 import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
 import {Resolution} from '../type.js';
@@ -160,12 +160,6 @@ class ChromeAppBrowserProxy {
   /** @override */
   isMp4RecordingEnabled() {
     return true;
-  }
-
-  /** @override */
-  getBackgroundOps() {
-    assert(window['backgroundOps'] !== undefined);
-    return window['backgroundOps'];
   }
 
   /** @override */

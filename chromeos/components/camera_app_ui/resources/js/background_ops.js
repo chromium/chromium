@@ -5,11 +5,11 @@
 // eslint-disable-next-line no-unused-vars
 import {AppWindow} from './app_window.js';
 // eslint-disable-next-line no-unused-vars
-import {TestingErrorCallback} from './error.js';
-// eslint-disable-next-line no-unused-vars
 import {Intent} from './intent.js';
 // eslint-disable-next-line no-unused-vars
 import {PerfLogger} from './perf.js';
+// eslint-disable-next-line no-unused-vars
+import {TestingErrorCallback} from './type.js';
 
 /**
  * Operations supported by foreground window.
@@ -80,4 +80,23 @@ export class BackgroundOps {
    * @abstract
    */
   notifySuspension() {}
+}
+
+/**
+ * Creates a fake background ops.
+ * @return {!BackgroundOps}
+ */
+export function createFakeBackgroundOps() {
+  const perfLogger = new PerfLogger();
+  const url = window.location.href;
+  const intent = url.includes('intent') ? Intent.create(new URL(url)) : null;
+  return /** @type {!BackgroundOps} */ ({
+    bindForegroundOps: (ops) => {},
+    bindAppWindow: (appWindow) => {},
+    getIntent: () => intent,
+    getPerfLogger: () => perfLogger,
+    getTestingErrorCallback: () => null,
+    notifyActivation: () => {},
+    notifySuspension: () => {},
+  });
 }

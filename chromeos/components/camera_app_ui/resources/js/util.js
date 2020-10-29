@@ -4,6 +4,7 @@
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
+import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
@@ -440,4 +441,16 @@ export function setInkdropEffect(el) {
     el.style.setProperty('--drop-radius', `${radius}px`);
     animateOnce(el);
   });
+}
+
+/**
+ * Instantiates template with the target selector.
+ * @param {string} selector
+ * @return {!Node}
+ */
+export function instantiateTemplate(selector) {
+  const tpl = dom.get(selector, HTMLTemplateElement);
+  const node = document.importNode(tpl.content, true);
+  setupI18nElements(node);
+  return node;
 }

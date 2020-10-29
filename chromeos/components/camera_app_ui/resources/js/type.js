@@ -222,3 +222,23 @@ export const ErrorLevel = {
   WARNING: 'WARNING',
   ERROR: 'ERROR',
 };
+
+/**
+ * Callback for reporting error in testing run.
+ * @typedef {function(!ErrorInfo)}
+ */
+export let TestingErrorCallback;
+
+/**
+ * Throws when a method is not implemented.
+ */
+export class NotImplementedError extends Error {
+  /**
+   * @param {string=} message
+   * @public
+   */
+  constructor(message = 'Method is not implemented') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}

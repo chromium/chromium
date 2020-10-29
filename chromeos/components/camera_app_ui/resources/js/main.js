@@ -6,6 +6,7 @@
 import {AppWindow} from './app_window.js';
 import {
   BackgroundOps,  // eslint-disable-line no-unused-vars
+  createFakeBackgroundOps,
   ForegroundOps,  // eslint-disable-line no-unused-vars
 } from './background_ops.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
@@ -279,7 +280,15 @@ let instance = null;
   if (instance !== null) {
     return;
   }
-  const bgOps = browserProxy.getBackgroundOps();
+
+  let bgOps;
+  if (window['backgroundOps'] !== undefined) {
+    bgOps = window['backgroundOps'];
+  } else {
+    // TODO(crbug.com/980846): Refactor after migrating to SWA since there is no
+    // background page for SWA.
+    bgOps = createFakeBackgroundOps();
+  }
 
   browserProxy.setupUnloadListener(() => {
     const intent = bgOps.getIntent();

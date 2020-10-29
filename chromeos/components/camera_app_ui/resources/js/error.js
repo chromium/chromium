@@ -10,13 +10,8 @@ import {
   ErrorInfo,  // eslint-disable-line no-unused-vars
   ErrorLevel,
   ErrorType,
+  TestingErrorCallback,  // eslint-disable-line no-unused-vars
 } from './type.js';
-
-/**
- * Callback for reporting error in testing run.
- * @typedef {function(!ErrorInfo)}
- */
-export let TestingErrorCallback;
 
 /**
  * Code location of stack frame.
@@ -28,20 +23,6 @@ export let TestingErrorCallback;
  *  }}
  */
 export let StackFrame;
-
-/**
- * Throws when a method is not implemented.
- */
-export class NotImplementedError extends Error {
-  /**
-   * @param {string=} message
-   * @public
-   */
-  constructor(message = 'Method is not implemented') {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
 
 /**
  * Converts v8 CallSite object to StackFrame.

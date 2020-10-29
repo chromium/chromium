@@ -441,7 +441,7 @@ export class ResolutionSettings extends BaseSettings {
       let /** !HTMLElement */ videoItem;
       if (deviceId !== focusedId) {
         const extItem =
-            dom.instantiateTemplate('#extcam-resolution-item-template');
+            util.instantiateTemplate('#extcam-resolution-item-template');
         [titleItem, photoItem, videoItem] =
             dom.getAllFrom(extItem, '.menu-item', HTMLElement);
 
@@ -610,7 +610,7 @@ export class ResolutionSettings extends BaseSettings {
         .forEach((element) => element.parentNode.removeChild(element));
 
     resolutions.forEach((r) => {
-      const item = dom.instantiateTemplate('#resolution-item-template');
+      const item = util.instantiateTemplate('#resolution-item-template');
       const label = dom.getFrom(item, 'label', HTMLLabelElement);
       util.setInkdropEffect(label);
       const input = dom.getFrom(item, 'input', HTMLInputElement);
