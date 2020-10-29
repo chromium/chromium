@@ -125,11 +125,13 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                           const StreamPipeOptions* options,
                           ExceptionState&);
 
-  ScriptPromise pipeTo(ScriptState*, ScriptValue destination, ExceptionState&);
+  ScriptPromise pipeTo(ScriptState*,
+                       WritableStream* destination,
+                       ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-pipe-to
   ScriptPromise pipeTo(ScriptState*,
-                       ScriptValue destination_value,
+                       WritableStream* destination,
                        const StreamPipeOptions* options,
                        ExceptionState&);
 

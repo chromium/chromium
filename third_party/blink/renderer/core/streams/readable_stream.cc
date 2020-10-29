@@ -1325,47 +1325,37 @@ ScriptValue ReadableStream::pipeThrough(ScriptState* script_state,
 }
 
 ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
-                                     ScriptValue destination,
+                                     WritableStream* destination,
                                      ExceptionState& exception_state) {
   return pipeTo(script_state, destination, StreamPipeOptions::Create(),
                 exception_state);
 }
 
 ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
-                                     ScriptValue destination_value,
+                                     WritableStream* destination,
                                      const StreamPipeOptions* options,
                                      ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-pipe-to
-  // 2. If ! IsWritableStream(dest) is false, return a promise rejected with a
-  //    TypeError exception.
-  // TODO(ricea): Do this in the IDL instead.
-  WritableStream* destination = V8WritableStream::ToImplWithTypeCheck(
-      script_state->GetIsolate(), destination_value.V8Value());
-
-  if (!destination) {
-    exception_state.ThrowTypeError("Illegal invocation");
-    return ScriptPromise();
-  }
-
-  // 3. If signal is not undefined, and signal is not an instance of the
-  //    AbortSignal interface, return a promise rejected with a TypeError
-  //    exception.
-  auto* pipe_options = MakeGarbageCollected<PipeOptions>(options);
-
-  // 4. If ! IsReadableStreamLocked(this) is true, return a promise rejected
-  // with a TypeError exception.
+  // 1. If ! IsReadableStreamLocked(this) is true, return a promise rejected
+  //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot pipe a locked stream");
     return ScriptPromise();
   }
 
-  // 5. If ! IsWritableStreamLocked(dest) is true, return a promise rejected
-  // with a TypeError exception.
+  // 2. If ! IsWritableStreamLocked(destination) is true, return a promise
+  //    rejected with a TypeError exception.
   if (WritableStream::IsLocked(destination)) {
     exception_state.ThrowTypeError("Cannot pipe to a locked stream");
     return ScriptPromise();
   }
 
+  // 3. Let signal be options["signal"] if it exists, or undefined otherwise.
+  auto* pipe_options = MakeGarbageCollected<PipeOptions>(options);
+
+  // 4. Return ! ReadableStreamPipeTo(this, destination,
+  //    options["preventClose"], options["preventAbort"],
+  //    options["preventCancel"], signal).
   return PipeTo(script_state, this, destination, pipe_options);
 }
 
