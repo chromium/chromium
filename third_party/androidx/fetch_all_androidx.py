@@ -163,6 +163,7 @@ def _write_cipd_yaml(libs_dir, cipd_yaml_path):
     data_files = ['BUILD.gn', 'additional_readme_paths.json']
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
+        androidx_rel_lib_dir = os.path.relpath(abs_lib_dir, _ANDROIDX_PATH)
         if not os.path.isdir(abs_lib_dir):
             continue
         lib_files = os.listdir(abs_lib_dir)
@@ -173,13 +174,15 @@ def _write_cipd_yaml(libs_dir, cipd_yaml_path):
             raise Exception('README.chromium not in {}'.format(abs_lib_dir))
         if not 'LICENSE' in lib_files:
             raise Exception('LICENSE not in {}'.format(abs_lib_dir))
-        data_files.append(os.path.join(abs_lib_dir, 'README.chromium'))
-        data_files.append(os.path.join(abs_lib_dir, 'LICENSE'))
+        data_files.append(os.path.join(androidx_rel_lib_dir,
+                                       'README.chromium'))
+        data_files.append(os.path.join(androidx_rel_lib_dir, 'LICENSE'))
 
         _rel_extracted_files = _extract_files_from_yaml(
             os.path.join(abs_lib_dir, 'cipd.yaml'))
         data_files.extend(
-            os.path.join(abs_lib_dir, f) for f in _rel_extracted_files)
+            os.path.join(androidx_rel_lib_dir, f)
+            for f in _rel_extracted_files)
 
     contents = [
         '# Copyright 2020 The Chromium Authors. All rights reserved.',
