@@ -83,9 +83,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     WriteUTF8String(pem.certificate().c_str());
     return true;
   }
-  if (wrapper_type_info == V8RTCEncodedAudioFrame::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::RTCInsertableStreamsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (wrapper_type_info == V8RTCEncodedAudioFrame::GetWrapperTypeInfo()) {
     if (IsForStorage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "An RTCEncodedAudioFrame cannot be "
@@ -94,9 +92,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     }
     return WriteRTCEncodedAudioFrame(wrappable->ToImpl<RTCEncodedAudioFrame>());
   }
-  if (wrapper_type_info == V8RTCEncodedVideoFrame::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::RTCInsertableStreamsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (wrapper_type_info == V8RTCEncodedVideoFrame::GetWrapperTypeInfo()) {
     if (IsForStorage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "An RTCEncodedVideoFrame cannot be "
