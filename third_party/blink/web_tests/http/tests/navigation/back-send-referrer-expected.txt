@@ -1,2 +1,2 @@
 Referrer: http://127.0.0.1:8000/navigation/back-send-referrer.html
-window.name: 3
+history.length : 3
