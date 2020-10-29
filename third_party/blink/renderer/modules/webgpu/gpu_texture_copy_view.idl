@@ -8,4 +8,5 @@ dictionary GPUTextureCopyView {
     required GPUTexture texture;
     GPUSize32 mipLevel = 0;
     GPUOrigin3D origin = {};
+    GPUTextureAspect aspect = "all";
 };

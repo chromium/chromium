@@ -852,6 +852,7 @@ WGPUTextureCopyView AsDawnType(const GPUTextureCopyView* webgpu_view,
   dawn_view.texture = webgpu_view->texture()->GetHandle();
   dawn_view.mipLevel = webgpu_view->mipLevel();
   dawn_view.origin = AsDawnType(&webgpu_view->origin());
+  dawn_view.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_view->aspect());
 
   return dawn_view;
 }
