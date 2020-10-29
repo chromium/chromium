@@ -194,7 +194,7 @@ void History::go(ScriptState* script_state,
     return;
 
   if (!active_window->GetFrame() ||
-      !active_window->GetFrame()->CanNavigate(*GetFrame()) ||
+      !active_window->GetFrame()->CanNavigate(*DomWindow()->GetFrame()) ||
       !active_window->GetFrame()->IsNavigationAllowed() ||
       !DomWindow()->GetFrame()->IsNavigationAllowed()) {
     return;

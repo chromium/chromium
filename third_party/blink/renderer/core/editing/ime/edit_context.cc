@@ -67,7 +67,7 @@ bool EditContext::HasPendingActivity() const {
 }
 
 InputMethodController& EditContext::GetInputMethodController() const {
-  return ExecutionContextClient::GetFrame()->GetInputMethodController();
+  return DomWindow()->GetFrame()->GetInputMethodController();
 }
 
 bool EditContext::IsEditContextActive() const {
@@ -93,19 +93,15 @@ bool EditContext::IsVirtualKeyboardPolicyManual() const {
 
 void EditContext::DispatchCompositionEndEvent(const String& text) {
   auto* event = MakeGarbageCollected<CompositionEvent>(
-      event_type_names::kCompositionend,
-      ExecutionContextClient::GetFrame()->DomWindow(), text);
+      event_type_names::kCompositionend, DomWindow(), text);
   DispatchEvent(*event);
 }
 
 bool EditContext::DispatchCompositionStartEvent(const String& text) {
   auto* event = MakeGarbageCollected<CompositionEvent>(
-      event_type_names::kCompositionstart,
-      ExecutionContextClient::GetFrame()->DomWindow(), text);
+      event_type_names::kCompositionstart, DomWindow(), text);
   DispatchEvent(*event);
-  if (!ExecutionContextClient::GetFrame())
-    return false;
-  return true;
+  return DomWindow();
 }
 
 void EditContext::DispatchTextUpdateEvent(const String& text,

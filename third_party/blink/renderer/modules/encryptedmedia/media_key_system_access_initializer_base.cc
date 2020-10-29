@@ -212,16 +212,12 @@ void MediaKeySystemAccessInitializerBase::GenerateWarningAndReportMetrics()
             "behavior."));
   }
 
-  if (!IsExecutionContextValid())
+  if (!DomWindow())
     return;
 
-  Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
-  LocalFrame* frame = GetFrame();
-  if (!document || !frame)
-    return;
-
+  LocalFrame* frame = DomWindow()->GetFrame();
   ukm::builders::Media_EME_RequestMediaKeySystemAccess builder(
-      document->UkmSourceID());
+      DomWindow()->UkmSourceID());
   builder.SetKeySystem(KeySystemForUkm::kWidevine);
   builder.SetIsAdFrame(
       static_cast<int>(frame->IsAdRoot() || frame->IsAdSubframe()));
@@ -232,7 +228,7 @@ void MediaKeySystemAccessInitializerBase::GenerateWarningAndReportMetrics()
       static_cast<int>(has_empty_robustness));
   builder.SetVideoCapabilities_HasHwSecureAllRobustness(
       static_cast<int>(has_hw_secure_all));
-  builder.Record(document->UkmRecorder());
+  builder.Record(DomWindow()->UkmRecorder());
 }
 
 }  // namespace blink

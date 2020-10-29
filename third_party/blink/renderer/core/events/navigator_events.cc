@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/events/navigator_events.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -37,12 +38,8 @@
 namespace blink {
 
 int32_t NavigatorEvents::maxTouchPoints(Navigator& navigator) {
-  LocalFrame* frame = navigator.GetFrame();
-  if (!frame)
-    return 0;
-  if (Settings* settings = frame->GetSettings())
-    return settings->GetMaxTouchPoints();
-  return 0;
+  LocalDOMWindow* window = navigator.DomWindow();
+  return window ? window->GetFrame()->GetSettings()->GetMaxTouchPoints() : 0;
 }
 
 }  // namespace blink

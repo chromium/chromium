@@ -73,10 +73,11 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
       largest_image->first_size, largest_image->load_time, image_id, image_url,
       image_element);
 
-  if (LocalFrame* frame = window_performance_->GetFrame()) {
-    TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        kTraceCategories, kLCPCandidate, largest_image->paint_time, "data",
-        ImageCandidateTraceData(largest_image), "frame", ToTraceValue(frame));
+  if (LocalDOMWindow* window = window_performance_->DomWindow()) {
+    TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,
+                                     largest_image->paint_time, "data",
+                                     ImageCandidateTraceData(largest_image),
+                                     "frame", ToTraceValue(window->GetFrame()));
   }
 }
 
@@ -101,10 +102,11 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulText(
       largest_text->paint_time, largest_text->first_size, base::TimeTicks(),
       text_id, g_empty_string, text_element);
 
-  if (LocalFrame* frame = window_performance_->GetFrame()) {
-    TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        kTraceCategories, kLCPCandidate, largest_text->paint_time, "data",
-        TextCandidateTraceData(largest_text), "frame", ToTraceValue(frame));
+  if (LocalDOMWindow* window = window_performance_->DomWindow()) {
+    TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,
+                                     largest_text->paint_time, "data",
+                                     TextCandidateTraceData(largest_text),
+                                     "frame", ToTraceValue(window->GetFrame()));
   }
 }
 
@@ -120,11 +122,10 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
   value->SetInteger("nodeId", static_cast<int>(largest_text->node_id));
   value->SetInteger("size", static_cast<int>(largest_text->first_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
-  value->SetBoolean("isMainFrame",
-                    window_performance_->GetFrame()->IsMainFrame());
-  auto* document = window_performance_->DomWindow()->document();
+  auto* window = window_performance_->DomWindow();
+  value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
   value->SetString("navigationId",
-                   IdentifiersFactory::LoaderId(document->Loader()));
+                   IdentifiersFactory::LoaderId(window->document()->Loader()));
   return value;
 }
 
@@ -136,11 +137,10 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   value->SetInteger("nodeId", static_cast<int>(largest_image->node_id));
   value->SetInteger("size", static_cast<int>(largest_image->first_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
-  value->SetBoolean("isMainFrame",
-                    window_performance_->GetFrame()->IsMainFrame());
-  auto* document = window_performance_->DomWindow()->document();
+  auto* window = window_performance_->DomWindow();
+  value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
   value->SetString("navigationId",
-                   IdentifiersFactory::LoaderId(document->Loader()));
+                   IdentifiersFactory::LoaderId(window->document()->Loader()));
 
   return value;
 }

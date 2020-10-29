@@ -106,20 +106,16 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
 }
 
 bool KeyboardLayout::IsLocalFrameAttached() {
-  if (GetFrame())
-    return true;
-  return false;
+  return DomWindow();
 }
 
 bool KeyboardLayout::EnsureServiceConnected() {
   if (!service_.is_bound()) {
-    LocalFrame* frame = GetFrame();
-    if (!frame) {
+    if (!DomWindow())
       return false;
-    }
-    frame->GetBrowserInterfaceBroker().GetInterface(
+    DomWindow()->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
-            frame->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     DCHECK(service_.is_bound());
   }
   return true;
@@ -128,8 +124,8 @@ bool KeyboardLayout::EnsureServiceConnected() {
 bool KeyboardLayout::CalledFromSupportedContext(ExecutionContext* context) {
   DCHECK(context);
   // This API is only accessible from a top level, secure browsing context.
-  LocalFrame* frame = GetFrame();
-  return frame && frame->IsMainFrame() && context->IsSecureContext();
+  return DomWindow() && DomWindow()->GetFrame()->IsMainFrame() &&
+         context->IsSecureContext();
 }
 
 void KeyboardLayout::GotKeyboardLayoutMap(

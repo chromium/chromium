@@ -34,7 +34,6 @@ namespace blink {
 
 class ExecutionContext;
 class LocalDOMWindow;
-class LocalFrame;
 
 // ExecutionContextClient and ExecutionContextLifecycleObserver are helpers to
 // associate an object with an ExecutionContext. It is unsafe to access an
@@ -72,10 +71,6 @@ class CORE_EXPORT ExecutionContextClient : public GarbageCollectedMixin {
   // If the execution context is a window, returns it. Returns nullptr if the
   // execution context is not a window or if it has been detached.
   LocalDOMWindow* DomWindow() const;
-
-  // If associated with a live window, returns the associated frame.
-  // Returns null otherwise.
-  LocalFrame* GetFrame() const;
 
   void Trace(Visitor*) const override;
 

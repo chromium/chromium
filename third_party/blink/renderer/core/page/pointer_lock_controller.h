@@ -43,6 +43,7 @@ namespace blink {
 
 class Element;
 class Document;
+class LocalFrame;
 class Page;
 class PointerLockOptions;
 class WebMouseEvent;

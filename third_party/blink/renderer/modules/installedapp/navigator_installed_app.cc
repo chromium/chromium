@@ -36,7 +36,7 @@ ScriptPromise NavigatorInstalledApp::getInstalledRelatedApps(
     return promise;
   }
 
-  if (!navigator.GetFrame()->IsMainFrame()) {
+  if (!navigator.DomWindow()->GetFrame()->IsMainFrame()) {
     auto* exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "getInstalledRelatedApps() is only supported in "
