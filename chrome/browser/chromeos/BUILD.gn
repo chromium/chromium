@@ -350,6 +350,7 @@ source_set("chromeos") {
     "//storage/browser",
     "//storage/common",
     "//third_party/blink/public/common",
+    "//third_party/boringssl",
     "//third_party/icu",
     "//third_party/libaddressinput",
     "//third_party/libipp",

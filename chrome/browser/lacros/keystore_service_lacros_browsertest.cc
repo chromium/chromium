@@ -46,3 +46,65 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
   // attestation is disabled. We want this to error out because of a poorly
   // formatted attestation message.
 }
+
+// Tests that get certificates works.
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
+  crosapi::mojom::GetCertificatesResultPtr result;
+  crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
+      keystore_service_remote().get());
+  async_waiter.GetCertificates(crosapi::mojom::KeystoreType::kUser, &result);
+  ASSERT_TRUE(result->is_certificates());
+  EXPECT_EQ(0u, result->get_certificates().size());
+}
+
+// Tests that generate key works.
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GenerateKeyPKCS) {
+  crosapi::mojom::KeystoreBinaryResultPtr result;
+  crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
+      keystore_service_remote().get());
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
+      crosapi::mojom::KeystoreSigningAlgorithm::New();
+  crosapi::mojom::KeystorePKCS115ParamsPtr params =
+      crosapi::mojom::KeystorePKCS115Params::New();
+  params->modulus_length = 1024;
+  algo->set_pkcs115(std::move(params));
+  async_waiter.GenerateKey(crosapi::mojom::KeystoreType::kUser, std::move(algo),
+                           &result);
+  ASSERT_TRUE(result->is_blob());
+  EXPECT_GT(result->get_blob().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GenerateKeyECDSA) {
+  crosapi::mojom::KeystoreBinaryResultPtr result;
+  crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
+      keystore_service_remote().get());
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
+      crosapi::mojom::KeystoreSigningAlgorithm::New();
+  crosapi::mojom::KeystoreECDSAParamsPtr params =
+      crosapi::mojom::KeystoreECDSAParams::New();
+  params->named_curve = "P-256";
+  algo->set_ecdsa(std::move(params));
+  async_waiter.GenerateKey(crosapi::mojom::KeystoreType::kUser, std::move(algo),
+                           &result);
+  ASSERT_TRUE(result->is_blob());
+  EXPECT_GT(result->get_blob().size(), 1u);
+}
+
+// Tests that trying to add/remove an incorrectly formatted certificate results
+// in failure.
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, CertificateBadFormat) {
+  const char expected_error[] = "Certificate is not a valid X.509 certificate.";
+  std::string result;
+  std::vector<uint8_t> dummy_certificate;
+  dummy_certificate.push_back(15);
+  crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
+      keystore_service_remote().get());
+  async_waiter.AddCertificate(crosapi::mojom::KeystoreType::kUser,
+                              std::move(dummy_certificate), &result);
+  EXPECT_EQ(result, expected_error);
+
+  result = "";
+  async_waiter.RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
+                                 std::move(dummy_certificate), &result);
+  EXPECT_EQ(result, expected_error);
+}

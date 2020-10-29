@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_LACROS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_LACROS_H_
 
+#include <string>
+
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 
@@ -19,33 +21,46 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
 };
 
 class EnterprisePlatformKeysInternalGenerateKeyFunction
-    : public LacrosNotImplementedExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysInternalGenerateKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  using ResultPtr = crosapi::mojom::KeystoreBinaryResultPtr;
+  void OnGenerateKey(ResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
 };
 
-class EnterprisePlatformKeysGetCertificatesFunction
-    : public LacrosNotImplementedExtensionFunction {
+class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
+  ResponseAction Run() override;
+
+  using ResultPtr = crosapi::mojom::GetCertificatesResultPtr;
+  void OnGetCertificates(ResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
                              ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
 };
 
 class EnterprisePlatformKeysImportCertificateFunction
-    : public LacrosNotImplementedExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysImportCertificateFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnAddCertificate(const std::string& error);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.importCertificate",
                              ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE)
 };
 
 class EnterprisePlatformKeysRemoveCertificateFunction
-    : public LacrosNotImplementedExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysRemoveCertificateFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnRemoveCertificate(const std::string& error);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.removeCertificate",
                              ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
 };

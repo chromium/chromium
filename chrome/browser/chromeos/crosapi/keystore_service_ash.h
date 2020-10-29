@@ -42,6 +42,17 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
       bool migrate,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
+  void GetCertificates(mojom::KeystoreType keystore,
+                       GetCertificatesCallback callback) override;
+  void GenerateKey(mojom::KeystoreType keystore,
+                   mojom::KeystoreSigningAlgorithmPtr algorithm,
+                   GenerateKeyCallback callback) override;
+  void AddCertificate(mojom::KeystoreType keystore,
+                      const std::vector<uint8_t>& certificate,
+                      AddCertificateCallback callback) override;
+  void RemoveCertificate(mojom::KeystoreType keystore,
+                         const std::vector<uint8_t>& certificate,
+                         RemoveCertificateCallback callback) override;
 
  private:
   static void OnGetTokens(
@@ -49,6 +60,16 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
       std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
           platform_keys_token_ids,
       chromeos::platform_keys::Status status);
+  static void OnGetCertificates(GetCertificatesCallback callback,
+                                std::unique_ptr<net::CertificateList> certs,
+                                chromeos::platform_keys::Status status);
+  static void OnGenerateKey(GenerateKeyCallback callback,
+                            const std::string& public_key,
+                            chromeos::platform_keys::Status status);
+  static void OnImportCertificate(AddCertificateCallback callback,
+                                  chromeos::platform_keys::Status status);
+  static void OnRemoveCertificate(RemoveCertificateCallback callback,
+                                  chromeos::platform_keys::Status status);
 
   // |challenge| is used as a opaque identifier to match against the unique_ptr
   // in outstanding_challenges_. It should not be dereferenced.
