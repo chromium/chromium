@@ -2908,59 +2908,32 @@ message ExtensionInstallReportLogEvent {
   // a copy used for reporting purposes.
   enum FailureReason {
     FAILURE_REASON_UNKNOWN = 0;
-
     INVALID_ID = 1;
-
     MALFORMED_EXTENSION_SETTINGS = 2;
-
     REPLACED_BY_ARC_APP = 3;
-
     MALFORMED_EXTENSION_DICT = 4;
-
     NOT_SUPPORTED_EXTENSION_DICT = 5;
-
     MALFORMED_EXTENSION_DICT_FILE_PATH = 6;
-
     MALFORMED_EXTENSION_DICT_VERSION = 7;
-
     MALFORMED_EXTENSION_DICT_UPDATE_URL = 8;
-
     LOCALE_NOT_SUPPORTED = 9;
-
     NOT_PERFORMING_NEW_INSTALL = 10;
-
     TOO_OLD_PROFILE = 11;
-
     DO_NOT_INSTALL_FOR_ENTERPRISE = 12;
-
     ALREADY_INSTALLED = 13;
-
     CRX_FETCH_FAILED = 14;
-
     MANIFEST_FETCH_FAILED = 15;
-
     MANIFEST_INVALID = 16;
-
     NO_UPDATE = 17;
-
     CRX_INSTALL_ERROR_DECLINED = 18;
-
     CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE = 19;
-
     CRX_INSTALL_ERROR_OTHER = 20;
-
     NO_UPDATE_URL = 21;
-
     PENDING_ADD_FAILED = 22;
-
     DOWNLOADER_ADD_FAILED = 23;
-
     IN_PROGRESS = 24;
-
     CRX_FETCH_URL_EMPTY = 25;
-
     CRX_FETCH_URL_INVALID = 26;
-
     OVERRIDDEN_BY_SETTINGS = 27;
   }
 
@@ -2970,15 +2943,10 @@ message ExtensionInstallReportLogEvent {
   // in the installation process.
   enum InstallationStage {
     INSTALLATION_STAGE_UNKNOWN = 0;
-
     CREATED = 1;
-
     PENDING = 2;
-
     DOWNLOADING = 3;
-
     INSTALLING = 4;
-
     COMPLETE = 5;
   }
 
@@ -2987,23 +2955,14 @@ message ExtensionInstallReportLogEvent {
   // reporting purposes.
   enum UserType {
     USER_TYPE_UNKNOWN = 0;
-
     USER_TYPE_REGULAR = 1;
-
     USER_TYPE_GUEST = 2;
-
     USER_TYPE_PUBLIC_ACCOUNT = 3;
-
     USER_TYPE_SUPERVISED = 4;
-
     USER_TYPE_KIOSK_APP = 5;
-
     USER_TYPE_CHILD = 6;
-
     USER_TYPE_ARC_KIOSK_APP = 7;
-
     USER_TYPE_ACTIVE_DIRECTORY = 8;
-
     USER_TYPE_WEB_KIOSK_APP = 9;
   }
 
@@ -3013,25 +2972,15 @@ message ExtensionInstallReportLogEvent {
   // for reporting purposes.
   enum DownloadingStage {
     DOWNLOADING_STAGE_UNKNOWN = 0;
-
     DOWNLOAD_PENDING = 1;
-
     QUEUED_FOR_MANIFEST = 2;
-
     DOWNLOADING_MANIFEST = 3;
-
     DOWNLOADING_MANIFEST_RETRY = 4;
-
     PARSING_MANIFEST = 5;
-
     MANIFEST_LOADED = 6;
-
     QUEUED_FOR_CRX = 7;
-
     DOWNLOADING_CRX = 8;
-
     DOWNLOADING_CRX_RETRY = 9;
-
     FINISHED = 10;
   }
 
@@ -3041,19 +2990,12 @@ message ExtensionInstallReportLogEvent {
   // copy used for reporting purposes.
   enum InstallCreationStage {
     INSTALL_CREATION_STAGE_UNKNOWN = 0;
-
     CREATION_INITIATED = 1;
-
     NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED = 2;
-
     NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED = 3;
-
     NOTIFIED_FROM_MANAGEMENT = 4;
-
     NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 5;
-
     SEEN_BY_POLICY_LOADER = 6;
-
     SEEN_BY_EXTERNAL_PROVIDER = 7;
   }
 
@@ -3064,15 +3006,10 @@ message ExtensionInstallReportLogEvent {
   // copy used for reporting purposes.
   enum DownloadCacheStatus {
     CACHE_UNKNOWN = 0;
-
     CACHE_DISABLED = 1;
-
     CACHE_MISS = 2;
-
     CACHE_OUTDATED = 3;
-
     CACHE_HIT = 4;
-
     CACHE_HIT_ON_MANIFEST_FETCH_FAILURE = 5;
   }
 
