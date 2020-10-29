@@ -255,7 +255,7 @@ if (is_android || is_chromeos ||
 
     # Enables Java library desugaring.
     # This will cause an extra classes.dex file to appear in every apk.
-    enable_jdk_library_desugaring = true
+    enable_jdk_library_desugaring = false
   }
 
   # Host stuff -----------------------------------------------------------------
