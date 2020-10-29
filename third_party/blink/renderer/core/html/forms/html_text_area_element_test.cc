@@ -83,7 +83,8 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
   RunDocumentLifecycle();
   // Should be "1234\n5678\n90".  The legacy behavior is wrong.
-  EXPECT_EQ(GetParam() ? "1234\n5678\n90" : "1234567890",
+  EXPECT_EQ(textarea.GetLayoutBox()->IsLayoutNGObject() ? "1234\n5678\n90"
+                                                        : "1234567890",
             textarea.ValueWithHardLineBreaks());
 }
 
