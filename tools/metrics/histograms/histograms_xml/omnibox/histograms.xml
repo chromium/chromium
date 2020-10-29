@@ -350,6 +350,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Omnibox.IconOrFaviconShown" enum="SuggestionIconOrFaviconType"
     expires_after="M83">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>

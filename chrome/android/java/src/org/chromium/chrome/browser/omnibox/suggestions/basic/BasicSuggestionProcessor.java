@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -65,13 +64,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public PropertyModel createModel() {
         return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
-    }
-
-    @Override
-    public void recordItemPresented(PropertyModel model) {
-        RecordHistogram.recordEnumeratedHistogram("Omnibox.IconOrFaviconShown",
-                model.get(SuggestionViewProperties.SUGGESTION_ICON_TYPE),
-                SuggestionIcon.TOTAL_COUNT);
     }
 
     /**
