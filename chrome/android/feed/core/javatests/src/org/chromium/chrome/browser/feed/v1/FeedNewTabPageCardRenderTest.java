@@ -59,6 +59,7 @@ import java.util.List;
     ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
 @Features.DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS,
     ChromeFeatureList.QUERY_TILES, ChromeFeatureList.VIDEO_TUTORIALS,
+    ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
     ChromeFeatureList.INTEREST_FEED_V2})
 public class FeedNewTabPageCardRenderTest {
     // clang-format on

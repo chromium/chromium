@@ -2779,6 +2779,25 @@
             ]
         }
     ],
+    "EnhancedProtectionPromoCard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "EnhancedProtectionPromoMaxImpressionsAndroid": "13",
+                        "SigninPromoMaxImpressionsAndroid": "13"
+                    },
+                    "enable_features": [
+                        "EnhancedProtectionPromoCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseReportingInChromeOS": [
         {
             "platforms": [
