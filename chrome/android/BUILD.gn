@@ -820,6 +820,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/image_fetcher:java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/performance_hints/android:java",
+    "//chrome/browser/policy/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/preferences:preferences_junit_tests",
     "//chrome/browser/profiles/android:java",

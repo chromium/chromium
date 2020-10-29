@@ -1,0 +1,169 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.firstrun;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowProcess;
+
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.policy.PolicyService;
+
+/** Unit tests for PolicyLoadListener. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowProcess.class})
+public class PolicyLoadListenerUnitTest {
+    private static final String LOADED_POLICY_READY = "Policy service should be ready to read.";
+    private static final String LOADED_NO_POLICY = "Policy should not exist.";
+    private static final String LOADING_NOT_FINISHED =
+            "Whether policy might exist should be not decided yet.";
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Spy
+    public OneshotSupplierImpl<PolicyService> mTestPolicyServiceSupplier =
+            new OneshotSupplierImpl<>();
+    @Spy
+    public Callback<Boolean> mListener;
+    @Mock
+    public PolicyService mPolicyService;
+    @Mock
+    public FirstRunAppRestrictionInfo mTestAppRestrictionInfo;
+
+    private PolicyService.Observer mPolicyServiceObserver;
+    private Callback<Boolean> mAppRestrictionsCallback;
+    private PolicyLoadListener mPolicyLoadListener;
+
+    @Before
+    public void setUp() {
+        Mockito.doAnswer(invocation -> {
+                   mPolicyServiceObserver = invocation.getArgument(0);
+                   return null;
+               })
+                .when(mPolicyService)
+                .addObserver(any());
+        Mockito.doAnswer(invocation -> {
+                   mAppRestrictionsCallback = invocation.getArgument(0);
+                   return null;
+               })
+                .when(mTestAppRestrictionInfo)
+                .getHasAppRestriction(any());
+
+        mPolicyLoadListener =
+                new PolicyLoadListener(mTestAppRestrictionInfo, mTestPolicyServiceSupplier);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+
+        Mockito.verify(mTestAppRestrictionInfo).getHasAppRestriction(mAppRestrictionsCallback);
+        Mockito.verify(mTestPolicyServiceSupplier).onAvailable(any());
+    }
+
+    @Test
+    public void testAppRestrictionNotFound() {
+        mPolicyLoadListener.onAvailable(mListener);
+
+        mAppRestrictionsCallback.onResult(false);
+        Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
+        Mockito.verify(mListener).onResult(false);
+    }
+
+    @Test
+    public void testAppRestrictionFoundAndPolicyLoaded() {
+        mPolicyLoadListener.onAvailable(mListener);
+
+        mAppRestrictionsCallback.onResult(true);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(any());
+
+        mTestPolicyServiceSupplier.set(mPolicyService);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(any());
+
+        setPolicyServiceInitialized();
+        Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
+        Mockito.verify(mListener).onResult(true);
+    }
+
+    @Test
+    public void testPolicyInitializedWithoutAppRestriction() {
+        mPolicyLoadListener.onAvailable(mListener);
+
+        mTestPolicyServiceSupplier.set(mPolicyService);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(any());
+
+        setPolicyServiceInitialized();
+        Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
+        Mockito.verify(mListener).onResult(true);
+    }
+
+    @Test
+    public void testPolicyInitializedBeforeSupplied() {
+        setPolicyServiceInitialized();
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+
+        mTestPolicyServiceSupplier.set(mPolicyService);
+        Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
+    }
+
+    @Test
+    public void testAddListenerAfterFinished() {
+        mAppRestrictionsCallback.onResult(false);
+        Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
+
+        mPolicyLoadListener.onAvailable(mListener);
+        Mockito.verify(mListener).onResult(false);
+    }
+
+    @Test
+    public void testDestroyAfterStart_AppRestrictions() {
+        mPolicyLoadListener.onAvailable(mListener);
+
+        mPolicyLoadListener.destroy();
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(anyBoolean());
+
+        // Even when no app restrictions were found, listeners will not be informed after #destroy,
+        // and the state for PolicyLoadListener should stay at not finished.
+        mAppRestrictionsCallback.onResult(false);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    public void testDestroyAfterStart_PolicyInitialized() {
+        mPolicyLoadListener.onAvailable(mListener);
+
+        mPolicyLoadListener.destroy();
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(anyBoolean());
+
+        // Even when policy service is initialized, listeners will not be informed after #destroy,
+        // and the state for PolicyLoadListener should stay at not finished.
+        mTestPolicyServiceSupplier.set(mPolicyService);
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(anyBoolean());
+    }
+
+    private void setPolicyServiceInitialized() {
+        Mockito.when(mPolicyService.isInitializationComplete()).thenReturn(true);
+        if (mPolicyServiceObserver != null) mPolicyServiceObserver.onPolicyServiceInitialized();
+    }
+}

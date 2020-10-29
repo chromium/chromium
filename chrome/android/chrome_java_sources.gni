@@ -725,6 +725,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/firstrun/ForcedSigninProcessor.java",
   "java/src/org/chromium/chrome/browser/firstrun/FreIntentCreator.java",
   "java/src/org/chromium/chrome/browser/firstrun/LightweightFirstRunActivity.java",
+  "java/src/org/chromium/chrome/browser/firstrun/PolicyLoadListener.java",
   "java/src/org/chromium/chrome/browser/firstrun/SigninFirstRunFragment.java",
   "java/src/org/chromium/chrome/browser/firstrun/TabbedModeFirstRunActivity.java",
   "java/src/org/chromium/chrome/browser/firstrun/ToSAndUMAFirstRunFragment.java",
