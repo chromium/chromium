@@ -13,6 +13,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
 #include "chrome/browser/flags/jni_headers/ChromeFeatureList_jni.h"
+#include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/share/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
@@ -225,6 +226,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kDnsOverHttps,
     &net::features::kSameSiteByDefaultCookies,
     &net::features::kCookiesWithoutSameSiteMustBeSecure,
+    &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
     &paint_preview::kPaintPreviewShowOnStartup,
     &language::kDetailedLanguageSettings,

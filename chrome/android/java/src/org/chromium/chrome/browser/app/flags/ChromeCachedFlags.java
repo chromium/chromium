@@ -73,7 +73,8 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.TAB_TO_GTS_ANIMATION,
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS,
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP,
-                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
+                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
+                ChromeFeatureList.USE_CHIME_ANDROID_SDK);
         // clang-format on
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
         CachedFeatureFlags.cacheAdditionalNativeFlags();

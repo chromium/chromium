@@ -5,15 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/notifications/chime/ChimeSession.java" ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//chrome/android/modules/chime/public:java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/notifications/chime/ChimeDelegate.java" ]
 }
 
 source_set("android") {
@@ -22,14 +14,5 @@ source_set("android") {
     "features.h",
   ]
 
-  deps = [
-    ":jni_headers",
-    "//base",
-  ]
-}
-
-generate_jni("jni_headers") {
-  visibility = [ ":*" ]
-
-  sources = [ "java/src/org/chromium/chrome/browser/notifications/chime/ChimeSession.java" ]
+  deps = [ "//base" ]
 }

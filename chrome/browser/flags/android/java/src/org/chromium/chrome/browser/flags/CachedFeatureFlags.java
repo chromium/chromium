@@ -79,6 +79,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS, false);
             put(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, false);
             put(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR, false);
+            put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false);
         }
     };
 

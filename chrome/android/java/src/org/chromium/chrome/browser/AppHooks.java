@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.VariationsSession;
+import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksProviderIterator;
@@ -357,5 +358,12 @@ public abstract class AppHooks {
      */
     public String getWebApkServerUrl() {
         return "";
+    }
+
+    /**
+     * Returns a Chime Delegate if the chime module is defined.
+     */
+    public @Nullable ChimeDelegate getChimeDelegate() {
+        return null;
     }
 }
