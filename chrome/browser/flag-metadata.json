@@ -3943,7 +3943,7 @@
   },
   {
     "name": "read-later",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "corising" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "corising" ],
     "expiry_milestone": 90
   },
   {
@@ -4315,7 +4315,7 @@
   },
   {
     "name" : "side-panel",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "pbos" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "pbos" ],
     "expiry_milestone" : 92
   },
   {
@@ -4439,27 +4439,27 @@
   },
   {
     "name": "tab-groups",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "connily" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "connily" ],
     "expiry_milestone": 88
   },
   {
     "name": "tab-groups-auto-create",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "xialinyan" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
     "expiry_milestone": 89
   },
   {
     "name": "tab-groups-collapse",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "xialinyan" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
     "expiry_milestone": 89
   },
   {
     "name": "tab-groups-collapse-freezing",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "xialinyan" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
     "expiry_milestone": 89
   },
   {
     "name": "tab-groups-feedback",
-    "owners": [ "chrome-desktop-ui-seattle@google.com", "xialinyan" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
     "expiry_milestone": 86
   },
   {
