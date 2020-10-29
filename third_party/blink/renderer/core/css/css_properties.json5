@@ -446,15 +446,6 @@
       valid_type: "str",
     },
 
-    // - affected_by_forced_colors
-    // The property value will be overridden with the default value defined in
-    // the forced colors UA style sheet when forced colors mode is enabled and
-    // forced-color-adjust is set to auto.
-    affected_by_forced_colors: {
-      default: false,
-      valid_type: "bool",
-    },
-
     // - valid_for_first_letter: true
     //
     // https://drafts.csswg.org/css-pseudo-4/#first-letter-styling
@@ -718,7 +709,6 @@
       priority: "High",
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
@@ -1208,7 +1198,6 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialBackgroundColor",
       },
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
@@ -1226,7 +1215,6 @@
         fill_type: "Image",
         fill_type_getter: "GetImage",
       },
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       is_background: true,
@@ -1325,7 +1313,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
@@ -1476,7 +1463,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
@@ -1528,7 +1514,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
@@ -1580,7 +1565,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
@@ -1674,7 +1658,6 @@
       converter: "ConvertShadowList",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
     },
     {
@@ -2001,7 +1984,6 @@
       setter: "SetFillPaint",
       getter: "FillPaint",
       converter: "ConvertSVGPaint",
-      affected_by_forced_colors: true,
       valid_for_highlight: true,
     },
     {
@@ -2788,7 +2770,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_cue: true,
     },
     {
@@ -3489,7 +3470,6 @@
       setter: "SetStrokePaint",
       getter: "StrokePaint",
       converter: "ConvertSVGPaint",
-      affected_by_forced_colors: true,
       valid_for_highlight: true,
     },
     {
@@ -3647,7 +3627,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
@@ -3763,7 +3742,6 @@
       converter: "ConvertShadowList",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
@@ -4183,7 +4161,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
     },
     {
       name: "column-rule-style",
@@ -4463,7 +4440,6 @@
       field_template: "<color>",
       default_value: "StyleColor(LayoutTheme::TapHighlightColor())",
       converter: "ConvertStyleColor",
-      affected_by_forced_colors: true,
     },
     {
       name: "-webkit-text-combine",
@@ -4483,7 +4459,6 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      affected_by_forced_colors: true,
       valid_for_marker: true,
       valid_for_highlight: true,
     },
@@ -5768,7 +5743,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
@@ -5804,7 +5778,6 @@
       computed_style_custom_functions: ["getter","setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
     },
     {
       name: "-internal-visited-background-color",
@@ -5821,7 +5794,6 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialBackgroundColor",
       },
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
@@ -5838,7 +5810,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
     },
     {
@@ -5853,7 +5824,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
     },
     {
@@ -5868,7 +5838,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
     },
     {
@@ -5883,7 +5852,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
     },
     {
@@ -5936,7 +5904,6 @@
       setter: "SetInternalVisitedFillPaint",
       getter: "FillPaint",
       converter: "ConvertSVGPaint",
-      affected_by_forced_colors: true,
       valid_for_highlight: true,
     },
     {
@@ -5951,7 +5918,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_cue: true,
     },
     {
@@ -5964,7 +5930,6 @@
       setter: "SetInternalVisitedStrokePaint",
       getter: "StrokePaint",
       converter: "ConvertSVGPaint",
-      affected_by_forced_colors: true,
       valid_for_highlight: true,
     },
     {
@@ -5979,7 +5944,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
@@ -5997,7 +5961,6 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
-      affected_by_forced_colors: true,
       valid_for_highlight: true,
     },
     {

@@ -244,7 +244,6 @@ class CSSProperties(object):
         if not method_name:
             method_name = name.to_upper_camel_case().replace('Webkit', '')
         set_if_none(property_, 'inherited', False)
-        set_if_none(property_, 'affected_by_forced_colors', False)
 
         # Initial function, Getters and Setters for ComputedStyle.
         set_if_none(property_, 'initial', 'Initial' + method_name)

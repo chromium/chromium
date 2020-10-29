@@ -1430,8 +1430,6 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   cascade.AddInterpolations(&custom_transitions, CascadeOrigin::kTransition);
 
   CascadeFilter filter;
-  if (IsForcedColorsModeEnabled(state))
-    filter = filter.Add(CSSProperty::kIsAffectedByForcedColors, true);
   if (state.Style()->StyleType() == kPseudoIdMarker)
     filter = filter.Add(CSSProperty::kValidForMarker, false);
   if (IsHighlightPseudoElement(state.Style()->StyleType()))
