@@ -60,25 +60,13 @@ void TitledUrlIndex::SetNodeSorter(
 }
 
 void TitledUrlIndex::Add(const TitledUrlNode* node) {
-  std::vector<base::string16> terms =
-      ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()));
-  for (size_t i = 0; i < terms.size(); ++i)
-    RegisterNode(terms[i], node);
-  terms = ExtractQueryWords(
-      CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), nullptr));
-  for (size_t i = 0; i < terms.size(); ++i)
-    RegisterNode(terms[i], node);
+  for (const base::string16& term : ExtractIndexTerms(node))
+    RegisterNode(term, node);
 }
 
 void TitledUrlIndex::Remove(const TitledUrlNode* node) {
-  std::vector<base::string16> terms =
-      ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()));
-  for (size_t i = 0; i < terms.size(); ++i)
-    UnregisterNode(terms[i], node);
-  terms = ExtractQueryWords(
-      CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), nullptr));
-  for (size_t i = 0; i < terms.size(); ++i)
-    UnregisterNode(terms[i], node);
+  for (const base::string16& term : ExtractIndexTerms(node))
+    UnregisterNode(term, node);
 }
 
 std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
@@ -87,16 +75,11 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
     query_parser::MatchingAlgorithm matching_algorithm) {
   const base::string16 query = Normalize(input_query);
   std::vector<base::string16> terms = ExtractQueryWords(query);
-  if (terms.empty())
-    return {};
 
-  TitledUrlNodeSet matches;
-  for (size_t i = 0; i < terms.size(); ++i) {
-    if (!GetResultsMatchingTerm(terms[i], i == 0, matching_algorithm,
-                                &matches)) {
-      return {};
-    }
-  }
+  TitledUrlNodeSet matches =
+      RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
+  if (matches.empty())
+    return {};
 
   TitledUrlNodes sorted_nodes;
   SortMatches(matches, &sorted_nodes);
@@ -183,49 +166,52 @@ base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   return match;
 }
 
-bool TitledUrlIndex::GetResultsMatchingTerm(
+TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAllTerms(
+    const std::vector<base::string16>& terms,
+    query_parser::MatchingAlgorithm matching_algorithm) const {
+  if (terms.empty())
+    return {};
+
+  TitledUrlNodeSet matches =
+      RetrieveNodesMatchingTerm(terms[0], matching_algorithm);
+  for (size_t i = 1; i < terms.size() && !matches.empty(); ++i) {
+    TitledUrlNodeSet term_matches =
+        RetrieveNodesMatchingTerm(terms[i], matching_algorithm);
+    // Compute intersection between the two sets.
+    base::EraseIf(matches, base::IsNotIn<TitledUrlNodeSet>(term_matches));
+  }
+
+  return matches;
+}
+
+TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingTerm(
     const base::string16& term,
-    bool first_term,
-    query_parser::MatchingAlgorithm matching_algorithm,
-    TitledUrlNodeSet* matches) {
+    query_parser::MatchingAlgorithm matching_algorithm) const {
   Index::const_iterator i = index_.lower_bound(term);
   if (i == index_.end())
-    return false;
+    return {};
 
   if (!query_parser::QueryParser::IsWordLongEnoughForPrefixSearch(
       term, matching_algorithm)) {
     // Term is too short for prefix match, compare using exact match.
     if (i->first != term)
-      return false;  // No title/URL pairs with this term.
-
-    if (first_term) {
-      (*matches) = i->second;
-      return true;
-    }
-    base::EraseIf(*matches, base::IsNotIn<TitledUrlNodeSet>(i->second));
-  } else {
-    // Loop through index adding all entries that start with term to
-    // |prefix_matches|.
-    TitledUrlNodeSet tmp_prefix_matches;
-    // If this is the first term, then store the result directly in |matches|
-    // to avoid calling stl intersection (which requires a copy).
-    TitledUrlNodeSet* prefix_matches =
-        first_term ? matches : &tmp_prefix_matches;
-    while (i != index_.end() &&
-           i->first.size() >= term.size() &&
-           term.compare(0, term.size(), i->first, 0, term.size()) == 0) {
-      for (auto n = i->second.begin(); n != i->second.end(); ++n) {
-        prefix_matches->insert(prefix_matches->end(), *n);
-      }
-      ++i;
-    }
-    if (!first_term) {
-      base::EraseIf(*matches, base::IsNotIn<TitledUrlNodeSet>(*prefix_matches));
-    }
+      return {};  // No title/URL pairs with this term.
+    return i->second;
   }
-  return !matches->empty();
+
+  // Loop through index adding all entries that start with term to
+  // |prefix_matches|.
+  TitledUrlNodes prefix_matches;
+  while (i != index_.end() && i->first.size() >= term.size() &&
+         term.compare(0, term.size(), i->first, 0, term.size()) == 0) {
+    prefix_matches.insert(prefix_matches.end(), i->second.begin(),
+                          i->second.end());
+    ++i;
+  }
+  return prefix_matches;
 }
 
+// static
 std::vector<base::string16> TitledUrlIndex::ExtractQueryWords(
     const base::string16& query) {
   std::vector<base::string16> terms;
@@ -235,6 +221,24 @@ std::vector<base::string16> TitledUrlIndex::ExtractQueryWords(
   parser.ParseQueryWords(base::i18n::ToLower(query),
                          query_parser::MatchingAlgorithm::DEFAULT,
                          &terms);
+  return terms;
+}
+
+// static
+std::vector<base::string16> TitledUrlIndex::ExtractIndexTerms(
+    const TitledUrlNode* node) {
+  std::vector<base::string16> terms;
+
+  for (const base::string16& term :
+       ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
+    terms.push_back(term);
+  }
+
+  for (const base::string16& term : ExtractQueryWords(CleanUpUrlForMatching(
+           node->GetTitledUrlNodeUrl(), /*adjustments=*/nullptr))) {
+    terms.push_back(term);
+  }
+
   return terms;
 }
 

@@ -53,7 +53,7 @@ class BookmarkClientMock : public TestBookmarkClient {
   DISALLOW_COPY_AND_ASSIGN(BookmarkClientMock);
 };
 
-// Minimalistic implementatio of TitledUrlNode.
+// Minimal implementation of TitledUrlNode.
 class TestTitledUrlNode : public TitledUrlNode {
  public:
   TestTitledUrlNode(const base::string16& title, const GURL& url)
@@ -542,6 +542,37 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
   ASSERT_EQ(2U, matches.size());
   EXPECT_EQ(data[0].url, matches[0].node->GetTitledUrlNodeUrl());
   EXPECT_EQ(data[3].url, matches[1].node->GetTitledUrlNodeUrl());
+}
+
+TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
+  TitledUrlNode* node =
+      AddNode("termA termB otherTerm xyz ab", GURL("http://foo.com"));
+
+  struct TestData {
+    const std::string query;
+    const bool should_be_retrieved;
+  } data[] = {// Should return matches if all input terms match, even if not all
+              // node terms match.
+              {"term other", true},
+              // Should not match midword.
+              {"term ther", false},
+              // Short input terms should only return exact matches.
+              {"xy", false},
+              {"ab", true}};
+
+  for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
+    std::vector<base::string16> terms = base::SplitString(
+        base::UTF8ToUTF16(test_data.query), base::UTF8ToUTF16(" "),
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    auto matches = index()->RetrieveNodesMatchingAllTermsForTesting(
+        terms, query_parser::MatchingAlgorithm::DEFAULT);
+    if (test_data.should_be_retrieved) {
+      EXPECT_TRUE(matches.contains(node));
+      EXPECT_EQ(matches.size(), 1u);
+    } else
+      EXPECT_TRUE(matches.empty());
+  };
 }
 
 }  // namespace
