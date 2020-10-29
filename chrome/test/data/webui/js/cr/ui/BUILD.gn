@@ -33,11 +33,23 @@ js_library("array_data_model_test.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("command_test.m") {
+  sources =
+      [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/command_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_type_check("closure_compile") {
   uses_js_modules = true
 
   deps = [
     ":array_data_model_test.m",
+    ":command_test.m",
     "../../..:chai_assert",
   ]
 }

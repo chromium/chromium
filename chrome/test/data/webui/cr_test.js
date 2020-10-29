@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
-/* #ignore */ var EventTarget;
+var EventTarget;
 
 function setUp() {
-  /* #ignore */ EventTarget = cr.EventTarget;
+  EventTarget = cr.EventTarget;
 }
 
 function testDefineProperty() {
@@ -129,6 +127,7 @@ function testDefinePropertyAttrWithSetter() {
   var obj = document.createElement('div');
 
   var hit = false;
+
   function onTestSet(value, oldValue) {
     assertEquals(obj, this);
     assertEquals(null, oldValue);
@@ -208,6 +207,7 @@ function testDefinePropertyBoolAttrEvent() {
 function testDefinePropertyBoolAttrEventWithHook() {
   var obj = document.createElement('div');
   var hit = false;
+
   function onTestSet(value, oldValue) {
     assertEquals(obj, this);
     assertTrue(this.test);
@@ -220,7 +220,7 @@ function testDefinePropertyBoolAttrEventWithHook() {
   assertTrue(hit);
 }
 
-/* #export */ function testAddSingletonGetter() {
+function testAddSingletonGetter() {
   function Foo() {}
   cr.addSingletonGetter(Foo);
 
@@ -244,7 +244,7 @@ function testDefinePropertyBoolAttrEventWithHook() {
       x, z, 'Should return a different object after clearing for testing');
 }
 
-/* #export */ function testDefineWithGetter() {
+function testDefineWithGetter() {
   var v = 0;
   cr.define('foo', function() {
     return {
@@ -259,6 +259,3 @@ function testDefinePropertyBoolAttrEventWithHook() {
   v = 1;
   assertEquals(1, foo.v);
 }
-
-window.setUp = setUp;
-window.testAddSingletonGetter = testAddSingletonGetter;

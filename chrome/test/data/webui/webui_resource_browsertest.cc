@@ -61,10 +61,6 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
   LoadTestUrl("cr_test.html");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrModuleTest) {
-  LoadTestUrl("?module=cr_test.m.js");
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
   LoadTestUrl("cr_reload_test.html");
 }

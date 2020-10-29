@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // clang-format on
 
 /* #ignore */ /* @const */ var EventTarget;
 
-/* #export */ function setUp() {
+function setUp() {
   /* #ignore */ EventTarget = cr.EventTarget;
 }
 
-/* #export */ function testFunctionListener() {
+function testFunctionListener() {
   var fi = 0;
   function f(e) {
     fi++;
@@ -41,20 +42,20 @@
   assertEquals(1, gi, 'Should have been called once');
 }
 
-/* #export */ function testHandleEvent() {
+function testHandleEvent() {
   var fi = 0;
-  var f = {
+  var f = /** @type {!EventListener} */ ({
     handleEvent: function(e) {
       fi++;
     }
-  };
+  });
 
   var gi = 0;
-  var g = {
+  var g = /** @type {!EventListener} */ ({
     handleEvent: function(e) {
       gi++;
     }
-  };
+  });
 
   var et = new EventTarget;
   et.addEventListener('f', f);
@@ -74,7 +75,7 @@
   assertEquals(1, gi, 'Should have been called once');
 }
 
-/* #export */ function testPreventDefault() {
+function testPreventDefault() {
   var i = 0;
   function prevent(e) {
     i++;
@@ -100,7 +101,9 @@
   assertEquals(1, i);
 }
 
-window.setUp = setUp;
-window.testFunctionListener = testFunctionListener;
-window.testHandleEvent = testHandleEvent;
-window.testPreventDefault = testPreventDefault;
+Object.assign(window, {
+  setUp,
+  testFunctionListener,
+  testHandleEvent,
+  testPreventDefault,
+});

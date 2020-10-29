@@ -465,7 +465,6 @@ group("modulize") {
 js_modulizer("modulize_local") {
   input_files = [
     "cr_focus_row_behavior_test.js",
-    "cr_test.js",
     "fake_chrome_event.js",
     "mock_controller.js",
     "mock_timer.js",
@@ -483,7 +482,7 @@ group("closure_compile") {
     "cr_components:closure_compile",
     "cr_elements:closure_compile",
     "inline_login:closure_compile",
-    "js/cr/ui:closure_compile",
+    "js/cr:closure_compile",
     "new_tab_page:closure_compile",
     "print_preview:closure_compile",
     "read_later:closure_compile",
