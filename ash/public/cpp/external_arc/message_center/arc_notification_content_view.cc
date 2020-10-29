@@ -687,10 +687,11 @@ void ArcNotificationContentView::OnPaint(gfx::Canvas* canvas) {
         item_->GetSnapshot().height(), contents_bounds.x(), contents_bounds.y(),
         contents_bounds.width(), contents_bounds.height(), true /* filter */);
   } else {
-    // Draw a blank background otherwise. The height of the view and surface are
-    // not exactly synced and user may see the blank area out of the surface.
-    // This code prevetns an ugly blank area and show white color instead.
-    // This should be removed after b/35786193 is done.
+    // Draw a white background otherwise. The height of the view/ surface and
+    // animation buffer size are not exactly synced and user may see the blank
+    // area out of the surface.
+    // TODO: This can be removed once both ARC and Chrome notifications have
+    // smooth expansion animations.
     canvas->DrawColor(SK_ColorWHITE);
   }
 }
