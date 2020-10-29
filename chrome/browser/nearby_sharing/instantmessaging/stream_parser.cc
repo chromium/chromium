@@ -5,10 +5,13 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 
 StreamParser::StreamParser(
-    base::RepeatingCallback<void(const std::string& message)> listener)
-    : listener_(listener) {}
+    base::RepeatingCallback<void(const std::string& message)> listener,
+    base::OnceClosure fastpath_ready_callback)
+    : listener_(listener),
+      fastpath_ready_callback_(std::move(fastpath_ready_callback)) {}
 StreamParser::~StreamParser() = default;
 
 void StreamParser::Append(base::StringPiece data) {
@@ -73,9 +76,22 @@ void StreamParser::DelegateMessage(
     chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
         response;
     response.ParseFromString(stream_body.messages(i));
-    if (response.body_case() != chrome_browser_nearby_sharing_instantmessaging::
-                                    ReceiveMessagesResponse::kInboxMessage)
-      continue;
-    listener_.Run(response.inbox_message().message());
+    switch (response.body_case()) {
+      case chrome_browser_nearby_sharing_instantmessaging::
+          ReceiveMessagesResponse::kFastPathReady:
+        NS_LOG(INFO) << __func__ << ": received kFastPathReady";
+        if (fastpath_ready_callback_) {
+          std::move(fastpath_ready_callback_).Run();
+        }
+        break;
+      case chrome_browser_nearby_sharing_instantmessaging::
+          ReceiveMessagesResponse::kInboxMessage:
+        listener_.Run(response.inbox_message().message());
+        break;
+      default:
+        NS_LOG(ERROR) << __func__ << ": message body case was unexpected: "
+                      << response.body_case();
+        NOTREACHED();
+    }
   }
 }

@@ -21,9 +21,21 @@ CreateReceiveMessagesResponse(const std::string& msg) {
   return response;
 }
 
+chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
+CreateFastPathReadyResponse() {
+  chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
+      response;
+  response.mutable_fast_path_ready();
+  return response;
+}
+
 chrome_browser_nearby_sharing_instantmessaging::StreamBody BuildProto(
-    const std::vector<std::string>& messages) {
+    const std::vector<std::string>& messages,
+    bool include_fast_path = false) {
   chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body;
+  if (include_fast_path) {
+    stream_body.add_messages(CreateFastPathReadyResponse().SerializeAsString());
+  }
   for (const auto& msg : messages) {
     stream_body.add_messages(
         CreateReceiveMessagesResponse(msg).SerializeAsString());
@@ -37,6 +49,8 @@ class StreamParserTest : public testing::Test {
  public:
   StreamParserTest()
       : stream_parser_(base::BindRepeating(&StreamParserTest::OnMessageReceived,
+                                           base::Unretained(this)),
+                       base::BindRepeating(&StreamParserTest::OnFastPathReady,
                                            base::Unretained(this))) {}
   ~StreamParserTest() override = default;
 
@@ -46,11 +60,15 @@ class StreamParserTest : public testing::Test {
 
   const std::vector<std::string> GetMessages() { return messages_received_; }
 
+  bool fast_path_ready() { return fast_path_ready_; }
+
  private:
   void OnMessageReceived(const std::string& message) {
     messages_received_.push_back(message);
   }
+  void OnFastPathReady() { fast_path_ready_ = true; }
 
+  bool fast_path_ready_ = false;
   StreamParser stream_parser_;
   std::vector<std::string> messages_received_;
 };
@@ -120,4 +138,16 @@ TEST_F(StreamParserTest, MultipleMessagesSplit) {
   GetStreamParser().Append(second_message);
   EXPECT_EQ(5, MessagesReceived());
   EXPECT_EQ(messages_1, GetMessages());
+}
+
+// The fast path message triggers callback.
+TEST_F(StreamParserTest, FastPathReadyTriggersCallback) {
+  std::vector<std::string> messages = {"random 42"};
+  chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body =
+      BuildProto(messages, true);
+  GetStreamParser().Append(stream_body.SerializeAsString());
+
+  EXPECT_TRUE(fast_path_ready());
+  EXPECT_EQ(1, MessagesReceived());
+  EXPECT_EQ(messages, GetMessages());
 }

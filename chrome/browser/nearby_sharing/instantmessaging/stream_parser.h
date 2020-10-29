@@ -20,7 +20,8 @@ class StreamBody;
 class StreamParser {
  public:
   explicit StreamParser(
-      base::RepeatingCallback<void(const std::string& message)> listener);
+      base::RepeatingCallback<void(const std::string& message)> listener,
+      base::OnceClosure fastpath_ready);
   ~StreamParser();
 
   void Append(base::StringPiece data);
@@ -33,6 +34,7 @@ class StreamParser {
           stream_body);
 
   base::RepeatingCallback<void(const std::string& message)> listener_;
+  base::OnceClosure fastpath_ready_callback_;
   std::string data_;
 };
 

@@ -63,6 +63,8 @@ class ReceiveMessagesExpress : public network::SimpleURLLoaderStreamConsumer {
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
 
+  void OnFastPathReady();
+
   TokenFetcher* token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

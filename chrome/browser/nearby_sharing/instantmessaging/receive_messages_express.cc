@@ -78,7 +78,9 @@ void ReceiveMessagesExpress::StartReceivingMessages(
   }
   success_callback_ = std::move(callback);
   url_loader_.reset();
-  stream_parser_ = std::make_unique<StreamParser>(listener);
+  stream_parser_ = std::make_unique<StreamParser>(
+      listener, base::BindOnce(&ReceiveMessagesExpress::OnFastPathReady,
+                               base::Unretained(this)));
 
   token_fetcher_->GetAccessToken(
       base::BindOnce(&ReceiveMessagesExpress::DoStartReceivingMessages,
@@ -124,9 +126,6 @@ void ReceiveMessagesExpress::StopReceivingMessages() {
 void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
                                             base::OnceClosure resume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!success_callback_.is_null())
-    std::move(success_callback_).Run(true);
-
   stream_parser_->Append(data);
   std::move(resume).Run();
 }
@@ -142,4 +141,10 @@ void ReceiveMessagesExpress::OnComplete(bool success) {
 
 void ReceiveMessagesExpress::OnRetry(base::OnceClosure start_retry) {
   NOTIMPLEMENTED();
+}
+
+void ReceiveMessagesExpress::OnFastPathReady() {
+  if (!success_callback_.is_null()) {
+    std::move(success_callback_).Run(true);
+  }
 }
