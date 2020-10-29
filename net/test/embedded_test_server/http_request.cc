@@ -19,6 +19,8 @@ namespace test_server {
 
 namespace {
 
+size_t kRequestSizeLimit = 64 * 1024 * 1024;  // 64 mb.
+
 // Helper function used to trim tokens in http request headers.
 std::string Trim(const std::string& value) {
   std::string result;
@@ -28,7 +30,9 @@ std::string Trim(const std::string& value) {
 
 }  // namespace
 
-HttpRequest::HttpRequest() : method(METHOD_UNKNOWN), has_content(false) {}
+HttpRequest::HttpRequest() : method(METHOD_UNKNOWN),
+                             has_content(false) {
+}
 
 HttpRequest::HttpRequest(const HttpRequest& other) = default;
 
@@ -50,6 +54,8 @@ HttpRequestParser::~HttpRequestParser() = default;
 
 void HttpRequestParser::ProcessChunk(const base::StringPiece& data) {
   buffer_.append(data.data(), data.size());
+  DCHECK_LE(buffer_.size() + data.size(), kRequestSizeLimit) <<
+      "The HTTP request is too large.";
 }
 
 std::string HttpRequestParser::ShiftLine() {
@@ -110,8 +116,8 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
 
     // Protocol.
     const std::string protocol = base::ToLowerASCII(header_line_tokens[2]);
-    CHECK(protocol == "http/1.0" || protocol == "http/1.1")
-        << "Protocol not supported: " << protocol;
+    CHECK(protocol == "http/1.0" || protocol == "http/1.1") <<
+        "Protocol not supported: " << protocol;
   }
 
   // Parse further headers.
@@ -134,7 +140,8 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
         DCHECK_NE(std::string::npos, delimiter_pos) << "Syntax error.";
         header_name = Trim(header_line.substr(0, delimiter_pos));
         std::string header_value = Trim(header_line.substr(
-            delimiter_pos + 1, header_line.size() - delimiter_pos - 1));
+            delimiter_pos + 1,
+            header_line.size() - delimiter_pos - 1));
         http_request_->headers[header_name] = header_value;
       }
     }
@@ -145,7 +152,8 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
   if (http_request_->headers.count("Content-Length") > 0) {
     http_request_->has_content = true;
     const bool success = base::StringToSizeT(
-        http_request_->headers["Content-Length"], &declared_content_length_);
+        http_request_->headers["Content-Length"],
+        &declared_content_length_);
     if (!success) {
       declared_content_length_ = 0;
       LOG(WARNING) << "Malformed Content-Length header's value.";
@@ -191,10 +199,11 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseContent() {
     return WAITING;
   }
 
-  const size_t fetch_bytes =
-      std::min(available_bytes,
-               declared_content_length_ - http_request_->content.size());
-  http_request_->content.append(buffer_.data() + buffer_position_, fetch_bytes);
+  const size_t fetch_bytes = std::min(
+      available_bytes,
+      declared_content_length_ - http_request_->content.size());
+  http_request_->content.append(buffer_.data() + buffer_position_,
+                                fetch_bytes);
   buffer_position_ += fetch_bytes;
 
   if (declared_content_length_ == http_request_->content.size()) {
