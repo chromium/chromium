@@ -199,6 +199,15 @@ static LocaleMap CreateLocaleFallbackMap() {
       {"und-Orya", "or"},  // Oriya
       {"und-Taml", "ta"},  // Tamil
       {"und-Telu", "te"},  // Telugu
+
+      // List of locales with hyphens not to fall back.
+      {"de-1901", nullptr},
+      {"de-1996", nullptr},
+      {"de-ch-1901", nullptr},
+      {"en-gb", nullptr},
+      {"en-us", nullptr},
+      {"mn-cyrl", nullptr},
+      {"und-ethi", nullptr},
   };
   LocaleMap map;
   for (const auto& it : locale_fallback_data)
@@ -206,12 +215,28 @@ static LocaleMap CreateLocaleFallbackMap() {
   return map;
 }
 
+// static
+AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
+  DEFINE_STATIC_LOCAL(LocaleMap, locale_fallback, (CreateLocaleFallbackMap()));
+  for (AtomicString mapped_locale = locale;;) {
+    const auto& it = locale_fallback.find(mapped_locale);
+    if (it != locale_fallback.end()) {
+      if (it->value)
+        return it->value;
+      return mapped_locale;
+    }
+    const wtf_size_t last_hyphen = mapped_locale.ReverseFind('-');
+    if (last_hyphen == kNotFound || !last_hyphen)
+      return mapped_locale;
+    mapped_locale = AtomicString(mapped_locale.GetString().Left(last_hyphen));
+  }
+}
+
 scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     const AtomicString& locale) {
-  DEFINE_STATIC_LOCAL(LocaleMap, locale_fallback, (CreateLocaleFallbackMap()));
-  const auto& it = locale_fallback.find(locale);
-  if (it != locale_fallback.end())
-    return LayoutLocale::Get(it->value)->GetHyphenation();
+  const AtomicString mapped_locale = HyphenationMinikin::MapLocale(locale);
+  if (mapped_locale.Impl() != locale.Impl())
+    return LayoutLocale::Get(mapped_locale)->GetHyphenation();
 
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));

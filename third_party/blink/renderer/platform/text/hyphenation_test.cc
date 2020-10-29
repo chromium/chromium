@@ -72,6 +72,33 @@ TEST_F(HyphenationTest, Get) {
   EXPECT_EQ(nullptr, LayoutLocale::Get("en-UK")->GetHyphenation());
 }
 
+#if defined(USE_MINIKIN_HYPHENATION)
+TEST_F(HyphenationTest, MapLocale) {
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-de"), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-de-xyz"), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-li"), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-li-1901"), "de-ch-1901");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu"), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu-xyz"), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz-xyz"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-ca"), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-fr"), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-fr-xyz"), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("mn-xyz"), "mn-cyrl");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("und-Deva-xyz"), "hi");
+
+  const char* no_map_locales[] = {"en-us", "fr"};
+  for (const char* locale_str : no_map_locales) {
+    AtomicString locale(locale_str);
+    AtomicString mapped_locale = HyphenationMinikin::MapLocale(locale);
+    // If no mapping, the same instance should be returned.
+    EXPECT_EQ(locale.Impl(), mapped_locale.Impl());
+  }
+}
+#endif
+
 #if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
 TEST_F(HyphenationTest, HyphenLocations) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");

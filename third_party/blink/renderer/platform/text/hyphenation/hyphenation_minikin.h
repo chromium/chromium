@@ -28,6 +28,8 @@ class PLATFORM_EXPORT HyphenationMinikin final : public Hyphenation {
                                 wtf_size_t before_index) const override;
   Vector<wtf_size_t, 8> HyphenLocations(const StringView&) const override;
 
+  static AtomicString MapLocale(const AtomicString& locale);
+
   static scoped_refptr<HyphenationMinikin> FromFileForTesting(base::File);
 
  private:
