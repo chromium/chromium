@@ -1238,6 +1238,9 @@ util.isNonModifiable = (volumeManager, entry) => {
     if (util.isPluginVmEnabled() && entry.fullPath === '/PvmDefault') {
       return true;
     }
+    if (util.isFilesCameraFolderEnabled() && entry.fullPath === '/Camera') {
+      return true;
+    }
   }
 
   if (volumeInfo.volumeType === VolumeManagerCommon.RootType.CROSTINI &&
