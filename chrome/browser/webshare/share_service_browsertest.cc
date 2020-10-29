@@ -13,17 +13,47 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if defined(OS_WIN)
+#include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
+#endif
+
 class ShareServiceBrowserTest : public InProcessBrowserTest {
  public:
   ShareServiceBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kWebShare);
   }
 
+#if defined(OS_WIN)
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    if (!IsSupportedEnvironment())
+      return;
+
+    ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
+  }
+#endif
+
+ protected:
+#if defined(OS_WIN)
+  bool IsSupportedEnvironment() {
+    return webshare::ScopedShareOperationFakeComponents::
+        IsSupportedEnvironment();
+  }
+#endif
+
  private:
   base::test::ScopedFeatureList feature_list_;
+#if defined(OS_WIN)
+  webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
+#if defined(OS_WIN)
+  if (!IsSupportedEnvironment())
+    return;
+#endif
+
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/webshare/index.html"));

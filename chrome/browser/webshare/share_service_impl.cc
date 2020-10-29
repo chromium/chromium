@@ -5,6 +5,7 @@
 #include "chrome/browser/webshare/share_service_impl.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
@@ -12,6 +13,10 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+#if defined(OS_WIN)
+#include "chrome/browser/webshare/win/share_operation.h"
+#endif
 
 // IsDangerousFilename() and IsDangerousMimeType() should be kept in sync with
 // //third_party/blink/renderer/modules/webshare/FILE_TYPES.md
@@ -165,10 +170,17 @@ void ShareServiceImpl::Share(const std::string& title,
 #if defined(OS_CHROMEOS)
   sharesheet_client_.Share(title, text, share_url, std::move(files),
                            std::move(callback));
+#elif defined(OS_WIN)
+  auto share_operation = std::make_unique<webshare::ShareOperation>(
+      title, text, share_url, std::move(files), web_contents);
+  share_operation->Run(base::BindOnce(
+      [](std::unique_ptr<webshare::ShareOperation> share_operation,
+         ShareCallback callback,
+         blink::mojom::ShareError result) { std::move(callback).Run(result); },
+      std::move(share_operation), std::move(callback)));
 #else
-  // TODO(crbug.com/1035527): Add implementation for OS_WIN
-  NOTIMPLEMENTED();
-  std::move(callback).Run(blink::mojom::ShareError::OK);
+  NOTREACHED();
+  std::move(callback).Run(blink::mojom::ShareError::INTERNAL_ERROR);
 #endif
 }
 
