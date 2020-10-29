@@ -293,6 +293,10 @@ void PdfViewWebPlugin::SetLinkUnderCursor(
   NOTIMPLEMENTED();
 }
 
+bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
+  return base::Value(url).is_string();
+}
+
 bool PdfViewWebPlugin::IsValid() const {
   return container_ && container_->GetDocument().GetFrame();
 }

@@ -2199,6 +2199,10 @@ void OutOfProcessInstance::SetLinkUnderCursor(
   pp::PDF::SetLinkUnderCursor(this, link_under_cursor.c_str());
 }
 
+bool OutOfProcessInstance::IsValidLink(const std::string& url) {
+  return pp::Var(url).is_string();
+}
+
 void OutOfProcessInstance::ProcessPreviewPageInfo(const std::string& url,
                                                   int dest_page_index) {
   DCHECK(IsPrintPreview());

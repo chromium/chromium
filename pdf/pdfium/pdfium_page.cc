@@ -55,17 +55,6 @@ constexpr float k180DegreesInRadians = base::kPiFloat;
 constexpr float k270DegreesInRadians = 3 * base::kPiFloat / 2;
 constexpr float k360DegreesInRadians = 2 * base::kPiFloat;
 
-PDFiumPage::IsValidLinkFunction g_is_valid_link_func_for_testing = nullptr;
-
-// If the link cannot be converted to a pp::Var, then it is not possible to
-// pass it to JS. In this case, ignore the link like other PDF viewers.
-// See https://crbug.com/312882 for an example.
-// TODO(crbug.com/702993): Get rid of the PPAPI usage here, as well as
-// SetIsValidLinkFunctionForTesting() and related code.
-bool IsValidLink(const std::string& url) {
-  return pp::Var(url).is_string();
-}
-
 gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int output_width = FPDF_GetPageWidthF(page);
   int output_height = FPDF_GetPageHeightF(page);
@@ -281,12 +270,6 @@ PDFiumPage::PDFiumPage(PDFiumPage&& that) = default;
 
 PDFiumPage::~PDFiumPage() {
   DCHECK_EQ(0, preventing_unload_count_);
-}
-
-// static
-void PDFiumPage::SetIsValidLinkFunctionForTesting(
-    IsValidLinkFunction function) {
-  g_is_valid_link_func_for_testing = function;
 }
 
 void PDFiumPage::Unload() {
@@ -985,10 +968,7 @@ void PDFiumPage::PopulateWebLinks() {
     Link link;
     link.target.url = base::UTF16ToUTF8(url);
 
-    IsValidLinkFunction is_valid_link_func =
-        g_is_valid_link_func_for_testing ? g_is_valid_link_func_for_testing
-                                         : &IsValidLink;
-    if (!is_valid_link_func(link.target.url))
+    if (!engine_->IsValidLink(link.target.url))
       continue;
 
     // Make sure all the characters in the URL are valid per RFC 1738.

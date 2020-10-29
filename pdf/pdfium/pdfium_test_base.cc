@@ -35,10 +35,6 @@ base::FilePath GetTestFontsDir() {
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-bool IsValidLinkForTesting(const std::string& url) {
-  return !url.empty();
-}
-
 }  // namespace
 
 PDFiumTestBase::PDFiumTestBase() = default;
@@ -56,11 +52,9 @@ bool PDFiumTestBase::UsingTestFonts() {
 
 void PDFiumTestBase::SetUp() {
   InitializePDFium();
-  PDFiumPage::SetIsValidLinkFunctionForTesting(&IsValidLinkForTesting);
 }
 
 void PDFiumTestBase::TearDown() {
-  PDFiumPage::SetIsValidLinkFunctionForTesting(nullptr);
   FPDF_DestroyLibrary();
 }
 

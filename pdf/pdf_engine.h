@@ -279,6 +279,12 @@ class PDFEngine {
 
     // Sets the link under cursor.
     virtual void SetLinkUnderCursor(const std::string& link_under_cursor) = 0;
+
+    // If the link cannot be converted to JS payload struct, then it is not
+    // possible to pass it to JS. In this case, ignore the link like other PDF
+    // viewers.
+    // See https://crbug.com/312882 for an example.
+    virtual bool IsValidLink(const std::string& url) = 0;
   };
 
   struct AccessibilityLinkInfo {

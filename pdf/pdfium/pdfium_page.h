@@ -44,9 +44,6 @@ class PDFiumPage {
   PDFiumPage(PDFiumPage&& that);
   ~PDFiumPage();
 
-  using IsValidLinkFunction = bool (*)(const std::string& url);
-  static void SetIsValidLinkFunctionForTesting(IsValidLinkFunction function);
-
   // Unloads the PDFium data for this page from memory.
   void Unload();
   // Gets the FPDF_PAGE for this page, loading and parsing it if necessary.

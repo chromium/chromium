@@ -811,6 +811,10 @@ FPDF_FORMHANDLE PDFiumEngine::form() const {
   return document_ ? document_->form() : nullptr;
 }
 
+bool PDFiumEngine::IsValidLink(const std::string& url) {
+  return client_->IsValidLink(url);
+}
+
 void PDFiumEngine::ContinueFind(int32_t result) {
   StartFind(current_find_text_, result != 0);
 }

@@ -186,6 +186,8 @@ class PDFiumEngine : public PDFEngine,
   FPDF_DOCUMENT doc() const;
   FPDF_FORMHANDLE form() const;
 
+  bool IsValidLink(const std::string& url);
+
  private:
   // This helper class is used to detect the difference in selection between
   // construction and destruction.  At destruction, it invalidates all the

@@ -173,4 +173,9 @@ void PreviewModeClient::SetLinkUnderCursor(
   NOTREACHED();
 }
 
+bool PreviewModeClient::IsValidLink(const std::string& url) {
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace chrome_pdf

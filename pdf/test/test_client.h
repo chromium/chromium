@@ -40,6 +40,7 @@ class TestClient : public PDFEngine::Client {
   float GetToolbarHeightInScreenCoords() override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
+  bool IsValidLink(const std::string& url) override;
 
  private:
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed
