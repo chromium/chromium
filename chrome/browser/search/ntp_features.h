@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_NTP_FEATURES_H_
-#define COMPONENTS_SEARCH_NTP_FEATURES_H_
+#ifndef CHROME_BROWSER_SEARCH_NTP_FEATURES_H_
+#define CHROME_BROWSER_SEARCH_NTP_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -56,4 +56,4 @@ double GetLocalHistoryRepeatableQueriesFrequencyExponent();
 
 }  // namespace ntp_features
 
-#endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_
+#endif  // CHROME_BROWSER_SEARCH_NTP_FEATURES_H_

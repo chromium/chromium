@@ -12,12 +12,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "chrome/common/url_constants.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/ntp_tiles/constants.h"
-#include "components/search/ntp_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

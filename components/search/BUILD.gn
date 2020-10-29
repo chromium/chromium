@@ -4,8 +4,6 @@
 
 static_library("search") {
   sources = [
-    "ntp_features.cc",
-    "ntp_features.h",
     "search.cc",
     "search.h",
     "search_provider_observer.cc",
