@@ -34,13 +34,18 @@ public class GetDetailsConverter {
     static final String RESPONSE_GET_DETAILS_RESPONSE_CODE = "getDetails.responseCode";
     static final String RESPONSE_GET_DETAILS_DETAILS_LIST = "getDetails.detailsList";
 
-    static final String ITEM_DETAILS_ID = "itemDetails.id";
-    static final String ITEM_DETAILS_TITLE = "itemDetails.title";
-    static final String ITEM_DETAILS_DESC = "itemDetails.description";
-    static final String ITEM_DETAILS_CURRENCY = "itemDetails.currency";
-    static final String ITEM_DETAILS_VALUE = "itemDetails.value";
-    static final String[] ITEM_DETAILS_ALL_FIELDS = {ITEM_DETAILS_ID, ITEM_DETAILS_TITLE,
-            ITEM_DETAILS_DESC, ITEM_DETAILS_CURRENCY, ITEM_DETAILS_VALUE};
+    static final String KEY_ID = "itemDetails.id";
+    static final String KEY_TITLE = "itemDetails.title";
+    static final String KEY_DESC = "itemDetails.description";
+    static final String KEY_CURRENCY = "itemDetails.currency";
+    static final String KEY_VALUE = "itemDetails.value";
+    static final String[] REQUIRED_FIELDS = {KEY_ID, KEY_TITLE, KEY_DESC, KEY_CURRENCY, KEY_VALUE};
+
+    static final String KEY_SUBS_PERIOD = "itemDetails.subsPeriod";
+    static final String KEY_FREE_TRIAL_PERIOD = "itemDetails.freeTrialPeriod";
+    static final String KEY_INTRO_CURRENCY = "itemDetails.introPriceCurrency";
+    static final String KEY_INTRO_VALUE = "itemDetails.introPriceValue";
+    static final String KEY_INTRO_PERIOD = "itemDetails.introPricePeriod";
 
     private GetDetailsConverter() {}
 
@@ -106,23 +111,39 @@ public class GetDetailsConverter {
 
         Bundle item = (Bundle) itemAsParcelable;
 
-        for (String field : ITEM_DETAILS_ALL_FIELDS) {
+        for (String field : REQUIRED_FIELDS) {
             if (item.containsKey(field) && (item.get(field) instanceof String)) continue;
             Log.w(TAG, "Item does not contain field String " + field + ".");
             return null;
         }
 
-        PaymentCurrencyAmount amount = new PaymentCurrencyAmount();
-        amount.currency = item.getString(ITEM_DETAILS_CURRENCY);
-        amount.value = item.getString(ITEM_DETAILS_VALUE);
+        // Mandatory fields.
+        PaymentCurrencyAmount price = new PaymentCurrencyAmount();
+        price.currency = item.getString(KEY_CURRENCY);
+        price.value = item.getString(KEY_VALUE);
 
-        ItemDetails res = new ItemDetails();
-        res.itemId = item.getString(ITEM_DETAILS_ID);
-        res.title = item.getString(ITEM_DETAILS_TITLE);
-        res.description = item.getString(ITEM_DETAILS_DESC);
-        res.price = amount;
+        ItemDetails result = new ItemDetails();
+        result.itemId = item.getString(KEY_ID);
+        result.title = item.getString(KEY_TITLE);
+        result.description = item.getString(KEY_DESC);
+        result.price = price;
 
-        return res;
+        // Optional fields.
+        result.subscriptionPeriod = item.getString(KEY_SUBS_PERIOD);
+        result.freeTrialPeriod = item.getString(KEY_FREE_TRIAL_PERIOD);
+        result.introductoryPricePeriod = item.getString(KEY_INTRO_PERIOD);
+
+        String introPriceCurrency = item.getString(KEY_INTRO_CURRENCY);
+        String introPriceValue = item.getString(KEY_INTRO_VALUE);
+
+        if (introPriceCurrency != null && introPriceValue != null) {
+            PaymentCurrencyAmount introPrice = new PaymentCurrencyAmount();
+            introPrice.currency = introPriceCurrency;
+            introPrice.value = introPriceValue;
+            result.introductoryPrice = introPrice;
+        }
+
+        return result;
     }
 
     public static void returnClientAppUnavailable(GetDetailsResponse callback) {
@@ -138,15 +159,34 @@ public class GetDetailsConverter {
      * This would be used by the client app and is here only to help testing.
      */
     @VisibleForTesting
+    public static Bundle createItemDetailsBundle(String id, String title, String desc,
+            String currency, String value, @Nullable String subsPeriod,
+            @Nullable String freeTrialPeriod, @Nullable String introPriceCurrency,
+            @Nullable String introPriceValue, @Nullable String intoPricePeriod) {
+        Bundle bundle = createItemDetailsBundle(id, title, desc, currency, value);
+
+        bundle.putString(KEY_SUBS_PERIOD, subsPeriod);
+        bundle.putString(KEY_FREE_TRIAL_PERIOD, freeTrialPeriod);
+        bundle.putString(KEY_INTRO_CURRENCY, introPriceCurrency);
+        bundle.putString(KEY_INTRO_VALUE, introPriceValue);
+        bundle.putString(KEY_INTRO_PERIOD, intoPricePeriod);
+
+        return bundle;
+    }
+
+    /**
+     * Like the above method, but provides {@code null} for all optional parameters.
+     */
+    @VisibleForTesting
     public static Bundle createItemDetailsBundle(
             String id, String title, String desc, String currency, String value) {
         Bundle bundle = new Bundle();
 
-        bundle.putString(ITEM_DETAILS_ID, id);
-        bundle.putString(ITEM_DETAILS_TITLE, title);
-        bundle.putString(ITEM_DETAILS_DESC, desc);
-        bundle.putString(ITEM_DETAILS_CURRENCY, currency);
-        bundle.putString(ITEM_DETAILS_VALUE, value);
+        bundle.putString(KEY_ID, id);
+        bundle.putString(KEY_TITLE, title);
+        bundle.putString(KEY_DESC, desc);
+        bundle.putString(KEY_CURRENCY, currency);
+        bundle.putString(KEY_VALUE, value);
 
         return bundle;
     }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.PARAM_ACKNOWLEDGE_MAKE_AVAILABLE_AGAIN;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.PARAM_ACKNOWLEDGE_PURCHASE_TOKEN;
@@ -23,6 +24,7 @@ import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetail
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.junit.Test;
@@ -68,6 +70,24 @@ public class DigitalGoodsConverterTest {
 
         ItemDetails item = GetDetailsConverter.convertItemDetails(bundle);
         assertItemDetails(item, id, title, desc, currency, value);
+        assertSubsItemDetails(item, null, null, null, null, null);
+    }
+
+    @Test
+    public void convertItemDetails_subscriptions() {
+        String subsPeriod = "2 weeks";
+        String freeTrialPeriod = "1 week";
+        String introPriceCurrency = "GBP";
+        String introPriceValue = "3.0";
+        String introPricePeriod = "1 month";
+
+        Bundle bundle = GetDetailsConverter.createItemDetailsBundle("id", "Title", "desc", "GBP",
+                "10.0", subsPeriod, freeTrialPeriod, introPriceCurrency, introPriceValue,
+                introPricePeriod);
+
+        ItemDetails item = GetDetailsConverter.convertItemDetails(bundle);
+        assertSubsItemDetails(item, subsPeriod, freeTrialPeriod, introPriceCurrency,
+                introPriceValue, introPricePeriod);
     }
 
     /**
@@ -93,7 +113,9 @@ public class DigitalGoodsConverterTest {
         int responseCode = 0;
         Parcelable[] items = {
                 GetDetailsConverter.createItemDetailsBundle("1", "t1", "d1", "c1", "v1"),
-                GetDetailsConverter.createItemDetailsBundle("2", "t2", "d2", "c2", "v2")};
+                GetDetailsConverter.createItemDetailsBundle(
+                        "2", "t2", "d2", "c2", "v2", "sp2", "ftp2", "ipc2", "ipv2", "ipp2")};
+
         args.putInt(RESPONSE_GET_DETAILS_RESPONSE_CODE, responseCode);
         args.putParcelableArray(RESPONSE_GET_DETAILS_DETAILS_LIST, items);
 
@@ -101,7 +123,9 @@ public class DigitalGoodsConverterTest {
 
         assertEquals(responseCode, state.responseCode);
         assertItemDetails(state.itemDetails[0], "1", "t1", "d1", "c1", "v1");
+        assertSubsItemDetails(state.itemDetails[0], null, null, null, null, null);
         assertItemDetails(state.itemDetails[1], "2", "t2", "d2", "c2", "v2");
+        assertSubsItemDetails(state.itemDetails[1], "sp2", "ftp2", "ipc2", "ipv2", "ipp2");
     }
 
     private static void assertItemDetails(ItemDetails item, String id, String title, String desc,
@@ -111,6 +135,20 @@ public class DigitalGoodsConverterTest {
         assertEquals(desc, item.description);
         assertEquals(currency, item.price.currency);
         assertEquals(value, item.price.value);
+    }
+
+    private static void assertSubsItemDetails(ItemDetails item, @Nullable String subsPeriod,
+            @Nullable String freeTrialPeriod, @Nullable String introPriceCurrency,
+            @Nullable String introPriceValue, @Nullable String intoPricePeriod) {
+        assertEquals(subsPeriod, item.subscriptionPeriod);
+        assertEquals(freeTrialPeriod, item.freeTrialPeriod);
+        if (introPriceCurrency == null || introPriceValue == null) {
+            assertNull(item.introductoryPrice);
+        } else {
+            assertEquals(introPriceCurrency, item.introductoryPrice.currency);
+            assertEquals(introPriceValue, item.introductoryPrice.value);
+        }
+        assertEquals(intoPricePeriod, item.introductoryPricePeriod);
     }
 
     @Test
