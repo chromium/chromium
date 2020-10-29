@@ -315,7 +315,7 @@ static void ReadExifDirectory(JOCTET* dir_start,
     kOrientationTag = 0x112,
     kResolutionXTag = 0x11a,
     kResolutionYTag = 0x11b,
-    kresolution_unitTag = 0x128,
+    kResolutionUnitTag = 0x128,
     kPixelXDimensionTag = 0xa002,
     kPixelYDimensionTag = 0xa003,
     kExifOffsetTag = 0x8769
@@ -353,7 +353,7 @@ static void ReadExifDirectory(JOCTET* dir_start,
           metadata.orientation = ImageOrientation::FromEXIFValue(ReadUint16(value_ptr, is_big_endian));
         break;
 
-      case ExifTags::kresolution_unitTag:
+      case ExifTags::kResolutionUnitTag:
         if (type == kUnsignedShortType && count == 1)
           metadata.resolution_unit = ReadUint16(value_ptr, is_big_endian);
         break;
@@ -431,7 +431,7 @@ static void ReadImageMetaData(jpeg_decompress_struct* info, DecodedImageMetaData
     // http://partners.adobe.com/public/developer/en/tiff/TIFF6.pdf
     JOCTET* data_end = marker->data + marker->data_length;
     JOCTET* root_start = marker->data + kOffsetToTiffData;
-    JOCTET* tiff_start = marker->data + ifd_offset;
+    JOCTET* tiff_start = marker->data + ifd_offset - 2;
     JOCTET* ifd0 = root_start + ifd_offset;
 
     ReadExifDirectory(ifd0, tiff_start, root_start, data_end, is_big_endian, metadata);
