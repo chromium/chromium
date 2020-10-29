@@ -172,8 +172,9 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
   bubble_wrapper_->bubble_view()->ResetDelegate();
 
-  // Clear container state before `delegate_` is deleted, as container views
-  // depend on it.
+  // Explicitly reset holding space item view containers so that they will stop
+  // observing the holding space controller/model while they are asynchronously
+  // destroyed.
   pinned_files_container_->Reset();
   recent_files_container_->Reset();
 }

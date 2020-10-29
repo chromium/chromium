@@ -28,12 +28,9 @@ class HoldingSpaceItemViewsContainer : public views::View,
       const HoldingSpaceItemViewsContainer& other) = delete;
   ~HoldingSpaceItemViewsContainer() override;
 
-  // Resets the container. Called when the tray bubble starts closing - holding
-  // space item views depend on the `HoldingSpaceItemViewDelegate` which is
-  // reset when the `HoldingSpaceTrayBubble` is reset.
-  // This removes all children that depend on the delegate, and stops observing
-  // holding space model to ensure no new items are created while the bubble
-  // widget is being closed (which happens asynchronously).
+  // Resets the container. Called when the tray bubble starts closing to
+  // stop observing the holding space controller/model to ensure that no new
+  // items are created while the bubble widget is being asynchronously closed.
   void Reset();
 
   virtual void AddHoldingSpaceItemView(const HoldingSpaceItem* item,

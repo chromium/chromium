@@ -17,7 +17,6 @@ HoldingSpaceItemViewsContainer::~HoldingSpaceItemViewsContainer() = default;
 void HoldingSpaceItemViewsContainer::Reset() {
   model_observer_.RemoveAll();
   controller_observer_.RemoveAll();
-  RemoveAllHoldingSpaceItemViews();
 }
 
 void HoldingSpaceItemViewsContainer::ChildPreferredSizeChanged(
