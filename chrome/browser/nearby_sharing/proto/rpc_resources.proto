@@ -80,8 +80,20 @@ message Contact {
 }
 
 // A contact record from People backend.
-// NextId=5
+// NextId=6
 message ContactRecord {
+  // The type of the ContactRecord.
+  enum Type {
+    // The source of the contact is unknown.
+    UNKNOWN = 0;
+
+    // The source of the contact is from google (i.e. google.com/contacts).
+    GOOGLE_CONTACT = 1;
+
+    // The source of the contact is from a device.
+    DEVICE_CONTACT = 2;
+  }
+
   // The stable id of this contact record.
   string id = 1;
 
@@ -94,6 +106,9 @@ message ContactRecord {
 
   // A list of phone numbers and emails under this contact record.
   repeated Contact.Identifier identifiers = 4;
+
+  // The type of the ContactRecord.
+  Type type = 5;
 }
 
 // A ShareTarget is a potential destination of a share.
