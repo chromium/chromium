@@ -16,12 +16,25 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
+#if BUILDFLAG(PLATFORM_CFM)
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
+#include "chrome/browser/device_identity/device_identity_provider.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#endif  // BUILDFLAG(PLATFORM_CFM)
+#endif  // defined(OS_CHROMEOS)
+
 namespace feedback {
 
 namespace {
 
 constexpr char kAuthenticationErrorLogMessage[] =
     "Feedback report will be sent without authentication.";
+
+constexpr char kConsumer[] = "feedback_uploader_chrome";
+
+constexpr char kScope[] = "https://www.googleapis.com/auth/supportcontent";
 
 void QueueSingleReport(base::WeakPtr<feedback::FeedbackUploader> uploader,
                        scoped_refptr<FeedbackReport> report) {
@@ -47,18 +60,36 @@ FeedbackUploaderChrome::FeedbackUploaderChrome(
 
 FeedbackUploaderChrome::~FeedbackUploaderChrome() = default;
 
-void FeedbackUploaderChrome::AccessTokenAvailable(
+void FeedbackUploaderChrome::PrimaryAccountAccessTokenAvailable(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  DCHECK(token_fetcher_);
-  token_fetcher_.reset();
+  DCHECK(primary_account_token_fetcher_);
+  primary_account_token_fetcher_.reset();
+  AccessTokenAvailable(error, access_token_info.token);
+}
+
+#if defined(OS_CHROMEOS)
+#if BUILDFLAG(PLATFORM_CFM)
+void FeedbackUploaderChrome::ActiveAccountAccessTokenAvailable(
+    GoogleServiceAuthError error,
+    std::string token) {
+  DCHECK(active_account_token_fetcher_);
+  active_account_token_fetcher_.reset();
+  AccessTokenAvailable(error, token);
+}
+#endif  // BUILDFLAG(PLATFORM_CFM)
+#endif  // defined(OS_CHROMEOS)
+
+void FeedbackUploaderChrome::AccessTokenAvailable(GoogleServiceAuthError error,
+                                                  std::string token) {
   if (error.state() == GoogleServiceAuthError::NONE) {
-    DCHECK(!access_token_info.token.empty());
-    access_token_ = access_token_info.token;
+    DCHECK(!token.empty());
+    access_token_ = token;
   } else {
     LOG(ERROR) << "Failed to get the access token. "
                << kAuthenticationErrorLogMessage;
   }
+
   FeedbackUploader::StartDispatchingReport();
 }
 
@@ -81,15 +112,43 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   if (identity_manager &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
     signin::ScopeSet scopes;
-    scopes.insert("https://www.googleapis.com/auth/supportcontent");
-    token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-        "feedback_uploader_chrome", identity_manager, scopes,
-        base::BindOnce(&FeedbackUploaderChrome::AccessTokenAvailable,
-                       base::Unretained(this)),
-        signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        signin::ConsentLevel::kNotRequired);
+    scopes.insert(kScope);
+    primary_account_token_fetcher_ =
+        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+            kConsumer, identity_manager, scopes,
+            base::BindOnce(
+                &FeedbackUploaderChrome::PrimaryAccountAccessTokenAvailable,
+                base::Unretained(this)),
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            signin::ConsentLevel::kNotRequired);
     return;
   }
+
+#if defined(OS_CHROMEOS)
+#if BUILDFLAG(PLATFORM_CFM)
+  // CFM Devices may need to acquire the auth token for their robot account
+  // before they submit feedback.
+  DeviceOAuth2TokenService* deviceTokenService =
+      DeviceOAuth2TokenServiceFactory::Get();
+  DCHECK(deviceTokenService);
+  auto device_identity_provider =
+      std::make_unique<DeviceIdentityProvider>(deviceTokenService);
+
+  // Flag indicating that a device was intended to be used as a CFM.
+  bool isMeetDevice =
+      policy::EnrollmentRequisitionManager::IsRemoraRequisition();
+  if (isMeetDevice && !device_identity_provider->GetActiveAccountId().empty()) {
+    OAuth2AccessTokenManager::ScopeSet scopes;
+    scopes.insert(kScope);
+    active_account_token_fetcher_ = device_identity_provider->FetchAccessToken(
+        kConsumer, scopes,
+        base::BindOnce(
+            &FeedbackUploaderChrome::ActiveAccountAccessTokenAvailable,
+            base::Unretained(this)));
+    return;
+  }
+#endif  // BUILDFLAG(PLATFORM_CFM)
+#endif  // defined(OS_CHROMEOS)
 
   LOG(ERROR) << "Failed to request oauth access token. "
              << kAuthenticationErrorLogMessage;

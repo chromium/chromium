@@ -2312,6 +2312,7 @@ static_library("browser") {
       "//chromeos/audio",
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/camera_app_ui:mojo_bindings",
+      "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/help_app_ui:mojo_bindings",
