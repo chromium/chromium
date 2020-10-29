@@ -12,7 +12,10 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -22,10 +25,13 @@ namespace {
 
 using ::testing::_;
 
+AccountId GetChildAccountId() {
+  return AccountId::FromUserEmail("child@gmail.com");
+}
+
 class ParentAccessControllerImplTest : public LoginTestBase {
  protected:
-  ParentAccessControllerImplTest()
-      : account_id_(AccountId::FromUserEmail("child@gmail.com")) {}
+  ParentAccessControllerImplTest() : account_id_(GetChildAccountId()) {}
   ~ParentAccessControllerImplTest() override = default;
 
   // LoginScreenTest:
@@ -55,11 +61,23 @@ class ParentAccessControllerImplTest : public LoginTestBase {
     access_granted ? ++successful_validation_ : ++back_action_;
   }
 
-  void StartParentAccess(
-      SupervisedAction action = SupervisedAction::kUnlockTimeLimits) {
+  // Starts parent access validation.
+  // Use this overloaded method if session state and supervised action are not
+  // relevant.
+  void StartParentAccess() {
+    GetSessionControllerClient()->SetSessionState(
+        session_manager::SessionState::LOCKED);
+    StartParentAccess(account_id_, SupervisedAction::kUnlockTimeLimits);
+  }
+
+  // Starts parent access validation with supervised |action|.
+  // Session state should be configured accordingly to the |action|.
+  void StartParentAccess(SupervisedAction action) {
     StartParentAccess(account_id_, action);
   }
 
+  // Starts parent access validation with supervised |action| and |account_id|.
+  // Session state should be configured accordingly to the |action|.
   void StartParentAccess(const AccountId& account_id, SupervisedAction action) {
     validation_time_ = base::Time::Now();
     ash::ParentAccessController::Get()->ShowWidget(
@@ -137,6 +155,8 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessDialogFocus) {
 
 // Tests correct UMA reporting for parent access.
 TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
   StartParentAccess(SupervisedAction::kUnlockTimeLimits);
   histogram_tester_.ExpectBucketCount(
       ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
@@ -145,6 +165,8 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
   ExpectUMAActionReported(
       ParentAccessControllerImpl::UMAAction::kCanceledByUser, 1, 1);
 
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
   StartParentAccess(SupervisedAction::kUpdateTimezone);
   histogram_tester_.ExpectBucketCount(
       ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
@@ -153,7 +175,6 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
   ExpectUMAActionReported(
       ParentAccessControllerImpl::UMAAction::kCanceledByUser, 2, 2);
 
-  // The below usage depends on the session state.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   StartParentAccess(SupervisedAction::kUpdateClock);
@@ -166,7 +187,7 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  StartParentAccess(SupervisedAction::kUpdateClock);
+  StartParentAccess(EmptyAccountId(), SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
       ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
       ParentAccessControllerImpl::UMAUsage::kTimeChangeLoginScreen, 1);
@@ -186,7 +207,7 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  StartParentAccess(SupervisedAction::kReauth);
+  StartParentAccess(EmptyAccountId(), SupervisedAction::kReauth);
   histogram_tester_.ExpectBucketCount(
       ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
       ParentAccessControllerImpl::UMAUsage::kReauhLoginScreen, 1);
@@ -237,6 +258,27 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUnsuccessfulValidation) {
   ExpectUMAActionReported(
       ParentAccessControllerImpl::UMAAction::kCanceledByUser, 1, 3);
 }
+
+#if DCHECK_IS_ON()
+// Tests that on login screen we check parent access code against all accounts.
+TEST_F(ParentAccessControllerImplTest, EnforceNoAccountSpecifiedOnLogin) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  EXPECT_DEATH_IF_SUPPORTED(
+      StartParentAccess(GetChildAccountId(), SupervisedAction::kReauth), "");
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  EXPECT_DEATH_IF_SUPPORTED(
+      StartParentAccess(GetChildAccountId(), SupervisedAction::kAddUser), "");
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  EXPECT_DEATH_IF_SUPPORTED(
+      StartParentAccess(GetChildAccountId(), SupervisedAction::kUpdateClock),
+      "");
+}
+#endif
 
 }  // namespace
 }  // namespace ash
