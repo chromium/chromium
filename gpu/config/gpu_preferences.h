@@ -215,6 +215,9 @@ struct GPU_EXPORT GpuPreferences {
   // Use Vulkan for rasterization and display compositing.
   VulkanImplementationName use_vulkan = VulkanImplementationName::kNone;
 
+  // Enable using vulkan protected memory.
+  bool enable_vulkan_protected_memory = false;
+
   // Enforce using vulkan protected memory.
   bool enforce_vulkan_protected_memory = false;
 

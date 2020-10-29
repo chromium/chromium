@@ -77,16 +77,8 @@ const char kUseVulkan[] = "use-vulkan";
 const char kVulkanImplementationNameNative[] = "native";
 const char kVulkanImplementationNameSwiftshader[] = "swiftshader";
 
-// Forces to use protected memory for vulkan compositing.
-const char kEnforceVulkanProtectedMemory[] = "enforce-vulkan-protected-memory";
-
 // Disables VK_KHR_surface extension. Instead of using swapchain, bitblt will be
 // used for present render result on screen.
 const char kDisableVulkanSurface[] = "disable-vulkan-surface";
-
-// Disables falling back to GL based hardware rendering if initializing Vulkan
-// fails. This is to allow tests to catch regressions in Vulkan.
-const char kDisableVulkanFallbackToGLForTesting[] =
-    "disable-vulkan-fallback-to-gl-for-testing";
 
 }  // namespace switches

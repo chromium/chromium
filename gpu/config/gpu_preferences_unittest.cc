@@ -75,6 +75,8 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
             right.watchdog_starts_backgrounded);
   EXPECT_EQ(left.gr_context_type, right.gr_context_type);
   EXPECT_EQ(left.use_vulkan, right.use_vulkan);
+  EXPECT_EQ(left.enable_vulkan_protected_memory,
+            right.enable_vulkan_protected_memory);
   EXPECT_EQ(left.enable_gpu_benchmarking_extension,
             right.enable_gpu_benchmarking_extension);
   EXPECT_EQ(left.enable_webgpu, right.enable_webgpu);
@@ -114,12 +116,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
 
     GpuPreferences default_prefs;
     mojom::GpuPreferences prefs_mojom;
-
-    // Make sure all fields are included in mojo struct.
-    // TODO(zmo): This test isn't perfect. If a field isn't included in
-    // mojom::GpuPreferences, the two struct sizes might still be equal due to
-    // alignment.
-    EXPECT_EQ(sizeof(default_prefs), sizeof(prefs_mojom));
 
 #define GPU_PREFERENCES_FIELD(name, value)         \
   input_prefs.name = value;                        \

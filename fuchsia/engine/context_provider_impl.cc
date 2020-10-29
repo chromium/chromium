@@ -392,6 +392,8 @@ void ContextProviderImpl::Create(
       web_engine_config.FindBoolPath("use-overlays-for-video").value_or(false);
 
   if (enable_protected_graphics) {
+    launch_command.AppendSwitch(switches::kEnableVulkanProtectedMemory);
+    // TODO(crbug.com/1143764): Remove this after underlays are stable.
     if (force_protected_graphics || !use_overlays_for_video) {
       launch_command.AppendSwitch(switches::kEnforceVulkanProtectedMemory);
     }

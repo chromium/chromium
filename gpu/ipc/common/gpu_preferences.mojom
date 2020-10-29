@@ -77,6 +77,7 @@ struct GpuPreferences {
   bool watchdog_starts_backgrounded;
   GrContextType gr_context_type;
   VulkanImplementationName use_vulkan;
+  bool enable_vulkan_protected_memory;
   bool enforce_vulkan_protected_memory;
   bool disable_vulkan_surface;
   bool disable_vulkan_fallback_to_gl_for_testing;

@@ -163,6 +163,8 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
       return false;
     if (!prefs.ReadUseVulkan(&out->use_vulkan))
       return false;
+    out->enable_vulkan_protected_memory =
+        prefs.enable_vulkan_protected_memory();
     out->enforce_vulkan_protected_memory =
         prefs.enforce_vulkan_protected_memory();
     out->disable_vulkan_surface = prefs.disable_vulkan_surface();
@@ -330,6 +332,9 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   static gpu::VulkanImplementationName use_vulkan(
       const gpu::GpuPreferences& prefs) {
     return prefs.use_vulkan;
+  }
+  static bool enable_vulkan_protected_memory(const gpu::GpuPreferences& prefs) {
+    return prefs.enable_vulkan_protected_memory;
   }
   static bool enforce_vulkan_protected_memory(
       const gpu::GpuPreferences& prefs) {

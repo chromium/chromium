@@ -99,6 +99,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 
   gpu_preferences.enable_oop_rasterization_ddl =
       base::FeatureList::IsEnabled(features::kOopRasterizationDDL);
+  gpu_preferences.enable_vulkan_protected_memory =
+      command_line->HasSwitch(switches::kEnableVulkanProtectedMemory);
   gpu_preferences.enforce_vulkan_protected_memory =
       command_line->HasSwitch(switches::kEnforceVulkanProtectedMemory);
   gpu_preferences.disable_vulkan_fallback_to_gl_for_testing =
