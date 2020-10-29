@@ -763,6 +763,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.FormEvents.CreditCard.WithServerNickname"
     enum="AutofillFormEvent" expires_after="2021-04-01">
+  <obsolete>
+    Removed 10/2020 as it is launched and no longer needed for analysis.
+  </obsolete>
   <owner>sujiezhu@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -783,6 +786,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Autofill.FormEvents.CreditCard.WithServerNickname.SelectionDuration"
     units="units" expires_after="2021-04-01">
+  <obsolete>
+    Removed 10/2020 as it is launched and no longer needed for analysis.
+  </obsolete>
   <owner>sujiezhu@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
