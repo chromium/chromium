@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "safe_browsing_policy_handler_unittest.cc",
     "safe_browsing_prefs_unittest.cc",
   ]
+
   deps = [
     ":safe_browsing_policy_handler",
     ":safe_browsing_prefs",
@@ -58,6 +59,14 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url:url",
   ]
+
+  if (safe_browsing_mode == 1) {
+    sources += [ "visual_utils_unittest.cc" ]
+    deps += [
+      ":common",
+      "//ui/gfx:color_utils",
+    ]
+  }
 }
 
 source_set("common") {
@@ -81,6 +90,18 @@ source_set("common") {
     "//net",
     "//url/ipc:url_ipc",
   ]
+
+  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
+    sources += [
+      "visual_utils.cc",
+      "visual_utils.h",
+    ]
+    deps += [
+      "//components/safe_browsing/core:client_model_proto",
+      "//third_party/opencv:emd",
+      "//ui/gfx:color_utils",
+    ]
+  }
 
   public_deps = [ ":interfaces" ]
 

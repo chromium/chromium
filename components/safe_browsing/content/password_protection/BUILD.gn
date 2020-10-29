@@ -14,8 +14,6 @@ source_set("password_protection") {
       "password_protection_request.h",
       "password_protection_service.cc",
       "password_protection_service.h",
-      "visual_utils.cc",
-      "visual_utils.h",
     ]
 
     public_deps = [ "//google_apis:google_apis" ]
@@ -75,9 +73,7 @@ source_set("password_protection_unittest") {
       "password_protection_navigation_throttle_unittest.cc",
       "password_protection_service_unittest.cc",
     ]
-    if (safe_browsing_mode == 1) {
-      sources += [ "visual_utils_unittest.cc" ]
-    }
+
     deps = [
       ":mock_password_protection",
       ":password_protection",

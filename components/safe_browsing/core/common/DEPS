@@ -8,5 +8,8 @@ include_rules = [
   "+content/public/test",
   "+crypto/sha2.h",
   "+ipc",
+  "+third_party/opencv",
+  "+third_party/skia/include",
+  "+ui/gfx",
   "+url"
 ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_VISUAL_UTILS_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_VISUAL_UTILS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
 
 #include <string>
 
@@ -52,4 +52,4 @@ base::Optional<VisionMatchResult> IsVisualMatch(const SkBitmap& image,
 }  // namespace visual_utils
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_VISUAL_UTILS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_

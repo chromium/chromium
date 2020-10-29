@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "components/safe_browsing/content/password_protection/visual_utils.h"
+#include "components/safe_browsing/core/common/visual_utils.h"
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
