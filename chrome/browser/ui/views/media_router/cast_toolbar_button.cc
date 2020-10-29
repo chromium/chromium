@@ -170,14 +170,17 @@ void CastToolbarButton::UpdateIcon() {
     icon_color = gfx::kGoogleBlue500;
   }
 
+  // This function is called when system theme changes. If an idle icon is
+  // present, its color needs update.
+  if (icon_color == gfx::kPlaceholderColor) {
+    UpdateIconsWithStandardColors(*new_icon);
+  }
   if (icon_ == new_icon)
     return;
 
   icon_ = new_icon;
   LogIconChange(icon_);
-  if (icon_color == gfx::kPlaceholderColor) {
-    UpdateIconsWithStandardColors(*icon_);
-  } else {
+  if (icon_color != gfx::kPlaceholderColor) {
     for (auto state : kButtonStates)
       SetImageModel(state, ui::ImageModel::FromVectorIcon(*icon_, icon_color));
   }
