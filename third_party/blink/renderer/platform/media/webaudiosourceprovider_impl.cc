@@ -78,6 +78,7 @@ class WebAudioSourceProviderImpl::TeeFilter
              int prior_frames_skipped,
              media::AudioBus* audio_bus) override {
     DCHECK(initialized());
+    DCHECK_EQ(audio_bus->channels(), channels_);
 
     const int num_rendered_frames = renderer_->Render(
         delay, delay_timestamp, prior_frames_skipped, audio_bus);
@@ -225,7 +226,16 @@ void WebAudioSourceProviderImpl::ProvideInput(
   }
 
   DCHECK(client_);
-  DCHECK_EQ(tee_filter_->channels(), bus_wrapper_->channels());
+
+  // It may be the case that the given |audio_data| doesn't have the same number
+  // of channels as we were expecting, due to a race condition. In that case,
+  // simply output silence.
+  if (tee_filter_->channels() != bus_wrapper_->channels()) {
+    DVLOG(2) << "Outputting silence due to mismatched channel count";
+    bus_wrapper_->Zero();
+    return;
+  }
+
   const int frames = tee_filter_->Render(
       base::TimeDelta(), base::TimeTicks::Now(), 0, bus_wrapper_.get());
 

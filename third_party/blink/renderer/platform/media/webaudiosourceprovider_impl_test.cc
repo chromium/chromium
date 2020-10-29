@@ -397,6 +397,44 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   ASSERT_FALSE(CompareBusses(bus1.get(), bus2.get()));
 }
 
+TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
+  // Create a stereo stream
+  auto stereo_params = media::AudioParameters(
+      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
+      kTestSampleRate * 2, 64);
+
+  // When Initialize() is called after setClient(), the params should propagate
+  // to the client via setFormat() during the call.
+  EXPECT_CALL(*this,
+              SetFormat(stereo_params.channels(), stereo_params.sample_rate()));
+  wasp_impl_->SetClient(this);
+  wasp_impl_->Initialize(stereo_params, &fake_callback_);
+  base::RunLoop().RunUntilIdle();
+
+  wasp_impl_->Start();
+  wasp_impl_->Play();
+
+  // Create a mono stream
+  auto mono_params = media::AudioParameters(
+      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_MONO,
+      kTestSampleRate * 2, 64);
+
+  auto bus = media::AudioBus::Create(mono_params);
+
+  // Point the WebVector into memory owned by |bus|.
+  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  for (size_t i = 0; i < audio_data.size(); ++i)
+    audio_data[i] = bus->channel(static_cast<int>(i));
+
+  auto zero_bus = media::AudioBus::Create(mono_params);
+  zero_bus->Zero();
+
+  // Verify ProvideInput() returns silence and doesn't crash.
+  bus->channel(0)[0] = 1;
+  wasp_impl_->ProvideInput(audio_data, mono_params.frames_per_buffer());
+  ASSERT_TRUE(CompareBusses(bus.get(), zero_bus.get()));
+}
+
 TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   wasp_impl_ = new WebAudioSourceProviderImpl(
       mock_sink_, &media_log_,
