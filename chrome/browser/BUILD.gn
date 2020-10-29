@@ -2351,6 +2351,9 @@ static_library("browser") {
       ]
     }
   }
+  if (is_linux || is_chromeos) {
+    deps += [ "//chrome/browser/error_reporting" ]
+  }
   if (use_ozone) {
     deps += [
       "//ui/events/ozone",

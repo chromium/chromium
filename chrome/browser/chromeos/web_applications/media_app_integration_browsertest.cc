@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/file_manager/web_file_tasks.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -283,6 +284,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        TrustedContextReportsConsoleErrors) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_ui = LaunchApp(web_app::SystemAppType::MEDIA);
@@ -304,6 +306,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        TrustedContextReportsDomExceptions) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_ui = LaunchApp(web_app::SystemAppType::MEDIA);
@@ -320,6 +323,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        UntrustedContextReportsDomExceptions) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* app = LaunchApp(web_app::SystemAppType::MEDIA);
@@ -336,6 +340,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        TrustedContextReportsUnhandledExceptions) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_ui = LaunchApp(web_app::SystemAppType::MEDIA);
@@ -352,6 +357,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        UntrustedContextReportsUnhandledExceptions) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* app = LaunchApp(web_app::SystemAppType::MEDIA);
@@ -367,6 +373,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        TrustedContextReportsTypeErrors) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_ui = LaunchApp(web_app::SystemAppType::MEDIA);
@@ -384,6 +391,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        UntrustedContextReportsTypeErrors) {
   MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 
   WaitForTestSystemAppInstall();
   content::WebContents* app = LaunchApp(web_app::SystemAppType::MEDIA);

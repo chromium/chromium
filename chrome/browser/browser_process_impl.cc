@@ -196,6 +196,10 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/component_updater/supervised_user_whitelist_installer.h"
 #endif
@@ -1148,6 +1152,10 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
 #if !defined(OS_ANDROID)
   ApplyMetricsReportingPolicy();
+#endif
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  ChromeJsErrorReportProcessor::Create();
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)

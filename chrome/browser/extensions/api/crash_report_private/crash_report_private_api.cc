@@ -7,7 +7,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
-#include "components/crash/content/browser/error_reporting/send_javascript_error_report.h"
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/devtools_agent_host.h"
 
 namespace extensions {
@@ -50,6 +50,12 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   const auto params = crash_report_private::ReportError::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
+  auto processor = JsErrorReportProcessor::Get();
+  if (!processor) {
+    VLOG(3) << "No processor for error report";
+    return RespondNow(Error("No processor for error report"));
+  }
+
   JavaScriptErrorReport error_report;
   error_report.message = std::move(params->info.message);
   error_report.url = std::move(params->info.url);
@@ -75,7 +81,7 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
 
   error_report.app_locale = g_browser_process->GetApplicationLocale();
 
-  SendJavaScriptErrorReport(
+  processor->SendErrorReport(
       std::move(error_report),
       base::BindOnce(&CrashReportPrivateReportErrorFunction::OnReportComplete,
                      this),

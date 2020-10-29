@@ -2117,6 +2117,8 @@ if (!is_android) {
           "../browser/extensions/api/terminal/terminal_private_browsertest.cc",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
         ]
+
+        deps += [ "//chrome/browser/error_reporting:test_support" ]
       }
 
       deps += [
@@ -5014,6 +5016,10 @@ test("unit_tests") {
       "//chromeos/services/nearby/public/cpp:test_support",
       "//components/arc:arc_test_support",
     ]
+  }
+
+  if (is_linux || is_chromeos) {
+    deps += [ "//chrome/browser/error_reporting:unit_test" ]
   }
 
   if (use_x11 || use_ozone) {

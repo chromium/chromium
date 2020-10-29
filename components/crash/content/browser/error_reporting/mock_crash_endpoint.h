@@ -20,7 +20,7 @@ struct HttpRequest;
 }  // namespace test_server
 }  // namespace net
 
-// Installs a mock crash server endpoint into chrome.crashReportPrivate.
+// Installs a mock crash server endpoint.
 class MockCrashEndpoint {
  public:
   struct Report {
@@ -43,6 +43,9 @@ class MockCrashEndpoint {
   // Configures whether the mock crash reporter client has user-consent for
   // submitting crash reports.
   void set_consented(bool consented) { consented_ = consented; }
+
+  // Returns the URL that tests should send crash reports to.
+  std::string GetCrashEndpointURL() const;
 
  private:
   class Client;

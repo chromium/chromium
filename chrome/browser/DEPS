@@ -16,6 +16,7 @@ include_rules = [
   "+chrome/android/modules",
   "+chrome/android/test_support_jni_headers",
   "+chrome/app",
+  "+chrome/browser/error_reporting",
   "+chrome/browser/flags/android",
   "+chrome/browser/preferences/android",
   "+chrome/browser/profiles/android/jni_headers",

@@ -1,0 +1,55 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+# thunking issues. Fix & re-enable.
+assert(is_linux || is_chromeos)
+
+static_library("error_reporting") {
+  sources = [
+    "chrome_js_error_report_processor.cc",
+    "chrome_js_error_report_processor.h",
+  ]
+  deps = [
+    "//base",
+    "//components/crash/content/browser/error_reporting",
+    "//components/crash/core/app",
+    "//components/feedback",
+    "//components/startup_metric_utils/browser",
+    "//content/public/browser",
+    "//net",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_chrome_js_error_report_processor.cc",
+    "mock_chrome_js_error_report_processor.h",
+  ]
+  deps = [
+    ":error_reporting",
+    "//base",
+    "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+  ]
+}
+
+source_set("unit_test") {
+  testonly = true
+  sources = [ "chrome_js_error_report_processor_unittest.cc" ]
+  deps = [
+    ":error_reporting",
+    ":test_support",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/crash/content/browser/error_reporting",
+    "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+    "//components/crash/core/app",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

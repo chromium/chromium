@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/crash/content/browser/error_reporting/send_javascript_error_report.h"
+#include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 
-#include <memory>
-#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -14,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -34,49 +31,7 @@
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
 constexpr char kCrashEndpointUrl[] = "https://clients2.google.com/cr/report";
-#else
-constexpr char kCrashEndpointUrl[] = "";
-#endif
-
-std::string& GetCrashEndpoint() {
-  static base::NoDestructor<std::string> crash_endpoint(kCrashEndpointUrl);
-  return *crash_endpoint;
-}
-
-struct OsVersionOverride {
-  OsVersionOverride(int32_t major_override,
-                    int32_t minor_override,
-                    int32_t bugfix_override)
-      : major(major_override), minor(minor_override), bugfix(bugfix_override) {}
-  int32_t major;
-  int32_t minor;
-  int32_t bugfix;
-};
-
-// If return value is set, use that as the major/minor/bugfix OS version
-// numbers. This is used as dependency injection during testing.
-base::Optional<OsVersionOverride>& GetOsVersionOverrides() {
-  static base::NoDestructor<base::Optional<OsVersionOverride>> testing_override;
-  return *testing_override;
-}
-
-// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
-// thunking issues. Fix & re-enable.
-#if !defined(OS_WIN)
-
-void OnRequestComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
-                       base::ScopedClosureRunner callback_runner,
-                       std::unique_ptr<std::string> response_body) {
-  if (response_body) {
-    // TODO(iby): Update the crash log (uploads.log)
-    DVLOG(1) << "Uploaded crash report. ID: " << *response_body;
-  } else {
-    LOG(ERROR) << "Failed to upload crash report";
-  }
-  // callback_runner will implicitly run the callback when we reach this line.
-}
 
 // Sometimes, the stack trace will contain an error message as the first line,
 // which confuses the Crash server. This function deletes it if it is present.
@@ -104,10 +59,41 @@ std::string RedactErrorMessage(const std::string& message) {
       .Redact(message);
 }
 
+using ParameterMap = std::map<std::string, std::string>;
+
+std::string BuildPostRequestQueryString(const ParameterMap& params) {
+  std::vector<std::string> query_parts;
+  for (const auto& kv : params) {
+    query_parts.push_back(base::StrCat(
+        {kv.first, "=",
+         net::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
+  }
+  return base::JoinString(query_parts, "&");
+}
+
+}  // namespace
+
+ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor() = default;
+ChromeJsErrorReportProcessor::~ChromeJsErrorReportProcessor() = default;
+
+void ChromeJsErrorReportProcessor::OnRequestComplete(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    base::ScopedClosureRunner callback_runner,
+    std::unique_ptr<std::string> response_body) {
+  if (response_body) {
+    // TODO(iby): Update the crash log (uploads.log)
+    VLOG(1) << "Uploaded crash report. ID: " << *response_body;
+  } else {
+    LOG(ERROR) << "Failed to upload crash report";
+  }
+  // callback_runner will implicitly run the callback when we reach this line.
+}
+
 // Returns the redacted, fixed-up error report if the user consented to have it
 // sent. Returns base::nullopt if the user did not consent or we otherwise
 // should not send the report. All the MayBlock work should be done in here.
-base::Optional<JavaScriptErrorReport> CheckConsentAndRedact(
+base::Optional<JavaScriptErrorReport>
+ChromeJsErrorReportProcessor::CheckConsentAndRedact(
     JavaScriptErrorReport error_report) {
   if (!crash_reporter::GetClientCollectStatsConsent()) {
     return base::nullopt;
@@ -126,57 +112,37 @@ base::Optional<JavaScriptErrorReport> CheckConsentAndRedact(
   return error_report;
 }
 
-using ParameterMap = std::map<std::string, std::string>;
-
-std::string BuildPostRequestQueryString(const ParameterMap& params) {
-  std::vector<std::string> query_parts;
-  for (const auto& kv : params) {
-    query_parts.push_back(base::StrCat(
-        {kv.first, "=",
-         net::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
-  }
-  return base::JoinString(query_parts, "&");
-}
-
-struct PlatformInfo {
+struct ChromeJsErrorReportProcessor::PlatformInfo {
   std::string product_name;
   std::string version;
   std::string channel;
   std::string os_version;
 };
 
-PlatformInfo GetPlatformInfo() {
+ChromeJsErrorReportProcessor::PlatformInfo
+ChromeJsErrorReportProcessor::GetPlatformInfo() {
   PlatformInfo info;
 
   // TODO(https://crbug.com/1121816): Get correct product_name for non-POSIX
   // platforms.
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if defined(OS_POSIX)
   crash_reporter::GetClientProductNameAndVersion(&info.product_name,
                                                  &info.version, &info.channel);
 #endif
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
-  const base::Optional<OsVersionOverride>& version_override =
-      GetOsVersionOverrides();
-  if (version_override) {
-    os_major_version = version_override->major;
-    os_minor_version = version_override->minor;
-    os_bugfix_version = version_override->bugfix;
-  } else {
-    base::SysInfo::OperatingSystemVersionNumbers(
-        &os_major_version, &os_minor_version, &os_bugfix_version);
-  }
-
+  GetOsVersion(os_major_version, os_minor_version, os_bugfix_version);
   info.os_version = base::StringPrintf("%d.%d.%d", os_major_version,
                                        os_minor_version, os_bugfix_version);
   return info;
 }
 
-void SendReport(const GURL& url,
-                const std::string& body,
-                base::ScopedClosureRunner callback_runner,
-                network::SharedURLLoaderFactory* loader_factory) {
+void ChromeJsErrorReportProcessor::SendReport(
+    const GURL& url,
+    const std::string& body,
+    base::ScopedClosureRunner callback_runner,
+    network::SharedURLLoaderFactory* loader_factory) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
   resource_request->url = url;
@@ -215,7 +181,7 @@ void SendReport(const GURL& url,
         }
       })");
 
-  DVLOG(1) << "Sending crash report: " << resource_request->url;
+  VLOG(1) << "Sending crash report: " << resource_request->url;
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -228,13 +194,13 @@ void SendReport(const GURL& url,
   network::SimpleURLLoader* loader = url_loader.get();
   loader->DownloadToString(
       loader_factory,
-      base::BindOnce(&OnRequestComplete, std::move(url_loader),
-                     std::move(callback_runner)),
+      base::BindOnce(&ChromeJsErrorReportProcessor::OnRequestComplete, this,
+                     std::move(url_loader), std::move(callback_runner)),
       kCrashEndpointResponseMaxSizeInBytes);
 }
 
 // Finishes sending process once the MayBlock processing is done. On UI thread.
-void OnConsentCheckCompleted(
+void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     base::ScopedClosureRunner callback_runner,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::TimeDelta browser_process_uptime,
@@ -245,13 +211,7 @@ void OnConsentCheckCompleted(
     return;
   }
 
-  std::string& crash_endpoint_string = GetCrashEndpoint();
-  if (crash_endpoint_string.empty()) {
-    LOG(WARNING) << "Not sending error reports to Google for browsers that are "
-                    "not Google Chrome";
-    return;
-  }
-
+  std::string crash_endpoint_string = GetCrashEndpoint();
   // TODO(https://crbug.com/986166): Use crash_reporter for Chrome OS.
   const auto platform = GetPlatformInfo();
 
@@ -299,17 +259,22 @@ void OnConsentCheckCompleted(
   SendReport(url, body, std::move(callback_runner), loader_factory.get());
 }
 
-#endif  // !defined(OS_WIN)
+// static
+void ChromeJsErrorReportProcessor::Create() {
+  // Google only wants error reports from official builds. Don't install a
+  // processor for other builds.
+#if defined(GOOGLE_CHROME_BUILD)
+  DCHECK(JsErrorReportProcessor::Get() == nullptr)
+      << "Attempted to create multiple ChromeJsErrorReportProcessors";
+  JsErrorReportProcessor::SetDefault(
+      base::AdoptRef(new ChromeJsErrorReportProcessor));
+#endif  // defined(GOOGLE_CHROME_BUILD)
+}
 
-}  // namespace
-
-// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
-// thunking issues. Fix & re-enable.
-#if !defined(OS_WIN)
-
-void SendJavaScriptErrorReport(JavaScriptErrorReport error_report,
-                               base::OnceClosure completion_callback,
-                               content::BrowserContext* browser_context) {
+void ChromeJsErrorReportProcessor::SendErrorReport(
+    JavaScriptErrorReport error_report,
+    base::OnceClosure completion_callback,
+    content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ScopedClosureRunner callback_runner(std::move(completion_callback));
 
@@ -329,26 +294,20 @@ void SendJavaScriptErrorReport(JavaScriptErrorReport error_report,
   // this thread (the UI thread) to use the loader_factory.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CheckConsentAndRedact, std::move(error_report)),
-      base::BindOnce(&OnConsentCheckCompleted, std::move(callback_runner),
+      base::BindOnce(&ChromeJsErrorReportProcessor::CheckConsentAndRedact, this,
+                     std::move(error_report)),
+      base::BindOnce(&ChromeJsErrorReportProcessor::OnConsentCheckCompleted,
+                     this, std::move(callback_runner),
                      std::move(loader_factory), browser_process_uptime));
 }
 
-#endif  // !defined(OS_WIN)
-
-void SetCrashEndpointForTesting(const std::string& endpoint) {
-  GetCrashEndpoint() = endpoint;
+std::string ChromeJsErrorReportProcessor::GetCrashEndpoint() {
+  return kCrashEndpointUrl;
 }
 
-// The weird "{" comment is to get the
-// CheckNoProductionCodeUsingTestOnlyFunctions PRESUBMIT to be quiet.
-void SetOsVersionForTesting(int32_t os_major_version,  // {
-                            int32_t os_minor_version,
-                            int32_t os_bugfix_version) {
-  GetOsVersionOverrides().emplace(os_major_version, os_minor_version,
-                                  os_bugfix_version);
-}
-
-void ClearOsVersionTestingOverride() {
-  GetOsVersionOverrides().reset();
+void ChromeJsErrorReportProcessor::GetOsVersion(int32_t& os_major_version,
+                                                int32_t& os_minor_version,
+                                                int32_t& os_bugfix_version) {
+  base::SysInfo::OperatingSystemVersionNumbers(
+      &os_major_version, &os_minor_version, &os_bugfix_version);
 }

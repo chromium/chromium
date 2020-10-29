@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "components/crash/content/browser/error_reporting/send_javascript_error_report.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -55,13 +54,16 @@ MockCrashEndpoint::MockCrashEndpoint(
       &MockCrashEndpoint::HandleRequest, base::Unretained(this)));
   EXPECT_TRUE(test_server->Start());
 
-  SetCrashEndpointForTesting(test_server->GetURL(kTestCrashEndpoint).spec());
   client_ = std::make_unique<Client>(this);
   crash_reporter::SetCrashReporterClient(client_.get());
 }
 
 MockCrashEndpoint::~MockCrashEndpoint() {
   crash_reporter::SetCrashReporterClient(nullptr);
+}
+
+std::string MockCrashEndpoint::GetCrashEndpointURL() const {
+  return test_server_->GetURL(kTestCrashEndpoint).spec();
 }
 
 MockCrashEndpoint::Report MockCrashEndpoint::WaitForReport() {

@@ -5,6 +5,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
@@ -24,16 +25,6 @@ namespace {
 using ::testing::MatchesRegex;
 
 constexpr const char* kTestExtensionId = "jjeoclcdfjddkdjokiejckgcildcflpp";
-
-std::string GetOsVersion() {
-  int32_t os_major_version = 0;
-  int32_t os_minor_version = 0;
-  int32_t os_bugfix_version = 0;
-  base::SysInfo::OperatingSystemVersionNumbers(
-      &os_major_version, &os_minor_version, &os_bugfix_version);
-  return base::StringPrintf("%d.%d.%d", os_major_version, os_minor_version,
-                            os_bugfix_version);
-}
 
 }  // namespace
 
@@ -71,6 +62,8 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
 
     crash_endpoint_ =
         std::make_unique<MockCrashEndpoint>(embedded_test_server());
+    processor_ = std::make_unique<ScopedMockChromeJsErrorReportProcessor>(
+        *crash_endpoint_);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -85,6 +78,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   }
   const Extension* extension_;
   std::unique_ptr<MockCrashEndpoint> crash_endpoint_;
+  std::unique_ptr<ScopedMockChromeJsErrorReportProcessor> processor_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateApiTest);
@@ -108,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS&os_version=" +
-                   GetOsVersion() +
+                   "os=ChromeOS&os_version=7.20.1"
                    "&prod=Chrome_ChromeOS&src=http%3A%2F%2Fwww.test."
                    "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4"));
   EXPECT_EQ(report->content, "");
@@ -140,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
-                   "&line=123&os=ChromeOS&os_version=" +
-                   GetOsVersion() +
+                   "&line=123&os=ChromeOS&os_version=7.20.1"
                    "&prod=Chrome%2520\\(Chrome%2520OS\\)&"
                    "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
                    "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
@@ -171,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
                    "\\d+&browser_version=1.2."
                    "3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
-                   "line=123&os=ChromeOS&os_version=" +
-                   GetOsVersion() +
+                   "line=123&os=ChromeOS&os_version=7.20.1"
                    "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
                    "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
@@ -204,8 +195,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
           "3.4&channel=Stable&column=456&"
           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
           "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
-          "os_version=" +
-          GetOsVersion() +
+          "os_version=7.20.1"
           "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
           "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
