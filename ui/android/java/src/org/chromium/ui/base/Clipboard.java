@@ -424,6 +424,7 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * system. But on Android O, sharing images/files needs to grant permission to each app/packages
      * individually. Note: Don't forget to revoke the permission once the clipboard is updated.
      */
+    @SuppressWarnings("QueryPermissionsNeeded")
     private void grantUriPermission(@NonNull Uri uri) {
         if ((Build.VERSION.SDK_INT != Build.VERSION_CODES.O
                     && Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1)

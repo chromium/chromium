@@ -56,6 +56,7 @@ public class WebApkHandlerDelegate {
      * Calls the native WebApkHandlerDelegate with information for each installed WebAPK.
      */
     @CalledByNative
+    @SuppressWarnings("QueryPermissionsNeeded")
     public void retrieveWebApks() {
         if (mNativePointer == 0) {
             return;

@@ -82,6 +82,7 @@ public abstract class ChromotingUtil {
      * @param intent The (implicit) intent to launch.
      * @return True if the intent was resolved.
      */
+    @SuppressWarnings("QueryPermissionsNeeded")
     public static boolean startActivitySafely(Context context, Intent intent) {
         if (intent.resolveActivity(context.getPackageManager()) == null) {
             Log.w(TAG, "Unable to resolve activity for: %s", intent);

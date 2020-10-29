@@ -135,6 +135,8 @@ Still reading?
   <issue id="PrivateApi" severity="ignore"/>
   <!-- Chrome is a system app. -->
   <issue id="ProtectedPermissions" severity="ignore"/>
+  <!-- Android 11+ package visibility: g.co/dev/packagevisibility -->
+  <issue id="QueryAllPackagesPermission" severity="ignore"/>
   <issue id="RestrictedApi">
     <!-- Chrome uses these GMS core APIs. -->
     <ignore regexp="is marked as internal and should not be accessed from apps"/>
@@ -145,6 +147,8 @@ Still reading?
   <issue id="RtlCompat" severity="ignore"/>
   <issue id="RtlEnabled" severity="ignore"/>
   <issue id="RtlSymmetry" severity="ignore"/>
+  <!-- Android 10+ WRITE_EXTERNAL_STORAGE changed meaning. -->
+  <issue id="ScopedStorage" severity="ignore"/>
   <issue id="SetJavaScriptEnabled" severity="ignore"/>
   <issue id="SignatureOrSystemPermissions" severity="ignore"/>
   <issue id="StaticFieldLeak">

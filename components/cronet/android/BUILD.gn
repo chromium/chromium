@@ -1015,6 +1015,7 @@ if (!is_component_build) {
     # it depends on basically all source files.
     enable_lint = true
     lint_suppressions_file = "lint-suppressions.xml"
+    lint_baseline_file = "lint-baseline.xml"
 
     # Still needs to support Jelly Bean. See crbug.com/922656.
     lint_min_sdk_version = 16

@@ -364,6 +364,7 @@ public class WebApkValidator {
      * @param manifestUrl The URL of the manifest that was used to generate the WebAPK.
      * @return The WebAPK's package name if installed, or null otherwise.
      */
+    @SuppressWarnings("QueryPermissionsNeeded")
     public static @Nullable String queryBoundWebApkForManifestUrl(
             Context context, String manifestUrl) {
         assert manifestUrl != null;

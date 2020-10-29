@@ -84,6 +84,7 @@ public class EnterpriseInfo {
     /**
      * Returns, via callback, whether the device has a device owner or a profile owner.
      */
+    @SuppressWarnings("QueryPermissionsNeeded")
     public void getDeviceEnterpriseInfo(Callback<OwnedState> callback) {
         // AsyncTask requires being called from UI thread.
         ThreadUtils.assertOnUiThread();
