@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
 #include "chrome/common/chrome_features.h"
@@ -830,9 +831,17 @@ TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
   EXPECT_EQ(FlocId::CreateFromHistory({"a.test", "b.test"}), floc_id());
 }
 
+// TODO(crbug.com/1143855): Flaky on Linux TSAN.
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(THREAD_SANITIZER)
+#define MAYBE_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded \
+  DISABLED_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded
+#else
+#define MAYBE_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded \
+  SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded
+#endif
 TEST_F(
     FlocIdProviderUnitTest,
-    SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded) {
+    MAYBE_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kFlocIdSortingLshBasedComputation);
@@ -853,9 +862,17 @@ TEST_F(
   EXPECT_TRUE(first_floc_computation_triggered());
 }
 
+// TODO(crbug.com/1143855): Flaky on Linux TSAN.
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(THREAD_SANITIZER)
+#define MAYBE_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled \
+  DISABLED_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled
+#else
+#define MAYBE_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled \
+  SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled
+#endif
 TEST_F(
     FlocIdProviderUnitTest,
-    SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled) {
+    MAYBE_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kFlocIdSortingLshBasedComputation);
