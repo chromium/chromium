@@ -82,6 +82,14 @@ NSArray* ChromeIdentityService::GetAllIdentitiesSortedForDisplay() {
   return nil;
 }
 
+void ChromeIdentityService::RunAfterCacheIsPopulated(
+    base::OnceClosure callback) {
+  if (!callback.is_null())
+    std::move(callback).Run();
+}
+
+void ChromeIdentityService::WaitUntilCacheIsPopulated() {}
+
 void ChromeIdentityService::ForgetIdentity(ChromeIdentity* identity,
                                            ForgetIdentityCallback callback) {}
 
