@@ -289,9 +289,8 @@ Polymer({
               or Search + Space. Then use the Up and Down arrow keys to select
               an item. Finally, collapse the list by pressing Enter or Search +
               Space.`,
-            `You can try this out in the Practice Area. To continue, use Search
-              + Right or Tab to find the Next lesson button. Then press Search
-              + Space or Enter to activate.`
+            `Press Search + Right arrow to find the practice area or the Next
+              lesson button. Then press Search + Space to activate.`
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
