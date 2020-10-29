@@ -16,6 +16,7 @@
 * [Threading](/android_webview/docs/threading.md)
   <!-- Link new docs above this line. -->
 * [More docs](/android_webview/docs/)
+* [**File a docs bug or request**](https://bugs.chromium.org/p/chromium/issues/entry?labels=OS-Android,Pri-3,Type-Task,Documentation&components=Mobile%3EWebView&status=Available&description=What+WebView+documentation+would+you+like+to+see%3F)
 
 [home]: /android_webview/docs/README.md
 [logo]: /android_webview/docs/images/webview_logo.png
