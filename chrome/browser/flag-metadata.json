@@ -796,7 +796,7 @@
   {
     "name": "default-browser-setting",
     "owners": [ "gambard", "bling-flags" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "delay-async-script-execution",
@@ -816,7 +816,7 @@
   {
     "name": "desktop-version-default",
     "owners": [ "gambard", "bling-flags" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "destroy-profile-on-browser-close",
