@@ -143,7 +143,10 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.StartBrowser()
     cls.SetStaticServerDirs([data_path])
 
-  def _KillGPUProcess(self, number_of_gpu_process_kills, check_crash_count):
+  def _KillGPUProcess(self,
+                      number_of_gpu_process_kills,
+                      check_crash_count,
+                      timeout=wait_timeout):
     tab = self.tab
     # Doing the GPU process kill operation cooperatively -- in the
     # same page's context -- is much more stressful than restarting
@@ -158,7 +161,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # to have fully reset before crashing the GPU process.
       if check_crash_count:
         tab.WaitForJavaScriptCondition(
-            'window.domAutomationController._finished', timeout=wait_timeout)
+            'window.domAutomationController._finished', timeout=timeout)
 
       # Crash the GPU process.
       #
@@ -170,7 +173,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # process was chosen.
       tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
 
-      completed = _WaitForPageToFinish(tab)
+      completed = _WaitForPageToFinish(tab, timeout=timeout)
 
       if check_crash_count:
         self._CheckCrashCount(tab, expected_kills)
@@ -256,7 +259,9 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--enable-unsafe-webgpu',
     ])
     self._NavigateAndWaitForLoad(test_path)
-    self._KillGPUProcess(1, False)
+    # The gpu startup sometimes takes longer on the bots.
+    # Increasing the timeout for this test as it times out before completion
+    self._KillGPUProcess(1, False, timeout=180)
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGLContextLostFromLoseContextExtension(self, test_path):
@@ -456,10 +461,10 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-def _WaitForPageToFinish(tab):
+def _WaitForPageToFinish(tab, timeout=wait_timeout):
   try:
     tab.WaitForJavaScriptCondition('window.domAutomationController._finished',
-                                   timeout=wait_timeout)
+                                   timeout=timeout)
     return True
   except exceptions.TimeoutException:
     return False
