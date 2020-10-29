@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/model_type_configurer.h"
+#include "components/sync/model/type_entities_count.h"
 
 namespace sync_sessions {
 
@@ -75,6 +76,11 @@ void ProxyTabsDataTypeController::DeactivateDataType(
 
 void ProxyTabsDataTypeController::GetAllNodes(AllNodesCallback callback) {
   std::move(callback).Run(type(), std::make_unique<base::ListValue>());
+}
+
+void ProxyTabsDataTypeController::GetTypeEntitiesCount(
+    base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback) const {
+  std::move(callback).Run(syncer::TypeEntitiesCount(type()));
 }
 
 void ProxyTabsDataTypeController::RecordMemoryUsageAndCountsHistograms() {}

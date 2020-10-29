@@ -24,6 +24,7 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
@@ -563,6 +564,18 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   int i = 0;
   for (const auto& child : node->children())
     AppendNodeAndChildrenForDebugging(child.get(), i++, all_nodes);
+}
+
+void BookmarkModelTypeProcessor::GetTypeEntitiesCountForDebugging(
+    base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  syncer::TypeEntitiesCount count(syncer::BOOKMARKS);
+  if (bookmark_tracker_) {
+    count.non_tombstone_entities = bookmark_tracker_->TrackedBookmarksCount();
+    count.entities = count.non_tombstone_entities +
+                     bookmark_tracker_->TrackedUncommittedTombstonesCount();
+  }
+  std::move(callback).Run(count);
 }
 
 void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {

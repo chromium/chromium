@@ -883,12 +883,12 @@ size_t SyncedBookmarkTracker::TrackedBookmarksCount() const {
   return bookmark_node_to_entities_map_.size();
 }
 
-size_t SyncedBookmarkTracker::TrackedEntitiesCountForTest() const {
-  return sync_id_to_entities_map_.size();
+size_t SyncedBookmarkTracker::TrackedUncommittedTombstonesCount() const {
+  return ordered_local_tombstones_.size();
 }
 
-size_t SyncedBookmarkTracker::TrackedUncommittedTombstonesCountForTest() const {
-  return ordered_local_tombstones_.size();
+size_t SyncedBookmarkTracker::TrackedEntitiesCountForTest() const {
+  return sync_id_to_entities_map_.size();
 }
 
 void SyncedBookmarkTracker::ClearSpecificsHashForTest(const Entity* entity) {

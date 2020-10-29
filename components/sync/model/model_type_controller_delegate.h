@@ -18,6 +18,7 @@
 namespace syncer {
 
 struct DataTypeActivationRequest;
+struct TypeEntitiesCount;
 
 // The ModelTypeControllerDelegate handles communication of ModelTypeController
 // with the data type. Unlike the controller which lives on the UI thread, the
@@ -45,6 +46,11 @@ class ModelTypeControllerDelegate {
   // Returns a ListValue representing all nodes for the type to |callback|.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodesForDebugging(AllNodesCallback callback) = 0;
+
+  // Returns TypeEntitiesCount for the type to |callback|.
+  // Used for updating data type counts in chrome://sync-internals.
+  virtual void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback) const = 0;
 
   // Records entities count and estimated memory usage of the type into
   // histograms.

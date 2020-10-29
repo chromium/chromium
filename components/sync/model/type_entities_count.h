@@ -11,7 +11,9 @@ namespace syncer {
 
 // Used to track per data-type entity counts for debugging purposes.
 struct TypeEntitiesCount {
-  ModelType type = UNSPECIFIED;
+  explicit TypeEntitiesCount(ModelType type) : type(type) {}
+
+  ModelType type;
 
   int entities = 0;
 

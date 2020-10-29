@@ -52,12 +52,18 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     GetBridgeDelegate()->GetAllNodesForDebugging(std::move(callback));
   }
 
+  void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback)
+      const override {
+    GetBridgeDelegate()->GetTypeEntitiesCountForDebugging(std::move(callback));
+  }
+
   void RecordMemoryUsageAndCountsHistograms() override {
     GetBridgeDelegate()->RecordMemoryUsageAndCountsHistograms();
   }
 
  private:
-  ModelTypeControllerDelegate* GetBridgeDelegate() {
+  ModelTypeControllerDelegate* GetBridgeDelegate() const {
     DCHECK(bridge_);
     return bridge_->change_processor()->GetControllerDelegate().get();
   }

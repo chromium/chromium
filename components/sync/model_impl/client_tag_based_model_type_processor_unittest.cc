@@ -27,6 +27,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/test/engine/mock_model_type_worker.h"
 #include "components/sync/test/model/fake_model_type_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,6 +75,11 @@ std::unique_ptr<EntityData> GenerateEntityData(const std::string& key,
 void CaptureCommitRequest(CommitRequestDataList* dst,
                           CommitRequestDataList&& src) {
   *dst = std::move(src);
+}
+
+void CaptureTypeEntitiesCount(TypeEntitiesCount* dst,
+                              const TypeEntitiesCount& count) {
+  *dst = count;
 }
 
 class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
@@ -2219,6 +2225,10 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUntrackEntityForStorageKey) {
   worker()->AckOnePendingCommit();
 
   // Check the processor tracks the entity.
+  TypeEntitiesCount count(GetModelType());
+  type_processor()->GetTypeEntitiesCountForDebugging(
+      base::BindOnce(&CaptureTypeEntitiesCount, &count));
+  ASSERT_EQ(1, count.non_tombstone_entities);
   ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // The bridge deletes the data locally and does not want to sync the deletion.
@@ -2228,6 +2238,9 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUntrackEntityForStorageKey) {
   // The deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity any more.
+  type_processor()->GetTypeEntitiesCountForDebugging(
+      base::BindOnce(&CaptureTypeEntitiesCount, &count));
+  EXPECT_EQ(0, count.non_tombstone_entities);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 
@@ -2244,6 +2257,10 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // No deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity.
+  TypeEntitiesCount count(GetModelType());
+  type_processor()->GetTypeEntitiesCountForDebugging(
+      base::BindOnce(&CaptureTypeEntitiesCount, &count));
+  EXPECT_EQ(0, count.non_tombstone_entities);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 
@@ -2259,6 +2276,10 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   worker()->AckOnePendingCommit();
 
   // Check the processor tracks the entity.
+  TypeEntitiesCount count(GetModelType());
+  type_processor()->GetTypeEntitiesCountForDebugging(
+      base::BindOnce(&CaptureTypeEntitiesCount, &count));
+  ASSERT_EQ(1, count.non_tombstone_entities);
   ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // The bridge deletes the data locally and does not want to sync the deletion.
@@ -2268,6 +2289,9 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // The deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity any more.
+  type_processor()->GetTypeEntitiesCountForDebugging(
+      base::BindOnce(&CaptureTypeEntitiesCount, &count));
+  EXPECT_EQ(0, count.non_tombstone_entities);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 

@@ -34,6 +34,9 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
+  void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback)
+      const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
  private:
@@ -41,8 +44,8 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   // |task_runner_|.
   void PostTask(
       const base::Location& location,
-      base::OnceCallback<void(base::WeakPtr<ModelTypeControllerDelegate>)>
-          task);
+      base::OnceCallback<void(base::WeakPtr<ModelTypeControllerDelegate>)> task)
+      const;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const DelegateProvider delegate_provider_;

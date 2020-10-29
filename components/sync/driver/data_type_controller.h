@@ -21,6 +21,7 @@
 namespace syncer {
 
 struct ConfigureContext;
+struct TypeEntitiesCount;
 class ModelTypeConfigurer;
 class SyncError;
 
@@ -123,6 +124,11 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodes(AllNodesCallback callback) = 0;
+
+  // Collects TypeEntitiesCount for this datatype and passes them to |callback|.
+  // Used to display entity counts in chrome://sync-internals.
+  virtual void GetTypeEntitiesCount(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback) const = 0;
 
   // Records entities count and estimated memory usage of the type into
   // histograms. Can be called only if state() != NOT_RUNNING.

@@ -102,6 +102,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
+  void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback)
+      const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   // Returns the estimate of dynamically allocated memory in bytes.

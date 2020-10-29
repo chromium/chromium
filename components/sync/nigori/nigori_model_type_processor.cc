@@ -11,6 +11,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/model_impl/processor_entity.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
@@ -262,6 +263,15 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   std::move(callback).Run(syncer::NIGORI, std::move(all_nodes));
 }
 
+void NigoriModelTypeProcessor::GetTypeEntitiesCountForDebugging(
+    base::OnceCallback<void(const TypeEntitiesCount&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TypeEntitiesCount count(syncer::NIGORI);
+  count.non_tombstone_entities = entity_ ? 1 : 0;
+  count.entities = count.non_tombstone_entities;
+  std::move(callback).Run(count);
+}
+
 void NigoriModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t memory_usage = 0;
@@ -380,10 +390,6 @@ bool NigoriModelTypeProcessor::IsConnectedForTest() const {
 const sync_pb::ModelTypeState&
 NigoriModelTypeProcessor::GetModelTypeStateForTest() {
   return model_type_state_;
-}
-
-bool NigoriModelTypeProcessor::HasEntityForTest() const {
-  return entity_ != nullptr;
 }
 
 bool NigoriModelTypeProcessor::IsTrackingMetadata() {

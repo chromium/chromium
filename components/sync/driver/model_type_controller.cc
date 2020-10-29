@@ -16,6 +16,7 @@
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_error_handler_impl.h"
+#include "components/sync/model/type_entities_count.h"
 
 namespace syncer {
 namespace {
@@ -219,6 +220,15 @@ bool ModelTypeController::ShouldRunInTransportOnlyMode() const {
 void ModelTypeController::GetAllNodes(AllNodesCallback callback) {
   DCHECK(delegate_);
   delegate_->GetAllNodesForDebugging(std::move(callback));
+}
+
+void ModelTypeController::GetTypeEntitiesCount(
+    base::OnceCallback<void(const TypeEntitiesCount&)> callback) const {
+  if (delegate_) {
+    delegate_->GetTypeEntitiesCountForDebugging(std::move(callback));
+  } else {
+    std::move(callback).Run(TypeEntitiesCount(type()));
+  }
 }
 
 void ModelTypeController::RecordMemoryUsageAndCountsHistograms() {

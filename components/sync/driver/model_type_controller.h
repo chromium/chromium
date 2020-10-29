@@ -55,6 +55,8 @@ class ModelTypeController : public DataTypeController {
   State state() const override;
   bool ShouldRunInTransportOnlyMode() const override;
   void GetAllNodes(AllNodesCallback callback) override;
+  void GetTypeEntitiesCount(base::OnceCallback<void(const TypeEntitiesCount&)>
+                                callback) const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   ModelTypeControllerDelegate* GetDelegateForTesting(SyncMode sync_mode);

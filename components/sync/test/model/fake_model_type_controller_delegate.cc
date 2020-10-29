@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/type_entities_count.h"
 
 namespace syncer {
 
@@ -85,6 +86,11 @@ void FakeModelTypeControllerDelegate::GetAllNodesForDebugging(
 }
 
 void FakeModelTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}
+
+void FakeModelTypeControllerDelegate::GetTypeEntitiesCountForDebugging(
+    base::OnceCallback<void(const TypeEntitiesCount&)> callback) const {
+  std::move(callback).Run(TypeEntitiesCount(type_));
+}
 
 base::WeakPtr<ModelTypeControllerDelegate>
 FakeModelTypeControllerDelegate::GetWeakPtr() {

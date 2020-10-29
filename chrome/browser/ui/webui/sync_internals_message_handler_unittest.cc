@@ -66,7 +66,8 @@ class TestSyncService : public syncer::FakeSyncService {
   void GetEntityCountsForDebugging(
       base::OnceCallback<void(const std::vector<syncer::TypeEntitiesCount>&)>
           callback) const override {
-    return std::move(callback).Run({{syncer::PASSWORDS, 42, 42}});
+    return std::move(callback).Run(
+        {syncer::TypeEntitiesCount(syncer::PASSWORDS)});
   }
 
   int add_observer_count() const { return add_observer_count_; }

@@ -28,6 +28,9 @@ class ForwardingModelTypeControllerDelegate
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
+  void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const TypeEntitiesCount&)> callback)
+      const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
  private:

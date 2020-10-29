@@ -463,20 +463,20 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
       tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
                    unique_position, specifics);
 
-  ASSERT_THAT(tracker->TrackedUncommittedTombstonesCountForTest(), Eq(0U));
+  ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
 
   // Delete the bookmark, leading to a pending deletion (local tombstone).
   tracker->MarkDeleted(tracker->GetEntityForSyncId(kSyncId));
   ASSERT_THAT(entity->bookmark_node(), IsNull());
   ASSERT_TRUE(entity->metadata()->is_deleted());
-  ASSERT_THAT(tracker->TrackedUncommittedTombstonesCountForTest(), Eq(1U));
+  ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));
 
   // Undelete it.
   tracker->UndeleteTombstoneForBookmarkNode(entity, &node);
 
   EXPECT_THAT(entity->bookmark_node(), NotNull());
   EXPECT_FALSE(entity->metadata()->is_deleted());
-  EXPECT_THAT(tracker->TrackedUncommittedTombstonesCountForTest(), Eq(0U));
+  EXPECT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
 }
 
 TEST(SyncedBookmarkTrackerTest,

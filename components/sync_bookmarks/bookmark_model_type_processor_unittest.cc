@@ -21,6 +21,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -623,6 +624,21 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
   ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
   EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldReportNoCountersWhenModelIsNotLoaded) {
+  SimulateOnSyncStarting();
+  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  syncer::TypeEntitiesCount count(syncer::BOOKMARKS);
+  // Assign an arbitrary non-zero number of entities to be able to check that
+  // actually a 0 has been written to it later.
+  count.non_tombstone_entities = 1000;
+  processor()->GetTypeEntitiesCountForDebugging(base::BindLambdaForTesting(
+      [&](const syncer::TypeEntitiesCount& returned_count) {
+        count = returned_count;
+      }));
+  EXPECT_EQ(0, count.non_tombstone_entities);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,

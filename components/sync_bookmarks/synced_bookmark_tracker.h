@@ -273,12 +273,12 @@ class SyncedBookmarkTracker {
   // Returns number of tracked bookmarks that aren't deleted.
   size_t TrackedBookmarksCount() const;
 
-  // Returns number of tracked entities. Used only in test.
-  size_t TrackedEntitiesCountForTest() const;
-
   // Returns number of bookmarks that have been deleted but the server hasn't
   // confirmed the deletion yet.
-  size_t TrackedUncommittedTombstonesCountForTest() const;
+  size_t TrackedUncommittedTombstonesCount() const;
+
+  // Returns number of tracked entities. Used only in test.
+  size_t TrackedEntitiesCountForTest() const;
 
   // Clears the specifics hash for |entity|, useful for testing.
   void ClearSpecificsHashForTest(const Entity* entity);

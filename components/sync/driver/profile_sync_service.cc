@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -1471,8 +1472,37 @@ ProfileSyncService::GetTypeStatusMapForDebugging() {
 void ProfileSyncService::GetEntityCountsForDebugging(
     base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
     const {
-  // TODO(crbug.com/1138535): Retrieve counts from |data_type_controllers_|.
-  std::move(callback).Run({});
+  // The method must respond with the TypeEntitiesCount of all data types, but
+  // each count request is async. The strategy is to use base::BarrierClosure()
+  // to only send the final response once all types are done.
+  using EntityCountsVector = std::vector<TypeEntitiesCount>;
+  auto all_types_counts = std::make_unique<EntityCountsVector>();
+  EntityCountsVector* all_types_counts_ptr = all_types_counts.get();
+  // |respond_all_counts_callback| owns |all_types_counts|.
+  auto respond_all_counts_callback = base::BindOnce(
+      [](base::OnceCallback<void(const EntityCountsVector&)> callback,
+         std::unique_ptr<EntityCountsVector> all_types_counts) {
+        std::move(callback).Run(*all_types_counts);
+      },
+      std::move(callback), std::move(all_types_counts));
+
+  // |all_types_done_barrier| runs |respond_all_counts_callback| once it's been
+  // called for all types.
+  base::RepeatingClosure all_types_done_barrier = base::BarrierClosure(
+      data_type_controllers_.size(), std::move(respond_all_counts_callback));
+
+  // Callbacks passed to the controllers get a non-owning reference to the
+  // counts vector, which they use to push the count for their individual type.
+  for (const auto& type_and_controller : data_type_controllers_) {
+    type_and_controller.second->GetTypeEntitiesCount(base::BindOnce(
+        [](const base::RepeatingClosure& all_types_done_barrier,
+           EntityCountsVector* all_types_counts_ptr,
+           const TypeEntitiesCount& count) {
+          all_types_counts_ptr->push_back(count);
+          all_types_done_barrier.Run();
+        },
+        all_types_done_barrier, all_types_counts_ptr));
+  }
 }
 
 void ProfileSyncService::OnSyncManagedPrefChange(bool is_sync_managed) {

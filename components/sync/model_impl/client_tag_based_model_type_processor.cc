@@ -22,6 +22,7 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/model_impl/client_tag_based_remote_update_handler.h"
 #include "components/sync/model_impl/processor_entity.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -1202,6 +1203,16 @@ void ClientTagBasedModelTypeProcessor::
   ClearAllTrackedMetadataAndResetState();
   // Not having `entity_tracker_` results in doing the initial sync again.
   DCHECK(!entity_tracker_);
+}
+
+void ClientTagBasedModelTypeProcessor::GetTypeEntitiesCountForDebugging(
+    base::OnceCallback<void(const TypeEntitiesCount&)> callback) const {
+  TypeEntitiesCount count(type_);
+  if (entity_tracker_) {
+    count.entities = entity_tracker_->size();
+    count.non_tombstone_entities = entity_tracker_->CountNonTombstoneEntries();
+  }
+  std::move(callback).Run(count);
 }
 
 void ClientTagBasedModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
