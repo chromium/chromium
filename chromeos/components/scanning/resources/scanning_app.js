@@ -50,8 +50,11 @@ Polymer({
       value: () => [],
     },
 
-    /** @type (?string) */
-    selectedScannerId: String,
+    /** @type {string} */
+    selectedScannerId: {
+      type: String,
+      observer: 'onSelectedScannerIdChange_'
+    },
 
     /**
      * @type {?chromeos.scanning.mojom.ScannerCapabilities}
@@ -108,8 +111,6 @@ Polymer({
       value: false,
     },
   },
-
-  observers: ['onSelectedScannerIdChange_(selectedScannerId)'],
 
   /** @override */
   created() {
@@ -183,19 +184,16 @@ Polymer({
     this.selectedScannerId = tokenToString(this.scanners_[0].id);
   },
 
-  /**
-   * @param {!string} selectedScannerId
-   * @private
-   */
-  onSelectedScannerIdChange_(selectedScannerId) {
-    if (!this.scannerIds_.has(selectedScannerId)) {
+  /** @private */
+  onSelectedScannerIdChange_() {
+    if (!this.scannerIds_.has(this.selectedScannerId)) {
       return;
     }
 
     this.scanButtonDisabled_ = true;
 
     this.scanService_
-        .getScannerCapabilities(this.scannerIds_.get(selectedScannerId))
+        .getScannerCapabilities(this.scannerIds_.get(this.selectedScannerId))
         .then(
             /*@type {!{capabilities:
                    !chromeos.scanning.mojom.ScannerCapabilities}}*/
