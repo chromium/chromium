@@ -678,6 +678,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.UserActionsCount" enum="Boolean"
+    expires_after="2021-04-01">
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Emitted when a user action is recorded.
+
+    Intended to be used to estimate how many user actions are lost due lack of
+    being persisted in the same way histograms are. One way to use this
+    histogram is to look as the count in this histogram in logs that come from
+    the previous session. All of those user actions will have been lost.
+
+    Also note that user actions can be lost due to being truncated before
+    uploading a UMA record. Those logs user actions are recorded in the
+    histogram UMA.TruncatedEvents.UserAction.
+
+    There may be other ways user actions are dropped too.
+  </summary>
+</histogram>
+
 <histogram name="UMA.UserDemographics.Status" enum="UserDemographicsStatus"
     expires_after="2021-04-15">
   <owner>vincb@google.com</owner>
