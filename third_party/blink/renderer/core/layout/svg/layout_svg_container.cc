@@ -59,13 +59,15 @@ void LayoutSVGContainer::UpdateLayout() {
       transform_change == SVGTransformChange::kFull ||
       SVGLayoutSupport::ScreenScaleFactorChanged(Parent());
 
-  // When hasRelativeLengths() is false, no descendants have relative lengths
+  SVGContainerLayoutInfo layout_info;
+  layout_info.scale_factor_changed = did_screen_scale_factor_change_;
+  // When HasRelativeLengths() is false, no descendants have relative lengths
   // (hence no one is interested in viewport size changes).
-  bool layout_size_changed =
+  layout_info.viewport_changed =
       GetElement()->HasRelativeLengths() &&
       SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
 
-  content_.Layout(false, did_screen_scale_factor_change_, layout_size_changed);
+  content_.Layout(layout_info);
 
   bool bbox_changed = false;
   if (needs_boundaries_update_) {

@@ -14,14 +14,12 @@
 
 namespace blink {
 
-void SVGContentContainer::Layout(bool force_layout,
-                                 bool screen_scaling_factor_changed,
-                                 bool layout_size_changed) {
+void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
-    bool force_child_layout = force_layout;
+    bool force_child_layout = layout_info.force_layout;
 
-    if (screen_scaling_factor_changed) {
+    if (layout_info.scale_factor_changed) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
       if (child->IsSVGText())
@@ -29,7 +27,7 @@ void SVGContentContainer::Layout(bool force_layout,
       force_child_layout = true;
     }
 
-    if (layout_size_changed) {
+    if (layout_info.viewport_changed) {
       // When selfNeedsLayout is false and the layout size changed, we have to
       // check whether this child uses relative lengths
       if (auto* element = DynamicTo<SVGElement>(child->GetNode())) {

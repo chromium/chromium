@@ -14,14 +14,18 @@ class FloatRect;
 class HitTestLocation;
 class HitTestResult;
 
+struct SVGContainerLayoutInfo {
+  bool force_layout = false;
+  bool scale_factor_changed = false;
+  bool viewport_changed = false;
+};
+
 // Content representation for an SVG container. Wraps a LayoutObjectChildList
 // with additional state related to the children of the container. Used by
 // <svg>, <g> etc.
 class SVGContentContainer {
  public:
-  void Layout(bool force_layout,
-              bool screen_scaling_factor_changed,
-              bool layout_size_changed);
+  void Layout(const SVGContainerLayoutInfo&);
   bool HitTest(HitTestResult&, const HitTestLocation&, HitTestAction) const;
 
   void ComputeBoundingBoxes(FloatRect& object_bounding_box,

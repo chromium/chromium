@@ -32,13 +32,15 @@ void LayoutSVGHiddenContainer::UpdateLayout() {
   DCHECK(NeedsLayout());
   LayoutAnalyzer::Scope analyzer(*this);
 
-  // When hasRelativeLengths() is false, no descendants have relative lengths
+  SVGContainerLayoutInfo layout_info;
+  layout_info.force_layout = SelfNeedsLayout();
+  // When HasRelativeLengths() is false, no descendants have relative lengths
   // (hence no one is interested in viewport size changes).
-  bool layout_size_changed =
+  layout_info.viewport_changed =
       GetElement()->HasRelativeLengths() &&
       SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
 
-  Content().Layout(SelfNeedsLayout(), false, layout_size_changed);
+  Content().Layout(layout_info);
   UpdateCachedBoundaries();
   ClearNeedsLayout();
 }

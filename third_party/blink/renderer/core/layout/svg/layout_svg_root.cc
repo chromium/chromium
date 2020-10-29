@@ -249,8 +249,11 @@ void LayoutSVGRoot::UpdateLayout() {
   is_layout_size_changed_ =
       viewport_may_have_changed && svg->HasRelativeLengths();
 
-  content_.Layout(false, did_screen_scale_factor_change_,
-                  is_layout_size_changed_);
+  SVGContainerLayoutInfo layout_info;
+  layout_info.scale_factor_changed = did_screen_scale_factor_change_;
+  layout_info.viewport_changed = is_layout_size_changed_;
+
+  content_.Layout(layout_info);
 
   if (needs_boundaries_or_transform_update_) {
     UpdateCachedBoundaries();
