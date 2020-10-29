@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -44,6 +45,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/modulator.h"
+#include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -635,18 +638,146 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
   return result;
 }
 
-v8::MaybeLocal<v8::Value> V8ScriptRunner::EvaluateModule(
-    v8::Isolate* isolate,
-    ExecutionContext* execution_context,
-    v8::Local<v8::Module> module,
-    v8::Local<v8::Context> context) {
-  TRACE_EVENT0("v8,devtools.timeline", "v8.evaluateModule");
-  RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
-  v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
-  // Do not perform a microtask checkpoint here. A checkpoint is performed
-  // only after module error handling to ensure proper timing with and without
-  // top-level await.
-  return module->Evaluate(context);
+class ModuleEvaluationRejectionCallback final : public ScriptFunction {
+ public:
+  explicit ModuleEvaluationRejectionCallback(ScriptState* script_state)
+      : ScriptFunction(script_state) {}
+
+  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
+    ModuleEvaluationRejectionCallback* self =
+        MakeGarbageCollected<ModuleEvaluationRejectionCallback>(script_state);
+    return self->BindToV8Function();
+  }
+
+ private:
+  ScriptValue Call(ScriptValue value) override {
+    ModuleRecord::ReportException(GetScriptState(), value.V8Value());
+    return ScriptValue();
+  }
+};
+
+// <specdef href="https://html.spec.whatwg.org/C/#run-a-module-script">
+// Spec with TLA: https://github.com/whatwg/html/pull/4352
+ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
+    ModuleScript* module_script,
+    RethrowErrorsOption rethrow_errors) {
+  // <spec step="1">If rethrow errors is not given, let it be false.</spec>
+
+  // <spec step="2">Let settings be the settings object of script.</spec>
+  //
+  // The settings object is |module_script->SettingsObject()|.
+  ScriptState* script_state = module_script->SettingsObject()->GetScriptState();
+  DCHECK_EQ(Modulator::From(script_state), module_script->SettingsObject());
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+
+  // <spec step="3">Check if we can run script with settings. If this returns
+  // "do not run" then return NormalCompletion(empty).</spec>
+  if (!execution_context->CanExecuteScripts(kAboutToExecuteScript)) {
+    return ScriptEvaluationResult::FromModuleNotRun();
+  }
+
+  // <spec step="4">Prepare to run script given settings.</spec>
+  //
+  // These are placed here to also cover ModuleRecord::ReportException().
+  v8::MicrotasksScope microtasks_scope(isolate,
+                                       ToMicrotaskQueue(execution_context),
+                                       v8::MicrotasksScope::kRunMicrotasks);
+  ScriptState::EscapableScope scope(script_state);
+
+  // Without TLA: <spec step="5">Let evaluationStatus be null.</spec>
+  ScriptEvaluationResult result = ScriptEvaluationResult::FromModuleNotRun();
+
+  // <spec step="6">If script's error to rethrow is not null, ...</spec>
+  if (module_script->HasErrorToRethrow()) {
+    // Without TLA: <spec step="6">... then set evaluationStatus to Completion
+    //     { [[Type]]: throw, [[Value]]: script's error to rethrow,
+    //       [[Target]]: empty }.</spec>
+    // With TLA:    <spec step="5">If script's error to rethrow is not null,
+    //     then let valuationPromise be a promise rejected with script's error
+    //     to rethrow.</spec>
+    result = ScriptEvaluationResult::FromModuleException(
+        module_script->CreateErrorToRethrow().V8Value());
+  } else {
+    // <spec step="7">Otherwise:</spec>
+
+    // <spec step="7.1">Let record be script's record.</spec>
+    v8::Local<v8::Module> record = module_script->V8Module();
+    CHECK(!record.IsEmpty());
+
+    // <spec step="7.2">Set evaluationStatus to record.Evaluate(). ...</spec>
+
+    // Isolate exceptions that occur when executing the code. These exceptions
+    // should not interfere with javascript code we might evaluate from C++
+    // when returning from here.
+    v8::TryCatch try_catch(isolate);
+
+    // Script IDs are not available on errored modules or on non-source text
+    // modules, so we give them a default value.
+    probe::ExecuteScript probe(execution_context, module_script->SourceURL(),
+                               record->GetStatus() != v8::Module::kErrored &&
+                                       record->IsSourceTextModule()
+                                   ? record->ScriptId()
+                                   : v8::UnboundScript::kNoScriptId);
+
+    TRACE_EVENT0("v8,devtools.timeline", "v8.evaluateModule");
+    RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
+    v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
+
+    // Do not perform a microtask checkpoint here. A checkpoint is performed
+    // only after module error handling to ensure proper timing with and
+    // without top-level await.
+    v8::Local<v8::Value> v8_result;
+    if (!record->Evaluate(script_state->GetContext()).ToLocal(&v8_result)) {
+      result =
+          ScriptEvaluationResult::FromModuleException(try_catch.Exception());
+    } else {
+      result = ScriptEvaluationResult::FromModuleSuccess(v8_result);
+    }
+
+    // <spec step="7.2">... If Evaluate fails to complete as a result of the
+    // user agent aborting the running script, then set evaluationStatus to
+    // Completion { [[Type]]: throw, [[Value]]: a new "QuotaExceededError"
+    // DOMException, [[Target]]: empty }.</spec>
+  }
+
+  // [not specced] Store V8 code cache on successful evaluation.
+  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
+    execution_context->GetTaskRunner(TaskType::kNetworking)
+        ->PostTask(FROM_HERE,
+                   WTF::Bind(&Modulator::ProduceCacheModuleTreeTopLevel,
+                             WrapWeakPersistent(Modulator::From(script_state)),
+                             WrapWeakPersistent(module_script)));
+  }
+
+  if (!rethrow_errors.ShouldRethrow()) {
+    if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
+      // <spec step="7"> If report errors is true, then upon rejection of
+      // evaluationPromise with reason, report the exception given by reason
+      // for script.</spec>
+      v8::Local<v8::Function> callback_failure =
+          ModuleEvaluationRejectionCallback::CreateFunction(script_state);
+      // Add a rejection handler to report back errors once the result
+      // promise is rejected.
+      result.GetPromise(script_state)
+          .Then(v8::Local<v8::Function>(), callback_failure);
+    } else {
+      // <spec step="8">If evaluationStatus is an abrupt completion,
+      // then:</spec>
+      if (result.GetResultType() ==
+          ScriptEvaluationResult::ResultType::kException) {
+        // <spec step="8.2">Otherwise, report the exception given by
+        // evaluationStatus.[[Value]] for script.</spec>
+        ModuleRecord::ReportException(script_state,
+                                      result.GetExceptionForModule());
+      }
+    }
+  }
+
+  // <spec step="8">Clean up after running script with settings.</spec>
+  // - Partially implement in MicrotaskScope destructor and the
+  // - ScriptState::EscapableScope destructor.
+  return result.Escape(&scope);
 }
 
 void V8ScriptRunner::ReportException(v8::Isolate* isolate,

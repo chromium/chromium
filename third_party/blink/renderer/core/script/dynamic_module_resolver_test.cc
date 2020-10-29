@@ -37,7 +37,9 @@ const KURL TestDependencyURL() {
 class DynamicModuleResolverTestModulator final : public DummyModulator {
  public:
   explicit DynamicModuleResolverTestModulator(ScriptState* script_state)
-      : script_state_(script_state) {}
+      : script_state_(script_state) {
+    Modulator::SetModulator(script_state, this);
+  }
   ~DynamicModuleResolverTestModulator() override = default;
 
   void ResolveTreeFetch(ModuleScript* module_script) {
@@ -89,17 +91,6 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
 
     pending_client_ = client;
     fetch_tree_was_called_ = true;
-  }
-
-  ScriptEvaluationResult ExecuteModule(
-      ModuleScript* module_script,
-      CaptureEvalErrorFlag capture_error) final {
-    EXPECT_EQ(CaptureEvalErrorFlag::kCapture, capture_error);
-
-    ScriptState::EscapableScope scope(script_state_);
-    ScriptEvaluationResult result = ModuleRecord::Evaluate(
-        script_state_, module_script->V8Module(), module_script->SourceURL());
-    return result.Escape(&scope);
   }
 
   Member<ScriptState> script_state_;

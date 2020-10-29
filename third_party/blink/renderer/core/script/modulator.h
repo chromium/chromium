@@ -195,26 +195,12 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   virtual Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) = 0;
 
-  enum class CaptureEvalErrorFlag : bool { kReport, kCapture };
-
-  // ExecuteModule implements #run-a-module-script HTML spec algorithm.
-  // https://html.spec.whatwg.org/C/#run-a-module-script
-  // CaptureEvalErrorFlag is used to implement "rethrow errors" parameter in
-  // run-a-module-script.
-  // - When "rethrow errors" is to be set, use kCapture for EvaluateModule().
-  // Then EvaluateModule() wraps exceptions in a ScriptEvaluationResult instead
-  // of throwing it and the caller should rethrow the exception.
-  // - When "rethrow errors" is not to be set, use kReport. If there is an error
-  // to throw, EvaluateModule() "report the error" inside it, and returns
-  // ScriptEvaluationResult wrapping the error. Otherwise, it returns either a
-  // ScriptEvaluationResult that is empty or contains the successful evaluation
-  // result.
-  virtual ScriptEvaluationResult ExecuteModule(ModuleScript*,
-                                               CaptureEvalErrorFlag) = 0;
-
   virtual ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,
       util::PassKey<ModuleScriptLoader> pass_key) = 0;
+
+  // Produce V8 code cache for the given ModuleScript and its submodules.
+  virtual void ProduceCacheModuleTreeTopLevel(ModuleScript*) = 0;
 };
 
 }  // namespace blink

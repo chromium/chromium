@@ -123,35 +123,6 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
   return ScriptValue();
 }
 
-ScriptEvaluationResult ModuleRecord::Evaluate(ScriptState* script_state,
-                                              v8::Local<v8::Module> record,
-                                              const KURL& source_url) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-
-  // Isolate exceptions that occur when executing the code. These exceptions
-  // should not interfere with javascript code we might evaluate from C++ when
-  // returning from here.
-  v8::TryCatch try_catch(isolate);
-
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-
-  // Script IDs are not available on errored modules or on non-source text
-  // modules, so we give them a default value.
-  probe::ExecuteScript probe(execution_context, source_url,
-                             record->GetStatus() != v8::Module::kErrored &&
-                                     record->IsSourceTextModule()
-                                 ? record->ScriptId()
-                                 : v8::UnboundScript::kNoScriptId);
-
-  v8::Local<v8::Value> result;
-  if (!V8ScriptRunner::EvaluateModule(isolate, execution_context, record,
-                                      script_state->GetContext())
-           .ToLocal(&result)) {
-    return ScriptEvaluationResult::FromModuleException(try_catch.Exception());
-  }
-  return ScriptEvaluationResult::FromModuleSuccess(result);
-}
-
 void ModuleRecord::ReportException(ScriptState* script_state,
                                    v8::Local<v8::Value> exception) {
   V8ScriptRunner::ReportException(script_state->GetIsolate(), exception);

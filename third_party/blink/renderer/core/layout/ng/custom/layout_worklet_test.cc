@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/css_layout_definition.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet_global_scope_proxy.h"
+#include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -59,7 +60,9 @@ class LayoutWorkletTest : public PageTestBase {
         ModuleRecord::Instantiate(script_state, module, js_url);
     EXPECT_TRUE(exception.IsEmpty());
 
-    return ModuleRecord::Evaluate(script_state, module, js_url);
+    return JSModuleScript::CreateForTest(Modulator::From(script_state), module,
+                                         js_url)
+        ->RunScriptAndReturnValue();
   }
 
  private:

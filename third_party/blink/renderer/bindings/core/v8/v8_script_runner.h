@@ -43,6 +43,7 @@ namespace blink {
 class ScriptEvaluationResult;
 class ExecutionContext;
 class KURL;
+class ModuleScript;
 class ReferrerScriptInfo;
 class ScriptFetchOptions;
 class ScriptSourceCode;
@@ -55,6 +56,9 @@ class CORE_EXPORT V8ScriptRunner final {
  public:
   // Rethrow errors flag in
   // https://html.spec.whatwg.org/C/#run-a-classic-script
+  // implemented by CompileAndRunScript() and
+  // https://html.spec.whatwg.org/C/#run-a-module-script
+  // implemented by EvaluateModule().
   class RethrowErrorsOption final {
     STACK_ALLOCATED();
 
@@ -70,11 +74,20 @@ class CORE_EXPORT V8ScriptRunner final {
       return RethrowErrorsOption(base::nullopt);
     }
 
-    // Rethrow errors flag is true. When rethrowing, a NetworkError with
-    // `message` is thrown. This is used only for importScripts(), and
-    // `message` is used to throw NetworkErrors with the same message text,
-    // no matter whether the NetworkError is thrown inside or outside
-    // EvaluateAndReturnValue().
+    // Rethrow errors flag is true.
+    // When an exception is to be rethrown,
+    // For classic scripts:
+    //    The exception is rethrown to V8, and ScriptEvaluationResult doesn't
+    //    retain the exception.
+    //    When script's muted errors is true, a NetworkError with
+    //    `message` is thrown. This is used only for importScripts(), and
+    //    `message` is used to throw NetworkErrors with the same message text,
+    //    no matter whether the NetworkError is thrown inside or outside
+    //    V8ScriptRunner.
+    // For module scripts:
+    //    The exception is caught and
+    //    ScriptEvaluationResult::GetExceptionForModule() returns the exception
+    //    to be rethrown.
     static RethrowErrorsOption Rethrow(const String& message) {
       return RethrowErrorsOption(message);
     }
@@ -134,10 +147,13 @@ class CORE_EXPORT V8ScriptRunner final {
                                                 int argc,
                                                 v8::Local<v8::Value> info[],
                                                 v8::Isolate*);
-  static v8::MaybeLocal<v8::Value> EvaluateModule(v8::Isolate*,
-                                                  ExecutionContext*,
-                                                  v8::Local<v8::Module>,
-                                                  v8::Local<v8::Context>);
+
+  // https://html.spec.whatwg.org/C/#run-a-module-script
+  // Callers must enter a v8::HandleScope before calling.
+  // See the class comments of RethrowErrorsOption and ScriptEvaluationResult
+  // for exception handling and return value semantics.
+  static ScriptEvaluationResult EvaluateModule(ModuleScript*,
+                                               RethrowErrorsOption);
 
   // Only to be used from ModuleRecord::ReportException().
   static void ReportExceptionForModule(v8::Isolate*,

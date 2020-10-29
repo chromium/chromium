@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -149,7 +150,9 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
     EXPECT_TRUE(exception.IsEmpty());
 
     ScriptEvaluationResult result =
-        ModuleRecord::Evaluate(script_state, module, js_url);
+        JSModuleScript::CreateForTest(Modulator::From(script_state), module,
+                                      js_url)
+            ->RunScriptAndReturnValue();
     return result.GetResultType() ==
            ScriptEvaluationResult::ResultType::kSuccess;
   }

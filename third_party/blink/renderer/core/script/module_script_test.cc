@@ -167,10 +167,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
                                           module_script->V8Module(),
                                           module_script->SourceURL())
                     .IsEmpty());
-    ASSERT_EQ(ModuleRecord::Evaluate(scope.GetScriptState(),
-                                     module_script->V8Module(),
-                                     module_script->SourceURL())
-                  .GetResultType(),
+    ASSERT_EQ(module_script->RunScriptAndReturnValue().GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     TestFoo(scope);
 
@@ -294,10 +291,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
                                           module_script->V8Module(),
                                           module_script->SourceURL())
                     .IsEmpty());
-    ASSERT_EQ(ModuleRecord::Evaluate(scope.GetScriptState(),
-                                     module_script->V8Module(),
-                                     module_script->SourceURL())
-                  .GetResultType(),
+    ASSERT_EQ(module_script->RunScriptAndReturnValue().GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     TestFoo(scope);
 

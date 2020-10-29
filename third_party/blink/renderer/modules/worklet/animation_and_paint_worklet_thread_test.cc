@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
@@ -81,9 +82,11 @@ class AnimationAndPaintWorkletThreadTest : public PageTestBase {
     ScriptValue exception =
         ModuleRecord::Instantiate(script_state, module, js_url);
     EXPECT_TRUE(exception.IsEmpty());
-    EXPECT_EQ(
-        ModuleRecord::Evaluate(script_state, module, js_url).GetResultType(),
-        ScriptEvaluationResult::ResultType::kSuccess);
+    EXPECT_EQ(JSModuleScript::CreateForTest(Modulator::From(script_state),
+                                            module, js_url)
+                  ->RunScriptAndReturnValue()
+                  .GetResultType(),
+              ScriptEvaluationResult::ResultType::kSuccess);
     wait_event->Signal();
   }
 };

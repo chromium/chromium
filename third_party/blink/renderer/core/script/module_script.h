@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -54,14 +55,22 @@ class CORE_EXPORT ModuleScript : public Script {
   virtual void ProduceCache() {}
   const KURL& SourceURL() const { return source_url_; }
 
+  // https://html.spec.whatwg.org/C/#run-a-module-script
+  // Callers must enter a `v8::HandleScope` before calling.
+  // See the class comments of `RethrowErrorsOption` and
+  // `ScriptEvaluationResult` for exception handling and return value semantics.
+  WARN_UNUSED_RESULT ScriptEvaluationResult RunScriptAndReturnValue(
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+
+  Modulator* SettingsObject() const { return settings_object_; }
+
  protected:
   ModuleScript(Modulator*,
                v8::Local<v8::Module>,
                const KURL& source_url,
                const KURL& base_url,
                const ScriptFetchOptions&);
-
-  Modulator* SettingsObject() const { return settings_object_; }
 
  private:
   mojom::blink::ScriptType GetScriptType() const override {

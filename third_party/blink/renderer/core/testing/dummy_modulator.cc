@@ -169,17 +169,13 @@ Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
   return Vector<ModuleRequest>();
 }
 
-ScriptEvaluationResult DummyModulator::ExecuteModule(ModuleScript*,
-                                                     CaptureEvalErrorFlag) {
-  NOTREACHED();
-  return ScriptEvaluationResult::FromModuleNotRun();
-}
-
 ModuleScriptFetcher* DummyModulator::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType,
     util::PassKey<ModuleScriptLoader> pass_key) {
   NOTREACHED();
   return nullptr;
 }
+
+void DummyModulator::ProduceCacheModuleTreeTopLevel(ModuleScript*) {}
 
 }  // namespace blink

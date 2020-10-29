@@ -90,8 +90,6 @@ class ModulatorImplBase : public Modulator {
   ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
   Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) override;
-  ScriptEvaluationResult ExecuteModule(ModuleScript*,
-                                       CaptureEvalErrorFlag) override;
 
   // Populates |reason| and returns true if the dynamic import is disallowed on
   // the associated execution context. In that case, a caller of this function
@@ -100,7 +98,7 @@ class ModulatorImplBase : public Modulator {
   // modification of |reason|.
   virtual bool IsDynamicImportForbidden(String* reason) = 0;
 
-  void ProduceCacheModuleTreeTopLevel(ModuleScript*);
+  void ProduceCacheModuleTreeTopLevel(ModuleScript*) override;
   void ProduceCacheModuleTree(ModuleScript*,
                               HeapHashSet<Member<const ModuleScript>>*);
 

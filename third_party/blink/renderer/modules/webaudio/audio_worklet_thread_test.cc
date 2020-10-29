@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -121,7 +122,9 @@ class AudioWorkletThreadTest : public PageTestBase {
         ModuleRecord::Instantiate(script_state, module, js_url);
     EXPECT_TRUE(exception.IsEmpty());
     ScriptEvaluationResult result =
-        ModuleRecord::Evaluate(script_state, module, js_url);
+        JSModuleScript::CreateForTest(Modulator::From(script_state), module,
+                                      js_url)
+            ->RunScriptAndReturnValue();
     EXPECT_EQ(result.GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     wait_event->Signal();

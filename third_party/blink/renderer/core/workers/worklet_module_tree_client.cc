@@ -70,10 +70,7 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   }
 
   // Step 5: "Run a module script given script."
-  ScriptEvaluationResult result =
-      Modulator::From(script_state_)
-          ->ExecuteModule(module_script,
-                          Modulator::CaptureEvalErrorFlag::kReport);
+  ScriptEvaluationResult result = module_script->RunScriptAndReturnValue();
 
   auto* global_scope =
       To<WorkletGlobalScope>(ExecutionContext::From(script_state_));

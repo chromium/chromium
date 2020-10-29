@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/script/module_script.h"
 
+#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -101,29 +104,29 @@ void ModuleScript::Trace(Visitor* visitor) const {
 }
 
 void ModuleScript::RunScript(LocalDOMWindow*) {
-  // We need a HandleScope for the ScriptEvaluationResult that is created
-  // in ::ExecuteModule(...).
+  // We need a HandleScope for the `ScriptEvaluationResult` returned from
+  // `RunScriptAndReturnValue`.
   ScriptState::Scope scope(SettingsObject()->GetScriptState());
   DVLOG(1) << *this << "::RunScript()";
-
-  SettingsObject()->ExecuteModule(this,
-                                  Modulator::CaptureEvalErrorFlag::kReport);
+  ignore_result(RunScriptAndReturnValue());
 }
 
 bool ModuleScript::RunScriptOnWorkerOrWorklet(
     WorkerOrWorkletGlobalScope& global_scope) {
-  // We need a HandleScope for the ScriptEvaluationResult that is created
-  // in ::ExecuteModule(...).
+  // We need a HandleScope for the `ScriptEvaluationResult` returned from
+  // `RunScriptAndReturnValue`.
   ScriptState::Scope scope(SettingsObject()->GetScriptState());
   DCHECK(global_scope.IsContextThread());
 
-  // This |error| is always null because the second argument is |kReport|.
   // TODO(nhiroki): Catch an error when an evaluation error happens.
   // (https://crbug.com/680046)
-  ScriptEvaluationResult result = SettingsObject()->ExecuteModule(
-      this, Modulator::CaptureEvalErrorFlag::kReport);
-
+  ScriptEvaluationResult result = RunScriptAndReturnValue();
   return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
+}
+
+ScriptEvaluationResult ModuleScript::RunScriptAndReturnValue(
+    V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  return V8ScriptRunner::EvaluateModule(this, std::move(rethrow_errors));
 }
 
 std::pair<size_t, size_t> ModuleScript::GetClassicScriptSizes() const {
