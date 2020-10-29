@@ -1842,9 +1842,6 @@ extern const char kVideoTutorialsInstantFetchDescription[];
 extern const char kPrefetchNotificationSchedulingIntegrationName[];
 extern const char kPrefetchNotificationSchedulingIntegrationDescription[];
 
-extern const char kUsageStatsDescription[];
-extern const char kUsageStatsName[];
-
 extern const char kUseChimeAndroidSdkDescription[];
 extern const char kUseChimeAndroidSdkName[];
 

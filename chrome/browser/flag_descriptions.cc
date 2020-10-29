@@ -3192,12 +3192,6 @@ const char kUpdateNotificationServiceImmediateShowOptionName[] =
 const char kUpdateNotificationServiceImmediateShowOptionDescription[] =
     "Show update notification right immediately";
 
-const char kUsageStatsDescription[] =
-    "When set, enables sharing of per-domain usage stats with the Digital "
-    "Wellbeing app on Android, and allows Digital Wellbeing to suspend access "
-    "to websites in order to enforce user-defined time limits.";
-const char kUsageStatsName[] = "Share Usage Stats with Digital Wellbeing";
-
 const char kUseChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kUseChimeAndroidSdkName[] = "Use Chime SDK";

@@ -5721,9 +5721,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid, MULTI_VALUE_TYPE(kNotificationSchedulerChoices)},
 
 #if defined(OS_ANDROID)
-    {"usage-stats", flag_descriptions::kUsageStatsName,
-     flag_descriptions::kUsageStatsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kUsageStatsFeature)},
 
     {"use-chime-android-sdk", flag_descriptions::kUseChimeAndroidSdkName,
      flag_descriptions::kUseChimeAndroidSdkDescription, kOsAndroid,
