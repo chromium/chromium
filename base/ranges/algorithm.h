@@ -11,9 +11,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/functional/identity.h"
+#include "base/functional/invoke.h"
 #include "base/ranges/functional.h"
 #include "base/ranges/ranges.h"
-#include "base/stl_util.h"
 #include "base/template_util.h"
 
 namespace base {
