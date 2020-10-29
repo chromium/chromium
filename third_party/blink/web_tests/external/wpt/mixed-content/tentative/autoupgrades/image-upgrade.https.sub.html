@@ -11,7 +11,8 @@
     async_test(t => assert_image_loads(t), "Image autoupgraded");
 
     function assert_image_loads(test) {
-        var url = new URL("http://web-platform.test:8443/mixed-autoupgrade/resources/pass.png")
+        // Since autoupgrades don't upgrade custom ports, we use the https port with an HTTP scheme. A successful autoupgrade will result in the right URL loading (and no autoupgrade will result in failure).
+        var url = new URL("http://{{host}}:{{ports[https][0]}}/mixed-content/tentative/resources/pass.png")
         var i = document.createElement('img');
         i.onload = test.step_func_done(_ => {
             assert_equals(i.naturalHeight, 64, "Height.");
