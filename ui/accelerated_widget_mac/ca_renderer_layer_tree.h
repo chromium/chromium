@@ -90,9 +90,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     bool AddContentLayer(CARendererLayerTree* tree,
                          const CARendererLayerParams& params);
 
-    // Workaround for https://crbug.com/923427. Only allow any
-    // AVSampleBufferDisplayLayer if there is exactly one video quad.
-    void EnforceOnlyOneAVLayer();
+    // Downgrade all downgradeable AVSampleBufferDisplayLayers to be normal
+    // CALayers.
+    // https://crbug.com/923427, https://crbug.com/1143477
+    void DowngradeAVLayersToCALayers();
 
     // Allocate CALayers for this layer and its children, and set their
     // properties appropriately. Re-use the CALayers from |old_layer| if
@@ -200,6 +201,13 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     NSString* const ca_filter = nil;
 
     CALayerType type = CALayerType::kDefault;
+
+    // If |type| is CALayerType::kVideo and |video_type_can_downgrade| then
+    // |type| can be downgraded to kDefault. This can be set to false for
+    // HDR video (that cannot be displayed by a regular CALayer) or for
+    // protected content (see https://crbug.com/1026703).
+    bool video_type_can_downgrade = true;
+
     base::scoped_nsobject<CALayer> ca_layer;
 
     // If this layer's contents can be represented as an

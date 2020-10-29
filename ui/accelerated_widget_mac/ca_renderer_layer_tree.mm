@@ -268,23 +268,14 @@ bool CARendererLayerTree::RootLayer::WantsFullcreenLowPowerBackdrop() const {
   return found_video_layer;
 }
 
-void CARendererLayerTree::RootLayer::EnforceOnlyOneAVLayer() {
-  size_t video_layer_count = 0;
+void CARendererLayerTree::RootLayer::DowngradeAVLayersToCALayers() {
   for (auto& clip_layer : clip_and_sorting_layers) {
     for (auto& transform_layer : clip_layer.transform_layers) {
       for (auto& content_layer : transform_layer.content_layers) {
-        if (content_layer.type == CALayerType::kVideo)
-          video_layer_count += 1;
-      }
-    }
-  }
-  if (video_layer_count <= 1)
-    return;
-  for (auto& clip_layer : clip_and_sorting_layers) {
-    for (auto& transform_layer : clip_layer.transform_layers) {
-      for (auto& content_layer : transform_layer.content_layers) {
-        if (content_layer.type == CALayerType::kVideo)
+        if (content_layer.type == CALayerType::kVideo &&
+            content_layer.video_type_can_downgrade) {
           content_layer.type = CALayerType::kDefault;
+        }
       }
     }
   }
@@ -443,18 +434,21 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   if (metal::ShouldUseHDRCopier(io_surface, io_surface_color_space)) {
     type = CALayerType::kHDRCopier;
   } else if (io_surface) {
-    switch (IOSurfaceGetPixelFormat(io_surface)) {
-      case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-      case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
-        // Only allow 4:2:0 frames which fill the layer's contents to be
-        // promoted to AV layers.
-        if (tree->allow_av_sample_buffer_display_layer_ &&
-            contents_rect == gfx::RectF(0, 0, 1, 1)) {
+    // Only allow 4:2:0 frames which fill the layer's contents to be
+    // promoted to AV layers.
+    if (tree->allow_av_sample_buffer_display_layer_ &&
+        contents_rect == gfx::RectF(0, 0, 1, 1)) {
+      switch (IOSurfaceGetPixelFormat(io_surface)) {
+        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
           type = CALayerType::kVideo;
-        }
-        break;
-      default:
-        break;
+          break;
+        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+          type = CALayerType::kVideo;
+          video_type_can_downgrade = false;
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -498,6 +492,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(ContentLayer&& layer)
       opacity(layer.opacity),
       ca_filter(layer.ca_filter),
       type(layer.type),
+      video_type_can_downgrade(layer.video_type_can_downgrade),
       ca_layer(std::move(layer.ca_layer)),
       av_layer(std::move(layer.av_layer)) {
   DCHECK(!layer.ca_layer);
@@ -609,9 +604,9 @@ void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
     DLOG(ERROR) << "CARendererLayerTree root layer not attached to tree.";
   }
 
-  EnforceOnlyOneAVLayer();
-
   if (WantsFullcreenLowPowerBackdrop()) {
+    // In fullscreen low power mode there exists a single video layer on a
+    // solid black background.
     const gfx::RectF bg_rect(
         ScaleSize(gfx::SizeF(pixel_size), 1 / scale_factor));
     if (gfx::RectF([ca_layer frame]) != bg_rect)
@@ -623,6 +618,16 @@ void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
       [ca_layer setFrame:CGRectZero];
     if ([ca_layer backgroundColor])
       [ca_layer setBackgroundColor:nil];
+    // We know that we are not in fullscreen low power mode, so there is no
+    // power savings (and a slight power cost) to using
+    // AVSampleBufferDisplayLayer.
+    // https://crbug.com/1143477
+    // We also want to minimize our use of AVSampleBufferDisplayLayer because we
+    // don't track which video element corresponded to which CALayer, and
+    // AVSampleBufferDisplayLayer is not updated with the CATransaction.
+    // Combined, these can result in result in videos jumping around.
+    // https://crbug.com/923427
+    DowngradeAVLayersToCALayers();
   }
 
   for (size_t i = 0; i < clip_and_sorting_layers.size(); ++i) {
