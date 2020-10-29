@@ -719,6 +719,7 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderEnabled),
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderName),
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderSearchURL),
+      base::SysUTF8ToNSString(policy::key::kEditBookmarksEnabled),
       base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled),
       base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel),
       base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled),
@@ -744,6 +745,8 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
           @"http://www.google.com/search?q={searchTerms}",
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderName) :
           @"TestEngine",
+
+      base::SysUTF8ToNSString(policy::key::kEditBookmarksEnabled) : @NO,
 
       base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled) : @NO,
 
