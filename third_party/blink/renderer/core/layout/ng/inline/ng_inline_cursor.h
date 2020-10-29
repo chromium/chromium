@@ -216,9 +216,9 @@ class CORE_EXPORT NGInlineCursor {
   using ItemsSpan = NGFragmentItems::Span;
 
   explicit NGInlineCursor(const LayoutBlockFlow& block_flow);
-  explicit NGInlineCursor(const NGFragmentItems& items);
-  explicit NGInlineCursor(const NGFragmentItems& fragment_items,
-                          ItemsSpan items);
+  explicit NGInlineCursor(const NGPhysicalBoxFragment& box_fragment);
+  NGInlineCursor(const NGPhysicalBoxFragment& box_fragment,
+                 const NGFragmentItems& items);
   explicit NGInlineCursor(const NGPaintFragment& root_paint_fragment);
   explicit NGInlineCursor(const NGInlineBackwardCursor& backward_cursor);
   NGInlineCursor(const NGInlineCursor& other) = default;
@@ -243,6 +243,12 @@ class CORE_EXPORT NGInlineCursor {
   const NGFragmentItems& Items() const {
     DCHECK(fragment_items_);
     return *fragment_items_;
+  }
+
+  // Returns the |NGPhysicalBoxFragment| that owns |Items|.
+  const NGPhysicalBoxFragment& BoxFragment() const {
+    DCHECK(root_box_fragment_);
+    return *root_box_fragment_;
   }
 
   // Returns the |LayoutBlockFlow| containing this cursor.
@@ -480,6 +486,10 @@ class CORE_EXPORT NGInlineCursor {
 #endif
 
  private:
+  NGInlineCursor(const NGPhysicalBoxFragment& box_fragment,
+                 const NGFragmentItems& fragment_items,
+                 ItemsSpan items);
+
   // Returns true if |this| is only for a part of an inline formatting context;
   // in other words, if |this| is created by |CursorForDescendants|.
   bool IsDescendantsCursor() const {
@@ -508,8 +518,11 @@ class CORE_EXPORT NGInlineCursor {
   // Move the cursor position to the first fragment in tree.
   void MoveToFirst();
 
-  void SetRoot(const NGFragmentItems& items);
-  void SetRoot(const NGFragmentItems& fragment_items, ItemsSpan items);
+  void SetRoot(const NGPhysicalBoxFragment& box_fragment,
+               const NGFragmentItems& items);
+  void SetRoot(const NGPhysicalBoxFragment& box_fragment,
+               const NGFragmentItems& fragment_items,
+               ItemsSpan items);
   void SetRoot(const NGPaintFragment& root_paint_fragment);
   void SetRoot(const LayoutBlockFlow& block_flow);
   bool SetRoot(const LayoutBlockFlow& block_flow, wtf_size_t fragment_index);
@@ -565,7 +578,7 @@ class CORE_EXPORT NGInlineCursor {
 
   ItemsSpan items_;
   const NGFragmentItems* fragment_items_ = nullptr;
-
+  const NGPhysicalBoxFragment* root_box_fragment_ = nullptr;
   const NGPaintFragment* root_paint_fragment_ = nullptr;
 
   CulledInlineTraversal culled_inline_;

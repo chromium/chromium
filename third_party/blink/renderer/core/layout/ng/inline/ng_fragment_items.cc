@@ -207,9 +207,10 @@ bool NGFragmentItems::CanReuseAll(NGInlineCursor* cursor) {
   return true;
 }
 
-const NGFragmentItem* NGFragmentItems::EndOfReusableItems() const {
+const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
+    const NGPhysicalBoxFragment& container) const {
   const NGFragmentItem* last_line_start = &front();
-  for (NGInlineCursor cursor(*this); cursor;) {
+  for (NGInlineCursor cursor(container, *this); cursor;) {
     const NGFragmentItem& item = *cursor.Current();
     if (item.IsDirty())
       return &item;
@@ -264,8 +265,9 @@ bool NGFragmentItems::TryDirtyFirstLineFor(
 }
 
 bool NGFragmentItems::TryDirtyLastLineFor(
+    const LayoutBlockFlow& container,
     const LayoutObject& layout_object) const {
-  NGInlineCursor cursor(*this);
+  NGInlineCursor cursor(container);
   cursor.MoveTo(layout_object);
   if (!cursor)
     return false;
@@ -278,6 +280,7 @@ bool NGFragmentItems::TryDirtyLastLineFor(
 }
 
 void NGFragmentItems::DirtyLinesFromChangedChild(
+    const LayoutBlockFlow& container,
     const LayoutObject* child) const {
   if (UNLIKELY(!child)) {
     front().SetDirty();
@@ -303,7 +306,7 @@ void NGFragmentItems::DirtyLinesFromChangedChild(
       if (UNLIKELY(child->IsFloatingOrOutOfFlowPositioned()))
         continue;
       if (child->IsInLayoutNGInlineFormattingContext() &&
-          TryDirtyLastLineFor(*child))
+          TryDirtyLastLineFor(container, *child))
         return;
       continue;
     }
@@ -332,7 +335,7 @@ void NGFragmentItems::DirtyLinesFromNeedsLayout(
   for (LayoutObject* child = container->FirstChild(); child;
        child = child->NextSibling()) {
     if (child->NeedsLayout()) {
-      DirtyLinesFromChangedChild(child);
+      DirtyLinesFromChangedChild(*container, child);
       return;
     }
   }

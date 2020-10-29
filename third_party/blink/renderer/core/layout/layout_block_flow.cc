@@ -4640,7 +4640,7 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
       RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
     for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
       if (const NGFragmentItems* items = fragment.Items()) {
-        NGInlineCursor cursor(*items);
+        NGInlineCursor cursor(fragment, *items);
         NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
       }
       // Even if this turned out to be an inline formatting context with

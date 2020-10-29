@@ -60,11 +60,13 @@ class NGFragmentItemTest : public NGLayoutTest,
 
   void TestFirstDirtyLineIndex(const char* id, wtf_size_t expected_index) {
     LayoutBlockFlow* block_flow = GetLayoutBlockFlowByElementId(id);
-    const NGFragmentItems* items = block_flow->FragmentItems();
+    const NGPhysicalBoxFragment* fragment = block_flow->GetPhysicalFragment(0);
+    const NGFragmentItems* items = fragment->Items();
     items->DirtyLinesFromNeedsLayout(block_flow);
-    const NGFragmentItem* end_reusable_item = items->EndOfReusableItems();
+    const NGFragmentItem* end_reusable_item =
+        items->EndOfReusableItems(*fragment);
 
-    NGInlineCursor cursor(*items);
+    NGInlineCursor cursor(*fragment, *items);
     const auto lines = GetLines(&cursor);
     EXPECT_EQ(IndexOf(lines, end_reusable_item), expected_index);
   }

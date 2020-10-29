@@ -1189,16 +1189,16 @@ TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
 
   // Test cursors rooted at |NGFragmentItems|.
   // They can enumerate fragments only in the specified fragmentainer.
-  Vector<const NGFragmentItems*> fragment_items_list;
+  Vector<const NGPhysicalBoxFragment*> fragments;
   for (const NGPhysicalBoxFragment& fragment :
        block_flow->PhysicalFragments()) {
-    fragment_items_list.push_back(fragment.Items());
-    DCHECK_NE(fragment_items_list.back(), nullptr);
+    DCHECK(fragment.HasItems());
+    fragments.push_back(&fragment);
   }
-  EXPECT_EQ(fragment_items_list.size(), 3u);
-  TestFragment1(NGInlineCursor(*fragment_items_list[0]));
-  TestFragment2(NGInlineCursor(*fragment_items_list[1]));
-  TestFragment3(NGInlineCursor(*fragment_items_list[2]));
+  EXPECT_EQ(fragments.size(), 3u);
+  TestFragment1(NGInlineCursor(*fragments[0], *fragments[0]->Items()));
+  TestFragment2(NGInlineCursor(*fragments[1], *fragments[1]->Items()));
+  TestFragment3(NGInlineCursor(*fragments[2], *fragments[2]->Items()));
 }
 
 }  // namespace

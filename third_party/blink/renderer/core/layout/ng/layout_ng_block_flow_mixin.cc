@@ -286,7 +286,7 @@ void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
   if (child->IsInLayoutNGInlineFormattingContext()) {
     if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
       if (const NGFragmentItems* items = Base::FragmentItems())
-        items->DirtyLinesFromChangedChild(child);
+        items->DirtyLinesFromChangedChild(*this, child);
     }
   }
 }

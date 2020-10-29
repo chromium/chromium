@@ -590,7 +590,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
 
   // Traverse child items.
   if (items) {
-    for (NGInlineCursor cursor(*items); cursor;
+    for (NGInlineCursor cursor(*this, *items); cursor;
          cursor.MoveToNextSkippingChildren()) {
       const NGFragmentItem* item = cursor.CurrentItem();
       if (item->Type() == NGFragmentItem::kLine) {
@@ -737,7 +737,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
   if (IsScrollContainer())
     point += PhysicalOffset(PixelSnappedScrolledContentOffset());
   if (const NGFragmentItems* items = Items()) {
-    NGInlineCursor cursor(*items);
+    NGInlineCursor cursor(*this, *items);
     if (const PositionWithAffinity position =
             cursor.PositionForPointInInlineFormattingContext(point, *this))
       return AdjustForEditingBoundary(position);

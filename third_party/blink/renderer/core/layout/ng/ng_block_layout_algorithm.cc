@@ -991,7 +991,8 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
   // Find reusable lines. Fail if no items are reusable.
   previous_items->DirtyLinesFromNeedsLayout(inline_node.GetLayoutBlockFlow());
-  const NGFragmentItem* end_item = previous_items->EndOfReusableItems();
+  const NGFragmentItem* end_item =
+      previous_items->EndOfReusableItems(previous_fragment);
   DCHECK(end_item);
   if (!end_item || end_item == &previous_items->front())
     return false;
@@ -1011,7 +1012,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   const NGConstraintSpace& space = ConstraintSpace();
   DCHECK_EQ(items_builder->GetWritingDirection(), space.GetWritingDirection());
   const auto result =
-      items_builder->AddPreviousItems(*previous_items, previous_fragment.Size(),
+      items_builder->AddPreviousItems(previous_fragment, *previous_items,
                                       &container_builder_, end_item, max_lines);
   if (UNLIKELY(!result.succeeded)) {
     DCHECK_EQ(children.size(), children_before);

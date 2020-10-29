@@ -132,7 +132,7 @@ class FragmentTreeDumper {
       bool has_fragment_items = false;
       if (flags_ & NGPhysicalFragment::DumpItems) {
         if (const NGFragmentItems* fragment_items = box->Items()) {
-          NGInlineCursor cursor(*fragment_items);
+          NGInlineCursor cursor(*box, *fragment_items);
           Append(&cursor, indent + 2);
           has_fragment_items = true;
         }

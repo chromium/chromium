@@ -1452,7 +1452,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
   if (previous_break_token)
     previously_consumed_block_size = previous_break_token->ConsumedBlockSize();
   bool initial_container_is_flipped = Style().IsFlippedBlocksWritingMode();
-  for (NGInlineCursor cursor(items); cursor; cursor.MoveToNext()) {
+  for (NGInlineCursor cursor(container, items); cursor; cursor.MoveToNext()) {
     if (const NGPhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
       // Replaced elements and inline blocks need Location() set relative to
       // their block container.

@@ -196,8 +196,8 @@ void NGFragmentItemsBuilder::AddListMarker(
 
 NGFragmentItemsBuilder::AddPreviousItemsResult
 NGFragmentItemsBuilder::AddPreviousItems(
+    const NGPhysicalBoxFragment& container,
     const NGFragmentItems& items,
-    const PhysicalSize& container_size,
     NGBoxFragmentBuilder* container_builder,
     const NGFragmentItem* end_item,
     wtf_size_t max_lines) {
@@ -228,7 +228,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
   // This is needed because the container size may be different, in that case,
   // the physical offsets are different when `writing-mode: vertial-rl`.
   DCHECK(!is_converted_to_physical_);
-  const WritingModeConverter converter(GetWritingDirection(), container_size);
+  const WritingModeConverter converter(GetWritingDirection(), container.Size());
   const WritingMode writing_mode = GetWritingMode();
   WritingModeConverter line_converter(
       {ToLineWritingMode(writing_mode), TextDirection::kLtr});
@@ -238,7 +238,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
   LayoutUnit used_block_size;
   wtf_size_t line_count = 0;
 
-  for (NGInlineCursor cursor(items); cursor;) {
+  for (NGInlineCursor cursor(container, items); cursor;) {
     DCHECK(cursor.Current().Item());
     const NGFragmentItem& item = *cursor.Current().Item();
     if (&item == end_item)

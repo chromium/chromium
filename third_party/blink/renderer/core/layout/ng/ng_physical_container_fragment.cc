@@ -140,7 +140,7 @@ void NGPhysicalContainerFragment::AddOutlineRectsForNormalChildren(
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(this)) {
     DCHECK_EQ(box->PostLayout(), box);
     if (const NGFragmentItems* items = box->Items()) {
-      for (NGInlineCursor cursor(*items); cursor; cursor.MoveToNext()) {
+      for (NGInlineCursor cursor(*box, *items); cursor; cursor.MoveToNext()) {
         DCHECK(cursor.Current().Item());
         const NGFragmentItem& item = *cursor.Current().Item();
         if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved()))

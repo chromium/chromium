@@ -74,10 +74,12 @@ class CORE_EXPORT NGFragmentItems {
 
   // Returns the end (next of the last) item that are reusable. If no items are
   // reusable, it is the first item.
-  const NGFragmentItem* EndOfReusableItems() const;
+  const NGFragmentItem* EndOfReusableItems(
+      const NGPhysicalBoxFragment& container) const;
 
   // Mark items dirty when |child| is removed from the tree.
-  void DirtyLinesFromChangedChild(const LayoutObject* child) const;
+  void DirtyLinesFromChangedChild(const LayoutBlockFlow& container,
+                                  const LayoutObject* child) const;
 
   // Mark items dirty from |LayoutObject::NeedsLayout| flags.
   void DirtyLinesFromNeedsLayout(const LayoutBlockFlow* block_flow) const;
@@ -97,7 +99,8 @@ class CORE_EXPORT NGFragmentItems {
 
   static bool CanReuseAll(NGInlineCursor* cursor);
   bool TryDirtyFirstLineFor(const LayoutObject& layout_object) const;
-  bool TryDirtyLastLineFor(const LayoutObject& layout_object) const;
+  bool TryDirtyLastLineFor(const LayoutBlockFlow& container,
+                           const LayoutObject& layout_object) const;
 
   String text_content_;
   String first_line_text_content_;

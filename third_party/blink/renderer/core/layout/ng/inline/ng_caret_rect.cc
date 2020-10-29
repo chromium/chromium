@@ -103,10 +103,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
                                   cursor.Current().OffsetInContainerBlock();
   const PhysicalSize caret_size(caret_width, caret_height);
 
-  // TODO(crbug.com/1061423): Shouldn't assume that there's only one
-  // fragment.
-  const NGPhysicalBoxFragment& fragment =
-      *cursor.Current().GetLayoutObject()->ContainingBlockFlowFragment();
+  const NGPhysicalBoxFragment& fragment = cursor.BoxFragment();
   NGInlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   const PhysicalOffset line_box_offset =

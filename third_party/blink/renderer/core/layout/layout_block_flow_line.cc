@@ -2433,7 +2433,7 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
     }
   } else if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
     if (const NGFragmentItems* items = fragment->Items()) {
-      for (NGInlineCursor cursor(*items); cursor;
+      for (NGInlineCursor cursor(*fragment, *items); cursor;
            cursor.MoveToNextSkippingChildren()) {
         const NGFragmentItem* child = cursor.CurrentItem();
         DCHECK(child);
@@ -2497,7 +2497,7 @@ void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
       StyleRef().IsLeftToRightDirection()) {
     if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
       if (const NGFragmentItems* items = fragment->Items()) {
-        for (NGInlineCursor cursor(*items); cursor;
+        for (NGInlineCursor cursor(*fragment, *items); cursor;
              cursor.MoveToNextSkippingChildren()) {
           if (!cursor.Current().IsLineBox())
             continue;
@@ -2835,12 +2835,17 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
     return;
   }
 
-  if (const NGFragmentItems* fragment_items = FragmentItems()) {
-    NGInlineCursor first_line(*fragment_items);
-    if (first_line) {
-      DCHECK(!FirstRootBox());
+  const auto fragments = PhysicalFragments();
+  if (!fragments.IsEmpty()) {
+    DCHECK(!FirstRootBox());
+    for (const NGPhysicalBoxFragment& fragment : fragments) {
+      NGInlineCursor first_line(fragment);
+      if (!first_line)
+        continue;
       first_line.MoveToFirstLine();
-      if (first_line && first_line.Current().UsesFirstLineStyle()) {
+      if (!first_line)
+        continue;
+      if (first_line.Current().UsesFirstLineStyle()) {
         // Mark all descendants of the first line if first-line style.
         for (NGInlineCursor descendants = first_line.CursorForDescendants();
              descendants; descendants.MoveToNext()) {
@@ -2856,6 +2861,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
         }
         StyleRef().ClearCachedPseudoElementStyles();
         SetShouldDoFullPaintInvalidation();
+        return;
       }
     }
     return;

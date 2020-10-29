@@ -1682,7 +1682,7 @@ void LayoutInline::DirtyLinesFromChangedChild(
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())) {
       if (const LayoutBlockFlow* container = FragmentItemsContainer()) {
         if (const NGFragmentItems* items = container->FragmentItems())
-          items->DirtyLinesFromChangedChild(child);
+          items->DirtyLinesFromChangedChild(*container, child);
       }
       return;
     }

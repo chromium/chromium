@@ -940,13 +940,12 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     return value();
 
   if (layout_object->IsLayoutNGObject()) {
-    const auto* items = layout_object->FragmentItems();
-    if (!items)
+    NGInlineCursor cursor(*layout_object);
+    if (!cursor)
       return value();
     const auto* mapping = NGInlineNode::GetOffsetMapping(layout_object);
     if (!mapping)
       return value();
-    NGInlineCursor cursor(*items);
     Position break_position = GetNextSoftBreak(*mapping, cursor);
     StringBuilder result;
     for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {

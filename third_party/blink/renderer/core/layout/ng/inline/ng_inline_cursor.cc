@@ -34,17 +34,21 @@ inline void NGInlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
   MakeNull();
 }
 
-void NGInlineCursor::SetRoot(const NGFragmentItems& fragment_items,
+void NGInlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
+                             const NGFragmentItems& fragment_items,
                              ItemsSpan items) {
+  DCHECK_EQ(box_fragment.Items(), &fragment_items);
   DCHECK(items.data() || !items.size());
+  root_box_fragment_ = &box_fragment;
   fragment_items_ = &fragment_items;
   items_ = items;
   DCHECK(fragment_items_->IsSubSpan(items_));
   MoveToItem(items_.begin());
 }
 
-void NGInlineCursor::SetRoot(const NGFragmentItems& items) {
-  SetRoot(items, items.Items());
+void NGInlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
+                             const NGFragmentItems& items) {
+  SetRoot(box_fragment, items, items.Items());
 }
 
 void NGInlineCursor::SetRoot(const NGPaintFragment& root_paint_fragment) {
@@ -62,7 +66,7 @@ bool NGInlineCursor::TrySetRootFragmentItems() {
         root_block_flow_->GetPhysicalFragment(fragment_index_);
     DCHECK(fragment);
     if (const NGFragmentItems* items = fragment->Items()) {
-      SetRoot(*items);
+      SetRoot(*fragment, *items);
       return true;
     }
   }
@@ -95,13 +99,20 @@ NGInlineCursor::NGInlineCursor(const LayoutBlockFlow& block_flow) {
   SetRoot(block_flow);
 }
 
-NGInlineCursor::NGInlineCursor(const NGFragmentItems& fragment_items,
+NGInlineCursor::NGInlineCursor(const NGPhysicalBoxFragment& box_fragment,
+                               const NGFragmentItems& fragment_items,
                                ItemsSpan items) {
-  SetRoot(fragment_items, items);
+  SetRoot(box_fragment, fragment_items, items);
 }
 
-NGInlineCursor::NGInlineCursor(const NGFragmentItems& items) {
-  SetRoot(items);
+NGInlineCursor::NGInlineCursor(const NGPhysicalBoxFragment& box_fragment,
+                               const NGFragmentItems& items) {
+  SetRoot(box_fragment, items);
+}
+
+NGInlineCursor::NGInlineCursor(const NGPhysicalBoxFragment& box_fragment) {
+  if (const NGFragmentItems* items = box_fragment.Items())
+    SetRoot(box_fragment, *items);
 }
 
 NGInlineCursor::NGInlineCursor(const NGPaintFragment& root_paint_fragment) {
@@ -144,11 +155,8 @@ const LayoutBlockFlow* NGInlineCursor::GetLayoutBlockFlow() const {
     return layout_object->ContainingNGBlockFlow();
   }
   if (IsItemCursor()) {
-    const NGFragmentItem& item = fragment_items_->front();
-    const LayoutObject* layout_object = item.GetLayoutObject();
-    if (item.Type() == NGFragmentItem::kLine)
-      return To<LayoutBlockFlow>(layout_object);
-    return layout_object->ContainingNGBlockFlow();
+    DCHECK(root_box_fragment_);
+    return To<LayoutBlockFlow>(root_box_fragment_->GetLayoutObject());
   }
   NOTREACHED();
   return nullptr;
@@ -169,9 +177,10 @@ NGInlineCursor NGInlineCursor::CursorForDescendants() const {
   if (current_.item_) {
     unsigned descendants_count = current_.item_->DescendantsCount();
     if (descendants_count > 1) {
+      DCHECK(root_box_fragment_);
       DCHECK(fragment_items_);
       return NGInlineCursor(
-          *fragment_items_,
+          *root_box_fragment_, *fragment_items_,
           ItemsSpan(&*(current_.item_iter_ + 1), descendants_count - 1));
     }
     return NGInlineCursor();
@@ -1029,7 +1038,7 @@ void NGInlineCursor::MoveTo(const NGInlineCursor& cursor) {
   }
   if (cursor.current_.item_) {
     if (!fragment_items_)
-      SetRoot(*cursor.fragment_items_);
+      SetRoot(*cursor.root_box_fragment_, *cursor.fragment_items_);
     // Note: We use address instead of iterato because we can't compare
     // iterators in different span. See |base::CheckedContiguousIterator<T>|.
     const ptrdiff_t index = &*cursor.current_.item_iter_ - &*items_.begin();

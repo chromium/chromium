@@ -23,7 +23,7 @@ NGFragmentChildIterator::NGFragmentChildIterator(
   if (parent_break_token)
     child_break_tokens_ = parent_break_token->ChildBreakTokens();
   if (parent.HasItems()) {
-    current_.cursor_.emplace(*parent.Items());
+    current_.cursor_.emplace(parent);
     current_.block_break_token_ = parent_break_token;
     UpdateSelfFromCursor();
   } else {

@@ -572,7 +572,7 @@ void NGBoxFragmentPainter::PaintObject(
           PaintBlockFlowContents(paint_info, paint_offset);
         } else {
           DCHECK(physical_box_fragment.IsInlineBox());
-          NGInlineCursor cursor(*items_);
+          NGInlineCursor cursor(physical_box_fragment, *items_);
           PaintInlineItems(paint_info.ForDescendants(), paint_offset,
                            PhysicalOffset(), &cursor);
         }
@@ -694,7 +694,7 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
     return;
   }
   DCHECK(items_);
-  NGInlineCursor children(*items_);
+  NGInlineCursor children(fragment, *items_);
   PaintLineBoxChildren(&children, paint_info.ForDescendants(), paint_offset);
 }
 
@@ -882,7 +882,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
   if (const NGPhysicalBoxFragment* box =
           DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {
-      NGInlineCursor cursor(*items);
+      NGInlineCursor cursor(*box, *items);
       PaintFloatingItems(float_paint_info, &cursor);
       return;
     }
@@ -2273,9 +2273,9 @@ bool NGBoxFragmentPainter::HitTestChildren(
     return false;
   }
   if (items_) {
-    NGInlineCursor cursor(*items_);
-    return HitTestChildren(hit_test, PhysicalFragment(), cursor,
-                           accumulated_offset);
+    const NGPhysicalBoxFragment& fragment = PhysicalFragment();
+    NGInlineCursor cursor(fragment, *items_);
+    return HitTestChildren(hit_test, fragment, cursor, accumulated_offset);
   }
   // Check descendants of this fragment because floats may be in the
   // |NGFragmentItems| of the descendants.
@@ -2468,7 +2468,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
 
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {
-      NGInlineCursor children(*items);
+      NGInlineCursor children(*box, *items);
       if (HitTestFloatingChildItems(hit_test, children, accumulated_offset))
         return true;
       // Even if this turned out to be an inline formatting context, we need to
