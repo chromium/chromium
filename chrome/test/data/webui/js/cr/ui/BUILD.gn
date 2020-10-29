@@ -29,7 +29,10 @@ js_library("array_data_model_test.m") {
   sources = [
     "$root_gen_dir/chrome/test/data/webui/js/cr/ui/array_data_model_test.m.js",
   ]
-  deps = [ "//ui/webui/resources/js/cr/ui:array_data_model.m" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -44,12 +47,79 @@ js_library("command_test.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("context_menu_handler_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/context_menu_handler_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("grid_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/grid_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:grid.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("list_selection_model_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/list_selection_model_test.m.js" ]
+  deps = [
+    ":list_selection_model_test_util.m",
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("list_selection_model_test_util.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/list_selection_model_test_util.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("list_single_selection_model_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/list_single_selection_model_test.m.js" ]
+  deps = [
+    ":list_selection_model_test_util.m",
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("list_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/list_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_type_check("closure_compile") {
   uses_js_modules = true
 
   deps = [
     ":array_data_model_test.m",
     ":command_test.m",
-    "../../..:chai_assert",
+    ":context_menu_handler_test.m",
+    ":grid_test.m",
+    ":list_selection_model_test.m",
+    ":list_selection_model_test_util.m",
+    ":list_single_selection_model_test.m",
+    ":list_test.m",
   ]
 }

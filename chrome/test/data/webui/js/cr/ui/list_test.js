@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import {assertEquals} from '../../../chai_assert.js';
 // #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 // clang-format on
 
-/* #export */ function testClearPinnedItem() {
+function testClearPinnedItem() {
   var list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
-  cr.ui.List.decorate(list);
+  cr.ui.decorate(list, cr.ui.List);
   document.body.appendChild(list);
 
   var model = new cr.ui.ArrayDataModel(['Item A', 'Item B']);
@@ -29,12 +31,12 @@
   assertEquals('Item B', list.querySelectorAll('li')[0].textContent);
 }
 
-/* #export */ function testClickOutsideListItem() {
+function testClickOutsideListItem() {
   const list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
-  cr.ui.List.decorate(list);
+  cr.ui.decorate(list, cr.ui.List);
   document.body.appendChild(list);
 
   // Add a header inside the list.
@@ -63,5 +65,7 @@
   assertEquals(item, list.getListItemAncestor(span));
 }
 
-window.testClearPinnedItem = testClearPinnedItem;
-window.testClickOutsideListItem = testClickOutsideListItem;
+Object.assign(window, {
+  testClearPinnedItem,
+  testClickOutsideListItem,
+});
