@@ -264,7 +264,7 @@ class NET_EXPORT SpdySessionPool
   // Close only the currently existing SpdySessions that are idle.
   // Let any new ones created while this method is running continue to
   // live.
-  void CloseCurrentIdleSessions();
+  void CloseCurrentIdleSessions(const std::string& description);
 
   // Repeatedly close all SpdySessions until all of them (including new ones
   // created in the process of closing the current ones, and new ones created in

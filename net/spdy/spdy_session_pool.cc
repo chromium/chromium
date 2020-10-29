@@ -419,9 +419,8 @@ void SpdySessionPool::CloseCurrentSessions(Error error) {
                              false /* idle_only */);
 }
 
-void SpdySessionPool::CloseCurrentIdleSessions() {
-  CloseCurrentSessionsHelper(ERR_ABORTED, "Closing idle sessions.",
-                             true /* idle_only */);
+void SpdySessionPool::CloseCurrentIdleSessions(const std::string& description) {
+  CloseCurrentSessionsHelper(ERR_ABORTED, description, true /* idle_only */);
 }
 
 void SpdySessionPool::CloseAllSessions() {

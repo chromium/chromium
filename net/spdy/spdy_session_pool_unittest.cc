@@ -250,6 +250,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentSessions) {
 }
 
 TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
+  const std::string close_session_description = "Closing idle sessions.";
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
@@ -318,7 +319,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   EXPECT_TRUE(session3->IsAvailable());
 
   // Should not do anything, all are active
-  spdy_session_pool_->CloseCurrentIdleSessions();
+  spdy_session_pool_->CloseCurrentIdleSessions(close_session_description);
   EXPECT_TRUE(session1->is_active());
   EXPECT_TRUE(session1->IsAvailable());
   EXPECT_TRUE(session2->is_active());
@@ -340,7 +341,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   EXPECT_TRUE(session3->IsAvailable());
 
   // Should close session 1 and 3, 2 should be left open
-  spdy_session_pool_->CloseCurrentIdleSessions();
+  spdy_session_pool_->CloseCurrentIdleSessions(close_session_description);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(session1);
@@ -349,7 +350,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   EXPECT_FALSE(session3);
 
   // Should not do anything
-  spdy_session_pool_->CloseCurrentIdleSessions();
+  spdy_session_pool_->CloseCurrentIdleSessions(close_session_description);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(session2->is_active());
@@ -364,7 +365,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   EXPECT_TRUE(session2->IsAvailable());
 
   // This should close session 2
-  spdy_session_pool_->CloseCurrentIdleSessions();
+  spdy_session_pool_->CloseCurrentIdleSessions(close_session_description);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(session2);
@@ -582,7 +583,7 @@ void SpdySessionPoolTest::RunIPPoolingTest(
 
       // Test that calling CloseIdleSessions, does not cause a crash.
       // http://crbug.com/181400
-      spdy_session_pool_->CloseCurrentIdleSessions();
+      spdy_session_pool_->CloseCurrentIdleSessions("Closing idle sessions.");
       base::RunLoop().RunUntilIdle();
 
       // Verify spdy_session and spdy_session1 are closed.
