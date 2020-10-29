@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
+#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -296,6 +297,68 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (NSUInteger)indexOfActiveNormalTab {
   return chrome_test_util::GetIndexOfActiveNormalTab();
+}
+
+#pragma mark - Window utilities (EG2)
+
++ (NSUInteger)windowCount WARN_UNUSED_RESULT {
+  // If the scene API is in use, return the count of open sessions.
+  if (@available(iOS 13, *)) {
+    return UIApplication.sharedApplication.openSessions.count;
+  }
+
+  // Otherwise, there's always exectly one window;
+  return 1;
+}
+
++ (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT {
+  // If the scene API is in use, look at all the connected scenes and count
+  // those in the foreground.
+  if (@available(iOS 13, *)) {
+    NSUInteger count = 0;
+    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+      if (scene.activationState == UISceneActivationStateForegroundActive ||
+          scene.activationState == UISceneActivationStateForegroundInactive) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  // Otherwise, there's always exectly one window;
+  return 1;
+}
+
++ (void)closeAllExtraWindows {
+  if (!IsMultipleScenesSupported())
+    return;
+
+  if (@available(iOS 13, *)) {
+    NSSet<UISceneSession*>* sessions =
+        UIApplication.sharedApplication.openSessions;
+    if (sessions.count <= 1)
+      return;
+    BOOL foundForegroundScene = NO;
+    for (UISceneSession* session in sessions) {
+      UIScene* scene = session.scene;
+      if (!foundForegroundScene && scene &&
+          (scene.activationState == UISceneActivationStateForegroundActive ||
+           scene.activationState == UISceneActivationStateForegroundInactive)) {
+        foundForegroundScene = YES;
+        // Leave the first foreground scene connected, so there's one open
+        // window left.
+        continue;
+      }
+      // If this isn't the first foreground scene, destroy it.
+      UIWindowSceneDestructionRequestOptions* options =
+          [[UIWindowSceneDestructionRequestOptions alloc] init];
+      options.windowDismissalAnimation =
+          UIWindowSceneDismissalAnimationStandard;
+      [UIApplication.sharedApplication requestSceneSessionDestruction:session
+                                                              options:options
+                                                         errorHandler:nil];
+    }
+  }
 }
 
 #pragma mark - WebState Utilities (EG2)
@@ -767,6 +830,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 + (BOOL)isNativeContextMenusEnabled {
   return IsNativeContextMenuEnabled();
+}
+
++ (BOOL)areMultipleWindowsSupported {
+  return IsMultipleScenesSupported();
 }
 
 #pragma mark - ScopedBlockPopupsPref

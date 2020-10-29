@@ -33,6 +33,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
 - (void)tearDown {
+  // No-op if only one window presents.
+  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
+                      [self appConfigurationForTestCase]];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
@@ -145,6 +148,20 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testNewWindowFromToolsMenu {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::OpenNewWindowMenuButton()];
+
+  // Verify the second window.
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
+                      [self appConfigurationForTestCase]];
 }
 
 // Navigates to a pdf page and verifies that the "Find in Page..." tool
