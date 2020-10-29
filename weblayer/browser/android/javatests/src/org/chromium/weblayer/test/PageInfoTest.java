@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;

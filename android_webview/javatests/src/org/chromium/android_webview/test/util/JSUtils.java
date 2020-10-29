@@ -10,10 +10,10 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 

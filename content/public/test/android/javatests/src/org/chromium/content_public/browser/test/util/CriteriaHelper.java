@@ -10,6 +10,7 @@ import android.os.Looper;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.content_public.browser.test.NestedSystemMessageHandler;
 

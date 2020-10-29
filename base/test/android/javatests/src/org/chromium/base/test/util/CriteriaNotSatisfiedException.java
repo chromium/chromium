@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content_public.browser.test.util;
+package org.chromium.base.test.util;
 
 /**
  * Exception indicating that a Criteria did not match expectations.
  */
-public class CriteriaNotSatisfiedException
-        extends org.chromium.base.test.util.CriteriaNotSatisfiedException {
+public class CriteriaNotSatisfiedException extends AssertionError {
     /**
      * @param msg The reason the criteria was not met.
      */

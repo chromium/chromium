@@ -13,9 +13,9 @@ import androidx.fragment.app.FragmentManager;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.CriteriaNotSatisfiedException;
 import org.chromium.third_party.android.media.R;
 
 import java.util.ArrayList;

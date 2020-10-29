@@ -94,6 +94,7 @@ android_library("test_support_java") {
     ":java",
     ":test_jni_headers",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",

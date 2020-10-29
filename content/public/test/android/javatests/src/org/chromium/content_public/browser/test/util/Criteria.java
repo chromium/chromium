@@ -10,6 +10,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+
 /**
  * Provides a means for validating whether some condition/criteria has been met.
  * <p>

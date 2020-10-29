@@ -3871,6 +3871,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/CallbackHelper.java",
       "test/android/javatests/src/org/chromium/base/test/util/CloseableOnMainThread.java",
       "test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java",
+      "test/android/javatests/src/org/chromium/base/test/util/CriteriaNotSatisfiedException.java",
       "test/android/javatests/src/org/chromium/base/test/util/DisableIf.java",
       "test/android/javatests/src/org/chromium/base/test/util/DisableIfSkipCheck.java",
       "test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java",

@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -33,7 +34,6 @@ import org.chromium.components.sync.protocol.SessionWindow;
 import org.chromium.components.sync.protocol.SyncEnums;
 import org.chromium.components.sync.protocol.TabNavigation;
 import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
