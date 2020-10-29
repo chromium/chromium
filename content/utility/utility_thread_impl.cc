@@ -104,15 +104,18 @@ class ServiceBinderImpl {
       return;
 
     // There are no more services running in this process. Time to terminate.
-    main_thread_task_runner_->PostTask(
+    //
+    // First ensure that shutdown also tears down |this|. This is necessary to
+    // support multiple tests in the same test suite using out-of-process
+    // services via the InProcessUtilityThreadHelper, and it must be done on the
+    // current thread to avoid data races.
+    auto main_thread_task_runner = main_thread_task_runner_;
+    GetInstanceStorage().reset();
+    main_thread_task_runner->PostTask(
         FROM_HERE, base::BindOnce(&ServiceBinderImpl::ShutDownProcess));
   }
 
   static void ShutDownProcess() {
-    // Ensure that shutdown also tears down |this|. This is necessary to support
-    // multiple tests in the same test suite using out-of-process services via
-    // the InProcessUtilityThreadHelper.
-    GetInstanceStorage().reset();
     UtilityThread::Get()->ReleaseProcess();
   }
 
