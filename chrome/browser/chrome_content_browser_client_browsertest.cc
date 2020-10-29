@@ -66,16 +66,7 @@
 #include "chrome/test/base/launchservices_utils_mac.h"
 #endif
 
-namespace content {
-
 namespace {
-
-enum class NetworkServiceState {
-  kDisabled,
-  kEnabled,
-};
-
-}  // namespace
 
 // Use a test class with SetUpCommandLine to ensure the flag is sent to the
 // first renderer process.
@@ -84,7 +75,7 @@ class ChromeContentBrowserClientBrowserTest : public InProcessBrowserTest {
   ChromeContentBrowserClientBrowserTest() {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolateAllSitesForTesting(command_line);
+    content::IsolateAllSitesForTesting(command_line);
   }
 
  private:
@@ -100,11 +91,11 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
 
   ui_test_utils::NavigateToURL(browser(), url);
-  NavigationEntry* entry = browser()
-                               ->tab_strip_model()
-                               ->GetWebContentsAt(0)
-                               ->GetController()
-                               .GetLastCommittedEntry();
+  content::NavigationEntry* entry = browser()
+                                        ->tab_strip_model()
+                                        ->GetWebContentsAt(0)
+                                        ->GetController()
+                                        .GetLastCommittedEntry();
 
   ASSERT_TRUE(entry != NULL);
   EXPECT_EQ(url, entry->GetURL());
@@ -156,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   // dedicated process.
   content::BrowserContext* context = browser()->profile();
   GURL isolated_url(https_test_server().GetURL("ntp.com", "/title1.html"));
-  scoped_refptr<SiteInstance> site_instance =
-      SiteInstance::CreateForURL(context, isolated_url);
+  scoped_refptr<content::SiteInstance> site_instance =
+      content::SiteInstance::CreateForURL(context, isolated_url);
   EXPECT_TRUE(site_instance->RequiresDedicatedProcess());
 
   // The site URL for the NTP URL should resolve to a chrome-search:// URL via
@@ -514,4 +505,4 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
 }
 #endif
 
-}  // namespace content
+}  // namespace
