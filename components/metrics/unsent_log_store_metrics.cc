@@ -22,6 +22,10 @@ void UnsentLogStoreMetrics::RecordDroppedLogSize(size_t size) {}
 
 void UnsentLogStoreMetrics::RecordDroppedLogsNum(int dropped_logs_num) {}
 
+void UnsentLogStoreMetrics::RecordIntendingToSentLogs(int num) {}
+
+void UnsentLogStoreMetrics::RecordSentLog() {}
+
 void UnsentLogStoreMetrics::RecordLastUnsentLogMetadataMetrics(
     int unsent_samples_count,
     int sent_samples_count,

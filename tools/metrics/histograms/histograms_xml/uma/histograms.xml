@@ -584,9 +584,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-30">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Counter for number of UMA unsent logs removed from persistent storage.
+    The number of UMA unsent logs removed from persistent storage.
+
+    Useful in comparison with UMA.UnsentLogs.IntendingToSend (that counts hte
+    number of UMA unsent logs that are intended to be sent, i.e., not dropped).
   </summary>
 </histogram>
 
@@ -604,6 +608,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.UnsentLogs.IntendingToSend" units="logs"
+    expires_after="2021-04-01">
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of UMA unsent logs from persistent storage that will be staged /
+    are intended to be sent. These logs are not dropped from persistent storage.
+
+    Useful in comparison with UMA.UnsentLogs.Dropped (to see how many persistent
+    logs are intended to be sent versus are not intended to be sent) and with
+    UMA.UnsentLogs.IntendingToSend (to see how many are actually sent).
+  </summary>
+</histogram>
+
 <histogram name="UMA.UnsentLogs.PersistedSizeInKB" units="KB"
     expires_after="2021-05-30">
   <owner>michaelbai@chromium.org</owner>
@@ -613,6 +631,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The size of all persistent initial or ongoing logs that have been
     proto-encoded and compressed in the previous browser run; it is recorded on
     the browser start up. The value '0' means no unsent logs.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.Sent" enum="Boolean" expires_after="2021-04-01">
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Emitted when a UMA unsent log is marked as sent.
+
+    Useful in comparison with UMA.UnsentLogs.Dropped and
+    UMA.UnsentLogs.IntendingToSend.
   </summary>
 </histogram>
 

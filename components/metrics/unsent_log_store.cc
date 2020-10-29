@@ -162,6 +162,7 @@ void UnsentLogStore::MarkStagedLogAsSent() {
   DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
   if (list_[staged_log_index_]->samples_count.has_value())
     total_samples_sent_ += list_[staged_log_index_]->samples_count.value();
+  metrics_->RecordSentLog();
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs() {
@@ -303,6 +304,7 @@ void UnsentLogStore::TrimLogs() {
   size_t dropped_logs_count = list_.size() - trimmed_list.size();
   if (dropped_logs_count > 0)
     metrics_->RecordDroppedLogsNum(dropped_logs_count);
+  metrics_->RecordIntendingToSentLogs(trimmed_list.size());
 
   // Put the trimmed list in the correct place.
   list_.swap(trimmed_list);
