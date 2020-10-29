@@ -211,6 +211,12 @@ class TestRunner {
   // requests in WorkQueue.
   void RemoveLoadingFrame(blink::WebFrame* frame);
 
+  // Called when a main frame has been navigated away.
+  void OnFrameDeactivated(WebFrameTestProxy* frame);
+
+  // Called when a main frame has been restored from backward/forward cache.
+  void OnFrameReactivated(WebFrameTestProxy* frame);
+
   void PolicyDelegateDone();
   bool PolicyDelegateEnabled() const;
   bool PolicyDelegateIsPermissive() const;

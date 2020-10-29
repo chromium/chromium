@@ -82,14 +82,16 @@ class WebFrameTestProxy : public RenderFrameImpl,
       blink::WebSetSinkIdCompleteCallback completion_callback) override;
   void DidClearWindowObject() override;
 
- private:
   // mojom::WebTestRenderFrame implementation.
   void SynchronouslyCompositeAfterTest(
       SynchronouslyCompositeAfterTestCallback callback) override;
   void DumpFrameLayout(DumpFrameLayoutCallback callback) override;
   void SetTestConfiguration(mojom::WebTestRunTestConfigurationPtr config,
                             bool starting_test) override;
+  void OnDeactivated() override;
+  void OnReactivated() override;
 
+ private:
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::WebTestRenderFrame> receiver);
 

@@ -36,6 +36,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -1078,8 +1079,23 @@ void WebTestControlHost::DidUpdateFaviconURL(
   }
 }
 
+void WebTestControlHost::RenderViewHostChanged(RenderViewHost* old_host,
+                                               RenderViewHost* new_host) {
+  // Notifies the main frame of |old_host| that it is deactivated while it's
+  // kept alive in back-forward cache.
+  GetWebTestRenderFrameRemote(old_host->GetMainFrame())->OnDeactivated();
+}
+
 void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {
   main_window_render_view_hosts_.erase(render_view_host);
+}
+
+void WebTestControlHost::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  NavigationRequest* request = NavigationRequest::From(navigation_handle);
+  RenderFrameHostImpl* rfh = request->rfh_restored_from_back_forward_cache();
+  if (rfh)
+    GetWebTestRenderFrameRemote(rfh)->OnReactivated();
 }
 
 void WebTestControlHost::RenderProcessHostDestroyed(

@@ -2564,6 +2564,38 @@ void TestRunner::RemoveLoadingFrame(blink::WebFrame* frame) {
     work_queue_.RequestWork();
 }
 
+void TestRunner::OnFrameDeactivated(WebFrameTestProxy* frame) {
+  if (!test_is_running_)
+    return;
+
+  DCHECK(frame->IsMainFrame());
+  RemoveMainFrame(frame);
+  RemoveRenderView(frame->GetWebViewTestProxy());
+}
+
+void TestRunner::OnFrameReactivated(WebFrameTestProxy* frame) {
+  if (!test_is_running_)
+    return;
+
+  DCHECK(frame->IsMainFrame());
+
+  // A WorkQueueItem that navigates reports that it will start a load, but when
+  // a frame comes from the back/forward cache, it is already loaded so
+  // AddLoadingFrame() will not occur. This informs the system that the load is
+  // complete, or will in fact not start so that the TestRunner does not wait
+  // for this frame to end the test. At this point the frame has already had a
+  // chance to run script and insert further WorkQueueItems or other state that
+  // would delay ending the test, if it wished to.
+  frame_will_start_load_ = false;
+
+  AddMainFrame(frame);
+  WebViewTestProxy* view_proxy = frame->GetWebViewTestProxy();
+  AddRenderView(view_proxy);
+  if (view_proxy->is_main_window()) {
+    work_queue_.RequestWork();
+  }
+}
+
 void TestRunner::FinishTestIfReady() {
   if (!test_is_running_)
     return;

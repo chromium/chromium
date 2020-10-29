@@ -715,6 +715,14 @@ void WebFrameTestProxy::DidClearWindowObject() {
   RenderFrameImpl::DidClearWindowObject();
 }
 
+void WebFrameTestProxy::OnDeactivated() {
+  test_runner()->OnFrameDeactivated(this);
+}
+
+void WebFrameTestProxy::OnReactivated() {
+  test_runner()->OnFrameReactivated(this);
+}
+
 WebWidgetTestProxy* WebFrameTestProxy::GetLocalRootWebWidgetTestProxy() {
   return static_cast<WebWidgetTestProxy*>(GetLocalRootRenderWidget());
 }

@@ -109,6 +109,14 @@ interface WebTestRenderFrame {
   // RenderViews created to host frames for the main window, either as OOPIFs or
   // to handle cross-site navigations.
   SetTestConfiguration(WebTestRunTestConfiguration config, bool starting_test);
+
+  // Notifies a frame that has been navigated away. This is called only on main
+  // frames to remove the frame from TestRunner's management list.
+  OnDeactivated();
+
+  // Notifies a frame that has been restored from backward/forward cache.
+  // This is called on main frames to add them to TestRunner's management list.
+  OnReactivated();
 };
 
 // Web test messages related runtime flags sent from the browser process to the
