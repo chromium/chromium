@@ -67,7 +67,6 @@ const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry
         {switches::kDisable3DAPIs, prefs::kDisable3DAPIs, true},
         {switches::kEnableCloudPrintProxy, prefs::kCloudPrintProxyEnabled,
          true},
-        {switches::kAllowOutdatedPlugins, prefs::kPluginsAllowOutdated, true},
         {switches::kNoPings, prefs::kEnableHyperlinkAuditing, false},
         {switches::kAllowRunningInsecureContent,
          prefs::kWebKitAllowRunningInsecureContent, true},

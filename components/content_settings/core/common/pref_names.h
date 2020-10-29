@@ -45,8 +45,6 @@ extern const char kManagedInsecureContentAllowedForUrls[];
 extern const char kManagedInsecureContentBlockedForUrls[];
 extern const char kManagedJavaScriptAllowedForUrls[];
 extern const char kManagedJavaScriptBlockedForUrls[];
-extern const char kManagedPluginsAllowedForUrls[];
-extern const char kManagedPluginsBlockedForUrls[];
 extern const char kManagedPopupsAllowedForUrls[];
 extern const char kManagedPopupsBlockedForUrls[];
 extern const char kManagedNotificationsAllowedForUrls[];

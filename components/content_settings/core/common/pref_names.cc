@@ -82,10 +82,6 @@ const char kManagedNotificationsAllowedForUrls[] =
     "profile.managed_notifications_allowed_for_urls";
 const char kManagedNotificationsBlockedForUrls[] =
     "profile.managed_notifications_blocked_for_urls";
-const char kManagedPluginsAllowedForUrls[] =
-    "profile.managed_plugins_allowed_for_urls";
-const char kManagedPluginsBlockedForUrls[] =
-    "profile.managed_plugins_blocked_for_urls";
 const char kManagedPopupsAllowedForUrls[] =
     "profile.managed_popups_allowed_for_urls";
 const char kManagedPopupsBlockedForUrls[] =

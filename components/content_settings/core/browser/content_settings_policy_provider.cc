@@ -61,12 +61,6 @@ const PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedNotificationsBlockedForUrls,
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK},
-        {prefs::kManagedPluginsAllowedForUrls, ContentSettingsType::PLUGINS,
-         CONTENT_SETTING_ALLOW,
-         content_settings::WildcardsInPrimaryPattern::NOT_ALLOWED},
-        {prefs::kManagedPluginsBlockedForUrls, ContentSettingsType::PLUGINS,
-         CONTENT_SETTING_BLOCK,
-         content_settings::WildcardsInPrimaryPattern::NOT_ALLOWED},
         {prefs::kManagedPopupsAllowedForUrls, ContentSettingsType::POPUPS,
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedPopupsBlockedForUrls, ContentSettingsType::POPUPS,
@@ -180,8 +174,6 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kManagedJavaScriptBlockedForUrls);
   registry->RegisterListPref(prefs::kManagedNotificationsAllowedForUrls);
   registry->RegisterListPref(prefs::kManagedNotificationsBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedPluginsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedPluginsBlockedForUrls);
   registry->RegisterListPref(prefs::kManagedPopupsAllowedForUrls);
   registry->RegisterListPref(prefs::kManagedPopupsBlockedForUrls);
   registry->RegisterListPref(prefs::kManagedWebUsbAllowDevicesForUrls);
@@ -266,8 +258,6 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
       prefs::kManagedNotificationsAllowedForUrls, callback);
   pref_change_registrar_.Add(
       prefs::kManagedNotificationsBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPluginsAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPluginsBlockedForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedPopupsAllowedForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedPopupsBlockedForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedWebUsbAskForUrls, callback);
@@ -613,8 +603,6 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
       name == prefs::kManagedJavaScriptBlockedForUrls ||
       name == prefs::kManagedNotificationsAllowedForUrls ||
       name == prefs::kManagedNotificationsBlockedForUrls ||
-      name == prefs::kManagedPluginsAllowedForUrls ||
-      name == prefs::kManagedPluginsBlockedForUrls ||
       name == prefs::kManagedPopupsAllowedForUrls ||
       name == prefs::kManagedPopupsBlockedForUrls ||
       name == prefs::kManagedWebUsbAskForUrls ||

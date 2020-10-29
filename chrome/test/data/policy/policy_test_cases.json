@@ -2584,39 +2584,11 @@
   },
 
   "PluginsAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "PluginsAllowedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_plugins_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_plugins_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=plugins]').click();",
-            "selector": "[content-exception=plugins]"
-          }
-        ],
-        "note": "TODO(bartfab): Flag this with can_be_recommended when http://crbug.com/106682 is fixed."
-      }
-    ]
+    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
   },
 
   "PluginsBlockedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "PluginsBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_plugins_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_plugins_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=plugins]').click();",
-            "selector": "[content-exception=plugins]"
-          }
-        ],
-        "note": "TODO(bartfab): Flag this with can_be_recommended when http://crbug.com/106682 is fixed."
-      }
-    ]
+    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
   },
 
   "PopupsAllowedForUrls": {
@@ -2857,13 +2829,7 @@
   },
 
   "AllowOutdatedPlugins": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {"AllowOutdatedPlugins": true},
-        "prefs": { "plugins.allow_outdated": {}}
-      }
-    ]
+    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
   },
 
   "AlwaysAuthorizePlugins": {

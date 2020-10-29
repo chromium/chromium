@@ -37,7 +37,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 extern const char kAllowCrossOriginAuthPrompt[];
 extern const char kAllowHttpScreenCapture[];
-extern const char kAllowOutdatedPlugins[];
 extern const char kAllowProfilesOutsideUserDir[];
 extern const char kAllowRunningInsecureContent[];
 extern const char kAllowSilentPush[];

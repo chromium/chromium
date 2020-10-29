@@ -30,9 +30,6 @@ const char kAllowCrossOriginAuthPrompt[]    = "allow-cross-origin-auth-prompt";
 // extension API.
 const char kAllowHttpScreenCapture[] = "allow-http-screen-capture";
 
-// Don't block outdated plugins.
-const char kAllowOutdatedPlugins[]          = "allow-outdated-plugins";
-
 // Allows profiles to be created outside of the user data dir.
 // TODO(https://crbug.com/1060366): Various places in Chrome assume that all
 // profiles are within the user data dir. Some tests need to violate that
