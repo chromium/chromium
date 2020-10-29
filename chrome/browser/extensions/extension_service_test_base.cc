@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -35,6 +36,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/policy/core/common/policy_service_impl.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -61,13 +63,18 @@ namespace {
 std::unique_ptr<TestingProfile> BuildTestingProfile(
     const ExtensionServiceTestBase::ExtensionServiceInitParams& params) {
   TestingProfile::Builder profile_builder;
-  // Create a PrefService that only contains user defined preference values.
+  // Create a PrefService that only contains user defined preference values and
+  // policies.
   sync_preferences::PrefServiceMockFactory factory;
   // If pref_file is empty, TestingProfile automatically creates
   // sync_preferences::TestingPrefServiceSyncable instance.
   if (!params.pref_file.empty()) {
     factory.SetUserPrefsFile(params.pref_file,
                              base::ThreadTaskRunnerHandle::Get().get());
+    if (params.policy_service) {
+      factory.SetManagedPolicies(params.policy_service,
+                                 g_browser_process->browser_policy_connector());
+    }
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
         new user_prefs::PrefRegistrySyncable);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
@@ -128,6 +135,9 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
     return;
   }
   data_dir_ = test_data_dir.AppendASCII("extensions");
+
+  policy_service_ = std::make_unique<policy::PolicyServiceImpl>(
+      std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
 }
 
 ExtensionServiceTestBase::~ExtensionServiceTestBase() {
@@ -156,6 +166,8 @@ ExtensionServiceTestBase::CreateDefaultInitParams() {
   params.profile_path = path;
   params.pref_file = prefs_filename;
   params.extensions_install_dir = extensions_install_dir;
+
+  params.policy_service = policy_service_.get();
   return params;
 }
 
@@ -328,6 +340,7 @@ void ExtensionServiceTestBase::TearDown() {
     if (partition)
       partition->WaitForDeletionTasksForTesting();
   }
+  policy_provider_.Shutdown();
 }
 
 void ExtensionServiceTestBase::SetUpTestCase() {

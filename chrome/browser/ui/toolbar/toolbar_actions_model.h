@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -43,6 +44,7 @@ class ExtensionMessageBubbleController;
 class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                             public extensions::LoadErrorReporter::Observer,
                             public extensions::ExtensionRegistryObserver,
+                            public extensions::ExtensionManagement::Observer,
                             public KeyedService {
  public:
   using ActionId = std::string;
@@ -187,6 +189,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Returns true if the action is pinned to the toolbar.
   bool IsActionPinned(const ActionId& action_id) const;
 
+  // Returns true if the action is force-pinned to the toolbar.
+  bool IsActionForcePinned(const ActionId& action_id) const;
+
   // Move the pinned action for |action_id| to |target_index|.
   void MovePinnedAction(const ActionId& action_id, size_t target_index);
 
@@ -219,6 +224,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   void OnLoadFailure(content::BrowserContext* browser_context,
                      const base::FilePath& extension_path,
                      const std::string& error) override;
+
+  // extensions::ExtensionManagement::Observer:
+  void OnExtensionManagementSettingsChanged() override;
 
   // To be called after the extension service is ready; gets loaded extensions
   // from the ExtensionRegistry, their saved order from the pref service, and
@@ -339,6 +347,10 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   ScopedObserver<extensions::LoadErrorReporter,
                  extensions::LoadErrorReporter::Observer>
       load_error_reporter_observer_{this};
+
+  ScopedObserver<extensions::ExtensionManagement,
+                 extensions::ExtensionManagement::Observer>
+      extension_management_observer_{this};
 
   base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_{this};
 

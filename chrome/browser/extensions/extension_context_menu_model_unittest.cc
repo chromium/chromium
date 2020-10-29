@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -610,6 +611,62 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
     int index = menu.GetIndexOfCommandId(visibility_command);
     EXPECT_NE(-1, index);
     EXPECT_EQ(pin_string, menu.GetLabelAt(index));
+  }
+}
+
+// Test that the "pin" and "unpin" menu items is disabled when the extension is
+// force-pinned via ExtensionSettings.
+TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
+  InitializeEmptyExtensionService();
+  Browser* browser = GetBrowser();
+  extension_action_test_util::CreateToolbarModelForProfile(profile());
+  const Extension* extension = AddExtension(
+      "extension", manifest_keys::kBrowserAction, Manifest::INTERNAL);
+  const Extension* force_pinned_extension =
+      AddExtension("force_pinned_extension", manifest_keys::kBrowserAction,
+                   Manifest::INTERNAL);
+
+  std::string json = base::StringPrintf(
+      R"({
+        "%s": {
+          "toolbar_pin": "force_pinned"
+        }
+      })",
+      force_pinned_extension->id().c_str());
+  base::Optional<base::Value> parsed = base::JSONReader::Read(json);
+  policy::PolicyMap map;
+  map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+          std::move(parsed), nullptr);
+  policy_provider()->UpdateChromePolicy(map);
+
+  // For laziness.
+  const ExtensionContextMenuModel::MenuEntries visibility_command =
+      ExtensionContextMenuModel::TOGGLE_VISIBILITY;
+  const base::string16 unpin_string =
+      l10n_util::GetStringUTF16(IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR);
+  const base::string16 force_pinned_string =
+      l10n_util::GetStringUTF16(IDS_EXTENSIONS_PINNED_BY_ADMIN);
+
+  {
+    // Not force-pinned.
+    ExtensionContextMenuModel menu(
+        extension, browser, ExtensionContextMenuModel::PINNED, nullptr, true);
+    int index = menu.GetIndexOfCommandId(visibility_command);
+    EXPECT_NE(-1, index);
+    EXPECT_TRUE(menu.IsEnabledAt(index));
+    EXPECT_EQ(unpin_string, menu.GetLabelAt(index));
+  }
+
+  {
+    // Force-pinned.
+    ExtensionContextMenuModel menu(force_pinned_extension, browser,
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true);
+    int index = menu.GetIndexOfCommandId(visibility_command);
+    EXPECT_NE(-1, index);
+    EXPECT_FALSE(menu.IsEnabledAt(index));
+    EXPECT_EQ(force_pinned_string, menu.GetLabelAt(index));
   }
 }
 

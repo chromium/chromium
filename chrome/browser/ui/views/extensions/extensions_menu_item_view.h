@@ -12,6 +12,7 @@
 class Browser;
 class ExtensionContextMenuController;
 class ExtensionsMenuButton;
+class Profile;
 class ToolbarActionViewController;
 class ToolbarActionsModel;
 
@@ -64,6 +65,8 @@ class ExtensionsMenuItemView : public views::View {
   // Maybe adjust |icon_color| to assure high enough contrast with the
   // background.
   SkColor GetAdjustedIconColor(SkColor icon_color) const;
+
+  Profile* const profile_;
 
   ExtensionsMenuButton* const primary_action_button_;
 

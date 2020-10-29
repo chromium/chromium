@@ -1601,7 +1601,8 @@
               "installation_mode": "allowed",
               "blocked_permissions": [
                 "history"
-              ]
+              ],
+              "toolbar_pin": "force_pinned"
             },
             "bcdefghijklmnopabcdefghijklmnopa": {
               "installation_mode": "force_installed",

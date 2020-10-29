@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -34,6 +35,7 @@ ToolbarActionsModelFactory::ToolbarActionsModelFactory()
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ExtensionManagementFactory::GetInstance());
 }
 
 ToolbarActionsModelFactory::~ToolbarActionsModelFactory() {}

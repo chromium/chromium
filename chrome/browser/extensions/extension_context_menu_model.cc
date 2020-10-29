@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -84,15 +85,24 @@ bool MenuItemMatchesAction(const base::Optional<ActionInfo::Type> action_type,
   return false;
 }
 
+// Returns true if the given |extension| is required to remain pinned/visible in
+// the toolbar by policy.
+bool IsExtensionForcePinned(const Extension& extension, Profile* profile) {
+  auto* management = ExtensionManagementFactory::GetForBrowserContext(profile);
+  return base::Contains(management->GetForcePinnedList(), extension.id());
+}
+
 // Returns the id for the visibility command for the given |extension|.
 int GetVisibilityStringId(
     Profile* profile,
     const Extension* extension,
     ExtensionContextMenuModel::ButtonVisibility button_visibility) {
   if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    return button_visibility == ExtensionContextMenuModel::PINNED
-               ? IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR
-               : IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+    if (IsExtensionForcePinned(*extension, profile))
+      return IDS_EXTENSIONS_PINNED_BY_ADMIN;
+    if (button_visibility == ExtensionContextMenuModel::PINNED)
+      return IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
+    return IDS_EXTENSIONS_PIN_TO_TOOLBAR;
   }
   DCHECK(profile);
   int string_id = -1;
@@ -296,9 +306,9 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     // Extension pinning/unpinning is not available for Incognito as this leaves
     // a trace of user activity.
     case TOGGLE_VISIBILITY:
-      if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-        return !browser_->profile()->IsOffTheRecord();
-      return true;
+      return (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu) &&
+              !browser_->profile()->IsOffTheRecord() &&
+              !IsExtensionForcePinned(*extension, profile_));
     // Manage extensions is always enabled.
     case MANAGE_EXTENSIONS:
       return true;
@@ -429,6 +439,12 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
       GetVisibilityStringId(profile_, extension, button_visibility);
   DCHECK_NE(-1, visibility_string_id);
   AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
+  if (IsExtensionForcePinned(*extension, profile_)) {
+    int toggle_visibility_index = GetIndexOfCommandId(TOGGLE_VISIBILITY);
+    SetIcon(toggle_visibility_index,
+            ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                           gfx::kChromeIconGrey, 16));
+  }
 
   if (!is_component_) {
     AddSeparator(ui::NORMAL_SEPARATOR);

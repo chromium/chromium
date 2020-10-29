@@ -184,6 +184,20 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
     }
   }
 
+  std::string toolbar_pin_str;
+  if (dict->GetStringWithoutPathExpansion(schema_constants::kToolbarPin,
+                                          &toolbar_pin_str)) {
+    if (toolbar_pin_str == schema_constants::kDefaultUnpinned) {
+      toolbar_pin = ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
+    } else if (toolbar_pin_str == schema_constants::kForcePinned) {
+      toolbar_pin = ExtensionManagement::ToolbarPinMode::kForcePinned;
+    } else {
+      // Invalid value for 'toolbar_pin'.
+      LOG(WARNING) << kMalformedPreferenceWarning;
+      return false;
+    }
+  }
+
   return true;
 }
 

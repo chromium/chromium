@@ -46,12 +46,13 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
     bool allow_pinning)
-    : primary_action_button_(new ExtensionsMenuButton(browser,
+    : profile_(browser->profile()),
+      primary_action_button_(new ExtensionsMenuButton(browser,
                                                       this,
                                                       controller.get(),
                                                       allow_pinning)),
       controller_(std::move(controller)),
-      model_(ToolbarActionsModel::Get(browser->profile())) {
+      model_(ToolbarActionsModel::Get(profile_)) {
   // Set so the extension button receives enter/exit on children to retain hover
   // status when hovering child views.
   SetNotifyEnterExitOnChild(true);
@@ -76,13 +77,11 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
         base::BindRepeating(&ExtensionsMenuItemView::PinButtonPressed,
                             base::Unretained(this)));
     pin_button->SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets));
-    // Extension pinning is not available in Incognito as it leaves a trace of
-    // user activity.
-    pin_button->SetEnabled(!browser->profile()->IsOffTheRecord());
 
     pin_button_ = pin_button.get();
     AddChildView(std::move(pin_button));
   }
+  UpdatePinButton();
 
   auto context_menu_button = CreateBubbleMenuItem(
       EXTENSION_CONTEXT_MENU, views::Button::PressedCallback());
@@ -123,9 +122,21 @@ void ExtensionsMenuItemView::OnThemeChanged() {
 void ExtensionsMenuItemView::UpdatePinButton() {
   if (!pin_button_)
     return;
-  pin_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IsPinned() ? IDS_EXTENSIONS_MENU_UNPIN_BUTTON_TOOLTIP
-                 : IDS_EXTENSIONS_MENU_PIN_BUTTON_TOOLTIP));
+
+  bool is_force_pinned =
+      model_ && model_->IsActionForcePinned(controller_->GetId());
+  int pin_button_string_id = 0;
+  if (is_force_pinned)
+    pin_button_string_id = IDS_EXTENSIONS_PINNED_BY_ADMIN;
+  else if (IsPinned())
+    pin_button_string_id = IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
+  else
+    pin_button_string_id = IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+  pin_button_->SetTooltipText(l10n_util::GetStringUTF16(pin_button_string_id));
+  // Extension pinning is not available in Incognito as it leaves a trace of
+  // user activity.
+  pin_button_->SetEnabled(!is_force_pinned && !profile_->IsOffTheRecord());
+
   SkColor unpinned_icon_color =
       GetAdjustedIconColor(GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_MenuIconColor));

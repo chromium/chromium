@@ -134,6 +134,12 @@ struct IndividualSettings {
   // exceptions etc. This string is limited to 1000 characters.
   std::string blocked_install_message;
 
+  // Allows admins to control whether the extension icon should be pinned to
+  // the toolbar next to the omnibar. If it is pinned, the icon is visible at
+  // all times.
+  ExtensionManagement::ToolbarPinMode toolbar_pin =
+      ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(IndividualSettings);
 };

@@ -4691,6 +4691,10 @@
               'blocked_install_message': {
                 'type': 'string',
                 'description': '''text that will be displayed to the user in the chrome webstore if installation is blocked.''',
+              },
+              'toolbar_pin': {
+                'type': 'string',
+                'enum': ['force_pinned', 'default_unpinned'],
               }
             },
           },
@@ -4751,6 +4755,7 @@
           'installation_mode': 'allowed',
           'blocked_permissions': ['history'],
           'minimum_version_required': '1.0.1',
+          'toolbar_pin': 'force_pinned',
         },
         'bcdefghijklmnopabcdefghijklmnopa' : {
           'installation_mode': 'force_installed',

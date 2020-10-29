@@ -16,6 +16,9 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/sandboxed_unpacker.h"
@@ -61,6 +64,8 @@ class ExtensionServiceTestBase : public testing::Test {
     bool is_first_run = true;
     bool profile_is_supervised = false;
     bool enable_bookmark_model = false;
+
+    policy::PolicyService* policy_service = nullptr;
 
     // Though you could use this constructor, you probably want to use
     // CreateDefaultInitParams(), and then make a change or two.
@@ -141,6 +146,9 @@ class ExtensionServiceTestBase : public testing::Test {
   content::BrowserTaskEnvironment* task_environment() {
     return task_environment_.get();
   }
+  policy::MockConfigurationPolicyProvider* policy_provider() {
+    return &policy_provider_;
+  }
 
  private:
   // Must be declared before anything that may make use of the
@@ -157,6 +165,14 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Enable creation of WebContents without initializing a renderer.
   content::RenderViewHostTestEnabler rvh_test_enabler_;
+
+  // Provides policies for the PolicyService below, so this must be created
+  // before it.
+  policy::MockConfigurationPolicyProvider policy_provider_;
+
+  // PolicyService for the testing profile, so unit tests can use custom
+  // policies.
+  std::unique_ptr<policy::PolicyService> policy_service_;
 
  protected:
   // It's unfortunate that these are exposed to subclasses (rather than used

@@ -14,10 +14,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
+#include "base/ranges/algorithm.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -241,6 +243,10 @@ void ToolbarActionsModel::OnLoadFailure(
   }
 }
 
+void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
+  OnActionToolbarPrefChange();
+}
+
 void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
   auto pos = std::find(last_known_positions_.begin(),
                        last_known_positions_.end(), action_id);
@@ -275,6 +281,10 @@ void ToolbarActionsModel::OnReady() {
   // taken from prefs.
   extension_registry_observer_.Add(extension_registry_);
   extension_action_observer_.Add(extension_action_api_);
+
+  auto* management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+  extension_management_observer_.Add(management);
 
   actions_initialized_ = true;
   for (Observer& observer : observers_)
@@ -449,6 +459,13 @@ ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
   DCHECK(base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
   return base::Contains(pinned_action_ids_, action_id);
+}
+
+bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
+  DCHECK(base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
+  auto* management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return base::Contains(management->GetForcePinnedList(), action_id);
 }
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
@@ -656,6 +673,7 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
                                               bool is_now_visible) {
   if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
     DCHECK_NE(is_now_visible, IsActionPinned(action_id));
+    DCHECK(!IsActionForcePinned(action_id));
     auto new_pinned_action_ids = pinned_action_ids_;
     if (is_now_visible) {
       new_pinned_action_ids.push_back(action_id);
@@ -829,10 +847,19 @@ void ToolbarActionsModel::UpdatePinnedActionIds() {
 
 std::vector<ToolbarActionsModel::ActionId>
 ToolbarActionsModel::GetFilteredPinnedActionIds() const {
+  // Force-pinned extensions should always be present in the output vector.
+  extensions::ExtensionIdList pinned = extension_prefs_->GetPinnedExtensions();
+  auto* management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+  // O(n^2), but there are typically very few force-pinned extensions.
+  base::ranges::copy_if(
+      management->GetForcePinnedList(), std::back_inserter(pinned),
+      [&pinned](const std::string& id) { return !base::Contains(pinned, id); });
+
   // TODO(pbos): Make sure that the pinned IDs are pruned from ExtensionPrefs on
   // startup so that we don't keep saving stale IDs.
   std::vector<ActionId> filtered_action_ids;
-  for (auto& action_id : extension_prefs_->GetPinnedExtensions()) {
+  for (auto& action_id : pinned) {
     if (HasAction(action_id))
       filtered_action_ids.push_back(action_id);
   }

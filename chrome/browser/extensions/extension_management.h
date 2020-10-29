@@ -75,6 +75,18 @@ class ExtensionManagement : public KeyedService {
     INSTALLATION_REMOVED,
   };
 
+  // Behavior for "Pin extension to toolbar" from the extensions menu, default
+  // is kDefaultUnpinned
+  // * kDefaultUnpinned: Extension starts unpinned, but the user can still pin
+  //                     it afterwards.
+  // * kForcePinned: Extension starts pinned to the toolbar, and the user
+  //                 cannot unpin it.
+  // TODO(crbug.com/1071314): Add kDefaultPinned state.
+  enum class ToolbarPinMode {
+    kDefaultUnpinned = 0,
+    kForcePinned,
+  };
+
   explicit ExtensionManagement(Profile* profile);
   ~ExtensionManagement() override;
 
@@ -193,6 +205,10 @@ class ExtensionManagement : public KeyedService {
   // required version is returned.
   bool CheckMinimumVersion(const Extension* extension,
                            std::string* required_version) const;
+
+  // Returns the list of extensions with "force_pinned" mode for the
+  // "toolbar_pin" setting.
+  ExtensionIdSet GetForcePinnedList() const;
 
   // Returns whether the profile associated with this instance is supervised.
   bool is_child() const { return is_child_; }
