@@ -261,14 +261,17 @@ enum ChipType {
 enum ChipIcon {
   NO_ICON = 0;
 
-  // https://icons.googleplex.com/#icon=ic_clear
+  // https://icons.googleplex.com/#icon=clear
   ICON_CLEAR = 1;
 
-  // https://icons.googleplex.com/#icon=ic_done
+  // https://icons.googleplex.com/#icon=done
   ICON_DONE = 2;
 
-  // https://icons.googleplex.com/#icon=ic_refresh
+  // https://icons.googleplex.com/#icon=refresh
   ICON_REFRESH = 3;
+
+  // https://icons.googleplex.com/#icon=more_vert
+  ICON_OVERFLOW = 4;
 }
 
 // Defines a mapping to an Android Q direct action.

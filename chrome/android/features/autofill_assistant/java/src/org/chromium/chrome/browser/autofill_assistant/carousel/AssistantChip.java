@@ -26,7 +26,7 @@ public class AssistantChip {
 
     /**
      * An icon that should be displayed next to the text. This is the java version of the ChipIcon
-     * enum in //components/autofill_assistant/browser/service.proto. DO NOT change this without
+     * enum in //components/autofill_assistant/browser/model.proto. DO NOT change this without
      * adapting that proto enum.
      */
     @IntDef({Icon.NONE, Icon.CLEAR, Icon.DONE, Icon.REFRESH})
@@ -34,14 +34,17 @@ public class AssistantChip {
     public @interface Icon {
         int NONE = 0;
 
-        // https://icons.googleplex.com/#icon=ic_clear
+        // https://icons.googleplex.com/#icon=clear
         int CLEAR = 1;
 
-        // https://icons.googleplex.com/#icon=ic_done
+        // https://icons.googleplex.com/#icon=done
         int DONE = 2;
 
-        // https://icons.googleplex.com/#icon=ic_refresh
+        // https://icons.googleplex.com/#icon=refresh
         int REFRESH = 3;
+
+        // https://icons.googleplex.com/#icon=more_vert
+        int OVERFLOW = 4;
     }
 
     /**

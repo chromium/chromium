@@ -245,6 +245,9 @@
       <message name="IDS_AUTOFILL_ASSISTANT_DECREASE_VALUE" desc="Text announced when the '-' button of a counter is highlighted by TalkBack.">
         Decrease value
       </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_OVERFLOW_OPTIONS" desc="Content description for the overflow icon displayed in the first prompt, which will open a popup menu with additional options.">
+        Preferences
+      </message>
     </messages>
   </release>
 </grit>
