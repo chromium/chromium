@@ -17,6 +17,7 @@
 // <include src="../../image_loader/image_loader_client.js">
 
 // <include src="../../../webui/resources/js/cr.js">
+// <include src="../../../webui/resources/js/assert.js">
 // <include src="../../../webui/resources/js/util.js">
 // <include src="../../../webui/resources/js/event_tracker.js">
 // <include src="../../../webui/resources/js/load_time_data.js">
