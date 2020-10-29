@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 
 #include "build/build_config.h"
+#include "chrome/common/buildflags.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -55,6 +56,17 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
   }
   source->AddResourcePath("", default_resource);
 }
+
+#if BUILDFLAG(OPTIMIZE_WEBUI)
+void SetupBundledWebUIDataSource(content::WebUIDataSource* source,
+                                 base::StringPiece bundled_path,
+                                 int bundle,
+                                 int default_resource) {
+  SetupPolymer3Defaults(source);
+  source->AddResourcePath(bundled_path, bundle);
+  source->AddResourcePath("", default_resource);
+}
+#endif
 
 void AddLocalizedStringsBulk(content::WebUIDataSource* html_source,
                              base::span<const LocalizedString> strings) {

@@ -407,12 +407,12 @@ resource map can be added as follows:
 ```
 
 <a name="SetupWebUIDataSource"></a>
-### webui::SetupWebUIDataSource()
+### webui::SetupWebUIDataSource() and webui::SetupBundledWebUIDataSource()
 
-This method performs common configuration tasks on a data source for a Web UI
-that uses JS modules. When creating a Web UI that uses JS modules, use this
-utility instead of duplicating the configuration steps it performs elsewhere.
-Specific setup steps include:
+These methods perform common configuration tasks on a data source for a Web UI
+that uses JS modules. When creating a Web UI that uses JS modules, use these
+utilities instead of duplicating the configuration steps they perform elsewhere.
+Specific setup steps performed by these utilities include:
 
 * Setting the content security policy to allow the data source to load only
   resources from its own host (e.g. chrome://history), chrome://resources, and
@@ -422,7 +422,13 @@ Specific setup steps include:
 * Adding the test loader files to the data source, so that test files can be
   loaded as JS modules.
 * Setting the resource to load for the empty path.
-* Adding all resources from a GritResourceMap.
+
+The version for non-bundled UIs (<code>SetupWebUIDataSource()</code>) also adds
+all resources in a GritResourceMap.
+
+The version for bundled UIs (<code>SetupBundledWebUIDataSource()</code>) adds
+a single specified bundled resource. Note that this version is only defined when
+the optimize_webui build flag is enabled.
 
 ## Browser (C++) &rarr; Renderer (JS)
 
