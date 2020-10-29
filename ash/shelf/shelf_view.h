@@ -24,8 +24,10 @@
 #include "ash/shell_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -694,14 +696,11 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 
-  // The animation metrics reporter for icon move animation.
-  std::unique_ptr<ui::AnimationMetricsReporter> move_animation_reporter_;
+  // Tracks the icon move animation.
+  base::Optional<ui::ThroughputTracker> move_animation_tracker_;
 
-  // The animation metrics reporter for icon fade-in animation.
-  std::unique_ptr<ui::AnimationMetricsReporter> fade_in_animation_reporter_;
-
-  // The animation metrics reporter for icon fade-out animation.
-  std::unique_ptr<ui::AnimationMetricsReporter> fade_out_animation_reporter_;
+  // Tracks the icon fade-out animation.
+  base::Optional<ui::ThroughputTracker> fade_out_animation_tracker_;
 
   // Called when showing shelf context menu.
   base::RepeatingClosure context_menu_shown_callback_;

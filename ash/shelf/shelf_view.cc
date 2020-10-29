@@ -15,6 +15,7 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -62,6 +63,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/animation_metrics_reporter.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -112,12 +114,6 @@ constexpr char kShelfIconFadeInAnimationHistogram[] =
     "Ash.ShelfIcon.AnimationSmoothness.FadeIn";
 constexpr char kShelfIconFadeOutAnimationHistogram[] =
     "Ash.ShelfIcon.AnimationSmoothness.FadeOut";
-
-enum class IconAnimationType {
-  kMoveAnimation,
-  kFadeInAnimation,
-  kFadeOutAnimation
-};
 
 // Helper to check if tablet mode is enabled.
 bool IsTabletModeEnabled() {
@@ -197,34 +193,20 @@ class ShelfFocusSearch : public views::FocusSearch {
   DISALLOW_COPY_AND_ASSIGN(ShelfFocusSearch);
 };
 
-class IconAnimationMetricsReporter : public ui::AnimationMetricsReporter {
- public:
-  explicit IconAnimationMetricsReporter(IconAnimationType type) : type_(type) {}
-  IconAnimationMetricsReporter(const IconAnimationMetricsReporter&) = delete;
-  IconAnimationMetricsReporter& operator=(const IconAnimationMetricsReporter&) =
-      delete;
-  ~IconAnimationMetricsReporter() override = default;
+void ReportMoveAnimationSmoothness(int smoothness) {
+  base::UmaHistogramPercentageObsoleteDoNotUse(kShelfIconMoveAnimationHistogram,
+                                               smoothness);
+}
 
- private:
-  void Report(int value) override {
-    switch (type_) {
-      case IconAnimationType::kMoveAnimation:
-        base::UmaHistogramPercentageObsoleteDoNotUse(
-            kShelfIconMoveAnimationHistogram, value);
-        break;
-      case IconAnimationType::kFadeInAnimation:
-        base::UmaHistogramPercentageObsoleteDoNotUse(
-            kShelfIconFadeInAnimationHistogram, value);
-        break;
-      case IconAnimationType::kFadeOutAnimation:
-        base::UmaHistogramPercentageObsoleteDoNotUse(
-            kShelfIconFadeOutAnimationHistogram, value);
-        break;
-    }
-  }
+void ReportFadeInAnimationSmoothness(int smoothness) {
+  base::UmaHistogramPercentageObsoleteDoNotUse(
+      kShelfIconFadeInAnimationHistogram, smoothness);
+}
 
-  IconAnimationType type_ = IconAnimationType::kMoveAnimation;
-};
+void ReportFadeOutAnimationSmoothness(int smoothness) {
+  base::UmaHistogramPercentageObsoleteDoNotUse(
+      kShelfIconFadeOutAnimationHistogram, smoothness);
+}
 
 // Returns the id of the display on which |view| is shown.
 int64_t GetDisplayIdForView(const View* view) {
@@ -390,13 +372,6 @@ int ShelfView::GetSizeOfAppButtons(int count, int button_size) {
 }
 
 void ShelfView::Init() {
-  move_animation_reporter_ = std::make_unique<IconAnimationMetricsReporter>(
-      IconAnimationType::kMoveAnimation);
-  fade_in_animation_reporter_ = std::make_unique<IconAnimationMetricsReporter>(
-      IconAnimationType::kFadeInAnimation);
-  fade_out_animation_reporter_ = std::make_unique<IconAnimationMetricsReporter>(
-      IconAnimationType::kFadeOutAnimation);
-
   separator_ = new views::Separator();
   separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
@@ -1381,7 +1356,11 @@ void ShelfView::OnTabletModeChanged() {
 
 void ShelfView::AnimateToIdealBounds() {
   CalculateIdealBounds();
-  bounds_animator_->SetAnimationMetricsReporter(move_animation_reporter_.get());
+
+  move_animation_tracker_.emplace(
+      GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+  move_animation_tracker_->Start(metrics_util::ForSmoothness(
+      base::BindRepeating(&ReportMoveAnimationSmoothness)));
 
   for (int i = 0; i < view_model_->view_size(); ++i) {
     View* view = view_model_->view_at(i);
@@ -1404,8 +1383,12 @@ void ShelfView::FadeIn(views::View* view) {
   fade_in_animation_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
   fade_in_animation_settings.AddObserver(fade_in_animation_delegate_.get());
-  fade_in_animation_settings.SetAnimationMetricsReporter(
-      fade_in_animation_reporter_.get());
+
+  ui::AnimationThroughputReporter reporter(
+      fade_in_animation_settings.GetAnimator(),
+      metrics_util::ForSmoothness(
+          base::BindRepeating(&ReportFadeInAnimationSmoothness)));
+
   view->layer()->SetOpacity(1.f);
 }
 
@@ -1808,6 +1791,9 @@ void ShelfView::OnFadeInAnimationEnded() {
 }
 
 void ShelfView::OnFadeOutAnimationEnded() {
+  fade_out_animation_tracker_->Stop();
+  fade_out_animation_tracker_.reset();
+
   // Call PreferredSizeChanged() to notify container to re-layout at the end
   // of removal animation.
   PreferredSizeChanged();
@@ -2023,10 +2009,13 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   if (view->GetVisible() && view->layer()->opacity() > 0.0f) {
     UpdateShelfItemViewsVisibility();
 
+    fade_out_animation_tracker_.emplace(
+        GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+    fade_out_animation_tracker_->Start(metrics_util::ForSmoothness(
+        base::BindRepeating(&ReportFadeOutAnimationSmoothness)));
+
     // The first animation fades out the view. When done we'll animate the rest
     // of the views to their target location.
-    bounds_animator_->SetAnimationMetricsReporter(
-        fade_out_animation_reporter_.get());
     bounds_animator_->AnimateViewTo(view.get(), view->bounds());
     bounds_animator_->SetAnimationDelegate(
         view.get(), std::unique_ptr<gfx::AnimationDelegate>(
@@ -2338,6 +2327,11 @@ void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 
 void ShelfView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   shelf_->set_is_tablet_mode_animation_running(false);
+
+  if (move_animation_tracker_) {
+    move_animation_tracker_->Stop();
+    move_animation_tracker_.reset();
+  }
 
   if (snap_back_from_rip_off_view_ && animator == bounds_animator_.get()) {
     if (!animator->IsAnimating(snap_back_from_rip_off_view_)) {
