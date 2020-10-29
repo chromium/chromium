@@ -2981,6 +2981,8 @@ source_set("chromeos") {
       "//chromeos/resources:telemetry_extension_resources",
     ]
     sources += [
+      "web_applications/chrome_file_manager_ui_delegate.cc",
+      "web_applications/chrome_file_manager_ui_delegate.h",
       "web_applications/file_manager_web_app_info.cc",
       "web_applications/file_manager_web_app_info.h",
       "web_applications/sample_system_web_app_info.cc",

@@ -15,8 +15,9 @@
 namespace chromeos {
 namespace file_manager {
 
-FileManagerUI::FileManagerUI(content::WebUI* web_ui)
-    : MojoWebUIController(web_ui) {
+FileManagerUI::FileManagerUI(content::WebUI* web_ui,
+                             std::unique_ptr<FileManagerUIDelegate> delegate)
+    : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   auto source = base::WrapUnique(content::WebUIDataSource::Create(
       chromeos::file_manager::kChromeUIFileManagerHost));
   // The HTML content loaded on chrome://file-manager.

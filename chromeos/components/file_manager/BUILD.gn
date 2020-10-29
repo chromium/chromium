@@ -18,6 +18,7 @@ static_library("file_manager_ui") {
   sources = [
     "file_manager_ui.cc",
     "file_manager_ui.h",
+    "file_manager_ui_delegate.h",
     "url_constants.cc",
     "url_constants.h",
   ]

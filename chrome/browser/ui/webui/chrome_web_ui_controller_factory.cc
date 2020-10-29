@@ -223,6 +223,7 @@
 #endif
 
 #if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
+#include "chrome/browser/chromeos/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
 #include "chromeos/components/file_manager/file_manager_ui.h"
 #include "chromeos/components/file_manager/url_constants.h"
@@ -342,6 +343,16 @@ WebUIController* NewWebUI<chromeos::CameraAppUI>(WebUI* web_ui,
   auto delegate = std::make_unique<ChromeCameraAppUIDelegate>(web_ui);
   return new chromeos::CameraAppUI(web_ui, std::move(delegate));
 }
+
+#if !defined(OFFICIAL_BUILD)
+template <>
+WebUIController* NewWebUI<chromeos::file_manager::FileManagerUI>(
+    WebUI* web_ui,
+    const GURL& url) {
+  auto delegate = std::make_unique<ChromeFileManagerUIDelegate>();
+  return new chromeos::file_manager::FileManagerUI(web_ui, std::move(delegate));
+}
+#endif  // !defined(OFFICIAL_BUILD)
 
 template <>
 WebUIController* NewWebUI<chromeos::HelpAppUI>(WebUI* web_ui, const GURL& url) {

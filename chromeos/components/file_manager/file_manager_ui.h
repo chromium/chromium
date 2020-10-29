@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chromeos/components/file_manager/file_manager_ui_delegate.h"
 #include "chromeos/components/file_manager/mojom/file_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,7 +23,8 @@ class FileManagerPageHandler;
 class FileManagerUI : public ui::MojoWebUIController,
                       public mojom::PageHandlerFactory {
  public:
-  explicit FileManagerUI(content::WebUI* web_ui);
+  FileManagerUI(content::WebUI* web_ui,
+                std::unique_ptr<FileManagerUIDelegate> delegate);
   ~FileManagerUI() override;
 
   // Disallow copy and assign.
@@ -32,11 +34,15 @@ class FileManagerUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver);
 
+  const FileManagerUIDelegate* delegate() { return delegate_.get(); }
+
  private:
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<mojom::Page> pending_page,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler) override;
+
+  std::unique_ptr<FileManagerUIDelegate> delegate_;
 
   mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
   std::unique_ptr<FileManagerPageHandler> page_handler_;
