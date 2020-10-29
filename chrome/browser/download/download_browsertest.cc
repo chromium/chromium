@@ -2721,8 +2721,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
 // Times out often on debug ChromeOS because test is slow.
 #if defined(OS_CHROMEOS) && (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
-#elif defined(OS_MAC) || defined(OS_LINUX)
-// Started to be flaky on Linux and Mac too. https://crbug.com/1141263
+#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// Flaking on Windows, macOS, and Linux. https://crbug.com/1141263
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #else
 #define MAYBE_SaveLargeImage SaveLargeImage
