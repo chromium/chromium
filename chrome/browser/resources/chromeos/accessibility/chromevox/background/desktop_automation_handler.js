@@ -392,6 +392,9 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       case EventType.TEXT_SELECTION_CHANGED:
         // Event type TEXT_SELECTION_CHANGED is duplicated by
         // DOCUMENT_SELECTION_CHANGED for content editables and text areas.
+        // Fall through.
+      case EventType.VALUE_IN_TEXT_FIELD_CHANGED:
+        // By design, generated only for simple inputs.
         if (isContentEditable || isTextArea) {
           return;
         }
@@ -404,9 +407,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         if (isContentEditable || isInput || isTextArea) {
           return;
         }
-      case EventType.VALUE_IN_TEXT_FIELD_CHANGED:
-        // By design, generated only for text field roles.
-        break;
       default:
         return;
     }
