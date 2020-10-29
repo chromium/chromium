@@ -492,7 +492,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'passed': [],
         'failed': {
             'TESTS_DID_NOT_START': [
-                '%s.xcresult with test results does not exist.' % OUTPUT_PATH
+                '%s with staging data does not exist.' % OUTPUT_PATH
             ]
         }
     }
@@ -508,8 +508,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'passed': [],
         'failed': {
             'BUILD_INTERRUPTED': [
-                '%s with test results does not exist.' %
-                os.path.join(OUTPUT_PATH + '.xcresult', 'Info.plist')
+                '%s with test results does not exist.' % XCRESULT_PATH
             ]
         }
     }
@@ -566,10 +565,9 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         '[09:09:00:INFO] Test case \'-[TestCase2 method1]\' failed on device.',
         '** BUILD INTERRUPTED **',
     ]
-    not_found_message = [
-        'Info.plist.xcresult/Info.plist with test results does not exist.']
+    not_found_message = ['%s with test results does not exist.' % XCRESULT_PATH]
     res = xcode_log_parser.Xcode11LogParser().collect_test_results(
-        'Info.plist', output)
+        OUTPUT_PATH, output)
     self.assertIn('BUILD_INTERRUPTED', res['failed'])
     self.assertEqual(not_found_message + output,
                      res['failed']['BUILD_INTERRUPTED'])

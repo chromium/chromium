@@ -229,6 +229,15 @@ class Xcode11LogParser(object):
         'failed': {}
     }
 
+    # Xcodebuild writes staging data to |output_path| folder during test
+    # execution. If |output_path| doesn't exist, it means tests didn't start at
+    # all.
+    if not os.path.exists(output_path):
+      test_results['failed']['TESTS_DID_NOT_START'] = [
+          '%s with staging data does not exist.' % output_path
+      ]
+      return test_results
+
     # During a run `xcodebuild .. -resultBundlePath %output_path%`
     # that generates output_path folder,
     # but Xcode 11+ generates `output_path.xcresult` and `output_path`
@@ -238,16 +247,13 @@ class Xcode11LogParser(object):
     # on bots. This piece of code uses .xcresult folder.
     xcresult = output_path + '.xcresult'
 
+    # |output_path|.xcresult folder is created at the end of tests. If
+    # |output_path| folder exists but |output_path|.xcresult folder doesn't
+    # exist, it means xcodebuild exited or was killed half way during tests.
     if not os.path.exists(xcresult):
-      test_results['failed']['TESTS_DID_NOT_START'] = [
-          '%s with test results does not exist.' % xcresult
-      ]
-      return test_results
-
-    plist_path = os.path.join(xcresult, 'Info.plist')
-    if not os.path.exists(plist_path):
       test_results['failed']['BUILD_INTERRUPTED'] = [
-          '%s with test results does not exist.' % plist_path] + output
+          '%s with test results does not exist.' % xcresult
+      ] + output
       test_results['passed'] = parse_passed_tests_for_interrupted_run(output)
       return test_results
 
