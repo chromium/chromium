@@ -581,27 +581,23 @@ void DecoderStream<StreamType>::OnDecodeDone(
       return;
 
     default:
-      // TODO(liberato): Use |status| better, since it might not be a generic
-      // error anymore.
       if (!decoder_produced_a_frame_ &&
           base::FeatureList::IsEnabled(kFallbackAfterDecodeError)) {
-        pending_decode_requests_ = 0;
+        MEDIA_LOG(WARNING, media_log_)
+            << GetStreamTypeString()
+            << " decoder fallback after initial decode error.";
 
         // Prevent all pending decode requests and outputs from those requests
         // from being called back.
         fallback_weak_factory_.InvalidateWeakPtrs();
-
-        std::string fallback_message =
-            GetStreamTypeString() +
-            " fallback to new decoder after initial decode error.";
-        FUNCTION_DVLOG(1) << ": " << fallback_message;
-        MEDIA_LOG(WARNING, media_log_) << fallback_message;
+        pending_decode_requests_ = 0;
         state_ = STATE_REINITIALIZING_DECODER;
         SelectDecoder();
       } else {
-        std::string error_message = GetStreamTypeString() + " decode error!";
-        FUNCTION_DVLOG(1) << ": " << error_message;
-        MEDIA_LOG(ERROR, media_log_) << error_message;
+        media_log_->NotifyError(std::move(status));
+        MEDIA_LOG(ERROR, media_log_)
+            << GetStreamTypeString() << " decode error!";
+
         state_ = STATE_ERROR;
         ClearOutputs();
         if (read_cb_)

@@ -32,10 +32,10 @@ std::string ToJSON(const media::MediaLogRecord* event) {
 // TODO(tmathmeyer) replace this with a log-only EventHandler.
 void Log(media::MediaLogRecord* event) {
   if (event->type == media::MediaLogRecord::Type::kMediaStatus) {
-    LOG(ERROR) << "MediaEvent: " << ToJSON(event);
+    DVLOG(1) << "MediaEvent: " << ToJSON(event);
   } else if (event->type == media::MediaLogRecord::Type::kMessage &&
              event->params.HasKey("error")) {
-    LOG(ERROR) << "MediaEvent: " << ToJSON(event);
+    DVLOG(1) << "MediaEvent: " << ToJSON(event);
   } else if (event->type != media::MediaLogRecord::Type::kMediaPropertyChange) {
     DVLOG(1) << "MediaEvent: " << ToJSON(event);
   }
