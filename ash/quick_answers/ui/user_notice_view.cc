@@ -68,8 +68,8 @@ constexpr char kA11ySettingsButtonDescText[] =
 // Accept button.
 constexpr SkColor kAcceptButtonTextColor = gfx::kGoogleGrey200;
 constexpr char kA11yAcceptButtonDescText[] =
-    "Let Assistant show info such as definition or unit conversion for your "
-    "selection.";
+    "Let Assistant show info such as definition, translation or unit "
+    "conversion for your selection.";
 
 // Dogfood button.
 constexpr int kDogfoodButtonMarginDip = 4;

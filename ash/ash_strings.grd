@@ -2857,7 +2857,7 @@ Here are some things you can try to get started.
         Get the <ph name="intent">$1<ex>definition</ex></ph> for "<ph name="query">$2<ex>unfathomable</ex></ph>"
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature.">
-        With a right-click or a long press, Assistant shows info such as the definition or unit conversion for your selection.
+        With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON" desc="Display text on the Manage-Settings button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
         Manage Settings
