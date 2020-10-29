@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.incognito.interstitial;
 
+import android.text.style.StyleSpan;
 import android.view.View;
+import android.widget.TextView;
 
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.SpanApplier;
 
 /**
  * This class regroups the bindView util methods of the
@@ -28,6 +31,18 @@ class IncognitoInterstitialViewBinder {
             throw new IllegalArgumentException(
                     "Cannot update the view for propertyKey: " + propertyKey);
         }
+    }
+
+    /**
+     * Sets up the incognito interstitial view.
+     */
+    static void setUpView(View view) {
+        TextView message = view.findViewById(R.id.incognito_interstitial_message);
+        message.setText(SpanApplier.applySpans(message.getText().toString(),
+                new SpanApplier.SpanInfo(
+                        "<b1>", "</b1>", new StyleSpan(android.graphics.Typeface.BOLD)),
+                new SpanApplier.SpanInfo(
+                        "<b2>", "</b2>", new StyleSpan(android.graphics.Typeface.BOLD))));
     }
 
     // Necessary helper methods to return the subviews present inside the incognito

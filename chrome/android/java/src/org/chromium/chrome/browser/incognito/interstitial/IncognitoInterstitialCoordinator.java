@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.incognito.interstitial;
 
-import android.text.style.StyleSpan;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.MainThread;
 
-import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.text.SpanApplier;
 
 /**
  * The coordinator of the incognito interstitial along with IncognitoInterstitialDelegate are the
@@ -35,25 +31,10 @@ public class IncognitoInterstitialCoordinator {
     @MainThread
     public IncognitoInterstitialCoordinator(
             View view, IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
-        formatIncognitoInterstitialMessage(view);
+        IncognitoInterstitialViewBinder.setUpView(view);
         IncognitoInterstitialMediator mediator =
                 new IncognitoInterstitialMediator(incognitoInterstitialDelegate);
         PropertyModelChangeProcessor.create(
                 mediator.getModel(), view, IncognitoInterstitialViewBinder::bindView);
-    }
-
-    private static void formatIncognitoInterstitialMessage(View incognitoInterstitialView) {
-        TextView incognitoInterstitialMessageView =
-                incognitoInterstitialView.findViewById(R.id.incognito_interstitial_message);
-
-        String incognitoInterstitialMessageText =
-                incognitoInterstitialMessageView.getText().toString();
-
-        incognitoInterstitialMessageView.setText(
-                SpanApplier.applySpans(incognitoInterstitialMessageText,
-                        new SpanApplier.SpanInfo(
-                                "<b1>", "</b1>", new StyleSpan(android.graphics.Typeface.BOLD)),
-                        new SpanApplier.SpanInfo(
-                                "<b2>", "</b2>", new StyleSpan(android.graphics.Typeface.BOLD))));
     }
 }
