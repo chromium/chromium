@@ -1873,7 +1873,7 @@ TEST_F('OSSettingsInputMethodOptionsPageTest', 'AllJsTests', () => {
 var OSSettingsInputPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return super.browsePreload + 'chromeos/os_languages_page/input_page.html';
+    return super.browsePreload + 'chromeos/os_language_page/input_page.html';
   }
 
   /** @override */

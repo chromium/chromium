@@ -173,6 +173,20 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
 
+  html_source->AddResourcePath("constants/routes.mojom-lite.js",
+                               IDR_OS_SETTINGS_ROUTES_MOJOM_LITE_JS);
+  html_source->AddResourcePath("constants/setting.mojom-lite.js",
+                               IDR_OS_SETTINGS_SETTING_MOJOM_LITE_JS);
+
+  html_source->AddResourcePath(
+      "search/user_action_recorder.mojom-lite.js",
+      IDR_OS_SETTINGS_USER_ACTION_RECORDER_MOJOM_LITE_JS);
+  html_source->AddResourcePath(
+      "search/search_result_icon.mojom-lite.js",
+      IDR_OS_SETTINGS_SEARCH_RESULT_ICON_MOJOM_LITE_JS);
+  html_source->AddResourcePath("search/search.mojom-lite.js",
+                               IDR_OS_SETTINGS_SEARCH_MOJOM_LITE_JS);
+
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
   AddUpdateRequiredEolStrings(html_source);

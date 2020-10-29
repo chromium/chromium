@@ -36,6 +36,13 @@
 namespace chromeos {
 namespace settings {
 
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+namespace {
+const char kOsGeneratedPath[] =
+    "@out_folder@/gen/chrome/browser/resources/settings/";
+}
+#endif
+
 // static
 void OSSettingsUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -63,31 +70,53 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       std::make_unique<chromeos::settings::StorageHandler>(profile,
                                                            html_source));
 
-  // We only need to register the mojo resources here because the rest are
-  // bundled or included in the grd.
-  RegisterNearbySharedMojoResources(html_source);
-
-  int default_resource =
-      base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)
-          ? IDR_OS_SETTINGS_CHROMEOS_OS_SETTINGS_V3_HTML
 #if BUILDFLAG(OPTIMIZE_WEBUI)
-          : IDR_OS_SETTINGS_VULCANIZED_HTML;
-#else
-          : IDR_OS_SETTINGS_CHROMEOS_OS_SETTINGS_HTML;
-#endif
+  if (base::FeatureList::IsEnabled(::chromeos::features::kOsSettingsPolymer3)) {
+    // Polymer3 Source files
+    webui::SetupBundledWebUIDataSource(html_source, "chromeos/os_settings.js",
+                                       IDR_OS_SETTINGS_OS_SETTINGS_ROLLUP_JS,
+                                       IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
+    html_source->AddResourcePath("chromeos/shared.rollup.js",
+                                 IDR_OS_SETTINGS_SHARED_ROLLUP_JS);
+    html_source->AddResourcePath("chromeos/lazy_load.js",
+                                 IDR_OS_SETTINGS_LAZY_LOAD_ROLLUP_JS);
+  } else {
+    // Polymer2 Source files
+    html_source->AddResourcePath("crisper.js", IDR_OS_SETTINGS_CRISPER_JS);
+    html_source->AddResourcePath("lazy_load.crisper.js",
+                                 IDR_OS_SETTINGS_LAZY_LOAD_CRISPER_JS);
+    html_source->AddResourcePath("chromeos/lazy_load.html",
+                                 IDR_OS_SETTINGS_LAZY_LOAD_VULCANIZED_HTML);
+    html_source->SetDefaultResource(IDR_OS_SETTINGS_VULCANIZED_HTML);
+  }
 
+  // We only need to register the mojo resources here because the rest are
+  // bundled in.
+  RegisterNearbySharedMojoResources(html_source);
+#else
   webui::SetupWebUIDataSource(
       html_source,
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
-      /*generated_path=*/std::string(), default_resource);
+      kOsGeneratedPath,
+      base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)
+          ? IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML
+          : IDR_OS_SETTINGS_SETTINGS_HTML);
 
-  // For Polymer 2 optimized builds that rely on loading individual subpages,
-  // set the default resource for tests.
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)) {
-    html_source->SetDefaultResource(default_resource);
-  }
+  // Register chrome://nearby resources so they are available at
+  // chrome://os-settings. This allows the sharing of resources without having
+  // to put everything in chrome://resources. This is necessary because portions
+  // of the nearby UI need to be re-used in both places.
+  // This is not nessary when OPTIMIZE_WEBUI is true because the files will be
+  // added to the optimized bundles.
+  RegisterNearbySharedResources(html_source);
 #endif
+
+  html_source->AddResourcePath("images/icon_add_circle.svg",
+                               IDR_OS_SETTINGS_ICON_ADD_CIRCLE_SVG);
+  html_source->AddResourcePath("images/icon_add_wifi.svg",
+                               IDR_OS_SETTINGS_ICON_ADD_WIFI_SVG);
+  html_source->AddResourcePath("images/icon_add_cellular.svg",
+                               IDR_OS_SETTINGS_ICON_ADD_CELLULAR_SVG);
 
   ManagedUIHandler::Initialize(web_ui, html_source);
 

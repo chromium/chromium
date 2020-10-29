@@ -168,9 +168,12 @@
   "chrome/browser/resources/read_later/read_later_resources.grd": {
     "includes": [1760],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/chromeos/os_settings_resources.grd": {
-    "META": {"sizes": {"includes": [1000],}},
+  "chrome/browser/resources/settings/os_settings_resources_vulcanized.grd": {
     "includes": [1770],
+  },
+  "chrome/browser/resources/settings/os_settings_resources.grd": {
+    "includes": [1780],
+    "structures": [1800],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/settings_resources.grd": {
     "META": {"sizes": {"includes": [500],}},
