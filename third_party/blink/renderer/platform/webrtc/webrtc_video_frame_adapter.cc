@@ -273,6 +273,42 @@ scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
   return dst_frame;
 }
 
+scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
+    scoped_refptr<media::VideoFrame> source_frame,
+    scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
+        scaled_frame_pool) {
+  gfx::GpuMemoryBuffer* gmb = source_frame->GetGpuMemoryBuffer();
+  if (!gmb || !gmb->Map()) {
+    return nullptr;
+  }
+  // Crop to the visible rectangle specified in |source_frame|.
+  const uint8_t* src_y = (reinterpret_cast<const uint8_t*>(gmb->memory(0)) +
+                          source_frame->visible_rect().x() +
+                          (source_frame->visible_rect().y() * gmb->stride(0)));
+  const uint8_t* src_uv =
+      (reinterpret_cast<const uint8_t*>(gmb->memory(1)) +
+       ((source_frame->visible_rect().x() / 2) * 2) +
+       ((source_frame->visible_rect().y() / 2) * gmb->stride(1)));
+
+  auto dst_frame = scaled_frame_pool->CreateFrame(
+      media::PIXEL_FORMAT_NV12, source_frame->natural_size(),
+      gfx::Rect(source_frame->natural_size()), source_frame->natural_size(),
+      source_frame->timestamp());
+  dst_frame->metadata()->MergeMetadataFrom(source_frame->metadata());
+  const auto& nv12_planes = dst_frame->layout().planes();
+  libyuv::NV12Scale(src_y, gmb->stride(0), src_uv, gmb->stride(1),
+                    source_frame->visible_rect().width(),
+                    source_frame->visible_rect().height(),
+                    dst_frame->data(media::VideoFrame::kYPlane),
+                    nv12_planes[media::VideoFrame::kYPlane].stride,
+                    dst_frame->data(media::VideoFrame::kUVPlane),
+                    nv12_planes[media::VideoFrame::kUVPlane].stride,
+                    dst_frame->coded_size().width(),
+                    dst_frame->coded_size().height(), libyuv::kFilterBox);
+  gmb->Unmap();
+  return dst_frame;
+}
+
 scoped_refptr<media::VideoFrame> ConstructVideoFrameFromGpu(
     scoped_refptr<media::VideoFrame> source_frame,
     scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
@@ -287,11 +323,14 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrameFromGpu(
   // Convert to I420 and scale to the natural size specified in |source_frame|.
   const bool dont_convert_nv12_image =
       base::FeatureList::IsEnabled(blink::features::kWebRtcLibvpxEncodeNV12);
-  if (dont_convert_nv12_image &&
-      source_frame->natural_size() == source_frame->visible_rect().size()) {
+  if (!dont_convert_nv12_image) {
+    return MakeScaledI420VideoFrame(std::move(source_frame),
+                                    std::move(scaled_frame_pool));
+  } else if (source_frame->natural_size() ==
+             source_frame->visible_rect().size()) {
     return WrapGmbVideoFrameForMappedMemoryAccess(std::move(source_frame));
   } else {
-    return MakeScaledI420VideoFrame(std::move(source_frame),
+    return MakeScaledNV12VideoFrame(std::move(source_frame),
                                     std::move(scaled_frame_pool));
   }
 }
