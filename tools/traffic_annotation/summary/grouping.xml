@@ -393,8 +393,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="search_suggest_service"/>
       <traffic_annotation unique_id="remote_suggestions_provider"/>
       <traffic_annotation unique_id="promo_service"/>
-      <traffic_annotation unique_id="recipe_tasks_service"/>
-      <traffic_annotation unique_id="shopping_tasks_service"/>
+      <traffic_annotation unique_id="task_module_service"/>
     </sender>
     <sender name="Speech Recognition">
       <traffic_annotation unique_id="speech_recognition_downstream"/>

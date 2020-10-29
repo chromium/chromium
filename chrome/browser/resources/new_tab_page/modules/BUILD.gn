@@ -15,8 +15,7 @@ js_library("modules") {
   deps = [
     ":module_registry",
     "kaleidoscope:module",
-    "recipe_tasks:module",
-    "shopping_tasks:module",
+    "task_module:module",
   ]
   if (!is_official_build) {
     deps += [ "dummy:module" ]
@@ -45,8 +44,7 @@ group("web_components") {
   public_deps = [
     ":web_components_local",
     "dummy:web_components",
-    "recipe_tasks:web_components",
-    "shopping_tasks:web_components",
+    "task_module:web_components",
   ]
 }
 
@@ -65,8 +63,7 @@ if (optimize_webui) {
       "module_descriptor.js",
       "modules.js",
       "module_registry.js",
-      "recipe_tasks/recipe_tasks_handler_proxy.js",
-      "shopping_tasks/shopping_tasks_handler_proxy.js",
+      "task_module/task_module_handler_proxy.js",
     ]
     if (!is_official_build) {
       in_files += [ "dummy/foo_proxy.js" ]
@@ -81,8 +78,7 @@ if (optimize_webui) {
     in_files = [
       "module_wrapper.js",
       "dummy/module.js",
-      "recipe_tasks/module.js",
-      "shopping_tasks/module.js",
+      "task_module/module.js",
     ]
   }
 }

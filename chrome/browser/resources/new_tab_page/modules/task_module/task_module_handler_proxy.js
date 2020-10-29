@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './recipe_tasks.mojom-lite.js';
+import './task_module.mojom-lite.js';
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler
- * interface used for retrieving the recipe task for the recipe task module.
+ * interface used for retrieving a shopping task for a task module.
  */
 
-export class RecipeTasksHandlerProxy {
+export class TaskModuleHandlerProxy {
   constructor() {
-    /** @type {!recipeTasks.mojom.RecipeTasksHandlerRemote} */
-    this.handler = recipeTasks.mojom.RecipeTasksHandler.getRemote();
+    /** @type {!taskModule.mojom.TaskModuleHandlerRemote} */
+    this.handler = taskModule.mojom.TaskModuleHandler.getRemote();
   }
 }
 
-addSingletonGetter(RecipeTasksHandlerProxy);
+addSingletonGetter(TaskModuleHandlerProxy);

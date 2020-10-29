@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {shoppingTasksDescriptor, ShoppingTasksHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 
-suite('NewTabPageModulesShoppingTasksModuleTest', () => {
+suite('NewTabPageModulesTaskModuleTest', () => {
   /**
-   * @implements {ShoppingTasksHandlerProxy}
+   * @implements {TaskModuleHandlerProxy}
    * @extends {TestBrowserProxy}
    */
   let testProxy;
@@ -16,30 +16,30 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = TestBrowserProxy.fromClass(ShoppingTasksHandlerProxy);
-    testProxy.handler = TestBrowserProxy.fromClass(
-        shoppingTasks.mojom.ShoppingTasksHandlerRemote);
-    ShoppingTasksHandlerProxy.instance_ = testProxy;
+    testProxy = TestBrowserProxy.fromClass(TaskModuleHandlerProxy);
+    testProxy.handler =
+        TestBrowserProxy.fromClass(taskModule.mojom.TaskModuleHandlerRemote);
+    TaskModuleHandlerProxy.instance_ = testProxy;
   });
 
   test('creates no module if no task', async () => {
     // Arrange.
     testProxy.handler.setResultFor(
-        'getPrimaryShoppingTask', Promise.resolve({shoppingTask: null}));
+        'getPrimaryTask', Promise.resolve({task: null}));
 
     // Act.
     await shoppingTasksDescriptor.initialize();
 
     // Assert.
-    assertEquals(1, testProxy.handler.getCallCount('getPrimaryShoppingTask'));
+    assertEquals(1, testProxy.handler.getCallCount('getPrimaryTask'));
     assertEquals(null, shoppingTasksDescriptor.element);
   });
 
   test('creates module if task', async () => {
     // Arrange.
-    const shoppingTask = {
+    const task = {
       title: 'Hello world',
-      products: [
+      taskItems: [
         {
           name: 'foo',
           imageUrl: {url: 'https://foo.com/img.png'},
@@ -66,20 +66,21 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
         },
       ],
     };
-    testProxy.handler.setResultFor(
-        'getPrimaryShoppingTask', Promise.resolve({shoppingTask}));
+    testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
     await shoppingTasksDescriptor.initialize();
-    const module = shoppingTasksDescriptor.element;
-    document.body.append(module);
-    module.$.productsRepeat.render();
-    module.$.relatedSearchesRepeat.render();
+    const moduleElement = shoppingTasksDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
 
     // Assert.
-    const products = Array.from(module.shadowRoot.querySelectorAll('.product'));
-    const pills = Array.from(module.shadowRoot.querySelectorAll('.pill'));
-    assertEquals(1, testProxy.handler.getCallCount('getPrimaryShoppingTask'));
+    const products =
+        Array.from(moduleElement.shadowRoot.querySelectorAll('.task-item'));
+    const pills =
+        Array.from(moduleElement.shadowRoot.querySelectorAll('.pill'));
+    assertEquals(1, testProxy.handler.getCallCount('getPrimaryTask'));
     assertEquals(2, products.length);
     assertEquals(2, pills.length);
     assertEquals('https://foo.com/', products[0].href);
@@ -106,16 +107,16 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
 
   test('products and pills are hidden when cutoff', async () => {
     const repeat = (n, fn) => Array(n).fill(0).map(fn);
-    testProxy.handler.setResultFor('getPrimaryShoppingTask', Promise.resolve({
-      shoppingTask: {
+    testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({
+      task: {
         title: 'Hello world',
-        products: repeat(20, () => ({
-                               name: 'foo',
-                               imageUrl: {url: 'https://foo.com/img.png'},
-                               price: '1 gazillion dollars',
-                               info: 'foo info',
-                               targetUrl: {url: 'https://foo.com'},
-                             })),
+        taskItems: repeat(20, () => ({
+                                name: 'foo',
+                                imageUrl: {url: 'https://foo.com/img.png'},
+                                price: '1 gazillion dollars',
+                                info: 'foo info',
+                                targetUrl: {url: 'https://foo.com'},
+                              })),
         relatedSearches: repeat(20, () => ({
                                       text: 'baz',
                                       targetUrl: {url: 'https://baz.com'},
@@ -125,10 +126,10 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
     await shoppingTasksDescriptor.initialize();
     const moduleElement = shoppingTasksDescriptor.element;
     document.body.append(moduleElement);
-    moduleElement.$.productsRepeat.render();
+    moduleElement.$.taskItemsRepeat.render();
     moduleElement.$.relatedSearchesRepeat.render();
     const getElements = () => Array.from(
-        moduleElement.shadowRoot.querySelectorAll('.product, .pill'));
+        moduleElement.shadowRoot.querySelectorAll('.task-item, .pill'));
     assertEquals(40, getElements().length);
     const hiddenCount = () =>
         getElements().filter(el => el.style.visibility === 'hidden').length;
@@ -147,10 +148,10 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
 
   test('Backend is notified when module is dismissed or restored', async () => {
     // Arrange.
-    const shoppingTask = {
+    const task = {
       title: 'Continue searching for Hello world',
       name: 'Hello world',
-      products: [
+      taskItems: [
         {
           name: 'foo',
           imageUrl: {url: 'https://foo.com/img.png'},
@@ -177,8 +178,7 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
         },
       ],
     };
-    testProxy.handler.setResultFor(
-        'getPrimaryShoppingTask', Promise.resolve({shoppingTask}));
+    testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
 
     // Act.
@@ -193,16 +193,16 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
 
     // Assert.
     assertEquals('Removed Hello world', toastMessage);
-    assertEquals(
-        'Hello world',
-        await testProxy.handler.whenCalled('dismissShoppingTask'));
+    assertDeepEquals(
+        [taskModule.mojom.TaskModuleType.kShopping, 'Hello world'],
+        await testProxy.handler.whenCalled('dismissTask'));
 
     // Act.
     shoppingTasksDescriptor.actions.restore();
 
     // Assert.
-    assertEquals(
-        'Hello world',
-        await testProxy.handler.whenCalled('restoreShoppingTask'));
+    assertDeepEquals(
+        [taskModule.mojom.TaskModuleType.kShopping, 'Hello world'],
+        await testProxy.handler.whenCalled('restoreTask'));
   });
 });

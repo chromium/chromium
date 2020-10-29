@@ -7,7 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 
 js_library("module") {
   deps = [
-    ":recipe_tasks_handler_proxy",
+    ":task_module_handler_proxy",
     "..:module_descriptor",
     "../..:img",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -16,9 +16,9 @@ js_library("module") {
   ]
 }
 
-js_library("recipe_tasks_handler_proxy") {
+js_library("task_module_handler_proxy") {
   deps = [
-    "//chrome/browser/search/recipe_tasks:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/search/task_module:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }

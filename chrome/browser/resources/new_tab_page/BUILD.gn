@@ -362,8 +362,7 @@ if (optimize_webui) {
       "new_tab_page.mojom-lite.js",
       "omnibox.mojom-lite.js",
       "promo_browser_command.mojom-lite.js",
-      "modules/recipe_tasks/recipe_tasks.mojom-lite.js",
-      "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
+      "modules/task_module/task_module.mojom-lite.js",
       "foo.mojom-lite.js",
     ]
   }

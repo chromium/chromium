@@ -14,18 +14,17 @@ import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
 import {kaleidoscopeDescriptor} from './kaleidoscope/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
-import {recipeTasksDescriptor} from './recipe_tasks/module.js';
-import {shoppingTasksDescriptor} from './shopping_tasks/module.js';
+import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
 
 /** @type {!Array<!ModuleDescriptor>} */
 const descriptors = [];
 
-if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
-  descriptors.push(recipeTasksDescriptor);
-}
-
 if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
   descriptors.push(shoppingTasksDescriptor);
+}
+
+if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
+  descriptors.push(recipeTasksDescriptor);
 }
 
 if (loadTimeData.getBoolean('kaleidoscopeModuleEnabled')) {

@@ -1,4 +1,4 @@
-<style>
+<style include="cr-hidden-style">
   :host {
     box-sizing: border-box;
     display: block;
@@ -8,12 +8,12 @@
     width: 100%;
   }
 
-  #recipes {
+  #taskItems {
     display: flex;
     flex-direction: row;
   }
 
-  .recipe {
+  .task-item {
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -22,28 +22,43 @@
     width: 120px;
   }
 
-  :host-context(.focus-outline-visible) .recipe:focus {
+  :host-context(.focus-outline-visible) .task-item:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  .recipe + .recipe {
+  .task-item:not([hidden]) + .task-item {
     margin-inline-start: 16px;
   }
 
   .image {
-    background: var(--google-grey-50);
     border-radius: 4px;
     box-sizing: border-box;
-    height: 100px;
     margin-bottom: 8px;
     width: 120px;
   }
 
+  :host([shopping]) .image {
+    background: var(--google-grey-50);
+    height: 120px;
+    padding: 10px;
+  }
+
+  :host([recipe]) .image {
+    height: 100px;
+  }
+
   img {
-    border-radius: 4px;
     height: 100%;
-    object-fit: cover;
     width: 100%;
+  }
+
+  :host([shopping]) img {
+    object-fit: contain;
+  }
+
+  :host([recipe]) img {
+    border-radius: 4px;
+    object-fit: cover;
   }
 
   .price {
@@ -61,6 +76,16 @@
     line-height: 20px;
     margin-bottom: 4px;
     overflow: hidden;
+  }
+
+  :host([shopping]) .name {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    height: 40px;
+  }
+
+  :host([recipe]) .name {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -117,6 +142,7 @@
   }
 
   cr-dialog::part(dialog) {
+    position: fixed;
     width: 459px;
   }
 
@@ -129,22 +155,23 @@
     text-decoration: none;
   }
 </style>
-<div id="recipes">
-  <template is="dom-repeat" id="recipesRepeat"
-      items="[[recipeTask.recipes]]" on-dom-change="onDomChange_">
-    <a class="recipe" href="[[item.targetUrl.url]]" on-click="onRecipeClick_"
-        on-auxclick="onRecipeClick_">
+<div id="taskItems">
+  <template is="dom-repeat" id="taskItemsRepeat" items="[[task.taskItems]]"
+      on-dom-change="onDomChange_">
+    <a class="task-item" href="[[item.targetUrl.url]]"
+        on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
       <div class="image">
         <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
       </div>
-      <div class="name"  title="[[item.name]]">[[item.name]]</div>
+      <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
+      <div class="name" title="[[item.name]]">[[item.name]]</div>
       <div class="info">[[item.info]]</div>
     </a>
   </template>
 </div>
 <div id="relatedSearches">
   <template is="dom-repeat" id="relatedSearchesRepeat"
-      items="[[recipeTask.relatedSearches]]" on-dom-change="onDomChange_">
+      items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
     <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
         on-auxclick="onPillClick_">
       <div class="loupe"></div>

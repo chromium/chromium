@@ -15,8 +15,7 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/ntp_features.h"
-#include "chrome/browser/search/recipe_tasks/recipe_tasks_handler.h"
-#include "chrome/browser/search/shopping_tasks/shopping_tasks_handler.h"
+#include "chrome/browser/search/task_module/task_module_handler.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/omnibox_mojo_utils.h"
@@ -251,11 +250,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddResourcePath("promo_browser_command.mojom-lite.js",
                           IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_MOJO_LITE_JS);
   source->AddResourcePath(
-      "modules/recipe_tasks/recipe_tasks.mojom-lite.js",
-      IDR_NEW_TAB_PAGE_MODULES_RECIPE_TASKS_RECIPE_TASKS_MOJO_LITE_JS);
-  source->AddResourcePath(
-      "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
-      IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_MOJO_LITE_JS);
+      "modules/task_module/task_module.mojom-lite.js",
+      IDR_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_MOJO_LITE_JS);
 #if !defined(OFFICIAL_BUILD)
   source->AddResourcePath("foo.mojom-lite.js",
                           IDR_NEW_TAB_PAGE_FOO_MOJO_LITE_JS);
@@ -381,16 +377,9 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<recipe_tasks::mojom::RecipeTasksHandler>
+    mojo::PendingReceiver<task_module::mojom::TaskModuleHandler>
         pending_receiver) {
-  recipe_tasks_handler_ = std::make_unique<RecipeTasksHandler>(
-      std::move(pending_receiver), profile_);
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<shopping_tasks::mojom::ShoppingTasksHandler>
-        pending_receiver) {
-  shopping_tasks_handler_ = std::make_unique<ShoppingTasksHandler>(
+  task_module_handler_ = std::make_unique<TaskModuleHandler>(
       std::move(pending_receiver), profile_);
 }
 #if !defined(OFFICIAL_BUILD)

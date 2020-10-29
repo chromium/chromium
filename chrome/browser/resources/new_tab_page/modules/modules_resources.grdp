@@ -19,14 +19,9 @@
   <include name="IDR_NEW_TAB_PAGE_MODULE_WRAPPER_JS"
       file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/module_wrapper.js"
       use_base_dir="false" type="BINDATA" compress="false" />
-  <include name="IDR_NEW_TAB_PAGE_MODULES_RECIPE_TASKS_MODULE_JS"
-      file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/recipe_tasks/module.js"
+  <include name="IDR_NEW_TAB_PAGE_MODULES_TASK_MODULE_MODULE_JS"
+      file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/task_module/module.js"
       use_base_dir="false" type="BINDATA" compress="false" />
-  <include name="IDR_NEW_TAB_PAGE_MODULES_RECIPE_TASKS_RECIPE_TASKS_HANDLER_PROXY_JS"
-      file="modules/recipe_tasks/recipe_tasks_handler_proxy.js" type="BINDATA" compress="false" />
-  <include name="IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_MODULE_JS"
-      file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/shopping_tasks/module.js"
-      use_base_dir="false" type="BINDATA" compress="false" />
-  <include name="IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_HANDLER_PROXY_JS"
-      file="modules/shopping_tasks/shopping_tasks_handler_proxy.js" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_HANDLER_PROXY_JS"
+      file="modules/task_module/task_module_handler_proxy.js" type="BINDATA" compress="false" />
 </grit-part>

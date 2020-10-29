@@ -264,7 +264,6 @@ Refer to README.md for content description and update process.
  <item id="ranker_url_fetcher" added_in_milestone="62" hash_code="95682324" type="0" content_hash_code="45958626" os_list="linux,windows" file_path="components/assist_ranker/ranker_url_fetcher.cc"/>
  <item id="rappor_report" added_in_milestone="62" hash_code="44606780" type="0" content_hash_code="111287826" os_list="linux,windows" file_path="components/rappor/log_uploader.cc"/>
  <item id="receive_messages_express" added_in_milestone="85" hash_code="29506140" type="0" deprecated="2020-09-21" content_hash_code="38581365" file_path=""/>
- <item id="recipe_tasks_service" added_in_milestone="88" hash_code="73597231" type="0" content_hash_code="31830923" os_list="linux,windows" file_path="chrome/browser/search/recipe_tasks/recipe_tasks_service.cc"/>
  <item id="refresh_token_annotation_request" added_in_milestone="62" hash_code="7433837" type="1" second_id="29188932" deprecated="2018-01-17" content_hash_code="137103383" file_path=""/>
  <item id="remote_copy_message_handler" added_in_milestone="80" hash_code="80255301" type="0" content_hash_code="117673331" os_list="linux,windows" file_path="chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.cc"/>
  <item id="remote_suggestions_provider" added_in_milestone="62" hash_code="49544361" type="0" content_hash_code="126329742" os_list="linux,windows" file_path="components/ntp_snippets/remote/cached_image_fetcher.cc"/>
@@ -310,7 +309,6 @@ Refer to README.md for content description and update process.
  <item id="service_worker_navigation_preload" added_in_milestone="63" hash_code="129872904" type="0" content_hash_code="79473248" os_list="linux,windows" file_path="content/browser/service_worker/service_worker_fetch_dispatcher.cc"/>
  <item id="service_worker_update_checker" added_in_milestone="71" hash_code="130931413" type="0" content_hash_code="46608086" os_list="linux,windows" file_path="content/browser/service_worker/service_worker_single_script_update_checker.cc"/>
  <item id="services_http_server_error_response" added_in_milestone="68" hash_code="59302801" type="0" content_hash_code="127774041" os_list="linux,windows" file_path="services/network/public/cpp/server/http_server.cc"/>
- <item id="shopping_tasks_service" added_in_milestone="87" hash_code="90297622" type="0" content_hash_code="133566501" os_list="windows,linux" file_path="chrome/browser/search/shopping_tasks/shopping_tasks_service.cc"/>
  <item id="sigined_exchange_cert_fetcher" added_in_milestone="66" hash_code="79442849" type="0" content_hash_code="8138156" os_list="linux,windows" file_path="content/browser/web_package/signed_exchange_cert_fetcher.cc"/>
  <item id="sigined_exchange_validity_pinger" added_in_milestone="75" hash_code="57114284" type="0" content_hash_code="119482488" os_list="linux,windows" file_path="content/browser/web_package/signed_exchange_validity_pinger.cc"/>
  <item id="signed_in_profile_avatar" added_in_milestone="62" hash_code="108903331" type="0" content_hash_code="72850619" os_list="linux,windows" file_path="chrome/browser/profiles/profile_downloader.cc"/>
@@ -335,6 +333,7 @@ Refer to README.md for content description and update process.
  <item id="sync_file_system" added_in_milestone="62" hash_code="102819690" type="0" content_hash_code="52153962" os_list="linux,windows" file_path="chrome/browser/sync_file_system/drive_backend/sync_engine.cc"/>
  <item id="sync_http_bridge" added_in_milestone="62" hash_code="57144960" type="0" content_hash_code="32868346" os_list="linux,windows" file_path="components/sync/engine/net/http_bridge.cc"/>
  <item id="sync_stop_reporter" added_in_milestone="62" hash_code="5021348" type="0" content_hash_code="56902850" os_list="linux,windows" file_path="components/sync/driver/sync_stopped_reporter.cc"/>
+ <item id="task_module_service" added_in_milestone="88" hash_code="50808258" type="0" content_hash_code="12116330" os_list="linux,windows" file_path="chrome/browser/search/task_module/task_module_service.cc"/>
  <item id="test" added_in_milestone="62" hash_code="3556498" type="0" reserved="1" os_list="linux,windows" file_path=""/>
  <item id="test_partial" added_in_milestone="62" hash_code="22096011" type="0" reserved="1" os_list="linux,windows" file_path=""/>
  <item id="tethering_handler_socket" added_in_milestone="65" hash_code="113065062" type="0" content_hash_code="986296" os_list="linux,windows" file_path="content/browser/devtools/protocol/tethering_handler.cc"/>

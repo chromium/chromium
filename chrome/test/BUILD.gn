@@ -4654,8 +4654,7 @@ test("unit_tests") {
 
       # NTP is in native code on Android.
       "../browser/search/ntp_features_unittest.cc",
-      "../browser/search/recipe_tasks/recipe_tasks_service_unittest.cc",
-      "../browser/search/shopping_tasks/shopping_tasks_service_unittest.cc",
+      "../browser/search/task_module/task_module_service_unittest.cc",
     ]
     if (is_posix || is_fuchsia) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]

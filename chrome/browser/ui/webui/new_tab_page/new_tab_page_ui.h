@@ -9,8 +9,7 @@
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
-#include "chrome/browser/search/recipe_tasks/recipe_tasks.mojom.h"
-#include "chrome/browser/search/shopping_tasks/shopping_tasks.mojom.h"
+#include "chrome/browser/search/task_module/task_module.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
@@ -38,8 +37,7 @@ class KaleidoscopeDataProviderImpl;
 class NewTabPageHandler;
 class Profile;
 class PromoBrowserCommandHandler;
-class RecipeTasksHandler;
-class ShoppingTasksHandler;
+class TaskModuleHandler;
 
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -81,17 +79,10 @@ class NewTabPageUI
           pending_receiver);
 
   // Instantiates the implementor of the
-  // recipe_tasks::mojom::RecipeTasksHandler mojo interface passing the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<recipe_tasks::mojom::RecipeTasksHandler>
-          pending_receiver);
-
-  // Instantiates the implementor of the
   // shopping_tasks::mojom::ShoppingTasksHandler mojo interface passing the
   // pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<shopping_tasks::mojom::ShoppingTasksHandler>
+      mojo::PendingReceiver<task_module::mojom::TaskModuleHandler>
           pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
@@ -147,8 +138,7 @@ class NewTabPageUI
 
   // Mojo implementations for modules:
   std::unique_ptr<KaleidoscopeDataProviderImpl> kaleidoscope_data_provider_;
-  std::unique_ptr<RecipeTasksHandler> recipe_tasks_handler_;
-  std::unique_ptr<ShoppingTasksHandler> shopping_tasks_handler_;
+  std::unique_ptr<TaskModuleHandler> task_module_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

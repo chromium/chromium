@@ -5,6 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "shopping_tasks.mojom" ]
+  sources = [ "task_module.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
