@@ -116,7 +116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.MatchCalledFromDocumentScope"
-    enum="ScopeMatchCalledFrom" expires_after="2020-11-30">
+    enum="ScopeMatchCalledFrom" expires_after="2021-11-30">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.MatchCalledWhenFetchIsIncomplete"
-    enum="FetchStatusWhenMatchCalled" expires_after="2020-11-30">
+    enum="FetchStatusWhenMatchCalled" expires_after="2021-11-30">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -139,7 +139,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.PercentOfRequestsForWhichUpdatesAreSent"
-    units="%" expires_after="2020-11-30">
+    units="%" expires_after="2021-11-30">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
