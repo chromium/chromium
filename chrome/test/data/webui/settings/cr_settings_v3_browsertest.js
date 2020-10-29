@@ -500,7 +500,6 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['SearchPage', 'search_page_test.js'],
  ['Search', 'search_settings_test.js'],
  ['SecurityKeysSubpage', 'security_keys_subpage_test.js'],
- ['SecurityPage', 'security_page_test.js'],
  ['SecureDns', 'secure_dns_test.js'],
  ['SiteData', 'site_data_test.js'],
  ['SiteDataDetails', 'site_data_details_subpage_tests.js'],
@@ -517,6 +516,13 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['ToggleButton', 'settings_toggle_button_tests.m.js'],
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
+
+// Timeout on MacOS dbg bots
+// https://crbug.com/1133412
+GEN('#if !defined(OS_MAC) || defined(NDEBUG)');
+[['SecurityPage', 'security_page_test.js'],
+].forEach(test => registerTest(...test));
+GEN('#endif  // !defined(OS_MAC) || defined(NDEBUG)');
 
 GEN('#if defined(OS_CHROMEOS)');
 [['LanguagesPageMetricsChromeOS', 'languages_page_metrics_test_cros.js'],
