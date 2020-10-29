@@ -8,8 +8,6 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package chromeos.ime;
 
 // The base message type for all communication between the IME service and the

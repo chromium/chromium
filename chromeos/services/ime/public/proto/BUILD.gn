@@ -6,4 +6,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("messages_proto") {
   sources = [ "messages.proto" ]
+
+  # Chrome only allows lite runtime, but google3 side needs full for testing and
+  # fuzzing. Force lite runtime here.
+  cc_generator_options = "lite=true:"
 }
