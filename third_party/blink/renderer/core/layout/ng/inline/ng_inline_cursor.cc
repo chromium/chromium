@@ -156,7 +156,11 @@ const LayoutBlockFlow* NGInlineCursor::GetLayoutBlockFlow() const {
   }
   if (IsItemCursor()) {
     DCHECK(root_box_fragment_);
-    return To<LayoutBlockFlow>(root_box_fragment_->GetLayoutObject());
+    const LayoutObject* layout_object =
+        root_box_fragment_->GetSelfOrContainerLayoutObject();
+    DCHECK(layout_object);
+    DCHECK(!layout_object->IsLayoutFlowThread());
+    return To<LayoutBlockFlow>(layout_object);
   }
   NOTREACHED();
   return nullptr;

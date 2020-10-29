@@ -252,6 +252,7 @@ class CORE_EXPORT NGInlineCursor {
   }
 
   // Returns the |LayoutBlockFlow| containing this cursor.
+  // When |this| is a column box, returns the multicol container.
   const LayoutBlockFlow* GetLayoutBlockFlow() const;
 
   // Return the index of the current physical box fragment of the containing
