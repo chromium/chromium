@@ -87,47 +87,55 @@ class CompositedLayerMappingTest : public RenderingTest {
 };
 
 TEST_F(CompositedLayerMappingTest, SubpixelAccumulationChange) {
-  SetBodyInnerHTML(
-      "<div id='target' style='will-change: opacity; background: lightblue; "
-      "position: relative; left: 0.4px; width: 100px; height: 100px'>");
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style='will-change: opacity; background: lightblue;
+        position: relative; left: 0.4px; width: 100px; height: 100px'>
+      <!-- This div would be snapped to a different pixel -->
+      <div style='position: relative; left: 0.3px; width: 50px; height: 50px;
+           background: green'></div>
+    </div>
+  )HTML");
 
+  GetDocument().View()->SetTracksRasterInvalidations(true);
   Element* target = GetDocument().getElementById("target");
   target->SetInlineStyleProperty(CSSPropertyID::kLeft, "0.6px");
-
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
-
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  UpdateAllLifecyclePhasesForTest();
   // Directly composited layers are not invalidated on subpixel accumulation
   // change.
-  EXPECT_FALSE(paint_layer->GraphicsLayerBacking()
-                   ->GetPaintController()
-                   .GetPaintArtifact()
-                   .IsEmpty());
+  EXPECT_TRUE(target->GetLayoutBox()
+                  ->Layer()
+                  ->GraphicsLayerBacking()
+                  ->GetRasterInvalidationTracking()
+                  ->Invalidations()
+                  .IsEmpty());
+  GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
 TEST_F(CompositedLayerMappingTest,
        SubpixelAccumulationChangeUnderInvalidation) {
   ScopedPaintUnderInvalidationCheckingForTest test(true);
-  SetBodyInnerHTML(
-      "<div id='target' style='will-change: opacity; background: lightblue; "
-      "position: relative; left: 0.4px; width: 100px; height: 100px'>");
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style='will-change: opacity; background: lightblue;
+        position: relative; left: 0.4px; width: 100px; height: 100px'>
+      <!-- This div will be snapped to a different pixel -->
+      <div style='position: relative; left: 0.3px; width: 50px; height: 50px;
+           background: green'></div>
+    </div>
+  )HTML");
 
+  GetDocument().View()->SetTracksRasterInvalidations(true);
   Element* target = GetDocument().getElementById("target");
   target->SetInlineStyleProperty(CSSPropertyID::kLeft, "0.6px");
-
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
-
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
+  UpdateAllLifecyclePhasesForTest();
   // Invalidate directly composited layers on subpixel accumulation change
   // when PaintUnderInvalidationChecking is enabled.
-  EXPECT_TRUE(paint_layer->GraphicsLayerBacking()
-                  ->GetPaintController()
-                  .GetPaintArtifact()
-                  .IsEmpty());
+  EXPECT_FALSE(target->GetLayoutBox()
+                   ->Layer()
+                   ->GraphicsLayerBacking()
+                   ->GetRasterInvalidationTracking()
+                   ->Invalidations()
+                   .IsEmpty());
+  GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
 TEST_F(CompositedLayerMappingTest,
@@ -158,20 +166,18 @@ TEST_F(CompositedLayerMappingTest,
     </div>
   )HTML");
 
+  GetDocument().View()->SetTracksRasterInvalidations(true);
   Element* target = GetDocument().getElementById("target");
   target->SetInlineStyleProperty(CSSPropertyID::kLeft, "0.6px");
-
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
-
-  PaintLayer* paint_layer =
-      ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
-  // The PaintArtifact should have been deleted because paint was
-  // invalidated for subpixel accumulation change.
-  EXPECT_TRUE(paint_layer->GraphicsLayerBacking()
-                  ->GetPaintController()
-                  .GetPaintArtifact()
-                  .IsEmpty());
+  UpdateAllLifecyclePhasesForTest();
+  // Invalidate indirectly composited layers on subpixel accumulation change.
+  EXPECT_FALSE(target->GetLayoutBox()
+                   ->Layer()
+                   ->GraphicsLayerBacking()
+                   ->GetRasterInvalidationTracking()
+                   ->Invalidations()
+                   .IsEmpty());
+  GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
 TEST_F(CompositedLayerMappingTest, SimpleInterestRect) {

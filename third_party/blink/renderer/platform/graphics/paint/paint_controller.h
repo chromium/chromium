@@ -83,7 +83,6 @@ class PLATFORM_EXPORT PaintController {
 
   // For pre-PaintAfterPaint only.
   void InvalidateAll();
-  bool CacheIsAllInvalid() const;
 
   // These methods are called during painting.
 
@@ -267,6 +266,7 @@ class PLATFORM_EXPORT PaintController {
  private:
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
+  friend class GraphicsLayer;  // Temporary for ClientCacheIsValid().
 
   // True if all display items associated with the client are validly cached.
   // However, the current algorithm allows the following situations even if

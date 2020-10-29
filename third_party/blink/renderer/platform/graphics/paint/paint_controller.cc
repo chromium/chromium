@@ -358,12 +358,6 @@ void PaintController::InvalidateAllInternal() {
   cache_is_all_invalid_ = true;
 }
 
-bool PaintController::CacheIsAllInvalid() const {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK(!cache_is_all_invalid_ || current_paint_artifact_->IsEmpty());
-  return cache_is_all_invalid_;
-}
-
 void PaintController::UpdateCurrentPaintChunkProperties(
     const PaintChunk::Id* id,
     const PropertyTreeStateOrAlias& properties) {

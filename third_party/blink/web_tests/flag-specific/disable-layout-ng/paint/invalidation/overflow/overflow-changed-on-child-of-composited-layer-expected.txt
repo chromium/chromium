@@ -8,10 +8,10 @@
     },
     {
       "name": "LayoutBlockFlow DIV id='parent'",
-      "position": [-1, -1],
-      "bounds": [745, 102],
+      "position": [-10, -10],
+      "bounds": [754, 210],
       "invalidations": [
-        [0, 0, 745, 102]
+        [0, 0, 310, 210]
       ],
       "transform": 1
     }

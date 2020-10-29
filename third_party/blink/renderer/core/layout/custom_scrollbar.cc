@@ -417,9 +417,10 @@ void CustomScrollbar::PositionScrollbarParts() {
 
 void CustomScrollbar::InvalidateDisplayItemClientsOfScrollbarParts() {
   for (auto& part : parts_) {
+    DCHECK(!part.value->PaintingLayer());
     ObjectPaintInvalidator(*part.value)
-        .SlowSetPaintingLayerNeedsRepaintAndInvalidateDisplayItemClient(
-            *part.value, PaintInvalidationReason::kScrollControl);
+        .InvalidateDisplayItemClient(*part.value,
+                                     PaintInvalidationReason::kScrollControl);
   }
 }
 

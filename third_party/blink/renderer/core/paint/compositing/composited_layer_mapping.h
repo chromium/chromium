@@ -387,8 +387,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
       wtf_size_t next_squashed_layer_index);
   void RemoveSquashedLayers(Vector<GraphicsLayerPaintInfo>& squashed_layers);
 
-  void SetContentsNeedDisplay();
-
   PaintLayer& owning_layer_;
 
   // The hierarchy of layers that is maintained by the CompositedLayerMapping

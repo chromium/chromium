@@ -1855,19 +1855,12 @@ void LocalFrameView::SetBaseBackgroundColor(const Color& background_color) {
 
   base_background_color_ = background_color;
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    DisableCompositingQueryAsserts disabler;
-    if (auto* layout_view = GetLayoutView()) {
-      if (layout_view->Layer()->HasCompositedLayerMapping()) {
-        CompositedLayerMapping* composited_layer_mapping =
-            layout_view->Layer()->GetCompositedLayerMapping();
-        composited_layer_mapping->UpdateContentsOpaque();
-        if (composited_layer_mapping->MainGraphicsLayer())
-          composited_layer_mapping->MainGraphicsLayer()->SetNeedsDisplay();
-        if (composited_layer_mapping->ScrollingContentsLayer())
-          composited_layer_mapping->ScrollingContentsLayer()->SetNeedsDisplay();
-      }
+  if (auto* layout_view = GetLayoutView()) {
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      if (auto* mapping = layout_view->Layer()->GetCompositedLayerMapping())
+        mapping->UpdateContentsOpaque();
     }
+    layout_view->SetBackgroundNeedsFullPaintInvalidation();
   }
 
   if (!ShouldThrottleRendering())

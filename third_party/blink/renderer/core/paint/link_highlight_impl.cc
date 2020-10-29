@@ -322,7 +322,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     auto bounding_rect = EnclosingIntRect(new_path.BoundingRect());
     new_path.Translate(-FloatSize(ToIntSize(bounding_rect.Location())));
 
-    auto* layer = link_highlight_fragment.Layer();
+    cc::Layer* layer = link_highlight_fragment.Layer();
     DCHECK(layer);
     if (link_highlight_fragment.GetPath() != new_path) {
       link_highlight_fragment.SetPath(new_path);
