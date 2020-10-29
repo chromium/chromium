@@ -78,6 +78,14 @@ changes to a test device. If you're testing Chrome for ChromeOS, follow the
 [Simple Chrome][simple-chrome] instructions to deploy your changes to a test
 device. Make sure you hit every code path you changed.
 
+Think about testing any edge cases that could break your code. Some common edge
+cases to consider:
+
+*   Guest mode
+*   Enterprise/EDU/Supervised users
+*   Accessibility
+*   Official Chrome-branded build (for Googlers)
+
 ## 6. Write unit or browser tests for any new code
 
 Consider automating any manual testing you did in the previous step.
