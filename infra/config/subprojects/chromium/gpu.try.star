@@ -161,6 +161,11 @@ def gpu_linux_builder(*, name, **kwargs):
     )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-amd-rel",
+    pool = "luci.chromium.gpu.linux.amd.try",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-dqp",
     pool = "luci.chromium.gpu.linux.intel.try",
 )
@@ -338,6 +343,11 @@ def gpu_win_builder(*, name, **kwargs):
         ssd = None,
         **kwargs
     )
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win10-amd-rel-64",
+    pool = "luci.chromium.gpu.win10.amd.try",
+)
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-intel-dqp-64",

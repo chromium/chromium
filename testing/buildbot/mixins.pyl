@@ -404,6 +404,15 @@
       },
     },
   },
+  'linux_amd_rx_5500_xt': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:7340',
+        'os': 'Ubuntu',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'linux_intel_hd_530': {
     'swarming': {
       'dimensions': {
@@ -865,6 +874,15 @@
         'gpu': '1002:699f',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'win10_amd_rx_5500_xt': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:7340',
+        'os': 'Windows-10',
+        'pool': 'chromium.tests.gpu.experimental',
       },
     },
   },
