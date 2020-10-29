@@ -177,7 +177,9 @@ class TestBrowserWindow : public BrowserWindow {
 
 #if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_WIN) || \
     defined(OS_LINUX)
-  void ShowHatsBubble(const std::string& site_id) override {}
+  void ShowHatsBubble(const std::string& site_id,
+                      base::OnceClosure success_callback,
+                      base::OnceClosure failure_callback) override {}
 #endif
 
   ExclusiveAccessContext* GetExclusiveAccessContext() override;

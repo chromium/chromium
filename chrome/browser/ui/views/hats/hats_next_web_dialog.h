@@ -29,7 +29,10 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
                           public content::WebContentsDelegate,
                           public ProfileObserver {
  public:
-  HatsNextWebDialog(Browser* browser, const std::string& trigger_id);
+  HatsNextWebDialog(Browser* browser,
+                    const std::string& trigger_id,
+                    base::OnceClosure success_callback,
+                    base::OnceClosure failure_callback);
   ~HatsNextWebDialog() override;
   HatsNextWebDialog(const HatsNextWebDialog&) = delete;
   HatsNextWebDialog& operator=(const HatsNextWebDialog&) = delete;
@@ -49,7 +52,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
                     const GURL& hats_survey_url_,
-                    const base::TimeDelta& timeout);
+                    const base::TimeDelta& timeout,
+                    base::OnceClosure success_callback,
+                    base::OnceClosure failure_callback);
 
   class HatsWebView;
 
@@ -113,6 +118,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   GURL hats_survey_url_;
 
   base::TimeDelta timeout_;
+
+  base::OnceClosure success_callback_;
+  base::OnceClosure failure_callback_;
 
   base::WeakPtrFactory<HatsNextWebDialog> weak_factory_{this};
 };

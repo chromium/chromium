@@ -101,12 +101,16 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
 };
 
 HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
-                                     const std::string& trigger_id)
+                                     const std::string& trigger_id,
+                                     base::OnceClosure success_callback,
+                                     base::OnceClosure failure_callback)
     : HatsNextWebDialog(
           browser,
           trigger_id,
           GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
-          base::TimeDelta::FromSeconds(10)) {}
+          base::TimeDelta::FromSeconds(10),
+          std::move(success_callback),
+          std::move(failure_callback)) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -123,7 +127,9 @@ void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
 HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
                                      const std::string& trigger_id,
                                      const GURL& hats_survey_url,
-                                     const base::TimeDelta& timeout)
+                                     const base::TimeDelta& timeout,
+                                     base::OnceClosure success_callback,
+                                     base::OnceClosure failure_callback)
     : BubbleDialogDelegateView(BrowserView::GetBrowserViewForBrowser(browser)
                                    ->toolbar_button_provider()
                                    ->GetAppMenuButton(),
@@ -133,7 +139,9 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
       browser_(browser),
       trigger_id_(trigger_id),
       hats_survey_url_(hats_survey_url),
-      timeout_(timeout) {
+      timeout_(timeout),
+      success_callback_(std::move(success_callback)),
+      failure_callback_(std::move(failure_callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
@@ -184,6 +192,7 @@ void HatsNextWebDialog::LoadTimedOut() {
       kHatsShouldShowSurveyReasonHistogram,
       HatsService::ShouldShowSurveyReasons::kNoSurveyUnreachable);
   CloseWidget();
+  std::move(failure_callback_).Run();
 }
 
 void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
@@ -197,6 +206,7 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
     service->RecordSurveyAsShown(trigger_id_);
     received_survey_loaded_ = true;
     ShowWidget();
+    std::move(success_callback_).Run();
   } else if (state == "close") {
     if (!received_survey_loaded_) {
       // Receiving a close state prior to a loaded state indicates that contact
@@ -206,12 +216,14 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
       base::UmaHistogramEnumeration(
           kHatsShouldShowSurveyReasonHistogram,
           HatsService::ShouldShowSurveyReasons::kNoRejectedByHatsService);
+      std::move(failure_callback_).Run();
     }
     CloseWidget();
   } else {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"
                << state;
     CloseWidget();
+    std::move(failure_callback_).Run();
   }
 }
 

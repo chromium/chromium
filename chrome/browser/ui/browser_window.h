@@ -468,7 +468,11 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows User Happiness Tracking Survey's invitation bubble when possible
   // (such as having the proper anchor view).
   // |site_id| is the site identification of the survey the bubble leads to.
-  virtual void ShowHatsBubble(const std::string& site_id) = 0;
+  // Note: |success_callback| and |failure_callback| are discarded for HaTS v1
+  // surveys, which are deprecated (crbug.com/1143176).
+  virtual void ShowHatsBubble(const std::string& site_id,
+                              base::OnceClosure success_callback,
+                              base::OnceClosure failure_callback) = 0;
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;

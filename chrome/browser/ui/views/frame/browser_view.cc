@@ -3440,8 +3440,12 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(
                                   focus_first_profile_button);
 }
 
-void BrowserView::ShowHatsBubble(const std::string& site_id) {
-  HatsBubbleView::ShowOnContentReady(browser(), site_id);
+void BrowserView::ShowHatsBubble(const std::string& site_id,
+                                 base::OnceClosure success_callback,
+                                 base::OnceClosure failure_callback) {
+  HatsBubbleView::ShowOnContentReady(browser(), site_id,
+                                     std::move(success_callback),
+                                     std::move(failure_callback));
 }
 
 ExclusiveAccessContext* BrowserView::GetExclusiveAccessContext() {

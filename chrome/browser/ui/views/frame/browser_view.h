@@ -468,7 +468,9 @@ class BrowserView : public BrowserWindow,
       AvatarBubbleMode mode,
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) override;
-  void ShowHatsBubble(const std::string& site_id) override;
+  void ShowHatsBubble(const std::string& site_id,
+                      base::OnceClosure success_callback,
+                      base::OnceClosure failure_callback) override;
   ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;

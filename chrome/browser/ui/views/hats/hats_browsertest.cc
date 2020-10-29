@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -40,7 +41,7 @@ class HatsBubbleTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     ASSERT_TRUE(browser()->is_type_normal());
     BrowserView::GetBrowserViewForBrowser(InProcessBrowserTest::browser())
-        ->ShowHatsBubble("test_site_id");
+        ->ShowHatsBubble("test_site_id", base::DoNothing(), base::DoNothing());
   }
 
  private:
@@ -195,8 +196,15 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
   MockHatsNextWebDialog(Browser* browser,
                         const std::string& trigger_id,
                         const GURL& hats_survey_url,
-                        const base::TimeDelta& timeout)
-      : HatsNextWebDialog(browser, trigger_id, hats_survey_url, timeout) {}
+                        const base::TimeDelta& timeout,
+                        base::OnceClosure success_callback,
+                        base::OnceClosure failure_callback)
+      : HatsNextWebDialog(browser,
+                          trigger_id,
+                          hats_survey_url,
+                          timeout,
+                          std::move(success_callback),
+                          std::move(failure_callback)) {}
 
   MOCK_METHOD0(ShowWidget, void());
   MOCK_METHOD0(CloseWidget, void());
@@ -235,6 +243,17 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
 
   MockHatsService* hats_service() { return hats_service_; }
 
+  base::OnceClosure GetSuccessClosure() {
+    return base::BindLambdaForTesting([&]() { ++success_count; });
+  }
+
+  base::OnceClosure GetFailureClosure() {
+    return base::BindLambdaForTesting([&]() { ++failure_count; });
+  }
+
+  int success_count = 0;
+  int failure_count = 0;
+
  private:
   base::test::ScopedFeatureList feature_list_;
   MockHatsService* hats_service_;
@@ -254,7 +273,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
+      GetFailureClosure());
 
   // Check that no record of a survey being shown is present.
   const base::DictionaryValue* pref_data =
@@ -276,6 +296,9 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
         run_loop.Quit();
       }));
   run_loop.Run();
+
+  EXPECT_EQ(1, success_count);
+  EXPECT_EQ(0, failure_count);
 
   // Check that a record of the survey being shown has been recorded.
   pref_data = browser()->profile()->GetPrefs()->GetDictionary(
@@ -299,11 +322,15 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "close_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
+      GetFailureClosure());
 
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey window should be closed.
   dialog->WaitForClose();
+
+  EXPECT_EQ(0, success_count);
+  EXPECT_EQ(1, failure_count);
 
   // Because no loaded state was provided, only a rejection should be recorded.
   histogram_tester.ExpectUniqueSample(
@@ -321,8 +348,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
+      GetFailureClosure());
   dialog->WaitForClose();
+
+  EXPECT_EQ(1, success_count);
+  EXPECT_EQ(0, failure_count);
 
   // The only recorded sample should indicate that the survey was shown.
   histogram_tester.ExpectUniqueSample(
@@ -340,9 +371,13 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyTimeout) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "invalid_test",
       embedded_test_server()->GetURL("/hats/non_existent.html"),
-      base::TimeDelta::FromMilliseconds(1));
+      base::TimeDelta::FromMilliseconds(1), GetSuccessClosure(),
+      GetFailureClosure());
 
   dialog->WaitForClose();
+
+  EXPECT_EQ(0, success_count);
+  EXPECT_EQ(1, failure_count);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
       HatsService::ShouldShowSurveyReasons::kNoSurveyUnreachable, 1);
@@ -357,9 +392,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "invalid_url_fragment_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
+      GetFailureClosure());
 
   dialog->WaitForClose();
+  EXPECT_EQ(0, success_count);
+  EXPECT_EQ(1, failure_count);
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
@@ -368,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "open_new_web_contents_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
 
   // The mock hats dialog will push a close state after it has attempted to
   // open another web contents.
@@ -388,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "resize_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
 
   // Check that the dialog reports a preferred size the same as the size defined
   // in hats_next_mock.html.
@@ -412,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "resize_to_large_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100));
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
 
   // Check that the maximum size of the dialog is bounded appropriately by the
   // dialogs maximum size. Depending on renderer warm-up, an initial empty size
