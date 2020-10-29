@@ -60,6 +60,8 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     bool AddDetachedNode(const Node& node);
     // Invoked on the content of this document is captured.
     void OnContentCaptured(Node& node, const gfx::Rect& visual_rect);
+    // Invoked after TaskSession grouped all captured content.
+    void OnGroupingComplete();
     bool HasUnsentData() const {
       return HasUnsentCapturedContent() || HasUnsentChangedContent() ||
              HasUnsentDetachedNodes();
@@ -98,6 +100,11 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     WeakMember<const Document> document_;
     // A set of weak reference of the node that has been sent.
     HeapHashSet<WeakMember<const Node>> sent_nodes_;
+    // A set of node that has been sent in previous capturing and still visible
+    // now, it is only valid while TaskSession is groupping the captured
+    // content, the nodes are moved and replace the |sent_nodes_| in
+    // OnGroupingComplete().
+    HeapHashSet<WeakMember<const Node>> visible_sent_nodes_;
     // A set of node whose value has been changed since last capture.
     HeapHashSet<WeakMember<Node>> changed_nodes_;
 

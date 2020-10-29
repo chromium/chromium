@@ -749,6 +749,10 @@ const base::Feature kCompositingOptimizations{
 const base::Feature kReducedReferrerGranularity{
     "ReducedReferrerGranularity", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the constant streaming in the ContentCapture task.
+const base::Feature kContentCaptureConstantStreaming = {
+    "ContentCaptureConstantStreaming", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the user activated exponential delay in the ContentCapture task.
 const base::Feature kContentCaptureUserActivatedDelay = {
     "ContentCaptureUserActivatedDelay", base::FEATURE_DISABLED_BY_DEFAULT};

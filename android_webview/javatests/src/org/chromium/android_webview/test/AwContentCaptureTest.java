@@ -451,7 +451,8 @@ public class AwContentCaptureTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    public void testSingleFrame() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=ContentCaptureConstantStreaming"})
+    public void testSingleFrameWithoutConstantStreaming() throws Throwable {
         final String response = "<html><head></head><body>"
                 + "<div id='place_holder'>"
                 + "<p style=\"height: 100vh\">Hello</p>"
@@ -488,6 +489,85 @@ public class AwContentCaptureTest {
 
         // Changed previous added element, this will trigger remove/capture events.
         long removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
+        final String newContent2 = "new content 2";
+        capturedContentIds = mConsumer.cloneCaptureContentIds();
+        runAndVerifyCallbacks(()
+                                      -> { setInnerHTML(newContentId, newContent2); },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED,
+                        TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        verifyRemovedContent(frameId, url, toLongSet(removedContentId),
+                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+        verifyCapturedContent(null, frameId, url, toStringSet(newContent2), capturedContentIds,
+                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+
+        // Remove the element.
+        removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
+        capturedContentIds = mConsumer.cloneCaptureContentIds();
+        runAndVerifyCallbacks(() -> {
+            removeElement(newContentId);
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_REMOVED));
+        verifyRemovedContent(frameId, url, toLongSet(removedContentId),
+                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=ContentCaptureConstantStreaming"})
+    public void testSingleFrameWithConstantStreaming() throws Throwable {
+        final String response = "<html><head></head><body>"
+                + "<div id='place_holder'>"
+                + "<p style=\"height: 100vh\">Hello</p>"
+                + "<p>world</p>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
+        runAndVerifyCallbacks(() -> {
+            loadUrlSync(url);
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        Long frameId = null;
+        Set<Long> capturedContentIds = null;
+        // Verify only on-screen content is captured.
+        verifyCapturedContent(null, frameId, url, toStringSet("Hello"), capturedContentIds,
+                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+
+        // Scrolls to the bottom, the node that became invisible is removed, and the content
+        // at bottom is captured.
+        frameId = Long.valueOf(mConsumer.getCapturedContent().getId());
+        long contentHelloId = mConsumer.getCapturedContent().getChildren().get(0).getId();
+        capturedContentIds = mConsumer.cloneCaptureContentIds();
+        runAndVerifyCallbacks(()
+                                      -> { scrollToBottom(); },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED,
+                        TestAwContentCaptureConsumer.CONTENT_REMOVED));
+        verifyCapturedContent(null, frameId, url, toStringSet("world"), capturedContentIds,
+                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyRemovedContent(frameId, url, toLongSet(contentHelloId),
+                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+        long contentWorldId = mConsumer.getCapturedContent().getChildren().get(0).getId();
+        // Adds the new content at the beginning and scroll back, the newly visible content
+        // is captured and invisible content is removed.
+        final String newContentId = "new_content_id";
+        final String newContent = "new content";
+        capturedContentIds = mConsumer.cloneCaptureContentIds();
+        runAndVerifyCallbacks(
+                ()
+                        -> {
+                    insertElement(newContentId, newContent);
+                    scrollToTop();
+                },
+                toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED,
+                        TestAwContentCaptureConsumer.CONTENT_REMOVED));
+        verifyCapturedContent(null, frameId, url, toStringSet(newContent, "Hello"),
+                capturedContentIds, mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        verifyRemovedContent(frameId, url, toLongSet(contentWorldId),
+                mConsumer.getCurrentFrameSession(), mConsumer.getRemovedIds());
+
+        // Changed previous added element, this will trigger remove/capture events.
+        long removedContentId = mConsumer.getCapturedContent().getChildren().get(0).getId();
+        // The id is unordered, if the current one is "Hello", the next child must be "new content".
+        if (removedContentId == contentHelloId) {
+            removedContentId = mConsumer.getCapturedContent().getChildren().get(1).getId();
+        }
         final String newContent2 = "new content 2";
         capturedContentIds = mConsumer.cloneCaptureContentIds();
         runAndVerifyCallbacks(()

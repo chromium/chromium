@@ -6,10 +6,19 @@
 
 #include <utility>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 
 namespace blink {
+
+namespace {
+bool IsConstantStreamingEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kContentCaptureConstantStreaming);
+}
+
+}  // namespace
 
 TaskSession::DocumentSession::DocumentSession(const Document& document,
                                               SentNodeCountCallback& callback)
@@ -21,7 +30,9 @@ TaskSession::DocumentSession::~DocumentSession() {
 }
 
 bool TaskSession::DocumentSession::AddDetachedNode(const Node& node) {
-  if (sent_nodes_.Contains(&node)) {
+  // Take the node out of |sent_nodes|, otherwise, the |node| would be found
+  // invisible in next capturing and be reported as the removed node again.
+  if (sent_nodes_.Take(&node)) {
     detached_nodes_.emplace_back(reinterpret_cast<int64_t>(&node));
     return true;
   }
@@ -72,9 +83,34 @@ void TaskSession::DocumentSession::OnContentCaptured(
     const gfx::Rect& visual_rect) {
   if (changed_nodes_.Take(&node)) {
     changed_content_.Set(WeakMember<Node>(&node), visual_rect);
-  } else if (!sent_nodes_.Contains(&node)) {
-    captured_content_.Set(WeakMember<Node>(&node), visual_rect);
-  }  // else |node| has been sent and unchanged.
+  } else {
+    if (IsConstantStreamingEnabled()) {
+      if (auto value = sent_nodes_.Take(&node))
+        visible_sent_nodes_.insert(value);
+      else
+        captured_content_.Set(WeakMember<Node>(&node), visual_rect);
+    } else {
+      if (!sent_nodes_.Contains(&node))
+        captured_content_.Set(WeakMember<Node>(&node), visual_rect);
+      // else |node| has been sent and unchanged.
+    }
+  }
+}
+
+void TaskSession::DocumentSession::OnGroupingComplete() {
+  if (!IsConstantStreamingEnabled())
+    return;
+
+  // All nodes in |sent_nodes_| aren't visible any more, remove them.
+  for (auto weak_node : sent_nodes_) {
+    if (auto* node = weak_node.Get())
+      detached_nodes_.emplace_back(reinterpret_cast<int64_t>(node));
+  }
+  // |visible_sent_nodes_| are still visible and moved to |sent_nodes_|.
+  sent_nodes_.swap(visible_sent_nodes_);
+  visible_sent_nodes_.clear();
+  // Any node in |changed_nodes_| isn't visible any more and shall be clear.
+  changed_nodes_.clear();
 }
 
 void TaskSession::DocumentSession::Trace(Visitor* visitor) const {
@@ -82,6 +118,7 @@ void TaskSession::DocumentSession::Trace(Visitor* visitor) const {
   visitor->Trace(changed_content_);
   visitor->Trace(document_);
   visitor->Trace(sent_nodes_);
+  visitor->Trace(visible_sent_nodes_);
   visitor->Trace(changed_nodes_);
 }
 
@@ -90,6 +127,7 @@ void TaskSession::DocumentSession::Reset() {
   captured_content_.clear();
   detached_nodes_.Clear();
   sent_nodes_.clear();
+  visible_sent_nodes_.clear();
   changed_nodes_.clear();
 }
 
@@ -123,6 +161,9 @@ void TaskSession::GroupCapturedContentByDocument(
       EnsureDocumentSession(node->GetDocument())
           .OnContentCaptured(*node, i.visual_rect);
     }
+  }
+  for (auto doc_session : to_document_session_.Values()) {
+    doc_session->OnGroupingComplete();
   }
 }
 

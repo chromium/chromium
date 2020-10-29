@@ -23,13 +23,57 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
 namespace {
+
 gfx::Rect GetRect(LayoutObject* layout_object) {
   return gfx::Rect(EnclosingIntRect(layout_object->VisualRectInDocument()));
 }
+
+void FindNodeVectorsDiff(const Vector<Persistent<Node>>& a,
+                         const Vector<Persistent<Node>>& b,
+                         Vector<Persistent<Node>>& a_diff_b) {
+  for (auto& i : a) {
+    if (!b.Contains(i))
+      a_diff_b.push_back(i);
+  }
+}
+
+void FindNodeVectorsDiff(const Vector<Persistent<Node>>& a,
+                         const Vector<Persistent<Node>>& b,
+                         Vector<Persistent<Node>>& a_diff_b,
+                         Vector<Persistent<Node>>& b_diff_a) {
+  FindNodeVectorsDiff(a, b, a_diff_b);
+  FindNodeVectorsDiff(b, a, b_diff_a);
+}
+
+void FindNodeVectorsUnion(const Vector<Persistent<Node>>& a,
+                          const Vector<Persistent<Node>>& b,
+                          HashSet<Persistent<Node>>& a_and_b) {
+  for (auto& n : a) {
+    a_and_b.insert(n);
+  }
+  for (auto& n : b) {
+    a_and_b.insert(n);
+  }
+}
+
+void ToNodeIds(const Vector<Persistent<Node>>& nodes,
+               Vector<int64_t>& node_ids) {
+  for (auto& v : nodes) {
+    node_ids.push_back(reinterpret_cast<int64_t>(static_cast<Node*>(v)));
+  }
+}
+
+void ToNodeTexts(const Vector<Persistent<Node>>& nodes,
+                 Vector<std::string>& texts) {
+  for (auto& n : nodes)
+    texts.push_back(n->nodeValue().Utf8());
+}
+
 }  // namespace
 
 class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
@@ -54,8 +98,11 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
                          bool first_data) override {
     data_ = data;
     first_data_ = first_data;
-    for (auto& d : data)
-      all_text_.push_back(d.GetValue().Utf8());
+    for (auto& d : data) {
+      auto text = d.GetValue().Utf8();
+      all_text_.push_back(text);
+      captured_text_.push_back(text);
+    }
   }
 
   void DidUpdateContent(const WebVector<WebContentHolder>& data) override {
@@ -78,6 +125,8 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
 
   const Vector<std::string>& AllText() const { return all_text_; }
 
+  const Vector<std::string>& CapturedText() const { return captured_text_; }
+
   const Vector<std::string>& UpdatedText() const { return updated_text_; }
 
   const WebVector<int64_t>& RemovedData() const { return removed_data_; }
@@ -87,6 +136,7 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
     data_.Clear();
     updated_data_.Clear();
     removed_data_.Clear();
+    captured_text_.clear();
   }
 
  private:
@@ -96,6 +146,7 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
   WebVector<int64_t> removed_data_;
   Vector<std::string> all_text_;
   Vector<std::string> updated_text_;
+  Vector<std::string> captured_text_;
 };
 
 class ContentCaptureTaskTestHelper : public ContentCaptureTask {
@@ -163,18 +214,14 @@ class ContentCaptureLocalFrameClientHelper : public EmptyLocalFrameClient {
   WebContentCaptureClient& client_;
 };
 
-class ContentCaptureTest : public PageTestBase,
-                           public ::testing::WithParamInterface<bool> {
+class ContentCaptureTest
+    : public PageTestBase,
+      public ::testing::WithParamInterface<std::vector<base::Feature>> {
  public:
   ContentCaptureTest() {
     EnablePlatform();
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kContentCaptureUserActivatedDelay);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kContentCaptureUserActivatedDelay);
-    }
+    feature_list_.InitWithFeatures(
+        GetParam(), /*disabled_features=*/std::vector<base::Feature>());
   }
 
   void SetUp() override {
@@ -207,6 +254,14 @@ class ContentCaptureTest : public PageTestBase,
     // ContentCaptureManager is created by LocalFrame.
     content_capture_manager_->GetContentCaptureTask()
         ->SetCapturedContentForTesting(node_ids_);
+    InitScrollingTestData();
+  }
+
+  void SimulateScrolling(size_t step) {
+    CHECK_LT(step, 4u);
+    content_capture_manager_->GetContentCaptureTask()
+        ->SetCapturedContentForTesting(scrolling_node_ids_[step]);
+    content_capture_manager_->OnScrollPositionChanged();
   }
 
   void CreateTextNodeAndNotifyManager() {
@@ -282,32 +337,86 @@ class ContentCaptureTest : public PageTestBase,
 
   Node& invisible_node() const { return *invisible_node_; }
 
+  const Vector<Vector<std::string>>& scrolling_expected_captured_nodes() {
+    return scrolling_expected_captured_nodes_;
+  }
+
+  const Vector<Vector<int64_t>>& scrolling_expected_removed_nodes() {
+    return scrolling_expected_removed_nodes_;
+  }
+
  private:
   void ResetResult() {
     GetWebContentCaptureClient()->ResetResults();
   }
 
-  // TODO(michaelbai): Remove this once integrate with LayoutText.
-  void InitNodeHolders() {
-    Vector<std::string> ids{"p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"};
+  void BuildNodesInfo(const Vector<std::string>& ids,
+                      Vector<Persistent<Node>>& nodes,
+                      Vector<cc::NodeInfo>& node_ids) {
     for (auto id : ids) {
       Node* node = GetElementById(id.c_str())->firstChild();
       CHECK(node);
       LayoutObject* layout_object = node->GetLayoutObject();
       CHECK(layout_object);
       CHECK(layout_object->IsText());
-      nodes_.push_back(node);
+      nodes.push_back(node);
       GetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
-      node_ids_.push_back(
+      node_ids.push_back(
           cc::NodeInfo(DOMNodeIds::IdForNode(node), GetRect(layout_object)));
     }
+  }
+
+  // TODO(michaelbai): Remove this once integrate with LayoutText.
+  void InitNodeHolders() {
+    BuildNodesInfo(
+        Vector<std::string>{"p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8"},
+        nodes_, node_ids_);
     invisible_node_ = GetElementById("invisible")->firstChild();
     DCHECK(invisible_node_.Get());
+  }
+
+  void InitScrollingTestData() {
+    Vector<Vector<Persistent<Node>>> nodes{4};
+    BuildNodesInfo(Vector<std::string>{"p1", "p2", "p3"}, nodes[0],
+                   scrolling_node_ids_[0]);
+    BuildNodesInfo(Vector<std::string>{"p3", "p4", "p5"}, nodes[1],
+                   scrolling_node_ids_[1]);
+    BuildNodesInfo(Vector<std::string>{"p6", "p7", "p8"}, nodes[2],
+                   scrolling_node_ids_[2]);
+    BuildNodesInfo(Vector<std::string>{"p2", "p3"}, nodes[3],
+                   scrolling_node_ids_[3]);
+    // Build expected result.
+    if (base::FeatureList::IsEnabled(
+            features::kContentCaptureConstantStreaming)) {
+      for (int i = 0; i < 4; ++i) {
+        Vector<Persistent<Node>> a_diff_b;
+        Vector<Persistent<Node>> b_diff_a;
+        FindNodeVectorsDiff(nodes[i],
+                            i == 0 ? Vector<Persistent<Node>>() : nodes[i - 1],
+                            a_diff_b, b_diff_a);
+        ToNodeTexts(a_diff_b, scrolling_expected_captured_nodes_[i]);
+        ToNodeIds(b_diff_a, scrolling_expected_removed_nodes_[i]);
+      }
+    } else {
+      HashSet<Persistent<Node>> sent;
+      for (int i = 0; i < 4; ++i) {
+        Vector<Persistent<Node>> a_diff_b;
+        Vector<Persistent<Node>> b;
+        CopyToVector(sent, b);
+        FindNodeVectorsDiff(nodes[i], b, a_diff_b);
+        ToNodeTexts(a_diff_b, scrolling_expected_captured_nodes_[i]);
+        sent.clear();
+        FindNodeVectorsUnion(b, nodes[i], sent);
+      }
+    }
   }
 
   Vector<Persistent<Node>> nodes_;
   Vector<cc::NodeInfo> node_ids_;
   Persistent<Node> invisible_node_;
+  Vector<Vector<std::string>> scrolling_expected_captured_nodes_{4};
+  Vector<Vector<int64_t>> scrolling_expected_removed_nodes_{4};
+  Vector<Vector<cc::NodeInfo>> scrolling_node_ids_{4};
   std::unique_ptr<WebContentCaptureClientTestHelper> content_capture_client_;
   Persistent<ContentCaptureManagerTestHelper> content_capture_manager_;
   Persistent<ContentCaptureLocalFrameClientHelper> local_frame_client_;
@@ -315,7 +424,16 @@ class ContentCaptureTest : public PageTestBase,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, ContentCaptureTest, testing::Values(true, false));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentCaptureTest,
+    testing::Values(
+        std::vector<base::Feature>{},
+        std::vector<base::Feature>{features::kContentCaptureUserActivatedDelay},
+        std::vector<base::Feature>{features::kContentCaptureConstantStreaming},
+        std::vector<base::Feature>{
+            features::kContentCaptureUserActivatedDelay,
+            features::kContentCaptureConstantStreaming}));
 
 TEST_P(ContentCaptureTest, Basic) {
   RunContentCaptureTask();
@@ -324,6 +442,23 @@ TEST_P(ContentCaptureTest, Basic) {
   EXPECT_FALSE(GetWebContentCaptureClient()->Data().empty());
   EXPECT_EQ(GetExpectedSecondResultSize(),
             GetWebContentCaptureClient()->Data().size());
+}
+
+TEST_P(ContentCaptureTest, Scrolling) {
+  for (size_t step = 0; step < 4; ++step) {
+    SimulateScrolling(step);
+    RunContentCaptureTask();
+    EXPECT_EQ(ContentCaptureTask::TaskState::kStop,
+              GetContentCaptureTask()->GetTaskStateForTesting());
+    EXPECT_THAT(GetWebContentCaptureClient()->CapturedText(),
+                testing::UnorderedElementsAreArray(
+                    scrolling_expected_captured_nodes()[step]))
+        << "at step " << step;
+    EXPECT_THAT(GetWebContentCaptureClient()->RemovedData(),
+                testing::UnorderedElementsAreArray(
+                    scrolling_expected_removed_nodes()[step]))
+        << "at step " << step;
+  }
 }
 
 TEST_P(ContentCaptureTest, PauseAndResume) {
@@ -605,7 +740,8 @@ TEST_P(ContentCaptureTest, RescheduleTask) {
   task->Schedule(ContentCaptureTask::ScheduleReason::kScrolling);
   base::TimeDelta interval2 = task->GetTaskNextFireIntervalForTesting();
   auto test_running_time = base::TimeTicks::Now() - begin;
-  if (GetParam()) {
+  if (base::FeatureList::IsEnabled(
+          features::kContentCaptureUserActivatedDelay)) {
     // The first scheduled task is always shortest even though caused by
     // NonUserTriggered.
     EXPECT_LE(interval1, GetWebContentCaptureClient()->GetTaskShortDelay());
