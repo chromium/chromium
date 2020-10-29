@@ -6811,15 +6811,7 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
 #if defined(OS_ANDROID)
-  if (!strcmp("password-change-in-settings", entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
-  }
-
   if (!strcmp("password-change-support", entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
-  }
-
-  if (!strcmp("password-scripts-fetching", entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 #endif  // OS_ANDROID
