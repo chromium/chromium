@@ -45,6 +45,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // video.
   virtual bool Uses24HourFormat() const = 0;
 
+  // Returns whether initiation of capture mode is restricted because of
+  // currently visible restricted content.
+  virtual bool IsCaptureModeInitRestricted() const = 0;
+
   // Returns whether capture of the region defined by |window| and |bounds|
   // is currently allowed or not.
   virtual bool IsCaptureAllowed(const aura::Window* window,

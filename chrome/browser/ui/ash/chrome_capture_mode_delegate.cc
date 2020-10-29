@@ -79,6 +79,10 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   return base::GetHourClockType() == base::k24HourClock;
 }
 
+bool ChromeCaptureModeDelegate::IsCaptureModeInitRestricted() const {
+  return policy::DlpContentManager::Get()->IsCaptureModeInitRestricted();
+}
+
 bool ChromeCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
                                                  const gfx::Rect& bounds,
                                                  bool for_video) const {

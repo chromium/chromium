@@ -73,6 +73,10 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Called when video capturing is stopped.
   void OnVideoCaptureStopped();
 
+  // Returns whether initiation of capture mode should be restricted because
+  // any restricted content is currently visible.
+  bool IsCaptureModeInitRestricted() const;
+
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
   static void SetDlpContentManagerForTesting(

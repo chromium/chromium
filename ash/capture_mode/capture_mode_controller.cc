@@ -288,6 +288,11 @@ void CaptureModeController::Start() {
   if (capture_mode_session_)
     return;
 
+  if (delegate_->IsCaptureModeInitRestricted()) {
+    ShowDisabledNotification();
+    return;
+  }
+
   capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
 }
 

@@ -125,6 +125,13 @@ void DlpContentManager::OnVideoCaptureStopped() {
   running_video_capture_.reset();
 }
 
+bool DlpContentManager::IsCaptureModeInitRestricted() const {
+  return GetOnScreenPresentRestrictions().HasRestriction(
+             DlpContentRestriction::kScreenshot) ||
+         GetOnScreenPresentRestrictions().HasRestriction(
+             DlpContentRestriction::kVideoCapture);
+}
+
 /* static */
 void DlpContentManager::SetDlpContentManagerForTesting(
     DlpContentManager* dlp_content_manager) {
