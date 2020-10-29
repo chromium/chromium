@@ -5,7 +5,6 @@
 #include "ios/chrome/test/app/password_test_util.h"
 
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller+testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"

@@ -42,22 +42,17 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 // The presenter of the feature.
 @property(nonatomic, weak) id<PasswordBreachPresenter> presenter;
 
-// Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands> handler;
-
 @end
 
 @implementation PasswordBreachMediator
 
 - (instancetype)initWithConsumer:(id<PasswordBreachConsumer>)consumer
                        presenter:(id<PasswordBreachPresenter>)presenter
-                         handler:(id<ApplicationCommands>)handler
                              URL:(const GURL&)URL
                         leakType:(CredentialLeakType)leakType {
   self = [super init];
   if (self) {
     _presenter = presenter;
-    _handler = handler;
     _leakType = GetLeakDialogType(leakType);
     _dismissReason = LeakDialogDismissalReason::kNoDirectInteraction;
 
@@ -85,18 +80,9 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 - (void)confirmationAlertPrimaryAction {
   self.dismissReason = LeakDialogDismissalReason::kClickedCheckPasswords;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck)) {
-    // Opening Password page will stop the presentation in the presenter.
-    // No need to send |stop|.
-    [self.presenter startPasswordCheck];
-  } else {
-    // Opening a new tab already stops the presentation in the presenter.
-    // No need to send |stop|.
-    OpenNewTabCommand* newTabCommand =
-        [OpenNewTabCommand commandWithURLFromChrome:GetPasswordCheckupURL()];
-    [self.handler openURLInNewTab:newTabCommand];
-  }
+  // Opening Password page will stop the presentation in the presenter.
+  // No need to send |stop|.
+  [self.presenter startPasswordCheck];
 }
 
 - (void)confirmationAlertSecondaryAction {

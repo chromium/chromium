@@ -397,10 +397,6 @@ const char kOpenDownloadsInFilesAppDescription[] =
     "the tools menu or after pressing the 'Open in downloads' button invoked "
     "by pressing 'Open In...' after download completes.";
 
-const char kPasswordCheckName[] = "Bulk Password Check";
-const char kPasswordCheckDescription[] =
-    "Enables the Bulk Password Check feature for signed-in users.";
-
 const char kPageInfoRefactoringName[] = "New design of the page info";
 const char kPageInfoRefactoringDescription[] =
     "Uses the new design for the page security info.";

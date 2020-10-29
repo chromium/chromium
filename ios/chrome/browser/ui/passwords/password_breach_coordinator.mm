@@ -63,12 +63,9 @@ using password_manager::CredentialLeakType;
   if (@available(iOS 13, *)) {
     self.viewController.modalInPresentation = YES;
   }
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
   self.mediator =
       [[PasswordBreachMediator alloc] initWithConsumer:self.viewController
                                              presenter:self
-                                               handler:handler
                                                    URL:_url
                                               leakType:self.leakType];
   self.viewController.actionHandler = self.mediator;

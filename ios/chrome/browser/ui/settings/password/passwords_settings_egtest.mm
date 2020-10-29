@@ -312,12 +312,9 @@ void CopyPasswordDetailWithID(int detail_id) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  // Password Check Feature is enabled for all tests. This is done because it
+  // Password Editing Feature is enabled by test name. This is done because it
   // is inefficient to use ensureAppLaunchedWithConfiguration for each test.
   // This should be removed once test config is modified.
-  // TODO(crbug.com/1075494): Remove this once feature is launched.
-  config.features_enabled.push_back(password_manager::features::kPasswordCheck);
-
   if ([self isRunningTest:@selector(testEditUsername)] ||
       [self isRunningTest:@selector(testEditUsernameFails)]) {
     config.features_enabled.push_back(

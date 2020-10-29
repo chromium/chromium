@@ -414,30 +414,27 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
         forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck)) {
-    // Password check.
-    [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
-    if (!_passwordProblemsItem) {
-      _passwordProblemsItem = [self passwordProblemsItem];
-    }
-
-    [self updatePasswordCheckStatusLabelWithState:_passwordCheckState];
-    [model addItem:_passwordProblemsItem
-        toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-
-    if (!_checkForProblemsItem) {
-      _checkForProblemsItem = [self checkForProblemsItem];
-    }
-
-    [self updatePasswordCheckButtonWithState:_passwordCheckState];
-    [model addItem:_checkForProblemsItem
-        toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-
-    [self updateLastCheckTimestampWithState:_passwordCheckState
-                                  fromState:_passwordCheckState
-                                     update:NO];
+  // Password check.
+  [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
+  if (!_passwordProblemsItem) {
+    _passwordProblemsItem = [self passwordProblemsItem];
   }
+
+  [self updatePasswordCheckStatusLabelWithState:_passwordCheckState];
+  [model addItem:_passwordProblemsItem
+      toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+
+  if (!_checkForProblemsItem) {
+    _checkForProblemsItem = [self checkForProblemsItem];
+  }
+
+  [self updatePasswordCheckButtonWithState:_passwordCheckState];
+  [model addItem:_checkForProblemsItem
+      toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+
+  [self updateLastCheckTimestampWithState:_passwordCheckState
+                                fromState:_passwordCheckState
+                                   update:NO];
 
   // Saved passwords.
   if (!_savedForms.empty()) {
@@ -724,13 +721,11 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
 - (void)setPasswordsForms:
     (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck)) {
-    _blockedForms.clear();
-    _savedForms.clear();
-    _savedPasswordDuplicates.clear();
-    _blockedPasswordDuplicates.clear();
-  }
+  _blockedForms.clear();
+  _savedForms.clear();
+  _savedPasswordDuplicates.clear();
+  _blockedPasswordDuplicates.clear();
+
   _didReceiveSavedForms = YES;
   [self hideLoadingSpinnerBackground];
   if (results.empty()) {
@@ -799,11 +794,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   // Remove save passwords switch section and password check section.
   [self
       performBatchTableViewUpdates:^{
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::kPasswordCheck)) {
-          [self clearSectionWithIdentifier:SectionIdentifierPasswordCheck
-                          withRowAnimation:UITableViewRowAnimationTop];
-        }
+        [self clearSectionWithIdentifier:SectionIdentifierPasswordCheck
+                        withRowAnimation:UITableViewRowAnimationTop];
 
         [self clearSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
                         withRowAnimation:UITableViewRowAnimationTop];
@@ -837,25 +829,21 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
             arrayWithObjects:[NSIndexPath indexPathForRow:0
                                                 inSection:switchSection],
                              nil];
+        [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
+                                   atIndex:1];
+        NSInteger checkSection =
+            [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
 
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::kPasswordCheck)) {
-          [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
-                                     atIndex:1];
-          NSInteger checkSection = [model
-              sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
-
-          [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
-                        withRowAnimation:UITableViewRowAnimationTop];
-          [model addItem:_passwordProblemsItem
-              toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-          [model addItem:_checkForProblemsItem
-              toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-          [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:0
-                                                       inSection:checkSection]];
-          [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
-                                                       inSection:checkSection]];
-        }
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
+                      withRowAnimation:UITableViewRowAnimationTop];
+        [model addItem:_passwordProblemsItem
+            toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+        [model addItem:_checkForProblemsItem
+            toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+        [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:0
+                                                     inSection:checkSection]];
+        [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
+                                                     inSection:checkSection]];
 
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
                               withRowAnimation:UITableViewRowAnimationTop];

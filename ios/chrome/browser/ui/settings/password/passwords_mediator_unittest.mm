@@ -87,8 +87,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
     BlockCleanupTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordCheck);
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -134,7 +132,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   FakePasswordsConsumer* consumer_;
   PasswordsMediator* mediator_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PasswordsMediatorTest, ElapsedTimeSinceLastCheck) {

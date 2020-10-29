@@ -26,7 +26,6 @@
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #include "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
-#import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -76,23 +75,11 @@ enum PasswordsSections {
   ExportPasswordsButton,
 };
 
-class PasswordsTableViewControllerTest
-    : public ChromeTableViewControllerTest,
-      public ::testing::WithParamInterface<PasswordCheckFeatureStatus> {
+class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
  protected:
   PasswordsTableViewControllerTest() = default;
 
   void SetUp() override {
-    // TODO(crbug.com/1096986): Remove parametrized tests once the feature is
-    // enabled.
-    if (GetParam().password_check_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          password_manager::features::kPasswordCheck);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          password_manager::features::kPasswordCheck);
-    }
-
     browser_ = std::make_unique<TestBrowser>();
     ChromeTableViewControllerTest::SetUp();
     IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
@@ -135,15 +122,15 @@ class PasswordsTableViewControllerTest
       case PasswordCheck:
         return section;
       case SavedPasswords:
-        return GetParam().password_check_enabled ? 2 : 1;
+        return 2;
       case Blocked:
-        return GetParam().password_check_enabled ? 3 : 2;
+        return 3;
       case ExportPasswordsButton:
-        return GetParam().password_check_enabled ? 3 : 2;
+        return 3;
     }
   }
 
-  int SectionsOffset() { return GetParam().password_check_enabled ? 1 : 0; }
+  int SectionsOffset() { return 1; }
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
@@ -173,17 +160,8 @@ class PasswordsTableViewControllerTest
 
   // Adds a form to PasswordsTableViewController.
   void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
-    if (GetParam().password_check_enabled) {
-      GetTestStore().AddLogin(*form);
-      RunUntilIdle();
-    } else {
-      PasswordsTableViewController* passwords_controller =
-          static_cast<PasswordsTableViewController*>(controller());
-      GetTestStore().AddLogin(*form);
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords;
-      passwords.push_back(std::move(form));
-      [passwords_controller setPasswordsForms:std::move(passwords)];
-    }
+    GetTestStore().AddLogin(*form);
+    RunUntilIdle();
   }
 
   // Creates and adds a saved password form.
@@ -297,18 +275,17 @@ class PasswordsTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   PasswordsMediator* mediator_;
 };
 
 // Tests default case has no saved sites and no blocked sites.
-TEST_P(PasswordsTableViewControllerTest, TestInitialization) {
+TEST_F(PasswordsTableViewControllerTest, TestInitialization) {
   CheckController();
   EXPECT_EQ(2 + SectionsOffset(), NumberOfSections());
 }
 
 // Tests adding one item in saved password section.
-TEST_P(PasswordsTableViewControllerTest, AddSavedPasswords) {
+TEST_F(PasswordsTableViewControllerTest, AddSavedPasswords) {
   AddSavedForm1();
 
   EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
@@ -316,7 +293,7 @@ TEST_P(PasswordsTableViewControllerTest, AddSavedPasswords) {
 }
 
 // Tests adding one item in blocked password section.
-TEST_P(PasswordsTableViewControllerTest, AddBlockedPasswords) {
+TEST_F(PasswordsTableViewControllerTest, AddBlockedPasswords) {
   AddBlockedForm1();
 
   EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
@@ -325,7 +302,7 @@ TEST_P(PasswordsTableViewControllerTest, AddBlockedPasswords) {
 
 // Tests adding one item in saved password section, and two items in blocked
 // password section.
-TEST_P(PasswordsTableViewControllerTest, AddSavedAndBlocked) {
+TEST_F(PasswordsTableViewControllerTest, AddSavedAndBlocked) {
   AddSavedForm1();
   AddBlockedForm1();
   AddBlockedForm2();
@@ -340,7 +317,7 @@ TEST_P(PasswordsTableViewControllerTest, AddSavedAndBlocked) {
 }
 
 // Tests the order in which the saved passwords are displayed.
-TEST_P(PasswordsTableViewControllerTest, TestSavedPasswordsOrder) {
+TEST_F(PasswordsTableViewControllerTest, TestSavedPasswordsOrder) {
   AddSavedForm2();
 
   CheckTextCellTextAndDetailText(@"example2.com", @"test@egmail.com",
@@ -354,7 +331,7 @@ TEST_P(PasswordsTableViewControllerTest, TestSavedPasswordsOrder) {
 }
 
 // Tests the order in which the blocked passwords are displayed.
-TEST_P(PasswordsTableViewControllerTest, TestBlockedPasswordsOrder) {
+TEST_F(PasswordsTableViewControllerTest, TestBlockedPasswordsOrder) {
   AddBlockedForm2();
   CheckTextCellText(@"secret2.com", GetSectionIndex(SavedPasswords), 0);
 
@@ -365,7 +342,7 @@ TEST_P(PasswordsTableViewControllerTest, TestBlockedPasswordsOrder) {
 
 // Tests displaying passwords in the saved passwords section when there are
 // duplicates in the password store.
-TEST_P(PasswordsTableViewControllerTest, AddSavedDuplicates) {
+TEST_F(PasswordsTableViewControllerTest, AddSavedDuplicates) {
   AddSavedForm1();
   AddSavedForm1();
 
@@ -375,7 +352,7 @@ TEST_P(PasswordsTableViewControllerTest, AddSavedDuplicates) {
 
 // Tests displaying passwords in the blocked passwords section when there
 // are duplicates in the password store.
-TEST_P(PasswordsTableViewControllerTest, AddBlockedDuplicates) {
+TEST_F(PasswordsTableViewControllerTest, AddBlockedDuplicates) {
   AddBlockedForm1();
   AddBlockedForm1();
 
@@ -384,7 +361,7 @@ TEST_P(PasswordsTableViewControllerTest, AddBlockedDuplicates) {
 }
 
 // Tests deleting items from saved passwords and blocked passwords sections.
-TEST_P(PasswordsTableViewControllerTest, DeleteItems) {
+TEST_F(PasswordsTableViewControllerTest, DeleteItems) {
   AddSavedForm1();
   AddBlockedForm1();
   AddBlockedForm2();
@@ -409,7 +386,7 @@ TEST_P(PasswordsTableViewControllerTest, DeleteItems) {
 
 // Tests deleting items from saved passwords and blocked passwords sections
 // when there are duplicates in the store.
-TEST_P(PasswordsTableViewControllerTest, DeleteItemsWithDuplicates) {
+TEST_F(PasswordsTableViewControllerTest, DeleteItemsWithDuplicates) {
   AddSavedForm1();
   AddSavedForm1();
   AddBlockedForm1();
@@ -434,7 +411,7 @@ TEST_P(PasswordsTableViewControllerTest, DeleteItemsWithDuplicates) {
   }));
 }
 
-TEST_P(PasswordsTableViewControllerTest,
+TEST_F(PasswordsTableViewControllerTest,
        TestExportButtonDisabledNoSavedPasswords) {
   PasswordsTableViewController* passwords_controller =
       static_cast<PasswordsTableViewController*>(controller());
@@ -458,7 +435,7 @@ TEST_P(PasswordsTableViewControllerTest,
               UIAccessibilityTraitNotEnabled);
 }
 
-TEST_P(PasswordsTableViewControllerTest,
+TEST_F(PasswordsTableViewControllerTest,
        TestExportButtonEnabledWithSavedPasswords) {
   PasswordsTableViewController* passwords_controller =
       static_cast<PasswordsTableViewController*>(controller());
@@ -477,7 +454,7 @@ TEST_P(PasswordsTableViewControllerTest,
 }
 
 // Tests that the "Export Passwords..." button is greyed out in edit mode.
-TEST_P(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
+TEST_F(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
   PasswordsTableViewController* passwords_controller =
       static_cast<PasswordsTableViewController*>(controller());
   AddSavedForm1();
@@ -497,7 +474,7 @@ TEST_P(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
 
 // Tests that the "Export Passwords..." button is enabled after exiting
 // edit mode.
-TEST_P(PasswordsTableViewControllerTest,
+TEST_F(PasswordsTableViewControllerTest,
        TestExportButtonEnabledWhenEdittingFinished) {
   PasswordsTableViewController* passwords_controller =
       static_cast<PasswordsTableViewController*>(controller());
@@ -518,7 +495,7 @@ TEST_P(PasswordsTableViewControllerTest,
 }
 
 // Tests filtering of items.
-TEST_P(PasswordsTableViewControllerTest, FilterItems) {
+TEST_F(PasswordsTableViewControllerTest, FilterItems) {
   AddSavedForm1();
   AddSavedForm2();
   AddBlockedForm1();
@@ -566,9 +543,7 @@ TEST_P(PasswordsTableViewControllerTest, FilterItems) {
 }
 
 // Test verifies disabled state of password check cell.
-TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateDisabled) {
-  if (!GetParam().password_check_enabled)
-    return;
+TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateDisabled) {
   ChangePasswordCheckState(PasswordCheckStateDisabled);
 
   CheckDetailItemTextWithIds(IDS_IOS_CHECK_PASSWORDS,
@@ -582,10 +557,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateDisabled) {
 }
 
 // Test verifies default state of password check cell.
-TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateDefault) {
-  if (!GetParam().password_check_enabled)
-    return;
-
+TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateDefault) {
   ChangePasswordCheckState(PasswordCheckStateDefault);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -601,10 +573,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateDefault) {
 }
 
 // Test verifies safe state of password check cell.
-TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
-  if (!GetParam().password_check_enabled)
-    return;
-
+TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
   ChangePasswordCheckState(PasswordCheckStateSafe);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -620,9 +589,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
 }
 
 // Test verifies unsafe state of password check cell.
-TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
-  if (!GetParam().password_check_enabled)
-    return;
+TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
   AddSavedForm1();
   AddCompromisedCredential1();
   ChangePasswordCheckState(PasswordCheckStateUnSafe);
@@ -640,10 +607,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
 }
 
 // Test verifies running state of password check cell.
-TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateRunning) {
-  if (!GetParam().password_check_enabled)
-    return;
-
+TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateRunning) {
   ChangePasswordCheckState(PasswordCheckStateRunning);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -659,10 +623,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateRunning) {
 }
 
 // Test verifies error state of password check cell.
-TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateError) {
-  if (!GetParam().password_check_enabled)
-    return;
-
+TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateError) {
   ChangePasswordCheckState(PasswordCheckStateError);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -679,10 +640,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordCheckStateError) {
 }
 
 // Test verifies tapping start with no saved passwords has no effect.
-TEST_P(PasswordsTableViewControllerTest, DisabledPasswordCheck) {
-  if (!GetParam().password_check_enabled)
-    return;
-
+TEST_F(PasswordsTableViewControllerTest, DisabledPasswordCheck) {
   PasswordsTableViewController* passwords_controller =
       static_cast<PasswordsTableViewController*>(controller());
 
@@ -698,9 +656,7 @@ TEST_P(PasswordsTableViewControllerTest, DisabledPasswordCheck) {
 }
 
 // Test verifies tapping start triggers correct function in service.
-TEST_P(PasswordsTableViewControllerTest, StartPasswordCheck) {
-  if (!GetParam().password_check_enabled)
-    return;
+TEST_F(PasswordsTableViewControllerTest, StartPasswordCheck) {
   AddSavedForm1();
   RunUntilIdle();
 
@@ -717,10 +673,7 @@ TEST_P(PasswordsTableViewControllerTest, StartPasswordCheck) {
 }
 
 // Test verifies changes to the password store are reflected on UI.
-TEST_P(PasswordsTableViewControllerTest, PasswordStoreListener) {
-  if (!GetParam().password_check_enabled)
-    return;
-
+TEST_F(PasswordsTableViewControllerTest, PasswordStoreListener) {
   AddSavedForm1();
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
   AddSavedForm2();
@@ -734,9 +687,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordStoreListener) {
 }
 
 // Test verifies Passwords View Controller handles deletion of passwords.
-TEST_P(PasswordsTableViewControllerTest, PasswordIssuesDeletion) {
-  if (!GetParam().password_check_enabled)
-    return;
+TEST_F(PasswordsTableViewControllerTest, PasswordIssuesDeletion) {
   AddSavedForm1();
   AddSavedForm2();
   EXPECT_EQ(2, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
@@ -749,15 +700,5 @@ TEST_P(PasswordsTableViewControllerTest, PasswordIssuesDeletion) {
   [passwords_controller deletePasswordForm:password];
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 }
-
-const std::vector<PasswordCheckFeatureStatus> kPasswordCheckFeatureStatusCases{
-    // Password check disabled
-    {FALSE},
-    // Password check enabled
-    {TRUE}};
-
-INSTANTIATE_TEST_SUITE_P(PasswordCheckDisabledAndEnabled,
-                         PasswordsTableViewControllerTest,
-                         ::testing::ValuesIn(kPasswordCheckFeatureStatusCases));
 
 }  // namespace

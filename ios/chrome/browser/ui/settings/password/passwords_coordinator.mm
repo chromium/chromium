@@ -17,8 +17,6 @@
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
@@ -35,7 +33,6 @@
 #endif
 
 @interface PasswordsCoordinator () <
-    LegacyPasswordDetailsTableViewControllerDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
     PasswordsSettingsCommands,
@@ -152,26 +149,15 @@
 }
 
 - (void)showDetailedViewForForm:(const password_manager::PasswordForm&)form {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck)) {
-    DCHECK(!self.passwordDetailsCoordinator);
-    self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
-        initWithBaseNavigationController:self.baseNavigationController
-                                 browser:self.browser
-                                password:form
-                            reauthModule:self.reauthModule
-                    passwordCheckManager:[self passwordCheckManager].get()];
-    self.passwordDetailsCoordinator.delegate = self;
-    [self.passwordDetailsCoordinator start];
-  } else {
-    LegacyPasswordDetailsTableViewController* controller =
-        [[LegacyPasswordDetailsTableViewController alloc]
-              initWithPasswordForm:form
-                          delegate:self
-            reauthenticationModule:self.reauthModule];
-    controller.dispatcher = self.dispatcher;
-    [self.baseNavigationController pushViewController:controller animated:YES];
-  }
+  DCHECK(!self.passwordDetailsCoordinator);
+  self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser
+                              password:form
+                          reauthModule:self.reauthModule
+                  passwordCheckManager:[self passwordCheckManager].get()];
+  self.passwordDetailsCoordinator.delegate = self;
+  [self.passwordDetailsCoordinator start];
 }
 
 #pragma mark - PasswordsTableViewControllerPresentationDelegate
@@ -211,15 +197,6 @@
                         (const password_manager::PasswordForm&)password {
   DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
   [self.passwordsViewController deletePasswordForm:password];
-}
-
-#pragma mark LegacyPasswordDetailsTableViewControllerDelegate
-
-- (void)passwordDetailsTableViewController:
-            (LegacyPasswordDetailsTableViewController*)controller
-                            deletePassword:
-                                (const password_manager::PasswordForm&)form {
-  [self.passwordsViewController deletePasswordForm:form];
 }
 
 #pragma mark Private

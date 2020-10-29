@@ -93,13 +93,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
     _passwordStoreObserver =
         std::make_unique<PasswordStoreObserverBridge>(self);
     _passwordStore->AddObserver(_passwordStoreObserver.get());
-
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordCheck)) {
-      _passwordCheckManager = passwordCheckManager;
-      _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
-          self, _passwordCheckManager.get());
-    }
+    _passwordCheckManager = passwordCheckManager;
+    _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
+        self, _passwordCheckManager.get());
   }
   return self;
 }
@@ -107,6 +103,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 - (void)dealloc {
   if (_passwordStoreObserver) {
     _passwordStore->RemoveObserver(_passwordStoreObserver.get());
+  }
+  if (_passwordCheckObserver) {
+    _passwordCheckManager->RemoveObserver(_passwordCheckObserver.get());
   }
 }
 
@@ -116,15 +115,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
   _consumer = consumer;
   [self loginsDidChange];
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck)) {
-    _currentState = _passwordCheckManager->GetPasswordCheckState();
-    [self.consumer setPasswordCheckUIState:
-                       [self computePasswordCheckUIStateWith:_currentState]
-                 compromisedPasswordsCount:_passwordCheckManager
-                                               ->GetCompromisedCredentials()
-                                               .size()];
-  }
+  _currentState = _passwordCheckManager->GetPasswordCheckState();
+  [self.consumer setPasswordCheckUIState:
+                     [self computePasswordCheckUIStateWith:_currentState]
+               compromisedPasswordsCount:_passwordCheckManager
+                                             ->GetCompromisedCredentials()
+                                             .size()];
 }
 
 #pragma mark - PasswordsTableViewControllerDelegate

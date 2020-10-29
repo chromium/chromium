@@ -44,9 +44,6 @@ source_set("password") {
 source_set("password_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "legacy_password_details_table_view_controller.h",
-    "legacy_password_details_table_view_controller.mm",
-    "legacy_password_details_table_view_controller_delegate.h",
     "password_exporter.h",
     "password_exporter.mm",
     "password_issue.h",
@@ -116,10 +113,7 @@ source_set("password_constants") {
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "legacy_password_details_table_view_controller+testing.h",
-    "password_exporter_for_testing.h",
-  ]
+  sources = [ "password_exporter_for_testing.h" ]
   deps = [ ":password_ui" ]
 }
 
@@ -127,7 +121,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "legacy_password_details_table_view_controller_unittest.mm",
     "password_exporter_unittest.mm",
     "password_issues_mediator_unittest.mm",
     "password_issues_table_view_controller_unittest.mm",
