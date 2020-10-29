@@ -132,10 +132,8 @@ void ScheduledAction::Execute(ExecutionContext* context) {
     return;
   }
 
-  // We're using |SanitizeScriptErrors::kDoNotSanitize| to keep the existing
-  // behavior, but this causes failures on
-  // wpt/html/webappapis/scripting/processing-model-2/compile-error-cross-origin-setTimeout.html
-  // and friends.
+  // We use |SanitizeScriptErrors::kDoNotSanitize| because muted errors flag is
+  // not set in https://html.spec.whatwg.org/C/#timer-initialisation-steps
   DVLOG(1) << "ScheduledAction::execute " << this << ": executing from source";
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     window->GetScriptController().ExecuteScriptAndReturnValue(
