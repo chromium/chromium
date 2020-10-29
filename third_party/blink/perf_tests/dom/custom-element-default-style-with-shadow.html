@@ -12,23 +12,17 @@ customElements.define('my-element', class MyElement extends HTMLElement {
   }
 });
 
-PerfTestRunner.measureTime({
+PerfTestRunner.measureRunsPerSecond({
     description: "Measures performance of styling custom elements with shadowRoot's innerHTML.",
 
-    setup: function() {
-      while (holderElement.innerHTML = '') {
-        holderElement.removeChild(holderElement.firstChild);
-      }
-    },
-
     run: function() {
+      holderElement.textContent = '';
       for (i = 0; i < 100; i++) {
         holderElement.appendChild(document.createElement('my-element'));
         // force layout.
         document.body.offsetWidth;
       }
     },
-    warmUpCount: 3,
-    iterationCount: 500,
+    warmUpCount: 1,
 });
 </script>
