@@ -53,7 +53,7 @@ void TabSearchButton::FrameColorsChanged() {
            gfx::CreateVectorIcon(kTabSearchIcon, GetForegroundColor()));
 }
 
-void TabSearchButton::OnWidgetClosing(views::Widget* widget) {
+void TabSearchButton::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(bubble_, widget);
   observed_bubble_widget_.Remove(bubble_);
   bubble_ = nullptr;
