@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/posix/eintr_wrapper.h"
@@ -353,6 +354,7 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
 
   // Create the lacros-chrome subprocess.
   base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
+  lacros_launch_time_ = base::TimeTicks::Now();
   // If lacros_process_ already exists, because it does not call waitpid(2),
   // the process will never be collected.
   lacros_process_ = base::LaunchProcess(command_line, options);
@@ -372,6 +374,8 @@ void BrowserManager::OnAshChromeServiceReceiverReceived(
   ash_chrome_service_ =
       std::make_unique<AshChromeServiceImpl>(std::move(pending_receiver));
   state_ = State::RUNNING;
+  base::UmaHistogramMediumTimes("ChromeOS.Lacros.StartTime",
+                                base::TimeTicks::Now() - lacros_launch_time_);
   // Set the launch-on-login pref every time lacros-chrome successfully starts,
   // instead of once during ash-chrome shutdown, so we have the right value
   // even if ash-chrome crashes.

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager_observer.h"
 #include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -184,6 +185,9 @@ class BrowserManager : public session_manager::SessionManagerObserver {
 
   // Called when the binary download completes.
   LoadCompleteCallback load_complete_callback_;
+
+  // Time when the lacros process was launched.
+  base::TimeTicks lacros_launch_time_;
 
   // Process handle for the lacros-chrome process.
   base::Process lacros_process_;
