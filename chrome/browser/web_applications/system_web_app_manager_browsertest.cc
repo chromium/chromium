@@ -1104,18 +1104,29 @@ class SystemWebAppManagerUpgradeBrowserTest
   }
   ~SystemWebAppManagerUpgradeBrowserTest() override = default;
 
+  // Don't use WaitForTestSystemAppInstall in this test, because it artificially
+  // resets the OnAppsSynchronized signal, and starts a new synchronize request.
+  void WaitForSystemAppsSynchronized() {
+    base::RunLoop run_loop;
+    WebAppProvider::Get(browser()->profile())
+        ->system_web_app_manager()
+        .on_apps_synchronized()
+        .Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, PRE_Upgrade) {
-  WaitForTestSystemAppInstall();
+  WaitForSystemAppsSynchronized();
   EXPECT_GE(GetManager().GetRegisteredSystemAppsForTesting().size(),
             GetManager().GetAppIds().size());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, Upgrade) {
-  WaitForTestSystemAppInstall();
+  WaitForSystemAppsSynchronized();
   const auto& app_ids = GetManager().GetAppIds();
 
   EXPECT_EQ(GetManager().GetRegisteredSystemAppsForTesting().size(),

@@ -381,7 +381,10 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
     // Always update in tests.
     update_policy_ = UpdatePolicy::kAlwaysUpdate;
 
-    // Return early to avoid populating with real system apps.
+    // Populate with real system apps if the test asks for it.
+    if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
+      system_app_infos_ = CreateSystemWebApps();
+
     return;
   }
 
