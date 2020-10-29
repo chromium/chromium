@@ -56,11 +56,6 @@ std::unique_ptr<CommandItem> CreateNoOpCommandItem(const base::string16& title,
   return item;
 }
 
-template <typename T>
-std::unique_ptr<CommandItem> CreateCompositeCommandItem(
-    const base::string16& title,
-    double scope) {}
-
 TestCommandSource* AddSource(
     std::vector<std::unique_ptr<CommandSource>>* sources,
     std::unique_ptr<TestCommandSource> source) {
@@ -75,9 +70,10 @@ class CommanderControllerTest : public BrowserWithTestWindowTest {
  public:
   class TestBackend : public CommanderBackend {
    public:
-    explicit TestBackend(CommanderControllerTest* owner) {
-      owner->SetTestBackend(this);
+    explicit TestBackend(CommanderControllerTest* owner) : owner_(owner) {
+      owner_->SetTestBackend(this);
     }
+    ~TestBackend() override { owner_->SetTestBackend(nullptr); }
     void OnTextChanged(const base::string16& text, Browser* browser) override {
       text_changed_invocations_.push_back(text);
     }
@@ -100,6 +96,7 @@ class CommanderControllerTest : public BrowserWithTestWindowTest {
     }
 
    private:
+    CommanderControllerTest* owner_;
     ViewModelUpdateCallback callback_;
     std::vector<base::string16> text_changed_invocations_;
     std::vector<size_t> command_selected_invocations_;
@@ -133,6 +130,29 @@ class CommanderControllerTest : public BrowserWithTestWindowTest {
   void SetTestBackend(TestBackend* test_backend) {
     test_backend_ = test_backend;
   }
+
+  std::unique_ptr<TestCommandSource> CreateCompositeCommandSource() {
+    return std::make_unique<TestCommandSource>(base::BindRepeating(
+        [](CommanderControllerTest* instance, const base::string16&,
+           Browser* browser) -> CommandSource::CommandResults {
+          auto item = std::make_unique<CommandItem>();
+          item->title = base::ASCIIToUTF16("Do something...");
+          item->score = 100;
+          item->matched_ranges.emplace_back(0, item->title.size());
+          item->delegate_factory = base::BindOnce(
+              [](CommanderControllerTest* instance)
+                  -> std::unique_ptr<CommanderBackend> {
+                return std::make_unique<TestBackend>(instance);
+              },
+              instance);
+          CommandSource::CommandResults results;
+          results.push_back(std::move(item));
+          return results;
+        },
+        this));
+  }
+
+  bool is_composite_command_active() const { return test_backend_ != nullptr; }
 
  protected:
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -427,33 +447,14 @@ TEST_F(CommanderControllerTest, NoActionOnOOBIndex) {
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
-
   controller->OnCommandSelected(1, model.result_set_id);
 
   EXPECT_FALSE(item_called);
 }
 
 TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
-  auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](CommanderControllerTest* instance, const base::string16&,
-         Browser* browser) -> CommandSource::CommandResults {
-        auto item = std::make_unique<CommandItem>();
-        item->title = base::ASCIIToUTF16("Do something...");
-        item->score = 100;
-        item->matched_ranges.emplace_back(0, item->title.size());
-        item->delegate_factory = base::BindOnce(
-            [](CommanderControllerTest* instance)
-                -> std::unique_ptr<CommanderBackend> {
-              return std::make_unique<TestBackend>(instance);
-            },
-            instance);
-        CommandSource::CommandResults results;
-        results.push_back(std::move(item));
-        return results;
-      },
-      this));
   std::vector<std::unique_ptr<CommandSource>> sources;
-  sources.push_back(std::move(source));
+  sources.push_back(CreateCompositeCommandSource());
   auto controller =
       CommanderController::CreateWithSourcesForTesting(std::move(sources));
   controller->SetUpdateCallback(base::BindRepeating(
@@ -466,7 +467,6 @@ TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
   ASSERT_EQ(received_view_models_.size(), 1u);
   {
     ViewModelCallbackWaiter waiter(this);
-
     controller->OnCommandSelected(0,
                                   received_view_models_.back().result_set_id);
   }
@@ -475,26 +475,8 @@ TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
 }
 
 TEST_F(CommanderControllerTest, OnTextChangedPassedToDelegate) {
-  auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](CommanderControllerTest* instance, const base::string16&,
-         Browser* browser) -> CommandSource::CommandResults {
-        auto item = std::make_unique<CommandItem>();
-        item->title = base::ASCIIToUTF16("Do something...");
-        item->score = 100;
-        item->matched_ranges.emplace_back(0, item->title.size());
-        item->delegate_factory = base::BindOnce(
-            [](CommanderControllerTest* instance)
-                -> std::unique_ptr<CommanderBackend> {
-              return std::make_unique<TestBackend>(instance);
-            },
-            instance);
-        CommandSource::CommandResults results;
-        results.push_back(std::move(item));
-        return results;
-      },
-      this));
   std::vector<std::unique_ptr<CommandSource>> sources;
-  sources.push_back(std::move(source));
+  sources.push_back(CreateCompositeCommandSource());
   auto controller =
       CommanderController::CreateWithSourcesForTesting(std::move(sources));
   controller->SetUpdateCallback(base::BindRepeating(
@@ -511,6 +493,7 @@ TEST_F(CommanderControllerTest, OnTextChangedPassedToDelegate) {
     controller->OnCommandSelected(0,
                                   received_view_models_.back().result_set_id);
   }
+  ASSERT_TRUE(is_composite_command_active());
   EXPECT_TRUE(test_backend_->text_changed_invocations().empty());
 
   controller->OnTextChanged(base::ASCIIToUTF16("hocus pocus"), browser());
@@ -520,26 +503,8 @@ TEST_F(CommanderControllerTest, OnTextChangedPassedToDelegate) {
 }
 
 TEST_F(CommanderControllerTest, OnCommandSelectedPassedToDelegate) {
-  auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](CommanderControllerTest* instance, const base::string16&,
-         Browser* browser) -> CommandSource::CommandResults {
-        auto item = std::make_unique<CommandItem>();
-        item->title = base::ASCIIToUTF16("Do something...");
-        item->score = 100;
-        item->matched_ranges.emplace_back(0, item->title.size());
-        item->delegate_factory = base::BindOnce(
-            [](CommanderControllerTest* instance)
-                -> std::unique_ptr<CommanderBackend> {
-              return std::make_unique<TestBackend>(instance);
-            },
-            instance);
-        CommandSource::CommandResults results;
-        results.push_back(std::move(item));
-        return results;
-      },
-      this));
   std::vector<std::unique_ptr<CommandSource>> sources;
-  sources.push_back(std::move(source));
+  sources.push_back(CreateCompositeCommandSource());
   auto controller =
       CommanderController::CreateWithSourcesForTesting(std::move(sources));
   controller->SetUpdateCallback(base::BindRepeating(
@@ -556,13 +521,43 @@ TEST_F(CommanderControllerTest, OnCommandSelectedPassedToDelegate) {
     controller->OnCommandSelected(0,
                                   received_view_models_.back().result_set_id);
   }
-
+  ASSERT_TRUE(is_composite_command_active());
   EXPECT_TRUE(test_backend_->text_changed_invocations().empty());
 
   controller->OnCommandSelected(586,
                                 received_view_models_.back().result_set_id);
   ASSERT_EQ(test_backend_->command_selected_invocations().size(), 1u);
   EXPECT_EQ(test_backend_->command_selected_invocations().back(), 586u);
+}
+
+TEST_F(CommanderControllerTest, OnCompositeCommandCancelledRemovesDelegate) {
+  std::vector<std::unique_ptr<CommandSource>> sources;
+  sources.push_back(CreateCompositeCommandSource());
+  auto controller =
+      CommanderController::CreateWithSourcesForTesting(std::move(sources));
+  controller->SetUpdateCallback(base::BindRepeating(
+      &CommanderControllerTest::OnViewModelUpdated, base::Unretained(this)));
+
+  // Prime the sources so we can select an item.
+  {
+    ViewModelCallbackWaiter waiter(this);
+    controller->OnTextChanged(base::ASCIIToUTF16("abracadabra"), browser());
+  }
+  ASSERT_EQ(received_view_models_.size(), 1u);
+
+  // Selecting
+  {
+    ViewModelCallbackWaiter waiter(this);
+    controller->OnCommandSelected(0,
+                                  received_view_models_.back().result_set_id);
+  }
+  ASSERT_EQ(received_view_models_.size(), 2u);
+  EXPECT_EQ(received_view_models_.back().action,
+            CommanderViewModel::Action::kPrompt);
+  EXPECT_TRUE(is_composite_command_active());
+
+  controller->OnCompositeCommandCancelled();
+  EXPECT_FALSE(is_composite_command_active());
 }
 
 }  // namespace commander

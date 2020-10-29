@@ -101,6 +101,11 @@ void CommanderController::OnCommandSelected(size_t command_index,
   }
 }
 
+void CommanderController::OnCompositeCommandCancelled() {
+  DCHECK(delegate_);
+  delegate_.reset();
+}
+
 void CommanderController::SetUpdateCallback(ViewModelUpdateCallback callback) {
   callback_ = std::move(callback);
 }
