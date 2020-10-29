@@ -4,13 +4,13 @@
 
 #include "ash/ambient/ui/assistant_response_container_view.h"
 
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/assistant/model/assistant_response.h"
 #include "ash/assistant/model/ui/assistant_card_element.h"
 #include "ash/assistant/model/ui/assistant_error_element.h"
 #include "ash/assistant/model/ui/assistant_text_element.h"
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_error_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_text_element_view.h"
 #include "ash/assistant/ui/main_stage/element_animator.h"
@@ -28,7 +28,7 @@ constexpr int kPreferredWidthDip = 600;
 AssistantResponseContainerView::AssistantResponseContainerView(
     AssistantViewDelegate* delegate)
     : AnimatedContainerView(delegate) {
-  SetID(AssistantViewID::kAmbientAssistantResponseContainerView);
+  SetID(AmbientViewID::kAmbientAssistantResponseContainerView);
   InitLayout();
 }
 

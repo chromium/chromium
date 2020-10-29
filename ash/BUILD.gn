@@ -196,6 +196,7 @@ component("ash") {
     "ambient/ui/ambient_container_view.cc",
     "ambient/ui/ambient_container_view.h",
     "ambient/ui/ambient_view_delegate.h",
+    "ambient/ui/ambient_view_ids.h",
     "ambient/ui/assistant_response_container_view.cc",
     "ambient/ui/assistant_response_container_view.h",
     "ambient/ui/glanceable_info_view.cc",

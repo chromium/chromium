@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/assistant/ui/assistant_view_ids.h"
 #include "base/rand_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -79,7 +79,7 @@ AmbientBackgroundImageView::AmbientBackgroundImageView(
     AmbientViewDelegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
-  SetID(AssistantViewID::kAmbientBackgroundImageView);
+  SetID(AmbientViewID::kAmbientBackgroundImageView);
   InitLayout();
 }
 

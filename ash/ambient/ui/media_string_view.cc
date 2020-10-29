@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -113,7 +113,7 @@ bool ShouldShowOnLockScreen() {
 }  // namespace
 
 MediaStringView::MediaStringView() {
-  SetID(AssistantViewID::kAmbientMediaStringView);
+  SetID(AmbientViewID::kAmbientMediaStringView);
   InitLayout();
 }
 

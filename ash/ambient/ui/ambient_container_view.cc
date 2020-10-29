@@ -9,9 +9,9 @@
 
 #include "ash/ambient/ui/ambient_assistant_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -33,7 +33,7 @@ constexpr int kAssistantPreferredHeightDip = 128;
 
 AmbientContainerView::AmbientContainerView(AmbientViewDelegate* delegate)
     : delegate_(delegate) {
-  SetID(AssistantViewID::kAmbientContainerView);
+  SetID(AmbientViewID::kAmbientContainerView);
   Init();
 }
 

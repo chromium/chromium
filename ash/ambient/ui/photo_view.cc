@@ -12,7 +12,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
-#include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +41,7 @@ void ReportSmoothness(int value) {
 // PhotoView ------------------------------------------------------------------
 PhotoView::PhotoView(AmbientViewDelegate* delegate) : delegate_(delegate) {
   DCHECK(delegate_);
-  SetID(AssistantViewID::kAmbientPhotoView);
+  SetID(AmbientViewID::kAmbientPhotoView);
   Init();
 }
 

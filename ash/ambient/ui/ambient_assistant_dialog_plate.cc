@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
@@ -22,7 +23,7 @@ namespace ash {
 AmbientAssistantDialogPlate::AmbientAssistantDialogPlate(
     AssistantViewDelegate* delegate)
     : delegate_(delegate) {
-  SetID(AssistantViewID::kAmbientAssistantDialogPlate);
+  SetID(AmbientViewID::kAmbientAssistantDialogPlate);
   InitLayout();
 
   assistant_controller_observer_.Add(AssistantController::Get());

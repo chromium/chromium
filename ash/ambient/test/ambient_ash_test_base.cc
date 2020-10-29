@@ -13,9 +13,9 @@
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
+#include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
-#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/session/session_controller_impl.h"
@@ -38,7 +38,7 @@
 
 namespace ash {
 namespace {
-constexpr float kFastForwardFactor = 1.0001;
+constexpr float kFastForwardFactor = 1.001;
 }  // namespace
 
 class TestAmbientURLLoaderImpl : public AmbientURLLoader {
@@ -263,13 +263,15 @@ void AmbientAshTestBase::SetPhotoViewImageSize(int width, int height) {
 
 AmbientBackgroundImageView*
 AmbientAshTestBase::GetAmbientBackgroundImageView() {
+  DCHECK(container_view());
   return static_cast<AmbientBackgroundImageView*>(container_view()->GetViewByID(
-      AssistantViewID::kAmbientBackgroundImageView));
+      AmbientViewID::kAmbientBackgroundImageView));
 }
 
 MediaStringView* AmbientAshTestBase::GetMediaStringView() {
+  DCHECK(container_view());
   return static_cast<MediaStringView*>(
-      container_view()->GetViewByID(AssistantViewID::kAmbientMediaStringView));
+      container_view()->GetViewByID(AmbientViewID::kAmbientMediaStringView));
 }
 
 void AmbientAshTestBase::FastForwardToInactivity() {
