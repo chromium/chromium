@@ -717,6 +717,7 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
 
   event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(AXWindowInfoData::New());
+  event->window_id = 1;
   AXWindowInfoData* root_window = event->window_data->back().get();
   root_window->window_id = 100;
   root_window->root_node_id = 10;
@@ -777,9 +778,11 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
   EXPECT_EQ(node3->id, data.focus_id);
 
   // Simulate opening another window in this task.
+  // |root_window->window_id| can be the same as the previous one, but
+  // |event->window_id| of the event are always different for different window.
   // This is the same as new WINDOW_STATE_CHANGED event, so focus is at the
   // first accessible node (node2).
-  root_window->window_id = 200;
+  event->window_id = 2;
   event->event_type = AXEventType::WINDOW_STATE_CHANGED;
   event->source_id = node1->id;
   CallNotifyAccessibilityEvent(event.get());
@@ -789,7 +792,7 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
 
   // Simulate closing the second window and coming back to the first window.
   // The focus back to the last focus node, which is node3.
-  root_window->window_id = 100;
+  event->window_id = 1;
   event->event_type = AXEventType::WINDOW_STATE_CHANGED;
   event->source_id = root->id;
   CallNotifyAccessibilityEvent(event.get());

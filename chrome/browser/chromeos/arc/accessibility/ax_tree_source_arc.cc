@@ -153,7 +153,10 @@ void AXTreeSourceArc::SerializeNode(AccessibilityInfoDataWrapper* info_data,
 
 void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     const AXEventData& event_data) {
-  window_id_ = event_data.window_id;
+  if (window_id_ != event_data.window_id) {
+    android_focused_id_.reset();
+    window_id_ = event_data.window_id;
+  }
   is_notification_ = event_data.notification_key.has_value();
   is_input_method_window_ = event_data.is_input_method_window;
 
@@ -424,11 +427,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     // We do it for WINDOW_STATE_CHANGED event from a window or a root node.
     bool from_root_or_window = (source_node && !source_node->IsNode()) ||
                                IsRootOfNodeTree(event_data.source_id);
-    auto itr = root_window_id_to_last_focus_node_id_.find(*root_id_);
-    if (from_root_or_window &&
-        itr != root_window_id_to_last_focus_node_id_.end()) {
+    auto itr = window_id_to_last_focus_node_id_.find(event_data.window_id);
+    if (from_root_or_window && itr != window_id_to_last_focus_node_id_.end())
       new_focus = GetFromId(itr->second);
-    }
 
     // Otherwise, try focus on the first focusable node.
     if (!IsValid(new_focus))
@@ -445,9 +446,10 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
   }
 
   if (android_focused_id_.has_value()) {
-    root_window_id_to_last_focus_node_id_[*root_id_] = *android_focused_id_;
+    window_id_to_last_focus_node_id_[event_data.window_id] =
+        *android_focused_id_;
   } else {
-    root_window_id_to_last_focus_node_id_.erase(*root_id_);
+    window_id_to_last_focus_node_id_.erase(event_data.window_id);
   }
 
   AccessibilityInfoDataWrapper* focused_node =

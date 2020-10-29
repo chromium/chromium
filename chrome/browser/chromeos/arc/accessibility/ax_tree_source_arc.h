@@ -179,8 +179,8 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   std::map<int32_t, std::string> cached_names_;
   std::map<int32_t, ax::mojom::Role> cached_roles_;
 
-  // Cache of mapping from the root window id to the last focused node id.
-  std::map<int32_t, int32_t> root_window_id_to_last_focus_node_id_;
+  // Cache of mapping from the *Android* window id to the last focused node id.
+  std::map<int32_t, int32_t> window_id_to_last_focus_node_id_;
 
   // Mapping from Chrome node ID to its cached computed bounds.
   // This simplifies bounds calculations.
