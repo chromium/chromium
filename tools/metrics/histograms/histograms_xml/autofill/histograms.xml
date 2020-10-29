@@ -802,6 +802,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormFillSuccessIOS"
+    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2021-04-30">
+  <owner>kazinova@chromium.org</owner>
+  <owner>chrome-autofill@google.com</owner>
+  <summary>
+    Records whether the the form was successfully filled by Autofill on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormSubmittedState" enum="AutofillFormSubmittedState"
     expires_after="M95">
   <owner>battre@chromium.org</owner>

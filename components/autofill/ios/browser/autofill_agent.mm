@@ -15,6 +15,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -107,7 +108,8 @@ void GetFormField(autofill::FormFieldData* field,
 
 void UpdateFieldManagerWithFillingResults(
     scoped_refptr<FieldDataManager> fieldDataManager,
-    NSString* jsonString) {
+    NSString* jsonString,
+    size_t numFieldsInFormData) {
   std::map<uint32_t, base::string16> fillingResults;
   if (autofill::ExtractFillingResults(jsonString, &fillingResults)) {
     for (auto& fillData : fillingResults) {
@@ -116,6 +118,8 @@ void UpdateFieldManagerWithFillingResults(
           kAutofilledOnUserTrigger);
     }
   }
+  // TODO(crbug/1131038): Remove once the experiment is over.
+  UMA_HISTOGRAM_BOOLEAN("Autofill.FormFillSuccessIOS", !fillingResults.empty());
 }
 
 void UpdateFieldManagerForClearedIDs(
@@ -944,6 +948,7 @@ autofillManagerFromWebState:(web::WebState*)webState
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
+  size_t numFieldsInFormData = data->FindPath("fields")->DictSize();
   [_jsAutofillManager fillForm:std::move(data)
       forceFillFieldIdentifier:SysUTF16ToNSString(_pendingAutocompleteField)
         forceFillFieldUniqueID:_pendingAutocompleteFieldID
@@ -953,7 +958,8 @@ autofillManagerFromWebState:(web::WebState*)webState
                if (!strongSelf)
                  return;
                UpdateFieldManagerWithFillingResults(
-                   strongSelf->_fieldDataManager, jsonString);
+                   strongSelf->_fieldDataManager, jsonString,
+                   numFieldsInFormData);
                // It is possible that the fill was not initiated by selecting
                // a suggestion in this case the callback is nil.
                if (suggestionHandledCompletionCopy)

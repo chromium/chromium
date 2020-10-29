@@ -7319,6 +7319,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Some data available to fill"/>
 </enum>
 
+<enum name="BooleanAutofillFormFillSuccessIOS">
+  <int value="0" label="Not filled"/>
+  <int value="1" label="Filled"/>
+</enum>
+
 <enum name="BooleanAutofillInteractionAfterParsedAsType">
   <int value="0" label="No interaction"/>
   <int value="1" label="Interaction observed"/>
