@@ -151,14 +151,7 @@ class AboutFlagsHistogramTest : public ::testing::Test {
   }
 };
 
-// http://crbug.com/1141271
-#if defined(OS_LINUX)
-#define MAYBE_CheckHistograms DISABLED_CheckHistograms
-#else
-#define MAYBE_CheckHistograms CheckHistograms
-#endif
-
-TEST_F(AboutFlagsHistogramTest, MAYBE_CheckHistograms) {
+TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
   base::Optional<base::HistogramEnumEntryMap> login_custom_flags =
       base::ReadEnumFromEnumsXml("LoginCustomFlags");
   ASSERT_TRUE(login_custom_flags)
