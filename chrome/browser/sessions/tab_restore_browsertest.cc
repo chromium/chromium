@@ -195,6 +195,13 @@ class TabRestoreTest : public InProcessBrowserTest {
     observer.Wait();
   }
 
+  void EnableSessionService(
+      SessionStartupPref::Type type = SessionStartupPref::Type::DEFAULT) {
+    SessionStartupPref pref(type);
+    Profile* profile = browser()->profile();
+    SessionStartupPref::SetStartupPref(profile, pref);
+  }
+
   GURL url1_;
   GURL url2_;
 
@@ -1408,4 +1415,38 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(
       histogram_tester.GetAllSamples(kTimeSinceTabClosedUntilRestored).size(),
       0U);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_PRE_RestoreAfterMultipleRestarts) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  // Navigate to url1 in the current tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1_, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_RestoreAfterMultipleRestarts) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  // Navigate to url2 in the current tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2_, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+}
+
+// Verifies restoring tabs from previous sessions.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreAfterMultipleRestarts) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  // Restore url2 from one session ago.
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
+  EXPECT_EQ(url2_, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+
+  // Restore url1 from two sessions ago.
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 2));
+  EXPECT_EQ(url1_, browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
 }

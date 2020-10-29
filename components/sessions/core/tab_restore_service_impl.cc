@@ -1184,9 +1184,12 @@ void TabRestoreServiceImpl::PersistenceDelegate::LoadStateChanged() {
   }
 
   staging_entries_.clear();
-  entries_to_write_ = 0;
 
   tab_restore_service_helper_->PruneEntries();
+
+  // Write the loaded entries into the current session.
+  entries_to_write_ = tab_restore_service_helper_->entries().size();
+
   tab_restore_service_helper_->NotifyTabsChanged();
 
   tab_restore_service_helper_->NotifyLoaded();
