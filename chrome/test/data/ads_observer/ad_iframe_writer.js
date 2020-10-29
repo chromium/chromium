@@ -32,3 +32,5 @@ function createAdIframeAtRect(x, y, width, height) {
   document.body.appendChild(frame);
   return frame;
 }
+
+document.scriptExecuted = true;

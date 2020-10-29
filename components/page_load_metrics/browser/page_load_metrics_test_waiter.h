@@ -57,6 +57,10 @@ class PageLoadMetricsTestWaiter
   // of |rect|. Subsequent calls overwrite unmet expectations.
   void AddMainFrameIntersectionExpectation(const gfx::Rect& rect);
 
+  // Adds a main frame intersection expectation for any main frame
+  // intersection update for the page load.
+  void AddMainFrameIntersectionExpectation();
+
   // Add a single WebFeature expectation.
   void AddWebFeatureExpectation(blink::mojom::WebFeature web_feature);
 
@@ -266,6 +270,7 @@ class PageLoadMetricsTestWaiter
   // Expectation for the main frame intersection. Has a value when
   // an expectation has not been met.
   base::Optional<gfx::Rect> expected_main_frame_intersection_;
+  bool expected_main_frame_intersection_update_ = false;
 
   int current_complete_resources_ = 0;
   int64_t current_network_bytes_ = 0;

@@ -23,6 +23,7 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_helper.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
+#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -31,6 +32,7 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/load_policy.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -663,6 +665,32 @@ void AdsPageLoadMetricsObserver::OnFrameIntersectionUpdate(
           *intersection_update.main_frame_intersection_rect);
     }
   }
+
+  CheckForAdDensityViolation();
+}
+
+// TODO(https://crbug.com/1142669): Evaluate imposing width requirements
+// for ad density violations.
+void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
+#if defined(OS_ANDROID)
+  const int kMaxMobileAdDensityByHeight = 30;
+  if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
+      kMaxMobileAdDensityByHeight) {
+    auto* client = ChromeSubresourceFilterClient::FromWebContents(
+        GetDelegate().GetWebContents());
+    // AdsPageLoadMetricsObserver is not created unless there is a
+    // ChromeSubresourceFilterClient
+    DCHECK(client);
+
+    // Violations can be triggered multiple times for the same page as
+    // violations after the first are ignored. Ad frame violations are
+    // attributed to the main frame url.
+    client->OnAdsViolationTriggered(
+        GetDelegate().GetWebContents()->GetMainFrame(),
+        subresource_filter::mojom::AdsViolation::
+            kMobileAdDensityByHeightAbove30);
+  }
+#endif
 }
 
 void AdsPageLoadMetricsObserver::OnFrameDeleted(

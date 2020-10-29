@@ -49,6 +49,8 @@ class ChromeSubresourceFilterClient
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // SubresourceFilterClient:
   void ShowNotification() override;
@@ -84,6 +86,8 @@ class ChromeSubresourceFilterClient
       nullptr;
 
   bool did_show_ui_for_navigation_ = false;
+
+  bool ads_violation_triggered_for_last_committed_navigation_ = false;
 
   // Corresponds to a devtools command which triggers filtering on all page
   // loads. We must be careful to ensure this boolean does not persist after the

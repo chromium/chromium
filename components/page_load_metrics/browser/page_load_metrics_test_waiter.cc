@@ -40,6 +40,10 @@ void PageLoadMetricsTestWaiter::AddMainFrameIntersectionExpectation(
   expected_main_frame_intersection_ = rect;
 }
 
+void PageLoadMetricsTestWaiter::AddMainFrameIntersectionExpectation() {
+  expected_main_frame_intersection_update_ = true;
+}
+
 void PageLoadMetricsTestWaiter::AddSubFrameExpectation(TimingField field) {
   CHECK_NE(field, TimingField::kLoadTimingInfo)
       << "LOAD_TIMING_INFO should only be used as a page-level expectation";
@@ -200,6 +204,9 @@ void PageLoadMetricsTestWaiter::OnFrameIntersectionUpdate(
     content::RenderFrameHost* rfh,
     const page_load_metrics::mojom::FrameIntersectionUpdate&
         frame_intersection_update) {
+  if (frame_intersection_update.main_frame_intersection_rect)
+    expected_main_frame_intersection_update_ = false;
+
   if (expected_main_frame_intersection_ &&
       expected_main_frame_intersection_ ==
           frame_intersection_update.main_frame_intersection_rect) {
@@ -349,7 +356,8 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          SubframeNavigationExpectationsSatisfied() &&
          SubframeDataExpectationsSatisfied() && expected_frame_sizes_.empty() &&
          CpuTimeExpectationsSatisfied() &&
-         !expected_main_frame_intersection_.has_value();
+         !expected_main_frame_intersection_.has_value() &&
+         !expected_main_frame_intersection_update_;
 }
 
 PageLoadMetricsTestWaiter::WaiterMetricsObserver::~WaiterMetricsObserver() =

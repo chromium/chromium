@@ -82,7 +82,9 @@ class AdsInterventionManager {
       mojom::AdsViolation ads_violation);
 
   // Returns the last active ads intervention written to metadata,
-  // otherwise base::nullopt is returned.
+  // otherwise base::nullopt is returned. When retrieving ads interventions
+  // for a navigation, should_record_metrics should be true to record
+  // per-navigation ads intervention metrics.
   base::Optional<LastAdsIntervention> GetLastAdsIntervention(
       const GURL& url) const;
 

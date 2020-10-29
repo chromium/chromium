@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -21,6 +22,13 @@ namespace {
 // Key into the website settings dict for last active ads violation.
 const char kLastAdsViolationTimeKey[] = "LastAdsViolationTime";
 const char kLastAdsViolationKey[] = "LastAdsViolation";
+
+// Histograms
+const char kAdsInterventionRecordedHistogramName[] =
+    "SubresourceFilter.PageLoad.AdsInterventionTriggered";
+
+const char kTimeSinceAdsInterventionTriggeredHistogramName[] =
+    "SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention";
 
 AdsInterventionStatus GetAdsInterventionStatus(bool activation_status,
                                                bool intervention_active) {
@@ -59,6 +67,9 @@ void AdsInterventionManager::TriggerAdsInterventionForUrlOnSubsequentLoads(
       SubresourceFilterContentSettingsManager::ActivationSource::
           kAdsIntervention,
       std::move(additional_metadata));
+
+  UMA_HISTOGRAM_ENUMERATION(kAdsInterventionRecordedHistogramName,
+                            ads_violation);
 }
 
 base::Optional<AdsInterventionManager::LastAdsIntervention>
@@ -99,6 +110,9 @@ bool AdsInterventionManager::ShouldActivate(
       last_intervention->duration_since <
           subresource_filter::kAdsInterventionDuration.Get();
   if (last_intervention) {
+    UMA_HISTOGRAM_COUNTS_1000(kTimeSinceAdsInterventionTriggeredHistogramName,
+                              last_intervention->duration_since.InHours());
+
     auto* ukm_recorder = ukm::UkmRecorder::Get();
     ukm::builders::AdsIntervention_LastIntervention builder(
         ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),

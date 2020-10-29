@@ -260,6 +260,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceFilter.PageLoad.AdsInterventionTriggered"
+    enum="AdsViolations" expires_after="M90">
+  <owner>yaoxia@google.com</owner>
+  <owner>chrome-ads-uma@google.com</owner>
+  <summary>
+    Records that an ads violation has been triggered on a page load. Logged at
+    the time the ads violation is detected.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed"
     units="resource loads" expires_after="M85">
   <owner>csharrison@chromium.org</owner>
@@ -342,6 +352,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Note: this histogram is emitted for all clients, both ones which have
     high-resolution timer available and those which don't.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention"
+    units="hours" expires_after="M90">
+  <owner>yaoxia@google.com</owner>
+  <owner>chrome-ads-uma@google.com</owner>
+  <summary>
+    Records the time since the last ads intervention when loading a page that
+    has previously triggered an ads intervention. This is limited by the maximum
+    expiry time of intervention data, 7 days. Recorded at the time page
+    activation is computed during page load when a previous intervention was
+    previously recorded and has not expired from the intervention data.
   </summary>
 </histogram>
 

@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/scoped_observer.h"
 #include "base/time/tick_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/frame_data.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/page_ad_density_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -177,6 +178,11 @@ class AdsPageLoadMetricsObserver
     std::unique_ptr<FrameTreeData> owned_frame_data_;
     base::WeakPtr<FrameTreeData> unowned_frame_data_;
   };
+
+  // Checks the current page ad density by height for an better ads standard
+  // violation. The better ads standard defines ad density violations as any
+  // site with more than 30 percent ad density by height.
+  void CheckForAdDensityViolation();
 
   // subresource_filter::SubresourceFilterObserver:
   void OnAdSubframeDetected(

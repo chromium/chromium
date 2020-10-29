@@ -85,6 +85,14 @@ void ChromeSubresourceFilterClient::DidStartNavigation(
   }
 }
 
+void ChromeSubresourceFilterClient::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
+      !navigation_handle->IsSameDocument()) {
+    ads_violation_triggered_for_last_committed_navigation_ = false;
+  }
+}
+
 void ChromeSubresourceFilterClient::OnReloadRequested() {
   // TODO(crbug.com/1116095): Once ContentSubresourceFilterThrottleManager knows
   // about content settings, this method can move entirely into
@@ -154,15 +162,25 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
   return effective_activation_level;
 }
 
+// TODO(https://crbug.com/1131969): Consider adding reporting when
+// ads violations are triggered.
 void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
     content::RenderFrameHost* rfh,
     subresource_filter::mojom::AdsViolation triggered_violation) {
+  // Only trigger violations once per navigation. The ads intervention
+  // manager ignores all interventions after recording an intervention
+  // for the intervention duration, however, a page that began a navigation
+  // before the intervention duration and was still alive after the duration
+  // could re-trigger an ads intervention.
+  if (ads_violation_triggered_for_last_committed_navigation_)
+    return;
+
   // If the feature is disabled, simulate ads interventions as if we were
   // enforcing on ads: do not record new interventions if we would be enforcing
   // an intervention on ads already.
   //
-  // TODO(https://crbug/1107998): Verify this behavior when violation signals
-  // and histograms are added.
+  // TODO(https://crbug.com/1131971): Add support for enabling ads interventions
+  // separately for different ads violations.
   const GURL& url = rfh->GetLastCommittedURL();
   base::Optional<
       subresource_filter::AdsInterventionManager::LastAdsIntervention>
@@ -176,6 +194,8 @@ void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
 
   profile_context_->ads_intervention_manager()
       ->TriggerAdsInterventionForUrlOnSubsequentLoads(url, triggered_violation);
+
+  ads_violation_triggered_for_last_committed_navigation_ = true;
 }
 
 void ChromeSubresourceFilterClient::AllowlistByContentSettings(
