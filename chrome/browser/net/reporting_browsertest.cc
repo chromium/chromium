@@ -251,8 +251,7 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest,
 }
 
 // These tests intentionally crash a render process, and so fail ASan tests.
-// Flaky timeouts on Win7 Tests (dbg)(1); see https://crbug.com/985255.
-#if defined(ADDRESS_SANITIZER) || (defined(OS_WIN) && !defined(NDEBUG))
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashReport DISABLED_CrashReport
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #else

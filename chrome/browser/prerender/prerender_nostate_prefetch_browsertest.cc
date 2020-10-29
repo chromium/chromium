@@ -1369,13 +1369,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, Loop) {
   WaitForRequestCount(src_server()->GetURL(kPrefetchScript), 1);
 }
 
-// Flaky timeouts on Win7 Tests; see https://crbug.com/985255.
-#if defined(OS_WIN)
-#define MAYBE_RendererCrash DISABLED_RendererCrash
-#else
-#define MAYBE_RendererCrash RendererCrash
-#endif
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_RendererCrash) {
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, RendererCrash) {
   // Navigate to about:blank to get the session storage namespace.
   ui_test_utils::NavigateToURL(current_browser(), GURL(url::kAboutBlankURL));
   content::SessionStorageNamespace* storage_namespace =

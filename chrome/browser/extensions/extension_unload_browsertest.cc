@@ -191,13 +191,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, OpenedOpaqueWindows) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
-// Flaky timeouts on Win7 Tests (dbg)(1); see https://crbug.com/985255.
-#if defined(OS_WIN) && !defined(NDEBUG)
-#define MAYBE_CrashedTabs DISABLED_CrashedTabs
-#else
-#define MAYBE_CrashedTabs CrashedTabs
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, MAYBE_CrashedTabs) {
+IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
       R"({
