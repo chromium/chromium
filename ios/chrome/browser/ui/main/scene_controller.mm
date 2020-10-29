@@ -38,6 +38,7 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -59,6 +60,8 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
+#import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
@@ -141,7 +144,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                SettingsNavigationControllerDelegate,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
-                               WebStateListObserving> {
+                               WebStateListObserving,
+                               LocationPermissionsCommands> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
 }
 
@@ -204,6 +208,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // The coordinator used to control sign-in UI flows. Lazily created the first
 // time it is accessed.
 @property(nonatomic, strong) SigninCoordinator* signinCoordinator;
+
+@property(nonatomic, strong)
+    LocationPermissionsCoordinator* locationPermissionsCoordinator;
 
 // Additional product specific data used by UserFeedbackDataSource.
 // TODO(crbug.com/1117041): Move this into a UserFeedback config object.
@@ -1078,7 +1085,25 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   self.signinCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:mainBrowser];
-  [self startSigninCoordinatorWithCompletion:nil];
+  [self startSigninCoordinatorWithCompletion:^(BOOL success) {
+    if (base::FeatureList::IsEnabled(kLocationFirstRunModal)) {
+      [self showLocationPermissionsFromViewController:baseViewController];
+    }
+  }];
+}
+
+- (void)showLocationPermissionsFromViewController:
+    (UIViewController*)baseViewController {
+  self.locationPermissionsCoordinator = [[LocationPermissionsCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.mainInterface.browser];
+  self.locationPermissionsCoordinator.handler = self;
+  [self.locationPermissionsCoordinator start];
+}
+
+- (void)dismissLocationPermissionsExplanationModal {
+  [self.locationPermissionsCoordinator stop];
+  self.locationPermissionsCoordinator = nil;
 }
 
 - (void)

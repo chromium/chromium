@@ -249,6 +249,11 @@ const BOOL kDefaultStatsCheckboxValue = YES;
                              [self.dispatcher
                                  showAdvancedSigninSettingsFromViewController:
                                      presentingViewController];
+                           } else if (base::FeatureList::IsEnabled(
+                                          kLocationFirstRunModal)) {
+                             [self.dispatcher
+                                 showLocationPermissionsFromViewController:
+                                     presentingViewController];
                            }
                          }];
 }
