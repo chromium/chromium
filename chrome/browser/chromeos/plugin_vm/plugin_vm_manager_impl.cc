@@ -114,7 +114,7 @@ PluginVmManagerImpl::~PluginVmManagerImpl() {
       ->RemoveObserver(this);
 }
 
-void PluginVmManagerImpl::OnPrimaryUserProfilePrepared() {
+void PluginVmManagerImpl::OnPrimaryUserSessionStarted() {
   vm_tools::plugin_dispatcher::ListVmRequest request;
   request.set_owner_id(owner_id_);
   request.set_vm_name_uuid(kPluginVmName);

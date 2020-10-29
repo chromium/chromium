@@ -19,7 +19,7 @@ class MockPluginVmManager : public PluginVmManager {
   MockPluginVmManager(const MockPluginVmManager&) = delete;
   MockPluginVmManager& operator=(const MockPluginVmManager&) = delete;
 
-  MOCK_METHOD(void, OnPrimaryUserProfilePrepared, (), ());
+  MOCK_METHOD(void, OnPrimaryUserSessionStarted, (), ());
   MOCK_METHOD(void, LaunchPluginVm, (LaunchPluginVmCallback callback), ());
   MOCK_METHOD(void, RelaunchPluginVm, (), ());
   MOCK_METHOD(void, StopPluginVm, (const std::string& name, bool force), ());

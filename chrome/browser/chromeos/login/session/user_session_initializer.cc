@@ -97,6 +97,9 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
 
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
+    DCHECK_EQ(primary_profile_, nullptr);
+    primary_profile_ = profile;
+
     InitRlz(profile);
     InitializeCerts(profile);
     InitializeCRLSetFetcher();
@@ -186,11 +189,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 
   arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile);
 
-  plugin_vm::PluginVmManager* plugin_vm_manager =
-      plugin_vm::PluginVmManagerFactory::GetForProfile(profile);
-  if (plugin_vm_manager)
-    plugin_vm_manager->OnPrimaryUserProfilePrepared();
-
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(profile);
   if (crostini_manager)
@@ -202,6 +200,17 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   }
 
   g_browser_process->platform_part()->InitializePrimaryProfileServices(profile);
+}
+
+void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
+  if (is_primary_user) {
+    DCHECK_NE(primary_profile_, nullptr);
+
+    plugin_vm::PluginVmManager* plugin_vm_manager =
+        plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
+    if (plugin_vm_manager)
+      plugin_vm_manager->OnPrimaryUserSessionStarted();
+  }
 }
 
 void UserSessionInitializer::InitRlzImpl(Profile* profile,

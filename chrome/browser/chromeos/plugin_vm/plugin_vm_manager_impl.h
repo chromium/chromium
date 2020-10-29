@@ -48,7 +48,7 @@ class PluginVmManagerImpl
   explicit PluginVmManagerImpl(Profile* profile);
   ~PluginVmManagerImpl() override;
 
-  void OnPrimaryUserProfilePrepared() override;
+  void OnPrimaryUserSessionStarted() override;
 
   // TODO(juwa): Don't allow launch/stop/uninstall to run simultaneously.
   // |callback| is called either when VM tools are ready or if an error occurs.

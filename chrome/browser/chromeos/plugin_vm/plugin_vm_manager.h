@@ -23,7 +23,7 @@ class PluginVmManager : public KeyedService {
  public:
   using LaunchPluginVmCallback = base::OnceCallback<void(bool success)>;
 
-  virtual void OnPrimaryUserProfilePrepared() = 0;
+  virtual void OnPrimaryUserSessionStarted() = 0;
 
   virtual void LaunchPluginVm(LaunchPluginVmCallback callback) = 0;
   virtual void RelaunchPluginVm() = 0;
