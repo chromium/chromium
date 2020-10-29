@@ -163,7 +163,7 @@ def main():
     # Move the executable into a subfolder as there needs to be only one
     # executable in the parent folder.
     subprocess.check_call(rn_cmd +
-        ['gcpw_extension.exe', 'extension\gcpw_extension.exe'],
+        ['gcpw_extension.exe', os.path.join('extension', 'gcpw_extension.exe')],
         stdout=nul_file)
 
   # Combine the SFX module with the archive to make a self extracting
