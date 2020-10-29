@@ -344,6 +344,8 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
 
     EXPECT_CALL(provider_, IsInitializationComplete(_))
         .WillRepeatedly(Return(false));
+    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(_))
+        .WillRepeatedly(Return(false));
     provider_.Init();
     PolicyServiceImpl::Providers providers;
     providers.push_back(&provider_);
@@ -397,6 +399,8 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
   void MarkPolicyProviderInitialized() {
     Mock::VerifyAndClearExpectations(&provider_);
     EXPECT_CALL(provider_, IsInitializationComplete(_))
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(_))
         .WillRepeatedly(Return(true));
     provider_.SetAutoRefresh();
     provider_.RefreshPolicies();

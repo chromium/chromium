@@ -54,6 +54,10 @@ void ProxyPolicyProvider::RefreshPolicies() {
   }
 }
 
+bool ProxyPolicyProvider::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
+  return delegate_ && delegate_->IsInitializationComplete(domain);
+}
+
 void ProxyPolicyProvider::OnUpdatePolicy(
     ConfigurationPolicyProvider* provider) {
   if (block_policy_updates_for_testing_)

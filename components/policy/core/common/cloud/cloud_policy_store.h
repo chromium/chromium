@@ -94,6 +94,10 @@ class POLICY_EXPORT CloudPolicyStore {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return status_;
   }
+  bool first_policies_loaded() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return first_policies_loaded_;
+  }
   CloudPolicyValidatorBase::Status validation_status() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return validation_result_.get() ? validation_result_->status
@@ -154,6 +158,9 @@ class POLICY_EXPORT CloudPolicyStore {
   // tests and remove the override.
   void SetPolicyMapForTesting(const PolicyMap& policy_map);
 
+  // Sets whether or not the first policies for this policy store were loaded.
+  void SetFirstPoliciesLoaded(bool loaded);
+
  protected:
   // Invokes the corresponding callback on all registered observers.
   void NotifyStoreLoaded();
@@ -172,14 +179,16 @@ class POLICY_EXPORT CloudPolicyStore {
   std::unique_ptr<enterprise_management::PolicyData> policy_;
 
   // Latest status code.
-  Status status_;
+  Status status_ = STATUS_OK;
+
+  bool first_policies_loaded_ = false;
 
   // Latest validation result.
   std::unique_ptr<CloudPolicyValidatorBase::ValidationResult>
       validation_result_;
 
   // The invalidation version of the last policy stored.
-  int64_t invalidation_version_;
+  int64_t invalidation_version_ = 0;
 
   // The public part of signing key that is used by the currently effective
   // policy. The subclasses should keep its value up to date to correspond to
@@ -191,7 +200,7 @@ class POLICY_EXPORT CloudPolicyStore {
  private:
   // Whether the store has completed asynchronous initialization, which is
   // triggered by calling Load().
-  bool is_initialized_;
+  bool is_initialized_ = false;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 

@@ -35,10 +35,12 @@ class POLICY_EXPORT CommandLinePolicyProvider
 
   // ConfigurationPolicyProvider implementation.
   void RefreshPolicies() override;
+  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
  private:
   explicit CommandLinePolicyProvider(const base::CommandLine& command_line);
 
+  bool first_policies_loaded_;
   PolicyLoaderCommandLine loader_;
 };
 

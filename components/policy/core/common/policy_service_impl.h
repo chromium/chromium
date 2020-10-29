@@ -67,6 +67,7 @@ class POLICY_EXPORT PolicyServiceImpl
   bool HasProvider(ConfigurationPolicyProvider* provider) const override;
   const PolicyMap& GetPolicies(const PolicyNamespace& ns) const override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
+  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies(base::OnceClosure callback) override;
 #if defined(OS_ANDROID)
   android::PolicyServiceAndroid* GetPolicyServiceAndroid() override;
@@ -81,6 +82,8 @@ class POLICY_EXPORT PolicyServiceImpl
   void UnthrottleInitialization();
 
  private:
+  enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
+
   using Observers =
       base::ObserverList<PolicyService::Observer, true>::Unchecked;
 
@@ -109,16 +112,17 @@ class POLICY_EXPORT PolicyServiceImpl
   // of namespaces whose policies have been modified.
   void MergeAndTriggerUpdates();
 
-  // Checks if all providers are initialized and sets |initialization_complete_|
-  // accordingly. If initialization is not throttled, will also notify the
-  // observers if the service just became initialized.
-  void CheckInitializationComplete();
+  // Checks if all providers are initialized or have loaded their policies and
+  // sets |policy_domain_status_| accordingly. If initialization is not
+  // throttled, will also notify the observers of the appropriate status.
+  void CheckPolicyDomainStatus();
 
-  // If initialization is complete for |policy_domain| and initialization is not
-  // throttled, will notify obserers for |policy_domain| that it has been
-  // initialized. This function should only be called when |policy_domain| just
-  // became initialized or when initialization has been unthrottled.
-  void MaybeNotifyInitializationComplete(PolicyDomain policy_domain);
+  // If initialization is not throttled, observers of |policy_domain| of the
+  // initialization will be notified of the domains' initialization and of the
+  // first policies being loaded. This function should only be called when
+  // |policy_domain| just became initialized, just got its first policies or
+  // when initialization has been unthrottled.
+  void MaybeNotifyPolicyDomainStatusChange(PolicyDomain policy_domain);
 
   // Invokes all the refresh callbacks if there are no more refreshes pending.
   void CheckRefreshComplete();
@@ -134,8 +138,8 @@ class POLICY_EXPORT PolicyServiceImpl
   // Maps each policy domain to its observer list.
   std::map<PolicyDomain, std::unique_ptr<Observers>> observers_;
 
-  // True if all the providers are initialized for the indexed policy domain.
-  bool initialization_complete_[POLICY_DOMAIN_SIZE];
+  // The status of all the providers for the indexed policy domain.
+  PolicyDomainStatus policy_domain_status_[POLICY_DOMAIN_SIZE];
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().

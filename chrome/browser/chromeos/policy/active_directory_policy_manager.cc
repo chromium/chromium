@@ -97,6 +97,17 @@ bool ActiveDirectoryPolicyManager::IsInitializationComplete(
   return true;
 }
 
+bool ActiveDirectoryPolicyManager::IsFirstPolicyLoadComplete(
+    PolicyDomain domain) const {
+  if (domain == POLICY_DOMAIN_CHROME)
+    return store()->first_policies_loaded();
+  if (domain == extension_policy_domain_) {
+    return extension_policy_service_ &&
+           extension_policy_service_->policy() != nullptr;
+  }
+  return true;
+}
+
 void ActiveDirectoryPolicyManager::RefreshPolicies() {
   scheduler_->ScheduleTaskNow();
 }

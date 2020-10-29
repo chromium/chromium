@@ -48,8 +48,18 @@ class POLICY_EXPORT PolicyService {
     // Invoked at most once for each |domain|, when the PolicyService becomes
     // ready. If IsInitializationComplete() is false, then this will be invoked
     // once all the policy providers have finished loading their policies for
-    // |domain|.
+    // |domain|. This does not handle failure to load policies from some
+    // providers, so it is possible for for the policy service to be initialised
+    // if the providers failed for example to load its policies cache.
     virtual void OnPolicyServiceInitialized(PolicyDomain domain) {}
+
+    // Invoked at most once for each |domain|, when the PolicyService becomes
+    // ready. If IsFirstPolicyLoadComplete() is false, then this will be invoked
+    // once all the policy providers have finished loading their policies for
+    // |domain|. The difference from |OnPolicyServiceInitialized| is that this
+    // will wait for cloud policies to be fetched when the local cache is not
+    // available, which may take some time depending on user's network.
+    virtual void OnFirstPoliciesLoaded(PolicyDomain domain) {}
 
    protected:
     virtual ~Observer() {}
@@ -88,7 +98,7 @@ class POLICY_EXPORT PolicyService {
 
   // The PolicyService loads policy from several sources, and some require
   // asynchronous loads. IsInitializationComplete() returns true once all
-  // sources have loaded their policies for the given |domain|.
+  // sources have been initialized for the given |domain|.
   // It is safe to read policy from the PolicyService even if
   // IsInitializationComplete() is false; there will be an OnPolicyUpdated()
   // notification once new policies become available.
@@ -99,6 +109,20 @@ class POLICY_EXPORT PolicyService {
   // is registered, then that Observer will not receive an
   // OnPolicyServiceInitialized() notification.
   virtual bool IsInitializationComplete(PolicyDomain domain) const = 0;
+
+  // The PolicyService loads policy from several sources, and some require
+  // asynchronous loads. IsFirstPolicyLoadComplete() returns true once all
+  // sources have loaded their initial policies for the given |domain|.
+  // It is safe to read policy from the PolicyService even if
+  // IsFirstPolicyLoadComplete() is false; there will be an OnPolicyUpdated()
+  // notification once new policies become available.
+  //
+  // OnFirstPoliciesLoaded() is called when IsFirstPolicyLoadComplete()
+  // becomes true, which happens at most once for each domain.
+  // If IsFirstPolicyLoadComplete() is already true for |domain| when an
+  // Observer is registered, then that Observer will not receive an
+  // OnFirstPoliciesLoaded() notification.
+  virtual bool IsFirstPolicyLoadComplete(PolicyDomain domain) const = 0;
 
   // Asks the PolicyService to reload policy from all available policy sources.
   // |callback| is invoked once every source has reloaded its policies, and

@@ -41,6 +41,7 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;
   void RefreshPolicies() override;
+  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
  private:
   // Helper for RefreshPolicies().
@@ -65,6 +66,8 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   // Callback used to synchronize RefreshPolicies() calls with the background
   // thread. See the implementation for the details.
   base::CancelableOnceClosure refresh_callback_;
+
+  bool first_policies_loaded_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

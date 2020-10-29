@@ -82,7 +82,7 @@ TEST_F(UserCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   // called.
   CreateManager();
   store_->policy_map_.CopyFrom(policy_map_);
-  EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
+  EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(2);
   store_->NotifyStoreLoaded();
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
