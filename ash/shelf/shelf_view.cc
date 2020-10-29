@@ -36,6 +36,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -99,9 +100,6 @@ constexpr float kDragAndDropProxyScale = 1.2f;
 constexpr float kDraggedImageOpacity = 0.5f;
 
 namespace {
-
-// White with ~20% opacity.
-constexpr SkColor kSeparatorColor = SkColorSetARGB(0x32, 0xFF, 0xFF, 0xFF);
 
 // The dimensions, in pixels, of the separator between pinned and unpinned
 // items.
@@ -400,7 +398,8 @@ void ShelfView::Init() {
       IconAnimationType::kFadeOutAnimation);
 
   separator_ = new views::Separator();
-  separator_->SetColor(kSeparatorColor);
+  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
   separator_->SetPreferredHeight(kSeparatorSize);
   separator_->SetVisible(false);
   ConfigureChildView(separator_, ui::LAYER_TEXTURED);
