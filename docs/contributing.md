@@ -353,6 +353,14 @@ general rules of thumb can be helpful in navigating how to structure changes:
   that future changes will be less likely to regress functionality. Protect
   your code with tests!
 
+- **Stick to the current set of supported languages as described in the
+  [styleguide][cr-styleguide].** While there is likely always a slightly better
+  tool for any particular job, maintainability of the codebase is paramount.
+  Reducing the number of languages eases toolchain and infrastructure
+  requirements, and minimizes the learning hurdles for developers to be
+  successful contributing across the codebase. Additions of new languages must
+  be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+
 ## Tips
 
 ### Review etiquette
