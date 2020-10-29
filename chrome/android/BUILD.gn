@@ -655,10 +655,6 @@ java_group("chrome_all_java") {
   if (dfmify_dev_ui) {
     deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
   }
-
-  if (use_chime_android_sdk) {
-    deps += [ "//chrome/android/modules/chime/public:java" ]
-  }
 }
 
 # This is a list of all base module jni headers. New features should add their
