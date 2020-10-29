@@ -88,8 +88,8 @@ class ToolbarButton : public views::LabelButton,
   virtual void UpdateIcon() {}
 
   // Gets/Sets |layout_insets_|, see comment there.
-  gfx::Insets GetLayoutInsets() const;
-  void SetLayoutInsets(const gfx::Insets& insets);
+  base::Optional<gfx::Insets> GetLayoutInsets() const;
+  void SetLayoutInsets(const base::Optional<gfx::Insets>& insets);
 
   // views::LabelButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -254,11 +254,11 @@ class ToolbarButton : public views::LabelButton,
   // Menu runner to display drop down menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
-  // Layout insets to use.
-  // The default value is GetLayoutInsets(TOOLBAR_BUTTON) which is only
-  // appropriate inside the toolbar. When it is hosted outside the toolbar, use
-  // SetLayoutInsets() to supply the proper value.
-  gfx::Insets layout_insets_;
+  // Layout insets to use. This is used when the ToolbarButton is not actually
+  // hosted inside the toolbar. If not supplied,
+  // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
+  // outside the toolbar.
+  base::Optional<gfx::Insets> layout_insets_;
 
   // Delta from regular toolbar-button insets. This is necessary for buttons
   // that use smaller or larger icons than regular ToolbarButton instances.
@@ -290,7 +290,7 @@ class ToolbarButton : public views::LabelButton,
 };
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton, views::LabelButton)
-VIEW_BUILDER_PROPERTY(gfx::Insets, LayoutInsets)
+VIEW_BUILDER_PROPERTY(base::Optional<gfx::Insets>, LayoutInsets)
 END_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_BUTTON_H_
