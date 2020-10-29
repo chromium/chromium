@@ -30,4 +30,8 @@ specific_include_rules = {
   ".*test\.cc": [
     "+services/network/test",
   ],
+
+  ".*test_suite\.cc": [
+    "+ui/base",
+  ],
 }

@@ -37,6 +37,7 @@ constexpr char kValidResponse[] = R"(
   }
 )";
 
+constexpr char kTestTranslationTitle[] = "test · inglés";
 constexpr char kTestTranslationResult[] = "prueba";
 
 const auto kTestTranslationIntent =
@@ -87,6 +88,7 @@ TEST_F(TranslationResultLoaderTest, Success) {
   std::unique_ptr<QuickAnswer> expected_quick_answer =
       std::make_unique<QuickAnswer>();
   expected_quick_answer->primary_answer = kTestTranslationResult;
+  expected_quick_answer->secondary_answer = kTestTranslationTitle;
   test_url_loader_factory_.AddResponse(kCloudTranslationApiRequest,
                                        kValidResponse);
   EXPECT_CALL(

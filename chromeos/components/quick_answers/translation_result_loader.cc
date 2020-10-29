@@ -44,10 +44,6 @@ constexpr base::StringPiece kSourceLanguageKey = "source";
 constexpr base::StringPiece kTargetLanguageKey = "target";
 
 std::string BuildTitleText(const IntentInfo& intent_info) {
-  // TODO(b/169453041): Add test support for localized strings.
-  if (!ui::ResourceBundle::HasSharedInstance())
-    return std::string();
-
   auto locale_name = l10n_util::GetDisplayNameForLocale(
       intent_info.source_language, intent_info.target_language, true);
   return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,

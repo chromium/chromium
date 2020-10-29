@@ -9,7 +9,11 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 # To add a unit test to this target, make a "unit_test" source_set in your
 # component and add a reference here.
 test("chromeos_components_unittests") {
-  sources = [ "run_all_unittests.cc" ]
+  sources = [
+    "chromeos_components_test_suite.cc",
+    "chromeos_components_test_suite.h",
+    "run_all_unittests.cc",
+  ]
 
   deps = [
     "//base",
@@ -37,11 +41,17 @@ test("chromeos_components_unittests") {
     "//chromeos/components/tether:unit_tests",
     "//chromeos/components/trial_group:unit_tests",
     "//mojo/core/embedder",
+    "//ui/base:base",
   ]
 
   if (!is_official_build) {
     deps += [ "//chromeos/components/telemetry_extension_ui:unit_tests" ]
   }
+
+  data_deps = [
+    "//chromeos/strings:chromeos_test_strings",
+    "//ui/resources:ui_test_pak_data",
+  ]
 }
 
 group("closure_compile") {

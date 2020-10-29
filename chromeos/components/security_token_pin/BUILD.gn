@@ -32,8 +32,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-  data_deps = [
-    "//chromeos/strings:chromeos_test_strings",
-    "//ui/resources:ui_test_pak_data",
-  ]
 }
