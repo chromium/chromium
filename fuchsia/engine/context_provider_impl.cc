@@ -409,6 +409,9 @@ void ContextProviderImpl::Create(
     AppendFeature(switches::kEnableFeatures,
                   features::kUseSkiaOutputDeviceBufferQueue.name,
                   &launch_command);
+    AppendFeature(switches::kEnableFeatures,
+                  features::kUseRealBuffersForPageFlipTest.name,
+                  &launch_command);
     launch_command.AppendSwitchASCII(switches::kEnableHardwareOverlays,
                                      "underlay");
     launch_command.AppendSwitch(switches::kUseOverlaysForVideo);
