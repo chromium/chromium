@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
-#include "mojo/public/cpp/bindings/lib/tracing_helper.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "mojo/public/cpp/bindings/sync_handle_watcher.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -492,8 +491,7 @@ bool Connector::DispatchMessage(Message message) {
   }
 
   TRACE_EVENT_WITH_FLOW0("toplevel.flow", "mojo::Message Receive",
-                         MANGLE_MESSAGE_ID(message.header()->trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN);
+                         message.header()->trace_id, TRACE_EVENT_FLAG_FLOW_IN);
 #if !BUILDFLAG(MOJO_TRACE_ENABLED)
   // This emits just full class name, and is inferior to mojo tracing.
   TRACE_EVENT("toplevel", "Connector::DispatchMessage",

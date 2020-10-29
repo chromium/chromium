@@ -783,6 +783,8 @@ component("base") {
     "trace_event/heap_profiler_allocation_context_tracker.h",
     "trace_event/memory_allocator_dump_guid.cc",
     "trace_event/memory_allocator_dump_guid.h",
+    "trace_event/trace_id_helper.cc",
+    "trace_event/trace_id_helper.h",
     "traits_bag.h",
     "tuple.h",
     "unguessable_token.cc",

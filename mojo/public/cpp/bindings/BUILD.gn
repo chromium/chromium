@@ -80,7 +80,6 @@ component("bindings_base") {
     "lib/serialization_util.h",
     "lib/string_serialization.h",
     "lib/template_util.h",
-    "lib/tracing_helper.h",
     "lib/unserialized_message_context.cc",
     "lib/unserialized_message_context.h",
     "lib/validate_params.h",
