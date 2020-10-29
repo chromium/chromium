@@ -10,8 +10,9 @@ namespace storage {
 namespace test {
 
 const std::vector<std::string> kStorageTypes{
-    "Cookie", "LocalStorage", "FileSystem",    "SessionStorage", "IndexedDb",
-    "WebSql", "CacheStorage", "ServiceWorker", "CookieStore"};
+    "Cookie",         "LocalStorage", "FileSystem", "FileSystemAccess",
+    "SessionStorage", "IndexedDb",    "WebSql",     "CacheStorage",
+    "ServiceWorker",  "CookieStore"};
 
 const std::vector<std::string> kCrossTabCommunicationTypes{
     "SharedWorker",

@@ -662,6 +662,55 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksIndexedDB) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksFileSystem) {
+  ui_test_utils::NavigateToURL(browser(), GetPageURL());
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
+
+  const char kBaseExpected[] = "%s - %s";
+
+  const char kBaseScript[] = R"(
+      (async function() {
+        const name = `%s`;
+        try {
+          await %s;
+        } catch(e) {
+          return `${name} - ${e.toString()}`;
+        }
+        return `${name} - success`;
+      }())
+  )";
+
+  struct TestOp {
+    const char* name;
+    const char* code;
+    const char* error;
+  };
+
+  const TestOp kTestOps[] = {
+      {.name = "navigator.storage.getDirectory()",
+       .code = "navigator.storage.getDirectory()",
+       .error = "SecurityError: Storage directory access is denied."},
+      {.name = "window.webkitRequestFileSystem()",
+       .code = "new Promise((resolve, reject) => { "
+               " window.webkitRequestFileSystem(window.TEMPORARY,"
+               " 5*1024, () => resolve(),"
+               " (e) => reject(e));"
+               "});",
+       .error = "AbortError: An ongoing operation was aborted, typically with "
+                "a call to abort()."},
+  };
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  for (auto& op : kTestOps) {
+    EXPECT_EQ(base::StringPrintf(kBaseExpected, op.name, op.error),
+              EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     CookieSettingsTest,

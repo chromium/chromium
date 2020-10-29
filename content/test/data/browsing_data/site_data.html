@@ -111,6 +111,26 @@
     openFile_('foo.txt', { create: false }, success_, failure_);
   }
 
+  async function setFileSystemAccess() {
+    try {
+      let dir = await navigator.storage.getDirectory();
+      await dir.getFileHandle('foo.txt', {create: true});
+      success_();
+    } catch (e) {
+      failure_();
+    }
+  }
+
+  async function hasFileSystemAccess() {
+    try {
+      let dir = await navigator.storage.getDirectory();
+      await dir.getFileHandle('foo.txt', { create: false });
+      success_();
+    } catch (e) {
+      failure_();
+    }
+  }
+
   function setWebSql() {
     var db = openDatabase('testdb', '1.0', 'a test db', 1024);
     db.transaction(function (tx) {
