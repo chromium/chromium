@@ -25190,6 +25190,7 @@ Called by update_extension_histograms.py.-->
   <int value="1523" label="CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED"/>
   <int value="1524"
       label="FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
+  <int value="1525" label="ACCESSIBILITY_PRIVATE_ISFEATUREENABLED"/>
 </enum>
 
 <enum name="ExtensionIconState">

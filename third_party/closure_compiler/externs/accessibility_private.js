@@ -196,6 +196,13 @@ chrome.accessibilityPrivate.AcceleratorAction = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.AccessibilityFeature = {
+  SELECT_TO_SPEAK_NAVIGATION_CONTROL: 'selectToSpeakNavigationControl',
+};
+
+/**
  * Called to translate localeCodeToTranslate into human-readable string in the
  * locale specified by displayLocaleCode
  * @param {string} localeCodeToTranslate
@@ -357,6 +364,13 @@ chrome.accessibilityPrivate.openSettingsSubpage = function(subpage) {};
  * @param {!chrome.accessibilityPrivate.AcceleratorAction} acceleratorAction
  */
 chrome.accessibilityPrivate.performAcceleratorAction = function(acceleratorAction) {};
+
+/**
+ * Checks to see if an accessibility feature is enabled.
+ * @param {!chrome.accessibilityPrivate.AccessibilityFeature} feature
+ * @param {function(boolean): void} callback Returns whether feature is enabled.
+ */
+chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

@@ -198,6 +198,14 @@ class AccessibilityPrivatePerformAcceleratorActionFunction
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.performAcceleratorAction",
                              ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION)
 };
+
+// API function that determines if an accessibility feature is enabled.
+class AccessibilityPrivateIsFeatureEnabledFunction : public ExtensionFunction {
+  ~AccessibilityPrivateIsFeatureEnabledFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.isFeatureEnabled",
+                             ACCESSIBILITY_PRIVATE_ISFEATUREENABLED)
+};
 #endif  // defined (OS_CHROMEOS)
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_

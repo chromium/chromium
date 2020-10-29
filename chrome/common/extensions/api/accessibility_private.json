@@ -172,6 +172,12 @@
         "type": "string",
         "enum": [ "focusPreviousPane", "focusNextPane" ],
         "description": "A subset of accelerator actions used by accessibility."
+      },
+      {
+        "id": "AccessibilityFeature",
+        "type": "string",
+        "enum": [ "selectToSpeakNavigationControl" ],
+        "description": "Subset of accessibility features."
       }
     ],
     "functions": [
@@ -466,6 +472,29 @@
           {
             "name": "acceleratorAction",
             "$ref": "AcceleratorAction"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "isFeatureEnabled",
+        "type": "function",
+        "description": "Checks to see if an accessibility feature is enabled.",
+        "parameters": [
+          {
+            "name": "feature",
+            "$ref": "AccessibilityFeature"
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Returns whether feature is enabled.",
+            "parameters": [
+              {
+                "name": "featureEnabled",
+                "type": "boolean"
+              }
+            ]
           }
         ],
         "platforms": ["chromeos"]

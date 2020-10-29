@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
 namespace extensions {
@@ -83,6 +84,31 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
   // Invalid subpage should not open settings window.
   Browser* settings_browser = settings_manager->FindBrowserForProfile(profile);
   EXPECT_EQ(nullptr, settings_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
+                       IsFeatureEnabled_FeatureDisabled) {
+  ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",
+                                  "is_feature_enabled_feature_disabled.html"))
+      << message_;
+}
+
+class AccessibilityPrivateApiFeatureEnabledTest : public ExtensionApiTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kSelectToSpeakNavigationControl);
+    ExtensionApiTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiFeatureEnabledTest,
+                       IsFeatureEnabled_FeatureEnabled) {
+  ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",
+                                  "is_feature_enabled_feature_enabled.html"))
+      << message_;
 }
 
 }  // namespace extensions

@@ -560,4 +560,24 @@ AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+AccessibilityPrivateIsFeatureEnabledFunction::Run() {
+  std::unique_ptr<accessibility_private::IsFeatureEnabled::Params> params =
+      accessibility_private::IsFeatureEnabled::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::AccessibilityFeature params_feature = params->feature;
+  bool enabled;
+  switch (params_feature) {
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_SELECTTOSPEAKNAVIGATIONCONTROL:
+      enabled = ::features::IsSelectToSpeakNavigationControlEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_NONE:
+      return RespondNow(Error("Unrecognized feature"));
+  }
+
+  return RespondNow(OneArgument(base::Value(enabled)));
+}
+
 #endif  // defined (OS_CHROMEOS)
