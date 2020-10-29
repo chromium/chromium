@@ -29,7 +29,7 @@ const char kMouseLockBubbleReshowsHistogramName[] =
 // The amount of time to disallow repeated pointer lock calls after the user
 // successfully escapes from one lock request.
 constexpr base::TimeDelta kEffectiveUserEscapeDuration =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::TimeDelta::FromMilliseconds(1250);
 
 }  // namespace
 
