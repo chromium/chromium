@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 namespace {
@@ -86,6 +87,13 @@ class LacrosChromeServiceNeverBlockingState
     owner_sequence_->PostTask(
         FROM_HERE,
         base::BindOnce(&LacrosChromeServiceImpl::GetHistogramsAffineSequence,
+                       owner_, std::move(callback)));
+  }
+
+  void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {
+    owner_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence,
                        owner_, std::move(callback)));
   }
 
@@ -432,6 +440,12 @@ void LacrosChromeServiceImpl::GetHistogramsAffineSequence(
     GetHistogramsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
   delegate_->GetHistograms(std::move(callback));
+}
+
+void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
+    GetActiveTabUrlCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  delegate_->GetActiveTabUrl(std::move(callback));
 }
 
 int LacrosChromeServiceImpl::AshChromeServiceVersion() {

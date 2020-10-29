@@ -63,6 +63,9 @@ constexpr uint32_t kGetFeedbackDataMinVersion = 6;
 // The min version of LacrosChromeService mojo interface that supports
 // GetHistograms API.
 constexpr uint32_t kGetHistogramsMinVersion = 7;
+// The min version of LacrosChromeService mojo interface that supports
+// GetActiveTabUrl API.
+constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
 
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -245,6 +248,16 @@ void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
   DCHECK(lacros_chrome_service_.is_connected());
   DCHECK(GetHistogramsSupported());
   lacros_chrome_service_->GetHistograms(std::move(callback));
+}
+
+bool BrowserManager::GetActiveTabUrlSupported() const {
+  return lacros_chrome_service_version_ >= kGetActiveTabUrlMinVersion;
+}
+
+void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
+  DCHECK(lacros_chrome_service_.is_connected());
+  DCHECK(GetActiveTabUrlSupported());
+  lacros_chrome_service_->GetActiveTabUrl(std::move(callback));
 }
 
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {

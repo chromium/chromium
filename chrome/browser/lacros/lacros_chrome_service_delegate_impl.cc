@@ -6,11 +6,14 @@
 
 #include "base/logging.h"
 #include "base/metrics/statistics_recorder.h"
+#include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/lacros/feedback_util.h"
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/channel_info.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -64,6 +67,21 @@ void LacrosChromeServiceDelegateImpl::GetHistograms(
     LOG(ERROR) << "Failed to compress lacros histograms.";
     std::move(callback).Run(std::string());
   }
+}
+
+void LacrosChromeServiceDelegateImpl::GetActiveTabUrl(
+    GetActiveTabUrlCallback callback) {
+  Browser* browser = chrome::FindBrowserWithActiveWindow();
+  if (browser) {
+    GURL page_url;
+    page_url = chrome::GetTargetTabUrl(
+        browser->session_id(), browser->tab_strip_model()->active_index());
+    if (page_url.is_valid()) {
+      std::move(callback).Run(std::move(page_url));
+      return;
+    }
+  }
+  std::move(callback).Run(base::nullopt);
 }
 
 void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(

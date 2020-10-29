@@ -15,6 +15,7 @@ import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
+import "url/mojom/url.mojom";
 
 // LacrosInfo is a set of parameters passed to ash from lacros-chrome
 // upon lacros startup, which contains the lacros information such as version,
@@ -194,4 +195,8 @@ interface LacrosChromeService {
   // The histograms returned is zip compressed and is typically around 100KB.
   [MinVersion=7]
   GetHistograms@4() => (mojo_base.mojom.BigString compressed_histograms);
+
+  // Returns Url of the active tab from lacros if there is any.
+  [MinVersion=8]
+  GetActiveTabUrl@5() => (url.mojom.Url? url);
 };

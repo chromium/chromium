@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "base/values.h"
 
+class GURL;
+
 namespace chromeos {
 
 // Interface to inject Chrome dependent behavior into LacrosChromeServiceImpl
@@ -34,6 +36,11 @@ class LacrosChromeServiceDelegate {
   using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
   // Gets lacros histograms.
   virtual void GetHistograms(GetHistogramsCallback callback) = 0;
+
+  using GetActiveTabUrlCallback =
+      base::OnceCallback<void(const base::Optional<GURL>&)>;
+  // Gets Url of the active tab if there is any.
+  virtual void GetActiveTabUrl(GetActiveTabUrlCallback callback) = 0;
 };
 
 }  // namespace chromeos

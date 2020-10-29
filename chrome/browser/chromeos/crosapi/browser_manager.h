@@ -90,6 +90,14 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Gets Lacros histograms.
   void GetHistograms(GetHistogramsCallback callback);
 
+  // Returns true if crosapi interface supports GetActiveTabUrl API.
+  bool GetActiveTabUrlSupported() const;
+
+  using GetActiveTabUrlCallback =
+      base::OnceCallback<void(const base::Optional<GURL>&)>;
+  // Gets Url of the active tab from lacros if there is any.
+  void GetActiveTabUrl(GetActiveTabUrlCallback callback);
+
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);
 

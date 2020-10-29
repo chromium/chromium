@@ -25,6 +25,7 @@ class LacrosChromeServiceDelegateImpl
   std::string GetChromeVersion() override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
   void GetHistograms(GetHistogramsCallback callback) override;
+  void GetActiveTabUrl(GetActiveTabUrlCallback callback) override;
 
  private:
   void OnSystemInformationReady(

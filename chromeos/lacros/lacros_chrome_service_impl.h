@@ -24,6 +24,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
+class GURL;
+
 namespace chromeos {
 
 class LacrosChromeServiceDelegate;
@@ -197,6 +199,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
   // Gets histograms on the affine sequence.
   void GetHistogramsAffineSequence(GetHistogramsCallback callback);
+
+  using GetActiveTabUrlCallback =
+      base::OnceCallback<void(const base::Optional<GURL>&)>;
+  // Gets Url of the active tab on the affine sequence.
+  void GetActiveTabUrlAffineSequence(GetActiveTabUrlCallback callback);
 
   // Returns ash's version of the AshChromeService mojo interface version. This
   // determines which interface methods are available. This is safe to call from

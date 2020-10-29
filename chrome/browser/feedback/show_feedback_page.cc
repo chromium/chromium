@@ -19,6 +19,8 @@
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
 #if defined(OS_CHROMEOS)
+#include "base/bind.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -63,7 +65,23 @@ bool IsFromUserInteraction(FeedbackSource source) {
       return false;
   }
 }
-#endif
+
+void OnLacrosActiveTabUrlFeteched(
+    Profile* profile,
+    chrome::FeedbackSource source,
+    const std::string& description_template,
+    const std::string& description_placeholder_text,
+    const std::string& category_tag,
+    const std::string& extra_diagnostics,
+    const base::Optional<GURL>& active_tab_url) {
+  GURL page_url;
+  if (active_tab_url)
+    page_url = *active_tab_url;
+  chrome::ShowFeedbackPage(page_url, profile, source, description_template,
+                           description_placeholder_text, category_tag,
+                           extra_diagnostics);
+}
+#endif  // defined(OS_CHROMEOS)
 
 // TODO(http://crbug.com/1132106): Include the following code only in
 // non-lacros builds after M87 beta when Feedback crosapi is available in all
@@ -125,9 +143,26 @@ void ShowFeedbackPage(const Browser* browser,
   }
 
   Profile* profile = GetFeedbackProfile(browser);
+
+#if defined(OS_CHROMEOS)
+  // When users invoke the feedback dialog by pressing alt-shift-i without
+  // an active ash window, we need to check if there is an active lacros window
+  // and show its Url in the feedback dialog if there is any.
+  if (!browser && crosapi::BrowserManager::Get()->IsRunning() &&
+      crosapi::BrowserManager::Get()->GetActiveTabUrlSupported()) {
+    crosapi::BrowserManager::Get()->GetActiveTabUrl(base::BindOnce(
+        &OnLacrosActiveTabUrlFeteched, profile, source, description_template,
+        description_placeholder_text, category_tag, extra_diagnostics));
+  } else {
+    ShowFeedbackPage(page_url, profile, source, description_template,
+                     description_placeholder_text, category_tag,
+                     extra_diagnostics);
+  }
+#else
   ShowFeedbackPage(page_url, profile, source, description_template,
                    description_placeholder_text, category_tag,
                    extra_diagnostics);
+#endif  // defined(OS_CHROMEOS)
 }
 
 void ShowFeedbackPage(const GURL& page_url,
@@ -169,7 +204,7 @@ void ShowFeedbackPage(const GURL& page_url,
   RequestFeedbackFlow(page_url, profile, source, description_template,
                       description_placeholder_text, category_tag,
                       extra_diagnostics);
-#endif  //  #if BUILDFLAG(IS_LACROS)
+#endif  //  BUILDFLAG(IS_LACROS)
 }
 
 }  // namespace chrome
