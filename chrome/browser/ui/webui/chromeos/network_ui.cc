@@ -27,6 +27,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/connectivity_diagnostics/network_diagnostics_localized_strings.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
@@ -524,6 +525,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
 
   html->AddLocalizedStrings(localized_strings);
   network_health::AddLocalizedStrings(html);
+  network_diagnostics::AddLocalizedStrings(html);
 
   network_element::AddLocalizedStrings(html);
   network_element::AddOncLocalizedStrings(html);

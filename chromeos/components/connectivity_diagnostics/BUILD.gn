@@ -13,6 +13,7 @@ static_library("connectivity_diagnostics") {
   ]
 
   deps = [
+    ":network_diagnostics_strings",
     "//chromeos/components/web_applications",
     "//chromeos/constants",
     "//chromeos/resources:connectivity_diagnostics_resources",
@@ -26,4 +27,18 @@ static_library("connectivity_diagnostics") {
 
 group("closure_compile") {
   deps = [ "resources:closure_compile_module" ]
+}
+
+source_set("network_diagnostics_strings") {
+  sources = [
+    "network_diagnostics_localized_strings.cc",
+    "network_diagnostics_localized_strings.h",
+  ]
+
+  deps = [
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
 }

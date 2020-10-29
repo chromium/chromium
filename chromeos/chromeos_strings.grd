@@ -580,7 +580,99 @@ Try tapping the mic to ask me anything.
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_TITLE" desc="The label for connectivity diagnostics application that shows potential issues with the network connections">
         Connectivity Diagnostics
       </message>
-
+      <message name="IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY" desc="Label for Network diagnostics `LAN connectivity` test. This test determines if the device is connected to a Local Area Network (LAN)">
+        Lan Connectivity
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH" desc="Label for Network diagnostics `signal strength` test. This test ensures that a WiFi signal is strong enough for a stable connection.">
+        Signal Strength
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED" desc="Label for Network diagnostics `gateway can be pinged` test. This test ensures that there is a connection to the network gateway.">
+        Gateway can be Pinged
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HAS_SECURE_WIFI_CONNECTION" desc="Label for Network diagnostics `has secure WiFi connection` test. This test ensures that the WiFi connection is properly secure.">
+        Secure WiFi Connection
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLVER_PRESENT" desc="Label for Network diagnostics `DNS resolver present` test. This test ensures that the Domain Name Service (DNS) exists.">
+        DNS Resolver Present
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_LATENCY" desc="Label for Network diagnostics `DNS latency` test. This test makes sure the latency between the device and the Domain Name Server (DNS) is acceptable.">
+        DNS Latency
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION" desc="Label for Network diagnostics `DNS resolution` test. This test ensures that the Domain Name Server (DNS) can resolve network requests.">
+        DNS Resolution
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_PASSED" desc="Label shown when a Network diagnostics routine passed">
+        Passed
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_FAILED" desc="Label shown when a Network diagnostics routine failed">
+        Failed
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_NOT_RUN" desc="Label shown when a Network diagnostics routine did not run">
+        Not Run
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_RUN" desc="Label for Network diagnostics run routine button">
+        Run
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_RUN_ALL" desc="Label for Network diagnostics run all routines button">
+        Run All Routines
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK" desc="Label for Network diagnostics send feedback report button">
+        Send Feedback Report
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_NOT_FOUND" desc="Error message shown when a WiFi signal could not be detected">
+        Signal not found
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_WEAK" desc="Error message shown when a only a weak WiFi signal could be detected">
+        Weak signal
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_PROBLEM_UNREACHABLE" desc="Error message shown when a network gateway is not reachable">
+        Gateway is unreachable
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_PROBLEM_PING_DEFAULT_FAILED" desc="Error message shown when the default network gateway cannot be pinged">
+        Failed to ping the default network gateway
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_PROBLEM_DEFAULT_ABOVE_LATENCY" desc="Error message shown when the latency of the default network gateway is too high">
+        Default network above latency threshold
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_PROBLEM_PING_NON_DEFAULT_FAILED" desc="Error message shown when the non-default network gateway cannot be pinged">
+        Failed to ping the non-default network gateway
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_PROBLEM_NON_DEFAULT_ABOVE_LATENCY" desc="Error message shown when the latency of the non-default network gateway is too high">
+        Non-default network above latency threshold
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SECURE_WIFI_PROBLEM_NOT_SECURE" desc="Error message shown when the current WiFi network is not secure">
+        WiFi network is not secure
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SECURE_WIFI_PROBLEM_WEP_8021x" desc="Error message shown when the current WiFi network is secured with the weak protocol WEP 802.1x">
+        WiFi network is secured with weak protocol WEP 802.1x
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SECURE_WIFI_PROBLEM_WEP_PSK" desc="Error message shown when the current WiFi network is secured with the weak protocol WEP PSK">
+        WiFi network is secured with weak protocol WEP PSK
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_SECURE_WIFI_PROBLEM_UNKNOWN" desc="Error message shown when the current WiFi network is secured with an unknown protocol">
+        Unknown WiFi security protocol
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLVER_PROBLEM_NO_NAME_SERVERS" desc="Error message shown when the no domain name servers (DNS) are found">
+        No name servers found
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLVER_PROBLEM_MALFORMED_NAME_SERVERS" desc="Error message shown when the domain name servers (DNS) are malformed">
+        Malformed name servers
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLVER_PROBLEM_EMPTY_NAME_SERVERS" desc="Error message shown when the domain name servers (DNS) are empty">
+        Empty name servers
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_LATENCY_PROBLEM_FAILED_TO_RESOLVE_ALL_HOSTS" desc="Error message shown when the domain name servers (DNS) failed to resolve all hosts">
+        Failed to resolve all hosts
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_LATENCY_PROBLEM_SLIGHTLY_ABOVE_THRESHOLD" desc="Error message shown when the latency for the domain name server (DNS) is slightly above an allowable threshold">
+        DNS latency slightly above allowable threshold
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_LATENCY_PROBLEM_SIGNIFICANTLY_ABOVE_THRESHOLD" desc="Error message shown when the latency for the domain name server (DNS) is significantly above an allowable threshold">
+        DNS latency significantly above allowable threshold
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_PROBLEM_FAILED_TO_RESOLVE_HOST" desc="Error message shown when the domain name server (DNS) failed to resolve a host">
+        Failed to resolve host
+      </message>
     </messages>
   </release>
 </grit>
