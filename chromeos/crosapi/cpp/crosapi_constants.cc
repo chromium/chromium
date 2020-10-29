@@ -27,4 +27,13 @@ const char kDefaultDownloadsPath[] = "/home/chronos/user/MyFiles/Downloads";
 // user data partition.
 const char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
 
+// Release channel key in /etc/lsb-release.
+const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
+
+// Release channel values in /etc/lsb-release.
+const char kReleaseChannelCanary[] = "canary-channel";
+const char kReleaseChannelDev[] = "dev-channel";
+const char kReleaseChannelBeta[] = "beta-channel";
+const char kReleaseChannelStable[] = "stable-channel";
+
 }  // namespace crosapi
