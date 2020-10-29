@@ -2598,7 +2598,7 @@
   {
     "name": "fill-on-account-select",
     "owners": [ "jdoerrie" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "filling-passwords-from-any-origin",
@@ -3723,7 +3723,7 @@
   {
     "name": "password-check",
     "owners": [ "jdoerrie", "vasilii" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "password-scripts-fetching",
