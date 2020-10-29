@@ -93,6 +93,7 @@ function openPickerHelper(element) {
     return internals.pagePopupWindow;
 }
 
+// TODO(crbug.com/1047176) - use clickToOpenPickerWithPromise instead
 function clickToOpenPicker(x, y, callback, errorCallback) {
     eventSender.mouseMoveTo(x, y);
     eventSender.mouseDown();
@@ -102,6 +103,28 @@ function clickToOpenPicker(x, y, callback, errorCallback) {
         setPopupOpenCallback(callback);
     else if (typeof errorCallback === "function" && !popupWindow)
         errorCallback();
+}
+
+// Uses test_driver to open the picker.
+function clickToOpenPickerWithPromise(x, y, callback, errorCallback) {
+    return new Promise((resolve, reject)=>{
+      var actions = new test_driver.Actions();
+      actions
+          .pointerMove(x, y)
+          .pointerDown()
+          .pointerUp()
+          .send();
+      waitUntil(()=>internals.pagePopupWindow).then(()=>{
+        popupWindow = internals.pagePopupWindow;
+        if (typeof callback === "function")
+          setPopupOpenCallback(callback);
+        resolve();
+      }).catch((err)=>{
+          if (typeof errorCallback === "function" && !popupWindow)
+            errorCallback();
+         reject();
+      });
+    });
 }
 
 function setPopupOpenCallback(callback) {
