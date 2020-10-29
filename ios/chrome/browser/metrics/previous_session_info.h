@@ -95,7 +95,9 @@ enum class DeviceBatteryState {
 @property(nonatomic, assign, readonly) BOOL OSRestartedAfterPreviousSession;
 
 // Whether the previous session was on Multi Window enabled version of the
-// application.
+// application. A previous session doesn't have to be from a previous run, in
+// the case of single window to multiple windows migration, after the first
+// session created/restored the flag value should be updated to |YES|.
 // TODO(crbug.com/1109280): Remove after the migration to Multi-Window sessions
 // is done.
 @property(nonatomic, assign, readonly) BOOL isMultiWindowEnabledSession;
@@ -159,6 +161,11 @@ enum class DeviceBatteryState {
 
 // Empties the list of connected session.
 - (void)resetConnectedSceneSessionIDs;
+
+// Updates the local and the saved Multi Window support status.
+// TODO(crbug.com/1109280): Remove after the migration to Multi-Window
+// sessions is done.
+- (void)updateMultiWindowSupportStatus;
 
 // Must be called when Chrome starts session restoration. The returned closure
 // runner will clear up the flag when destroyed. Can be used on different
