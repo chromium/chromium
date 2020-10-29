@@ -1,7 +1,7 @@
 # analytics.js
 
 * [Project Page](https://developers.google.com/analytics/devguides/collection/analyticsjs)
-* The extern file [universal_analytics_api.js]((https://github.com/google/closure-compiler/blob/master/contrib/externs/universal_analytics_api.js)) is copied from the [closure compiler project](https://github.com/google/closure-compiler)
+* The extern file [universal_analytics_api.js](https://github.com/google/closure-compiler/blob/4327b35e038666593b0c72f90e75c4f33fc7a060/contrib/externs/universal_analytics_api.js) is copied from the [closure compiler project](https://github.com/google/closure-compiler)
 
 # comlink.js
 
