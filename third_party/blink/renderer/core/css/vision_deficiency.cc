@@ -24,18 +24,25 @@ AtomicString CreateFilterDataUrl(const char* piece) {
 AtomicString CreateVisionDeficiencyFilterUrl(
     VisionDeficiency vision_deficiency) {
   // The filter color matrices are based on the following research paper:
-  // Gustavo M. Machado, Manuel M. Oliveira, and Leandro A. F. Fernandes
+  // Gustavo M. Machado, Manuel M. Oliveira, and Leandro A. F. Fernandes,
   // "A Physiologically-based Model for Simulation of Color Vision Deficiency".
   // IEEE Transactions on Visualization and Computer Graphics. Volume 15 (2009),
   // Number 6, November/December 2009. pp. 1291-1298.
   // https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html
+  //
+  // The filter grayscale matrix is based on the following research paper:
+  // Rang Man Ho Nguyen and Michael S. Brown,
+  // "Why You Should Forget Luminance Conversion and Do Something Better".
+  // IEEE Conference on Computer Vision and Pattern Recognition (CVPR),
+  // Honolulu, HI, 2017. pp. 6750-6758.
+  // https://openaccess.thecvf.com/content_cvpr_2017/papers/Nguyen_Why_You_Should_CVPR_2017_paper.pdf
   switch (vision_deficiency) {
     case VisionDeficiency::kAchromatopsia:
       return CreateFilterDataUrl(
           "<feColorMatrix values=\""
-          "0.299  0.587  0.114  0.000  0.000 "
-          "0.299  0.587  0.114  0.000  0.000 "
-          "0.299  0.587  0.114  0.000  0.000 "
+          "0.213  0.715  0.072  0.000  0.000 "
+          "0.213  0.715  0.072  0.000  0.000 "
+          "0.213  0.715  0.072  0.000  0.000 "
           "0.000  0.000  0.000  1.000  0.000 "
           "\"/>");
     case VisionDeficiency::kBlurredVision:
