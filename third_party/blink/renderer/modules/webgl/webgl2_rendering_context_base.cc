@@ -928,8 +928,8 @@ void WebGL2RenderingContextBase::RenderbufferStorageImpl(
     case GL_DEPTH_STENCIL:
       // To be WebGL 1 backward compatible.
       if (samples > 0) {
-        SynthesizeGLError(GL_INVALID_ENUM, function_name,
-                          "invalid internalformat");
+        SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                          "internalformat invalid for samples > 0");
         return;
       }
       RenderbufferStorageHelper(target, 0, GL_DEPTH24_STENCIL8, width, height,

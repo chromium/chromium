@@ -114,10 +114,6 @@ crbug.com/1108044 conformance2/renderbuffers/readbuffer.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
 crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
-crbug.com/1082455 [ win ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
-crbug.com/1082455 [ linux ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
-crbug.com/1082455 [ android ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
-crbug.com/1082455 [ mac no-passthrough ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1082533 [ win angle-vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win angle-vulkan ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
@@ -632,6 +628,7 @@ crbug.com/658930 [ mac intel ] conformance2/textures/misc/integer-cubemap-textur
 crbug.com/782317 [ mac intel ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/1039465 [ mac intel ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 crbug.com/1018028 [ mac intel ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
+crbug.com/1082455 [ mac intel ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 
 # Mac Intel No-Passthrough
 crbug.com/1042011 [ mac intel-0xa2e no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
@@ -639,7 +636,6 @@ crbug.com/1042011 [ mac intel-0xa2e no-passthrough ] conformance2/textures/canva
 
 # Mac Passthrough
 crbug.com/angleproject/5223 [ mac passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
-crbug.com/angleproject/5227 [ mac passthrough ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 
 # Mac Passthrough / AMD
 crbug.com/anglerpoject/5224 [ mac passthrough amd ] conformance2/rendering/instanced-arrays.html [ Failure ]
