@@ -413,7 +413,10 @@ def main(argv):
   if args.out_manifest:
     manifest_data = {}
     manifest_data['base_dir'] = '%s' % args.out_folder
-    manifest_data['files'] = manifest.keys()
+    if (is_polymer3):
+      manifest_data['files'] = manifest.keys()
+    else:
+      manifest_data['files'] = args.html_out_files + args.js_out_files
     manifest_file = open(
         os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'wb')
     json.dump(manifest_data, manifest_file)
