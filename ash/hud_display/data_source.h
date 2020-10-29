@@ -58,6 +58,7 @@ class DataSource {
   DataSource& operator=(const DataSource&) = delete;
   ~DataSource();
 
+  // This must be called on io-enabled thread.
   Snapshot GetSnapshotAndReset();
 
  private:

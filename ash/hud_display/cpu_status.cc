@@ -20,9 +20,6 @@ namespace {
 constexpr char kProcStatFile[] = "/proc/stat";
 
 std::string ReadProcFile(const base::FilePath& path) {
-  // Synchronously reading files in /proc and /sys are safe.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
-
   std::string result;
   base::ReadFileToString(path, &result);
   return result;

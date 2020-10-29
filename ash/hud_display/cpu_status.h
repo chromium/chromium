@@ -35,6 +35,7 @@ struct CpuStats {
 };
 
 // Parses current /proc/stat and restuns current values.
+// Must be called on io-enabled thread.
 CpuStats GetProcStatCPU();
 
 }  // namespace hud_display

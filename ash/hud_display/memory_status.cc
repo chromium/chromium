@@ -37,9 +37,6 @@ base::FilePath GetProcPidDir(pid_t pid) {
 }
 
 std::string ReadProcFile(const base::FilePath& path) {
-  // Synchronously reading files in /proc and /sys are safe.
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
-
   std::string result;
   ReadFileToString(path, &result);
   return result;

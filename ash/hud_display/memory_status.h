@@ -17,6 +17,7 @@ namespace hud_display {
 // Should run on the file thread.
 class MemoryStatus {
  public:
+  // Must be created on io-enabled thread.
   MemoryStatus();
   MemoryStatus(const MemoryStatus&) = delete;
   MemoryStatus& operator=(const MemoryStatus&) = delete;

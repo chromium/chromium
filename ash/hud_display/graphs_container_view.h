@@ -7,8 +7,11 @@
 
 #include "ash/hud_display/data_source.h"
 #include "ash/hud_display/graph_page_view_base.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/timer/timer.h"
+#include "base/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -26,20 +29,28 @@ class GraphsContainerView : public views::View {
   GraphsContainerView& operator=(const GraphsContainerView&) = delete;
   ~GraphsContainerView() override;
 
-  // Synchrnously reads system counters and updates data.
-  void UpdateData();
 
   // Updates graphs display to match given mode.
   void SetMode(DisplayMode mode);
 
+  // Schedules new data update on the thread pool.
+  void RequestDataUpdate();
+
+  // Update graphs data from the given snapshot.
+  void UpdateData(std::unique_ptr<DataSource::Snapshot> snapshot);
+
  private:
-  // HUD is updatd with new data every tick.
-  base::RepeatingTimer refresh_timer_;
+  // This helps detect missing data intervals.
+  const base::TimeTicks start_time_;
+  size_t data_update_count_{0};
 
   // Source of graphs data.
-  DataSource data_source_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  std::unique_ptr<DataSource, base::OnTaskRunnerDeleter> data_source_;
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
+
+  base::WeakPtrFactory<GraphsContainerView> weak_factory_{this};
 };
 
 }  // namespace hud_display
