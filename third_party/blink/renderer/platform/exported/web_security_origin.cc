@@ -113,6 +113,12 @@ bool WebSecurityOrigin::CanAccessPasswordManager() const {
   return private_->CanAccessPasswordManager();
 }
 
+bool WebSecurityOrigin::IsSameOriginWith(const WebSecurityOrigin& other) const {
+  DCHECK(private_);
+  DCHECK(other.private_);
+  return private_->IsSameOriginWith(other.private_.Get());
+}
+
 WebSecurityOrigin::WebSecurityOrigin(scoped_refptr<const SecurityOrigin> origin)
     : private_(std::move(origin)) {}
 

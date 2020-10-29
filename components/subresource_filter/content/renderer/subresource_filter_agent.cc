@@ -126,11 +126,10 @@ mojom::ActivationState SubresourceFilterAgent::GetInheritedActivationState(
   if (!frame_to_inherit_from || !frame_to_inherit_from->IsWebLocalFrame())
     return mojom::ActivationState();
 
-  // TODO(crbug.com/1134740): Add an IsSameOriginWith() function to
-  // WebSecurityOrigin to avoid unnecessary conversions to url::Origin.
-  url::Origin render_frame_origin =
+  blink::WebSecurityOrigin render_frame_origin =
       render_frame->GetWebFrame()->GetSecurityOrigin();
-  url::Origin inherited_origin = frame_to_inherit_from->GetSecurityOrigin();
+  blink::WebSecurityOrigin inherited_origin =
+      frame_to_inherit_from->GetSecurityOrigin();
 
   // Only inherit from same-origin frames.
   if (render_frame_origin.IsSameOriginWith(inherited_origin)) {
