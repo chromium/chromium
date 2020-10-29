@@ -498,6 +498,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_RESOLUTION_OPTION_TEXT" desc="The text displayed for an option in the resolution dropdown.">
         <ph name="RESOLUTION_VALUE">$1<ex>300</ex></ph> dpi
       </message>
+      <message name="IDS_SCANNING_APP_SCAN_TO_DROPDOWN_LABEL" desc="The label for the dropdown that displays the chosen directory to save scans.">
+        Scan to
+      </message>
+      <message name="IDS_SCANNING_APP_MY_FILES_SELECT_OPTION" desc="The text displayed in the Scan To dropdown when the user chooses the local 'My files' folder from the select dialog.">
+        My files
+      </message>
 
       <!-- Diagnostics App -->
       <!-- TODO(michaelcheco): Update with finalized copies of the strings -->

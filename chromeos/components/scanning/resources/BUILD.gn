@@ -16,6 +16,7 @@ js_type_check("closure_compile_module") {
     ":page_size_select",
     ":resolution_select",
     ":scan_preview",
+    ":scan_to_select",
     ":scanner_select",
     ":scanning_app",
     ":scanning_app_types",
@@ -75,6 +76,15 @@ js_library("scan_preview") {
   ]
 }
 
+js_library("scan_to_select") {
+  deps = [
+    ":select_behavior",
+    "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("scanner_select") {
   deps = [
     ":scanning_app_types",
@@ -94,6 +104,7 @@ js_library("scanning_app") {
     ":page_size_select",
     ":resolution_select",
     ":scan_preview",
+    ":scan_to_select",
     ":scanner_select",
     ":scanning_app_types",
     ":scanning_app_util",
@@ -143,6 +154,7 @@ html_to_js("web_components") {
     "scan_preview.js",
     "scan_settings_section.js",
     "scanner_select.js",
+    "scan_to_select.js",
     "scanning_app.js",
     "scanning_shared_css.js",
     "source_select.js",

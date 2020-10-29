@@ -16,6 +16,8 @@
       <include name="IDR_SCANNING_APP_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_SCANNING_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/scanning/mojom/scanning.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SCANNING_APP_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_app.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SCAN_TO_SELECT_HTML" file="scan_to_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SCAN_TO_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scan_to_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCANNER_SELECT_HTML" file="scanner_select.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCANNER_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanner_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SOURCE_SELECT_HTML" file="source_select.html" type="BINDATA"/>

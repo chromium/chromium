@@ -755,3 +755,33 @@ suite('ScanPreviewTest', () => {
     assertTrue(!!scanPreview.$$('.preview'));
   });
 });
+
+suite('ScanToSelectTest', () => {
+  /** @type {?ScanToSelectElement} */
+  let scanToSelect = null;
+
+  /** {string} */
+  const myFiles = 'My files';
+
+  setup(() => {
+    scanToSelect = document.createElement('scan-to-select');
+    assertTrue(!!scanToSelect);
+    document.body.appendChild(scanToSelect);
+  });
+
+  teardown(() => {
+    if (scanToSelect) {
+      scanToSelect.remove();
+    }
+    scanToSelect = null;
+  });
+
+  test('initializeScanToSelect', () => {
+    // The dropdown should be disabled and only have one entry for 'My files'.
+    const select = scanToSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+    assertEquals(1, select.length);
+    assertEquals(myFiles, select.options[0].textContent.trim());
+  });
+});
