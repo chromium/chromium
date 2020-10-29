@@ -208196,6 +208196,10 @@
        []
       ]
      },
+     "is-specificity-shadow-expected.txt": [
+      "077db756104dfe54cde59f029813327af8667520",
+      []
+     ],
      "is-where-pseudo-elements-ref.html": [
       "3a17efedfbbaa0558ab73a16aef42ce626e27b7d",
       []
@@ -214323,6 +214327,14 @@
        "846995459c871a8106ff191959a5842ba497429c",
        []
       ],
+      "request-upload.any.serviceworker-expected.txt": [
+       "846995459c871a8106ff191959a5842ba497429c",
+       []
+      ],
+      "request-upload.any.sharedworker-expected.txt": [
+       "846995459c871a8106ff191959a5842ba497429c",
+       []
+      ],
       "request-upload.any.worker-expected.txt": [
        "846995459c871a8106ff191959a5842ba497429c",
        []
@@ -214330,6 +214342,10 @@
      },
      "cors": {
       "cors-preflight-redirect.any-expected.txt": [
+       "1130f249e167d39118bfc9eb330b2690b2fa7cce",
+       []
+      ],
+      "cors-preflight-redirect.any.sharedworker-expected.txt": [
        "1130f249e167d39118bfc9eb330b2690b2fa7cce",
        []
       ],
@@ -214447,11 +214463,27 @@
        "9b61ad26fe81f240de05edbcf3ffad870fa81788",
        []
       ],
+      "redirect-empty-location.any.serviceworker-expected.txt": [
+       "9b61ad26fe81f240de05edbcf3ffad870fa81788",
+       []
+      ],
+      "redirect-empty-location.any.sharedworker-expected.txt": [
+       "9b61ad26fe81f240de05edbcf3ffad870fa81788",
+       []
+      ],
       "redirect-empty-location.any.worker-expected.txt": [
        "9b61ad26fe81f240de05edbcf3ffad870fa81788",
        []
       ],
       "redirect-location.any-expected.txt": [
+       "2195cb15399ae551cdeecd4d874dfd40468d95ec",
+       []
+      ],
+      "redirect-location.any.serviceworker-expected.txt": [
+       "2195cb15399ae551cdeecd4d874dfd40468d95ec",
+       []
+      ],
+      "redirect-location.any.sharedworker-expected.txt": [
        "2195cb15399ae551cdeecd4d874dfd40468d95ec",
        []
       ],
@@ -214555,11 +214587,59 @@
        "9c23dfe384cb702447c902896f99568d44c468ba",
        []
       ],
+      "request-consume-empty.any-expected.txt": [
+       "9c23dfe384cb702447c902896f99568d44c468ba",
+       []
+      ],
+      "request-consume-empty.any.serviceworker-expected.txt": [
+       "9c23dfe384cb702447c902896f99568d44c468ba",
+       []
+      ],
+      "request-consume-empty.any.sharedworker-expected.txt": [
+       "9c23dfe384cb702447c902896f99568d44c468ba",
+       []
+      ],
+      "request-consume-empty.any.worker-expected.txt": [
+       "9c23dfe384cb702447c902896f99568d44c468ba",
+       []
+      ],
       "request-disturbed-expected.txt": [
        "d46bdb8c09e8fdcfee2df0b8baf77766c9f1655b",
        []
       ],
+      "request-disturbed.any-expected.txt": [
+       "d46bdb8c09e8fdcfee2df0b8baf77766c9f1655b",
+       []
+      ],
+      "request-disturbed.any.serviceworker-expected.txt": [
+       "d46bdb8c09e8fdcfee2df0b8baf77766c9f1655b",
+       []
+      ],
+      "request-disturbed.any.sharedworker-expected.txt": [
+       "d46bdb8c09e8fdcfee2df0b8baf77766c9f1655b",
+       []
+      ],
+      "request-disturbed.any.worker-expected.txt": [
+       "d46bdb8c09e8fdcfee2df0b8baf77766c9f1655b",
+       []
+      ],
       "request-error-expected.txt": [
+       "f3363b8565beda7f4c79e0ad792b657ca8b80372",
+       []
+      ],
+      "request-error.any-expected.txt": [
+       "f3363b8565beda7f4c79e0ad792b657ca8b80372",
+       []
+      ],
+      "request-error.any.serviceworker-expected.txt": [
+       "f3363b8565beda7f4c79e0ad792b657ca8b80372",
+       []
+      ],
+      "request-error.any.sharedworker-expected.txt": [
+       "f3363b8565beda7f4c79e0ad792b657ca8b80372",
+       []
+      ],
+      "request-error.any.worker-expected.txt": [
        "f3363b8565beda7f4c79e0ad792b657ca8b80372",
        []
       ],
@@ -214572,6 +214652,22 @@
        []
       ],
       "request-structure-expected.txt": [
+       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       []
+      ],
+      "request-structure.any-expected.txt": [
+       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       []
+      ],
+      "request-structure.any.serviceworker-expected.txt": [
+       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       []
+      ],
+      "request-structure.any.sharedworker-expected.txt": [
+       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       []
+      ],
+      "request-structure.any.worker-expected.txt": [
        "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
        []
       ],
@@ -214725,7 +214821,39 @@
        "6ff0e7113920bf7e56cc385b1b2a5be8e29804f1",
        []
       ],
+      "response-clone.any-expected.txt": [
+       "6ff0e7113920bf7e56cc385b1b2a5be8e29804f1",
+       []
+      ],
+      "response-clone.any.serviceworker-expected.txt": [
+       "6ff0e7113920bf7e56cc385b1b2a5be8e29804f1",
+       []
+      ],
+      "response-clone.any.sharedworker-expected.txt": [
+       "6ff0e7113920bf7e56cc385b1b2a5be8e29804f1",
+       []
+      ],
+      "response-clone.any.worker-expected.txt": [
+       "6ff0e7113920bf7e56cc385b1b2a5be8e29804f1",
+       []
+      ],
       "response-consume-empty-expected.txt": [
+       "5b0426fa4dca632bb0e8992fbae4109c2388f83a",
+       []
+      ],
+      "response-consume-empty.any-expected.txt": [
+       "5b0426fa4dca632bb0e8992fbae4109c2388f83a",
+       []
+      ],
+      "response-consume-empty.any.serviceworker-expected.txt": [
+       "5b0426fa4dca632bb0e8992fbae4109c2388f83a",
+       []
+      ],
+      "response-consume-empty.any.sharedworker-expected.txt": [
+       "5b0426fa4dca632bb0e8992fbae4109c2388f83a",
+       []
+      ],
+      "response-consume-empty.any.worker-expected.txt": [
        "5b0426fa4dca632bb0e8992fbae4109c2388f83a",
        []
       ],
@@ -214733,7 +214861,31 @@
        "fd1e6908bfaeab27815e9edc02eaf51624d6320a",
        []
       ],
+      "response-error-from-stream.any-expected.txt": [
+       "fd1e6908bfaeab27815e9edc02eaf51624d6320a",
+       []
+      ],
+      "response-error-from-stream.any.serviceworker-expected.txt": [
+       "fd1e6908bfaeab27815e9edc02eaf51624d6320a",
+       []
+      ],
+      "response-error-from-stream.any.sharedworker-expected.txt": [
+       "fd1e6908bfaeab27815e9edc02eaf51624d6320a",
+       []
+      ],
+      "response-error-from-stream.any.worker-expected.txt": [
+       "fd1e6908bfaeab27815e9edc02eaf51624d6320a",
+       []
+      ],
       "response-stream-disturbed-by-pipe.any-expected.txt": [
+       "7ee0f33a4ef947aa168fb4334899a47e94eaff3a",
+       []
+      ],
+      "response-stream-disturbed-by-pipe.any.serviceworker-expected.txt": [
+       "7ee0f33a4ef947aa168fb4334899a47e94eaff3a",
+       []
+      ],
+      "response-stream-disturbed-by-pipe.any.sharedworker-expected.txt": [
        "7ee0f33a4ef947aa168fb4334899a47e94eaff3a",
        []
       ],
@@ -214978,6 +215130,14 @@
       "cfab79c6b3c7ecfefeba9e4541a3a5d81a8e2723",
       []
      ],
+     "processing.any.serviceworker-expected.txt": [
+      "cfab79c6b3c7ecfefeba9e4541a3a5d81a8e2723",
+      []
+     ],
+     "processing.any.sharedworker-expected.txt": [
+      "cfab79c6b3c7ecfefeba9e4541a3a5d81a8e2723",
+      []
+     ],
      "processing.any.worker-expected.txt": [
       "cfab79c6b3c7ecfefeba9e4541a3a5d81a8e2723",
       []
@@ -215026,11 +215186,59 @@
       "bee27041d4637ef2ed19aeff4ce0f514c1fd19b5",
       []
      ],
+     "cache-mode.any-expected.txt": [
+      "bee27041d4637ef2ed19aeff4ce0f514c1fd19b5",
+      []
+     ],
+     "cache-mode.any.serviceworker-expected.txt": [
+      "bee27041d4637ef2ed19aeff4ce0f514c1fd19b5",
+      []
+     ],
+     "cache-mode.any.sharedworker-expected.txt": [
+      "bee27041d4637ef2ed19aeff4ce0f514c1fd19b5",
+      []
+     ],
+     "cache-mode.any.worker-expected.txt": [
+      "bee27041d4637ef2ed19aeff4ce0f514c1fd19b5",
+      []
+     ],
      "cc-request-expected.txt": [
       "10e574ea6c106f29cb5ce22d5ce08417c5a0e6cc",
       []
      ],
+     "cc-request.any-expected.txt": [
+      "10e574ea6c106f29cb5ce22d5ce08417c5a0e6cc",
+      []
+     ],
+     "cc-request.any.serviceworker-expected.txt": [
+      "10e574ea6c106f29cb5ce22d5ce08417c5a0e6cc",
+      []
+     ],
+     "cc-request.any.sharedworker-expected.txt": [
+      "10e574ea6c106f29cb5ce22d5ce08417c5a0e6cc",
+      []
+     ],
+     "cc-request.any.worker-expected.txt": [
+      "10e574ea6c106f29cb5ce22d5ce08417c5a0e6cc",
+      []
+     ],
      "heuristic-expected.txt": [
+      "e31950283c1246188ef891cabfd4e80b5044e354",
+      []
+     ],
+     "heuristic.any-expected.txt": [
+      "e31950283c1246188ef891cabfd4e80b5044e354",
+      []
+     ],
+     "heuristic.any.serviceworker-expected.txt": [
+      "e31950283c1246188ef891cabfd4e80b5044e354",
+      []
+     ],
+     "heuristic.any.sharedworker-expected.txt": [
+      "e31950283c1246188ef891cabfd4e80b5044e354",
+      []
+     ],
+     "heuristic.any.worker-expected.txt": [
       "e31950283c1246188ef891cabfd4e80b5044e354",
       []
      ],
@@ -215042,11 +215250,59 @@
       "9f29bc55f9b0857a93440eebf80fa7000459c069",
       []
      ],
+     "invalidate.any-expected.txt": [
+      "9f29bc55f9b0857a93440eebf80fa7000459c069",
+      []
+     ],
+     "invalidate.any.serviceworker-expected.txt": [
+      "9f29bc55f9b0857a93440eebf80fa7000459c069",
+      []
+     ],
+     "invalidate.any.sharedworker-expected.txt": [
+      "9f29bc55f9b0857a93440eebf80fa7000459c069",
+      []
+     ],
+     "invalidate.any.worker-expected.txt": [
+      "9f29bc55f9b0857a93440eebf80fa7000459c069",
+      []
+     ],
      "partial-expected.txt": [
       "759cb5d39fb19ace224984b994579fcf812ba487",
       []
      ],
+     "partial.any-expected.txt": [
+      "759cb5d39fb19ace224984b994579fcf812ba487",
+      []
+     ],
+     "partial.any.serviceworker-expected.txt": [
+      "759cb5d39fb19ace224984b994579fcf812ba487",
+      []
+     ],
+     "partial.any.sharedworker-expected.txt": [
+      "759cb5d39fb19ace224984b994579fcf812ba487",
+      []
+     ],
+     "partial.any.worker-expected.txt": [
+      "759cb5d39fb19ace224984b994579fcf812ba487",
+      []
+     ],
      "post-patch-expected.txt": [
+      "3a5cd58915539e5a42fbdd03f474da40f2b268c5",
+      []
+     ],
+     "post-patch.any-expected.txt": [
+      "3a5cd58915539e5a42fbdd03f474da40f2b268c5",
+      []
+     ],
+     "post-patch.any.serviceworker-expected.txt": [
+      "3a5cd58915539e5a42fbdd03f474da40f2b268c5",
+      []
+     ],
+     "post-patch.any.sharedworker-expected.txt": [
+      "3a5cd58915539e5a42fbdd03f474da40f2b268c5",
+      []
+     ],
+     "post-patch.any.worker-expected.txt": [
       "3a5cd58915539e5a42fbdd03f474da40f2b268c5",
       []
      ],
@@ -215069,6 +215325,22 @@
       ]
      },
      "vary-expected.txt": [
+      "5cfb7f71a1517441a64c250c8acca1bfa4049288",
+      []
+     ],
+     "vary.any-expected.txt": [
+      "5cfb7f71a1517441a64c250c8acca1bfa4049288",
+      []
+     ],
+     "vary.any.serviceworker-expected.txt": [
+      "5cfb7f71a1517441a64c250c8acca1bfa4049288",
+      []
+     ],
+     "vary.any.sharedworker-expected.txt": [
+      "5cfb7f71a1517441a64c250c8acca1bfa4049288",
+      []
+     ],
+     "vary.any.worker-expected.txt": [
       "5cfb7f71a1517441a64c250c8acca1bfa4049288",
       []
      ]
@@ -229716,14 +229988,6 @@
         "422c227ea95706b5eaa67c8784b0ce8ac4fca8e1",
         []
        ],
-       "compile-error-cross-origin-setInterval-expected.txt": [
-        "fa2584fd4c0679fb018c60732693e252fe9585cc",
-        []
-       ],
-       "compile-error-cross-origin-setTimeout-expected.txt": [
-        "bfa9c01cfc95944357e860e88720c21dda4fa9d2",
-        []
-       ],
        "compile-error-same-origin-with-hash-expected.txt": [
         "e6b4ffea5e691a3f0d6491ea4b34986e8deb489d",
         []
@@ -229798,25 +230062,17 @@
          ]
         }
        },
-       "runtime-error-cross-origin-setInterval-expected.txt": [
-        "1a692ddaa46bfb4397e75c7b0541e8e0e9498eac",
-        []
-       ],
-       "runtime-error-cross-origin-setTimeout-expected.txt": [
-        "2067df88b2c494edeb6f1759175058d9e7bf2ce3",
-        []
-       ],
        "runtime-error-same-origin-with-hash-expected.txt": [
         "98814ab16bb6a425e3712f2cf50f18a728511e7a",
         []
        ],
        "support": {
         "syntax-error-in-setInterval.js": [
-         "3b42fd9bc92e64873dadd1dc15ddd1492320378c",
+         "afec114458b37a31f28bc6833a93dfb604ed2f84",
          []
         ],
         "syntax-error-in-setTimeout.js": [
-         "84eb4fc419925d70470cd5fb90befb97e4fcd4fe",
+         "427542b42ec39d555599894e175393b4f157918d",
          []
         ],
         "syntax-error.js": [
@@ -229824,11 +230080,11 @@
          []
         ],
         "undefined-variable-in-setInterval.js": [
-         "4aa7da8256c655694fc9db1a29025bcb7658697f",
+         "c2a017a2abfbe4bac9720139f83ae0775c2e9ecc",
          []
         ],
         "undefined-variable-in-setTimeout.js": [
-         "6350ab62ebf335ce7ce539b4e7065ef2ccd9f9ee",
+         "6fa54cda9fb847dce7d9cc5bd5078d07f0f3f25a",
          []
         ],
         "undefined-variable.js": [
@@ -257394,6 +257650,10 @@
       "c592943b795596c4ebbd06c6ddfc79ed0fad2ec0",
       []
      ],
+     "get-set-cookie.py": [
+      "cdba642fca96f93a8d9d33a909682b4a1d2a7f04",
+      []
+     ],
      "gzip.py": [
       "17f142c4405f8e121a2468ffc380a9d56ef0822e",
       []
@@ -274802,7 +275062,7 @@
     ],
     "detached-iframe": {
      "clipboard-on-detached-iframe.https.html": [
-      "84fce80323624af9d1f431e85bc90e9d620174b0",
+      "5eb58e3213e33a0cf7150acbfaac8125bd0f61e5",
       [
        null,
        {}
@@ -307599,6 +307859,13 @@
        {}
       ]
      ],
+     "is-specificity-shadow.html": [
+      "af039955eb7c4fa1dff8bfa425775184a911a671",
+      [
+       null,
+       {}
+      ]
+     ],
      "is-specificity.html": [
       "541b0406d347e5ade0474024ba208ba222dc2d29",
       [
@@ -326423,11 +326690,67 @@
    "fetch": {
     "api": {
      "abort": {
-      "cache.https.html": [
-       "25ed0e1e9183b9a73884944352dd52780fda0091",
+      "cache.https.any.js": [
+       "bdaf0e69e5801040a18cb9d479b8fc3cc4a229d8",
        [
-        null,
-        {}
+        "fetch/api/abort/cache.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request signals &amp; the cache API"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/abort/cache.https.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request signals &amp; the cache API"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/abort/cache.https.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request signals &amp; the cache API"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/abort/cache.https.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request signals &amp; the cache API"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
       "destroyed-context.html": [
@@ -326569,11 +326892,45 @@
      },
      "basic": {
       "accept-header.any.js": [
-       "3d886dfad5a25ae16506e6eca23d845e3a997007",
+       "cd54cf2a03e8a926042356ef9d032b73c5d1a548",
        [
         "fetch/api/basic/accept-header.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/accept-header.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/accept-header.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -326585,6 +326942,10 @@
         "fetch/api/basic/accept-header.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -326600,18 +326961,180 @@
         {}
        ]
       ],
-      "conditional-get.html": [
-       "b80e929fe6bb59de67967fdda1518fcd8a55ef14",
+      "conditional-get.any.js": [
+       "2f9fa81c02b18b8d4c736caf022fab860d4488c6",
        [
-        null,
-        {}
+        "fetch/api/basic/conditional-get.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request ETag"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/conditional-get.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request ETag"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/conditional-get.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request ETag"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/conditional-get.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Request ETag"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ]
+         ]
+        }
        ]
       ],
-      "error-after-response.html": [
-       "8db3429324af16969d076c1c4db03b8b68496bf6",
+      "error-after-response.any.js": [
+       "f7114425f95504c1e7688421f17f74bc8326b9db",
        [
-        null,
+        "fetch/api/basic/error-after-response.any.html",
         {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: network timeout after receiving the HTTP response headers"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/basic/error-after-response.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: network timeout after receiving the HTTP response headers"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/basic/error-after-response.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: network timeout after receiving the HTTP response headers"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/basic/error-after-response.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: network timeout after receiving the HTTP response headers"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
@@ -326711,14 +327234,50 @@
        ]
       ],
       "historical.any.js": [
-       "aea4184ac8bca0c820cbf2d822cc38125f512e9a",
+       "c8081262168e36716a2f73e35681542c42ca7733",
        [
         "fetch/api/basic/historical.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/historical.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/historical.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ],
        [
         "fetch/api/basic/historical.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
       "integrity.sub.any.js": [
@@ -326875,11 +327434,45 @@
        ]
       ],
       "request-forbidden-headers.any.js": [
-       "fedabed5418bea81e9ff19c3c325d542b99faf31",
+       "5d85c4e62d32b0e1dff0265967693fde688694b2",
        [
         "fetch/api/basic/request-forbidden-headers.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-forbidden-headers.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-forbidden-headers.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -326892,6 +327485,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -326900,44 +327497,186 @@
        ]
       ],
       "request-head.any.js": [
-       "dc435bf0d6df943bc02406ea46ec0cce4134c4d9",
+       "e0b6afa079a4000cc97dd702a531f69c568eafcc",
        [
         "fetch/api/basic/request-head.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-head.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-head.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ],
        [
         "fetch/api/basic/request-head.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
       "request-headers-case.any.js": [
-       "067eabb13329b1caab7f5159b29bbe8a66e0ff85",
+       "4c10e717f8c2e594d0e1f612ce0a19191ac5fc85",
        [
         "fetch/api/basic/request-headers-case.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-headers-case.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-headers-case.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ],
        [
         "fetch/api/basic/request-headers-case.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
       "request-headers-nonascii.any.js": [
-       "0d822fb24f3e0c091acc3792339c975c9a129e53",
+       "4a9a8011385351473f31936b4a5a81fee58ec250",
        [
         "fetch/api/basic/request-headers-nonascii.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-headers-nonascii.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-headers-nonascii.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ],
        [
         "fetch/api/basic/request-headers-nonascii.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
       "request-headers.any.js": [
-       "4ba70f7c496b7c406e5ed1aef35ba5efb3dc46ef",
+       "ac54256e4c6a6377414d3a24dbe1fe34c8bb664d",
        [
         "fetch/api/basic/request-headers.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-headers.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-headers.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -326949,6 +327688,10 @@
         "fetch/api/basic/request-headers.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -326965,11 +327708,45 @@
        ]
       ],
       "request-referrer.any.js": [
-       "62fbd43e1dd42d9ba320536eb9921f6c6ee04004",
+       "0c3357642d674b7327966f840fab27550883b7da",
        [
         "fetch/api/basic/request-referrer.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-referrer.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-referrer.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -326982,6 +327759,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -326990,11 +327771,45 @@
        ]
       ],
       "request-upload.any.js": [
-       "14f4a07a4987e424ee42a23ac0218acc77a42b76",
+       "1412816a3c220d60ca1b3c525ac5953d10157c3c",
        [
         "fetch/api/basic/request-upload.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-upload.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/request-upload.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327006,6 +327821,10 @@
         "fetch/api/basic/request-upload.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327026,11 +327845,45 @@
        ]
       ],
       "scheme-about.any.js": [
-       "eb892d32fff9f3bf693853d2df15f179d4294cb5",
+       "4329bd070320ddf8e475de2b97a8859f201cebbd",
        [
         "fetch/api/basic/scheme-about.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/scheme-about.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/scheme-about.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327042,6 +327895,10 @@
         "fetch/api/basic/scheme-about.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327076,11 +327933,45 @@
        ]
       ],
       "scheme-data.any.js": [
-       "e4a880719d3410a77b686e7e1943cbaf55d4372b",
+       "1c3b5dc816c88b28ed2fd05607a2492ba8b6f5a6",
        [
         "fetch/api/basic/scheme-data.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/scheme-data.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/scheme-data.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327093,6 +327984,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -327101,11 +327996,45 @@
        ]
       ],
       "scheme-others.sub.any.js": [
-       "9c3cad17028524a2d2d65e3b4fde79d0662b037c",
+       "550f69c41b5a43aa5ca1996703375fa1ea6fbc89",
        [
         "fetch/api/basic/scheme-others.sub.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/scheme-others.sub.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/scheme-others.sub.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327118,6 +328047,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -327126,11 +328059,45 @@
        ]
       ],
       "stream-response.any.js": [
-       "5b11018eb31648f5503eba1b1e71a616e219b375",
+       "4a8855a62d7b0d5b53e9f2495f209170114ad4b6",
        [
         "fetch/api/basic/stream-response.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/stream-response.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/stream-response.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327142,6 +328109,10 @@
         "fetch/api/basic/stream-response.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327197,11 +328168,83 @@
         }
        ]
       ],
-      "text-utf8.html": [
-       "e5c567b9c4531113c12a3c56d0f5d9c1517589a2",
+      "text-utf8.any.js": [
+       "05c8c88825d37bfafe63d757d33a9a35284e22f9",
        [
-        null,
-        {}
+        "fetch/api/basic/text-utf8.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: Request and Response text() should decode as UTF-8"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/text-utf8.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: Request and Response text() should decode as UTF-8"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/text-utf8.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: Request and Response text() should decode as UTF-8"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/basic/text-utf8.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: Request and Response text() should decode as UTF-8"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -327364,11 +328407,45 @@
        ]
       ],
       "cors-multiple-origins.sub.any.js": [
-       "b1034eb7274a307d7f14e09d650277a38b329214",
+       "b3abb922841c63e5ccbb633d60d29f767f0586ad",
        [
         "fetch/api/cors/cors-multiple-origins.sub.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/cors/cors-multiple-origins.sub.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/cors/cors-multiple-origins.sub.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327380,6 +328457,10 @@
         "fetch/api/cors/cors-multiple-origins.sub.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327561,11 +328642,61 @@
        ]
       ],
       "cors-preflight-redirect.any.js": [
-       "7ed54319b4e90c98ff0328ee7b3e61f8551e9a5f",
+       "15f7659abd21569b79c7b44c469c27274339a61c",
        [
         "fetch/api/cors/cors-preflight-redirect.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/cors/cors-preflight-redirect.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/cors/cors-preflight-redirect.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "/common/utils.js"
@@ -327585,6 +328716,10 @@
         "fetch/api/cors/cors-preflight-redirect.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "/common/utils.js"
@@ -327972,11 +329107,45 @@
      },
      "credentials": {
       "authentication-basic.any.js": [
-       "4969b3042e8dcde56b0adb708fb2c5f64d18a9eb",
+       "babc5d003b108e6d2499e0e0ed0cc27f4130af18",
        [
         "fetch/api/credentials/authentication-basic.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/authentication-basic.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/authentication-basic.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -327989,6 +329158,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -327997,11 +329170,45 @@
        ]
       ],
       "cookies.any.js": [
-       "b65a866c09bce38fc8dfff20216ef9780c00e817",
+       "de30e477655c2851873e75a34019f30644679ac1",
        [
         "fetch/api/credentials/cookies.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/cookies.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/credentials/cookies.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328014,6 +329221,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -328023,78 +329234,642 @@
       ]
      },
      "headers": {
-      "header-values-normalize.html": [
-       "d2da32332e0468ac3993cfe9f0b754bbe9a8930b",
+      "header-values-normalize.any.js": [
+       "814789c5b0b578d5f3674b165cf68d6fbad63668",
        [
-        null,
+        "fetch/api/headers/header-values-normalize.any.html",
         {
+         "script_metadata": [
+          [
+           "title",
+           "Header value normalizing test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/headers/header-values-normalize.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Header value normalizing test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/headers/header-values-normalize.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Header value normalizing test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/headers/header-values-normalize.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Header value normalizing test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "header-values.html": [
-       "a68bfa91bf5d81d95141ee170f856f9defd8994a",
+      "header-values.any.js": [
+       "9a829d8d4ed6218b8c3ebde03caf7ae732111c12",
        [
-        null,
+        "fetch/api/headers/header-values.any.html",
         {
+         "script_metadata": [
+          [
+           "title",
+           "Header value test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/headers/header-values.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Header value test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/headers/header-values.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Header value test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/headers/header-values.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Header value test"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "headers-basic.html": [
-       "254ef051c1227cc676dafbc9f1a3d91c98a89b01",
+      "headers-basic.any.js": [
+       "5de71f43bb4fc37d38006626fc6c6276cd7dbd5b",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-basic.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers structure"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-basic.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers structure"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-basic.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers structure"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-basic.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers structure"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-casing.html": [
-       "1e505d81cda8c19f7cbb16436ea08fb3f92c6f48",
+      "headers-casing.any.js": [
+       "57bec0164ed9abb109a0835c5a6ecb52ebdf8556",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-casing.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers case management"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-casing.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers case management"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-casing.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers case management"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-casing.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers case management"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-combine.html": [
-       "7341b77e86b7ed7befa0398d3f68f51624dc1bce",
+      "headers-combine.any.js": [
+       "dab47889c45ef3cdb82f131a9c7d7cc4d2ed38fb",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-combine.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers have combined (and sorted) values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-combine.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers have combined (and sorted) values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-combine.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers have combined (and sorted) values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-combine.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers have combined (and sorted) values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-errors.html": [
-       "7f9916d87fe2ac125953eb25f0e278aa31073b3e",
+      "headers-errors.any.js": [
+       "ab8a118e255f3ad2d57b6d57ae4a5f263461b711",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-errors.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers errors"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-errors.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers errors"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-errors.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers errors"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-errors.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers errors"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-no-cors.window.js": [
-       "2f3a819ba1a6d1cb7418b0507e6f8130458ba988",
+      "headers-no-cors.any.js": [
+       "c09658e641ecdf143778df3b02b5ca549c5b4c19",
        [
-        "fetch/api/headers/headers-no-cors.window.html",
-        {}
+        "fetch/api/headers/headers-no-cors.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-no-cors.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-no-cors.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-no-cors.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-normalize.html": [
-       "6dfcf9d8194776479d500a6f6c6a5851424d9efc",
+      "headers-normalize.any.js": [
+       "5ebd7ae9ea9898917fe3d7a1660475f024c51d11",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-normalize.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers normalize values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-normalize.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers normalize values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-normalize.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers normalize values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-normalize.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers normalize values"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-record.html": [
-       "c7d8d99a7095ebb6b5d3e3154ac69108e819698f",
+      "headers-record.any.js": [
+       "55036c2da4c076884debd673fdea23abb7a9a2bd",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-record.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-record.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-record.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-record.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "headers-structure.html": [
-       "9448e450c9b80e53fff7c5372847a95ecb553f27",
+      "headers-structure.any.js": [
+       "c47290eb2098b37a67e2b189b310166ba1a6a828",
        [
-        null,
-        {}
+        "fetch/api/headers/headers-structure.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers basic"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-structure.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers basic"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-structure.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers basic"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/headers/headers-structure.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Headers basic"
+          ],
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -328299,11 +330074,45 @@
      },
      "redirect": {
       "redirect-back-to-original-origin.any.js": [
-       "32d413cb2f16db6753bd71cfa0395ff8bd7efea9",
+       "74d731f24251c16b204c50e9fa81527eeecc88cb",
        [
         "fetch/api/redirect/redirect-back-to-original-origin.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-back-to-original-origin.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-back-to-original-origin.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "/common/get-host-info.sub.js"
@@ -328316,6 +330125,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "/common/get-host-info.sub.js"
           ]
@@ -328324,11 +330137,63 @@
        ]
       ],
       "redirect-count.any.js": [
-       "4ce080e69027bc12f180dc93d00f0e7c9683022c",
+       "dda5d7f52901ae4f736e8defbd76963bdeb86259",
        [
         "fetch/api/redirect/redirect-count.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-count.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-count.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328350,6 +330215,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ],
@@ -328367,11 +330236,45 @@
        ]
       ],
       "redirect-empty-location.any.js": [
-       "79b04f5c5ec271f1fd3b17378ccc970ca1c3fab3",
+       "487f4d42e9239f1319bff6a8cbc46bb11231be60",
        [
         "fetch/api/redirect/redirect-empty-location.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-empty-location.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-empty-location.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328384,6 +330287,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -328392,11 +330299,45 @@
        ]
       ],
       "redirect-location-escape.tentative.any.js": [
-       "2975e5fe1a9758e45d4abf7feeceb0b2b58e257d",
+       "779ad7057937f63c02c7adc89f39b890c68d4896",
        [
         "fetch/api/redirect/redirect-location-escape.tentative.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-location-escape.tentative.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-location-escape.tentative.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328409,6 +330350,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -328417,11 +330362,45 @@
        ]
       ],
       "redirect-location.any.js": [
-       "91da26021d09a0254b7e571b9ee112fe1080d60f",
+       "5cb6cc280c4cd5fddb62fd8ba29d942894460d4e",
        [
         "fetch/api/redirect/redirect-location.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-location.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-location.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328434,6 +330413,10 @@
         {
          "script_metadata": [
           [
+           "global",
+           "window,worker"
+          ],
+          [
            "script",
            "../resources/utils.js"
           ]
@@ -328442,11 +330425,45 @@
        ]
       ],
       "redirect-method.any.js": [
-       "b24bb092c603a2f2c6942a9c6b3ab5936a7e1687",
+       "9fe086a9db718a5de8756e4b8a3830ae411871e0",
        [
         "fetch/api/redirect/redirect-method.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-method.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-method.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328458,6 +330475,10 @@
         "fetch/api/redirect/redirect-method.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -328583,19 +330604,125 @@
         }
        ]
       ],
-      "redirect-schemes.html": [
-       "2aa7bcea6955882fad34f529fc2544c24c560f3e",
+      "redirect-schemes.any.js": [
+       "31ec124fd6a3eda60b1641fb3cba983cf2317fce",
        [
-        null,
-        {}
+        "fetch/api/redirect/redirect-schemes.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: handling different schemes in redirects"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-schemes.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: handling different schemes in redirects"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-schemes.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: handling different schemes in redirects"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-schemes.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Fetch: handling different schemes in redirects"
+          ],
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
        ]
       ],
       "redirect-to-dataurl.any.js": [
-       "2f36f0b9d21b223c4f20e9ae2cc1620fb08212f3",
+       "9d0f147349c48870aae00c8c2be4aa3e376d36b1",
        [
         "fetch/api/redirect/redirect-to-dataurl.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-to-dataurl.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-to-dataurl.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "/common/get-host-info.sub.js"
@@ -328607,6 +330734,10 @@
         "fetch/api/redirect/redirect-to-dataurl.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "/common/get-host-info.sub.js"
@@ -328670,62 +330801,821 @@
         ]
        ]
       },
-      "request-bad-port.html": [
-       "d1d42cc217d036d63dc706cf729208e7d93897ba",
+      "request-bad-port.any.js": [
+       "8614192f84ea2c2d1fd995809c040c73f3eada81",
        [
-        null,
-        {}
+        "fetch/api/request/request-bad-port.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-bad-port.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-bad-port.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-bad-port.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
-      "request-cache-default-conditional.html": [
-       "145b30262daba00e3318d78b9c3617a8bd94f3bc",
+      "request-cache-default-conditional.any.js": [
+       "c5b2001cc8f6b02372f4c1f1306ab77d83654172",
        [
-        null,
+        "fetch/api/request/request-cache-default-conditional.any.html",
         {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default with conditional requests"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-default-conditional.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default with conditional requests"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-default-conditional.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default with conditional requests"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-default-conditional.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default with conditional requests"
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ],
          "timeout": "long"
         }
        ]
       ],
-      "request-cache-default.html": [
-       "c0e37b2d0c9b6382dfc72b1c6b90197b3e5e015d",
+      "request-cache-default.any.js": [
+       "dfa8369c9a37198ceec333e7d3f1748daa815058",
        [
-        null,
-        {}
+        "fetch/api/request/request-cache-default.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-default.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-default.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-default.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - default"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-cache-force-cache.html": [
-       "ed45726f55e652306b7826129f4bcee98403e334",
+      "request-cache-force-cache.any.js": [
+       "00dce096c7292495606d8606c8649e096bcac81d",
        [
-        null,
-        {}
+        "fetch/api/request/request-cache-force-cache.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - force-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-force-cache.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - force-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-force-cache.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - force-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-force-cache.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - force-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-cache-no-cache.html": [
-       "d30ed16269686ae7163853a795d529fb4d869b41",
+      "request-cache-no-cache.any.js": [
+       "41fc22baf23ddd3f832a38c853a203920a38062a",
        [
-        null,
-        {}
+        "fetch/api/request/request-cache-no-cache.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache : no-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-no-cache.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache : no-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-no-cache.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache : no-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-no-cache.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache : no-cache"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-cache-no-store.html": [
-       "396b6a650905def403a062a237fc760ddcda70aa",
+      "request-cache-no-store.any.js": [
+       "9a28718bf2292df5c0f9b7290dfe274ef0e015d8",
        [
-        null,
-        {}
+        "fetch/api/request/request-cache-no-store.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - no store"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-no-store.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - no store"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-no-store.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - no store"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-no-store.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - no store"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-cache-only-if-cached.html": [
-       "adb31a397a759c43f918c0f88a7f2067bfac33a8",
+      "request-cache-only-if-cached.any.js": [
+       "1305787c7c1d6641ed9eb11bf0151ca391877a1b",
        [
-        null,
-        {}
+        "fetch/api/request/request-cache-only-if-cached.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,sharedworker"
+          ],
+          [
+           "title",
+           "Request cache - only-if-cached"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-only-if-cached.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,sharedworker"
+          ],
+          [
+           "title",
+           "Request cache - only-if-cached"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-only-if-cached.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,sharedworker"
+          ],
+          [
+           "title",
+           "Request cache - only-if-cached"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-cache-reload.html": [
-       "45ff5832482dd971b4062100414d0b2187e478e0",
+      "request-cache-reload.any.js": [
+       "c7bfffb398890d478d0a9955a642a665bc18df31",
        [
-        null,
-        {}
+        "fetch/api/request/request-cache-reload.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - reload"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-reload.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - reload"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-reload.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - reload"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-cache-reload.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request cache - reload"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "request-cache.js"
+          ]
+         ]
+        }
        ]
       ],
       "request-clone.sub.html": [
@@ -328735,39 +331625,367 @@
         {}
        ]
       ],
-      "request-consume-empty.html": [
-       "41599588eed3d412a306ad53fd6ea5f7a474a2b6",
+      "request-consume-empty.any.js": [
+       "034a86041a74f58c4d0310ef809f6170b09dbb05",
        [
-        null,
-        {}
+        "fetch/api/request/request-consume-empty.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume empty bodies"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-consume-empty.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume empty bodies"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-consume-empty.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume empty bodies"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-consume-empty.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume empty bodies"
+          ]
+         ]
+        }
        ]
       ],
-      "request-consume.html": [
-       "06ef8a7d36db899927e5d76447880deb68250ffd",
+      "request-consume.any.js": [
+       "aff5d65244a15e9fb7cbded180bcdb55ef65be2b",
        [
-        null,
-        {}
+        "fetch/api/request/request-consume.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-consume.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-consume.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-consume.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-disturbed.html": [
-       "18d8a33478ead7af9408e15a41fcf73f1752762a",
+      "request-disturbed.any.js": [
+       "8a11de78ff6e0ed8a970a24325b1c126ebebcd97",
        [
-        null,
-        {}
+        "fetch/api/request/request-disturbed.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request disturbed"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-disturbed.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request disturbed"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-disturbed.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request disturbed"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-disturbed.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request disturbed"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-error.html": [
-       "622ba3f4c28c6d552f205b3492026a9e731bd4af",
+      "request-error.any.js": [
+       "67ed70c5db2f09aaed3a97fc249022b20d4b941e",
        [
-        null,
-        {}
+        "fetch/api/request/request-error.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request error"
+          ],
+          [
+           "script",
+           "request-error.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-error.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request error"
+          ],
+          [
+           "script",
+           "request-error.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-error.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request error"
+          ],
+          [
+           "script",
+           "request-error.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-error.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request error"
+          ],
+          [
+           "script",
+           "request-error.js"
+          ]
+         ]
+        }
        ]
       ],
-      "request-headers.html": [
-       "014f2fb2d58616696236973b5519cbf7d9eb6e3d",
+      "request-headers.any.js": [
+       "c48e24e5bc63f64c7053152149eee6e17234ef78",
        [
-        null,
-        {}
+        "fetch/api/request/request-headers.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request Headers"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-headers.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request Headers"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-headers.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request Headers"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-headers.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request Headers"
+          ]
+         ]
+        }
        ]
       ],
       "request-init-001.sub.html": [
@@ -328777,11 +331995,67 @@
         {}
        ]
       ],
-      "request-init-002.html": [
-       "14be27742208beffe7f7123771812de073cff1d1",
+      "request-init-002.any.js": [
+       "abb6689f1e844acb507929f701f3f8852c0994fd",
        [
-        null,
-        {}
+        "fetch/api/request/request-init-002.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request init: headers and body"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-init-002.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request init: headers and body"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-init-002.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request init: headers and body"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-init-002.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request init: headers and body"
+          ]
+         ]
+        }
        ]
       ],
       "request-init-003.sub.html": [
@@ -328865,11 +332139,99 @@
         }
        ]
       ],
-      "request-keepalive.html": [
-       "e165422166e9531b689208271f4c2691e1415cf7",
+      "request-keepalive.any.js": [
+       "cb4506db46c931ca347b05a7caa108292e480fc1",
        [
-        null,
-        {}
+        "fetch/api/request/request-keepalive.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request keepalive"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-keepalive.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request keepalive"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-keepalive.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request keepalive"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-keepalive.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request keepalive"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ]
+        }
        ]
       ],
       "request-reset-attributes.https.html": [
@@ -328879,11 +332241,67 @@
         {}
        ]
       ],
-      "request-structure.html": [
-       "e137a7ea5120ff24de310020fe330a6725cdb9d7",
+      "request-structure.any.js": [
+       "65f1b96b2b9042cd9f9656f125c756e9b4e5ff87",
        [
-        null,
-        {}
+        "fetch/api/request/request-structure.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request structure"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-structure.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request structure"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-structure.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request structure"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/request/request-structure.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Request structure"
+          ]
+         ]
+        }
        ]
       ],
       "url-encoding.html": [
@@ -328911,11 +332329,83 @@
         {}
        ]
       ],
-      "response-cancel-stream.html": [
-       "fcaed04d83e31a437695b55b50beb7425a5a3fb8",
+      "response-cancel-stream.any.js": [
+       "baa46de4039b176c30e0e8a49ee75acbd20e6450",
        [
-        null,
-        {}
+        "fetch/api/response/response-cancel-stream.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume blob and http bodies"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-cancel-stream.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume blob and http bodies"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-cancel-stream.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume blob and http bodies"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-cancel-stream.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume blob and http bodies"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
        ]
       ],
       "response-clone-iframe.window.js": [
@@ -328925,27 +332415,225 @@
         {}
        ]
       ],
-      "response-clone.html": [
-       "5529d49932cb8477f8c611de51c095a79e70000d",
+      "response-clone.any.js": [
+       "7cc8f205fa55d35e433a1ab8bc08f62af8bfb693",
        [
-        null,
+        "fetch/api/response/response-clone.any.html",
         {
-         "timeout": "long"
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response clone"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-clone.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response clone"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-clone.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response clone"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-clone.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response clone"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
         }
        ]
       ],
-      "response-consume-empty.html": [
-       "f587e635c655a13c4cb705dcb9756c603632a597",
+      "response-consume-empty.any.js": [
+       "0fa85ecbcb2d7b9093307b189c392aa9c528d9c7",
        [
-        null,
-        {}
+        "fetch/api/response/response-consume-empty.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume empty bodies"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-consume-empty.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume empty bodies"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-consume-empty.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume empty bodies"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-consume-empty.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume empty bodies"
+          ]
+         ]
+        }
        ]
       ],
-      "response-consume-stream.html": [
-       "8a97fa0c90f48bdac08b0adb27e2d8a619e97621",
+      "response-consume-stream.any.js": [
+       "d5b0c388cc75b6ed5fce3df21f3ecceb8ac606d5",
        [
-        null,
-        {}
+        "fetch/api/response/response-consume-stream.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-consume-stream.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-consume-stream.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-consume-stream.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response consume"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
        ]
       ],
       "response-consume.html": [
@@ -328955,18 +332643,130 @@
         {}
        ]
       ],
-      "response-error-from-stream.html": [
-       "370f6ba78d7341ad7be59bd6115049ac03428e1f",
+      "response-error-from-stream.any.js": [
+       "118eb7d5cb398c1a27aefb2e8c2358a851c3bfaf",
        [
-        null,
-        {}
+        "fetch/api/response/response-error-from-stream.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response Receives Propagated Error from ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-error-from-stream.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response Receives Propagated Error from ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-error-from-stream.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response Receives Propagated Error from ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-error-from-stream.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response Receives Propagated Error from ReadableStream"
+          ]
+         ]
+        }
        ]
       ],
-      "response-error.html": [
-       "7cbb138345964f548add67a9b290657de3aecebd",
+      "response-error.any.js": [
+       "a76bc4380286fac47b96425abaa6217ed5291e52",
        [
-        null,
-        {}
+        "fetch/api/response/response-error.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response error"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-error.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response error"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-error.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response error"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-error.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response error"
+          ]
+         ]
+        }
        ]
       ],
       "response-from-stream.any.js": [
@@ -329016,93 +332816,739 @@
         }
        ]
       ],
-      "response-init-001.html": [
-       "7af23d310f1ace9ad9827b8dd4e9e5ca17d26b5e",
+      "response-init-001.any.js": [
+       "559e49ad11ffe13a7a291935f6540b6a177e4c9f",
        [
-        null,
-        {}
+        "fetch/api/response/response-init-001.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: simple cases"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-init-001.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: simple cases"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-init-001.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: simple cases"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-init-001.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: simple cases"
+          ]
+         ]
+        }
        ]
       ],
-      "response-init-002.html": [
-       "a48af833644efea5373963fc1ce18a202dd454c5",
+      "response-init-002.any.js": [
+       "6c0a46e480406c359abcc7cc315810a844fff6ec",
        [
-        null,
-        {}
+        "fetch/api/response/response-init-002.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: body and headers"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-init-002.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: body and headers"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-init-002.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: body and headers"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-init-002.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response init: body and headers"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
        ]
       ],
-      "response-static-error.html": [
-       "b2d6e82d4279b7c911f38e4fe8294d03b51ec9f3",
+      "response-static-error.any.js": [
+       "4097eab37b4c90e8c453027b99fbf4ed31a08b42",
        [
-        null,
-        {}
+        "fetch/api/response/response-static-error.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: error static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-error.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: error static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-error.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: error static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-error.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: error static method"
+          ]
+         ]
+        }
        ]
       ],
-      "response-static-redirect.html": [
-       "f647b6debeb8930f98868b10652cd8e2ca527385",
+      "response-static-redirect.any.js": [
+       "971baec4909de67b7fe8001e600c7d77c1df23ee",
        [
-        null,
-        {}
+        "fetch/api/response/response-static-redirect.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: redirect static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-redirect.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: redirect static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-redirect.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: redirect static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-redirect.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: redirect static method"
+          ]
+         ]
+        }
        ]
       ],
-      "response-stream-disturbed-1.html": [
-       "c856a6d4e09df972e9def32a249f777e0c0ac5a4",
+      "response-stream-disturbed-1.any.js": [
+       "d80049a2a455e1afc9a1df244319b164141f995f",
        [
-        null,
-        {}
+        "fetch/api/response/response-stream-disturbed-1.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-1.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-1.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-1.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
        ]
       ],
-      "response-stream-disturbed-2.html": [
-       "75cc4a59706259e6e5bf95a8032328d644b71e64",
+      "response-stream-disturbed-2.any.js": [
+       "ccff547556e724db0e1b62da36f7041e503391ee",
        [
-        null,
-        {}
+        "fetch/api/response/response-stream-disturbed-2.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-2.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-2.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-2.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
        ]
       ],
-      "response-stream-disturbed-3.html": [
-       "795357e6fddca868507a17a2955dea4abcb55f1a",
+      "response-stream-disturbed-3.any.js": [
+       "32c11625eb454237f4296eaacd9c213192146f32",
        [
-        null,
-        {}
+        "fetch/api/response/response-stream-disturbed-3.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-3.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-3.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-3.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
        ]
       ],
-      "response-stream-disturbed-4.html": [
-       "9c387699353320fd02560626da5452ac71561fde",
+      "response-stream-disturbed-4.any.js": [
+       "58331ae1d0c8a7e52ecb71c8c5131818c17e10dc",
        [
-        null,
-        {}
+        "fetch/api/response/response-stream-disturbed-4.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-4.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-4.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-4.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
        ]
       ],
-      "response-stream-disturbed-5.html": [
-       "830a41bc8096205e7dae3c8b56cad29378a5340f",
+      "response-stream-disturbed-5.any.js": [
+       "9be0c93f35a07bc8d2a3c8ca2a83dae35e926515",
        [
-        null,
-        {}
+        "fetch/api/response/response-stream-disturbed-5.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-5.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-5.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-5.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Consuming Response body after getting a ReadableStream"
+          ]
+         ]
+        }
        ]
       ],
-      "response-stream-disturbed-6.html": [
-       "30492d472fee621a75d57e28ceca7bd7ea7d1fdd",
+      "response-stream-disturbed-6.any.js": [
+       "61d8544f0786c803f2793d463390537ff7d78fca",
        [
-        null,
-        {}
+        "fetch/api/response/response-stream-disturbed-6.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "ReadableStream disturbed tests, via Response's bodyUsed property"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-6.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "ReadableStream disturbed tests, via Response's bodyUsed property"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-6.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "ReadableStream disturbed tests, via Response's bodyUsed property"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-6.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "ReadableStream disturbed tests, via Response's bodyUsed property"
+          ]
+         ]
+        }
        ]
       ],
       "response-stream-disturbed-by-pipe.any.js": [
-       "f0066c2333a1c1038a506fb910ae9c280583c96e",
+       "5341b75271ead59be5022afd99ffbe22a26628fb",
        [
         "fetch/api/response/response-stream-disturbed-by-pipe.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-by-pipe.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-disturbed-by-pipe.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ],
        [
         "fetch/api/response/response-stream-disturbed-by-pipe.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
        ]
       ],
       "response-stream-with-broken-then.any.js": [
-       "b83365d73af5f430e589adbe4e1ea165419f047c",
+       "8fef66c8a281c6248fd36763889bc95aa899f7cc",
        [
         "fetch/api/response/response-stream-with-broken-then.any.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-with-broken-then.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-with-broken-then.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -329114,6 +333560,10 @@
         "fetch/api/response/response-stream-with-broken-then.any.worker.html",
         {
          "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
           [
            "script",
            "../resources/utils.js"
@@ -329137,14 +333587,50 @@
     },
     "content-encoding": {
      "bad-gzip-body.any.js": [
-      "f820322668c1cd79f1453cba918f1cf38bf8a1bb",
+      "17bc1261a3f5c36a9797c5a171990c522cfe7598",
       [
        "fetch/content-encoding/bad-gzip-body.any.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/content-encoding/bad-gzip-body.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/content-encoding/bad-gzip-body.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
       ],
       [
        "fetch/content-encoding/bad-gzip-body.any.worker.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
       ]
      ]
     },
@@ -329609,25 +334095,97 @@
     },
     "data-urls": {
      "base64.any.js": [
-      "c40805364e9d3e4b11283b80902c9562bd262a62",
+      "83f34db1777d99d6c1212a75ab4db44dcbd70720",
       [
        "fetch/data-urls/base64.any.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/data-urls/base64.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/data-urls/base64.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
       ],
       [
        "fetch/data-urls/base64.any.worker.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
       ]
      ],
      "processing.any.js": [
-      "940e5cea3878b9461e04cd64e0f5bde6b22e03d2",
+      "cec97bd6be2b2e3f1b39c7a5e8128ee48d7ac3d4",
       [
        "fetch/data-urls/processing.any.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/data-urls/processing.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/data-urls/processing.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
       ],
       [
        "fetch/data-urls/processing.any.worker.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
       ]
      ]
     },
@@ -329641,74 +334199,1050 @@
      ]
     },
     "http-cache": {
-     "304-update.html": [
-      "d6d8481e87427816113397bbed49f30b3e43c336",
+     "304-update.any.js": [
+      "15484f01eb32be314f0537694bb1a85a73bc2ba3",
       [
-       null,
+       "fetch/http-cache/304-update.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - 304 Updates"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/304-update.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - 304 Updates"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/304-update.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - 304 Updates"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/304-update.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - 304 Updates"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "cache-mode.html": [
-      "ea5bbad01889de63c2851b53ea50c0ded622431e",
+     "cache-mode.any.js": [
+      "8f406d5a6a500346febdc5cd5ac40ff613d51477",
       [
-       null,
+       "fetch/http-cache/cache-mode.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Fetch - Cache Mode"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/cache-mode.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Fetch - Cache Mode"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/cache-mode.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Fetch - Cache Mode"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/cache-mode.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Fetch - Cache Mode"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "cc-request.html": [
-      "e732683d7de1cb914e687e25b902a34e5e462c0c",
+     "cc-request.any.js": [
+      "d55656684144f89718cad19d9bf5ce7fc68268a9",
       [
-       null,
+       "fetch/http-cache/cc-request.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Cache-Control Request Directives"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/cc-request.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Cache-Control Request Directives"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/cc-request.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Cache-Control Request Directives"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/cc-request.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Cache-Control Request Directives"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "freshness.html": [
-      "38a457cbebab6c5ac6d48beb9c18a854e1ea8cbb",
+     "freshness.any.js": [
+      "6b97c8244f647c9dcbb95ccd2a9e06796e70444a",
       [
-       null,
+       "fetch/http-cache/freshness.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/freshness.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/freshness.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/freshness.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "heuristic.html": [
-      "c2333cd9f05cf096bdddb7a4c9d560125bcb2de6",
+     "heuristic.any.js": [
+      "d846131888288cb863308081eee9271caa108a09",
       [
-       null,
+       "fetch/http-cache/heuristic.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Heuristic Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/heuristic.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Heuristic Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/heuristic.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Heuristic Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/heuristic.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Heuristic Freshness"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "invalidate.html": [
-      "dbf727c0eaae9e86105e50ef858f953444801890",
+     "invalidate.any.js": [
+      "9f8090ace659d2b9cc44274b0379a30f08d949ee",
       [
-       null,
+       "fetch/http-cache/invalidate.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Invalidation"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/invalidate.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Invalidation"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/invalidate.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Invalidation"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/invalidate.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Invalidation"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "partial.html": [
-      "8f0b528e8ce396c90a87fc76b64f930e99700068",
+     "partial.any.js": [
+      "a75b8115f5cb54ce62f9af44510fc51b69826b89",
       [
-       null,
+       "fetch/http-cache/partial.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Partial Content"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/partial.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Partial Content"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/partial.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Partial Content"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/partial.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Partial Content"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "post-patch.html": [
-      "9025a96e4e3503830d3df69e6e0035e3217df1eb",
+     "post-patch.any.js": [
+      "0a69baa5c6646c53397618a8f6810ba7f703ef91",
       [
-       null,
+       "fetch/http-cache/post-patch.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Caching POST and PATCH responses"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/post-patch.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Caching POST and PATCH responses"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/post-patch.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Caching POST and PATCH responses"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/post-patch.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Caching POST and PATCH responses"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
@@ -329720,20 +335254,266 @@
        {}
       ]
      ],
-     "status.html": [
-      "d55d9e3cf24a496316677a8be9d1d54d21d9c3b8",
+     "status.any.js": [
+      "10c83a25a26dc0441f50aebe646e8ac68700e241",
       [
-       null,
+       "fetch/http-cache/status.any.html",
        {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Status Codes"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/status.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Status Codes"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/status.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Status Codes"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/status.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Status Codes"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
         "timeout": "long"
        }
       ]
      ],
-     "vary.html": [
-      "721d6e79b5248ed7a4334d754b8039c366090051",
+     "vary.any.js": [
+      "2cfd226af811739637a173dedd9f5d5c81ffb661",
       [
-       null,
-       {}
+       "fetch/http-cache/vary.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Vary"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/vary.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Vary"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/vary.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Vary"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/http-cache/vary.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "HTTP Cache - Vary"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "http-cache.js"
+         ]
+        ],
+        "timeout": "long"
+       }
       ]
      ]
     },
@@ -329770,11 +335550,67 @@
        {}
       ]
      ],
-     "fetch-preflight.https.sub.html": [
-      "ec987e1ca4b8b232e45d8e649b3b1b7ad631d1a0",
+     "fetch-preflight.https.sub.any.js": [
+      "d52474353ba5573ee45a4005673caf5667fd88f8",
       [
-       null,
-       {}
+       "fetch/metadata/fetch-preflight.https.sub.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/fetch-preflight.https.sub.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/fetch-preflight.https.sub.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/fetch-preflight.https.sub.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
       ]
      ],
      "fetch-via-serviceworker--fallback.https.sub.html": [
@@ -329791,11 +335627,67 @@
        {}
       ]
      ],
-     "fetch.https.sub.html": [
-      "bb7d20009442ac02c5e8011d28b67cc0014339c5",
+     "fetch.https.sub.any.js": [
+      "aeec5cdf2dc11de137cd4a5eebba931cd16a937d",
       [
-       null,
-       {}
+       "fetch/metadata/fetch.https.sub.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/fetch.https.sub.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/fetch.https.sub.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/fetch.https.sub.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
       ]
      ],
      "fetch.sub.html": [
@@ -330018,11 +335910,67 @@
        {}
       ]
      ],
-     "trailing-dot.https.sub.html": [
-      "afd876f0524dd40a0f77b743409e8968a89f81dc",
+     "trailing-dot.https.sub.any.js": [
+      "5e32fc4e7f6a44d2646e093cc9945fa01da77eda",
       [
-       null,
-       {}
+       "fetch/metadata/trailing-dot.https.sub.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/trailing-dot.https.sub.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/trailing-dot.https.sub.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/metadata/trailing-dot.https.sub.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/fetch/metadata/resources/helper.js"
+         ]
+        ]
+       }
       ]
      ],
      "unload.https.sub.html": [
@@ -330124,11 +336072,45 @@
     },
     "range": {
      "general.any.js": [
-      "656ac1ceea2511d960cdb21b25a2846eb092b8c4",
+      "80791c3847eac7501191b44e541d85f5b8f293b7",
       [
        "fetch/range/general.any.html",
        {
         "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/range/general.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/range/general.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
          [
           "script",
           "/common/utils.js"
@@ -330140,6 +336122,10 @@
        "fetch/range/general.any.worker.html",
        {
         "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
          [
           "script",
           "/common/utils.js"
@@ -330249,11 +336235,83 @@
        {}
       ]
      ],
-     "fetch.html": [
-      "c28708019fa4658a45e6637f045077585bb05605",
+     "fetch.any.js": [
+      "3682b9d2c3176eae85ff2f2a341948b37b8f6798",
       [
-       null,
-       {}
+       "fetch/stale-while-revalidate/fetch.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Tests Stale While Revalidate is executed for fetch API"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/stale-while-revalidate/fetch.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Tests Stale While Revalidate is executed for fetch API"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/stale-while-revalidate/fetch.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Tests Stale While Revalidate is executed for fetch API"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/stale-while-revalidate/fetch.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "title",
+          "Tests Stale While Revalidate is executed for fetch API"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
       ]
      ],
      "revalidate-not-blocked-by-csp.html": [
@@ -368741,14 +374799,14 @@
         ]
        ],
        "compile-error-cross-origin-setInterval.html": [
-        "14e9a8bc21532aa0446ca883daa9bf7bb0ec07af",
+        "c4028e650bf72b51d5fc3b594b16c253bdd59be6",
         [
          null,
          {}
         ]
        ],
        "compile-error-cross-origin-setTimeout.html": [
-        "7c46cc21a3e915764cc69fec39dade84070b8c42",
+        "1eebf82fbb0576b6ca955ca3ce7d518b7629e54a",
         [
          null,
          {}
@@ -368893,14 +374951,14 @@
         ]
        },
        "runtime-error-cross-origin-setInterval.html": [
-        "dd97566d70107a9713e05c838f63de07512a29e3",
+        "8b92f7d148d864842b5f1f19d1658979f280b39f",
         [
          null,
          {}
         ]
        ],
        "runtime-error-cross-origin-setTimeout.html": [
-        "6f9add5c9f59be752b2539414631126c4f33a4e5",
+        "2e1a9d23151804dd9635c19e1c1f5c5cbb05868f",
         [
          null,
          {}
@@ -432288,6 +438346,13 @@
     ],
     "close-worker-with-xhr-in-progress.html": [
      "4d03bea028fbc629b3a8f285478b845dbce432fb",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookies.http.html": [
+     "0ab71dd168ab6de239c55287db204f8f9f14a4ff",
      [
       null,
       {}

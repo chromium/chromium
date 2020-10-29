@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL HTTP cache uses content after PATCH request with response containing Content-Location and cache-allowing header assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
+FAIL HTTP cache uses content after POST request with response containing Content-Location and cache-allowing header assert_less_than: Response 2 does not come from cache expected a number less than 2 but got 2
+Harness: the test ran to completion.
+

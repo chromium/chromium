@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS ReadableStreamDefaultReader Promise receives ReadableStream start() Error
+PASS ReadableStreamDefaultReader Promise receives ReadableStream pull() Error
+FAIL ReadableStream start() Error propagates to Response.arrayBuffer() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
+FAIL ReadableStream start() Error propagates to Response.blob() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
+FAIL ReadableStream start() Error propagates to Response.formData() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
+FAIL ReadableStream start() Error propagates to Response.json() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
+FAIL ReadableStream start() Error propagates to Response.text() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
+FAIL ReadableStream pull() Error propagates to Response.arrayBuffer() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
+FAIL ReadableStream pull() Error propagates to Response.blob() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
+FAIL ReadableStream pull() Error propagates to Response.formData() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
+FAIL ReadableStream pull() Error propagates to Response.json() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
+FAIL ReadableStream pull() Error propagates to Response.text() Promise promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
+Harness: the test ran to completion.
+

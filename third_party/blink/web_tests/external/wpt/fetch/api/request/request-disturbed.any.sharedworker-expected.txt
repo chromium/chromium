@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Request's body: initial state
+PASS Request without body cannot be disturbed
+PASS Check cloning a disturbed request
+PASS Check creating a new request from a disturbed request
+PASS Check creating a new request with a new body from a disturbed request
+FAIL Input request used for creating new request became disturbed assert_equals: body should not change expected object "[object ReadableStream]" but got object "[object ReadableStream]"
+FAIL Input request used for creating new request became disturbed even if body is not used assert_equals: body should not change expected object "[object ReadableStream]" but got object "[object ReadableStream]"
+PASS Check consuming a disturbed request
+PASS Request construction failure should not set "bodyUsed"
+Harness: the test ran to completion.
+
