@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -345,12 +346,15 @@ public class MainSettings extends PreferenceFragmentCompat
         mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity()));
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
         mManageSync.setOnPreferenceClickListener(pref -> {
-            if (isSyncConsentAvailable) {
+            Context context = getContext();
+            if (ProfileSyncService.get().isSyncDisabledByEnterprisePolicy()) {
+                SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
+            } else if (isSyncConsentAvailable) {
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(getContext(), ManageSyncSettings.class);
+                settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
             } else {
                 SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                        getContext(), SigninAccessPoint.SETTINGS, primaryAccountName);
+                        context, SigninAccessPoint.SETTINGS, primaryAccountName);
             }
             return true;
         });

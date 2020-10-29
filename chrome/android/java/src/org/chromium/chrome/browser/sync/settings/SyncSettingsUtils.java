@@ -42,6 +42,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.StopSource;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -425,5 +426,16 @@ public class SyncSettingsUtils {
                         (exception) -> {
                             Log.e(TAG, "Error opening key retrieval dialog: ", exception);
                         });
+    }
+
+    /**
+     * Shows a toast indicating that sync is disabled for the account by the system administrator.
+     *
+     * @param context The context where the toast will be shown.
+     */
+    public static void showSyncDisabledByAdministratorToast(Context context) {
+        Toast.makeText(context, context.getString(R.string.sync_is_disabled_by_administrator),
+                     Toast.LENGTH_LONG)
+                .show();
     }
 }
