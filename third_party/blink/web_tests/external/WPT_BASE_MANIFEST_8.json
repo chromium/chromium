@@ -210393,7 +210393,7 @@
       []
      ],
      "exify.js": [
-      "c16b25e8676afef23133c2b35c1c6dc5623af473",
+      "b6c22e196c64a8532d05c1ea5e1453c5534c753b",
       []
      ]
     },
@@ -231662,7 +231662,7 @@
      []
     ],
     "resize-observer.idl": [
-     "0d2aa2863a79409e4904c35f2754f644aed9e0a2",
+     "d4973b77ce9aabf5c4c2141f0341e6e0fe263012",
      []
     ],
     "resource-timing.idl": [
@@ -231670,7 +231670,7 @@
      []
     ],
     "sanitizer-api.tentative.idl": [
-     "11653d1a186aa3159aaf5e44f5b0ff6ecf1dc50a",
+     "129c2962b31039d2a579b510ffb53b39225e19ff",
      []
     ],
     "savedata.idl": [
@@ -238065,10 +238065,6 @@
      "a006732015be3bbf07c79ecd11d8a50c4ebbda3f",
      []
     ],
-    "idlharness.window-expected.txt": [
-     "e58b1e13396f06b3816e8f62a7c1b1d70b28df96",
-     []
-    ],
     "resources": {
      "iframe.html": [
       "518317b520b68cbf92b09e67a57f1ecd27243747",
@@ -242139,24 +242135,6 @@
      "bf60a89d442ca7f26c61d19af6531aed1a2f5227",
      []
     ],
-    "piping": {
-     "pipe-through.any-expected.txt": [
-      "a7d386a986fe9341dfbb88c849f65097a365bec9",
-      []
-     ],
-     "pipe-through.any.serviceworker-expected.txt": [
-      "a7d386a986fe9341dfbb88c849f65097a365bec9",
-      []
-     ],
-     "pipe-through.any.sharedworker-expected.txt": [
-      "a7d386a986fe9341dfbb88c849f65097a365bec9",
-      []
-     ],
-     "pipe-through.any.worker-expected.txt": [
-      "a7d386a986fe9341dfbb88c849f65097a365bec9",
-      []
-     ]
-    },
     "readable-byte-streams": {
      "bad-buffers-and-views.any-expected.txt": [
       "9a39ea475532ce53b4cb586da6ebb4efde071336",
@@ -308884,7 +308862,7 @@
      ]
     ],
     "density-corrected-natural-size.html": [
-     "0b90b74f439b587f0aabb393c72a42db1a23ad61",
+     "b2241a6f7b51ecd35153d954a24cd835ecd174a1",
      [
       null,
       {}
