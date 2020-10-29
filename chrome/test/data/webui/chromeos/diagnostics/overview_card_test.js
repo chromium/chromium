@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/overview_card.js';
 
 import {fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
@@ -11,7 +9,7 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
-suite('OverviewCardTest', () => {
+export function overviewCardTestSuite() {
   /** @type {?HTMLElement} */
   let overviewElement = null;
 
@@ -64,4 +62,4 @@ suite('OverviewCardTest', () => {
           overviewElement.$$('#version').textContent);
     });
   });
-});
+}

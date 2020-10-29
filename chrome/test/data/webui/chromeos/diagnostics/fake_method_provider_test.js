@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
 
-suite('DiagnosticsFakeMethodResolver', () => {
+export function fakeMethodResolverTestSuite() {
   /** @type {?FakeMethodResolver} */
   let resolver = null;
 
@@ -44,4 +41,4 @@ suite('DiagnosticsFakeMethodResolver', () => {
       assertEquals(expected, result);
     });
   });
-});
+}

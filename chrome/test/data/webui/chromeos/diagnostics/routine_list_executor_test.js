@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {RoutineName, RoutineResultInfo, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
 
-suite('FakeRoutineListExecutorTest', () => {
+export function fakeRoutineListExecutorTestSuite() {
   /** @type {?FakeSystemRoutineController} */
   let controller = null;
 
@@ -115,4 +112,4 @@ suite('FakeRoutineListExecutorTest', () => {
 
     return runRoutinesAndAssertResults(routines);
   });
-});
+}

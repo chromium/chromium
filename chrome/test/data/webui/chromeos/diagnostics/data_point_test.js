@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/data_point.js';
 
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
-
-suite('DataPointTest', () => {
+export function dataPointTestSuite() {
   /** @type {?HTMLElement} */
   let dataPointElement = null;
 
@@ -49,4 +46,4 @@ suite('DataPointTest', () => {
       assertEquals(value, dataPointElement.$$('.value').textContent.trim());
     });
   });
-});
+}

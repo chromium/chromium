@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/routine_result_list.js';
 
 import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
@@ -12,7 +10,7 @@ import {flushTasks} from 'chrome://test/test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-suite('RoutineResultListTest', () => {
+export function routineResultListTestSuite() {
   /** @type {?HTMLElement} */
   let routineResultListElement = null;
 
@@ -112,4 +110,4 @@ suite('RoutineResultListTest', () => {
           assertEquals(0, getEntries().length);
         });
   });
-});
+}

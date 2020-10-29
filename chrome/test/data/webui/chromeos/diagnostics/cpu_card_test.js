@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/cpu_card.js';
 
 import {fakeCpuUsage} from 'chrome://diagnostics/fake_data.js';
@@ -12,7 +10,7 @@ import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://d
 import {flushTasks} from 'chrome://test/test_util.m.js';
 import * as dx_utils from './diagnostics_test_utils.js';
 
-suite('CpuCardTest', () => {
+export function cpuCardTestSuite() {
   /** @type {?HTMLElement} */
   let cpuElement = null;
 
@@ -101,4 +99,4 @@ suite('CpuCardTest', () => {
       assertFalse(isRunTestsButtonDisabled());
     });
   });
-});
+}

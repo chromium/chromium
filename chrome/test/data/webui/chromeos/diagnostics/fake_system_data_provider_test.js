@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-suite('FakeSystemDataProviderTest', () => {
+export function fakeSystemDataProviderTestSuite() {
   /** @type {?FakeSystemDataProvider} */
   let provider = null;
 
@@ -356,4 +353,4 @@ suite('FakeSystemDataProviderTest', () => {
           return completeResolver.promise;
         });
   });
-});
+}

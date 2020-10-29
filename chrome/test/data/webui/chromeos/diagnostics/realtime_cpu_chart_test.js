@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/realtime_cpu_chart.js';
 
 import {flushTasks} from 'chrome://test/test_util.m.js';
 import * as diagnostics_test_utils from './diagnostics_test_utils.js';
 
-suite('RealtimeCpuChartTest', () => {
+export function realtimeCpuChartTestSuite() {
   /** @type {?HTMLElement} */
   let realtimeCpuChartElement = null;
 
@@ -119,4 +117,4 @@ suite('RealtimeCpuChartTest', () => {
                        .getAttribute('d'));
     });
   });
-});
+}

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/memory_card.js';
 
 import {fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
@@ -12,7 +10,7 @@ import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://d
 import {flushTasks} from 'chrome://test/test_util.m.js';
 import * as dx_utils from './diagnostics_test_utils.js';
 
-suite('MemoryCardTest', () => {
+export function memoryCardTestSuite() {
   /** @type {?HTMLElement} */
   let memoryElement = null;
 
@@ -68,4 +66,4 @@ suite('MemoryCardTest', () => {
       assertEquals(memInUse, barChart.value);
     });
   });
-});
+}

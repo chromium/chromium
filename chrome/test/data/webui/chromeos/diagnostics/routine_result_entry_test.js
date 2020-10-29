@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/routine_result_entry.js';
 
 import {RoutineName, RoutineResult, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
-suite('RoutineResultEntryTest', () => {
+export function routineResultEntryTestSuite() {
   /** @type {?HTMLElement} */
   let routineResultEntryElement = null;
 
@@ -158,4 +156,4 @@ suite('RoutineResultEntryTest', () => {
       assertEquals(getStatusText(), 'kTestFailed');
     });
   });
-});
+}

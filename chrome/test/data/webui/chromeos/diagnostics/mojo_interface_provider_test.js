@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {getSystemDataProvider, getSystemRoutineController, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-suite('FakeMojoProviderTest', () => {
+export function fakeMojoProviderTestSuite() {
   test('SettingGettingTestProvider', () => {
     // TODO(zentaro): Replace with fake when built.
     let fake_provider =
@@ -22,4 +19,4 @@ suite('FakeMojoProviderTest', () => {
     setSystemRoutineControllerForTesting(fake_controller);
     assertEquals(fake_controller, getSystemRoutineController());
   });
-});
+}

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/routine_result_entry.js';
 import 'chrome://diagnostics/routine_section.js';
 
@@ -13,7 +11,7 @@ import {flushTasks} from 'chrome://test/test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-suite('RoutineSectionTest', () => {
+export function routineSectionTestSuite() {
   /** @type {?HTMLElement} */
   let routineSectionElement = null;
 
@@ -137,4 +135,4 @@ suite('RoutineSectionTest', () => {
           });
         });
   });
-});
+}
