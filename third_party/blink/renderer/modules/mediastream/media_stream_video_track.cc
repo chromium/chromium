@@ -682,9 +682,16 @@ void MediaStreamVideoTrack::GetSettings(
 void MediaStreamVideoTrack::OnReadyStateChanged(
     WebMediaStreamSource::ReadyState state) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  for (auto* sink : sinks_)
+
+  // Copy the vectors first, since sinks might DisconnectFromTrack() and
+  // invalidate iterators.
+
+  Vector<WebMediaStreamSink*> sinks_copy(sinks_);
+  for (auto* sink : sinks_copy)
     sink->OnReadyStateChanged(state);
-  for (auto* encoded_sink : encoded_sinks_)
+
+  Vector<WebMediaStreamSink*> encoded_sinks_copy(encoded_sinks_);
+  for (auto* encoded_sink : encoded_sinks_copy)
     encoded_sink->OnReadyStateChanged(state);
 }
 
