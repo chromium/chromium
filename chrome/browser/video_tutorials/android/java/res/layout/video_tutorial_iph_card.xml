@@ -47,10 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/thumbnail"
         android:layout_toStartOf="@id/close_button"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:layout_marginTop="12dp"
         android:ellipsize="end"
         android:maxLines="3"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />

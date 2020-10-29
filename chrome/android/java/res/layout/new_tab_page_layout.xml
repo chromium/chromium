@@ -84,6 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:layout="@layout/video_tutorial_iph_card"
         android:inflatedId="@+id/video_iph_card"/>
 
