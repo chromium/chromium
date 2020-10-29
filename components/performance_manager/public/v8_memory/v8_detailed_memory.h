@@ -485,17 +485,12 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
 
   using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
 
-  // Creates a one-shot memory measurement request that will immediately be
-  // sent to |process| (which must be a renderer process). The process will
-  // perform the measurement during a GC as determined by |mode|, and
-  // |callback| will be called with the results.
-  //
-  // |callback| is owned by the request object but will be destroyed after it
-  // is called or once no response can be received (such as if the ProcessNode
-  // is destroyed). It is safe for the callback to own resources that will be
-  // freed when the callback is destroyed. It is even safe for the callback to
-  // own |this|, making the V8DetailedMemoryRequestOneShot self-owning (it will
-  // be deleted along with the callback).
+  // Creates a one-shot memory measurement request that will be sent when
+  // StartMeasurement is called.
+  explicit V8DetailedMemoryRequestOneShot(
+      MeasurementMode mode = MeasurementMode::kDefault);
+
+  // Creates a one-shot memory measurement request and calls StartMeasurement.
   V8DetailedMemoryRequestOneShot(
       const ProcessNode* process,
       MeasurementCallback callback,
@@ -507,6 +502,20 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
       delete;
   V8DetailedMemoryRequestOneShot& operator=(
       const V8DetailedMemoryRequestOneShot&) = delete;
+
+  // Sends the measurement request to |process| (which must be a renderer
+  // process). The process will perform the measurement during a GC as
+  // determined by the MeasurementMode, and |callback| will be called with the
+  // results.
+  //
+  // |callback| is owned by the request object but will be destroyed after it
+  // is called or once no response can be received (such as if the ProcessNode
+  // is destroyed). It is safe for the callback to own resources that will be
+  // freed when the callback is destroyed. It is even safe for the callback to
+  // own |this|, making the V8DetailedMemoryRequestOneShot self-owning (it will
+  // be deleted along with the callback).
+  void StartMeasurement(const ProcessNode* process,
+                        MeasurementCallback callback);
 
   MeasurementMode mode() const { return mode_; }
 
@@ -527,9 +536,9 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
       MeasurementMode mode = MeasurementMode::kDefault);
 
  private:
-  void InitializeRequest(const ProcessNode* process, MeasurementMode mode);
-  void InitializeRequestFromOffSequence(base::WeakPtr<ProcessNode> process,
-                                        MeasurementMode mode);
+  void InitializeRequest();
+  void StartMeasurementFromOffSequence(base::WeakPtr<ProcessNode>,
+                                       MeasurementCallback callback);
   void DeleteRequest();
   void OnOwnerUnregistered();
 
@@ -644,6 +653,9 @@ class V8DetailedMemoryRequestOneShotAnySeq {
                               const V8DetailedMemoryProcessData& process_data,
                               const FrameDataMap& frame_data)>;
 
+  explicit V8DetailedMemoryRequestOneShotAnySeq(
+      MeasurementMode mode = MeasurementMode::kDefault);
+
   V8DetailedMemoryRequestOneShotAnySeq(
       RenderProcessHostId process_id,
       MeasurementCallback callback,
@@ -655,6 +667,9 @@ class V8DetailedMemoryRequestOneShotAnySeq {
       const V8DetailedMemoryRequestOneShotAnySeq&) = delete;
   V8DetailedMemoryRequestOneShotAnySeq& operator=(
       const V8DetailedMemoryRequestOneShotAnySeq&) = delete;
+
+  void StartMeasurement(RenderProcessHostId process_id,
+                        MeasurementCallback callback);
 
  private:
   void InitializeWrappedRequest(MeasurementCallback callback,
@@ -668,6 +683,8 @@ class V8DetailedMemoryRequestOneShotAnySeq {
       base::SequenceBound<MeasurementCallback> sequence_bound_callback,
       const ProcessNode* process_node,
       const V8DetailedMemoryProcessData* process_data);
+
+  MeasurementMode mode_;
 
   // The wrapped request. Must only be accessed from the PM sequence.
   std::unique_ptr<V8DetailedMemoryRequestOneShot> request_;

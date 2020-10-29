@@ -514,7 +514,8 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShot) {
   }
 
   uint64_t unassociated_v8_bytes_used = 0;
-  V8DetailedMemoryRequestOneShot process1_request(
+  V8DetailedMemoryRequestOneShot process1_request;
+  process1_request.StartMeasurement(
       process1.get(), base::BindLambdaForTesting(
                           [&unassociated_v8_bytes_used, &process1](
                               const ProcessNode* process_node,
@@ -2008,7 +2009,8 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
   }
 
   uint64_t unassociated_v8_bytes_used = 0;
-  V8DetailedMemoryRequestOneShotAnySeq process1_request(
+  V8DetailedMemoryRequestOneShotAnySeq process1_request;
+  process1_request.StartMeasurement(
       main_process_id(),
       base::BindLambdaForTesting(
           [&](RenderProcessHostId process_id,
