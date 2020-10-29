@@ -30,7 +30,8 @@ import org.chromium.services.service_manager.InterfaceFactory;
 public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
     // Tests can inject behaviour on future PaymentRequests via these objects.
     public static ChromePaymentRequestService.Delegate sDelegateForTest;
-    private static ChromePaymentRequestDelegateImplObserverForTest sObserver;
+    @Nullable
+    private static ChromePaymentRequestDelegateImplObserverForTest sObserverForTest;
     private final RenderFrameHost mRenderFrameHost;
 
     /** Observes the {@link ChromePaymentRequestDelegateImpl} for testing. */
@@ -133,7 +134,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     public static void setChromePaymentRequestDelegateImplObserverForTest(
             ChromePaymentRequestDelegateImplObserverForTest observer) {
         assert observer != null;
-        sObserver = observer;
+        sObserverForTest = observer;
     }
 
     @Override
@@ -155,7 +156,10 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         } else {
             ChromePaymentRequestDelegateImpl delegateImpl =
                     new ChromePaymentRequestDelegateImpl(mRenderFrameHost);
-            sObserver.onCreatedChromePaymentRequestDelegateImpl(/*delegateImpl=*/delegateImpl);
+            if (sObserverForTest != null) {
+                sObserverForTest.onCreatedChromePaymentRequestDelegateImpl(/*delegateImpl=*/
+                        delegateImpl);
+            }
             delegate = delegateImpl;
         }
 

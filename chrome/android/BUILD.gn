@@ -905,6 +905,7 @@ junit_binary("chrome_junit_tests") {
     "//services/device/public/mojom:mojom_java",
     "//services/media_session/public/cpp/android:media_session_java",
     "//services/media_session/public/mojom:mojom_java",
+    "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_collection_collection_java",
