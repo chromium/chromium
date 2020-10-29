@@ -117,6 +117,8 @@ inline SkPoint FloatPointToSkPoint(const FloatPoint& point) {
 }
 
 SkMatrix PLATFORM_EXPORT AffineTransformToSkMatrix(const AffineTransform&);
+SkMatrix PLATFORM_EXPORT
+TransformationMatrixToSkMatrix(const TransformationMatrix&);
 
 bool NearlyIntegral(float value);
 

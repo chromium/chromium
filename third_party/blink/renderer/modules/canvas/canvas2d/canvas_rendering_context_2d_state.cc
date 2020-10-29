@@ -39,10 +39,10 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
     : unrealized_save_count_(0),
       stroke_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
       fill_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
-      shadow_blur_(0),
+      shadow_blur_(0.0),
       shadow_color_(Color::kTransparent),
-      global_alpha_(1),
-      line_dash_offset_(0),
+      global_alpha_(1.0),
+      line_dash_offset_(0.0),
       unparsed_font_(defaultFont),
       unparsed_filter_(defaultFilter),
       text_align_(kStartTextAlign),
@@ -252,7 +252,7 @@ void CanvasRenderingContext2DState::ClipPath(
     const SkPath& path,
     AntiAliasingMode anti_aliasing_mode) {
   clip_list_.ClipPath(path, anti_aliasing_mode,
-                      AffineTransformToSkMatrix(transform_));
+                      TransformationMatrixToSkMatrix(transform_));
   has_clip_ = true;
   if (!path.isRect(nullptr))
     has_complex_clip_ = true;
@@ -300,8 +300,15 @@ void CanvasRenderingContext2DState::SetFontVariantCaps(
   SetFont(font_description, selector);
 }
 
+AffineTransform CanvasRenderingContext2DState::GetAffineTransform() const {
+  AffineTransform affine_transform =
+      AffineTransform(transform_.M11(), transform_.M12(), transform_.M21(),
+                      transform_.M22(), transform_.M41(), transform_.M42());
+  return affine_transform;
+}
+
 void CanvasRenderingContext2DState::SetTransform(
-    const AffineTransform& transform) {
+    const TransformationMatrix& transform) {
   is_transform_invertible_ = transform.IsInvertible();
   transform_ = transform;
 }

@@ -279,7 +279,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void Stop() final;
 
   bool IsTransformInvertible() const override;
-  AffineTransform Transform() const override;
+  TransformationMatrix GetTransform() const override;
 
   cc::Layer* CcLayer() const override;
   bool IsCanvas2DBufferValid() const override;

@@ -93,8 +93,9 @@ class MODULES_EXPORT CanvasPath {
                  ExceptionState&);
 
   virtual bool IsTransformInvertible() const { return true; }
-  virtual AffineTransform Transform() const {
-    return AffineTransform(1, 0, 0, 1, 0, 0);
+  virtual TransformationMatrix GetTransform() const {
+    // This will be the identity matrix
+    return TransformationMatrix();
   }
 
  protected:

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -179,6 +180,7 @@ class PLATFORM_EXPORT Path {
 
   void Apply(void* info, PathApplierFunction) const;
   void Transform(const AffineTransform&);
+  void Transform(const TransformationMatrix&);
 
   void AddPathForRoundedRect(const FloatRect&,
                              const FloatSize& top_left_radius,

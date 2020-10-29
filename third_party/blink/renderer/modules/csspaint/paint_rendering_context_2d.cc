@@ -128,7 +128,7 @@ void PaintRenderingContext2D::WillOverwriteCanvas() {
 }
 
 DOMMatrix* PaintRenderingContext2D::getTransform() {
-  const AffineTransform& t = GetState().Transform();
+  const TransformationMatrix& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
   m->setA(t.A() / effective_zoom_);
   m->setB(t.B() / effective_zoom_);

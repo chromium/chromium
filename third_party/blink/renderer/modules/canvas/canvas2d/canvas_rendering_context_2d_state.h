@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -60,10 +60,10 @@ class CanvasRenderingContext2DState final
   void SetLineDashOffset(double);
   double LineDashOffset() const { return line_dash_offset_; }
 
-  // setTransform returns true iff transform is invertible;
-  void SetTransform(const AffineTransform&);
+  void SetTransform(const TransformationMatrix&);
   void ResetTransform();
-  AffineTransform Transform() const { return transform_; }
+  TransformationMatrix GetTransform() const { return transform_; }
+  AffineTransform GetAffineTransform() const;
   bool IsTransformInvertible() const { return is_transform_invertible_; }
 
   void ClipPath(const SkPath&, AntiAliasingMode);
@@ -243,7 +243,7 @@ class CanvasRenderingContext2DState final
   mutable sk_sp<PaintFilter> shadow_and_foreground_image_filter_;
 
   double global_alpha_;
-  AffineTransform transform_;
+  TransformationMatrix transform_;
   Vector<double> line_dash_;
   double line_dash_offset_;
 

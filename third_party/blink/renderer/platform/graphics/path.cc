@@ -185,6 +185,10 @@ void Path::Transform(const AffineTransform& xform) {
   path_.transform(AffineTransformToSkMatrix(xform));
 }
 
+void Path::Transform(const TransformationMatrix& transformation_matrix) {
+  path_.transform(TransformationMatrixToSkMatrix(transformation_matrix));
+}
+
 float Path::length() const {
   SkScalar length = 0;
   SkPathMeasure measure(path_, false);

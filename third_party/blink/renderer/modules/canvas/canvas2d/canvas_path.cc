@@ -62,7 +62,7 @@ void CanvasPath::moveTo(double double_x, double double_y) {
   if (!std::isfinite(x) || !std::isfinite(y))
     return;
   if (!IsTransformInvertible()) {
-    path_.MoveTo(Transform().MapPoint(FloatPoint(x, y)));
+    path_.MoveTo(GetTransform().MapPoint(FloatPoint(x, y)));
     return;
   }
   path_.MoveTo(FloatPoint(x, y));
@@ -76,7 +76,7 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   FloatPoint p1 = FloatPoint(x, y);
 
   if (!IsTransformInvertible()) {
-    p1 = Transform().MapPoint(p1);
+    p1 = GetTransform().MapPoint(p1);
   }
 
   if (!path_.HasCurrentPoint())
@@ -101,8 +101,8 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   FloatPoint cp = FloatPoint(cpx, cpy);
 
   if (!IsTransformInvertible()) {
-    p1 = Transform().MapPoint(p1);
-    cp = Transform().MapPoint(cp);
+    p1 = GetTransform().MapPoint(p1);
+    cp = GetTransform().MapPoint(cp);
   }
 
   if (!path_.HasCurrentPoint())
@@ -132,9 +132,9 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
   FloatPoint cp2 = FloatPoint(cp2x, cp2y);
 
   if (!IsTransformInvertible()) {
-    p1 = Transform().MapPoint(p1);
-    cp1 = Transform().MapPoint(cp1);
-    cp2 = Transform().MapPoint(cp2);
+    p1 = GetTransform().MapPoint(p1);
+    cp1 = GetTransform().MapPoint(cp1);
+    cp2 = GetTransform().MapPoint(cp2);
   }
   if (!path_.HasCurrentPoint())
     path_.MoveTo(FloatPoint(cp1x, cp1y));
@@ -168,8 +168,8 @@ void CanvasPath::arcTo(double double_x1,
   FloatPoint p2 = FloatPoint(x2, y2);
 
   if (!IsTransformInvertible()) {
-    p1 = Transform().MapPoint(p1);
-    p2 = Transform().MapPoint(p2);
+    p1 = GetTransform().MapPoint(p1);
+    p2 = GetTransform().MapPoint(p2);
   }
 
   if (!path_.HasCurrentPoint())

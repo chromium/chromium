@@ -377,7 +377,7 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
 
   // Apply transformation and get the bounding rect
   Path transformed_path = path;
-  transformed_path.Transform(GetState().Transform());
+  transformed_path.Transform(GetState().GetAffineTransform());
   FloatRect bounding_rect = transformed_path.BoundingRect();
 
   // We first map canvas coordinates to layout coordinates.
@@ -429,7 +429,8 @@ void CanvasRenderingContext2D::clearRect(double x,
       std::isfinite(width) && std::isfinite(height)) {
     FloatRect rect(clampTo<float>(x), clampTo<float>(y), clampTo<float>(width),
                    clampTo<float>(height));
-    hit_region_manager_->RemoveHitRegionsInRect(rect, GetState().Transform());
+    hit_region_manager_->RemoveHitRegionsInRect(
+        rect, GetState().GetAffineTransform());
   }
 }
 
@@ -1058,8 +1059,8 @@ bool CanvasRenderingContext2D::IsTransformInvertible() const {
   return GetState().IsTransformInvertible();
 }
 
-AffineTransform CanvasRenderingContext2D::Transform() const {
-  return GetState().Transform();
+TransformationMatrix CanvasRenderingContext2D::GetTransform() const {
+  return GetState().GetTransform();
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
@@ -1153,7 +1154,7 @@ void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
 
   // Get the transformed path.
   Path transformed_path = path;
-  transformed_path.Transform(GetState().Transform());
+  transformed_path.Transform(GetState().GetAffineTransform());
 
   // Add border and padding to the bounding rect.
   LayoutRect element_rect =
@@ -1193,7 +1194,7 @@ void CanvasRenderingContext2D::addHitRegion(const HitRegionOptions* options,
     return;
   }
 
-  hit_region_path.Transform(GetState().Transform());
+  hit_region_path.Transform(GetState().GetAffineTransform());
 
   if (GetState().HasClip()) {
     hit_region_path.IntersectPath(GetState().GetCurrentClipPath());
