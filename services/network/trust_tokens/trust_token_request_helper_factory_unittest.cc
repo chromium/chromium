@@ -95,8 +95,11 @@ class TrustTokenRequestHelperFactoryTest : public ::testing::Test {
     store.OnStoreReady(TrustTokenStore::CreateForTesting());
     NoopTrustTokenKeyCommitmentGetter getter;
 
-    TrustTokenRequestHelperFactory(&store, &getter,
-                                   base::BindRepeating([]() { return true; }))
+    TrustTokenRequestHelperFactory(
+        &store, &getter,
+        base::BindRepeating(
+            []() -> mojom::NetworkContextClient* { return nullptr; }),
+        base::BindRepeating([]() { return true; }))
         .CreateTrustTokenHelperForRequest(
             request, params,
             base::BindLambdaForTesting(
@@ -269,8 +272,11 @@ TEST_F(TrustTokenRequestHelperFactoryTest, RespectsAuthorizer) {
   store.OnStoreReady(TrustTokenStore::CreateForTesting());
   NoopTrustTokenKeyCommitmentGetter getter;
 
-  TrustTokenRequestHelperFactory(&store, &getter,
-                                 base::BindRepeating([]() { return false; }))
+  TrustTokenRequestHelperFactory(
+      &store, &getter,
+      base::BindRepeating(
+          []() -> mojom::NetworkContextClient* { return nullptr; }),
+      base::BindRepeating([]() { return false; }))
       .CreateTrustTokenHelperForRequest(
           suitable_request(), suitable_signing_params(),
           base::BindLambdaForTesting(

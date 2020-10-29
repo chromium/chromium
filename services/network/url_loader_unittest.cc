@@ -81,6 +81,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -5539,15 +5540,21 @@ class NoopTrustTokenKeyCommitmentGetter : public TrustTokenKeyCommitmentGetter {
 base::NoDestructor<NoopTrustTokenKeyCommitmentGetter>
     noop_key_commitment_getter{};
 
+mojom::NetworkContextClient* ReturnNullNetworkContextClient() {
+  return nullptr;
+}
+
 class MockTrustTokenRequestHelperFactory
     : public TrustTokenRequestHelperFactory {
  public:
   MockTrustTokenRequestHelperFactory(
       mojom::TrustTokenOperationStatus creation_failure_error,
       SyncOrAsync sync_or_async)
-      : TrustTokenRequestHelperFactory(nullptr,
-                                       noop_key_commitment_getter.get(),
-                                       {}),
+      : TrustTokenRequestHelperFactory(
+            nullptr,
+            noop_key_commitment_getter.get(),
+            base::BindRepeating(&ReturnNullNetworkContextClient),
+            {}),
         sync_or_async_(sync_or_async),
         creation_failure_error_(creation_failure_error) {}
 
@@ -5556,9 +5563,11 @@ class MockTrustTokenRequestHelperFactory
       base::Optional<mojom::TrustTokenOperationStatus> on_finalize,
       SyncOrAsync sync_or_async,
       bool* begin_done_flag)
-      : TrustTokenRequestHelperFactory(nullptr,
-                                       noop_key_commitment_getter.get(),
-                                       {}),
+      : TrustTokenRequestHelperFactory(
+            nullptr,
+            noop_key_commitment_getter.get(),
+            base::BindRepeating(&ReturnNullNetworkContextClient),
+            {}),
         sync_or_async_(sync_or_async),
         helper_(
             std::make_unique<MockTrustTokenRequestHelper>(on_begin,

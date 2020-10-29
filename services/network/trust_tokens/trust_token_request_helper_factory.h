@@ -13,10 +13,12 @@
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
+#include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
 
 namespace network {
 
@@ -55,12 +57,20 @@ class TrustTokenRequestHelperFactory {
   // Tokens state and |key_commitment_getter| to obtain keys; consequently, both
   // arguments must outlive all of the created helpers.
   //
+  // |context_client_provider| provides a handle to a NetworkContextClient that
+  // will be used for requesting Trust Tokens operations' local execution.
+  // context_client_provider.Run() will be called before each attempt to
+  // delegate a Trust Tokens operation. It is permitted to return nullptr; in
+  // this case, the operation will be cancelled.
+  //
   // Each decision whether to vend a helper will first query |authorizer| to
   // determine whether it's currently allowed to execute Trust Tokens
   // operations.
   TrustTokenRequestHelperFactory(
       PendingTrustTokenStore* store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+      base::RepeatingCallback<mojom::NetworkContextClient*(void)>
+          context_client_provider,
       base::RepeatingCallback<bool(void)> authorizer);
 
   TrustTokenRequestHelperFactory(const TrustTokenRequestHelperFactory&) =
@@ -102,6 +112,8 @@ class TrustTokenRequestHelperFactory {
 
   PendingTrustTokenStore* store_;
   const TrustTokenKeyCommitmentGetter* key_commitment_getter_;
+  base::RepeatingCallback<mojom::NetworkContextClient*(void)>
+      context_client_provider_;
   base::RepeatingCallback<bool(void)> authorizer_;
 
   base::WeakPtrFactory<TrustTokenRequestHelperFactory> weak_factory_{this};
