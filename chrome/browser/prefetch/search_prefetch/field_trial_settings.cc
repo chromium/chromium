@@ -8,6 +8,8 @@
 
 #include "base/command_line.h"
 
+// Enables the feature completely with a few skipped checks to make local
+// testing easier.
 constexpr char kSearchPrefetchServiceCommandLineFlag[] =
     "enable-search-prefetch-service";
 
@@ -37,12 +39,20 @@ base::TimeDelta SearchPrefetchCachingLimit() {
 }
 
 size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSearchPrefetchServiceCommandLineFlag)) {
+    return 100;
+  }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "max_attempts_per_caching_duration",
       2);
 }
 
 base::TimeDelta SearchPrefetchErrorBackoffDuration() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSearchPrefetchServiceCommandLineFlag)) {
+    return base::TimeDelta::FromSeconds(1);
+  }
   return base::TimeDelta::FromMilliseconds(
       base::GetFieldTrialParamByFeatureAsInt(kSearchPrefetchServicePrefetching,
                                              "error_backoff_duration_ms",
