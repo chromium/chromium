@@ -131,3 +131,6 @@ crbug.com/1105308 [ fuchsia ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 [ fuchsia ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 [ android ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 [ chromeos ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+
+# Flakily not getting WebGL blocked on context loss
+crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
