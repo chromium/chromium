@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private.test_interfaces;
 
+import android.os.Bundle;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
 
@@ -55,7 +56,9 @@ interface ITestWebLayer {
   boolean didShowFullscreenToast(in ITab tab) = 17;
 
   // Does setup for MediaRouter tests, mocking out Chromecast devices.
-  void initializeMockMediaRouteProvider() = 18;
+  void initializeMockMediaRouteProvider(
+      boolean closeRouteWithErrorOnSend, boolean disableIsSupportsSource,
+      in String createRouteErrorMessage, in String joinRouteErrorMessage) = 18;
 
   // Gets a button from the currently visible media route selection dialog. The button represents a
   // route and contains the text |name|. Returns null if no such dialog or button exists.

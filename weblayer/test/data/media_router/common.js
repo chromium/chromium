@@ -290,11 +290,11 @@ function reconnectConnection(connectionId) {
 /**
  * Calls reconnect(connectionId) and verifies that it fails.
  * @param {!string} connectionId ID of connection to reconnect.
- * @param {!string} expectedErrorMessage
  */
 function reconnectConnectionAndExpectFailure(
-    connectionId, expectedErrorMessage) {
+    connectionId) {
   var reconnectConnectionRequest = new PresentationRequest(presentationUrl);
+  var expectedErrorMessage = 'Unknown route';
   reconnectConnectionRequest.reconnect(connectionId)
       .then(function(connection) {
         sendResult(false, 'reconnect() unexpectedly succeeded.');

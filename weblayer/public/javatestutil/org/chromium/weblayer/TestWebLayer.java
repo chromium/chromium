@@ -139,8 +139,11 @@ public final class TestWebLayer {
         return mITestWebLayer.didShowFullscreenToast(tab.getITab());
     }
 
-    public void initializeMockMediaRouteProvider() throws RemoteException {
-        mITestWebLayer.initializeMockMediaRouteProvider();
+    public void initializeMockMediaRouteProvider(boolean closeRouteWithErrorOnSend,
+            boolean disableIsSupportsSource, @Nullable String createRouteErrorMessage,
+            @Nullable String joinRouteErrorMessage) throws RemoteException {
+        mITestWebLayer.initializeMockMediaRouteProvider(closeRouteWithErrorOnSend,
+                disableIsSupportsSource, createRouteErrorMessage, joinRouteErrorMessage);
     }
 
     public View getMediaRouteButton(String name) throws RemoteException {

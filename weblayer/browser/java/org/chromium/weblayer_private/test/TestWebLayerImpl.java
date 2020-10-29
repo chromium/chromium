@@ -199,8 +199,25 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
     }
 
     @Override
-    public void initializeMockMediaRouteProvider() {
+    public void initializeMockMediaRouteProvider(boolean closeRouteWithErrorOnSend,
+            boolean disableIsSupportsSource, String createRouteErrorMessage,
+            String joinRouteErrorMessage) {
         BrowserMediaRouter.setRouteProviderFactoryForTest(new MockMediaRouteProvider.Factory());
+
+        if (closeRouteWithErrorOnSend) {
+            MockMediaRouteProvider.Factory.sProvider.setCloseRouteWithErrorOnSend(true);
+        }
+        if (disableIsSupportsSource) {
+            MockMediaRouteProvider.Factory.sProvider.setIsSupportsSource(false);
+        }
+        if (createRouteErrorMessage != null) {
+            MockMediaRouteProvider.Factory.sProvider.setCreateRouteErrorMessage(
+                    createRouteErrorMessage);
+        }
+        if (joinRouteErrorMessage != null) {
+            MockMediaRouteProvider.Factory.sProvider.setJoinRouteErrorMessage(
+                    joinRouteErrorMessage);
+        }
     }
 
     @Override
