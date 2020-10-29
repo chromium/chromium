@@ -36,6 +36,7 @@ class FakeTileManagerClient : public TileManagerClient {
                                WhichTree tree) const override;
   int GetMSAASampleCountForRaster(
       const scoped_refptr<DisplayItemList>& display_list) override;
+  bool HasPendingTree() override;
 
  private:
   gfx::ColorSpace color_space_;

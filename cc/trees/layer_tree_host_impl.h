@@ -494,6 +494,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   int GetMSAASampleCountForRaster(
       const scoped_refptr<DisplayItemList>& display_list) override;
 
+  bool HasPendingTree() override;
+
   // ScrollbarAnimationControllerClient implementation.
   void PostDelayedScrollbarAnimationTask(base::OnceClosure task,
                                          base::TimeDelta delay) override;

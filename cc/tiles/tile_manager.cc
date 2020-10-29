@@ -1496,7 +1496,7 @@ void TileManager::IssueSignals() {
   if (signals_.activate_tile_tasks_completed &&
       signals_.activate_gpu_work_completed &&
       !signals_.did_notify_ready_to_activate) {
-    if (IsReadyToActivate()) {
+    if (!client_->HasPendingTree() || IsReadyToActivate()) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                    "TileManager::IssueSignals - ready to activate");
       signals_.did_notify_ready_to_activate = true;

@@ -104,6 +104,9 @@ class CC_EXPORT TileManagerClient {
   virtual int GetMSAASampleCountForRaster(
       const scoped_refptr<DisplayItemList>& display_list) = 0;
 
+  // True if there is a pending tree.
+  virtual bool HasPendingTree() = 0;
+
  protected:
   virtual ~TileManagerClient() {}
 };

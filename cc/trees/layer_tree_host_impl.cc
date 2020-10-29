@@ -1851,6 +1851,10 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
   return RequestedMSAASampleCount();
 }
 
+bool LayerTreeHostImpl::HasPendingTree() {
+  return pending_tree_ != nullptr;
+}
+
 void LayerTreeHostImpl::NotifyReadyToActivate() {
   // The TileManager may call this method while the pending tree is still being
   // painted, as it isn't aware of the ongoing paint. We shouldn't tell the

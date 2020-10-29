@@ -43,4 +43,8 @@ int FakeTileManagerClient::GetMSAASampleCountForRaster(
   return 0;
 }
 
+bool FakeTileManagerClient::HasPendingTree() {
+  return true;
+}
+
 }  // namespace cc
