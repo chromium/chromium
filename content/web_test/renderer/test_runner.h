@@ -22,6 +22,7 @@
 #include "base/strings/string16.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
+#include "content/web_test/common/web_test_constants.h"
 #include "content/web_test/renderer/fake_screen_orientation_impl.h"
 #include "content/web_test/renderer/gamepad_controller.h"
 #include "content/web_test/renderer/layout_dump.h"
@@ -239,18 +240,12 @@ class TestRunner {
   blink::WebString RegisterIsolatedFileSystem(
       const std::vector<base::FilePath>& file_paths);
 
+  void ProcessWorkItem(mojom::WorkItemPtr work_item);
+  void ReplicateWorkQueueStates(const base::DictionaryValue& changed_values);
+
   blink::WebEffectiveConnectionType effective_connection_type() const {
     return effective_connection_type_;
   }
-
-  // A single item in the work queue.
-  class WorkItem {
-   public:
-    virtual ~WorkItem() {}
-
-    // Returns true if this started a load.
-    virtual bool Run(TestRunner*, WebFrameTestProxy*) = 0;
-  };
 
  private:
   friend class TestRunnerBindings;
@@ -259,30 +254,47 @@ class TestRunner {
   // Helper class for managing events queued by methods like QueueLoad or
   // QueueScript.
   class WorkQueue {
+    static constexpr const char* kKeyFrozen = "frozen";
+
    public:
     explicit WorkQueue(TestRunner* controller);
-    virtual ~WorkQueue();
-    void ProcessWorkSoon();
+    ~WorkQueue() = default;
 
     // Reset the state of the class between tests.
     void Reset();
 
-    void AddWork(WorkItem*);
+    void AddWork(mojom::WorkItemPtr work_item);
+    void RequestWork();
+    void ProcessWorkItem(mojom::WorkItemPtr work_item);
+    void ReplicateStates(const base::DictionaryValue& values);
 
-    void set_frozen(bool frozen) { frozen_ = frozen; }
-    bool is_empty() const { return queue_.empty(); }
+    // Takes care of notifying the browser after a change to the state.
+    void OnStatesChanged();
 
-    void set_finished_loading() { finished_loading_ = true; }
+    void set_loading(bool value) { loading_ = value; }
+
+    void set_frozen(bool value) { states_.SetBoolean(kKeyFrozen, value); }
+    void set_has_items(bool value) {
+      states_.SetBoolean(kDictKeyWorkQueueHasItems, value);
+    }
+    bool has_items() const { return GetStateValue(kDictKeyWorkQueueHasItems); }
 
    private:
-    void ProcessWork();
+    bool ProcessWorkItemInternal(mojom::WorkItemPtr work_item);
 
-    base::circular_deque<WorkItem*> queue_;
-    bool frozen_ = false;
-    bool finished_loading_ = false;
+    bool is_frozen() const { return GetStateValue(kKeyFrozen); }
+
+    bool GetStateValue(const char* key) const {
+      base::Optional<bool> value = states_.current_values().FindBoolPath(key);
+      DCHECK(value.has_value());
+      return value.value();
+    }
+
+    bool loading_ = true;
+    // Collection of flags to be synced with the browser process.
+    TrackedDictionary states_;
+
     TestRunner* controller_;
-
-    base::WeakPtrFactory<WorkQueue> weak_factory_{this};
   };
 
   // If the main test window's main frame is hosted in this renderer process,

@@ -42,6 +42,7 @@ mojom("web_test_common_mojom") {
 static_library("web_test_common") {
   testonly = true
   sources = [
+    "common/web_test_constants.cc",
     "common/web_test_constants.h",
     "common/web_test_string_util.cc",
     "common/web_test_string_util.h",

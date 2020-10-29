@@ -1217,6 +1217,8 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     GetWebTestRenderThreadRemote(process_host)
         ->ReplicateWebTestRuntimeFlagsChanges(
             accumulated_web_test_runtime_flags_changes_.Clone());
+    GetWebTestRenderThreadRemote(process_host)
+        ->ReplicateWorkQueueStates(work_queue_states_.Clone());
   }
 }
 
@@ -1229,6 +1231,7 @@ void WebTestControlHost::OnTestFinished() {
   devtools_bindings_.reset();
   devtools_protocol_test_bindings_.reset();
   accumulated_web_test_runtime_flags_changes_.Clear();
+  work_queue_states_.Clear();
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
@@ -1709,6 +1712,32 @@ void WebTestControlHost::AllowPointerLock() {
   main_window_->web_contents()->GotResponseToLockMouseRequest(
       blink::mojom::PointerLockResult::kSuccess);
   next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
+}
+
+void WebTestControlHost::WorkItemAdded(mojom::WorkItemPtr work_item) {
+  // TODO(peria): Check if |work_item| comes from the main window's main frame.
+  // TODO(peria): Reject the item if the work queue is frozen.
+  work_queue_.push_back(std::move(work_item));
+}
+
+void WebTestControlHost::RequestWorkItem() {
+  DCHECK(main_window_);
+  RenderProcessHost* main_frame_process =
+      main_window_->web_contents()->GetRenderViewHost()->GetProcess();
+  if (work_queue_.empty()) {
+    work_queue_states_.SetBoolPath(kDictKeyWorkQueueHasItems, false);
+    GetWebTestRenderThreadRemote(main_frame_process)
+        ->ReplicateWorkQueueStates(work_queue_states_.Clone());
+  } else {
+    GetWebTestRenderThreadRemote(main_frame_process)
+        ->ProcessWorkItem(work_queue_.front()->Clone());
+    work_queue_.pop_front();
+  }
+}
+
+void WebTestControlHost::WorkQueueStatesChanged(
+    base::Value changed_work_queue_states) {
+  work_queue_states_.MergeDictionary(&changed_work_queue_states);
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

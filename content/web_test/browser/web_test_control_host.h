@@ -246,6 +246,9 @@ class WebTestControlHost : public WebContentsObserver,
   void SetPointerLockWillFail() override;
   void SetPointerLockWillRespondAsynchronously() override;
   void AllowPointerLock() override;
+  void WorkItemAdded(mojom::WorkItemPtr work_item) override;
+  void RequestWorkItem() override;
+  void WorkQueueStatesChanged(base::Value changed_work_queue_states) override;
 
   void DiscardMainWindow();
   void CloseTestOpenedWindows();
@@ -353,6 +356,13 @@ class WebTestControlHost : public WebContentsObserver,
   // since PrepareForWebTest (i.e. changes that need to be sent to a fresh
   // renderer created while test is in progress).
   base::DictionaryValue accumulated_web_test_runtime_flags_changes_;
+
+  // Work items to be processed in the TestRunner on the renderer process
+  // that hosts the main window's main frame.
+  base::circular_deque<mojom::WorkItemPtr> work_queue_;
+
+  // Properties of the work queue.
+  base::DictionaryValue work_queue_states_;
 
   mojom::WebTestRendererDumpResultPtr renderer_dump_result_;
   std::string navigation_history_dump_;

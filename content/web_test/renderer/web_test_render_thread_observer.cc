@@ -80,4 +80,17 @@ void WebTestRenderThreadObserver::ResetRendererAfterWebTest(
   test_runner_->ResetRendererAfterWebTest(std::move(done_callback));
 }
 
+void WebTestRenderThreadObserver::ProcessWorkItem(
+    mojom::WorkItemPtr work_item) {
+  test_runner_->ProcessWorkItem(std::move(work_item));
+}
+
+void WebTestRenderThreadObserver::ReplicateWorkQueueStates(
+    base::Value work_queue_states) {
+  base::DictionaryValue* work_queue_states_dict = nullptr;
+  bool ok = work_queue_states.GetAsDictionary(&work_queue_states_dict);
+  DCHECK(ok);
+  test_runner_->ReplicateWorkQueueStates(*work_queue_states_dict);
+}
+
 }  // namespace content

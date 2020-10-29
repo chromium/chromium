@@ -5,8 +5,8 @@
 module content.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
@@ -48,6 +48,48 @@ struct WebTestRendererDumpResult {
 
   // Selection rect dump.
   gfx.mojom.Rect selection_rect;
+};
+
+// Tasks in the work queue. TestRunner on the main window's process manages
+// the queue, but TestRunner can migrate processes on navigations, so the queue
+// is stored on the browser side.
+// The work queue can be populated in the first page's loading on the main
+// window's main frame, and gets frozen at the end of the loading.
+// Work queues on non-main windows are frozen from the beginning, and can't
+// add work items.
+
+// Navigates backward/forward in history
+struct WorkItemBackForward {
+  // Navigation distance. If |distance| is negative, navigates to backward.
+  int32 distance;
+};
+
+// Navigates a frame named |target| to |url|
+struct WorkItemLoad {
+  string url;
+  // If |target| is empty, it means the main frame.
+  string target;
+};
+
+// Reloads
+struct WorkItemReload {};
+
+// Runs JavaScript code |script| which may trigger a navigation
+struct WorkItemLoadingScript {
+  string script;
+};
+
+// Runs JavaScript code |script| which does not trigger navigations
+struct WorkItemNonLoadingScript {
+  string script;
+};
+
+union WorkItem {
+  WorkItemBackForward back_forward;
+  WorkItemLoad load;
+  WorkItemReload reload;
+  WorkItemLoadingScript loading_script;
+  WorkItemNonLoadingScript non_loading_script;
 };
 
 // Web test messages sent from the browser process to the renderer. This
@@ -95,6 +137,13 @@ interface WebTestRenderThread {
   // leak detection in order for the test harness to drop anything that tests
   // passed in and which could cause a leak otherwise.
   ResetRendererAfterWebTest() => ();
+
+  // Processes a work item. This is called for the process with the main
+  // window's main frame.
+  ProcessWorkItem(WorkItem work_item);
+
+  // Syncs the work queue states to the new renderer.
+  ReplicateWorkQueueStates(mojo_base.mojom.DictionaryValue work_queue_states);
 };
 
 // Web test messages sent from the renderer process to the browser. This
@@ -244,4 +293,18 @@ interface WebTestControlHost {
 
   // Allow a pending pointer lock request.
   AllowPointerLock();
+
+  // Notifies the browser that a work item is enqueued.
+  WorkItemAdded(WorkItem work_item);
+
+  // Requests the browser to send a work item. If the work queue has N items,
+  // there will be N+1 calls to RequestWorkItem and N replies via
+  // WebTestRenderThread.ProcessWorkItem. The last RequestWorkItem sets
+  // |has_items| bit false, and is replied via
+  // WebTestRenderThread.ReplicateWorkQueueStates.
+  RequestWorkItem();
+
+  // Notifies the browser that the work queue states changed.
+  WorkQueueStatesChanged(
+      mojo_base.mojom.DictionaryValue changed_work_queue_states);
 };

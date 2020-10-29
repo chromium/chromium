@@ -39,6 +39,8 @@ class WebTestRenderThreadObserver : public RenderThreadObserver,
       base::Value changed_layout_test_runtime_flags) override;
   void TestFinishedFromSecondaryRenderer() override;
   void ResetRendererAfterWebTest(base::OnceClosure done_callback) override;
+  void ProcessWorkItem(mojom::WorkItemPtr work_item) override;
+  void ReplicateWorkQueueStates(base::Value work_queue_states) override;
 
   // Helper to bind this class as the mojom::WebTestRenderThread.
   void OnWebTestRenderThreadAssociatedRequest(

@@ -9,6 +9,8 @@ namespace content {
 
 constexpr int kDefaultDatabaseQuota = -1;
 
+extern const char kDictKeyWorkQueueHasItems[];
+
 }  // namespace content
 
 #endif  // CONTENT_WEB_TEST_COMMON_WEB_TEST_CONSTANTS_H_

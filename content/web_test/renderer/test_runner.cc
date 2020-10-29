@@ -2140,69 +2140,100 @@ void TestRunnerBindings::NotImplemented(const gin::Arguments& args) {}
 TestRunner::WorkQueue::WorkQueue(TestRunner* controller)
     : controller_(controller) {}
 
-TestRunner::WorkQueue::~WorkQueue() {
-  Reset();
-}
-
-void TestRunner::WorkQueue::ProcessWorkSoon() {
-  // We delay processing queued work to avoid recursion problems, and to avoid
-  // running tasks in the middle of a navigation call stack, where blink and
-  // content may have inconsistent states halfway through being updated.
-  blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-      FROM_HERE, base::BindOnce(&TestRunner::WorkQueue::ProcessWork,
-                                weak_factory_.GetWeakPtr()));
-}
-
 void TestRunner::WorkQueue::Reset() {
-  frozen_ = false;
-  finished_loading_ = false;
-  while (!queue_.empty()) {
-    delete queue_.front();
-    queue_.pop_front();
-  }
+  // Set values in a TrackedDictionary |states_| to avoid accessing missing
+  // values.
+  set_frozen(false);
+  set_has_items(false);
+  states_.ResetChangeTracking();
+  set_loading(true);
 }
 
-void TestRunner::WorkQueue::AddWork(WorkItem* work) {
-  if (frozen_) {
-    delete work;
+void TestRunner::WorkQueue::AddWork(mojom::WorkItemPtr work_item) {
+  if (is_frozen())
     return;
-  }
-  queue_.push_back(work);
+  controller_->GetWebTestControlHostRemote()->WorkItemAdded(
+      std::move(work_item));
+  set_has_items(true);
+  OnStatesChanged();
 }
 
-void TestRunner::WorkQueue::ProcessWork() {
-  WebFrameTestProxy* in_process_main_frame =
-      controller_->FindInProcessMainWindowMainFrame();
-  if (!in_process_main_frame)
+void TestRunner::WorkQueue::RequestWork() {
+  controller_->GetWebTestControlHostRemote()->RequestWorkItem();
+}
+
+void TestRunner::WorkQueue::ProcessWorkItem(mojom::WorkItemPtr work_item) {
+  // Watch for loading finishing inside ProcessWorkItemInternal().
+  set_loading(true);
+  bool started_load = ProcessWorkItemInternal(std::move(work_item));
+  if (started_load) {
+    // If a load started, and didn't complete inside of
+    // ProcessWorkItemInternal(), then mark the load as running.
+    if (loading_)
+      controller_->frame_will_start_load_ = true;
+
+    // Wait for an ongoing load to complete before requesting the next WorkItem.
     return;
+  }
+  RequestWork();
+}
 
-  while (!queue_.empty()) {
-    finished_loading_ = false;  // Watch for loading finishing inside Run().
-    bool started_load = queue_.front()->Run(controller_, in_process_main_frame);
-    delete queue_.front();
-    queue_.pop_front();
-
-    if (started_load) {
-      // If a load started, and didn't complete inside of Run(), then mark
-      // the load as running.
-      if (!finished_loading_)
-        controller_->frame_will_start_load_ = true;
-
-      // Quit doing work once a load is in progress.
-      //
-      // TODO(danakj): We could avoid the post-task of ProcessWork() by not
-      // early-outting here if |finished_loading_|. Since load finished we
-      // could keep running work. And in RemoveLoadingFrame() instead of
-      // calling ProcessWorkSoon() unconditionally, only call it if we're not
-      // already inside ProcessWork().
-      return;
+bool TestRunner::WorkQueue::ProcessWorkItemInternal(
+    mojom::WorkItemPtr work_item) {
+  switch (work_item->which()) {
+    case mojom::WorkItem::Tag::BACK_FORWARD: {
+      mojom::WorkItemBackForwardPtr& item_back_forward =
+          work_item->get_back_forward();
+      controller_->GoToOffset(item_back_forward->distance);
+      return true;  // TODO(danakj): Did it really start a navigation?
     }
+    case mojom::WorkItem::Tag::LOADING_SCRIPT: {
+      mojom::WorkItemLoadingScriptPtr& item_loading_script =
+          work_item->get_loading_script();
+      WebFrameTestProxy* main_frame =
+          controller_->FindInProcessMainWindowMainFrame();
+      DCHECK(main_frame);
+      main_frame->GetWebFrame()->ExecuteScript(blink::WebScriptSource(
+          blink::WebString::FromUTF8(item_loading_script->script)));
+      return true;  // TODO(danakj): Did it really start a navigation?
+    }
+    case mojom::WorkItem::Tag::NON_LOADING_SCRIPT: {
+      mojom::WorkItemNonLoadingScriptPtr& item_non_loading_script =
+          work_item->get_non_loading_script();
+      WebFrameTestProxy* main_frame =
+          controller_->FindInProcessMainWindowMainFrame();
+      DCHECK(main_frame);
+      main_frame->GetWebFrame()->ExecuteScript(blink::WebScriptSource(
+          blink::WebString::FromUTF8(item_non_loading_script->script)));
+      return false;
+    }
+    case mojom::WorkItem::Tag::LOAD: {
+      mojom::WorkItemLoadPtr& item_load = work_item->get_load();
+      controller_->LoadURLForFrame(GURL(item_load->url), item_load->target);
+      return true;  // TODO(danakj): Did it really start a navigation?
+    }
+    case mojom::WorkItem::Tag::RELOAD:
+      controller_->Reload();
+      return true;
   }
+  NOTREACHED();
+  return false;
+}
 
-  // If there was no navigation stated, there may be no more tasks in the
-  // system. We can safely finish the test here as we're not in the middle
-  // of a navigation call stack, and ProcessWork() was a posted task.
-  controller_->FinishTestIfReady();
+void TestRunner::WorkQueue::ReplicateStates(
+    const base::DictionaryValue& values) {
+  states_.ApplyUntrackedChanges(values);
+  if (!has_items())
+    controller_->FinishTestIfReady();
+}
+
+void TestRunner::WorkQueue::OnStatesChanged() {
+  if (states_.changed_values().empty())
+    return;
+
+  controller_->GetWebTestControlHostRemote()->WorkQueueStatesChanged(
+      states_.changed_values().Clone());
+  states_.ResetChangeTracking();
 }
 
 TestRunner::TestRunner()
@@ -2520,15 +2551,17 @@ void TestRunner::RemoveLoadingFrame(blink::WebFrame* frame) {
 
   // No more new work after the first complete load.
   work_queue_.set_frozen(true);
+  work_queue_.OnStatesChanged();
+
   // Inform the work queue that any load it started is done, in case it is
-  // still inside ProcessWork().
-  work_queue_.set_finished_loading();
+  // still inside ProcessWorkItem().
+  work_queue_.set_loading(false);
 
   // testRunner.waitUntilDone() will pause the work queue if it is being used by
   // the test, until testRunner.notifyDone() is called. However this can only be
   // done once.
   if (!web_test_runtime_flags_.wait_until_done() || did_notify_done_)
-    work_queue_.ProcessWorkSoon();
+    work_queue_.RequestWork();
 }
 
 void TestRunner::FinishTestIfReady() {
@@ -2552,7 +2585,7 @@ void TestRunner::FinishTestIfReady() {
 
   // If there are tasks in the queue still, we must wait for them before
   // finishing the test.
-  if (!work_queue_.is_empty())
+  if (work_queue_.has_items())
     return;
 
   // If waiting for testRunner.notifyDone() then we can not end the test.
@@ -2650,19 +2683,6 @@ bool TestRunner::ShouldDumpNavigationPolicy() const {
   return web_test_runtime_flags_.dump_navigation_policy();
 }
 
-class WorkItemBackForward : public TestRunner::WorkItem {
- public:
-  explicit WorkItemBackForward(int distance) : distance_(distance) {}
-
-  bool Run(TestRunner* test_runner, WebFrameTestProxy*) override {
-    test_runner->GoToOffset(distance_);
-    return true;  // FIXME: Did it really start a navigation?
-  }
-
- private:
-  int distance_;
-};
-
 WebFrameTestProxy* TestRunner::FindInProcessMainWindowMainFrame() {
   for (WebFrameTestProxy* main_frame : main_frames_) {
     WebViewTestProxy* view = main_frame->GetWebViewTestProxy();
@@ -2691,82 +2711,45 @@ void TestRunner::NotifyDone() {
 }
 
 void TestRunner::QueueBackNavigation(int how_far_back) {
-  work_queue_.AddWork(new WorkItemBackForward(-how_far_back));
+  work_queue_.AddWork(mojom::WorkItem::NewBackForward(
+      mojom::WorkItemBackForward::New(-how_far_back)));
 }
 
 void TestRunner::QueueForwardNavigation(int how_far_forward) {
-  work_queue_.AddWork(new WorkItemBackForward(how_far_forward));
+  work_queue_.AddWork(mojom::WorkItem::NewBackForward(
+      mojom::WorkItemBackForward::New(how_far_forward)));
 }
-
-class WorkItemReload : public TestRunner::WorkItem {
- public:
-  bool Run(TestRunner* test_runner, WebFrameTestProxy*) override {
-    test_runner->Reload();
-    return true;
-  }
-};
 
 void TestRunner::QueueReload() {
-  work_queue_.AddWork(new WorkItemReload());
+  work_queue_.AddWork(mojom::WorkItem::NewReload(mojom::WorkItemReload::New()));
 }
-
-class WorkItemLoadingScript : public TestRunner::WorkItem {
- public:
-  explicit WorkItemLoadingScript(const std::string& script) : script_(script) {}
-
-  bool Run(TestRunner*, WebFrameTestProxy* main_frame) override {
-    main_frame->GetWebFrame()->ExecuteScript(
-        blink::WebScriptSource(blink::WebString::FromUTF8(script_)));
-    return true;  // FIXME: Did it really start a navigation?
-  }
-
- private:
-  std::string script_;
-};
 
 void TestRunner::QueueLoadingScript(const std::string& script) {
-  work_queue_.AddWork(new WorkItemLoadingScript(script));
+  work_queue_.AddWork(mojom::WorkItem::NewLoadingScript(
+      mojom::WorkItemLoadingScript::New(script)));
 }
-
-class WorkItemNonLoadingScript : public TestRunner::WorkItem {
- public:
-  explicit WorkItemNonLoadingScript(const std::string& script)
-      : script_(script) {}
-
-  bool Run(TestRunner*, WebFrameTestProxy* main_frame) override {
-    main_frame->GetWebFrame()->ExecuteScript(
-        blink::WebScriptSource(blink::WebString::FromUTF8(script_)));
-    return false;
-  }
-
- private:
-  std::string script_;
-};
 
 void TestRunner::QueueNonLoadingScript(const std::string& script) {
-  work_queue_.AddWork(new WorkItemNonLoadingScript(script));
+  work_queue_.AddWork(mojom::WorkItem::NewNonLoadingScript(
+      mojom::WorkItemNonLoadingScript::New(script)));
 }
-
-class WorkItemLoad : public TestRunner::WorkItem {
- public:
-  WorkItemLoad(const GURL& url, const std::string& target)
-      : url_(url), target_(target) {}
-
-  bool Run(TestRunner* test_runner, WebFrameTestProxy*) override {
-    test_runner->LoadURLForFrame(url_, target_);
-    return true;  // FIXME: Did it really start a navigation?
-  }
-
- private:
-  GURL url_;
-  std::string target_;
-};
 
 void TestRunner::QueueLoad(const GURL& current_url,
                            const std::string& relative_url,
                            const std::string& target) {
   GURL full_url = current_url.Resolve(relative_url);
-  work_queue_.AddWork(new WorkItemLoad(full_url, target));
+  work_queue_.AddWork(mojom::WorkItem::NewLoad(
+      mojom::WorkItemLoad::New(full_url.spec(), target)));
+}
+
+void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item) {
+  work_queue_.ProcessWorkItem(std::move(work_item));
+}
+
+void TestRunner::ReplicateWorkQueueStates(const base::DictionaryValue& values) {
+  if (!test_is_running_)
+    return;
+  work_queue_.ReplicateStates(values);
 }
 
 void TestRunner::OnTestPreferencesChanged(const TestPreferences& test_prefs,
