@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/bind_test_util.h"
@@ -190,12 +191,9 @@ class V8DetailedMemoryDecoratorTestBase {
                 expected_mode);
   }
 
-  void ExpectBindAndRespondToQuery(
+  void ExpectBindReceiver(
       MockV8DetailedMemoryReporter* mock_reporter,
-      blink::mojom::PerProcessV8MemoryUsagePtr data,
-      RenderProcessHostId expected_process_id = kTestProcessID,
-      ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
-    InSequence seq;
+      RenderProcessHostId expected_process_id = kTestProcessID) {
     // Arg 0 is a
     // mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>. Pass it
     // to mock_reporter->Bind().
@@ -208,6 +206,16 @@ class V8DetailedMemoryDecoratorTestBase {
                                 Eq(expected_process_id))))
         .WillOnce(WithArg<0>(
             Invoke(mock_reporter, &MockV8DetailedMemoryReporter::Bind)));
+  }
+
+  // Helper that expects a bind and the initial query in sequence.
+  void ExpectBindAndRespondToQuery(
+      MockV8DetailedMemoryReporter* mock_reporter,
+      blink::mojom::PerProcessV8MemoryUsagePtr data,
+      RenderProcessHostId expected_process_id = kTestProcessID,
+      ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
+    InSequence seq;
+    ExpectBindReceiver(mock_reporter, expected_process_id);
     ExpectQueryAndReply(mock_reporter, std::move(data), expected_mode);
   }
 
@@ -233,6 +241,13 @@ class V8DetailedMemoryDecoratorTestBase {
       });
 
   base::TimeTicks last_query_time_;
+};
+
+// An arbitrary object used to test object lifetimes with WeakPtr.
+class LifetimeTestObject : public base::SupportsWeakPtr<LifetimeTestObject> {
+ public:
+  LifetimeTestObject() = default;
+  ~LifetimeTestObject() = default;
 };
 
 blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
@@ -315,6 +330,13 @@ class V8DetailedMemoryRequestAnySeqTest
     : public PerformanceManagerTestHarness,
       public V8DetailedMemoryDecoratorTestBase {
  public:
+  V8DetailedMemoryRequestAnySeqTest()
+      : PerformanceManagerTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  static constexpr char kMainFrameUrl[] = "http://a.com/";
+  static constexpr char kChildFrameUrl[] = "http://b.com/";
+
   void SetUp() override {
     PerformanceManagerTestHarness::SetUp();
 
@@ -330,13 +352,49 @@ class V8DetailedMemoryRequestAnySeqTest
           run_loop.Quit();
         }));
     run_loop.Run();
+
+    // Set the active contents and simulate a navigation, which adds nodes to
+    // the graph.
+    content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+    SetContents(CreateTestWebContents());
+    main_frame_ = content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL(kMainFrameUrl));
+    main_process_id_ = RenderProcessHostId(main_frame_->GetProcess()->GetID());
+  }
+
+  void CreateCrossProcessChildFrame() {
+    // Since kMainFrameUrl has a different domain than kChildFrameUrl, the main
+    // and child frames should end up in different processes.
+    child_frame_ =
+        content::RenderFrameHostTester::For(main_frame_)->AppendChild("frame1");
+    child_frame_ = content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL(kChildFrameUrl), child_frame_);
+    child_process_id_ =
+        RenderProcessHostId(child_frame_->GetProcess()->GetID());
+    ASSERT_NE(main_process_id_, child_process_id_);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner()
       override {
     return task_environment()->GetMainThreadTaskRunner();
   }
+
+  content::RenderFrameHost* main_frame() const { return main_frame_; }
+  content::RenderFrameHost* child_frame() const { return child_frame_; }
+
+  RenderProcessHostId main_process_id() const { return main_process_id_; }
+  RenderProcessHostId child_process_id() const { return child_process_id_; }
+
+ private:
+  content::RenderFrameHost* main_frame_ = nullptr;
+  content::RenderFrameHost* child_frame_ = nullptr;
+  RenderProcessHostId main_process_id_;
+  RenderProcessHostId child_process_id_;
 };
+
+// Storage for static members of V8DetailedMemoryRequestAnySeqTest.
+constexpr char V8DetailedMemoryRequestAnySeqTest::kMainFrameUrl[];
+constexpr char V8DetailedMemoryRequestAnySeqTest::kChildFrameUrl[];
 
 constexpr base::TimeDelta
     V8DetailedMemoryDecoratorTestBase::kMinTimeBetweenRequests;
@@ -470,29 +528,132 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShot) {
   Mock::VerifyAndClearExpectations(&mock_reporter1);
   Mock::VerifyAndClearExpectations(&mock_reporter2);
   EXPECT_EQ(unassociated_v8_bytes_used, 3ULL);
+}
 
-  // Create another request, but delete it before the result arrives.
+TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
+  auto process = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kTestProcessID));
+
+  MockV8DetailedMemoryReporter mock_reporter;
   {
+    InSequence seq;
+    ExpectBindReceiver(&mock_reporter);
+
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->unassociated_bytes_used = 4ULL;
-    ExpectQueryAndDelayReply(&mock_reporter1, base::TimeDelta::FromSeconds(10),
+    data->isolates[0]->unassociated_bytes_used = 1ULL;
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
                              std::move(data));
   }
 
+  // Create a one-shot request, but delete it before the result arrives.
   auto doomed_request = std::make_unique<V8DetailedMemoryRequestOneShot>(
-      process1.get(),
+      process.get(),
       base::BindOnce([](const ProcessNode* process_node,
                         const V8DetailedMemoryProcessData* process_data) {
         FAIL() << "Callback called after request deleted.";
       }));
 
-  // Verify that requests are sent but reply is not yet received.
+  // Verify that the request is sent but the reply is not yet received.
   task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
-  Mock::VerifyAndClearExpectations(&mock_reporter1);
-  Mock::VerifyAndClearExpectations(&mock_reporter2);
+  Mock::VerifyAndClearExpectations(&mock_reporter);
 
   doomed_request.reset();
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+
+  // Create a request that is deleted from within its own callback and make
+  // sure nothing explodes.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 2ULL;
+    ExpectQueryAndReply(&mock_reporter, std::move(data));
+  }
+  uint64_t unassociated_v8_bytes_used = 0;
+  doomed_request = std::make_unique<V8DetailedMemoryRequestOneShot>(
+      process.get(), base::BindLambdaForTesting(
+                         [&](const ProcessNode* process_node,
+                             const V8DetailedMemoryProcessData* process_data) {
+                           doomed_request.reset();
+                           ASSERT_TRUE(process_data);
+                           unassociated_v8_bytes_used =
+                               process_data->unassociated_v8_bytes_used();
+                         }));
   task_env().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  EXPECT_EQ(unassociated_v8_bytes_used, 2ULL);
+
+  // Ensure that resource-owning callbacks are freed when there is no response
+  // because the process dies.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 3ULL;
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+  auto lifetime_test = std::make_unique<LifetimeTestObject>();
+  auto weak_lifetime_test = lifetime_test->AsWeakPtr();
+  V8DetailedMemoryRequestOneShot unfinished_request(
+      process.get(),
+      base::BindOnce(
+          [](std::unique_ptr<LifetimeTestObject>, const ProcessNode*,
+             const V8DetailedMemoryProcessData*) {
+            FAIL() << "Callback called after process deleted.";
+          },
+          // Pass ownership to the callback. The object should be deleted if the
+          // callback is not called.
+          std::move(lifetime_test)));
+
+  // Verify that requests are sent but reply is not yet received.
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  ASSERT_TRUE(weak_lifetime_test);
+
+  process.reset();
+
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(weak_lifetime_test);
+}
+
+TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetimeAtExit) {
+  auto process = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kTestProcessID));
+
+  // Ensure that resource-owning callbacks are freed when there is no response
+  // because the browser is exiting (simulated by destroying the decorator).
+  MockV8DetailedMemoryReporter mock_reporter;
+  {
+    InSequence seq;
+    ExpectBindReceiver(&mock_reporter);
+
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1ULL;
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+
+  auto lifetime_test = std::make_unique<LifetimeTestObject>();
+  auto weak_lifetime_test = lifetime_test->AsWeakPtr();
+  V8DetailedMemoryRequestOneShot unfinished_request(
+      process.get(),
+      base::BindOnce(
+          [](std::unique_ptr<LifetimeTestObject>, const ProcessNode*,
+             const V8DetailedMemoryProcessData*) {
+            FAIL() << "Callback called after measurements cancelled.";
+          },
+          // Pass ownership to the callback. The object should be deleted if the
+          // callback is not called.
+          std::move(lifetime_test)));
+
+  // Verify that requests are sent but reply is not yet received.
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  ASSERT_TRUE(weak_lifetime_test);
+
+  internal::DestroyV8DetailedMemoryDecoratorForTesting(graph());
+
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(weak_lifetime_test);
 }
 
 TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
@@ -1646,20 +1807,11 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, InvalidParameters) {
 }
 
 TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
-  // Set the active contents and simulate a navigation, which adds nodes to the
-  // graph.
-  SetContents(CreateTestWebContents());
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://www.foo.com/"));
-
   // Create some test data to return for a measurement request.
   constexpr uint64_t kAssociatedBytes = 0x123;
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  ASSERT_NE(nullptr, main_frame);
-  const RenderProcessHostId process_id(main_frame->GetProcess()->GetID());
-  const blink::LocalFrameToken frame_token(main_frame->GetFrameToken());
-  const content::GlobalFrameRoutingId frame_id(process_id.value(),
-                                               main_frame->GetRoutingID());
+  const blink::LocalFrameToken frame_token(main_frame()->GetFrameToken());
+  const content::GlobalFrameRoutingId frame_id(main_process_id().value(),
+                                               main_frame()->GetRoutingID());
 
   V8DetailedMemoryProcessData expected_process_data;
   expected_process_data.set_unassociated_v8_bytes_used(kUnassociatedBytes);
@@ -1672,7 +1824,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
     data->isolates[0]->unassociated_bytes_used = kUnassociatedBytes;
     AddIsolateMemoryUsage(frame_token, kAssociatedBytes,
                           data->isolates[0].get());
-    ExpectBindAndRespondToQuery(&reporter, std::move(data), process_id);
+    ExpectBindAndRespondToQuery(&reporter, std::move(data), main_process_id());
   }
 
   // Decorator should not exist before creating a request.
@@ -1703,9 +1855,9 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
   // The observer should be invoked on the main sequence when a measurement is
   // available. Exit the RunLoop when this happens.
   base::RunLoop run_loop;
-  EXPECT_CALL(observer,
-              OnV8MemoryMeasurementAvailable(process_id, expected_process_data,
-                                             expected_frame_data))
+  EXPECT_CALL(observer, OnV8MemoryMeasurementAvailable(main_process_id(),
+                                                       expected_process_data,
+                                                       expected_frame_data))
       .WillOnce([&]() {
         run_loop.Quit();
         ASSERT_TRUE(
@@ -1714,8 +1866,8 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
         // Verify that the notification parameters can be used to retrieve a
         // RenderFrameHost and RenderProcessHost. This is safe on the main
         // thread.
-        EXPECT_NE(nullptr,
-                  content::RenderProcessHost::FromID(process_id.value()));
+        EXPECT_NE(nullptr, content::RenderProcessHost::FromID(
+                               main_process_id().value()));
         const content::GlobalFrameRoutingId frame_id =
             expected_frame_data.cbegin()->first;
         EXPECT_NE(nullptr, content::RenderFrameHost::FromID(frame_id));
@@ -1758,24 +1910,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
 }
 
 TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
-  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
-  SetContents(CreateTestWebContents());
-
-  // Set up a page at a.com with a subframe at b.com. These should be in
-  // different processes.
-  const GURL kUrlA("http://a.com/");
-  const GURL kUrlB("http://b.com/");
-  content::RenderFrameHost* main_frame =
-      content::NavigationSimulator::NavigateAndCommitFromBrowser(
-          web_contents(), GURL("http://a.com"));
-  content::RenderFrameHost* child_frame =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("frame1");
-  child_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://b.com"), child_frame);
-
-  const RenderProcessHostId process_id1(main_frame->GetProcess()->GetID());
-  const RenderProcessHostId process_id2(child_frame->GetProcess()->GetID());
-  ASSERT_NE(process_id1, process_id2);
+  CreateCrossProcessChildFrame();
 
   V8DetailedMemoryProcessData expected_process_data1;
   expected_process_data1.set_unassociated_v8_bytes_used(1U);
@@ -1787,11 +1922,13 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->unassociated_bytes_used = 1U;
-    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), process_id1);
+    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data),
+                                main_process_id());
 
     data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->unassociated_bytes_used = 2U;
-    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), process_id2);
+    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data),
+                                child_process_id());
   }
 
   // Create one request that measures both processes, and one request that
@@ -1803,21 +1940,21 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
 
   V8DetailedMemoryRequestAnySeq single_process_request(
       V8DetailedMemoryDecoratorTest::kMinTimeBetweenRequests,
-      MeasurementMode::kBounded, process_id1);
+      MeasurementMode::kBounded, main_process_id());
   MockV8DetailedMemoryObserverAnySeq single_process_observer;
   single_process_request.AddObserver(&single_process_observer);
 
   // When a measurement is available the all process observer should be invoked
   // for both processes, and the single process observer only for process 1.
-  EXPECT_CALL(
-      all_process_observer,
-      OnV8MemoryMeasurementAvailable(process_id1, expected_process_data1, _));
-  EXPECT_CALL(
-      all_process_observer,
-      OnV8MemoryMeasurementAvailable(process_id2, expected_process_data2, _));
-  EXPECT_CALL(
-      single_process_observer,
-      OnV8MemoryMeasurementAvailable(process_id1, expected_process_data1, _));
+  EXPECT_CALL(all_process_observer,
+              OnV8MemoryMeasurementAvailable(main_process_id(),
+                                             expected_process_data1, _));
+  EXPECT_CALL(all_process_observer,
+              OnV8MemoryMeasurementAvailable(child_process_id(),
+                                             expected_process_data2, _));
+  EXPECT_CALL(single_process_observer,
+              OnV8MemoryMeasurementAvailable(main_process_id(),
+                                             expected_process_data1, _));
 
   // Now execute all the above tasks.
   task_environment()->RunUntilIdle();
@@ -1833,25 +1970,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
 }
 
 TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
-  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
-  SetContents(CreateTestWebContents());
-
-  // Set up a page at a.com with a subframe at b.com. These should be in
-  // different processes. We will create one request that measures both
-  // processes, and a one-shot request that measures only one.
-  const GURL kUrlA("http://a.com/");
-  const GURL kUrlB("http://b.com/");
-  content::RenderFrameHost* main_frame =
-      content::NavigationSimulator::NavigateAndCommitFromBrowser(
-          web_contents(), GURL("http://a.com"));
-  content::RenderFrameHost* child_frame =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("frame1");
-  child_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://b.com"), child_frame);
-
-  const RenderProcessHostId process_id1(main_frame->GetProcess()->GetID());
-  const RenderProcessHostId process_id2(child_frame->GetProcess()->GetID());
-  ASSERT_NE(process_id1, process_id2);
+  CreateCrossProcessChildFrame();
 
   // Set the all process request to only send once within the test.
   V8DetailedMemoryRequestAnySeq all_process_request(
@@ -1864,14 +1983,16 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->unassociated_bytes_used = 1ULL;
-    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), process_id1);
+    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data),
+                                main_process_id());
   }
 
   MockV8DetailedMemoryReporter mock_reporter2;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->unassociated_bytes_used = 2ULL;
-    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), process_id2);
+    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data),
+                                child_process_id());
   }
 
   task_environment()->RunUntilIdle();
@@ -1888,13 +2009,13 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
 
   uint64_t unassociated_v8_bytes_used = 0;
   V8DetailedMemoryRequestOneShotAnySeq process1_request(
-      process_id1,
+      main_process_id(),
       base::BindLambdaForTesting(
           [&](RenderProcessHostId process_id,
               const V8DetailedMemoryProcessData& process_data,
               const V8DetailedMemoryRequestOneShotAnySeq::FrameDataMap&
                   frame_data) {
-            EXPECT_EQ(process_id, process_id1);
+            EXPECT_EQ(process_id, main_process_id());
             unassociated_v8_bytes_used =
                 process_data.unassociated_v8_bytes_used();
           }));
@@ -1902,17 +2023,26 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
   Mock::VerifyAndClearExpectations(&mock_reporter1);
   Mock::VerifyAndClearExpectations(&mock_reporter2);
   EXPECT_EQ(unassociated_v8_bytes_used, 3ULL);
+}
 
-  // Create another request, but delete it before the result arrives.
+TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetime) {
+  // Measure a child frame so that it can be detached.
+  CreateCrossProcessChildFrame();
+
+  // Create a one-shot request, but delete it before the result arrives.
+  MockV8DetailedMemoryReporter mock_reporter;
   {
+    InSequence seq;
+    ExpectBindReceiver(&mock_reporter, child_process_id());
+
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->unassociated_bytes_used = 4ULL;
-    ExpectQueryAndDelayReply(&mock_reporter1, base::TimeDelta::FromSeconds(10),
+    data->isolates[0]->unassociated_bytes_used = 1ULL;
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
                              std::move(data));
   }
 
   auto doomed_request = std::make_unique<V8DetailedMemoryRequestOneShotAnySeq>(
-      process_id1,
+      child_process_id(),
       base::BindOnce(
           [](RenderProcessHostId process_id,
              const V8DetailedMemoryProcessData& process_data,
@@ -1922,33 +2052,123 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
           }));
 
   // Verify that requests are sent but reply is not received.
-  task_environment()->RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&mock_reporter1);
-  Mock::VerifyAndClearExpectations(&mock_reporter2);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  Mock::VerifyAndClearExpectations(&mock_reporter);
 
   doomed_request.reset();
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+
+  // Create a request that is deleted from within its own callback and make
+  // sure nothing explodes.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 2ULL;
+    ExpectQueryAndReply(&mock_reporter, std::move(data));
+  }
+  uint64_t unassociated_v8_bytes_used = 0;
+  doomed_request = std::make_unique<V8DetailedMemoryRequestOneShotAnySeq>(
+      child_process_id(),
+      base::BindLambdaForTesting(
+          [&](RenderProcessHostId process_id,
+              const V8DetailedMemoryProcessData& process_data,
+              const V8DetailedMemoryRequestOneShotAnySeq::FrameDataMap&
+                  frame_data) {
+            doomed_request.reset();
+            unassociated_v8_bytes_used =
+                process_data.unassociated_v8_bytes_used();
+          }));
   task_environment()->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  EXPECT_EQ(unassociated_v8_bytes_used, 2ULL);
+
+  // Ensure that resource-owning callbacks are freed when there is no response
+  // because the process dies.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 3ULL;
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+  auto lifetime_test = std::make_unique<LifetimeTestObject>();
+  auto weak_lifetime_test = lifetime_test->AsWeakPtr();
+  V8DetailedMemoryRequestOneShotAnySeq unfinished_request(
+      child_process_id(),
+      base::BindOnce(
+          [](std::unique_ptr<LifetimeTestObject>, RenderProcessHostId,
+             const V8DetailedMemoryProcessData&,
+             const V8DetailedMemoryRequestOneShotAnySeq::FrameDataMap&) {
+            FAIL() << "Callback called after process deleted.";
+          },
+          // Pass ownership to the callback. The object should be deleted if the
+          // callback is not called.
+          std::move(lifetime_test)));
+
+  // Verify that requests are sent but reply is not yet received.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  ASSERT_TRUE(weak_lifetime_test);
+
+  content::RenderFrameHostTester::For(child_frame())->Detach();
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(weak_lifetime_test);
+}
+
+TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShotLifetimeAtExit) {
+  // Ensure that resource-owning callbacks are freed when there is no response
+  // because the browser is exiting (simulated by destroying the decorator).
+  MockV8DetailedMemoryReporter mock_reporter;
+  {
+    InSequence seq;
+    ExpectBindReceiver(&mock_reporter, main_process_id());
+
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1ULL;
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+
+  auto lifetime_test = std::make_unique<LifetimeTestObject>();
+  auto weak_lifetime_test = lifetime_test->AsWeakPtr();
+  V8DetailedMemoryRequestOneShotAnySeq unfinished_request(
+      main_process_id(),
+      base::BindOnce(
+          [](std::unique_ptr<LifetimeTestObject>, RenderProcessHostId,
+             const V8DetailedMemoryProcessData&,
+             const V8DetailedMemoryRequestOneShotAnySeq::FrameDataMap&) {
+            FAIL() << "Callback called after measurements cancelled.";
+          },
+          // Pass ownership to the callback. The object should be deleted if the
+          // callback is not called.
+          std::move(lifetime_test)));
+
+  // Verify that requests are sent but reply is not yet received.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  ASSERT_TRUE(weak_lifetime_test);
+
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(&internal::DestroyV8DetailedMemoryDecoratorForTesting));
+  // Block in the run loop until the destroy task runs on the PM sequence.
+  PerformanceManager::CallOnGraph(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(weak_lifetime_test);
 }
 
 // TODO(1085129): Move this test to web_memory_aggregator_unittest.cc
 // after extracting the testing infrastructure.
 TEST_F(V8DetailedMemoryRequestAnySeqTest, WebMeasureMemory) {
-  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
-  SetContents(CreateTestWebContents());
-
-  // Create a page with a single frame.
-  content::RenderFrameHost* main_frame =
-      content::NavigationSimulator::NavigateAndCommitFromBrowser(
-          web_contents(), GURL("http://foo.com/"));
-  const RenderProcessHostId process_id(main_frame->GetProcess()->GetID());
-
   blink::LocalFrameToken frame_token =
-      blink::LocalFrameToken(main_frame->GetFrameToken());
+      blink::LocalFrameToken(main_frame()->GetFrameToken());
 
   // Call WebMemory::Measure on the performance manager sequence and verify
   // that the result matches the data provided by the mock reporter.
   base::WeakPtr<FrameNode> frame_node_wrapper =
-      PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame);
+      PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
   bool measurement_done = false;
   PerformanceManager::CallOnGraph(
       FROM_HERE,
@@ -1962,7 +2182,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, WebMeasureMemory) {
                   EXPECT_EQ(1u, result->breakdown.size());
                   const auto& entry = result->breakdown[0];
                   EXPECT_EQ(1u, entry->attribution.size());
-                  EXPECT_EQ("http://foo.com/", *(entry->attribution[0]->url));
+                  EXPECT_EQ(kMainFrameUrl, *(entry->attribution[0]->url));
                   EXPECT_EQ(1001u, entry->bytes);
                   measurement_done = true;
                 }));
@@ -1973,7 +2193,8 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, WebMeasureMemory) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
-    ExpectBindAndRespondToQuery(&mock_reporter, std::move(data), process_id);
+    ExpectBindAndRespondToQuery(&mock_reporter, std::move(data),
+                                main_process_id());
   }
 
   // Finally, run all tasks and verify that the memory measurement callback
