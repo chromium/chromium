@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -45,20 +46,23 @@ void SavePasswordInfoBarDelegate::Create(
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_id);
+  bool is_single_account_user =
+      identity_manager->GetAccountsWithRefreshTokens().size() == 1;
 
   // is_smartlock_branding_enabled indicates whether the user is syncing
   // passwords to their Google Account.
   bool is_smartlock_branding_enabled =
       password_bubble_experiment::IsSmartLockUser(sync_service);
+  bool should_show_account_footer = is_smartlock_branding_enabled &&
+                                    !is_single_account_user &&
+                                    account_info.has_value();
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
   infobar_service->AddInfoBar(std::make_unique<SavePasswordInfoBar>(
       base::WrapUnique(
           new SavePasswordInfoBarDelegate(web_contents, std::move(form_to_save),
                                           is_smartlock_branding_enabled)),
-      is_smartlock_branding_enabled && account_info.has_value()
-          ? account_info.value()
-          : AccountInfo()));
+      should_show_account_footer ? account_info.value() : AccountInfo()));
 }
 
 SavePasswordInfoBarDelegate::~SavePasswordInfoBarDelegate() {
