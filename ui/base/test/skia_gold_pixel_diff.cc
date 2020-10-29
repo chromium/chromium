@@ -246,7 +246,8 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
       code_review_system_ = "gerrit";
     }
   }
-  if (cmd_line->HasSwitch(kNoLuciAuth)) {
+  if (cmd_line->HasSwitch(kNoLuciAuth) ||
+      !cmd_line->HasSwitch(switches::kTestLauncherBotMode)) {
     luci_auth_ = false;
   }
   initialized_ = true;

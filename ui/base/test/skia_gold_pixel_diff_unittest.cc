@@ -73,6 +73,52 @@ TEST_F(SkiaGoldPixelDiffTest, BypassSkiaGoldFunctionality) {
   EXPECT_TRUE(ret);
 }
 
+TEST_F(SkiaGoldPixelDiffTest, LuciAuthSwitch) {
+  MockSkiaGoldPixelDiff mock_pixel;
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitch(switches::kTestLauncherBotMode);
+
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_pixel,
+      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
+                                   HasSubstr(FILE_PATH_LITERAL("--luci"))))))
+      .Times(1);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
+TEST_F(SkiaGoldPixelDiffTest, NoLuciAuthSwitch) {
+  MockSkiaGoldPixelDiff mock_pixel;
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitch("no-luci-auth");
+
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_pixel, LaunchProcess(AllOf(Property(
+                              &base::CommandLine::GetCommandLineString,
+                              Not(HasSubstr(FILE_PATH_LITERAL("--luci")))))))
+      .Times(3);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
+TEST_F(SkiaGoldPixelDiffTest, LocalNoLuciAuth) {
+  MockSkiaGoldPixelDiff mock_pixel;
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);
+
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_pixel, LaunchProcess(AllOf(Property(
+                              &base::CommandLine::GetCommandLineString,
+                              Not(HasSubstr(FILE_PATH_LITERAL("--luci")))))))
+      .Times(3);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
+  EXPECT_TRUE(ret);
+}
+
 TEST_F(SkiaGoldPixelDiffTest, FuzzyMatching) {
   MockSkiaGoldPixelDiff mock_pixel;
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
