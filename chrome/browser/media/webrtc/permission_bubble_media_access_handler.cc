@@ -33,10 +33,10 @@
 #if defined(OS_ANDROID)
 #include <vector>
 
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/webrtc/screen_capture_infobar_delegate_android.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/common/content_features.h"
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)
@@ -194,8 +194,7 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
 
 #if defined(OS_ANDROID)
   if (blink::IsScreenCaptureMediaType(request.video_type) &&
-      !base::FeatureList::IsEnabled(
-          chrome::android::kUserMediaScreenCapturing)) {
+      !base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing)) {
     // If screen capturing isn't enabled on Android, we'll use "invalid state"
     // as result, same as on desktop.
     std::move(callback).Run(

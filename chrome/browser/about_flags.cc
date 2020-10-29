@@ -4411,7 +4411,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"screen-capture-android", flag_descriptions::kUserMediaScreenCapturingName,
      flag_descriptions::kUserMediaScreenCapturingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kUserMediaScreenCapturing)},
+     FEATURE_VALUE_TYPE(features::kUserMediaScreenCapturing)},
 #endif
 
 #if defined(OS_ANDROID)

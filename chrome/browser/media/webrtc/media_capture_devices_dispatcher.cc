@@ -34,10 +34,11 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "media/base/media_switches.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if !defined(OS_ANDROID)
+#if defined(OS_ANDROID)
+#include "content/public/common/content_features.h"
+#else  // !OS_ANDROID
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #endif  //  defined(OS_ANDROID)
 
@@ -149,16 +150,18 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+#if defined(OS_ANDROID)
   // Kill switch for getDisplayMedia() on browser side to prevent renderer from
   // bypassing blink side checks.
   if (request.video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
-      !base::FeatureList::IsEnabled(blink::features::kRTCGetDisplayMedia)) {
+      !base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing)) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
+#endif
 
   for (const auto& handler : media_access_handlers_) {
     if (handler->SupportsStreamType(web_contents, request.video_type,

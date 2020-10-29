@@ -269,7 +269,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableBackgroundFetch, features::kBackgroundFetch},
     {wf::EnableForcedColors, features::kForcedColors},
     {wf::EnableFractionalScrollOffsets, features::kFractionalScrollOffsets},
-    {wf::EnableGetDisplayMedia, blink::features::kRTCGetDisplayMedia},
+#if defined(OS_ANDROID)
+    {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},
+#endif
     {wf::EnableSignedExchangePrefetchCacheForNavigations,
      features::kSignedExchangePrefetchCacheForNavigations},
     {wf::EnableSignedExchangeSubresourcePrefetch,

@@ -921,7 +921,10 @@
     },
     {
       name: "GetDisplayMedia",
-      status: {"Android": "", "default": "stable"},
+      status: {
+        "Android": "experimental",
+        "default": "stable",
+        },
     },
     {
       name: "GroupEffect",
