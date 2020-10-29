@@ -333,7 +333,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2020-11-29">
+    enum="DownloadFileUIGoogleDrive" expires_after="2021-11-29">
   <owner>ewannpv@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
