@@ -79,6 +79,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_handle.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -1022,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   request->method = "GET";
   request->is_main_resource_load = true;
   auto dispatcher = std::make_unique<ServiceWorkerFetchDispatcher>(
-      std::move(request), blink::mojom::ResourceType::kMainFrame,
+      std::move(request), network::mojom::RequestDestination::kDocument,
       /*client_id=*/base::GenerateGUID(), version,
       base::BindLambdaForTesting([&]() { is_prepare_callback_called = true; }),
       base::BindLambdaForTesting(
@@ -1101,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   request->method = "GET";
   request->is_main_resource_load = true;
   auto dispatcher = std::make_unique<ServiceWorkerFetchDispatcher>(
-      std::move(request), blink::mojom::ResourceType::kMainFrame,
+      std::move(request), network::mojom::RequestDestination::kDocument,
       /*client_id=*/base::GenerateGUID(), version,
       base::BindLambdaForTesting([&]() { is_prepare_callback_called = true; }),
       base::BindLambdaForTesting(

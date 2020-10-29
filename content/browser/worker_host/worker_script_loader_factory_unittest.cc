@@ -17,6 +17,7 @@
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -74,6 +75,8 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
             url::Origin::Create(url), net::SiteForCookies());
     resource_request.resource_type =
         static_cast<int>(blink::mojom::ResourceType::kSharedWorker);
+    resource_request.destination =
+        network::mojom::RequestDestination::kSharedWorker;
     factory->CreateLoaderAndStart(
         loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
         0 /* request_id */, network::mojom::kURLLoadOptionNone,

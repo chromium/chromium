@@ -67,17 +67,17 @@ bool ShouldFallbackToLoadOfflinePage(
 ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContextCore> context,
     base::WeakPtr<ServiceWorkerContainerHost> container_host,
-    blink::mojom::ResourceType resource_type,
+    network::mojom::RequestDestination destination,
     bool skip_service_worker,
     ServiceWorkerAccessedCallback service_worker_accessed_callback)
     : context_(std::move(context)),
       container_host_(std::move(container_host)),
-      resource_type_(resource_type),
+      destination_(destination),
       skip_service_worker_(skip_service_worker),
       force_update_started_(false),
       service_worker_accessed_callback_(
           std::move(service_worker_accessed_callback)) {
-  DCHECK(ServiceWorkerUtils::IsMainResourceType(resource_type));
+  DCHECK(ServiceWorkerUtils::IsMainRequestDestination(destination));
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerControlleeRequestHandler::"
                          "ServiceWorkerControlleeRequestHandler",
@@ -99,7 +99,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 
   // For navigations, the update logic is taken care of
   // during navigation and waits for the HintToUpdateServiceWorker message.
-  if (blink::IsResourceTypeFrame(resource_type_))
+  if (blink::IsRequestDestinationFrame(destination_))
     return;
 
   // For shared workers. The renderer doesn't yet send a
@@ -439,9 +439,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
             ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
   ServiceWorkerMetrics::CountControlledPageLoad(
       active_version->site_for_uma(),
-      resource_type_ == blink::mojom::ResourceType::kMainFrame);
+      destination_ == network::mojom::RequestDestination::kDocument);
 
-  if (blink::IsResourceTypeFrame(resource_type_))
+  if (blink::IsRequestDestinationFrame(destination_))
     container_host_->AddServiceWorkerToUpdate(active_version);
 
   if (active_version->fetch_handler_existence() !=

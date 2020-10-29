@@ -164,8 +164,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   // Dispatch the fetch event.
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request_),
-      static_cast<blink::mojom::ResourceType>(resource_request_.resource_type),
-      container_host_->client_uuid(), active_worker,
+      resource_request_.destination, container_host_->client_uuid(),
+      active_worker,
       base::BindOnce(&ServiceWorkerMainResourceLoader::DidPrepareFetchEvent,
                      weak_factory_.GetWeakPtr(), active_worker,
                      active_worker->running_status()),
@@ -488,8 +488,8 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
   DCHECK(!completion_time_.is_null());
 
   // We only record these metrics for top-level navigation.
-  if (resource_request_.resource_type !=
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame))
+  if (resource_request_.destination !=
+      network::mojom::RequestDestination::kDocument)
     return;
 
   // |fetch_event_timing_| is recorded in renderer so we can get reasonable

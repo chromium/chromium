@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "url/gurl.h"
 
@@ -95,6 +96,7 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
   resource_request.mode = network::mojom::RequestMode::kNavigate;
   resource_request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  resource_request.destination = network::mojom::RequestDestination::kDocument;
 
   // Store the weak reference to ServiceWorkerContextCore before
   // |preferred_version| moves.
@@ -108,9 +110,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
 
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request),
-      static_cast<blink::mojom::ResourceType>(resource_request.resource_type),
-      base::GenerateGUID() /* client_id */, std::move(preferred_version),
-      base::DoNothing() /* prepare callback */,
+      resource_request.destination, base::GenerateGUID() /* client_id */,
+      std::move(preferred_version), base::DoNothing() /* prepare callback */,
       base::BindOnce(&ServiceWorkerOfflineCapabilityChecker::OnFetchResult,
                      base::Unretained(this)),
       /*is_offline_capability_check=*/true);

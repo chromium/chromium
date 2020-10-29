@@ -19,8 +19,8 @@
 #include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
 namespace content {
@@ -85,7 +85,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   ServiceWorkerMainResourceLoaderInterceptor(
       base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-      blink::mojom::ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       bool skip_service_worker,
       bool are_ancestors_secure,
       int frame_tree_node_id,
@@ -115,7 +115,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const base::WeakPtr<ServiceWorkerMainResourceHandle> handle_;
 
   // For all clients:
-  const blink::mojom::ResourceType resource_type_;
+  const network::mojom::RequestDestination request_destination_;
   const bool skip_service_worker_;
 
   // For window clients:

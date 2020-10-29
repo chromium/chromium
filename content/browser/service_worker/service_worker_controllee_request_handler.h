@@ -22,7 +22,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -44,7 +43,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
       base::WeakPtr<ServiceWorkerContainerHost> container_host,
-      blink::mojom::ResourceType resource_type,
+      network::mojom::RequestDestination destination,
       bool skip_service_worker,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
   ~ServiceWorkerControlleeRequestHandler();
@@ -106,7 +105,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
   const base::WeakPtr<ServiceWorkerContainerHost> container_host_;
-  const blink::mojom::ResourceType resource_type_;
+  const network::mojom::RequestDestination destination_;
 
   // If true, service workers are bypassed for request interception.
   const bool skip_service_worker_;

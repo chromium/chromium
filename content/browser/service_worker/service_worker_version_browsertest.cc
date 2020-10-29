@@ -59,11 +59,11 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/test/blob_test_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 using blink::mojom::CacheStorageError;
 
@@ -718,8 +718,8 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
         BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     GURL url = embedded_test_server()->GetURL(path);
-    blink::mojom::ResourceType resource_type =
-        blink::mojom::ResourceType::kMainFrame;
+    network::mojom::RequestDestination destination =
+        network::mojom::RequestDestination::kDocument;
     base::OnceClosure prepare_callback = CreatePrepareReceiver(prepare_result);
     ServiceWorkerFetchDispatcher::FetchCallback fetch_callback =
         CreateResponseReceiver(std::move(done), result);
@@ -727,7 +727,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     request->url = url;
     request->method = "GET";
     fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
-        std::move(request), resource_type, std::string() /* client_id */,
+        std::move(request), destination, std::string() /* client_id */,
         version_, std::move(prepare_callback), std::move(fetch_callback),
         /*is_offline_cpability_check=*/false);
     fetch_dispatcher_->Run();

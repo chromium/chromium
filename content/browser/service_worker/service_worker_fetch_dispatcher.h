@@ -18,12 +18,12 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 
 namespace content {
@@ -53,7 +53,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   using WebContentsGetter = base::RepeatingCallback<WebContents*()>;
 
   ServiceWorkerFetchDispatcher(blink::mojom::FetchAPIRequestPtr request,
-                               blink::mojom::ResourceType resource_type,
+                               network::mojom::RequestDestination destination,
                                const std::string& client_id,
                                scoped_refptr<ServiceWorkerVersion> version,
                                base::OnceClosure prepare_callback,
@@ -114,7 +114,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   blink::mojom::FetchAPIRequestPtr request_;
   std::string client_id_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  const blink::mojom::ResourceType resource_type_;
+  const network::mojom::RequestDestination destination_;
   base::OnceClosure prepare_callback_;
   FetchCallback fetch_callback_;
 
