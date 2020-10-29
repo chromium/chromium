@@ -17,11 +17,22 @@
 
 namespace media {
 
+namespace {
+
 // Current AudioRenderer implementation allows only one buffer with id=0.
 // TODO(crbug.com/1131179): Replace with an incrementing buffer id now that
 // AddPayloadBuffer() and RemovePayloadBuffer() are implemented properly in
 // AudioRenderer.
 const uint32_t kBufferId = 0;
+
+fuchsia::media::AudioRenderUsage GetStreamUsage(
+    const AudioParameters& parameters) {
+  if (parameters.latency_tag() == AudioLatency::LATENCY_RTC)
+    return fuchsia::media::AudioRenderUsage::COMMUNICATION;
+  return fuchsia::media::AudioRenderUsage::MEDIA;
+}
+
+}  // namespace
 
 AudioOutputStreamFuchsia::AudioOutputStreamFuchsia(
     AudioManagerFuchsia* manager,
@@ -46,6 +57,8 @@ bool AudioOutputStreamFuchsia::Open() {
   audio_server->CreateAudioRenderer(audio_renderer_.NewRequest());
   audio_renderer_.set_error_handler(
       fit::bind_member(this, &AudioOutputStreamFuchsia::OnRendererError));
+
+  audio_renderer_->SetUsage(GetStreamUsage(parameters_));
 
   // Inform the |audio_renderer_| of the format required by the caller.
   fuchsia::media::AudioStreamType format;
