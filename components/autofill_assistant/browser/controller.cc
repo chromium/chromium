@@ -119,7 +119,7 @@ bool IsInAllowlist(const std::string& subdomain,
 Controller::Controller(content::WebContents* web_contents,
                        Client* client,
                        const base::TickClock* tick_clock,
-                       RuntimeManagerImpl* runtime_manager,
+                       base::WeakPtr<RuntimeManagerImpl> runtime_manager,
                        std::unique_ptr<Service> service)
     : content::WebContentsObserver(web_contents),
       client_(client),
@@ -416,7 +416,9 @@ void Controller::RequireUI() {
 
 void Controller::SetUiShown(bool shown) {
   ui_shown_ = shown;
-  runtime_manager_->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
+  if (runtime_manager_) {
+    runtime_manager_->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
+  }
 }
 
 void Controller::SetGenericUi(

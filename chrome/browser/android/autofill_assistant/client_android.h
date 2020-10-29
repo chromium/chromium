@@ -123,6 +123,7 @@ class ClientAndroid : public Client,
   friend class content::WebContentsUserData<ClientAndroid>;
 
   explicit ClientAndroid(content::WebContents* web_contents);
+
   void CreateController(std::unique_ptr<Service> service);
   void DestroyController();
   void AttachUI(

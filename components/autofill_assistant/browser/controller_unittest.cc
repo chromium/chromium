@@ -105,9 +105,10 @@ class ControllerTest : public content::RenderViewHostTestHarness {
     ON_CALL(mock_client_, GetWebContents).WillByDefault(Return(web_contents()));
     ON_CALL(mock_client_, HasHadUI()).WillByDefault(Return(true));
 
+    mock_runtime_manager_ = std::make_unique<MockRuntimeManager>();
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
-        &mock_runtime_manager_, std::move(service));
+        mock_runtime_manager_->GetWeakPtr(), std::move(service));
     controller_->SetWebControllerForTest(std::move(web_controller));
 
     ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
@@ -239,7 +240,7 @@ class ControllerTest : public content::RenderViewHostTestHarness {
   MockService* mock_service_;
   MockWebController* mock_web_controller_;
   NiceMock<MockClient> mock_client_;
-  NiceMock<MockRuntimeManager> mock_runtime_manager_;
+  std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   NiceMock<MockControllerObserver> mock_observer_;
   std::unique_ptr<Controller> controller_;
 };
@@ -2856,11 +2857,17 @@ TEST_F(ControllerTest, RegularScriptShowsDefaultInitialStatusMessage) {
 }
 
 TEST_F(ControllerTest, NotifyRuntimeManagerOnUiStateChange) {
-  EXPECT_CALL(mock_runtime_manager_, SetUIState(UIState::kShown)).Times(1);
+  EXPECT_CALL(*mock_runtime_manager_, SetUIState(UIState::kShown)).Times(1);
   controller_->SetUiShown(true);
 
-  EXPECT_CALL(mock_runtime_manager_, SetUIState(UIState::kNotShown)).Times(1);
+  EXPECT_CALL(*mock_runtime_manager_, SetUIState(UIState::kNotShown)).Times(1);
   controller_->SetUiShown(false);
+}
+
+TEST_F(ControllerTest, RuntimeManagerDestroyed) {
+  mock_runtime_manager_.reset();
+  // This method should not crash.
+  controller_->SetUiShown(true);
 }
 
 TEST_F(ControllerTest, OnGetScriptsFailedWillShutdown) {

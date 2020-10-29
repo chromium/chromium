@@ -560,7 +560,8 @@ void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
 
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
-      RuntimeManagerImpl::GetForWebContents(web_contents_), std::move(service));
+      RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
+      std::move(service));
   controller_->SetStatusMessage(status_message);
 }
 

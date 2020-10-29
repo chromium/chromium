@@ -41,5 +41,9 @@ void RuntimeManagerImpl::SetUIState(UIState state) {
   }
 }
 
+base::WeakPtr<RuntimeManagerImpl> RuntimeManagerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RuntimeManagerImpl)
 }  // namespace autofill_assistant

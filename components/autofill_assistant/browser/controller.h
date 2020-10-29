@@ -63,7 +63,7 @@ class Controller : public ScriptExecutorDelegate,
   Controller(content::WebContents* web_contents,
              Client* client,
              const base::TickClock* tick_clock,
-             RuntimeManagerImpl* runtime_manager,
+             base::WeakPtr<RuntimeManagerImpl> runtime_manager,
              std::unique_ptr<Service> service);
   ~Controller() override;
 
@@ -360,7 +360,7 @@ class Controller : public ScriptExecutorDelegate,
   ClientSettings settings_;
   Client* const client_;
   const base::TickClock* const tick_clock_;
-  RuntimeManagerImpl* const runtime_manager_;
+  base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
 
   // Lazily instantiate in GetWebController().
   std::unique_ptr<WebController> web_controller_;
