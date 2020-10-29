@@ -158,7 +158,7 @@ void RendererStartupHelper::InitializeProcess(
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(browser_context_)->enabled_extensions();
   for (const auto& ext : extensions) {
-    // OnLoadedExtension should have already been called for the extension.
+    // OnExtensionLoaded should have already been called for the extension.
     DCHECK(base::Contains(extension_process_map_, ext->id()));
     DCHECK(!base::Contains(extension_process_map_[ext->id()], process));
 
