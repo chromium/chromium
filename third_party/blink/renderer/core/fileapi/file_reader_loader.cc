@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -213,14 +212,12 @@ void FileReaderLoader::Cleanup() {
 }
 
 void FileReaderLoader::Failed(FileErrorCode error_code, FailureType type) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(EnumerationHistogram, failure_histogram,
-                                  ("Storage.Blob.FileReaderLoader.FailureType",
-                                   static_cast<int>(FailureType::kCount)));
   // If an error was already reported, don't report this error again.
   if (error_code_ != FileErrorCode::kOK)
     return;
   error_code_ = error_code;
-  failure_histogram.Count(static_cast<int>(type));
+  base::UmaHistogramEnumeration("Storage.Blob.FileReaderLoader.FailureType",
+                                type);
   Cleanup();
   if (client_)
     client_->DidFail(error_code_);

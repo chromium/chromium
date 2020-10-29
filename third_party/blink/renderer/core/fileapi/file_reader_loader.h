@@ -125,7 +125,7 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
     // into this bucket. If there are a large number of errors reported here,
     // then there can be a new enumeration reported for mojo pipe errors.
     kMojoPipeUnexpectedReadError = 10,
-    kCount
+    kMaxValue = kMojoPipeUnexpectedReadError,
   };
 
   void Cleanup();
