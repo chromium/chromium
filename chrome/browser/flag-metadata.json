@@ -1886,11 +1886,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-offer-store-unmasked-wallet-cards",
-    "owners": [ "jsaul@google.com" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "enable-offline-previews",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.
