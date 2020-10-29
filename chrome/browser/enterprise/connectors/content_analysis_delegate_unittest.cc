@@ -897,7 +897,13 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
   EXPECT_TRUE(called);
 }
 
-TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted_PolicyAllows) {
+// Flaky on Mac: https://crbug.com/1143782:
+#if defined(OS_MAC)
+#define MAYBE_FileIsEncrypted_PolicyAllows DISABLED_FileIsEncrypted_PolicyAllows
+#else
+#define MAYBE_FileIsEncrypted_PolicyAllows FileIsEncrypted_PolicyAllows
+#endif
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, MAYBE_FileIsEncrypted_PolicyAllows) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
   SetScanPolicies(/*dlp=*/true, /*malware=*/true);
