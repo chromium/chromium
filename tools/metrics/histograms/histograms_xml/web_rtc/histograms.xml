@@ -709,7 +709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.TargetJitterBufferDelayMs" units="ms"
-    expires_after="2020-10-25">
+    expires_after="2021-10-25">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The target jitter buffer delay for the receiving side. Sampled once every 10
