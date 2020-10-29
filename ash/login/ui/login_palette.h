@@ -22,6 +22,7 @@ struct LoginPalette {
   SkColor button_annotation_color;
   SkColor pin_ink_drop_highlight_color;
   SkColor pin_ink_drop_ripple_color;
+  SkColor pin_input_text_color;
 };
 
 // For login screen and lock screen.

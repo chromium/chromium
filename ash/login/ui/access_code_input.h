@@ -63,7 +63,8 @@ class FlexCodeInput : public AccessCodeInput {
   FlexCodeInput(OnInputChange on_input_change,
                 OnEnter on_enter,
                 OnEscape on_escape,
-                bool obscure_pin);
+                bool obscure_pin,
+                SkColor text_color);
 
   FlexCodeInput(const FlexCodeInput&) = delete;
   FlexCodeInput& operator=(const FlexCodeInput&) = delete;
@@ -165,7 +166,8 @@ class FixedLengthCodeInput : public AccessCodeInput {
                        OnInputChange on_input_change,
                        OnEnter on_enter,
                        OnEscape on_escape,
-                       bool obscure_pin);
+                       bool obscure_pin,
+                       SkColor text_color);
 
   ~FixedLengthCodeInput() override;
   FixedLengthCodeInput(const FixedLengthCodeInput&) = delete;

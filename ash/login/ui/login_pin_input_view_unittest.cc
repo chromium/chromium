@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_pin_input_view.h"
 #include <memory>
 #include <string>
+#include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/login_test_base.h"
 #include "base/bind.h"
 #include "base/optional.h"
@@ -32,7 +33,7 @@ class LoginPinInputViewTest
 
   void SetUp() override {
     LoginTestBase::SetUp();
-    view_ = new LoginPinInputView();
+    view_ = new LoginPinInputView(CreateDefaultLoginPalette());
     view_->Init(base::BindRepeating(&LoginPinInputViewTest::OnPinSubmit,
                                     base::Unretained(this)),
                 base::BindRepeating(&LoginPinInputViewTest::OnPinChanged,

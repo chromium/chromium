@@ -311,6 +311,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   add_spacer(kDescriptionToAccessCodeDistanceDp);
 
+  LoginPalette palette = CreateDefaultLoginPalette();
+
   // Access code input view.
   if (request.pin_length.has_value()) {
     CHECK_GT(request.pin_length.value(), 0);
@@ -321,7 +323,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
         base::BindRepeating(&PinRequestView::SubmitCode,
                             base::Unretained(this)),
         base::BindRepeating(&PinRequestView::OnBack, base::Unretained(this)),
-        request.obscure_pin));
+        request.obscure_pin, palette.pin_input_text_color));
     access_code_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   } else {
     auto flex_code_input = std::make_unique<FlexCodeInput>(
@@ -330,7 +332,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
         base::BindRepeating(&PinRequestView::SubmitCode,
                             base::Unretained(this)),
         base::BindRepeating(&PinRequestView::OnBack, base::Unretained(this)),
-        request.obscure_pin);
+        request.obscure_pin, palette.pin_input_text_color);
     flex_code_input->SetAccessibleName(default_accessible_title_);
     access_code_view_ = AddChildView(std::move(flex_code_input));
   }

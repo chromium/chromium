@@ -37,6 +37,7 @@ constexpr const int kPinAutosubmitMaxLength = 12;
 class LoginPinInput : public FixedLengthCodeInput {
  public:
   LoginPinInput(int length,
+                const LoginPalette& palette,
                 LoginPinInputView::OnPinSubmit on_submit,
                 LoginPinInputView::OnPinChanged on_changed);
 
@@ -61,6 +62,7 @@ class LoginPinInput : public FixedLengthCodeInput {
 };
 
 LoginPinInput::LoginPinInput(int length,
+                             const LoginPalette& palette,
                              LoginPinInputView::OnPinSubmit on_submit,
                              LoginPinInputView::OnPinChanged on_changed)
     : FixedLengthCodeInput(length,
@@ -69,7 +71,8 @@ LoginPinInput::LoginPinInput(int length,
                                                base::Unretained(this)),
                            /*on_enter*/ base::DoNothing(),
                            /*on_escape*/ base::DoNothing(),
-                           /*obscure_pin*/ true),
+                           /*obscure_pin*/ true,
+                           /*text_color*/ palette.pin_input_text_color),
       length_(length),
       on_submit_(on_submit),
       on_changed_(on_changed) {
@@ -147,11 +150,12 @@ views::View* LoginPinInputView::TestApi::code_input() {
   return view_->code_input_;
 }
 
-LoginPinInputView::LoginPinInputView() : length_(kDefaultLength) {
+LoginPinInputView::LoginPinInputView(const LoginPalette& palette)
+    : length_(kDefaultLength), palette_(palette) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   code_input_ = AddChildView(std::make_unique<LoginPinInput>(
-      length_,
+      length_, palette_,
       base::BindRepeating(&LoginPinInputView::SubmitPin,
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
@@ -192,7 +196,7 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
   RemoveChildView(code_input_);
   delete code_input_;
   code_input_ = AddChildView(std::make_unique<LoginPinInput>(
-      pin_length,
+      pin_length, palette_,
       base::BindRepeating(&LoginPinInputView::SubmitPin,
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,

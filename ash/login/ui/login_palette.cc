@@ -30,7 +30,9 @@ LoginPalette CreateDefaultLoginPalette() {
        .pin_ink_drop_highlight_color =
            SkColorSetA(ripple_attributes.base_color, highlight_opacity),
        .pin_ink_drop_ripple_color =
-           SkColorSetA(ripple_attributes.base_color, inkdrop_opacity)});
+           SkColorSetA(ripple_attributes.base_color, inkdrop_opacity),
+       .pin_input_text_color = AshColorProvider::Get()->GetContentLayerColor(
+           AshColorProvider::ContentLayerType::kTextColorPrimary)});
 }
 
 LoginPalette CreateInSessionAuthPalette() {
@@ -41,7 +43,8 @@ LoginPalette CreateInSessionAuthPalette() {
        .button_enabled_color = SK_ColorDKGRAY,
        .button_annotation_color = SK_ColorDKGRAY,
        .pin_ink_drop_highlight_color = SkColorSetA(SK_ColorDKGRAY, 0x0A),
-       .pin_ink_drop_ripple_color = SkColorSetA(SK_ColorDKGRAY, 0x0F)});
+       .pin_ink_drop_ripple_color = SkColorSetA(SK_ColorDKGRAY, 0x0F),
+       .pin_input_text_color = SK_ColorDKGRAY});
 }
 
 }  // namespace ash

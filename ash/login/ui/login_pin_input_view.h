@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/access_code_input.h"
+#include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ui/views/view.h"
 
@@ -47,7 +48,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
     LoginPinInputView* const view_;
   };
 
-  LoginPinInputView();
+  explicit LoginPinInputView(const LoginPalette& palette);
   LoginPinInputView& operator=(const LoginPinInputView&) = delete;
   LoginPinInputView(const LoginPinInputView&) = delete;
   ~LoginPinInputView() override;
@@ -89,6 +90,9 @@ class ASH_EXPORT LoginPinInputView : public views::View {
 
   // Current field length.
   size_t length_ = kDefaultLength;
+
+  // Palette for the instance.
+  LoginPalette palette_;
 
   // Whether the field is read only.
   bool is_read_only_ = false;
