@@ -21,6 +21,7 @@ class AbortSignal;
 class ExceptionState;
 class MessagePort;
 class ReadableStreamDefaultController;
+class ReadableWritablePair;
 class ScriptPromise;
 class ScriptState;
 class StrategySizeAlgorithm;
@@ -115,15 +116,15 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                                          ScriptValue options,
                                          ExceptionState&);
 
-  ScriptValue pipeThrough(ScriptState*,
-                          ScriptValue transform_stream,
-                          ExceptionState&);
+  ReadableStream* pipeThrough(ScriptState*,
+                              ReadableWritablePair* transform,
+                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-pipe-through
-  ScriptValue pipeThrough(ScriptState*,
-                          ScriptValue transform_stream,
-                          const StreamPipeOptions* options,
-                          ExceptionState&);
+  ReadableStream* pipeThrough(ScriptState*,
+                              ReadableWritablePair* transform,
+                              const StreamPipeOptions* options,
+                              ExceptionState&);
 
   ScriptPromise pipeTo(ScriptState*,
                        WritableStream* destination,

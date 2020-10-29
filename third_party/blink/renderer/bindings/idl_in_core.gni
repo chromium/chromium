@@ -486,6 +486,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/streams/readable_stream.idl",
           "//third_party/blink/renderer/core/streams/readable_stream_default_controller.idl",
           "//third_party/blink/renderer/core/streams/readable_stream_default_reader.idl",
+          "//third_party/blink/renderer/core/streams/readable_writable_pair.idl",
           "//third_party/blink/renderer/core/streams/stream_pipe_options.idl",
           "//third_party/blink/renderer/core/streams/transform_stream.idl",
           "//third_party/blink/renderer/core/streams/transform_stream_default_controller.idl",

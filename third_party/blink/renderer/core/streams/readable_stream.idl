@@ -12,8 +12,8 @@
     // TODO(yhirano): function length is different from what's specced. Fix it.
     [RaisesException, CallWith=ScriptState] Promise<any> cancel(optional any reason);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamGetReader] ReadableStreamDefaultReader getReader(optional any mode);
-    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeThrough] any pipeThrough(
-        any transformStream, optional StreamPipeOptions options);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeThrough] ReadableStream pipeThrough(
+        ReadableWritablePair transform, optional StreamPipeOptions options);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
         WritableStream destination, optional StreamPipeOptions options);
     [RaisesException, CallWith=ScriptState] any tee();

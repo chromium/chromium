@@ -271,6 +271,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_property_definition.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_readable_writable_pair.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_readable_writable_pair.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_reporting_observer_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_reporting_observer_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_request_init.cc",
