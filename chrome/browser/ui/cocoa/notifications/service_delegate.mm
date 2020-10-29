@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/ui/cocoa/notifications/notification_service_delegate.h"
+#import "chrome/browser/ui/cocoa/notifications/service_delegate.h"
 
 #import <AppKit/AppKit.h>
 

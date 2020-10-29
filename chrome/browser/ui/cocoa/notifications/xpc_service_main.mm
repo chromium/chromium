@@ -6,7 +6,7 @@
 #include <xpc/xpc.h>
 
 #include "base/mac/scoped_nsobject.h"
-#import "chrome/browser/ui/cocoa/notifications/notification_service_delegate.h"
+#import "chrome/browser/ui/cocoa/notifications/service_delegate.h"
 
 // The main method of the notification alert xpc service.
 // It is initiaized by Chrome on demand whenever a notification of type alert
