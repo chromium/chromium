@@ -17,7 +17,7 @@ namespace {
 
 x11::Future<x11::GetPropertyReply> GetWorkspace() {
   auto* connection = x11::Connection::Get();
-  return connection->GetProperty({
+  return connection->GetProperty(x11::GetPropertyRequest{
       .window = connection->default_screen().root,
       .property = static_cast<x11::Atom>(gfx::GetAtom("_NET_CURRENT_DESKTOP")),
       .type = static_cast<x11::Atom>(gfx::GetAtom("CARDINAL")),

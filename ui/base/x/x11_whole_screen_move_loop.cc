@@ -263,7 +263,7 @@ void X11WholeScreenMoveLoop::GrabEscKey() {
 void X11WholeScreenMoveLoop::CreateDragInputWindow(
     x11::Connection* connection) {
   grab_input_window_ = connection->GenerateId<x11::Window>();
-  connection->CreateWindow({
+  connection->CreateWindow(x11::CreateWindowRequest{
       .wid = grab_input_window_,
       .parent = connection->default_root(),
       .x = -100,

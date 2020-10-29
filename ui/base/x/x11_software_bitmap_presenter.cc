@@ -76,11 +76,11 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
     connection->CreatePixmap({depth, pixmap_id, widget, width, height});
     ScopedPixmap pixmap(connection, pixmap_id);
 
-    connection->ChangeGC(
-        {.gc = gc, .subwindow_mode = x11::SubwindowMode::IncludeInferiors});
+    connection->ChangeGC(x11::ChangeGCRequest{
+        .gc = gc, .subwindow_mode = x11::SubwindowMode::IncludeInferiors});
     connection->CopyArea({widget, pixmap_id, gc, x, y, 0, 0, width, height});
-    connection->ChangeGC(
-        {.gc = gc, .subwindow_mode = x11::SubwindowMode::ClipByChildren});
+    connection->ChangeGC(x11::ChangeGCRequest{
+        .gc = gc, .subwindow_mode = x11::SubwindowMode::ClipByChildren});
 
     auto req = connection->GetImage({x11::ImageFormat::ZPixmap, pixmap_id, 0, 0,
                                      width, height, kAllPlanes});

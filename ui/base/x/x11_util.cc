@@ -220,13 +220,13 @@ void WithdrawWindow(x11::Window window) {
 }
 
 void RaiseWindow(x11::Window window) {
-  x11::Connection::Get()->ConfigureWindow(
-      {.window = window, .stack_mode = x11::StackMode::Above});
+  x11::Connection::Get()->ConfigureWindow(x11::ConfigureWindowRequest{
+      .window = window, .stack_mode = x11::StackMode::Above});
 }
 
 void LowerWindow(x11::Window window) {
-  x11::Connection::Get()->ConfigureWindow(
-      {.window = window, .stack_mode = x11::StackMode::Below});
+  x11::Connection::Get()->ConfigureWindow(x11::ConfigureWindowRequest{
+      .window = window, .stack_mode = x11::StackMode::Below});
 }
 
 void DefineCursor(x11::Window window, x11::Cursor cursor) {
@@ -235,14 +235,15 @@ void DefineCursor(x11::Window window, x11::Cursor cursor) {
   // timing on BookmarkBarViewTest8.DNDBackToOriginatingMenu on
   // linux-chromeos-rel, causing it to flake.
   x11::Connection::Get()
-      ->ChangeWindowAttributes({.window = window, .cursor = cursor})
+      ->ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
+          .window = window, .cursor = cursor})
       .Sync();
 }
 
 x11::Window CreateDummyWindow(const std::string& name) {
   auto* connection = x11::Connection::Get();
   auto window = connection->GenerateId<x11::Window>();
-  connection->CreateWindow({
+  connection->CreateWindow(x11::CreateWindowRequest{
       .wid = window,
       .parent = connection->default_root(),
       .x = -100,
@@ -560,7 +561,7 @@ bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
 
 bool PropertyExists(x11::Window window, const std::string& property_name) {
   auto response = x11::Connection::Get()
-                      ->GetProperty({
+                      ->GetProperty(x11::GetPropertyRequest{
                           .window = static_cast<x11::Window>(window),
                           .property = gfx::GetAtom(property_name),
                           .long_length = 1,
@@ -573,7 +574,7 @@ bool GetRawBytesOfProperty(x11::Window window,
                            x11::Atom property,
                            scoped_refptr<base::RefCountedMemory>* out_data,
                            x11::Atom* out_type) {
-  auto future = x11::Connection::Get()->GetProperty({
+  auto future = x11::Connection::Get()->GetProperty(x11::GetPropertyRequest{
       .window = static_cast<x11::Window>(window),
       .property = property,
       // Don't limit the amount of returned data.

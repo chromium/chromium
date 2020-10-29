@@ -143,11 +143,11 @@ bool GetArrayProperty(x11::Window window,
   using lentype = decltype(x11::GetPropertyRequest::long_length);
   auto response =
       x11::Connection::Get()
-          ->GetProperty(
-              {.window = static_cast<x11::Window>(window),
-               .property = name,
-               .long_length =
-                   amount ? length : std::numeric_limits<lentype>::max()})
+          ->GetProperty(x11::GetPropertyRequest{
+              .window = static_cast<x11::Window>(window),
+              .property = name,
+              .long_length =
+                  amount ? length : std::numeric_limits<lentype>::max()})
           .Sync();
   if (!response || response->format != CHAR_BIT * sizeof(T))
     return false;
@@ -178,13 +178,13 @@ void SetArrayProperty(x11::Window window,
   static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
   std::vector<uint8_t> data(sizeof(T) * values.size());
   memcpy(data.data(), values.data(), sizeof(T) * values.size());
-  x11::Connection::Get()->ChangeProperty(
-      {.window = static_cast<x11::Window>(window),
-       .property = name,
-       .type = type,
-       .format = CHAR_BIT * sizeof(T),
-       .data_len = values.size(),
-       .data = base::RefCountedBytes::TakeVector(&data)});
+  x11::Connection::Get()->ChangeProperty(x11::ChangePropertyRequest{
+      .window = static_cast<x11::Window>(window),
+      .property = name,
+      .type = type,
+      .format = CHAR_BIT * sizeof(T),
+      .data_len = values.size(),
+      .data = base::RefCountedBytes::TakeVector(&data)});
 }
 
 template <typename T>
