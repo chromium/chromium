@@ -21,6 +21,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":network_diagnostics.m",
+    ":network_diagnostics_mojo.m",
     ":network_health_summary.m",
   ]
 }
@@ -42,6 +43,13 @@ js_library("network_diagnostics") {
   ]
 }
 
+js_library("network_diagnostics_mojo") {
+  deps = [
+    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
 js_library("network_health_summary.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_summary.m.js" ]
   deps = [
@@ -56,11 +64,18 @@ js_library("network_health_summary.m") {
 js_library("network_diagnostics.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics.m.js" ]
   deps = [
+    ":network_diagnostics_mojo.m",
     "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_diagnostics_module" ]
+}
+
+js_library("network_diagnostics_mojo.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js" ]
+  deps = [ "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile" ]
+  extra_deps = [ ":modulize" ]
 }
 
 # polymer_modulizer for converting Polymer2 to Polymer3
@@ -77,8 +92,13 @@ polymer_modulizer("network_diagnostics") {
   html_type = "dom-module"
 }
 
+js_modulizer("modulize") {
+  input_files = [ "network_diagnostics_mojo.js" ]
+}
+
 group("polymer3_elements") {
   public_deps = [
+    ":modulize",
     ":network_diagnostics_module",
     ":network_health_summary_module",
   ]
