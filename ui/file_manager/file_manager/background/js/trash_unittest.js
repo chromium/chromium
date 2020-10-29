@@ -162,8 +162,6 @@ async function testMyFilesTrash(done) {
 /**
  * Test that Downloads has its own /Downloads/.Trash since it is a separate
  * mount on a device and we don't want move to trash to be a copy operation.
- *
- * @suppress {accessControls} Access shouldMoveToTrash_().
  */
 async function testDownloadsHasOwnTrash(done) {
   const trash = new Trash();
@@ -197,14 +195,14 @@ async function testDownloadsHasOwnTrash(done) {
 
   // Delete /Downloads/.Trash/files/file2.
   const file2Trashed = fs.entries['/Downloads/.Trash/files/file2'];
-  assertFalse(!!trash.shouldMoveToTrash_(volumeManager, file2Trashed));
+  assertFalse(!!trash.shouldMoveToTrash(volumeManager, file2Trashed));
   await trash.removeFileOrDirectory(
       volumeManager, file2Trashed, deletePermanently);
   assertEquals(11, Object.keys(fs.entries).length);
 
   // Delete /Downloads/.Trash.
   const downloadsTrash = fs.entries['/Downloads/.Trash'];
-  assertFalse(!!trash.shouldMoveToTrash_(volumeManager, downloadsTrash));
+  assertFalse(!!trash.shouldMoveToTrash(volumeManager, downloadsTrash));
   await trash.removeFileOrDirectory(
       volumeManager, downloadsTrash, deletePermanently);
   assertEquals(7, Object.keys(fs.entries).length);
@@ -214,8 +212,6 @@ async function testDownloadsHasOwnTrash(done) {
 
 /**
  * Test crostini trash in .local/share/Trash.
- *
- * @suppress {accessControls} Access shouldMoveToTrash_().
  */
 async function testCrostiniTrash(done) {
   const trash = new Trash();
@@ -252,14 +248,14 @@ async function testCrostiniTrash(done) {
   // Move /file2 to trash, then delete /.local/share/Trash/files/file2.
   await trash.removeFileOrDirectory(volumeManager, file2, deletePermanently);
   const file2Trashed = fs.entries['/.local/share/Trash/files/file2'];
-  assertFalse(!!trash.shouldMoveToTrash_(volumeManager, file2Trashed));
+  assertFalse(!!trash.shouldMoveToTrash(volumeManager, file2Trashed));
   await trash.removeFileOrDirectory(
       volumeManager, file2Trashed, deletePermanently);
   assertEquals(8, Object.keys(fs.entries).length);
 
   // Delete /.local/share/Trash.
   const crostiniTrash = fs.entries['/.local/share/Trash'];
-  assertFalse(!!trash.shouldMoveToTrash_(volumeManager, crostiniTrash));
+  assertFalse(!!trash.shouldMoveToTrash(volumeManager, crostiniTrash));
   await trash.removeFileOrDirectory(
       volumeManager, crostiniTrash, deletePermanently);
   assertEquals(4, Object.keys(fs.entries).length);

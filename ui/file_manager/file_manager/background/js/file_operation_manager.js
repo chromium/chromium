@@ -388,9 +388,21 @@ class FileOperationManagerImpl {
   }
 
   /**
+   * Returns true if all entries will use trash for delete.
+   *
+   * @param {!VolumeManager} volumeManager
+   * @param {!Array<!Entry>} entries The entries.
+   * @return {boolean}
+   */
+  willUseTrash(volumeManager, entries) {
+    return entries.every(
+        entry => this.trash_.shouldMoveToTrash(volumeManager, entry));
+  }
+
+  /**
    * Schedules the files deletion.
    *
-   * @param {Array<Entry>} entries The entries.
+   * @param {!Array<!Entry>} entries The entries.
    */
   deleteEntries(entries) {
     const task =

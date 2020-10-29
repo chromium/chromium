@@ -1112,6 +1112,13 @@ CommandHandler.COMMANDS_['delete'] = new class extends Command {
       return;
     }
 
+    // We show undo toast rather than dialog for entries which will use trash.
+    if (fileManager.fileOperationManager.willUseTrash(
+            fileManager.volumeManager, entries)) {
+      fileManager.fileOperationManager.deleteEntries(entries);
+      return;
+    }
+
     const message = entries.length === 1 ?
         strf('GALLERY_CONFIRM_DELETE_ONE', entries[0].name) :
         strf('GALLERY_CONFIRM_DELETE_SOME', entries.length);

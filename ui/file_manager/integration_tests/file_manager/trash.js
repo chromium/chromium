@@ -6,6 +6,7 @@
 
 /**
  * Delete files in MyFiles and ensure they are moved to /.Trash.
+ * Then delete items from /.Trash/files and /.Trash/info, then delete /.Trash.
  */
 testcase.trashMoveToTrash = async () => {
   const appId = await setupAndWaitUntilReady(
@@ -15,12 +16,8 @@ testcase.trashMoveToTrash = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
 
-  // Delete item and confirm delete.
+  // Delete item and wait for it to be removed (no dialog).
   await remoteCall.waitAndClickElement(appId, '#delete-button');
-  await remoteCall.waitAndClickElement(
-      appId, '.files-confirm-dialog .cr-dialog-ok');
-
-  // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -42,15 +39,49 @@ testcase.trashMoveToTrash = async () => {
   // Navigate to /My files/Downloads/.Trash/files.
   await navigateWithDirectoryTree(appId, '/My files/Downloads/.Trash/files');
 
-  // Ensure hello.txt exists.
-  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
+  // Select hello.txt.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
 
-  // Navigate to /My files/.Trash/files.
+  // Delete item and confirm delete (dialog shown).
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog .cr-dialog-ok');
+
+  // Wait for completion of file deletion.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Navigate to /My files/Downloads/.Trash/info.
   await navigateWithDirectoryTree(appId, '/My files/Downloads/.Trash/info');
 
-  // Ensure hello.txt.trashinfo exists.
-  await remoteCall.waitForElement(
+  // Select hello.txt.trashinfo.
+  await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt.trashinfo"]');
+
+  // Delete item and confirm delete (dialog shown).
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog .cr-dialog-ok');
+
+  // Wait for completion of file deletion.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt.trashinfo"]');
+
+  // Navigate to /My files/Downloads.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // Select .Trash.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name=".Trash"]');
+
+  // Delete item and confirm delete (dialog shown).
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog .cr-dialog-ok');
+
+  // Wait for completion of file deletion.
+  await remoteCall.waitForElementLost(appId, '#file-list [file-name=".Trash"]');
 };
 
 /**
@@ -64,12 +95,8 @@ testcase.trashRestore = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
 
-  // Delete item and confirm delete.
+  // Delete item and wait for it to be removed (no dialog).
   await remoteCall.waitAndClickElement(appId, '#delete-button');
-  await remoteCall.waitAndClickElement(
-      appId, '.files-confirm-dialog .cr-dialog-ok');
-
-  // Wait for file to be removed from list.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 

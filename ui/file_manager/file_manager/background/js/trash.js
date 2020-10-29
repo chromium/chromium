@@ -84,9 +84,8 @@ class Trash {
    * @param {!Entry} entry The entry to remove.
    * @return {?TrashConfig} Valid TrashConfig if item should be moved to trash,
    *     else null if item should be permanently deleted.
-   * @private
    */
-  shouldMoveToTrash_(volumeManager, entry) {
+  shouldMoveToTrash(volumeManager, entry) {
     const info = volumeManager.getLocationInfo(entry);
     if (!loadTimeData.getBoolean('FILES_TRASH_ENABLED') || !info) {
       return null;
@@ -118,7 +117,7 @@ class Trash {
    */
   removeFileOrDirectory(volumeManager, entry, permanentlyDelete) {
     if (!permanentlyDelete) {
-      const config = this.shouldMoveToTrash_(volumeManager, entry);
+      const config = this.shouldMoveToTrash(volumeManager, entry);
       if (config) {
         return this.trashFileOrDirectory_(entry, config);
       }
