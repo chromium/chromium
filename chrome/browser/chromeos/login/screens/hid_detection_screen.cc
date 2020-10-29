@@ -173,6 +173,9 @@ void HIDDetectionScreen::ShowImpl() {
   if (!is_hidden())
     return;
 
+  if (adapter_)
+    adapter_->AddObserver(this);
+
   if (view_)
     view_->SetPinDialogVisible(false);
   SendPointingDeviceNotification();
@@ -196,6 +199,9 @@ void HIDDetectionScreen::HideImpl() {
 
   if (discovery_session_.get())
     discovery_session_->Stop();
+
+  if (adapter_)
+    adapter_->RemoveObserver(this);
 
   if (view_)
     view_->Hide();
@@ -484,8 +490,6 @@ void HIDDetectionScreen::InitializeAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = adapter;
   CHECK(adapter_.get());
-
-  adapter_->AddObserver(this);
 }
 
 void HIDDetectionScreen::StartBTDiscoverySession() {
