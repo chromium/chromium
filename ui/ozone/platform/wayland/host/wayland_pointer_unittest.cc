@@ -312,12 +312,18 @@ TEST_P(WaylandPointerTest, FlingVertical) {
   // 1st axis event.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_VERTICAL_SCROLL, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // 2nd axis event.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_VERTICAL_SCROLL, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // axis_stop event which should trigger fling scroll.
   SendAxisStopEvents(pointer_->resource(), ++time);
-
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
   Sync();
 
   // Usual axis events should follow before the fling event.
@@ -360,12 +366,18 @@ TEST_P(WaylandPointerTest, FlingHorizontal) {
   // 1st axis event.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_HORIZONTAL_SCROLL, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // 2nd axis event.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_HORIZONTAL_SCROLL, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // axis_stop event which should trigger fling scroll.
   SendAxisStopEvents(pointer_->resource(), ++time);
-
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
   Sync();
 
   // Usual axis events should follow before the fling event.
@@ -409,16 +421,25 @@ TEST_P(WaylandPointerTest, FlingCancel) {
   // 1st axis event.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_VERTICAL_SCROLL, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // 2nd axis event.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_VERTICAL_SCROLL, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // 3rd axis event, whose offset is 0, should make the following axis_stop
   // trigger fling cancel.
   SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
                  WL_POINTER_AXIS_VERTICAL_SCROLL, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // axis_stop event which should trigger fling cancel.
   SendAxisStopEvents(pointer_->resource(), ++time);
-
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
   Sync();
 
   // Usual axis events should follow before the fling event.
@@ -466,12 +487,18 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
   // 1st axis event notifies scrolls both in vertical and horizontal.
   SendDiagonalAxisEvents(pointer_->resource(), ++time,
                          WL_POINTER_AXIS_SOURCE_FINGER, 20, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // 2st axis event notifies scrolls both in vertical and horizontal.
   SendDiagonalAxisEvents(pointer_->resource(), ++time,
                          WL_POINTER_AXIS_SOURCE_FINGER, 20, 10);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
   // axis_stop event which should trigger fling scroll.
   SendAxisStopEvents(pointer_->resource(), ++time);
-
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
   Sync();
 
   // Usual axis events should follow before the fling event.

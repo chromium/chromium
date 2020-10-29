@@ -29,7 +29,8 @@ using ::testing::SaveArg;
 namespace ui {
 
 WaylandTest::WaylandTest()
-    : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
+    : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
+                        base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto keyboard_layout_engine =
       std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);
