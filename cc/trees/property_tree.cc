@@ -344,6 +344,11 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   gfx::Vector2dF ancestor_sticky_box_offset;
   if (sticky_data->nearest_node_shifting_sticky_box !=
       TransformTree::kInvalidNodeId) {
+    // TODO(crbug.com/1128479): Investigate why there would be an invalid index
+    // passed in. Early return for now.
+    if (sticky_data->nearest_node_shifting_sticky_box >=
+        static_cast<int>(property_trees()->transform_tree.size()))
+      return gfx::Vector2dF();
     const StickyPositionNodeData* ancestor_sticky_data =
         GetStickyPositionData(sticky_data->nearest_node_shifting_sticky_box);
     DCHECK(ancestor_sticky_data);
@@ -354,6 +359,11 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   gfx::Vector2dF ancestor_containing_block_offset;
   if (sticky_data->nearest_node_shifting_containing_block !=
       TransformTree::kInvalidNodeId) {
+    // TODO(crbug.com/1128479): Investigate why there would be an invalid index
+    // passed in. Early return for now.
+    if (sticky_data->nearest_node_shifting_containing_block >=
+        static_cast<int>(property_trees()->transform_tree.size()))
+      return gfx::Vector2dF();
     const StickyPositionNodeData* ancestor_sticky_data = GetStickyPositionData(
         sticky_data->nearest_node_shifting_containing_block);
     DCHECK(ancestor_sticky_data);
