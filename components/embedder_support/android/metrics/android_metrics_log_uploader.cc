@@ -5,10 +5,8 @@
 #include "components/embedder_support/android/metrics/android_metrics_log_uploader.h"
 
 #include "base/android/jni_array.h"
-#include "base/check.h"
 #include "components/embedder_support/android/metrics/jni/AndroidMetricsLogUploader_jni.h"
 #include "components/metrics/log_decoder.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
@@ -35,16 +33,6 @@ void AndroidMetricsLogUploader::UploadLog(
     on_upload_complete_.Run(400, 0, true);
     return;
   }
-
-  // Speculative CHECKs to see why WebView UMA (and probably other embedders of
-  // this component) are missing system_profiles for a small fraction of
-  // records. TODO(https://crbug.com/1081925): downgrade these to DCHECKs or
-  // remove entirely when we figure out the issue.
-  CHECK(!log_data.empty());
-  metrics::ChromeUserMetricsExtension uma_log;
-  bool can_parse = uma_log.ParseFromString(log_data);
-  CHECK(can_parse);
-  CHECK(uma_log.has_system_profile());
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> java_data = ToJavaByteArray(
