@@ -159,6 +159,10 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
            type == net::AmbientAuthAllowedProfileTypes::ALL;
   }
 
+  // System profile does not need ambient authentication.
+  if (profile->GetOriginalProfile()->IsSystemProfile())
+    return false;
+
   // Profile type not yet supported.
   NOTREACHED();
 

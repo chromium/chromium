@@ -372,7 +372,8 @@ bool Profile::IsRegularProfile() const {
 }
 
 bool Profile::IsIncognitoProfile() const {
-  return IsPrimaryOTRProfile() && !IsGuestSession();
+  return IsPrimaryOTRProfile() && !IsGuestSession() &&
+         !GetOriginalProfile()->IsSystemProfile();
 }
 
 // static

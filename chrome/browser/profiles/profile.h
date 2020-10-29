@@ -398,9 +398,10 @@ class Profile : public content::BrowserContext {
   std::string GetDebugName() const;
 
   // IsRegularProfile() and IsIncognitoProfile() are mutually exclusive.
-  // IsSystemProfile() implies that IsRegularProfile() is true.
-  // IsOffTheRecord() is true for the off the record profile of incognito mode
-  // and guest sessions, and also non-primary OffTheRecord profiles.
+  // IsSystemProfile() implies that IsRegularProfile() is true. Note that system
+  //   profile will also create an OffTheRecord profile.
+  // IsOffTheRecord() is true for the off the record profile of Incognito mode,
+  // system profile, Guest sessions, and also non-primary OffTheRecord profiles.
 
   // Returns whether it's a regular profile.
   bool IsRegularProfile() const;
