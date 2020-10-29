@@ -20,7 +20,8 @@ class PrivacyScreenToastController;
 class ASH_EXPORT PrivacyScreenToastView : public views::View,
                                           public views::ViewObserver {
  public:
-  explicit PrivacyScreenToastView(PrivacyScreenToastController* controller);
+  PrivacyScreenToastView(PrivacyScreenToastController* controller,
+                         views::Button::PressedCallback callback);
   ~PrivacyScreenToastView() override;
   PrivacyScreenToastView(PrivacyScreenToastView&) = delete;
   PrivacyScreenToastView operator=(PrivacyScreenToastView&) = delete;

@@ -19,8 +19,7 @@ class UnifiedSystemTray;
 // privacy screen is toggled on/off.
 class ASH_EXPORT PrivacyScreenToastController
     : public TrayBubbleView::Delegate,
-      public PrivacyScreenController::Observer,
-      public views::ButtonListener {
+      public PrivacyScreenController::Observer {
  public:
   explicit PrivacyScreenToastController(UnifiedSystemTray* tray);
   ~PrivacyScreenToastController() override;
@@ -46,6 +45,8 @@ class ASH_EXPORT PrivacyScreenToastController
   // Updates the toast UI with the current privacy screen state.
   void UpdateToastView();
 
+  void ButtonPressed();
+
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   void OnMouseEnteredView() override;
@@ -54,9 +55,6 @@ class ASH_EXPORT PrivacyScreenToastController
 
   // PrivacyScreenController::Observer:
   void OnPrivacyScreenSettingChanged(bool enabled) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   UnifiedSystemTray* const tray_;
   TrayBubbleView* bubble_view_ = nullptr;

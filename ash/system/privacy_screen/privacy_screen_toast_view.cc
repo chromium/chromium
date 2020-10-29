@@ -111,7 +111,8 @@ class PrivacyScreenToastLabelView : public views::View {
 };
 
 PrivacyScreenToastView::PrivacyScreenToastView(
-    PrivacyScreenToastController* controller)
+    PrivacyScreenToastController* controller,
+    views::Button::PressedCallback callback)
     : controller_(controller) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kPrivacyScreenToastInsets,
@@ -119,7 +120,8 @@ PrivacyScreenToastView::PrivacyScreenToastView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  button_ = new FeaturePodIconButton(controller, /*is_togglable=*/true);
+  button_ =
+      new FeaturePodIconButton(std::move(callback), /*is_togglable=*/true);
   button_->SetVectorIcon(kPrivacyScreenIcon);
   button_->SetToggled(false);
   button_->AddObserver(this);
