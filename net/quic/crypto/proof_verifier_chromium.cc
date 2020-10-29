@@ -496,6 +496,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         // possible values of CheckCTRequirements() are handled.
         break;
     }
+
     TransportSecurityState::PKPStatus pin_validity =
         transport_security_state_->CheckPublicKeyPins(
             HostPortPair(hostname_, port_),
@@ -503,7 +504,6 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
             cert_verify_result.public_key_hashes, cert_.get(),
             cert_verify_result.verified_cert.get(),
             TransportSecurityState::ENABLE_PIN_REPORTS,
-            proof_verifier_->network_isolation_key_,
             &verify_details_->pinning_failure_log);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:

@@ -143,11 +143,6 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
     expected_content_type_ = content_type;
   }
 
-  void set_expected_network_isolation_key(
-      const NetworkIsolationKey& expected_network_isolation_key) {
-    expected_network_isolation_key_ = expected_network_isolation_key;
-  }
-
   // NetworkDelegateImpl implementation.
   int OnBeforeURLRequest(URLRequest* request,
                          CompletionOnceCallback callback,
@@ -157,12 +152,6 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
     EXPECT_STRCASEEQ("POST", request->method().data());
     EXPECT_FALSE(request->allow_credentials());
     EXPECT_TRUE(request->load_flags() & LOAD_DO_NOT_SAVE_COOKIES);
-
-    EXPECT_EQ(expected_network_isolation_key_,
-              request->isolation_info().network_isolation_key());
-    EXPECT_EQ(IsolationInfo::RequestType::kOther,
-              request->isolation_info().request_type());
-    EXPECT_TRUE(request->site_for_cookies().IsNull());
 
     const HttpRequestHeaders& extra_headers = request->extra_request_headers();
     std::string content_type;
@@ -190,7 +179,6 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
   GURL expect_url_;
   std::set<std::string> expect_reports_;
   std::string expected_content_type_;
-  NetworkIsolationKey expected_network_isolation_key_;
 
   DISALLOW_COPY_AND_ASSIGN(TestReportSenderNetworkDelegate);
 };
@@ -223,9 +211,6 @@ class ReportSenderTest : public TestWithTaskEnvironment {
       size_t request_sequence_number,
       base::OnceCallback<void()> success_callback,
       base::OnceCallback<void(const GURL&, int, int)> error_callback) {
-    NetworkIsolationKey network_isolation_key =
-        NetworkIsolationKey::CreateTransient();
-
     base::RunLoop run_loop;
     network_delegate_.set_url_request_destroyed_callback(
         run_loop.QuitClosure());
@@ -233,11 +218,10 @@ class ReportSenderTest : public TestWithTaskEnvironment {
     network_delegate_.set_expect_url(url);
     network_delegate_.ExpectReport(report);
     network_delegate_.set_expected_content_type("application/foobar");
-    network_delegate_.set_expected_network_isolation_key(network_isolation_key);
 
     EXPECT_EQ(request_sequence_number, network_delegate_.num_requests());
 
-    reporter->Send(url, "application/foobar", report, network_isolation_key,
+    reporter->Send(url, "application/foobar", report,
                    std::move(success_callback), std::move(error_callback));
 
     // The report is sent asynchronously, so wait for the report's
@@ -293,11 +277,11 @@ TEST_F(ReportSenderTest, SendMultipleReportsSimultaneously) {
 
   EXPECT_EQ(0u, network_delegate_.num_requests());
 
-  reporter.Send(url, "application/foobar", kDummyReport, NetworkIsolationKey(),
+  reporter.Send(url, "application/foobar", kDummyReport,
                 base::OnceCallback<void()>(),
                 base::OnceCallback<void(const GURL&, int, int)>());
   reporter.Send(url, "application/foobar", kSecondDummyReport,
-                NetworkIsolationKey(), base::OnceCallback<void()>(),
+                base::OnceCallback<void()>(),
                 base::OnceCallback<void(const GURL&, int, int)>());
 
   run_loop.Run();
@@ -322,7 +306,7 @@ TEST_F(ReportSenderTest, PendingRequestGetsDeleted) {
 
   std::unique_ptr<ReportSender> reporter(
       new ReportSender(context(), TRAFFIC_ANNOTATION_FOR_TESTS));
-  reporter->Send(url, "application/foobar", kDummyReport, NetworkIsolationKey(),
+  reporter->Send(url, "application/foobar", kDummyReport,
                  base::OnceCallback<void()>(),
                  base::OnceCallback<void(const GURL&, int, int)>());
   reporter.reset();

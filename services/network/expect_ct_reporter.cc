@@ -230,10 +230,11 @@ void ExpectCTReporter::OnResponseStarted(net::URLRequest* request,
     return;
   }
 
+  // TODO(https://crbug.com/993805):  Pass in preflight->network_isolation_key,
+  // once reporting API accepts NetworkIsolationKeys.
   report_sender_->Send(preflight->report_uri,
                        "application/expect-ct-report+json; charset=utf-8",
-                       preflight->serialized_report,
-                       preflight->network_isolation_key, success_callback_,
+                       preflight->serialized_report, success_callback_,
                        // Since |this| owns the |report_sender_|, it's safe to
                        // use base::Unretained here: |report_sender_| will be
                        // destroyed before |this|.

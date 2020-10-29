@@ -6740,6 +6740,8 @@ static_library("test_support") {
     sources += [
       "safe_browsing/certificate_reporting_service_test_utils.cc",
       "safe_browsing/certificate_reporting_service_test_utils.h",
+      "safe_browsing/mock_report_sender.cc",
+      "safe_browsing/mock_report_sender.h",
     ]
     deps += [
       "//chrome/browser/safe_browsing",
