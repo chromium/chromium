@@ -10,6 +10,14 @@
 namespace performance_manager {
 namespace execution_context_priority {
 
+// static
+MaxVoteAggregator::StampedVote*
+MaxVoteAggregator::StampedVote::FromAcceptedVote(AcceptedVote* accepted_vote) {
+  static_assert(offsetof(StampedVote, vote) == 0,
+                "AcceptedVote is expected to be at offset 0 of StampedVote");
+  return reinterpret_cast<StampedVote*>(accepted_vote);
+}
+
 MaxVoteAggregator::MaxVoteAggregator() : factory_(this) {}
 
 MaxVoteAggregator::~MaxVoteAggregator() = default;
@@ -138,9 +146,7 @@ bool MaxVoteAggregator::VoteData::RemoveVote(size_t index) {
 }
 
 size_t MaxVoteAggregator::VoteData::GetVoteIndex(AcceptedVote* vote) {
-  static_assert(offsetof(StampedVote, vote) == 0,
-                "AcceptedVote is expected to be at offset 0 of StampedVote");
-  StampedVote* stamped_vote = reinterpret_cast<StampedVote*>(vote);
+  StampedVote* stamped_vote = StampedVote::FromAcceptedVote(vote);
   DCHECK_NE(0u, votes_.size());
   DCHECK_LE(votes_.data(), stamped_vote);
   DCHECK_LT(stamped_vote, votes_.data() + votes_.size());

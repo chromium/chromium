@@ -15,8 +15,10 @@ namespace execution_context_priority {
 class MaxVoteAggregatorTestAccess {
  public:
   using VoteData = MaxVoteAggregator::VoteData;
+  using StampedVote = MaxVoteAggregator::StampedVote;
 };
 using VoteData = MaxVoteAggregatorTestAccess::VoteData;
+using StampedVote = MaxVoteAggregatorTestAccess::StampedVote;
 
 namespace {
 
@@ -75,6 +77,12 @@ class FakeVoteConsumer : public test::DummyVoteConsumer {
 };
 
 }  // namespace
+
+TEST(MaxVoteAggregatorTest, StampedVoteCast) {
+  StampedVote stamped_vote;
+
+  EXPECT_EQ(&stamped_vote, StampedVote::FromAcceptedVote(&stamped_vote.vote));
+}
 
 TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
   // Build a simple consumer/voter chain so that we generate an actual VoterId.

@@ -61,6 +61,10 @@ class MaxVoteAggregator : public VoteConsumer {
       return vote_id > rhs.vote_id;
     }
 
+    // Given an AcceptedVote that's embedded in a StampedVote::vote, retrieve
+    // the embedding StampedVote instance.
+    static StampedVote* FromAcceptedVote(AcceptedVote* accepted_vote);
+
     // IntrusiveHeap contract. We actually don't need HeapHandles, as we already
     // know the positions of the elements in the heap directly, as they are
     // tracked with explicit back pointers.
