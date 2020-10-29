@@ -127,10 +127,5 @@ MenuItem::Type GetType(extensions::api::context_menus::ItemType type,
   return extensions::MenuItem::NORMAL;
 }
 
-bool HasLazyContext(const Extension* extension) {
-  return BackgroundInfo::HasLazyBackgroundPage(extension) ||
-         BackgroundInfo::IsServiceWorkerBased(extension);
-}
-
 }  // namespace context_menus_api_helpers
 }  // namespace extensions

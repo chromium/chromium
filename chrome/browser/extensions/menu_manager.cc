@@ -807,7 +807,7 @@ bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
 
 void MenuManager::WriteToStorage(const Extension* extension,
                                  const MenuItem::ExtensionKey& extension_key) {
-  if (!BackgroundInfo::HasLazyBackgroundPage(extension))
+  if (!BackgroundInfo::HasLazyContext(extension))
     return;
   // <webview> menu items are transient and not stored in storage.
   if (extension_key.webview_instance_id)
@@ -849,11 +849,14 @@ void MenuManager::ReadFromStorage(const std::string& extension_id,
       AddContextItem(extension, std::move(items[i]));
     }
   }
+
+  for (TestObserver& observer : observers_)
+    observer.DidReadFromStorage(extension_id);
 }
 
 void MenuManager::OnExtensionLoaded(content::BrowserContext* browser_context,
                                     const Extension* extension) {
-  if (store_ && BackgroundInfo::HasLazyBackgroundPage(extension)) {
+  if (store_ && BackgroundInfo::HasLazyContext(extension)) {
     store_->GetExtensionValue(extension->id(), kContextMenusKey,
                               base::BindOnce(&MenuManager::ReadFromStorage,
                                              AsWeakPtr(), extension->id()));
@@ -898,6 +901,14 @@ void MenuManager::RemoveAllIncognitoContextItems() {
   for (auto remove_iter = items_to_remove.begin();
        remove_iter != items_to_remove.end(); ++remove_iter)
     RemoveContextMenuItem(*remove_iter);
+}
+
+void MenuManager::AddObserver(TestObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MenuManager::RemoveObserver(TestObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 MenuItem::ExtensionKey::ExtensionKey()

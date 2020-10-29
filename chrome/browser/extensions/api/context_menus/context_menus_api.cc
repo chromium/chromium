@@ -39,7 +39,7 @@ ExtensionFunction::ResponseAction ContextMenusCreateFunction::Run() {
   if (params->create_properties.id.get()) {
     id.string_uid = *params->create_properties.id;
   } else {
-    if (context_menus_api_helpers::HasLazyContext(extension()))
+    if (BackgroundInfo::HasLazyContext(extension()))
       return RespondNow(Error(kIdRequiredError));
 
     // The Generated Id is added by context_menus_custom_bindings.js.

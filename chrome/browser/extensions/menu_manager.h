@@ -18,6 +18,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
@@ -291,6 +293,12 @@ class MenuManager : public ProfileObserver,
   static const char kOnContextMenus[];
   static const char kOnWebviewContextMenus[];
 
+  class TestObserver : public base::CheckedObserver {
+   public:
+    ~TestObserver() override = default;
+    virtual void DidReadFromStorage(const std::string& extension_id) = 0;
+  };
+
   MenuManager(content::BrowserContext* context, StateStore* store_);
   ~MenuManager() override;
 
@@ -379,6 +387,9 @@ class MenuManager : public ProfileObserver,
   // Removes all "incognito" "split" mode context items.
   void RemoveAllIncognitoContextItems();
 
+  void AddObserver(TestObserver* observer);
+  void RemoveObserver(TestObserver* observer);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MenuManagerTest, DeleteParent);
   FRIEND_TEST_ALL_PREFIXES(MenuManagerTest, RemoveOneByOne);
@@ -416,6 +427,8 @@ class MenuManager : public ProfileObserver,
 
   // Owned by ExtensionSystem.
   StateStore* store_;
+
+  base::ObserverList<TestObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuManager);
 };

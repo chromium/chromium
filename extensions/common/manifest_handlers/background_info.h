@@ -33,6 +33,9 @@ class BackgroundInfo : public Extension::ManifestData {
   static bool HasGeneratedBackgroundPage(const Extension* extension);
   static bool AllowJSAccess(const Extension* extension);
   static bool IsServiceWorkerBased(const Extension* extension);
+  static bool HasLazyContext(const Extension* extension) {
+    return HasLazyBackgroundPage(extension) || IsServiceWorkerBased(extension);
+  }
 
   bool has_background_page() const {
     return background_url_.is_valid() || !background_scripts_.empty();
