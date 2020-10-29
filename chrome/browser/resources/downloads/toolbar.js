@@ -90,11 +90,6 @@ Polymer({
         this.items.some(data => !data.isDangerous && !data.isMixedContent);
     getToastManager().show(loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);
-    if (canUndo) {
-      this.fire('iron-announce', {
-        text: loadTimeData.getString('undoDescription'),
-      });
-    }
   },
 
   /** @private */

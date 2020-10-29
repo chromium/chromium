@@ -334,8 +334,6 @@ Polymer({
       }
     }
     this.$.toast.show();
-    this.fire('iron-announce', {text: this.removalNotification_});
-    this.fire('iron-announce', {text: this.i18n('undoDescription')});
   },
 
   /** @private */

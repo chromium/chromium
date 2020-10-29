@@ -423,9 +423,6 @@ export const CommandManager = Polymer({
             assert(state.selectedFolder));
         getToastManager().querySelector('dom-if').if = true;
         getToastManager().show(loadTimeData.getString('toastFolderSorted'));
-        this.fire('iron-announce', {
-          text: loadTimeData.getString('undoDescription'),
-        });
         break;
       case Command.ADD_BOOKMARK:
         /** @type {!BookmarksEditDialogElement} */ (this.$.editDialog.get())
@@ -843,11 +840,6 @@ export const CommandManager = Polymer({
         });
     getToastManager().querySelector('dom-if').if = canUndo;
     getToastManager().showForStringPieces(pieces);
-    if (canUndo) {
-      this.fire('iron-announce', {
-        text: loadTimeData.getString('undoDescription'),
-      });
-    }
   },
 
   /**

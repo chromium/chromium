@@ -19,8 +19,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
@@ -143,10 +142,6 @@ Polymer({
     });
 
     this.searchService_.loadMore();
-
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
   },
 
   /** @override */
@@ -270,11 +265,6 @@ Polymer({
         this.items_.some(data => !data.isDangerous && !data.isMixedContent);
     getToastManager().show(loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);
-    if (canUndo) {
-      this.fire('iron-announce', {
-        text: loadTimeData.getString('undoDescription'),
-      });
-    }
   },
 
   /** @private */

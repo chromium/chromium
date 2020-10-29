@@ -93,10 +93,6 @@ cr.define('cr.toastManager', () => {
      */
     showInternal_(hideSlotted) {
       this.$.slotted.hidden = hideSlotted;
-      Polymer.IronA11yAnnouncer.requestAvailability();
-      this.fire('iron-announce', {
-        text: this.$.content.textContent,
-      });
       this.$.toast.show();
     },
 

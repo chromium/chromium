@@ -48,20 +48,10 @@ suite('cr-toast', function() {
     assertFalse(toast.open);
   });
 
-  test('auto hide with (open = true)', function() {
-    const duration = 100;
-    toast.duration = duration;
-
-    toast.open = true;
-
-    mockTimer.tick(duration);
-    assertFalse(toast.open);
-  });
-
   test('show() clears auto-hide', function() {
     const duration = 70;
     toast.duration = duration;
-    toast.open = true;
+    toast.show();
     mockTimer.tick(duration - 1);
     toast.show();
 
@@ -77,20 +67,11 @@ suite('cr-toast', function() {
     assertFalse(toast.open);
   });
 
-  test('(open = true) does not clear auto-hide', function() {
-    const duration = 70;
-    toast.duration = duration;
-    toast.open = true;
-    mockTimer.tick(duration - 1);
-    toast.open = true;
-    mockTimer.tick(1);
-    assertFalse(toast.open);
-  });
 
   test('clearing duration clears timeout', function() {
     const nonZeroDuration = 30;
     toast.duration = nonZeroDuration;
-    toast.open = true;
+    toast.show();
     assertTrue(toast.open);
 
     const zeroDuration = 0;
@@ -115,7 +96,7 @@ suite('cr-toast', function() {
   test('setting duration clears auto-hide', function() {
     const oldDuration = 30;
     toast.duration = oldDuration;
-    toast.open = true;
+    toast.show();
 
     mockTimer.tick(oldDuration - 1);
     assertTrue(toast.open);

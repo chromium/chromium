@@ -14,6 +14,7 @@ Polymer({
     },
 
     open: {
+      readOnly: true,
       type: Boolean,
       value: false,
       reflectToAttribute: true,
@@ -37,7 +38,7 @@ Polymer({
 
     if (this.open && this.duration !== 0) {
       this.hideTimeoutId_ = window.setTimeout(() => {
-        this.open = false;
+        this._setOpen(false);
       }, this.duration);
     }
   },
@@ -58,7 +59,7 @@ Polymer({
     // the same as a previous toast.
     this.removeAttribute('role');
 
-    this.open = true;
+    this._setOpen(true);
     this.setAttribute('role', 'alert');
 
     if (shouldResetAutohide) {
@@ -68,6 +69,6 @@ Polymer({
 
   /** Hides the toast. */
   hide() {
-    this.open = false;
+    this._setOpen(false);
   },
 });
