@@ -3040,6 +3040,8 @@ enum WebFeature {
   kBarcodeDetectorDetect = 3711,
   kFaceDetectorDetect = 3712,
   kTextDetectorDetect = 3713,
+  kLocalStorageFirstUsedBeforeFcp = 3714,
+  kLocalStorageFirstUsedAfterFcp = 3715,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

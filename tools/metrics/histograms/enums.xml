@@ -30066,6 +30066,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3711" label="BarcodeDetectorDetect"/>
   <int value="3712" label="FaceDetectorDetect"/>
   <int value="3713" label="TextDetectorDetect"/>
+  <int value="3714" label="LocalStorageFirstUsedBeforeFcp"/>
+  <int value="3715" label="LocalStorageFirstUsedAfterFcp"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
