@@ -591,8 +591,10 @@ void ClientControlledShellSurface::SetExtraTitle(
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetExtraTitle",
                "extra_title", base::UTF16ToUTF8(extra_title));
 
-  if (!widget_)
+  if (!widget_) {
+    initial_extra_title_ = extra_title;
     return;
+  }
 
   GetFrameView()->GetHeaderView()->GetFrameHeader()->SetFrameTextOverride(
       extra_title);
@@ -1046,6 +1048,8 @@ void ClientControlledShellSurface::InitializeWindowState(
   UpdateFrameWidth();
   if (initial_orientation_lock_ != ash::OrientationLockType::kAny)
     SetOrientationLock(initial_orientation_lock_);
+  if (initial_extra_title_ != base::string16())
+    SetExtraTitle(initial_extra_title_);
 
   // Register Client controlled accelerators.
   views::FocusManager* focus_manager = widget_->GetFocusManager();

@@ -367,6 +367,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // widget is not created yet orientation lock is being set.
   ash::OrientationLockType initial_orientation_lock_ =
       ash::OrientationLockType::kAny;
+  // The extra title to be applied when widget is being created.
+  base::string16 initial_extra_title_ = base::string16();
 
   bool preserve_widget_bounds_ = false;
 
