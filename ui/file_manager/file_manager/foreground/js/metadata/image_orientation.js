@@ -13,7 +13,7 @@ let ImageTransformParam;
  * Class representing image orientation.
  * @final
  */
-class ImageOrientation {
+/* #export */ class ImageOrientation {
   /**
    * The constructor takes 2x2 matrix value that cancels the image orientation:
    * |a, c|

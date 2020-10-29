@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
 }
 
 IN_PROC_BROWSER_TEST_F(CanvasFileManagerJsTest, ImageOrientation) {
-  RunTestURL("foreground/js/metadata/image_orientation_unittest_gen.html");
+  RunTestURL("foreground/js/metadata/image_orientation_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportControllerTest) {

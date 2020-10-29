@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
 visibility = [ "//ui/file_manager/*" ]
@@ -13,7 +14,19 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
+    ":closure_jsmodules",
+    ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
+  ]
+}
+
+js_type_check("closure_jsmodules") {
+  uses_js_modules = true
+  deps = [
+    ":image_orientation.m",
+    ":metadata_item.m",
+    ":metadata_provider.m",
+    ":metadata_request.m",
   ]
 }
 
@@ -128,10 +141,17 @@ js_library("id3_parser") {
 js_library("image_orientation") {
 }
 
-js_unittest("image_orientation_unittest") {
+js_library("image_orientation.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/image_orientation.m.js" ]
+  deps = []
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("image_orientation_unittest.m") {
   deps = [
-    ":image_orientation",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":image_orientation.m",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -187,6 +207,13 @@ js_library("metadata_dispatcher") {
 js_library("metadata_item") {
 }
 
+js_library("metadata_item.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/metadata_item.m.js" ]
+  deps = []
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("metadata_model") {
   deps = [
     ":content_metadata_provider",
@@ -220,7 +247,25 @@ js_library("metadata_provider") {
   ]
 }
 
+js_library("metadata_provider.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/metadata_provider.m.js" ]
+  deps = [
+    ":metadata_item.m",
+    ":metadata_request.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("metadata_request") {
+}
+
+js_library("metadata_request.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/metadata_request.m.js" ]
+  deps = []
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("mock_metadata") {
@@ -260,13 +305,23 @@ js_unittest("thumbnail_model_unittest") {
   ]
 }
 
+js_test_gen_html("js_test_gen_html_modules") {
+  deps = [ ":image_orientation_unittest.m" ]
+  js_module = true
+
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui/file_manager/file_manager/foreground/js/metadata",
+                    "js_module_root=../../ui/file_manager/file_manager/foreground/js/metadata",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                  ]
+}
+
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":content_metadata_provider_unittest",
     ":exif_parser_unittest",
     ":external_metadata_provider_unittest",
     ":file_system_metadata_provider_unittest",
-    ":image_orientation_unittest",
     ":metadata_cache_item_unittest",
     ":metadata_cache_set_unittest",
     ":metadata_model_unittest",
@@ -274,4 +329,13 @@ js_test_gen_html("js_test_gen_html") {
     ":thumbnail_model_unittest",
   ]
   mocks = [ "metadata_dispatcher_mock_deps.js" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "metadata_item.js",
+    "metadata_request.js",
+    "image_orientation.js",
+    "metadata_provider.js",
+  ]
 }
