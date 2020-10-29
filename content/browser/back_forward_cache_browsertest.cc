@@ -34,6 +34,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -376,6 +377,30 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
         << location.ToString();
   }
 
+  void ExpectBrowsingInstanceNotSwappedReason(ShouldSwapBrowsingInstance reason,
+                                              base::Location location) {
+    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
+    AddSampleToBuckets(&expected_browsing_instance_not_swapped_reasons_,
+                       sample);
+
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    "BackForwardCache.HistoryNavigationOutcome."
+                    "BrowsingInstanceNotSwappedReason"),
+                UnorderedElementsAreArray(
+                    expected_browsing_instance_not_swapped_reasons_))
+        << location.ToString();
+
+    if (!check_all_sites_)
+      return;
+
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    "BackForwardCache.AllSites.HistoryNavigationOutcome."
+                    "BrowsingInstanceNotSwappedReason"),
+                UnorderedElementsAreArray(
+                    expected_browsing_instance_not_swapped_reasons_))
+        << location.ToString();
+  }
+
   void ExpectEvictedAfterCommitted(
       std::vector<BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason>
           reasons,
@@ -503,6 +528,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   std::vector<base::Bucket> expected_not_restored_;
   std::vector<base::Bucket> expected_blocklisted_features_;
   std::vector<base::Bucket> expected_disabled_reasons_;
+  std::vector<base::Bucket> expected_browsing_instance_not_swapped_reasons_;
   std::vector<base::Bucket> expected_eviction_after_committing_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unordered_map<base::Feature,
@@ -2493,6 +2519,23 @@ IN_PROC_BROWSER_TEST_F(
     ExpectBlocklistedFeatures(
         {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC,
          blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+        FROM_HERE);
+    ExpectBrowsingInstanceNotSwappedReason(
+        ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache,
+        FROM_HERE);
+
+    web_contents()->GetController().GoForward();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+    ExpectBrowsingInstanceNotSwappedReason(
+        ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
+        FROM_HERE);
+
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+    ExpectBrowsingInstanceNotSwappedReason(
+        ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
         FROM_HERE);
   } else {
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::

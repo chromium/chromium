@@ -123,6 +123,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
 
     not_restored_reasons_.reset();
     blocklisted_features_ = 0;
+    browsing_instance_not_swapped_reason_.reset();
     disabled_reasons_.clear();
     previous_navigation_is_served_from_bfcache_ =
         navigation->IsServedFromBackForwardCache();
