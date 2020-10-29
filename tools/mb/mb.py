@@ -1547,7 +1547,6 @@ class MetaBuildWrapper(object):
       ]
     elif is_cros_device and test_type != 'script':
       cmdline += [
-          '../../testing/test_env.py',
           os.path.join('bin', 'run_%s' % target),
           '--logs-dir=${ISOLATED_OUTDIR}',
       ]
