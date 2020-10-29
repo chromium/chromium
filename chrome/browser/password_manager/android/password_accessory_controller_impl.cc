@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -271,10 +272,9 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     }
   }
 
-  if (origin.GetURL().SchemeIsCryptographic() &&
+  if (IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kFillingPasswordsFromAnyOrigin)) {
-    // TODO(crbug.com/1104132): Disable the feature in insecure websites.
     base::string16 button_title =
         is_password_field
             ? l10n_util::GetStringUTF16(
@@ -439,6 +439,18 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
 
 void PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed() {
   all_passords_bottom_sheet_controller_.reset();
+}
+
+bool PasswordAccessoryControllerImpl::IsSecureSite() {
+  if (security_level_for_testing_) {
+    return security_level_for_testing_ == security_state::SECURE;
+  }
+
+  SecurityStateTabHelper::CreateForWebContents(web_contents_);
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents_);
+
+  return helper && helper->GetSecurityLevel() == security_state::SECURE;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordAccessoryControllerImpl)

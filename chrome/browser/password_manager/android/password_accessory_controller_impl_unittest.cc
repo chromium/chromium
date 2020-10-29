@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -203,7 +204,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override { mock_password_store_->ShutdownOnUIThread(); }
 
-  PasswordAccessoryController* controller() {
+  PasswordAccessoryControllerImpl* controller() {
     return PasswordAccessoryControllerImpl::FromWebContents(web_contents());
   }
 
@@ -639,6 +640,7 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlacklisted) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, AddsShowOtherPasswordsIfEnabled) {
+  controller()->SetSecurityLevelForTesting(security_state::SECURE);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kFillingPasswordsFromAnyOrigin);
@@ -658,6 +660,7 @@ TEST_F(PasswordAccessoryControllerTest, AddsShowOtherPasswordsIfEnabled) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, AddsShowOtherUsername) {
+  controller()->SetSecurityLevelForTesting(security_state::SECURE);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kFillingPasswordsFromAnyOrigin);
@@ -677,7 +680,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsShowOtherUsername) {
 }
 
 TEST_F(PasswordAccessoryControllerTest,
-       AddsShowOtherPasswordForOnlySecuredSites) {
+       AddsShowOtherPasswordForOnlyCryptographicSchemeSites) {
+  controller()->SetSecurityLevelForTesting(security_state::SECURE);
   // `Setup` method sets the URL to https but http is required for this method.
   NavigateAndCommit(GURL(kExampleHttpSite));
   FocusWebContentsOnMainFrame();
@@ -698,8 +702,27 @@ TEST_F(PasswordAccessoryControllerTest,
 }
 
 TEST_F(PasswordAccessoryControllerTest, HidesShowOtherPasswordsIfDisabled) {
+  controller()->SetSecurityLevelForTesting(security_state::SECURE);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kFillingPasswordsFromAnyOrigin);
+  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
+                                           passwords_empty_str(kExampleDomain));
+  data_builder.AppendFooterCommand(manage_passwords_str(),
+                                   autofill::AccessoryAction::MANAGE_PASSWORDS);
+  EXPECT_CALL(mock_manual_filling_controller_,
+              RefreshSuggestions(std::move(data_builder).Build()));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_manual_generation_available=*/false);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       HideShowOtherPasswordForLowSecurityLevelSites) {
+  controller()->SetSecurityLevelForTesting(security_state::WARNING);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kFillingPasswordsFromAnyOrigin);
   AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
                                            passwords_empty_str(kExampleDomain));

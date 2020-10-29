@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -78,6 +79,18 @@ class PasswordAccessoryControllerImpl
       content::WebContents* web_contents,
       password_manager::ContentPasswordManagerDriver* driver,
       autofill::mojom::FocusedFieldType focused_field_type);
+
+  // Returns true if the current site attached to `web_contents_` has a SECURE
+  // security level.
+  bool IsSecureSite();
+
+#if defined(UNIT_TEST)
+  // Used for testing to set `security_level_for_testing_`.
+  void SetSecurityLevelForTesting(
+      security_state::SecurityLevel security_level) {
+    security_level_for_testing_ = security_level;
+  }
+#endif
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -143,6 +156,10 @@ class PasswordAccessoryControllerImpl
   // Records the last focused field type that `RefreshSuggestionsForField()` was
   // called with.
   autofill::mojom::FocusedFieldType last_focused_field_type_;
+
+  // Security level used for testing only.
+  security_state::SecurityLevel security_level_for_testing_ =
+      security_state::NONE;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
