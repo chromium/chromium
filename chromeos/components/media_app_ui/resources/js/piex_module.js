@@ -133,8 +133,8 @@ function makeOrientationIfdFrame(value) {
  * @return {!Promise<!File>}
  */
 async function extractFromRawImageBuffer(buffer) {
-  /** Quantization table. */
-  const DQT_MARKER = 0xffdb;
+  /** Application Segment Marker. */
+  const APP1_MARKER = 0xffe1;
 
   /** SOI. Page 64. */
   const START_OF_IMAGE = 0xffd8;
@@ -171,9 +171,11 @@ async function extractFromRawImageBuffer(buffer) {
     return original('No SOI');
   }
 
-  // Files returned by Piex should begin immediately with JPEG headers.
-  if (view.getUint16(2) !== DQT_MARKER) {
-    return original('Unexpected marker');
+  // Files returned by Piex should begin immediately with JPEG headers (and the
+  // Define Quantization Table marker). If a layer between here and Piex has
+  // added its own APP marker segment(s), don't add a duplicate.
+  if (view.getUint16(2) === APP1_MARKER) {
+    return original('APP1 marker already present');
   }
 
   // Ignore the Start-Of-Image already in `jpegData` (TIFF_HEADER has one).
