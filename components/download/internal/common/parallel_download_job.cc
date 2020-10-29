@@ -185,9 +185,6 @@ void ParallelDownloadJob::BuildParallelRequests() {
           first_slice_offset,
           content_length_ - first_slice_offset + initial_request_offset_,
           GetParallelRequestCount(), GetMinSliceSize());
-    } else {
-      RecordParallelDownloadCreationEvent(
-          ParallelDownloadCreationEvent::FALLBACK_REASON_REMAINING_TIME);
     }
   }
 

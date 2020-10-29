@@ -55637,6 +55637,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="ParallelDownloadCreationEvent">
+  <obsolete>
+    Deprecated as of 10/2020
+  </obsolete>
   <int value="0" label="Parallel download started"/>
   <int value="1" label="Fall back to normal download"/>
   <int value="2" label="No strong validators response headers"/>

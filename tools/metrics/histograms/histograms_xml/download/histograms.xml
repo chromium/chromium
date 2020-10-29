@@ -491,6 +491,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.ParallelDownload.CreationEvent"
     enum="ParallelDownloadCreationEvent" expires_after="2020-12-06">
+  <obsolete>
+    Deprecated as of 10/2020
+  </obsolete>
   <owner>xingliu@chromium.org</owner>
   <summary>
     When parallel downloading feature is enabled, a download may be created as
