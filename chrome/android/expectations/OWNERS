@@ -1,4 +1,5 @@
-# Anyone can approve expectation updates. These expectation files exist to
-# prevent changing them without knowing, and to provide a git history of
-# changes to these important aggregated files.
+# Many expectation updates are trivial in nature, and so global ownership
+# is used here.
+# If you are unsure whether or not changes make sense, please request a
+# knowledgeable reviewer (e.g. from //chrome/android/OWNERS).
 *
