@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+
+declare_args() {
+  # Whether to integrate Chime notification SDK into Chrome.
+  use_chime_android_sdk = true
+}
+
+chime_module_desc = {
+  name = "chime"
+  android_manifest =
+      "//chrome/android/modules/chime/internal/java/AndroidManifest.xml"
+
+  # The actual SDK lives in a DFM in downstream.
+  if (enable_chrome_android_internal) {
+    java_deps = [ "//clank/features/chime:chime_dfm_java" ]
+  } else {
+    java_deps = [ "//chrome/android/modules/chime/internal:java" ]
+  }
+}
