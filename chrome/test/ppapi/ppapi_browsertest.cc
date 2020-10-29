@@ -275,7 +275,11 @@ PPAPI_SOCKET_TEST(TCPSocket_Backlog)
 #endif
 PPAPI_SOCKET_TEST(TCPSocket_Listen)
 PPAPI_SOCKET_TEST(TCPSocket_Interface_1_0)
+
+// Flaky on Windows https://crbug.com/1143728
+#if !defined(OS_WIN)
 PPAPI_SOCKET_TEST(TCPSocket_UnexpectedCalls)
+#endif
 
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(TCPServerSocketPrivate_Listen)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(TCPServerSocketPrivate_Backlog)
