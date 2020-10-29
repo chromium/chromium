@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -52,7 +53,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.WebContents;
@@ -93,7 +93,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private final Handler mHandler;
     private AutocompleteResult mAutocompleteResult;
 
-    private ToolbarDataProvider mDataProvider;
+    private LocationBarDataProvider mDataProvider;
     private OverviewModeBehavior mOverviewModeBehavior;
     private OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
 
@@ -262,7 +262,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     /**
      * Sets the data provider for the toolbar.
      */
-    void setToolbarDataProvider(ToolbarDataProvider provider) {
+    void setLocationBarDataProvider(LocationBarDataProvider provider) {
         mDataProvider = provider;
     }
 
@@ -741,7 +741,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                 mRequestSuggestions = null;
 
                 // There may be no tabs when searching form omnibox in overview mode. In that case,
-                // ToolbarDataProvider.getCurrentUrl() returns NTP url.
+                // LocationBarDataProvider.getCurrentUrl() returns NTP url.
                 if (!mDataProvider.hasTab() && !mDataProvider.isInOverviewAndShowingOmnibox()) {
                     // crbug.com/764749
                     Log.w(TAG, "onTextChangedForAutocomplete: no tab");
@@ -903,13 +903,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             // different from the current URL, even if it wound up at the same place
             // (e.g. manually retyping the same search query), and it seems wrong to
             // treat this as a reload.
-            transition = PageTransition.RELOAD;
-        } else if (((transition & PageTransition.CORE_MASK) == PageTransition.GENERATED)
-                && TextUtils.equals(
-                        suggestion.getFillIntoEdit(), mDataProvider.getDisplaySearchTerms())) {
-            // When the omnibox is displaying the default search provider search terms,
-            // the user focuses the omnibox, and hits Enter without refining the search
-            // terms, we should classify this transition as a RELOAD.
             transition = PageTransition.RELOAD;
         } else if (type == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
                 && mUrlBarEditingTextProvider.wasLastEditPaste()) {

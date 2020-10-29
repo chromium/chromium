@@ -19,7 +19,6 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -51,7 +50,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -258,11 +256,6 @@ public abstract class ToolbarLayout
             }
 
             @Override
-            public boolean hasTab() {
-                return false;
-            }
-
-            @Override
             public String getCurrentUrl() {
                 return "";
             }
@@ -270,11 +263,6 @@ public abstract class ToolbarLayout
             @Override
             public UrlBarData getUrlBarData() {
                 return UrlBarData.EMPTY;
-            }
-
-            @Override
-            public String getTitle() {
-                return "";
             }
 
             @Override
@@ -290,31 +278,6 @@ public abstract class ToolbarLayout
             @Override
             public boolean isUsingBrandColor() {
                 return false;
-            }
-
-            @Override
-            public boolean isOfflinePage() {
-                return false;
-            }
-
-            @Override
-            public boolean isPreview() {
-                return false;
-            }
-
-            @Override
-            public int getSecurityLevel() {
-                return ConnectionSecurityLevel.NONE;
-            }
-
-            @Override
-            public int getSecurityIconResource(boolean isTablet) {
-                return 0;
-            }
-
-            @Override
-            public @ColorRes int getSecurityIconColorStateList() {
-                return 0;
             }
         };
     }

@@ -21,6 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBi
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.ViewProvider;
@@ -215,8 +215,8 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
     }
 
     @Override
-    public void setToolbarDataProvider(ToolbarDataProvider toolbarDataProvider) {
-        mMediator.setToolbarDataProvider(toolbarDataProvider);
+    public void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider) {
+        mMediator.setLocationBarDataProvider(locationBarDataProvider);
     }
 
     @Override

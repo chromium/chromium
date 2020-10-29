@@ -20,10 +20,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -90,11 +90,11 @@ public class VoiceRecognitionHandler {
         void setSearchQuery(final String query);
 
         /**
-         * Grabs a reference to the toolbar data provider from the location bar.
-         * @return The {@link ToolbarDataProvider} currently in use by the
+         * Grabs a reference to the location data provider from the location bar.
+         * @return The {@link LocationBarDataProvider} currently in use by the
          *         {@link LocationBarLayout}.
          */
-        ToolbarDataProvider getToolbarDataProvider();
+        LocationBarDataProvider getLocationBarDataProvider();
 
         /**
          * Grabs a reference to the autocomplete coordinator from the location bar.
@@ -287,8 +287,10 @@ public class VoiceRecognitionHandler {
             }
 
             // Since voice was used, we need to let the frame know that there was a user gesture.
-            ToolbarDataProvider toolbarDataProvider = mDelegate.getToolbarDataProvider();
-            Tab currentTab = toolbarDataProvider != null ? toolbarDataProvider.getTab() : null;
+            LocationBarDataProvider locationBarDataProvider =
+                    mDelegate.getLocationBarDataProvider();
+            Tab currentTab =
+                    locationBarDataProvider != null ? locationBarDataProvider.getTab() : null;
             if (currentTab != null) {
                 if (mVoiceSearchWebContentsObserver != null) {
                     mVoiceSearchWebContentsObserver.destroy();
@@ -448,10 +450,10 @@ public class VoiceRecognitionHandler {
      * @return Whether or not voice search is enabled.
      */
     public boolean isVoiceSearchEnabled() {
-        ToolbarDataProvider toolbarDataProvider = mDelegate.getToolbarDataProvider();
-        if (toolbarDataProvider == null) return false;
+        LocationBarDataProvider locationBarDataProvider = mDelegate.getLocationBarDataProvider();
+        if (locationBarDataProvider == null) return false;
 
-        boolean isIncognito = toolbarDataProvider.isIncognito();
+        boolean isIncognito = locationBarDataProvider.isIncognito();
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
         if (windowAndroid == null || isIncognito) return false;
 

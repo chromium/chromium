@@ -75,8 +75,8 @@ public class StatusViewTest extends DummyUiActivityTestCase {
                                   .findViewById(R.id.location_bar_status);
             mStatusView.setDelegateForTesting(mStatusViewDelegate);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            mStatusView.setToolbarCommonPropertiesModel(
-                    new LocationBarModel(mStatusView.getContext()));
+
+            mStatusView.setLocationBarDataProvider(new LocationBarModel(mStatusView.getContext()));
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             mStatusMCP = PropertyModelChangeProcessor.create(
                     mStatusModel, mStatusView, new StatusViewBinder());

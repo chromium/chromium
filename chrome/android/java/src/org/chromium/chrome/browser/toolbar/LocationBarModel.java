@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
@@ -49,7 +51,7 @@ import java.net.URISyntaxException;
 /**
  * Provides a way of accessing toolbar data and state.
  */
-public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPropertiesModel {
+public class LocationBarModel implements ToolbarDataProvider, LocationBarDataProvider {
     private final Context mContext;
 
     private Tab mTab;
@@ -370,6 +372,12 @@ public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPrope
     public int getSecurityIconResource(boolean isTablet) {
         return getSecurityIconResource(
                 getSecurityLevel(), !isTablet, isOfflinePage(), isPreview(), isPaintPreview());
+    }
+
+    @Override
+    @StringRes
+    public int getSecurityIconContentDescriptionResourceId() {
+        return SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(getSecurityLevel());
     }
 
     @VisibleForTesting

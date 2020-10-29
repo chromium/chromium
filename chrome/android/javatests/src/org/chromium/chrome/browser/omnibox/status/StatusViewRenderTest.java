@@ -71,8 +71,7 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
                                   .inflate(org.chromium.chrome.R.layout.location_status, view, true)
                                   .findViewById(org.chromium.chrome.R.id.location_bar_status);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            mStatusView.setToolbarCommonPropertiesModel(
-                    new LocationBarModel(mStatusView.getContext()));
+            mStatusView.setLocationBarDataProvider(new LocationBarModel(mStatusView.getContext()));
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());
         });

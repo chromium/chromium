@@ -34,6 +34,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -192,7 +193,7 @@ public class VoiceRecognitionHandlerTest {
     /**
      * Test implementation of {@link ToolbarDataProvider}.
      */
-    private class TestDataProvider implements ToolbarDataProvider {
+    private class TestDataProvider implements LocationBarDataProvider {
         private boolean mIncognito;
 
         public void setIncognito(boolean incognito) {
@@ -283,6 +284,11 @@ public class VoiceRecognitionHandlerTest {
         public @ColorRes int getSecurityIconColorStateList() {
             return 0;
         }
+
+        @Override
+        public int getSecurityIconContentDescriptionResourceId() {
+            return 0;
+        }
     }
 
     /**
@@ -331,7 +337,7 @@ public class VoiceRecognitionHandlerTest {
         public void setSearchQuery(final String query) {}
 
         @Override
-        public ToolbarDataProvider getToolbarDataProvider() {
+        public LocationBarDataProvider getLocationBarDataProvider() {
             return mDataProvider;
         }
 

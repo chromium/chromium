@@ -42,11 +42,11 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -86,7 +86,7 @@ public class AutocompleteMediatorUnitTest {
     AutocompleteController mAutocompleteController;
 
     @Mock
-    ToolbarDataProvider mToolbarDataProvider;
+    LocationBarDataProvider mLocationBarDataProvider;
 
     @Mock
     Handler mHandler;
@@ -108,7 +108,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mAutocompleteController, mListModel,
                 mHandler);
-        mMediator.setToolbarDataProvider(mToolbarDataProvider);
+        mMediator.setLocationBarDataProvider(mLocationBarDataProvider);
         mMediator.getDropdownItemViewInfoListBuilderForTest().registerSuggestionProcessor(
                 mMockProcessor);
         mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(
@@ -340,11 +340,11 @@ public class AutocompleteMediatorUnitTest {
         String url = "http://www.example.com";
         String title = "Title";
         int pageClassification = 2;
-        when(mToolbarDataProvider.getProfile()).thenReturn(profile);
-        when(mToolbarDataProvider.getCurrentUrl()).thenReturn(url);
-        when(mToolbarDataProvider.getTitle()).thenReturn(title);
-        when(mToolbarDataProvider.hasTab()).thenReturn(true);
-        when(mToolbarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
+        when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
+        when(mLocationBarDataProvider.getTitle()).thenReturn(title);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(true);
+        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
 
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
@@ -362,10 +362,10 @@ public class AutocompleteMediatorUnitTest {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
         int pageClassification = 2;
-        when(mToolbarDataProvider.getProfile()).thenReturn(profile);
-        when(mToolbarDataProvider.getCurrentUrl()).thenReturn(url);
-        when(mToolbarDataProvider.hasTab()).thenReturn(true);
-        when(mToolbarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
+        when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(true);
+        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -385,10 +385,10 @@ public class AutocompleteMediatorUnitTest {
         Profile profile = Mockito.mock(Profile.class);
         String url = "http://www.example.com";
         int pageClassification = 2;
-        when(mToolbarDataProvider.getProfile()).thenReturn(profile);
-        when(mToolbarDataProvider.getCurrentUrl()).thenReturn(url);
-        when(mToolbarDataProvider.hasTab()).thenReturn(true);
-        when(mToolbarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
+        when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(true);
+        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -474,11 +474,11 @@ public class AutocompleteMediatorUnitTest {
         String url = "http://www.example.com";
         String title = "Title";
         int pageClassification = 2;
-        when(mToolbarDataProvider.getProfile()).thenReturn(profile);
-        when(mToolbarDataProvider.getCurrentUrl()).thenReturn(url);
-        when(mToolbarDataProvider.getTitle()).thenReturn(title);
-        when(mToolbarDataProvider.hasTab()).thenReturn(true);
-        when(mToolbarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
+        when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
+        when(mLocationBarDataProvider.getTitle()).thenReturn(title);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(true);
+        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
 
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn(url);
 
@@ -500,11 +500,11 @@ public class AutocompleteMediatorUnitTest {
         String url = "http://www.example.com";
         String title = "Title";
         int pageClassification = 2;
-        when(mToolbarDataProvider.getProfile()).thenReturn(profile);
-        when(mToolbarDataProvider.getCurrentUrl()).thenReturn(url);
-        when(mToolbarDataProvider.getTitle()).thenReturn(title);
-        when(mToolbarDataProvider.hasTab()).thenReturn(true);
-        when(mToolbarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getProfile()).thenReturn(profile);
+        when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
+        when(mLocationBarDataProvider.getTitle()).thenReturn(title);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(true);
+        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
 
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 

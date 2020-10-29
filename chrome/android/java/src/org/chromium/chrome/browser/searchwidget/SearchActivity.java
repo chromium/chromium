@@ -164,7 +164,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox = (SearchActivityLocationBarLayout) mContentView.findViewById(
                 R.id.search_location_bar);
         mSearchBox.setDelegate(this);
-        mSearchBox.setToolbarDataProvider(mSearchBoxDataProvider);
+        mSearchBox.setLocationBarDataProvider(mSearchBoxDataProvider);
         mSearchBox.initializeControls(
                 new WindowDelegate(getWindow()), getWindowAndroid(), null, null, null, null);
         mSearchBox.setProfileSupplier(mProfileSupplier);

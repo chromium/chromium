@@ -170,17 +170,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         void backKeyPressed();
 
         /**
-         * @return Whether or not we should force LTR text on the URL bar when unfocused.
-         */
-        boolean shouldForceLTR();
-
-        /**
-         * @return Whether or not the copy/cut action should grab the underlying URL or just copy
-         *         whatever's in the URL bar verbatim.
-         */
-        boolean shouldCutCopyVerbatim();
-
-        /**
          * Called to notify that a tap or long press gesture has been detected.
          * @param isLongPress Whether or not is a long press gesture.
          */
@@ -343,7 +332,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         // normally (to allow users to make non-URL searches and to avoid showing Android's split
         // insertion point when an RTL user enters RTL text). Also render text normally when the
         // text field is empty (because then it displays an instruction that is not a URL).
-        if (mFocused || length() == 0 || !mUrlBarDelegate.shouldForceLTR()) {
+        if (mFocused || length() == 0) {
             setTextDirection(TEXT_DIRECTION_INHERIT);
         } else {
             setTextDirection(TEXT_DIRECTION_LTR);
@@ -597,8 +586,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             return true;
         }
 
-        if ((id == android.R.id.cut || id == android.R.id.copy)
-                && !mUrlBarDelegate.shouldCutCopyVerbatim()) {
+        if ((id == android.R.id.cut || id == android.R.id.copy)) {
             if (id == android.R.id.cut) {
                 RecordUserAction.record("Omnibox.LongPress.Cut");
             } else {

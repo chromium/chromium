@@ -20,6 +20,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.MockedInTests;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
-import org.chromium.chrome.browser.toolbar.ToolbarCommonPropertiesModel;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,11 +62,6 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         boolean shouldShowSearchLoupeEverywhere(boolean isIncognito) {
             return SearchEngineLogoUtils.shouldShowSearchLoupeEverywhere(isIncognito);
         }
-
-        /** @see {@link SearchEngineLogoUtils#doesUrlMatchDefaultSearchEngine} */
-        boolean doesUrlMatchDefaultSearchEngine(String url) {
-            return SearchEngineLogoUtils.doesUrlMatchDefaultSearchEngine(url);
-        }
     }
 
     private final PropertyModel mModel;
@@ -100,7 +95,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     private Resources mResources;
     private Context mContext;
 
-    private ToolbarCommonPropertiesModel mToolbarCommonPropertiesModel;
+    private LocationBarDataProvider mLocationBarDataProvider;
     private UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
 
     private String mUrlBarTextWithAutocomplete = "";
@@ -146,9 +141,8 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     /**
      * Set the ToolbarDataProvider for this class.
      */
-    void setToolbarCommonPropertiesModel(
-            ToolbarCommonPropertiesModel toolbarCommonPropertiesModel) {
-        mToolbarCommonPropertiesModel = toolbarCommonPropertiesModel;
+    void setLocationBarDataProvider(LocationBarDataProvider toolbarCommonPropertiesModel) {
+        mLocationBarDataProvider = toolbarCommonPropertiesModel;
     }
 
     /**
@@ -307,7 +301,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         // Note: When mUrlFocusPercent is non-zero, that means we're still in the focused state from
         // scrolling on the NTP.
         if (!urlHasFocus && MathUtils.areFloatsEqual(mUrlFocusPercent, 0f)
-                && SearchEngineLogoUtils.currentlyOnNTP(mToolbarCommonPropertiesModel)) {
+                && SearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             setStatusIconShown(false);
         }
     }
@@ -336,7 +330,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         }
 
         // Only fade the animation on the new tab page.
-        if (SearchEngineLogoUtils.currentlyOnNTP(mToolbarCommonPropertiesModel)) {
+        if (SearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             float focusAnimationProgress = percent;
             if (!mUrlHasFocus) {
                 focusAnimationProgress = MathUtils.clamp(
@@ -530,23 +524,12 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
         boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
         boolean showIconWhenScrollingOnNTP =
-                SearchEngineLogoUtils.currentlyOnNTP(mToolbarCommonPropertiesModel)
-                && mUrlFocusPercent > 0 && !mUrlHasFocus
-                && !mToolbarCommonPropertiesModel.isLoading() && mShowStatusIconWhenUrlFocused;
-        // Show the logo unfocused if "Query in the omnibox" is active or we're on the NTP. Current
-        // "Query in the omnibox" behavior makes it active for non-dse searches if you've just
-        // changed your default search engine.The included workaround below
-        // (doesUrlMatchDefaultSearchEngine) can be removed once this is fixed.
-        // TODO(crbug.com/991017): Remove doesUrlMatchDefaultSearchEngine when "Query in the
-        //                         omnibox" properly reacts to dse changes.
-        boolean showUnfocusedSearchResultsPage = !mUrlHasFocus
-                && mToolbarCommonPropertiesModel != null
-                && mToolbarCommonPropertiesModel.getDisplaySearchTerms() != null
-                && mDelegate.doesUrlMatchDefaultSearchEngine(
-                        mToolbarCommonPropertiesModel.getCurrentUrl());
+                SearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)
+                && mUrlFocusPercent > 0 && !mUrlHasFocus && !mLocationBarDataProvider.isLoading()
+                && mShowStatusIconWhenUrlFocused;
+        // Show the logo unfocused if we're on the NTP.
         if (mDelegate.shouldShowSearchEngineLogo(mIsIncognito) && mIsSearchEngineStateSetup
-                && (showIconWhenFocused || showIconWhenScrollingOnNTP
-                        || showUnfocusedSearchResultsPage)) {
+                && (showIconWhenFocused || showIconWhenScrollingOnNTP)) {
             getStatusIconResourceForSearchEngineIcon(mIsIncognito, (statusIconRes) -> {
                 mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
             });

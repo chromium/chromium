@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -115,7 +114,7 @@ public class LocationBarLayout extends FrameLayout
     protected UrlBarCoordinator mUrlCoordinator;
     protected AutocompleteCoordinator mAutocompleteCoordinator;
 
-    protected ToolbarDataProvider mToolbarDataProvider;
+    protected LocationBarDataProvider mLocationBarDataProvider;
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
 
@@ -410,11 +409,12 @@ public class LocationBarLayout extends FrameLayout
         if (!mUrlHasFocus) {
             setUrlToPageUrl();
         } else {
-            String currentUrl = mToolbarDataProvider.getCurrentUrl();
-            if (NativePageFactory.isNativePageUrl(currentUrl, mToolbarDataProvider.isIncognito())) {
+            String currentUrl = mLocationBarDataProvider.getCurrentUrl();
+            if (NativePageFactory.isNativePageUrl(
+                        currentUrl, mLocationBarDataProvider.isIncognito())) {
                 setUrlBarTextEmpty();
             } else {
-                setUrlBarText(mToolbarDataProvider.getUrlBarData(), UrlBar.ScrollType.NO_SCROLL,
+                setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.NO_SCROLL,
                         SelectionState.SELECT_ALL);
             }
             setKeyboardVisibility(false, false);
@@ -453,19 +453,19 @@ public class LocationBarLayout extends FrameLayout
     /**
      * Sets the toolbar that owns this LocationBar.
      */
-    public void setToolbarDataProvider(ToolbarDataProvider toolbarDataProvider) {
-        mToolbarDataProvider = toolbarDataProvider;
+    public void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider) {
+        mLocationBarDataProvider = locationBarDataProvider;
 
         updateButtonVisibility();
 
-        mAutocompleteCoordinator.setToolbarDataProvider(toolbarDataProvider);
-        mStatusCoordinator.setToolbarDataProvider(toolbarDataProvider);
+        mAutocompleteCoordinator.setLocationBarDataProvider(locationBarDataProvider);
+        mStatusCoordinator.setLocationBarDataProvider(locationBarDataProvider);
         mUrlCoordinator.setOnFocusChangedCallback(this::onUrlFocusChange);
     }
 
     @Override
-    public final ToolbarDataProvider getToolbarDataProvider() {
-        return mToolbarDataProvider;
+    public final LocationBarDataProvider getLocationBarDataProvider() {
+        return mLocationBarDataProvider;
     }
 
     /**
@@ -503,10 +503,10 @@ public class LocationBarLayout extends FrameLayout
         if (mNativeInitialized
                 && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
                 && PrivacyPreferencesManager.getInstance().shouldPrerender()
-                && mToolbarDataProvider.hasTab()) {
+                && mLocationBarDataProvider.hasTab()) {
             mOmniboxPrerender.prerenderMaybe(userText, getOriginalUrl(),
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
-                    mToolbarDataProvider.getProfile(), mToolbarDataProvider.getTab());
+                    mLocationBarDataProvider.getProfile(), mLocationBarDataProvider.getTab());
         }
     }
 
@@ -586,19 +586,6 @@ public class LocationBarLayout extends FrameLayout
     }
 
     @Override
-    public boolean shouldForceLTR() {
-        return mToolbarDataProvider.getDisplaySearchTerms() == null;
-    }
-
-    @Override
-    public boolean shouldCutCopyVerbatim() {
-        // When cutting/copying text in the URL bar, it will try to copy some version of the actual
-        // URL to the clipboard, not the currently displayed URL bar contents. We want to avoid this
-        // when displaying search terms.
-        return mToolbarDataProvider.getDisplaySearchTerms() != null;
-    }
-
-    @Override
     public void gestureDetected(boolean isLongPress) {
         recordOmniboxFocusReason(isLongPress ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
                                              : OmniboxFocusReason.OMNIBOX_TAP);
@@ -622,8 +609,8 @@ public class LocationBarLayout extends FrameLayout
 
     @Override
     public boolean allowKeyboardLearning() {
-        if (mToolbarDataProvider == null) return false;
-        return !mToolbarDataProvider.isIncognito();
+        if (mLocationBarDataProvider == null) return false;
+        return !mLocationBarDataProvider.isIncognito();
     }
 
     @Override
@@ -669,7 +656,7 @@ public class LocationBarLayout extends FrameLayout
     @Override
     public boolean isCurrentPage(NativePage nativePage) {
         assert nativePage != null;
-        return nativePage == mToolbarDataProvider.getNewTabPageForCurrentTab();
+        return nativePage == mLocationBarDataProvider.getNewTabPageForCurrentTab();
     }
 
     @Override
@@ -701,9 +688,9 @@ public class LocationBarLayout extends FrameLayout
         // If the location bar is focused, the toolbar background color would be the default color
         // regardless of whether it is branded or not.
         final int defaultPrimaryColor = ChromeColors.getDefaultThemeColor(
-                getResources(), mToolbarDataProvider.isIncognito());
+                getResources(), mLocationBarDataProvider.isIncognito());
         final int primaryColor =
-                mUrlHasFocus ? defaultPrimaryColor : mToolbarDataProvider.getPrimaryColor();
+                mUrlHasFocus ? defaultPrimaryColor : mLocationBarDataProvider.getPrimaryColor();
 
         // This will be called between inflation and initialization. For those calls, using a null
         // ColorStateList should have no visible impact to the user.
@@ -727,11 +714,11 @@ public class LocationBarLayout extends FrameLayout
 
         mStatusCoordinator.setUseDarkColors(useDarkColors);
         mStatusCoordinator.setIncognitoBadgeVisibility(
-                mToolbarDataProvider.isIncognito() && !mIsTablet);
+                mLocationBarDataProvider.isIncognito() && !mIsTablet);
 
         if (mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.updateVisualsForState(
-                    useDarkColors, mToolbarDataProvider.isIncognito());
+                    useDarkColors, mLocationBarDataProvider.isIncognito());
         }
     }
 
@@ -762,9 +749,9 @@ public class LocationBarLayout extends FrameLayout
         mMicButton.setImageDrawable(drawable);
 
         final int defaultPrimaryColor = ChromeColors.getDefaultThemeColor(
-                getResources(), mToolbarDataProvider.isIncognito());
+                getResources(), mLocationBarDataProvider.isIncognito());
         final int primaryColor =
-                mUrlHasFocus ? defaultPrimaryColor : mToolbarDataProvider.getPrimaryColor();
+                mUrlHasFocus ? defaultPrimaryColor : mLocationBarDataProvider.getPrimaryColor();
         ColorStateList colorStateList =
                 mAssistantVoiceSearchService.getMicButtonColorStateList(primaryColor, getContext());
         ApiCompatibilityUtils.setImageTintList(mMicButton, colorStateList);
@@ -788,7 +775,7 @@ public class LocationBarLayout extends FrameLayout
      * <p>If the current tab is null, the URL text will be cleared.
      */
     public void setUrlToPageUrl() {
-        String currentUrl = mToolbarDataProvider.getCurrentUrl();
+        String currentUrl = mLocationBarDataProvider.getCurrentUrl();
 
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
@@ -804,15 +791,12 @@ public class LocationBarLayout extends FrameLayout
         }
 
         mOriginalUrl = currentUrl;
-        @ScrollType
-        int scrollType = mToolbarDataProvider.getDisplaySearchTerms() != null
-                ? UrlBar.ScrollType.SCROLL_TO_BEGINNING
-                : UrlBar.ScrollType.SCROLL_TO_TLD;
-        setUrlBarText(mToolbarDataProvider.getUrlBarData(), scrollType, SelectionState.SELECT_ALL);
-        if (!mToolbarDataProvider.hasTab()) return;
+        setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.SCROLL_TO_TLD,
+                SelectionState.SELECT_ALL);
+        if (!mLocationBarDataProvider.hasTab()) return;
 
         // Profile may be null if switching to a tab that has not yet been initialized.
-        Profile profile = mToolbarDataProvider.getProfile();
+        Profile profile = mLocationBarDataProvider.getProfile();
         if (profile != null && mOmniboxPrerender != null) mOmniboxPrerender.clear(profile);
     }
 
@@ -846,9 +830,9 @@ public class LocationBarLayout extends FrameLayout
         // side is initialized
         assert mNativeInitialized : "Loading URL before native side initialized";
 
-        // TODO(crbug.com/1085812): Should be taking a fulll loaded LoadUrlParams.
-        if (ReturnToChromeExperimentsUtil.willHandleLoadUrlWithPostDataFromStartSurface(
-                    url, transition, postDataType, postData, mToolbarDataProvider.isIncognito())) {
+        // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
+        if (ReturnToChromeExperimentsUtil.willHandleLoadUrlWithPostDataFromStartSurface(url,
+                    transition, postDataType, postData, mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
@@ -932,7 +916,7 @@ public class LocationBarLayout extends FrameLayout
 
                 mSearchEngine = searchEngine;
                 updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                                     mToolbarDataProvider.isIncognito()),
+                                                     mLocationBarDataProvider.isIncognito()),
                         TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
                         SearchEngineLogoUtils.getSearchLogoUrl());
             }
@@ -941,7 +925,7 @@ public class LocationBarLayout extends FrameLayout
 
         // Force an update once to populate initial data.
         updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                             mToolbarDataProvider.isIncognito()),
+                                             mLocationBarDataProvider.isIncognito()),
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
                 SearchEngineLogoUtils.getSearchLogoUrl());
     }
@@ -980,7 +964,7 @@ public class LocationBarLayout extends FrameLayout
 
     /** Focuses the current page. */
     private void focusCurrentTab() {
-        if (mToolbarDataProvider.hasTab()) {
+        if (mLocationBarDataProvider.hasTab()) {
             View view = getCurrentTab().getView();
             if (view != null) view.requestFocus();
         }
@@ -1043,7 +1027,7 @@ public class LocationBarLayout extends FrameLayout
 
         if (mUrlHasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
-            UrlBarData urlBarData = mToolbarDataProvider.getUrlBarData();
+            UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
             if (urlBarData.editingText != null) {
                 setUrlBarText(urlBarData, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
             }
@@ -1061,7 +1045,7 @@ public class LocationBarLayout extends FrameLayout
             mUrlFocusedWithoutAnimations = false;
 
             // Focus change caused by a close-tab may result in an invalid current tab.
-            if (mToolbarDataProvider.hasTab()) {
+            if (mLocationBarDataProvider.hasTab()) {
                 setUrlToPageUrl();
             }
 
@@ -1076,13 +1060,14 @@ public class LocationBarLayout extends FrameLayout
             if (imm.isActive(mUrlBar)) imm.hideSoftInputFromWindow(getWindowToken(), 0, null);
         }
 
-        if (mToolbarDataProvider.isUsingBrandColor()) updateVisualsForState();
+        if (mLocationBarDataProvider.isUsingBrandColor()) updateVisualsForState();
 
         mStatusCoordinator.onUrlFocusChange(mUrlHasFocus);
 
         if (!mUrlFocusedWithoutAnimations) handleUrlFocusAnimation(mUrlHasFocus);
 
-        if (mUrlHasFocus && mToolbarDataProvider.hasTab() && !mToolbarDataProvider.isIncognito()) {
+        if (mUrlHasFocus && mLocationBarDataProvider.hasTab()
+                && !mLocationBarDataProvider.isIncognito()) {
             if (mNativeInitialized
                     && TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) {
                 GeolocationHeader.primeLocationForGeoHeader();
@@ -1260,8 +1245,8 @@ public class LocationBarLayout extends FrameLayout
     /** @return The current active {@link Tab}. */
     @Nullable
     private Tab getCurrentTab() {
-        if (mToolbarDataProvider == null) return null;
-        return mToolbarDataProvider.getTab();
+        if (mLocationBarDataProvider == null) return null;
+        return mLocationBarDataProvider.getTab();
     }
 
     public void setUnfocusedWidth(int unfocusedWidth) {

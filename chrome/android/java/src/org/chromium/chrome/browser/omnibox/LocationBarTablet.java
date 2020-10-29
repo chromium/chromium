@@ -150,7 +150,7 @@ class LocationBarTablet extends LocationBarLayout {
             mUrlFocusChangeAnimator = null;
         }
 
-        if (getToolbarDataProvider().getNewTabPageForCurrentTab() == null) {
+        if (getLocationBarDataProvider().getNewTabPageForCurrentTab() == null) {
             finishUrlFocusChange(hasFocus);
             return;
         }
@@ -187,7 +187,7 @@ class LocationBarTablet extends LocationBarLayout {
     public void setUrlFocusChangeFraction(float fraction) {
         super.setUrlFocusChangeFraction(fraction);
 
-        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        NewTabPage ntp = getLocationBarDataProvider().getNewTabPageForCurrentTab();
         if (ntp != null) ntp.setUrlFocusChangeAnimationPercent(fraction);
     }
 
@@ -494,8 +494,8 @@ class LocationBarTablet extends LocationBarLayout {
     }
 
     private boolean shouldShowSaveOfflineButton() {
-        if (!mNativeInitialized || mToolbarDataProvider == null) return false;
-        Tab tab = mToolbarDataProvider.getTab();
+        if (!mNativeInitialized || mLocationBarDataProvider == null) return false;
+        Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return false;
         // The save offline button should not be shown on native pages. Currently, trying to
         // save an offline page in incognito crashes, so don't show it on incognito either.
@@ -503,8 +503,8 @@ class LocationBarTablet extends LocationBarLayout {
     }
 
     private boolean isSaveOfflineButtonEnabled() {
-        if (mToolbarDataProvider == null) return false;
-        return DownloadUtils.isAllowedToDownloadPage(mToolbarDataProvider.getTab());
+        if (mLocationBarDataProvider == null) return false;
+        return DownloadUtils.isAllowedToDownloadPage(mLocationBarDataProvider.getTab());
     }
 
     private boolean shouldShowPageActionButtons() {

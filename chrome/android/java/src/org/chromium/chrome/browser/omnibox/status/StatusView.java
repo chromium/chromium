@@ -26,8 +26,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
-import org.chromium.chrome.browser.toolbar.ToolbarCommonPropertiesModel;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.ui.widget.Toast;
 
@@ -74,7 +74,7 @@ public class StatusView extends LinearLayout {
     private boolean mLastTouchDelegateRtlness;
     private Rect mLastTouchDelegateRect;
 
-    private ToolbarCommonPropertiesModel mToolbarCommonPropertiesModel;
+    private LocationBarDataProvider mLocationBarDataProvider;
 
     public StatusView(Context context, AttributeSet attributes) {
         super(context, attributes);
@@ -93,9 +93,8 @@ public class StatusView extends LinearLayout {
         configureAccessibilityDescriptions();
     }
 
-    void setToolbarCommonPropertiesModel(
-            ToolbarCommonPropertiesModel toolbarCommonPropertiesModel) {
-        mToolbarCommonPropertiesModel = toolbarCommonPropertiesModel;
+    void setLocationBarDataProvider(LocationBarDataProvider toolbarCommonPropertiesModel) {
+        mLocationBarDataProvider = toolbarCommonPropertiesModel;
     }
 
     /**
@@ -103,9 +102,8 @@ public class StatusView extends LinearLayout {
      */
     public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl) {
-        if (mToolbarCommonPropertiesModel != null
-                && mDelegate.shouldShowSearchEngineLogo(
-                        mToolbarCommonPropertiesModel.isIncognito())) {
+        if (mLocationBarDataProvider != null
+                && mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
             LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(mIconView.getLayoutParams());
             layoutParams.setMarginEnd(0);
@@ -154,9 +152,8 @@ public class StatusView extends LinearLayout {
         // This is to prevent the visibility of the view being changed both implicitly here and
         // explicitly in setStatusIconShown. The visibility should only be set here through code not
         // related to the dse icon.
-        if (mToolbarCommonPropertiesModel != null
-                && mDelegate.shouldShowSearchEngineLogo(
-                        mToolbarCommonPropertiesModel.isIncognito())) {
+        if (mLocationBarDataProvider != null
+                && mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
@@ -315,9 +312,8 @@ public class StatusView extends LinearLayout {
         // This is to prevent the visibility of the view being changed both explicitly here and
         // implicitly in animateStatusIcon. The visibility should only be set here through code
         // related to the dse icon.
-        if (mToolbarCommonPropertiesModel != null
-                && !mDelegate.shouldShowSearchEngineLogo(
-                        mToolbarCommonPropertiesModel.isIncognito())) {
+        if (mLocationBarDataProvider != null
+                && !mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
             // Let developers know that they shouldn't use this code-path.
             assert false : "Only DSE icon code should set the status icon visibility manually.";
             return;

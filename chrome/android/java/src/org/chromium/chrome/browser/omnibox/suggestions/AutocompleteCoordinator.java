@@ -11,13 +11,13 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -36,9 +36,9 @@ public interface AutocompleteCoordinator extends UrlFocusChangeListener, UrlText
 
     /**
      * Provides data and state for the toolbar component.
-     * @param toolbarDataProvider The data provider.
+     * @param locationBarDataProvider The data provider.
      */
-    void setToolbarDataProvider(ToolbarDataProvider toolbarDataProvider);
+    void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider);
 
     /**
      * @param overviewModeBehavior A means of accessing the current OverviewModeState and a way to

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,8 +57,8 @@ public final class LocationBarCoordinator
      * @param locationBarLayout Inflated {@link LocationBarPhone} or {@link LocationBarTablet}.
      *         {@code LocationBarCoordinator} takes ownership and will destroy this object.
      * @param profileObservableSupplier The supplier of the active profile.
-     * @param toolbarDataProvider {@link ToolbarDataProvider} to be used for accessing Toolbar
-     *         state.
+     * @param locationBarDataProvider {@link LocationBarDataProvider} to be used for accessing
+     *         Toolbar state.
      * @param actionModeCallback The default callback for text editing action bar to use.
      * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
      * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
@@ -74,9 +73,9 @@ public final class LocationBarCoordinator
      */
     public LocationBarCoordinator(View locationBarLayout,
             ObservableSupplier<Profile> profileObservableSupplier,
-            ToolbarDataProvider toolbarDataProvider, ToolbarActionModeCallback actionModeCallback,
-            WindowDelegate windowDelegate, WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider,
+            LocationBarDataProvider locationBarDataProvider,
+            ToolbarActionModeCallback actionModeCallback, WindowDelegate windowDelegate,
+            WindowAndroid windowAndroid, ActivityTabProvider activityTabProvider,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider) {
@@ -93,7 +92,7 @@ public final class LocationBarCoordinator
             throw new IllegalArgumentException(locationBarLayout.getClass().toString());
         }
 
-        mLocationBarLayout.setToolbarDataProvider(toolbarDataProvider);
+        mLocationBarLayout.setLocationBarDataProvider(locationBarDataProvider);
         mLocationBarLayout.setProfileSupplier(profileObservableSupplier);
         mLocationBarLayout.setDefaultTextEditActionModeCallback(actionModeCallback);
         mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
@@ -152,8 +151,8 @@ public final class LocationBarCoordinator
         mLocationBarLayout.updateLoadingState(updateUrl);
     }
 
-    public ToolbarDataProvider getToolbarDataProvider() {
-        return mLocationBarLayout.getToolbarDataProvider();
+    public LocationBarDataProvider getLocationBarDataProvider() {
+        return mLocationBarLayout.getLocationBarDataProvider();
     }
 
     @Override
@@ -205,16 +204,6 @@ public final class LocationBarCoordinator
     @Override
     public void backKeyPressed() {
         mLocationBarLayout.backKeyPressed();
-    }
-
-    @Override
-    public boolean shouldForceLTR() {
-        return mLocationBarLayout.shouldForceLTR();
-    }
-
-    @Override
-    public boolean shouldCutCopyVerbatim() {
-        return mLocationBarLayout.shouldCutCopyVerbatim();
     }
 
     @Override

@@ -133,7 +133,7 @@ public class LocationBarLayoutTest {
         mTestLocationBarModel.setTab(tab, tab.isIncognito());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> getLocationBar().setToolbarDataProvider(mTestLocationBarModel));
+                () -> getLocationBar().setLocationBarDataProvider(mTestLocationBarModel));
     }
 
     private void setUrlToPageUrl(LocationBarLayout locationBar) {

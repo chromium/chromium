@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -246,12 +247,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /**
      *
-     * @param toolbarDataProvider {@link ToolbarDataProvider} to be used for accessing Toolbar
+     * @param locationBarDataProvider {@link ToolbarDataProvider} to be used for accessing Toolbar
      *         state.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
-    public LocationBar createLocationBar(ToolbarDataProvider toolbarDataProvider) {
-        mLocationBar = new CustomTabLocationBar(toolbarDataProvider);
+    public LocationBar createLocationBar(LocationBarDataProvider locationBarDataProvider) {
+        mLocationBar = new CustomTabLocationBar(locationBarDataProvider);
         mUrlCoordinator.setDelegate(mLocationBar);
         mLocationBar.updateVisualsForState();
         return mLocationBar;
@@ -624,21 +625,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * Custom tab-specific implementation of the LocationBar interface.
      */
     private class CustomTabLocationBar implements LocationBar, UrlBar.UrlBarDelegate {
-        private ToolbarDataProvider mToolbarDataProvider;
+        private LocationBarDataProvider mLocationBarDataProvider;
 
-        public CustomTabLocationBar(ToolbarDataProvider toolbarDataProvider) {
-            mToolbarDataProvider = toolbarDataProvider;
-        }
-
-        /** Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
-        ToolbarDataProvider getToolbarDataProvider() {
-            return mToolbarDataProvider;
+        public CustomTabLocationBar(LocationBarDataProvider locationBarDataProvider) {
+            mLocationBarDataProvider = locationBarDataProvider;
         }
 
         @Override
         public void onNativeLibraryReady() {
             mSecurityButton.setOnClickListener(v -> {
-                Tab currentTab = getToolbarDataProvider().getTab();
+                Tab currentTab = mLocationBarDataProvider.getTab();
                 if (currentTab == null) return;
                 WebContents webContents = currentTab.getWebContents();
                 if (webContents == null) return;
@@ -668,11 +664,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public boolean shouldCutCopyVerbatim() {
-            return false;
-        }
-
-        @Override
         public void gestureDetected(boolean isLongPress) {}
 
         @Override
@@ -687,17 +678,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void setTitleToPageTitle() {
-            String title = getToolbarDataProvider().getTitle();
-            if (!getToolbarDataProvider().hasTab() || TextUtils.isEmpty(title)) {
+            String title = mLocationBarDataProvider.getTitle();
+            if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)) {
                 mTitleBar.setText("");
                 return;
             }
 
             // It takes some time to parse the title of the webcontent, and before that
-            // ToolbarDataProvider#getTitle always returns the url. We postpone the title animation
-            // until the title is authentic.
+            // LocationBarDataProvider#getTitle always returns the url. We postpone the title
+            // animation until the title is authentic.
             if ((mState == STATE_DOMAIN_AND_TITLE || mState == STATE_TITLE_ONLY)
-                    && !title.equals(getToolbarDataProvider().getCurrentUrl())
+                    && !title.equals(mLocationBarDataProvider.getCurrentUrl())
                     && !title.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
                 // Delay the title animation until security icon animation finishes.
                 PostTask.postDelayedTask(
@@ -719,7 +710,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             String publisherUrl = TrustedCdn.getPublisherUrl(tab);
             String url = publisherUrl != null ? publisherUrl : tab.getUrlString().trim();
             if (mState == STATE_TITLE_ONLY) {
-                if (!TextUtils.isEmpty(getToolbarDataProvider().getTitle())) setTitleToPageTitle();
+                if (!TextUtils.isEmpty(mLocationBarDataProvider.getTitle())) {
+                    setTitleToPageTitle();
+                }
             }
 
             // Don't show anything for Chrome URLs and "about:blank".
@@ -735,7 +728,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             final int originStart;
             final int originEnd;
             if (publisherUrl != null) {
-                // TODO(bauerb): Move this into the ToolbarDataProvider as well?
                 String plainDisplayText =
                         getContext().getString(R.string.custom_tab_amp_publisher_url,
                                 extractPublisherFromPublisherUrl(publisherUrl));
@@ -749,7 +741,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 formattedDisplayText.removeSpan(ORIGIN_SPAN);
                 displayText = formattedDisplayText;
             } else {
-                UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
+                UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
                 displayText = urlBarData.displayText.subSequence(
                         urlBarData.originStartIndex, urlBarData.originEndIndex);
                 originStart = 0;
@@ -759,7 +751,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // The Lite Status view visibility should be updated on every new URL and only be
             // displayed along with the URL bar.
             final boolean liteStatusIsVisible =
-                    getToolbarDataProvider().isPreview() && mUrlBar.getVisibility() == View.VISIBLE;
+                    mLocationBarDataProvider.isPreview() && mUrlBar.getVisibility() == View.VISIBLE;
             mLiteStatusView.setVisibility(liteStatusIsVisible ? View.VISIBLE : View.GONE);
             mLiteStatusSeparatorView.setVisibility(liteStatusIsVisible ? View.VISIBLE : View.GONE);
 
@@ -804,17 +796,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void updateStatusIcon() {
             if (mState == STATE_TITLE_ONLY) return;
 
-            int securityIconResource = getToolbarDataProvider().getSecurityIconResource(
+            int securityIconResource = mLocationBarDataProvider.getSecurityIconResource(
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
             if (securityIconResource != 0) {
                 ColorStateList colorStateList = AppCompatResources.getColorStateList(
-                        getContext(), getToolbarDataProvider().getSecurityIconColorStateList());
+                        getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
                 ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
             }
             mAnimDelegate.updateSecurityButton(securityIconResource);
 
             int contentDescriptionId =
-                    getToolbarDataProvider().getSecurityIconContentDescriptionResourceId();
+                    mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
             String contentDescription = getContext().getString(contentDescriptionId);
             mSecurityButton.setContentDescription(contentDescription);
 
@@ -839,11 +831,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void destroy() {}
-
-        @Override
-        public boolean shouldForceLTR() {
-            return true;
-        }
 
         @Override
         public void showUrlBarCursorWithoutFocusAnimations() {}

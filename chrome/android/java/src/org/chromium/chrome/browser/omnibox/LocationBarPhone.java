@@ -65,7 +65,7 @@ class LocationBarPhone extends LocationBarLayout {
 
         // The search engine icon will be the first visible focused view when it's showing.
         shouldShowSearchEngineLogo = SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                getToolbarDataProvider().isIncognito());
+                getLocationBarDataProvider().isIncognito());
 
         // This branch will be hit if the search engine logo experiment is enabled.
         if (SearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
@@ -180,7 +180,7 @@ class LocationBarPhone extends LocationBarLayout {
     @Override
     public void updateVisualsForState() {
         super.updateVisualsForState();
-        boolean isIncognito = getToolbarDataProvider().isIncognito();
+        boolean isIncognito = getLocationBarDataProvider().isIncognito();
         setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
         updateStatusVisibility();
     }
@@ -264,12 +264,12 @@ class LocationBarPhone extends LocationBarLayout {
 
         // No offset is required if the experiment is disabled.
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    getToolbarDataProvider().isIncognito())) {
+                    getLocationBarDataProvider().isIncognito())) {
             return 0;
         }
 
         // On non-NTP pages, there will always be an icon when unfocused.
-        if (mToolbarDataProvider.getNewTabPageForCurrentTab() == null) return 0;
+        if (mLocationBarDataProvider.getNewTabPageForCurrentTab() == null) return 0;
 
         // This offset is only required when the focus animation is running.
         if (!hasFocus) return 0;
@@ -299,7 +299,7 @@ class LocationBarPhone extends LocationBarLayout {
 
         // No offset is required if the experiment is disabled.
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    getToolbarDataProvider().isIncognito())) {
+                    getLocationBarDataProvider().isIncognito())) {
             return 0;
         }
 
@@ -312,7 +312,7 @@ class LocationBarPhone extends LocationBarLayout {
                 urlExpansionPercent * mStatusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
 
         if (!hasFocus && mStatusCoordinator.isSearchEngineStatusIconVisible()
-                && SearchEngineLogoUtils.currentlyOnNTP(mToolbarDataProvider)) {
+                && SearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             // When:
             // 1. unfocusing the LocationBar on the NTP.
             // 2. scrolling the fakebox to the LocationBar on the NTP.
@@ -342,12 +342,12 @@ class LocationBarPhone extends LocationBarLayout {
 
     /** Update the status visibility according to the current state held in LocationBar. */
     private void updateStatusVisibility() {
-        boolean incognito = getToolbarDataProvider().isIncognito();
+        boolean incognito = getLocationBarDataProvider().isIncognito();
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(incognito)) {
             return;
         }
 
-        if (SearchEngineLogoUtils.currentlyOnNTP(mToolbarDataProvider)) {
+        if (SearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             mStatusCoordinator.setStatusIconShown(hasFocus());
         } else {
             mStatusCoordinator.setStatusIconShown(true);

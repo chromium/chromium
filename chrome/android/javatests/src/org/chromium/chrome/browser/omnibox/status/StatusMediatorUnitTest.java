@@ -39,8 +39,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarCommonPropertiesModel;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -63,7 +63,7 @@ public final class StatusMediatorUnitTest {
     @Mock
     NewTabPage mNewTabPage;
     @Mock
-    ToolbarCommonPropertiesModel mToolbarCommonPropertiesModel;
+    LocationBarDataProvider mLocationBarDataProvider;
     @Mock
     UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
     @Mock
@@ -95,7 +95,7 @@ public final class StatusMediatorUnitTest {
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mMockForceModelViewReconciliationRunnable);
-            mMediator.setToolbarCommonPropertiesModel(mToolbarCommonPropertiesModel);
+            mMediator.setLocationBarDataProvider(mLocationBarDataProvider);
             mMediator.setDelegateForTesting(mDelegate);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
@@ -124,8 +124,8 @@ public final class StatusMediatorUnitTest {
     @UiThreadTest
     public void searchEngineLogo_showGoogleLogo_hideAfterAnimationFinished() {
         setupSearchEngineLogoForTesting(true, false, false);
-        doReturn(mNewTabPage).when(mToolbarCommonPropertiesModel).getNewTabPageForCurrentTab();
-        doReturn("chrome://newtab").when(mToolbarCommonPropertiesModel).getCurrentUrl();
+        doReturn(mNewTabPage).when(mLocationBarDataProvider).getNewTabPageForCurrentTab();
+        doReturn("chrome://newtab").when(mLocationBarDataProvider).getCurrentUrl();
 
         mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
         mMediator.setUrlHasFocus(false);
@@ -169,9 +169,9 @@ public final class StatusMediatorUnitTest {
     @UiThreadTest
     public void searchEngineLogo_showGoogleLogo_whenScrolled() {
         setupSearchEngineLogoForTesting(true, false, false);
-        doReturn(false).when(mToolbarCommonPropertiesModel).isLoading();
-        doReturn(UrlConstants.NTP_URL).when(mToolbarCommonPropertiesModel).getCurrentUrl();
-        doReturn(mNewTabPage).when(mToolbarCommonPropertiesModel).getNewTabPageForCurrentTab();
+        doReturn(false).when(mLocationBarDataProvider).isLoading();
+        doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
+        doReturn(mNewTabPage).when(mLocationBarDataProvider).getNewTabPageForCurrentTab();
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -346,7 +346,7 @@ public final class StatusMediatorUnitTest {
     @UiThreadTest
     public void searchEngineLogo_incognitoNoIcon() {
         setupSearchEngineLogoForTesting(true, true, false);
-        doReturn(true).when(mToolbarCommonPropertiesModel).isIncognito();
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
