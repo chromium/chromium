@@ -83,9 +83,10 @@ GURL AppendFragmentDirectives(const GURL& base_url,
   if (new_ref.find(kFragmentsUrlDelimiter) == std::string::npos) {
     new_ref += kFragmentsUrlDelimiter;
   } else {
-    // The URL already had the :~: delimiter, so prepare appending the new
-    // fragments by appending an ampersand beforehand.
-    new_ref += "&";
+    // The URL already had the :~: delimiter, so remove what comes after before
+    // adding the new fragment(s).
+    new_ref = new_ref.substr(0, new_ref.find(kFragmentsUrlDelimiter) +
+                                    strlen(kFragmentsUrlDelimiter));
   }
 
   new_ref += fragments_string;
