@@ -8838,8 +8838,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9037,7 +9037,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MismatchedName) {
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
-      "different.test", dns_protocol::kTypeHttps, "" /* rdata */)};
+      "different.test", dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9101,8 +9101,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsDnsQuery) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9134,8 +9134,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery) {
                                {"DnsHttpssvcExperimentDomains", kName}});
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, true /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9207,8 +9207,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsOnly) {
                                {"DnsHttpssvcExperimentDomains", kName}});
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, true /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9245,8 +9245,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressError) {
                                {"DnsHttpssvcExperimentDomains", kName}});
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, true /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9353,8 +9353,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsLast) {
                                {"DnsHttpssvcExperimentDomains", kName}});
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, true /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9398,8 +9398,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressesLast) {
                                {"DnsHttpssvcExperimentDomains", kName}});
 
   MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, dns_protocol::kTypeHttps, "" /* rdata */)};
+  std::vector<DnsResourceRecord> records = {BuildTestDnsRecord(
+      kName, dns_protocol::kTypeHttps, "fake rdata" /* rdata */)};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, true /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),

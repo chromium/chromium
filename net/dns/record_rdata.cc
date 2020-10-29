@@ -25,6 +25,9 @@ static const size_t kSrvRecordMinimumSize = 6;
 static constexpr size_t kIntegrityMinimumSize =
     sizeof(uint16_t) + IntegrityRecordRdata::kDigestLen;
 
+// Minimal HTTPS rdata is 2 octets priority + 1 octet empty name.
+static constexpr size_t kHttpsRdataMinimumSize = 3;
+
 bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
   switch (type) {
     case dns_protocol::kTypeSRV:
@@ -36,8 +39,7 @@ bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
     case dns_protocol::kExperimentalTypeIntegrity:
       return data.size() >= kIntegrityMinimumSize;
     case dns_protocol::kTypeHttps:
-      // TODO(crbug.com/1138620): Implement actual size minimum.
-      return data.size() == 0;
+      return data.size() >= kHttpsRdataMinimumSize;
     case dns_protocol::kTypeCNAME:
     case dns_protocol::kTypePTR:
     case dns_protocol::kTypeTXT:

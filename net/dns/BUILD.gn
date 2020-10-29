@@ -65,6 +65,7 @@ source_set("dns") {
       "host_resolver_mdns_task.h",
       "host_resolver_proc.cc",
       "host_resolver_proc.h",
+      "https_record_rdata.cc",
       "httpssvc_metrics.cc",
       "httpssvc_metrics.h",
       "mapped_host_resolver.cc",
@@ -313,6 +314,7 @@ source_set("dns_client") {
       "dns_client.h",
       "dns_response.h",
       "dns_transaction.h",
+      "https_record_rdata.h",
       "record_parsed.h",
       "record_rdata.h",
     ]
@@ -396,6 +398,7 @@ source_set("tests") {
     "dns_util_unittest.cc",
     "host_cache_unittest.cc",
     "host_resolver_manager_unittest.cc",
+    "https_record_rdata_unittest.cc",
     "httpssvc_metrics_unittest.cc",
     "mapped_host_resolver_unittest.cc",
     "record_parsed_unittest.cc",

@@ -187,6 +187,16 @@ static const uint16_t kFlagAA = 0x400;  // Authoritative Answer - response flag.
 static const uint16_t kFlagRD = 0x100;  // Recursion Desired - query flag.
 static const uint16_t kFlagTC = 0x200;  // Truncated - server flag.
 
+// SVCB/HTTPS ServiceParamKey
+//
+// IANA registration pending. Values from draft-ietf-dnsop-svcb-httpssvc-03.
+static constexpr uint16_t kHttpsServiceParamKeyAlpn = 1;
+static constexpr uint16_t kHttpsServiceParamKeyNoDefaultAlpn = 2;
+static constexpr uint16_t kHttpsServiceParamKeyPort = 3;
+static constexpr uint16_t kHttpsServiceParamKeyIpv4Hint = 4;
+static constexpr uint16_t kHttpsServiceParamKeyEchConfig = 5;
+static constexpr uint16_t kHttpsServiceParamKeyIpv6Hint = 6;
+
 }  // namespace dns_protocol
 
 }  // namespace net
