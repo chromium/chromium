@@ -36,11 +36,15 @@ namespace ash {
 // visible state of the desks seem constant to the user (e.g. if the starting
 // desk is in overview, it appears to remain in overview while sliding out).
 // This approach makes it possible to show an empty black space separating both
-// desks while we animate them (See |kDesksSpacing|).
-//
+// desks while we animate them (See |kDesksSpacing|). The ending desk may change
+// after the animation has started. In this case, a new animation will replace
+// the current one and animate to the new ending desk, requesting a new
+// screenshot if necessary.
 // - `starting` desk: is the currently activated desk which will be deactivated
 //    shortly.
 // - `ending` desk: is the desk desired to be activated with this animation.
+// These can be changed if the enhanced desk animations feature is enabled using
+// ReplaceAnimation() or UpdateSwipeAnimation().
 //
 // The animation goes through the following phases:
 //
@@ -66,6 +70,16 @@ namespace ash {
 //     roots are taken by all animators (through checking
 //     ending_desk_screenshot_taken()), so that it can start phase (3) on all of
 //     them at the same time.
+//   * Phase (2) can be rentered after starting phase (3) by calling
+//     ReplaceAnimation() or UpdateSwipeAnimation(). The new ending desk will
+//     change, and if it does not have an associated screenshot layer, the
+//     caller will be responsible for requesting one using
+//     TakeEndingDeskScreenshot(). The screenshots are taken as needed since
+//     their layers are fullscreen and require activating a desk which may be a
+//     large operation for something that the user may not see. Once the
+//     screenshot is taken, it is kept until |this| is destroyed. If an
+//     associated screenshot layer exists already, ReplaceAnimation() and
+//     UpdateSwipeAnimation() can proceed without returning to phase (2).
 //
 // - Phase (3) begins when StartAnimation() is called.
 //   * The parent layer of both screenshot layers is animated, either:
@@ -87,10 +101,13 @@ namespace ash {
 //                start here
 //
 //       Animation layer transforms:
-//       * Begin transform: Identity (since starting desk screeshot is already
-//         visible).
-//       * End transform: Negative translation to the left to slide out starting
-//         desk, and slide in ending desk screenshots into the screen.
+//       * Begin transform: The transform that will make the starting desk
+//         screenshot visible. In this case it is a transform with translation
+//         (edge_padding_width_dp_, 0).
+//       * End transform: The transform that will make the ending desk
+//         screenshot visible. In this case it is a transform with translation
+//         (-|edge_padding_width_dp_| - |x_translation_offset_| -
+//         |kDesksSpacing|, 0).
 //
 //     - Or to the right (starting_desk_index_ > ending_desk_index_), when the
 //       starting desk is on the right.
@@ -110,16 +127,23 @@ namespace ash {
 //                                    start here
 //
 //       Animation layer transforms:
-//       * Begin transform: Negative translation to the left (to make starting
-//         desk screeshot visible on the screen).
-//       * End transform: Identity to make a translation to the right to slide
-//         out starting desk, and slide in ending desk screenshots into the
-//         screen.
+//       * Begin transform: The transform that will make the starting desk
+//         screenshot visible. In this case it is a transform with translation
+//         (-|edge_padding_width_dp_| - |x_translation_offset_| -
+//         |kDesksSpacing|, 0).
+//       * End transform: The transform that will make the ending desk
+//         screenshot visible. In this case it is a transform with translation
+//         (edge_padding_width_dp_, 0).
 //
 //   * The animation always begins such that the starting desk screenshot layer
 //     is the one visible on the screen, and the parent (animation layer) always
 //     moves in the direction such that the ending desk screenshot becomes
 //     visible on the screen.
+//   * The children (screenshot layers) are always placed left to right to match
+//     desk order. For example, if there are three desks and this class has been
+//     instructed to create a screenshot for all three desks, desk 1's
+//     screenshot will be on the left, desk 2's screenshot will be in the middle
+//     and desk 3's screenshot will be on the right.
 //   * Once the animation finishes, Delegate::OnDeskSwitchAnimationFinished() is
 //     triggered. The owner of this object can then check that all animators on
 //     all roots have finished their animations (by checking
@@ -152,12 +176,6 @@ namespace ash {
 //   the desks screenshots are animating horizontally.
 // This gives the effect that the removed desk windows are jumping from their
 // desk to the target desk.
-//
-// TODO(sammiequon): Update the class docs. It has been modified slightly to
-// accommodate the chained desk animations feature, and will be modified
-// slightly more to accommodate the continuous desk animations feature. The base
-// algorithm is still valid, but once the features are near completion these
-// need to be updated.
 class ASH_EXPORT RootWindowDeskSwitchAnimator
     : public ui::ImplicitAnimationObserver {
  public:
@@ -170,7 +188,8 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     virtual void OnStartingDeskScreenshotTaken(int ending_desk_index) = 0;
 
     // Called when phase (2) completes. The ending desk screenshot has been
-    // taken and put on the screen.
+    // taken and put on the screen. This can be called multiple times during the
+    // lifetime of |this|.
     virtual void OnEndingDeskScreenshotTaken() = 0;
 
     // Called when phase (3) completes. The animation completes and the ending
@@ -345,7 +364,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   bool animation_finished_ = false;
 
   // True while setting a new transform for chaining. If a animation is active,
-  // calling SetTranform will trigger OnImplicitAnimationsCompleted. In these
+  // calling SetTransform will trigger OnImplicitAnimationsCompleted. In these
   // cases we do not want to notify our delegate that the animation is finished.
   bool setting_new_transform_ = false;
 
