@@ -196,6 +196,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetSignedExchangePrefetchCacheEnabled(
       IsSignedExchangePrefetchCacheEnabled());
   request->SetRecursivePrefetchToken(RecursivePrefetchToken());
+  request->SetFetchLikeAPI(IsFetchLikeAPI());
 
   return request;
 }

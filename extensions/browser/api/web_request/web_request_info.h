@@ -25,6 +25,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -64,7 +65,6 @@ struct WebRequestInfoInitParams {
   std::string method;
   bool is_navigation_request = false;
   base::Optional<url::Origin> initiator;
-  blink::mojom::ResourceType type = blink::mojom::ResourceType::kSubResource;
   WebRequestResourceType web_request_type = WebRequestResourceType::OTHER;
   bool is_async = false;
   net::HttpRequestHeaders extra_request_headers;
@@ -128,11 +128,7 @@ struct WebRequestInfo {
   // initiate this request.
   ExtensionApiFrameIdMap::FrameData frame_data;
 
-  // The type of the request (e.g. main frame, subresource, XHR, etc).
-  const blink::mojom::ResourceType type;
-
-  // A partially mirrored copy of |type| which is slightly less granular and
-  // which also identifies WebSocket requests separately from other types.
+  // The resource type being requested.
   const WebRequestResourceType web_request_type = WebRequestResourceType::OTHER;
 
   // Indicates if this request is asynchronous.

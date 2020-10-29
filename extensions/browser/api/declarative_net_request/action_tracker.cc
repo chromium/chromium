@@ -25,6 +25,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -35,7 +36,7 @@ namespace dnr_api = api::declarative_net_request;
 
 bool IsMainFrameNavigationRequest(const WebRequestInfo& request_info) {
   return request_info.is_navigation_request &&
-         request_info.type == blink::mojom::ResourceType::kMainFrame;
+         request_info.web_request_type == WebRequestResourceType::MAIN_FRAME;
 }
 
 // Returns whether a TrackedRule should be recorded on a rule match for the

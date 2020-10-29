@@ -826,6 +826,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetIsolatedWorldOrigin(fetch_request_data_->IsolatedWorldOrigin());
   request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   request.SetRequestDestination(fetch_request_data_->Destination());
+  request.SetFetchLikeAPI(true);
   request.SetHttpMethod(fetch_request_data_->Method());
   request.SetFetchWindowId(fetch_request_data_->WindowId());
   request.SetTrustTokenParams(fetch_request_data_->TrustTokenParams());
@@ -935,6 +936,7 @@ void FetchManager::Loader::PerformDataFetch() {
   request.SetRequestorOrigin(fetch_request_data_->Origin());
   request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   request.SetRequestDestination(fetch_request_data_->Destination());
+  request.SetFetchLikeAPI(true);
   request.SetUseStreamOnResponse(true);
   request.SetHttpMethod(fetch_request_data_->Method());
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);

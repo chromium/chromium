@@ -452,6 +452,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
     is_signed_exchange_prefetch_cache_enabled_ = enabled;
   }
 
+  bool IsFetchLikeAPI() const { return is_fetch_like_api_; }
+
+  void SetFetchLikeAPI(bool enabled) { is_fetch_like_api_ = enabled; }
+
   bool PrefetchMaybeForTopLeveNavigation() const {
     return prefetch_maybe_for_top_level_navigation_;
   }
@@ -561,6 +565,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool is_from_origin_dirty_style_sheet_ = false;
 
   bool is_signed_exchange_prefetch_cache_enabled_ = false;
+
+  bool is_fetch_like_api_ = false;
 
   // Currently this is only used when a prefetch request has `as=document`
   // specified. If true, and the request is cross-origin, the browser will cache

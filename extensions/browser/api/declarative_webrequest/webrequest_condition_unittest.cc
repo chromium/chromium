@@ -12,6 +12,7 @@
 #include "components/url_matcher/url_matcher_constants.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using url_matcher::URLMatcher;
@@ -69,7 +70,6 @@ TEST(WebRequestConditionTest, CreateCondition) {
   const GURL http_url("http://www.example.com");
   WebRequestInfoInitParams match_params;
   match_params.url = http_url;
-  match_params.type = blink::mojom::ResourceType::kMainFrame;
   match_params.web_request_type = WebRequestResourceType::MAIN_FRAME;
   WebRequestInfo match_request_info(std::move(match_params));
   WebRequestData data(&match_request_info, ON_BEFORE_REQUEST);
@@ -81,7 +81,6 @@ TEST(WebRequestConditionTest, CreateCondition) {
   const GURL https_url("https://www.example.com");
   WebRequestInfoInitParams wrong_resource_type_params;
   wrong_resource_type_params.url = https_url;
-  wrong_resource_type_params.type = blink::mojom::ResourceType::kSubFrame;
   wrong_resource_type_params.web_request_type =
       WebRequestResourceType::SUB_FRAME;
   WebRequestInfo wrong_resource_type_request_info(

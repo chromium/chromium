@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
@@ -56,7 +57,7 @@ class WebRequestPermissions {
       bool crosses_incognito,
       HostPermissionsCheck host_permissions_check,
       const base::Optional<url::Origin>& initiator,
-      blink::mojom::ResourceType resource_type);
+      extensions::WebRequestResourceType web_request_type);
 
   static bool CanExtensionAccessInitiator(
       extensions::PermissionHelper* permission_helper,

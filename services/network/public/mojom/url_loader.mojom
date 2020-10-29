@@ -383,6 +383,9 @@ struct URLRequest {
   // features are enabled by default.
   bool is_signed_exchange_prefetch_cache_enabled;
 
+  // True for XHR, Fetch, and EventSource.
+  bool is_fetch_like_api;
+
   // If set, the network service will attempt to retrieve the appropriate origin
   // policy, if necessary, and attach it to the ResourceResponseHead.
   // Spec: https://wicg.github.io/origin-policy/

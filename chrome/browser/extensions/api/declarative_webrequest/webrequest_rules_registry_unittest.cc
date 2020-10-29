@@ -27,6 +27,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +59,6 @@ WebRequestInfoInitParams CreateRequestParams(const GURL& url) {
   WebRequestInfoInitParams info;
   info.url = url;
   info.is_navigation_request = true;
-  info.type = blink::mojom::ResourceType::kMainFrame;
   info.web_request_type = WebRequestResourceType::MAIN_FRAME;
   return info;
 }

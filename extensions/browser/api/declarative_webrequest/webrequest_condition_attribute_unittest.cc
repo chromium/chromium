@@ -16,6 +16,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "net/http/http_util.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -71,8 +72,6 @@ TEST(WebRequestConditionAttributeTest, CreateConditionAttribute) {
 TEST(WebRequestConditionAttributeTest, ResourceType) {
   std::string error;
   base::ListValue resource_types;
-  // The 'sub_frame' value is chosen arbitrarily, so as the corresponding
-  // blink::mojom::ResourceType is not 0, the default value.
   resource_types.AppendString("sub_frame");
 
   scoped_refptr<const WebRequestConditionAttribute> attribute =
@@ -83,15 +82,13 @@ TEST(WebRequestConditionAttributeTest, ResourceType) {
   EXPECT_EQ(std::string(keys::kResourceTypeKey), attribute->GetName());
 
   WebRequestInfoInitParams ok_params;
-  ok_params.type = blink::mojom::ResourceType::kSubFrame;
   ok_params.web_request_type = WebRequestResourceType::SUB_FRAME;
   WebRequestInfo request_ok_info(std::move(ok_params));
   EXPECT_TRUE(attribute->IsFulfilled(
       WebRequestData(&request_ok_info, ON_BEFORE_REQUEST)));
 
   WebRequestInfoInitParams fail_params;
-  ok_params.type = blink::mojom::ResourceType::kMainFrame;
-  ok_params.web_request_type = WebRequestResourceType::MAIN_FRAME;
+  fail_params.web_request_type = WebRequestResourceType::MAIN_FRAME;
   WebRequestInfo request_fail_info(std::move(fail_params));
   EXPECT_FALSE(attribute->IsFulfilled(
       WebRequestData(&request_fail_info, ON_BEFORE_REQUEST)));

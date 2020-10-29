@@ -7,6 +7,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
@@ -17,52 +18,38 @@ namespace declarative_net_request {
 namespace {
 namespace flat_rule = url_pattern_index::flat;
 
-// Maps blink::mojom::ResourceType to flat_rule::ElementType.
-flat_rule::ElementType GetElementType(blink::mojom::ResourceType type) {
-  switch (type) {
-    case blink::mojom::ResourceType::kPrefetch:
-    case blink::mojom::ResourceType::kSubResource:
+// Maps WebRequestResourceType to flat_rule::ElementType.
+flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
+  switch (web_request_type) {
+    case WebRequestResourceType::OTHER:
       return flat_rule::ElementType_OTHER;
-    case blink::mojom::ResourceType::kMainFrame:
-    case blink::mojom::ResourceType::kNavigationPreloadMainFrame:
+    case WebRequestResourceType::MAIN_FRAME:
       return flat_rule::ElementType_MAIN_FRAME;
-    case blink::mojom::ResourceType::kCspReport:
+    case WebRequestResourceType::CSP_REPORT:
       return flat_rule::ElementType_CSP_REPORT;
-    case blink::mojom::ResourceType::kScript:
-    case blink::mojom::ResourceType::kWorker:
-    case blink::mojom::ResourceType::kSharedWorker:
-    case blink::mojom::ResourceType::kServiceWorker:
+    case WebRequestResourceType::SCRIPT:
       return flat_rule::ElementType_SCRIPT;
-    case blink::mojom::ResourceType::kImage:
-    case blink::mojom::ResourceType::kFavicon:
+    case WebRequestResourceType::IMAGE:
       return flat_rule::ElementType_IMAGE;
-    case blink::mojom::ResourceType::kStylesheet:
+    case WebRequestResourceType::STYLESHEET:
       return flat_rule::ElementType_STYLESHEET;
-    case blink::mojom::ResourceType::kObject:
-    case blink::mojom::ResourceType::kPluginResource:
+    case WebRequestResourceType::OBJECT:
       return flat_rule::ElementType_OBJECT;
-    case blink::mojom::ResourceType::kXhr:
+    case WebRequestResourceType::XHR:
       return flat_rule::ElementType_XMLHTTPREQUEST;
-    case blink::mojom::ResourceType::kSubFrame:
-    case blink::mojom::ResourceType::kNavigationPreloadSubFrame:
+    case WebRequestResourceType::SUB_FRAME:
       return flat_rule::ElementType_SUBDOCUMENT;
-    case blink::mojom::ResourceType::kPing:
+    case WebRequestResourceType::PING:
       return flat_rule::ElementType_PING;
-    case blink::mojom::ResourceType::kMedia:
+    case WebRequestResourceType::MEDIA:
       return flat_rule::ElementType_MEDIA;
-    case blink::mojom::ResourceType::kFontResource:
+    case WebRequestResourceType::FONT:
       return flat_rule::ElementType_FONT;
+    case WebRequestResourceType::WEB_SOCKET:
+      return flat_rule::ElementType_WEBSOCKET;
   }
   NOTREACHED();
   return flat_rule::ElementType_OTHER;
-}
-
-// Returns the flat_rule::ElementType for the given |request|.
-flat_rule::ElementType GetElementType(const WebRequestInfo& request) {
-  if (request.url.SchemeIsWSOrWSS())
-    return flat_rule::ElementType_WEBSOCKET;
-
-  return GetElementType(request.type);
 }
 
 // Returns whether the request to |url| is third party to its |document_origin|.
@@ -100,7 +87,7 @@ content::GlobalFrameRoutingId GetFrameRoutingId(
 RequestParams::RequestParams(const WebRequestInfo& info)
     : url(&info.url),
       first_party_origin(info.initiator.value_or(url::Origin())),
-      element_type(GetElementType(info)),
+      element_type(GetElementType(info.web_request_type)),
       parent_routing_id(info.parent_routing_id) {
   is_third_party = IsThirdPartyRequest(*url, first_party_origin);
 }

@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace extensions {
@@ -31,10 +32,9 @@ enum class WebRequestResourceType : uint8_t {
   OTHER,  // The type is unknown, or differs from all the above.
 };
 
-// Multiple blink::mojom::ResourceTypes may map to the same
-// WebRequestResourceType, but the converse is not possible.
 WebRequestResourceType ToWebRequestResourceType(
-    blink::mojom::ResourceType type);
+    const network::ResourceRequest& request,
+    bool is_download);
 
 // Returns a string representation of |type|.
 const char* WebRequestResourceTypeToString(WebRequestResourceType type);

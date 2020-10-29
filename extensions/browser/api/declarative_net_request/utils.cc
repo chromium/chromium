@@ -24,6 +24,7 @@
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -169,43 +170,35 @@ void LogReadDynamicRulesStatus(ReadJSONRulesResult::Status status) {
   base::UmaHistogramEnumeration(kReadDynamicRulesJSONStatusHistogram, status);
 }
 
-// Maps blink::mojom::ResourceType to
-// api::declarative_net_request::ResourceType.
-dnr_api::ResourceType GetDNRResourceType(
-    blink::mojom::ResourceType resource_type) {
+// Maps WebRequestResourceType to api::declarative_net_request::ResourceType.
+dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
   switch (resource_type) {
-    case blink::mojom::ResourceType::kPrefetch:
-    case blink::mojom::ResourceType::kSubResource:
+    case WebRequestResourceType::OTHER:
       return dnr_api::RESOURCE_TYPE_OTHER;
-    case blink::mojom::ResourceType::kMainFrame:
-    case blink::mojom::ResourceType::kNavigationPreloadMainFrame:
+    case WebRequestResourceType::MAIN_FRAME:
       return dnr_api::RESOURCE_TYPE_MAIN_FRAME;
-    case blink::mojom::ResourceType::kCspReport:
+    case WebRequestResourceType::CSP_REPORT:
       return dnr_api::RESOURCE_TYPE_CSP_REPORT;
-    case blink::mojom::ResourceType::kScript:
-    case blink::mojom::ResourceType::kWorker:
-    case blink::mojom::ResourceType::kSharedWorker:
-    case blink::mojom::ResourceType::kServiceWorker:
+    case WebRequestResourceType::SCRIPT:
       return dnr_api::RESOURCE_TYPE_SCRIPT;
-    case blink::mojom::ResourceType::kImage:
-    case blink::mojom::ResourceType::kFavicon:
+    case WebRequestResourceType::IMAGE:
       return dnr_api::RESOURCE_TYPE_IMAGE;
-    case blink::mojom::ResourceType::kStylesheet:
+    case WebRequestResourceType::STYLESHEET:
       return dnr_api::RESOURCE_TYPE_STYLESHEET;
-    case blink::mojom::ResourceType::kObject:
-    case blink::mojom::ResourceType::kPluginResource:
+    case WebRequestResourceType::OBJECT:
       return dnr_api::RESOURCE_TYPE_OBJECT;
-    case blink::mojom::ResourceType::kXhr:
+    case WebRequestResourceType::XHR:
       return dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST;
-    case blink::mojom::ResourceType::kSubFrame:
-    case blink::mojom::ResourceType::kNavigationPreloadSubFrame:
+    case WebRequestResourceType::SUB_FRAME:
       return dnr_api::RESOURCE_TYPE_SUB_FRAME;
-    case blink::mojom::ResourceType::kPing:
+    case WebRequestResourceType::PING:
       return dnr_api::RESOURCE_TYPE_PING;
-    case blink::mojom::ResourceType::kMedia:
+    case WebRequestResourceType::MEDIA:
       return dnr_api::RESOURCE_TYPE_MEDIA;
-    case blink::mojom::ResourceType::kFontResource:
+    case WebRequestResourceType::FONT:
       return dnr_api::RESOURCE_TYPE_FONT;
+    case WebRequestResourceType::WEB_SOCKET:
+      return dnr_api::RESOURCE_TYPE_WEBSOCKET;
   }
   NOTREACHED();
   return dnr_api::RESOURCE_TYPE_OTHER;
@@ -225,7 +218,7 @@ dnr_api::RequestDetails CreateRequestDetails(const WebRequestInfo& request) {
   details.frame_id = request.frame_data.frame_id;
   details.parent_frame_id = request.frame_data.parent_frame_id;
   details.tab_id = request.frame_data.tab_id;
-  details.type = GetDNRResourceType(request.type);
+  details.type = GetDNRResourceType(request.web_request_type);
   return details;
 }
 

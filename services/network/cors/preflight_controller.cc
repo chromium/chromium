@@ -144,6 +144,8 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     // raw response to DevTools.
     preflight_request->devtools_request_id = devtools_request_id->ToString();
   }
+  preflight_request->is_fetch_like_api = request.is_fetch_like_api;
+
   return preflight_request;
 }
 

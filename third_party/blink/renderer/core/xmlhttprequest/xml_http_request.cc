@@ -1047,6 +1047,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   request.SetIsolatedWorldOrigin(isolated_world_security_origin_);
   request.SetHttpMethod(method_);
   request.SetRequestContext(mojom::blink::RequestContextType::XML_HTTP_REQUEST);
+  request.SetFetchLikeAPI(true);
   request.SetMode(upload_events
                       ? network::mojom::RequestMode::kCorsWithForcedPreflight
                       : network::mojom::RequestMode::kCors);

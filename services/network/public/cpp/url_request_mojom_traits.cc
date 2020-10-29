@@ -242,6 +242,7 @@ bool StructTraits<
   out->is_revalidating = data.is_revalidating();
   out->is_signed_exchange_prefetch_cache_enabled =
       data.is_signed_exchange_prefetch_cache_enabled();
+  out->is_fetch_like_api = data.is_fetch_like_api();
   out->obey_origin_policy = data.obey_origin_policy();
   return true;
 }

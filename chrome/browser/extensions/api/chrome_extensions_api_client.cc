@@ -63,6 +63,7 @@
 #include "extensions/browser/value_store/value_store_factory.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
@@ -138,7 +139,7 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
   // Exclude main frame navigation requests.
   bool is_browser_request =
       request.render_process_id == -1 &&
-      request.type != blink::mojom::ResourceType::kMainFrame;
+      request.web_request_type != WebRequestResourceType::MAIN_FRAME;
 
   // Hide requests made by the Devtools frontend.
   bool is_sensitive_request =

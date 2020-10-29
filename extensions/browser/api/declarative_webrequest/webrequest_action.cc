@@ -499,8 +499,8 @@ bool WebRequestAction::HasPermission(ApplyInfo* apply_info,
   return WebRequestPermissions::CanExtensionAccessURL(
              permission_helper, extension_id, request->url, -1,
              apply_info->crosses_incognito, permission_check,
-             request->initiator,
-             request->type) == PermissionsData::PageAccess::kAllowed;
+             request->initiator, request->web_request_type) ==
+         PermissionsData::PageAccess::kAllowed;
 }
 
 // static

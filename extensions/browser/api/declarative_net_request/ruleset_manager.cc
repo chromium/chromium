@@ -385,7 +385,7 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
     PageAccess page_access = WebRequestPermissions::CanExtensionAccessURL(
         permission_helper_, ruleset.extension_id, request.url, tab_id,
         crosses_incognito, WebRequestPermissions::DO_NOT_CHECK_HOST,
-        request.initiator, request.type);
+        request.initiator, request.web_request_type);
     DCHECK_NE(PageAccess::kWithheld, page_access);
     if (page_access != PageAccess::kAllowed)
       continue;
@@ -398,7 +398,7 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
             crosses_incognito,
             WebRequestPermissions::
                 REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-            request.initiator, request.type);
+            request.initiator, request.web_request_type);
 
     rulesets_to_evaluate.push_back(
         std::make_pair(&ruleset, host_permissions_access));

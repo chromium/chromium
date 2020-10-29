@@ -85,6 +85,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -1855,7 +1856,7 @@ bool ExtensionWebRequestEventRouter::HasAnyExtraHeadersListenerImpl(
 
 bool ExtensionWebRequestEventRouter::IsPageLoad(
     const WebRequestInfo& request) const {
-  return request.type == blink::mojom::ResourceType::kMainFrame;
+  return request.web_request_type == WebRequestResourceType::MAIN_FRAME;
 }
 
 void ExtensionWebRequestEventRouter::NotifyPageLoad() {
@@ -1954,7 +1955,7 @@ void ExtensionWebRequestEventRouter::GetMatchingListenersImpl(
               request->url, request->frame_data.tab_id, crosses_incognito,
               WebRequestPermissions::
                   REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-              request->initiator, request->type);
+              request->initiator, request->web_request_type);
 
       if (access != PermissionsData::PageAccess::kAllowed) {
         if (access == PermissionsData::PageAccess::kWithheld) {

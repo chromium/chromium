@@ -349,6 +349,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->is_signed_exchange_prefetch_cache_enabled = true;
   }
 
+  dest->is_fetch_like_api = src.IsFetchLikeAPI();
+
   if (const EncodedFormData* body = src_body.FormBody().get()) {
     DCHECK_NE(dest->method, net::HttpRequestHeaders::kGetMethod);
     DCHECK_NE(dest->method, net::HttpRequestHeaders::kHeadMethod);

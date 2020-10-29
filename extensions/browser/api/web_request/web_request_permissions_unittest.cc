@@ -19,6 +19,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -111,17 +112,15 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
   // Returns a WebRequestInfoInitParams instance constructed as per the given
   // parameters.
   auto create_request_params = [](const GURL& url,
-                                  blink::mojom::ResourceType type,
+                                  WebRequestResourceType web_request_type,
                                   int render_process_id) {
     WebRequestInfoInitParams request;
     request.url = url;
-    request.type = type;
     request.render_process_id = render_process_id;
-
-    request.web_request_type = ToWebRequestResourceType(type);
+    request.web_request_type = web_request_type;
     request.is_navigation_request =
-        type == blink::mojom::ResourceType::kMainFrame ||
-        type == blink::mojom::ResourceType::kSubFrame;
+        web_request_type == WebRequestResourceType::MAIN_FRAME ||
+        web_request_type == WebRequestResourceType::SUB_FRAME;
     return request;
   };
 
@@ -134,8 +133,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
     {
       SCOPED_TRACE("Renderer initiated sub-resource request");
       WebRequestInfo request(create_request_params(
-          request_url, blink::mojom::ResourceType::kSubResource,
-          kRendererProcessId));
+          request_url, WebRequestResourceType::OTHER, kRendererProcessId));
       bool expect_hidden =
           test_case.expected_hide_request_mask & HIDE_RENDERER_REQUEST;
       EXPECT_EQ(expect_hidden,
@@ -147,8 +145,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
           "Renderer initiated sub-resource request from "
           "chrome-untrusted://");
       auto request_init_params = create_request_params(
-          request_url, blink::mojom::ResourceType::kSubResource,
-          kRendererProcessId);
+          request_url, WebRequestResourceType::OTHER, kRendererProcessId);
       GURL url("chrome-untrusted://test/");
       request_init_params.initiator = url::Origin::Create(url);
 
@@ -161,8 +158,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
     {
       SCOPED_TRACE("Browser initiated sub-resource request");
       WebRequestInfo request(create_request_params(
-          request_url, blink::mojom::ResourceType::kSubResource,
-          kBrowserProcessId));
+          request_url, WebRequestResourceType::OTHER, kBrowserProcessId));
       bool expect_hidden = test_case.expected_hide_request_mask &
                            HIDE_BROWSER_SUB_RESOURCE_REQUEST;
       EXPECT_EQ(expect_hidden,
@@ -172,8 +168,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
     {
       SCOPED_TRACE("Main-frame navigation");
       WebRequestInfo request(create_request_params(
-          request_url, blink::mojom::ResourceType::kMainFrame,
-          kBrowserProcessId));
+          request_url, WebRequestResourceType::MAIN_FRAME, kBrowserProcessId));
       bool expect_hidden =
           test_case.expected_hide_request_mask & HIDE_MAIN_FRAME_NAVIGATION;
       EXPECT_EQ(expect_hidden,
@@ -183,8 +178,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
     {
       SCOPED_TRACE("Sub-frame navigation");
       WebRequestInfo request(create_request_params(
-          request_url, blink::mojom::ResourceType::kSubFrame,
-          kBrowserProcessId));
+          request_url, WebRequestResourceType::SUB_FRAME, kBrowserProcessId));
       bool expect_hidden =
           test_case.expected_hide_request_mask & HIDE_SUB_FRAME_NAVIGATION;
       EXPECT_EQ(expect_hidden,
@@ -198,8 +192,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
 
   {
     WebRequestInfo non_sensitive_request(create_request_params(
-        non_sensitive_url, blink::mojom::ResourceType::kScript,
-        kRendererProcessId));
+        non_sensitive_url, WebRequestResourceType::SCRIPT, kRendererProcessId));
     EXPECT_FALSE(WebRequestPermissions::HideRequest(permission_helper,
                                                     non_sensitive_request));
   }
@@ -212,8 +205,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
         ->Insert(extensions::kWebStoreAppId, kWebstoreProcessId,
                  kSiteInstanceId);
     WebRequestInfo sensitive_request_info(create_request_params(
-        non_sensitive_url, blink::mojom::ResourceType::kScript,
-        kWebstoreProcessId));
+        non_sensitive_url, WebRequestResourceType::SCRIPT, kWebstoreProcessId));
     EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,
                                                    sensitive_request_info));
   }
@@ -238,14 +230,13 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   auto get_access = [extension, this](
                         const GURL& url,
                         const base::Optional<url::Origin>& initiator,
-                        const blink::mojom::ResourceType resource_type) {
+                        const WebRequestResourceType type) {
     constexpr int kTabId = 42;
     constexpr WebRequestPermissions::HostPermissionsCheck kPermissionsCheck =
         WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL;
     return WebRequestPermissions::CanExtensionAccessURL(
         PermissionHelper::Get(browser_context()), extension->id(), url, kTabId,
-        false /* crosses incognito */, kPermissionsCheck, initiator,
-        resource_type);
+        false /* crosses incognito */, kPermissionsCheck, initiator, type);
   };
 
   const GURL example_com("https://example.com");
@@ -256,17 +247,16 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   GURL urls[] = {example_com, chromium_org};
   base::Optional<url::Origin> initiators[] = {base::nullopt, example_com_origin,
                                               chromium_org_origin};
-  blink::mojom::ResourceType resource_types[] = {
-      blink::mojom::ResourceType::kSubResource,
-      blink::mojom::ResourceType::kMainFrame};
+  WebRequestResourceType types[] = {WebRequestResourceType::OTHER,
+                                    WebRequestResourceType::MAIN_FRAME};
 
   // With all permissions withheld, the result of any request should be
   // kWithheld.
   for (const auto& url : urls) {
     for (const auto& initiator : initiators) {
-      for (const auto& resource_type : resource_types) {
+      for (const auto& type : types) {
         EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
-                  get_access(url, initiator, resource_type));
+                  get_access(url, initiator, type));
       }
     }
   }
@@ -284,12 +274,12 @@ TEST_F(ExtensionWebRequestPermissionsTest,
 
   // example.com isn't granted, so without an initiator or with an initiator
   // that the extension doesn't have access to, access is withheld.
-  EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
-            get_access(example_com, base::nullopt,
-                       blink::mojom::ResourceType::kSubResource));
+  EXPECT_EQ(
+      PermissionsData::PageAccess::kWithheld,
+      get_access(example_com, base::nullopt, WebRequestResourceType::OTHER));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
             get_access(example_com, example_com_origin,
-                       blink::mojom::ResourceType::kMainFrame));
+                       WebRequestResourceType::MAIN_FRAME));
 
   // However, if a sub-resource request is made to example.com from an initiator
   // that the extension has access to, access is allowed. This is functionally
@@ -297,20 +287,20 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   // permissions feature. See https://crbug.com/851722.
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             get_access(example_com, chromium_org_origin,
-                       blink::mojom::ResourceType::kSubResource));
+                       WebRequestResourceType::OTHER));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
             get_access(example_com, chromium_org_origin,
-                       blink::mojom::ResourceType::kSubFrame));
+                       WebRequestResourceType::SUB_FRAME));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
             get_access(example_com, chromium_org_origin,
-                       blink::mojom::ResourceType::kMainFrame));
+                       WebRequestResourceType::MAIN_FRAME));
 
   // With access to the requested origin, access is always allowed for
   // REQUIRE_HOST_PERMISSION_FOR_URL, independent of initiator.
   for (const auto& initiator : initiators) {
-    for (const auto& resource_type : resource_types) {
+    for (const auto& type : types) {
       EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
-                get_access(chromium_org, initiator, resource_type));
+                get_access(chromium_org, initiator, type));
     }
   }
 }
@@ -348,14 +338,13 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   auto get_access = [extension, this](
                         const GURL& url,
                         const base::Optional<url::Origin>& initiator,
-                        blink::mojom::ResourceType resource_type) {
+                        WebRequestResourceType type) {
     constexpr int kTabId = 42;
     constexpr WebRequestPermissions::HostPermissionsCheck kPermissionsCheck =
         WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR;
     return WebRequestPermissions::CanExtensionAccessURL(
         PermissionHelper::Get(browser_context()), extension->id(), url, kTabId,
-        false /* crosses incognito */, kPermissionsCheck, initiator,
-        resource_type);
+        false /* crosses incognito */, kPermissionsCheck, initiator, type);
   };
 
   using PageAccess = PermissionsData::PageAccess;
@@ -403,13 +392,13 @@ TEST_F(ExtensionWebRequestPermissionsTest,
         test_case.initiator ? test_case.initiator->Serialize().c_str()
                             : "empty"));
     EXPECT_EQ(get_access(test_case.url, test_case.initiator,
-                         blink::mojom::ResourceType::kSubResource),
+                         WebRequestResourceType::OTHER),
               test_case.expected_access_subresource);
     EXPECT_EQ(get_access(test_case.url, test_case.initiator,
-                         blink::mojom::ResourceType::kSubFrame),
+                         WebRequestResourceType::SUB_FRAME),
               test_case.expected_access_navigation);
     EXPECT_EQ(get_access(test_case.url, test_case.initiator,
-                         blink::mojom::ResourceType::kMainFrame),
+                         WebRequestResourceType::MAIN_FRAME),
               test_case.expected_access_navigation);
   }
 }

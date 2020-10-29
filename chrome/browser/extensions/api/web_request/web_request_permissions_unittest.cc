@@ -19,6 +19,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_message.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_CHROMEOS)
@@ -113,14 +114,12 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
 
   auto create_request_params =
       [&example_com](const url::Origin& initiator,
-                     blink::mojom::ResourceType type,
                      extensions::WebRequestResourceType web_request_type,
                      bool is_navigation_request) {
         WebRequestInfoInitParams info_params;
         info_params.url = example_com;
         info_params.initiator = initiator;
         info_params.render_process_id = -1;
-        info_params.type = type;
         info_params.web_request_type = web_request_type;
         info_params.is_navigation_request = is_navigation_request;
         return info_params;
@@ -131,22 +130,20 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
 
   // Sub-resource browser initiated requests are hidden from extensions.
   WebRequestInfoInitParams info_params_1 = create_request_params(
-      ntp_origin, blink::mojom::ResourceType::kSubResource,
-      extensions::WebRequestResourceType::OTHER, false);
+      ntp_origin, extensions::WebRequestResourceType::OTHER, false);
   EXPECT_TRUE(WebRequestPermissions::HideRequest(
       permission_helper_, WebRequestInfo(std::move(info_params_1))));
 
   // Sub-frame navigations initiated from the local ntp should be hidden.
   WebRequestInfoInitParams info_params_2 = create_request_params(
-      ntp_origin, blink::mojom::ResourceType::kSubFrame,
-      extensions::WebRequestResourceType::SUB_FRAME, true);
+      ntp_origin, extensions::WebRequestResourceType::SUB_FRAME, true);
   EXPECT_TRUE(WebRequestPermissions::HideRequest(
       permission_helper_, WebRequestInfo(std::move(info_params_2))));
 
   // Sub-frame navigations initiated from a non-sensitive domain should not be
   // hidden.
   WebRequestInfoInitParams info_params_3 = create_request_params(
-      url::Origin::Create(example_com), blink::mojom::ResourceType::kSubFrame,
+      url::Origin::Create(example_com),
       extensions::WebRequestResourceType::SUB_FRAME, true);
   EXPECT_FALSE(WebRequestPermissions::HideRequest(
       permission_helper_, WebRequestInfo(std::move(info_params_3))));
@@ -155,8 +152,8 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
 TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
        TestCanExtensionAccessURL_HostPermissions) {
   const GURL url("http://example.com");
-  const blink::mojom::ResourceType kResourceType =
-      blink::mojom::ResourceType::kSubResource;
+  const extensions::WebRequestResourceType kWebRequestType =
+      extensions::WebRequestResourceType::OTHER;
 
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             WebRequestPermissions::CanExtensionAccessURL(
@@ -164,21 +161,21 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::DO_NOT_CHECK_HOST, base::nullopt,
-                kResourceType));
+                kWebRequestType));
   EXPECT_EQ(PermissionsData::PageAccess::kDenied,
             WebRequestPermissions::CanExtensionAccessURL(
                 permission_helper_, permissionless_extension_->id(), url,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                base::nullopt, kResourceType));
+                base::nullopt, kWebRequestType));
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             WebRequestPermissions::CanExtensionAccessURL(
                 permission_helper_, com_extension_->id(), url,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                base::nullopt, kResourceType));
+                base::nullopt, kWebRequestType));
   EXPECT_EQ(
       PermissionsData::PageAccess::kAllowed,
       WebRequestPermissions::CanExtensionAccessURL(
@@ -186,39 +183,39 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
           -1,     // No tab id.
           false,  // crosses_incognito
           WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-          base::nullopt, kResourceType));
+          base::nullopt, kWebRequestType));
   EXPECT_EQ(PermissionsData::PageAccess::kDenied,
             WebRequestPermissions::CanExtensionAccessURL(
                 permission_helper_, com_extension_->id(), url,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_ALL_URLS, base::nullopt,
-                kResourceType));
+                kWebRequestType));
 
   base::Optional<url::Origin> initiator(
       url::Origin::Create(GURL("http://www.example.org")));
 
-  EXPECT_EQ(
-      PermissionsData::PageAccess::kAllowed,
-      WebRequestPermissions::CanExtensionAccessURL(
-          permission_helper_, permissionless_extension_->id(), url,
-          -1,     // No tab id.
-          false,  // crosses_incognito
-          WebRequestPermissions::DO_NOT_CHECK_HOST, initiator, kResourceType));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            WebRequestPermissions::CanExtensionAccessURL(
+                permission_helper_, permissionless_extension_->id(), url,
+                -1,     // No tab id.
+                false,  // crosses_incognito
+                WebRequestPermissions::DO_NOT_CHECK_HOST, initiator,
+                kWebRequestType));
   EXPECT_EQ(PermissionsData::PageAccess::kDenied,
             WebRequestPermissions::CanExtensionAccessURL(
                 permission_helper_, permissionless_extension_->id(), url,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                initiator, kResourceType));
+                initiator, kWebRequestType));
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             WebRequestPermissions::CanExtensionAccessURL(
                 permission_helper_, com_extension_->id(), url,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                initiator, kResourceType));
+                initiator, kWebRequestType));
   // Doesn't have access to the initiator.
   EXPECT_EQ(
       PermissionsData::PageAccess::kDenied,
@@ -227,7 +224,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
           -1,     // No tab id.
           false,  // crosses_incognito
           WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-          initiator, kResourceType));
+          initiator, kWebRequestType));
   // Navigation requests don't need access to the initiator.
   EXPECT_EQ(
       PermissionsData::PageAccess::kAllowed,
@@ -236,7 +233,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
           -1,     // No tab id.
           false,  // crosses_incognito
           WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-          initiator, blink::mojom::ResourceType::kSubFrame));
+          initiator, extensions::WebRequestResourceType::SUB_FRAME));
 
   EXPECT_EQ(
       PermissionsData::PageAccess::kDenied,
@@ -244,7 +241,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
           permission_helper_, com_extension_->id(), url,
           -1,     // No tab id.
           false,  // crosses_incognito
-          WebRequestPermissions::REQUIRE_ALL_URLS, initiator, kResourceType));
+          WebRequestPermissions::REQUIRE_ALL_URLS, initiator, kWebRequestType));
 
   // Public Sessions tests.
 #if defined(OS_CHROMEOS)
@@ -257,7 +254,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                base::nullopt, kResourceType));
+                base::nullopt, kWebRequestType));
 
   chromeos::ScopedTestPublicSessionLoginState login_state;
 
@@ -269,7 +266,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                base::nullopt, kResourceType));
+                base::nullopt, kWebRequestType));
 
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             WebRequestPermissions::CanExtensionAccessURL(
@@ -277,7 +274,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_ALL_URLS, base::nullopt,
-                kResourceType));
+                kWebRequestType));
 
   // Make sure that chrome:// URLs cannot be accessed.
   const GURL chrome_url("chrome://version/");
@@ -288,6 +285,6 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
                 -1,     // No tab id.
                 false,  // crosses_incognito
                 WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-                base::nullopt, kResourceType));
+                base::nullopt, kWebRequestType));
 #endif
 }
