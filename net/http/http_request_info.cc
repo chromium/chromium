@@ -11,8 +11,7 @@ HttpRequestInfo::HttpRequestInfo()
       load_flags(0),
       privacy_mode(PRIVACY_MODE_DISABLED),
       disable_secure_dns(false),
-      reporting_upload_depth(0),
-      idempotency(net::DEFAULT_IDEMPOTENCY) {}
+      reporting_upload_depth(0) {}
 
 HttpRequestInfo::HttpRequestInfo(const HttpRequestInfo& other) = default;
 

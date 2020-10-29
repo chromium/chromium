@@ -151,8 +151,6 @@ struct Cronet_UrlRequestParams {
   std::vector<Cronet_RawDataPtr> annotations;
   Cronet_RequestFinishedInfoListenerPtr request_finished_listener = nullptr;
   Cronet_ExecutorPtr request_finished_executor = nullptr;
-  Cronet_UrlRequestParams_IDEMPOTENCY idempotency =
-      Cronet_UrlRequestParams_IDEMPOTENCY_DEFAULT_IDEMPOTENCY;
 
  private:
   DISALLOW_ASSIGN(Cronet_UrlRequestParams);

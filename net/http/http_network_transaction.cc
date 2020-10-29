@@ -192,9 +192,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
     proxy_ssl_config_.disable_cert_verification_network_fetches = true;
   }
 
-  if (request_->idempotency == IDEMPOTENT ||
-      (request_->idempotency == DEFAULT_IDEMPOTENCY &&
-       HttpUtil::IsMethodSafe(request_info->method))) {
+  if (HttpUtil::IsMethodSafe(request_info->method)) {
     can_send_early_data_ = true;
   }
 

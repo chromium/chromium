@@ -112,8 +112,7 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
                                jtraffic_stats_tag_set == JNI_TRUE,
                                jtraffic_stats_tag,
                                jtraffic_stats_uid_set == JNI_TRUE,
-                               jtraffic_stats_uid,
-                               /*idempotency=*/net::DEFAULT_IDEMPOTENCY)) {
+                               jtraffic_stats_uid)) {
   owner_.Reset(env, jurl_request);
 }
 

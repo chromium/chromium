@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/cronet/cronet_url_request_context.h"
-#include "net/base/idempotency.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
@@ -63,8 +62,7 @@ CronetURLRequest::CronetURLRequest(CronetURLRequestContext* context,
                                    bool traffic_stats_tag_set,
                                    int32_t traffic_stats_tag,
                                    bool traffic_stats_uid_set,
-                                   int32_t traffic_stats_uid,
-                                   net::Idempotency idempotency)
+                                   int32_t traffic_stats_uid)
     : context_(context),
       network_tasks_(std::move(callback),
                      url,
@@ -76,8 +74,7 @@ CronetURLRequest::CronetURLRequest(CronetURLRequestContext* context,
                      traffic_stats_tag_set,
                      traffic_stats_tag,
                      traffic_stats_uid_set,
-                     traffic_stats_uid,
-                     idempotency),
+                     traffic_stats_uid),
       initial_method_("GET"),
       initial_request_headers_(std::make_unique<net::HttpRequestHeaders>()) {
   DCHECK(!context_->IsOnNetworkThread());
@@ -177,8 +174,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(std::unique_ptr<Callback> callback,
                                              bool traffic_stats_tag_set,
                                              int32_t traffic_stats_tag,
                                              bool traffic_stats_uid_set,
-                                             int32_t traffic_stats_uid,
-                                             net::Idempotency idempotency)
+                                             int32_t traffic_stats_uid)
     : callback_(std::move(callback)),
       initial_url_(url),
       initial_priority_(priority),
@@ -190,8 +186,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(std::unique_ptr<Callback> callback,
       traffic_stats_tag_set_(traffic_stats_tag_set),
       traffic_stats_tag_(traffic_stats_tag),
       traffic_stats_uid_set_(traffic_stats_uid_set),
-      traffic_stats_uid_(traffic_stats_uid),
-      idempotency_(idempotency) {
+      traffic_stats_uid_(traffic_stats_uid) {
   DETACH_FROM_THREAD(network_thread_checker_);
 }
 
@@ -288,7 +283,6 @@ void CronetURLRequest::NetworkTasks::Start(
   url_request_->set_method(method);
   url_request_->SetExtraRequestHeaders(*request_headers);
   url_request_->SetPriority(initial_priority_);
-  url_request_->SetIdempotency(idempotency_);
   if (upload)
     url_request_->set_upload(std::move(upload));
   if (traffic_stats_tag_set_ || traffic_stats_uid_set_) {

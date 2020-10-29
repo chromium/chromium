@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "net/base/idempotency.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
@@ -74,15 +73,6 @@ struct NET_EXPORT HttpRequestInfo {
   // this to NetworkIsolationKey::TopFrameSite().  That gives more consistent
   /// behavior, and may still provide useful metrics.
   base::Optional<url::Origin> possibly_top_frame_origin;
-
-  // Idempotency of the request, which determines that if it is safe to enable
-  // 0-RTT for the request. By default, 0-RTT is only enabled for safe
-  // HTTP methods, i.e., GET, HEAD, OPTIONS, and TRACE. For other methods,
-  // enabling 0-RTT may cause security issues since a network observer can
-  // replay the request. If the request has any side effects, those effects can
-  // happen multiple times. It is only safe to enable the 0-RTT if it is known
-  // that the request is idempotent.
-  net::Idempotency idempotency;
 };
 
 }  // namespace net
