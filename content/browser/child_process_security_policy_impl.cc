@@ -2104,8 +2104,7 @@ bool ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
   // Note: we cannot check the feature flags and early-out here, because the
   // origin trial might be active (in which case no feature flags are active).
 
-  // We only isolate HTTPS, so early-out if we see other schemes.
-  if (!origin.GetURL().SchemeIs(url::kHttpsScheme))
+  if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
     return false;
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
@@ -2153,9 +2152,7 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
     const url::Origin& origin,
     bool is_global_walk_or_frame_removal) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Origin Policy only exists for HTTPS, and header-based opt-in requests are
-  // also HTTPS-only, so nothing we isolate will be HTTP.
-  if (!origin.GetURL().SchemeIs(url::kHttpsScheme))
+  if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
     return;
 
   BrowsingInstanceId browsing_instance_id(
@@ -2223,9 +2220,7 @@ void ChildProcessSecurityPolicyImpl::
 void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
     const IsolationContext& isolation_context,
     const url::Origin& origin) {
-  // Origin Policy only exists for HTTPS, so nothing we isolate will be HTTP.
-  if (!origin.GetURL().SchemeIs(url::kHttpsScheme))
-    return;
+  DCHECK(IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin));
 
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());
@@ -2252,11 +2247,8 @@ void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
 
 bool ChildProcessSecurityPolicyImpl::UpdateOriginIsolationOptInListIfNecessary(
     const url::Origin& origin) {
-  // Avoid dealing with non-HTTPS and other non-valid-for-isolation origins.
-  if (!origin.GetURL().SchemeIs(url::kHttpsScheme) ||
-      !IsolatedOriginUtil::IsValidIsolatedOrigin(origin)) {
+  if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
     return false;
-  }
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
 

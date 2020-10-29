@@ -297,6 +297,57 @@ class OriginIsolationOptInHeaderTest : public OriginIsolationOptInServerTest {
   DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderTest);
 };
 
+// Used for a few tests that check non-HTTPS secure context behavior.
+class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
+ public:
+  OriginIsolationOptInHttpServerHeaderTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolatedOriginTestBase::SetUpCommandLine(command_line);
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+
+    // This is needed for this test to run properly on platforms where
+    //  --site-per-process isn't the default, such as Android.
+    IsolateAllSitesForTesting(command_line);
+
+    feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
+
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &OriginIsolationOptInHttpServerHeaderTest::HandleResponse,
+        base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  bool ShouldOriginGetOptInIsolation(const url::Origin& origin) {
+    auto* site_instance = static_cast<SiteInstanceImpl*>(
+        shell()->web_contents()->GetMainFrame()->GetSiteInstance());
+
+    return ChildProcessSecurityPolicyImpl::GetInstance()
+        ->ShouldOriginGetOptInIsolation(site_instance->GetIsolationContext(),
+                                        origin,
+                                        false /* origin_requests_isolation */);
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleResponse(
+      const net::test_server::HttpRequest& request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    response->AddCustomHeader("Origin-Isolation", "?1");
+
+    response->set_content("isolate me!");
+    return std::move(response);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHttpServerHeaderTest);
+};
+
 // This class allows testing the interaction of OptIn isolation and command-line
 // isolation for origins. Tests using this class will isolate foo.com and
 // bar.com by default using command-line isolation, but any opt-in isolation
@@ -407,6 +458,37 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
   SetHeaderValue("?1");
 
   GURL url(https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  url::Origin origin(url::Origin::Create(url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ShouldOriginGetOptInIsolation(origin));
+}
+
+// These tests ensure that non-HTTPS secure contexts (see
+// https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy) are
+// able to use origin isolation.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest, Localhost) {
+  GURL url(embedded_test_server()->GetURL("localhost", "/"));
+  url::Origin origin(url::Origin::Create(url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ShouldOriginGetOptInIsolation(origin));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest, DotLocalhost) {
+  GURL url(embedded_test_server()->GetURL("test.localhost", "/"));
+  url::Origin origin(url::Origin::Create(url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ShouldOriginGetOptInIsolation(origin));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest,
+                       OneTwentySeven) {
+  GURL url(embedded_test_server()->GetURL("127.0.0.1", "/"));
   url::Origin origin(url::Origin::Create(url));
 
   EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
