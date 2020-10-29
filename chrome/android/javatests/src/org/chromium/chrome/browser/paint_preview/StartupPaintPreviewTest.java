@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewTest.a
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObjectNotFoundException;
-import android.support.test.uiautomator.UiSelector;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -27,7 +26,6 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -176,7 +174,6 @@ public class StartupPaintPreviewTest {
     /**
      * Tests that the paint preview is removed when certain conditions are met.
      */
-    @DisabledTest(message = "crbug.com/1143219")
     @Test
     @MediumTest
     public void testRemoveOnActionbarClick() throws ExecutionException, UiObjectNotFoundException {
@@ -195,7 +192,8 @@ public class StartupPaintPreviewTest {
         int centerY = uiDevice.getDisplayHeight() / 2;
         uiDevice.swipe(centerX, centerY, centerX, centerY, 400);
         assertSnackbarVisibility(snackbarManager, true);
-        uiDevice.findObject(new UiSelector().text("Reload")).click();
+        TestThreadUtils.runOnUiThreadBlocking(()->
+                snackbarManager.getCurrentSnackbarForTesting().getController().onAction(null));
         assertAttachedAndShown(tabbedPaintPreview, false, false);
         Assert.assertEquals(
                 "Dismiss callback should have been called.", 1, dismissCallback.getCallCount());
