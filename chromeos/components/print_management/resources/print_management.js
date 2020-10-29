@@ -17,12 +17,14 @@ import './print_job_clear_history_dialog.js';
 import './print_job_entry.js';
 import './print_management_fonts_css.js';
 import './print_management_shared_css.js';
+import './strings.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getMetadataProvider} from './mojo_interface_provider.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getMetadataProvider} from './mojo_interface_provider.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
 const METADATA_STORED_FOR_ONE_DAY = 1;

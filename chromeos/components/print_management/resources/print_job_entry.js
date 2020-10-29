@@ -16,16 +16,17 @@ import './icons.js';
 import './print_management_fonts_css.js';
 import './print_management_shared_css.js';
 import './printing_manager.mojom-lite.js';
+import './strings.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {getMetadataProvider} from './mojo_interface_provider.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import './strings.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getMetadataProvider} from './mojo_interface_provider.js';
 
 (function() {
 
