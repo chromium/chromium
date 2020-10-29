@@ -2490,53 +2490,6 @@
       }
     }
   },
-  'storage_service_content_browsertests': {
-    'modifications': {
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-tester-rel': {
-        'experiment_percentage': 100,
-        'args': [
-          '--gtest_filter=-OutOfProcessPPAPITest.TrueTypeFont:'
-          'All/AccessibilityHitTestingBrowserTest.CachingAsyncHitTest_WithPinchZoom*:'
-          'All/SitePerProcessInternalsHitTestBrowserTest.ScrollNestedLocalNonFastScrollableDiv*:'
-          'BackForwardCacheBrowserTest.WindowOpen',
-        ],
-      },
-    },
-  },
-  'storage_service_extensions_browsertests': {
-    'modifications': {
-      # https://crbug.com/1111979,
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
-        ],
-      },
-    },
-  },
-  'storage_service_interactive_ui_tests': {
-    'remove_from': [
-      'linux-lacros-tester-rel', # https://crbug.com/1111979
-    ],
-    'modifications': {
-      'linux-chromeos-chrome': {
-        # TODO(crbug.com/970649): Remove this filter.
-        'args': [
-          '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
-        ],
-      },
-    }
-  },
   'swiftshader_unittests': {
     'remove_from': [
       # Save capacity on the hardware where we have only a few machines.

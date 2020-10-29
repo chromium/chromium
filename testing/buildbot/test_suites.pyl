@@ -4054,34 +4054,6 @@
         'results_handler': 'layout tests',
       },
     },
-    # TODO(https://crbug.com/1057802): Remove these tests once Out-of-Process
-    # Storage is on by default.
-    'storage_service_gtests': {
-      'storage_service_content_browsertests': {
-        'args': [
-          '--enable-features=StorageServiceOutOfProcess',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'test': 'content_browsertests',
-      },
-      'storage_service_extensions_browsertests': {
-        'args': [
-          '--enable-features=StorageServiceOutOfProcess',
-        ],
-        'test': 'extensions_browsertests',
-      },
-      'storage_service_interactive_ui_tests': {
-        'args': [
-          '--enable-features=StorageServiceOutOfProcess'
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-        'test': 'interactive_ui_tests',
-      },
-    },
 
     'swangle_gtests': {
       'angle_deqp_egl_tests': {
@@ -4874,7 +4846,6 @@
       'linux_specific_xr_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
-      'storage_service_gtests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_gtests',
     ],
@@ -4938,7 +4909,6 @@
       'non_android_chromium_gtests_skia_gold',
       'non_skia_renderer_gtests',
       'pixel_browser_tests_gtests',
-      'storage_service_gtests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_gtests',
       'win_specific_chromium_gtests',
@@ -5586,7 +5556,6 @@
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
-      'storage_service_gtests',
     ],
 
     'linux_chromeos_gtests_oobe': [
@@ -5599,7 +5568,6 @@
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
-      'storage_service_gtests',
     ],
 
     'linux_lacros_gtests': [
@@ -5615,7 +5583,6 @@
       'linux_flavor_specific_chromium_gtests',
       'linux_lacros_specific_gtests',
       'non_android_chromium_gtests',
-      'storage_service_gtests',
     ],
 
     'linux_viz_gtests': [
