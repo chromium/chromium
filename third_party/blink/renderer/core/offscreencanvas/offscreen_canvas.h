@@ -69,6 +69,10 @@ class CORE_EXPORT OffscreenCanvas final
   // API Methods
   ImageBitmap* transferToImageBitmap(ScriptState*, ExceptionState&);
 
+  ScriptPromise convertToBlob(ScriptState* script_state,
+                              const ImageEncodeOptions* options,
+                              ExceptionState& exception_state);
+
   const IntSize& Size() const override { return size_; }
   void SetSize(const IntSize&);
   void RecordTransfer();

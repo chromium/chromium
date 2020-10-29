@@ -179,6 +179,13 @@ void OffscreenCanvas::SetSize(const IntSize& size) {
   }
 }
 
+ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
+                                             const ImageEncodeOptions* options,
+                                             ExceptionState& exception_state) {
+  return CanvasRenderingContextHost::convertToBlob(script_state, options,
+                                                   exception_state, context_);
+}
+
 void OffscreenCanvas::RecordTransfer() {
   UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.Transferred", true);
 }

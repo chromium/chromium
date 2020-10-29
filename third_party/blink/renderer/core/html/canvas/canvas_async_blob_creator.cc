@@ -151,6 +151,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     base::TimeTicks start_time,
     ExecutionContext* context,
     UkmParameters ukm_params,
+    const IdentifiableToken& input_digest,
     ScriptPromiseResolver* resolver)
     : CanvasAsyncBlobCreator(image,
                              options,
@@ -159,6 +160,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
                              start_time,
                              context,
                              ukm_params,
+                             input_digest,
                              resolver) {}
 
 CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
@@ -169,6 +171,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     base::TimeTicks start_time,
     ExecutionContext* context,
     UkmParameters ukm_params,
+    const IdentifiableToken& input_digest,
     ScriptPromiseResolver* resolver)
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
@@ -180,6 +183,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       static_bitmap_image_loaded_(false),
       callback_(callback),
       ukm_params_(ukm_params),
+      input_digest_(input_digest),
       script_promise_resolver_(resolver) {
   DCHECK(image);
   DCHECK(context);
@@ -500,7 +504,8 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
       ->PostTask(
           FROM_HERE,
           WTF::Bind(
-              [](scoped_refptr<StaticBitmapImage> image,
+              [](IdentifiableToken input_digest,
+                 scoped_refptr<StaticBitmapImage> image,
                  UkmParameters ukm_params) {
                 std::unique_ptr<ImageDataBuffer> data_buffer =
                     ImageDataBuffer::Create(image);
@@ -509,13 +514,13 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
                 blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
                     .Set(blink::IdentifiableSurface::FromTypeAndToken(
                              blink::IdentifiableSurface::Type::kCanvasReadback,
-                             0),
+                             input_digest),
                          blink::IdentifiabilityDigestOfBytes(
                              base::make_span(data_buffer->Pixels(),
                                              data_buffer->ComputeByteSize())))
                     .Record(ukm_params.ukm_recorder);
               },
-              image_, ukm_params_));
+              input_digest_, image_, ukm_params_));
 }
 
 void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
