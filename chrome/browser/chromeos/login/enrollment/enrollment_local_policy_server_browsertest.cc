@@ -440,6 +440,21 @@ IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
+IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
+                       EnrollmentErrorIllegalAccountForPackagedEDULicense) {
+  policy_server_.SetExpectedDeviceEnrollmentError(907);
+
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+  enrollment_ui_.ExpectErrorMessage(
+      IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE,
+      /* can retry */ true);
+  enrollment_ui_.RetryAfterError();
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
+}
+
 // Error during enrollment : Strange HTTP response from server.
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
                        EnrollmentErrorServerIsDrunk) {

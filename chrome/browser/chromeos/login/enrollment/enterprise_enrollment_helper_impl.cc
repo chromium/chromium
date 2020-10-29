@@ -462,6 +462,9 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
         case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
           UMA(policy::kMetricEnrollmentRegisterEnterpriseTosHasNotBeenAccepted);
           break;
+        case policy::DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
+          UMA(policy::kMetricEnrollmentIllegalAccountForPackagedEDULicense);
+          break;
       }
       break;
     case policy::EnrollmentStatus::REGISTRATION_BAD_MODE:

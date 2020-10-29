@@ -426,6 +426,11 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED,
               true);
           break;
+        case policy::DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
+          ShowError(
+              IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE,
+              true);
+          break;
         default:
           ShowErrorMessage(
               l10n_util::GetStringFUTF8(

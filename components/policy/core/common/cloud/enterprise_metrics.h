@@ -140,8 +140,10 @@ enum MetricEnrollment {
   kMetricEnrollmentRegisterEnterpriseTosHasNotBeenAccepted = 61,
   // Too many requests are uploadede within a short time.
   kMetricEnrollmentTooManyRequests = 62,
+  // Enrollment failed: illegal account for packaged EDU license.
+  kMetricEnrollmentIllegalAccountForPackagedEDULicense = 63,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentTooManyRequests
+  kMaxValue = kMetricEnrollmentIllegalAccountForPackagedEDULicense
 };
 
 // Events related to policy refresh.

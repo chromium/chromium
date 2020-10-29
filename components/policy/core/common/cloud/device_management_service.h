@@ -88,6 +88,7 @@ class POLICY_EXPORT DeviceManagementService {
   static constexpr int kArcDisabled = 904;
   static constexpr int kInvalidDomainlessCustomer = 905;
   static constexpr int kTosHasNotBeenAccepted = 906;
+  static constexpr int kIllegalAccountForPackagedEDULicense = 907;
 
   // Number of times to retry on ERR_NETWORK_CHANGED errors.
   static const int kMaxRetries = 3;

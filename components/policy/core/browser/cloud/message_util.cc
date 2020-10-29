@@ -62,6 +62,8 @@ int GetIDSForDMStatus(DeviceManagementStatus status) {
     case DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
       // This is shown only on registration failed.
       return IDS_POLICY_DM_STATUS_UNKNOWN_ERROR;
+    case DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
+      return IDS_POLICY_DM_STATUS_SERVICE_DOMAIN_MISMATCH;
   }
   NOTREACHED() << "Unhandled DM status " << status;
   return IDS_POLICY_DM_STATUS_UNKNOWN_ERROR;

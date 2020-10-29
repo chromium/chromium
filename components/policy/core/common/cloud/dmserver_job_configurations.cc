@@ -204,6 +204,9 @@ DMServerJobConfiguration::MapNetErrorAndResponseCodeToDMStatus(
       case DeviceManagementService::kTosHasNotBeenAccepted:
         code = DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED;
         break;
+      case DeviceManagementService::kIllegalAccountForPackagedEDULicense:
+        code = DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE;
+        break;
       default:
         // Handle all unknown 5xx HTTP error codes as temporary and any other
         // unknown error as one that needs more time to recover.

@@ -3355,6 +3355,9 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED" desc="Error message to show when the user tries to enroll a device, but administrator has not accepted TOS.">
     Your administrator must first accept the terms of service in the Admin console Chrome device list.
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE" desc="Error message to show when the user tries to enroll a CBEdu device into non-EDU account.">
+    You must enroll this Chrome Education device into an education account. To sign up for a new account, please visit https://g.co/workspace/edusignup.
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ATTRIBUTE_ERROR" desc="Error message shown when successfully enrolled, but the device attribute update has failed.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management, but failed to send its asset and location information. Please manually enter this information from your Admin console for this device.
   </message>
