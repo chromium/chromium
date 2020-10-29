@@ -267,6 +267,21 @@ bool InvalidationSetMapsEqual(const MapType& a, const MapType& b) {
   return true;
 }
 
+void ExtractInvalidationSets(InvalidationSet* invalidation_set,
+                             DescendantInvalidationSet*& descendants,
+                             SiblingInvalidationSet*& siblings) {
+  CHECK(invalidation_set->IsAlive());
+  if (auto* descendant =
+          DynamicTo<DescendantInvalidationSet>(invalidation_set)) {
+    descendants = descendant;
+    siblings = nullptr;
+    return;
+  }
+
+  siblings = To<SiblingInvalidationSet>(invalidation_set);
+  descendants = siblings->Descendants();
+}
+
 }  // anonymous namespace
 
 InvalidationSet& RuleFeatureSet::EnsureMutableInvalidationSet(
@@ -368,21 +383,6 @@ void RuleFeatureSet::AddInvalidationSet(
         invalidation_set->IsSelfInvalidationSet() ? kSubject : kAncestor)
         .Combine(*invalidation_set);
   }
-}
-
-void ExtractInvalidationSets(InvalidationSet* invalidation_set,
-                             DescendantInvalidationSet*& descendants,
-                             SiblingInvalidationSet*& siblings) {
-  CHECK(invalidation_set->IsAlive());
-  if (auto* descendant =
-          DynamicTo<DescendantInvalidationSet>(invalidation_set)) {
-    descendants = descendant;
-    siblings = nullptr;
-    return;
-  }
-
-  siblings = To<SiblingInvalidationSet>(invalidation_set);
-  descendants = siblings->Descendants();
 }
 
 RuleFeatureSet::RuleFeatureSet() : is_alive_(true) {}
