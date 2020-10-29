@@ -4,7 +4,6 @@
 
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/tick_clock.h"
 #include "components/viz/common/quads/frame_deadline.h"
@@ -38,12 +37,7 @@ base::Optional<base::TimeDelta> SurfaceDependencyDeadline::Cancel() {
 
   deadline_.reset();
 
-  base::TimeDelta duration = tick_clock_->NowTicks() - start_time_;
-
-  UMA_HISTOGRAM_TIMES("Compositing.SurfaceDependencyDeadline.Duration",
-                      duration);
-
-  return duration;
+  return tick_clock_->NowTicks() - start_time_;
 }
 
 bool SurfaceDependencyDeadline::operator==(

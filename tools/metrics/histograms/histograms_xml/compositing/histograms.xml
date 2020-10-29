@@ -587,6 +587,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.SurfaceDependencyDeadline.Duration" units="ms"
     expires_after="2020-12-01">
+  <obsolete>
+    Expired October 2020.
+  </obsolete>
   <owner>jonross@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
@@ -598,6 +601,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.SurfaceManager.AliveSurfaces" units="surfaces"
     expires_after="2020-12-01">
+  <obsolete>
+    Expired October 2020.
+  </obsolete>
   <owner>jonross@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>

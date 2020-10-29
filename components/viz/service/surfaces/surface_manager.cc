@@ -13,7 +13,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -29,8 +28,6 @@
 
 namespace viz {
 namespace {
-
-const char kUmaAliveSurfaces[] = "Compositing.SurfaceManager.AliveSurfaces";
 
 constexpr base::TimeDelta kExpireInterval = base::TimeDelta::FromSeconds(10);
 
@@ -185,11 +182,6 @@ void SurfaceManager::GarbageCollectSurfaces() {
   }
 
   SurfaceIdSet reachable_surfaces = GetLiveSurfaces();
-
-  // Log the number of reachable surfaces after a garbage collection.
-  UMA_HISTOGRAM_CUSTOM_COUNTS(kUmaAliveSurfaces, reachable_surfaces.size(), 1,
-                              200, 50);
-
   std::vector<SurfaceId> surfaces_to_delete;
 
   // Delete all destroyed and unreachable surfaces.
