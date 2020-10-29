@@ -26,6 +26,11 @@ class COMPONENT_EXPORT(GCPW_POLICIES) DevicePoliciesManager {
   // Make sure GCPW update is set up correctly.
   void EnforceGcpwUpdatePolicy();
 
+  // Creates an Omaha policy with the list of allowed |domains| for GCPW to be
+  // used in tests.
+  bool SetAllowedDomainsOmahaPolicyForTesting(
+      const std::vector<base::string16>& domains);
+
  protected:
   // Returns the storage used for the instance pointer.
   static DevicePoliciesManager** GetInstanceStorage();

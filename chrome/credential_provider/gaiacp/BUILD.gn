@@ -120,6 +120,8 @@ component("policies") {
     ":util",
     "../extension:extension_lib",
     "//base",
+    "//chrome/updater/protos:omaha_proto",
+    "//components/policy/proto",
     "//url",
   ]
 }

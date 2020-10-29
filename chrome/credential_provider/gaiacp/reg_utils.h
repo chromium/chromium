@@ -79,6 +79,10 @@ extern const wchar_t kRegUpdateCredentialsOnChange[];
 // should be in shorter form.
 extern const wchar_t kRegUseShorterAccountName[];
 
+// Registry keys where list of domains allowed to login is specified.
+extern const wchar_t kEmailDomainsKey[];  // Older deprecated key.
+extern const wchar_t kEmailDomainsKeyNew[];
+
 // Gets any HKLM registry key on the system.
 HRESULT GetMachineRegDWORD(const base::string16& key_name,
                            const base::string16& name,

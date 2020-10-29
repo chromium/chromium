@@ -3780,5 +3780,73 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(L"", L"beta"),
                        ::testing::Values(L"", L"80.2.35.4")));
 
+// Test the allowed domains to login policy defined either through registry or
+// through a cloud policy.
+// Parameters are:
+// 1. int  : 0 - Domains set through cloud policy.
+//           1 - Domains set through deprecated "ed" registry entry.
+//           2 - Domains set through "domains_allowed_to_login" registry entry.
+// 2. string : List of domains from which users are allowed to login.
+class GcpGaiaCredentialBaseAllowedDomainsCloudPolicyTest
+    : public GcpGaiaCredentialBaseTest,
+      public ::testing::WithParamInterface<std::tuple<int, const wchar_t*>> {
+ public:
+  void SetUp() override;
+};
+
+void GcpGaiaCredentialBaseAllowedDomainsCloudPolicyTest::SetUp() {
+  GcpGaiaCredentialBaseTest::SetUp();
+
+  // Delete any existing registry entries. Setting to empty deletes them.
+  SetGlobalFlagForTesting(L"ed", L"");
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"");
+}
+
+TEST_P(GcpGaiaCredentialBaseAllowedDomainsCloudPolicyTest, OmahaPolicyTest) {
+  bool cloud_policies_enabled = std::get<0>(GetParam()) == 0;
+  bool use_old_domains_reg_key = std::get<0>(GetParam()) == 1;
+  base::string16 allowed_domains(std::get<1>(GetParam()));
+
+  FakeDevicePoliciesManager fake_device_policies_manager(
+      cloud_policies_enabled);
+
+  if (cloud_policies_enabled) {
+    DevicePolicies device_policies;
+    if (!allowed_domains.empty()) {
+      device_policies.domains_allowed_to_login = base::SplitString(
+          allowed_domains, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
+          base::SplitResult::SPLIT_WANT_NONEMPTY);
+    }
+    fake_device_policies_manager.SetDevicePolicies(device_policies);
+  } else if (use_old_domains_reg_key) {
+    SetGlobalFlagForTesting(L"ed", allowed_domains);
+  } else {
+    SetGlobalFlagForTesting(L"domains_allowed_to_login", allowed_domains);
+  }
+
+  // Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  if (allowed_domains.empty()) {
+    ASSERT_EQ(S_OK,
+              StartLogonProcess(/*succeeds=*/false, IDS_EMAIL_MISMATCH_BASE));
+  } else {
+    ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+    // Finish logon successfully.
+    ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+
+    ASSERT_EQ(S_OK, ReleaseProvider());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpGaiaCredentialBaseAllowedDomainsCloudPolicyTest,
+    ::testing::Combine(::testing::Values(0, 1, 2),
+                       ::testing::Values(L"", L"acme.com,acme.org")));
+
 }  // namespace testing
 }  // namespace credential_provider
