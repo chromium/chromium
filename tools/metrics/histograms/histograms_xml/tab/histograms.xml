@@ -1724,7 +1724,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.Suggestions.NumSuggestionsChanged{TabSuggestionType}"
-    units="count" expires_after="2020-11-01">
+    units="count" expires_after="2021-10-19">
   <owner>yusufo@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
   <owner>meiliang@chromium.org</owner>
