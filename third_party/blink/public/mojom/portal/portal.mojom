@@ -52,10 +52,9 @@ interface Portal {
 
   // When a portal is activated, it'll replace the current tab with the portal.
   // |activation_time| represents the time where HTMLPortalElement.activate()
-  // was called. The |trace_id| is used to generate activation flow events for
-  // performance tracing.
-  Activate(TransferableMessage data, mojo_base.mojom.TimeTicks activation_time,
-           uint64 trace_id) => (PortalActivateResult result);
+  // was called.
+  Activate(TransferableMessage data, mojo_base.mojom.TimeTicks activation_time)
+      => (PortalActivateResult result);
 
   // Sends message to the browser process, where it can be forwarded to the
   // portal's main frame.

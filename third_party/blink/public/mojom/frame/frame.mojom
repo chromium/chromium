@@ -943,13 +943,12 @@ interface LocalMainFrame {
   // can optionally include a message |data| dispatched with the
   // PortalActivateEvent. The return value |was_adopted| indicates if the portal
   // for the predecessor (identified by |portal_token|) was adopted by the
-  // current frame. The |trace_id| is used to generate activation flow events.
+  // current frame.
   OnPortalActivated(
       blink.mojom.PortalToken portal_token,
       pending_associated_remote<blink.mojom.Portal> portal,
       pending_associated_receiver<blink.mojom.PortalClient> portal_client,
-      blink.mojom.TransferableMessage data,
-      uint64 trace_id)
+      blink.mojom.TransferableMessage data)
       => (blink.mojom.PortalActivateResult result);
 
   // Forwards a message from a portal's host to the main frame in the portal's

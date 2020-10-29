@@ -308,7 +308,6 @@ void TakeHistoryForActivation(WebContentsImpl* activated_contents,
 
 void Portal::Activate(blink::TransferableMessage data,
                       base::TimeTicks activation_time,
-                      uint64_t trace_id,
                       ActivateCallback callback) {
   if (GetPortalHostContents()->portal()) {
     mojo::ReportBadMessage("Portal::Activate called on nested portal");
@@ -337,8 +336,7 @@ void Portal::Activate(blink::TransferableMessage data,
   outer_contents->GetDelegate()->UpdateInspectedWebContentsIfNecessary(
       outer_contents, portal_contents_.get(),
       base::BindOnce(&Portal::ActivateImpl, weak_factory_.GetWeakPtr(),
-                     std::move(data), activation_time, trace_id,
-                     std::move(callback)));
+                     std::move(data), activation_time, std::move(callback)));
 }
 
 namespace {
@@ -528,7 +526,6 @@ std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
 
 void Portal::ActivateImpl(blink::TransferableMessage data,
                           base::TimeTicks activation_time,
-                          uint64_t trace_id,
                           ActivateCallback callback) {
   WebContentsImpl* outer_contents = GetPortalHostContents();
   WebContentsDelegate* delegate = outer_contents->GetDelegate();
@@ -635,8 +632,7 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
   predecessor->Bind(std::move(portal_receiver), std::move(pending_client));
   successor_main_frame->OnPortalActivated(
       std::move(predecessor), std::move(pending_portal),
-      std::move(client_receiver), std::move(data), trace_id,
-      std::move(callback));
+      std::move(client_receiver), std::move(data), std::move(callback));
 
   // Notifying of activation happens later than ActivatePortalWebContents so
   // that it is observed after predecessor_web_contents has been moved into a
