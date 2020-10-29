@@ -36,6 +36,7 @@ WPT_OVERRIDE_EXPECTATIONS_PATH = (
 CHROME_BINARY = "../../out/{}/chrome"
 CHROMEDRIVER_BINARY = "../../out/{}/chromedriver"
 
+DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = "../../out/{}/results.json"
 MOJO_JS_PATH = "../../out/{}/gen/"
 
 class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
@@ -43,8 +44,11 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
     @property
     def rest_args(self):
         rest_args = super(WPTTestAdapter, self).rest_args
+
+        # Update the output directory to the default if it's not set.
+        self.maybe_set_default_isolated_script_test_output()
+
         # Here we add all of the arguments required to run WPT tests on Chrome.
-        target_dir = self.options.target
         rest_args.extend([
             "../../third_party/blink/web_tests/external/wpt/wpt",
             "--venv=../../",
@@ -52,13 +56,14 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "run",
             "chrome"
         ] + self.options.test_list + [
-            "--binary=" + CHROME_BINARY.format(target_dir),
+            "--binary=" + CHROME_BINARY.format(self.options.target),
             "--binary-arg=--host-resolver-rules="
                 "MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1",
             "--binary-arg=--enable-experimental-web-platform-features",
             "--binary-arg=--enable-blink-test-features",
             "--binary-arg=--enable-blink-features=MojoJS,MojoJSTest",
-            "--webdriver-binary=" + CHROMEDRIVER_BINARY.format(target_dir),
+            "--webdriver-binary=" + CHROMEDRIVER_BINARY.format(
+                self.options.target),
             "--webdriver-arg=--enable-chrome-logs",
             "--headless",
             "--no-capture-stdio",
@@ -72,7 +77,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # it uses the exit code to determine which shards to retry (ie:
             # those that had non-zero exit codes).
             #"--no-fail-on-unexpected",
-            "--metadata", WPT_METADATA_OUTPUT_DIR.format(target_dir),
+            "--metadata", WPT_METADATA_OUTPUT_DIR.format(self.options.target),
             # By specifying metadata above, WPT will try to find manifest in the
             # metadata directory. So here we point it back to the correct path
             # for the manifest.
@@ -82,7 +87,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # a lengthy import/export cycle to refresh. So we allow WPT to
             # update the manifest in cast it's stale.
             #"--no-manifest-update",
-            "--manifest", WPT_WORKING_COPY_MANIFEST.format(target_dir),
+            "--manifest", WPT_WORKING_COPY_MANIFEST.format(self.options.target),
             # (crbug.com/1023835) The flags below are temporary to aid debugging
             "--log-mach=-",
             "--log-mach-verbose",
@@ -90,7 +95,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # TODO(lpz): Consider removing --processes and compute automatically
             # from multiprocessing.cpu_count()
             #"--processes=5",
-            "--mojojs-path=" + MOJO_JS_PATH.format(target_dir),
+            "--mojojs-path=" + MOJO_JS_PATH.format(self.options.target),
         ])
         return rest_args
 
@@ -100,6 +105,15 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
                             help=target_help)
         parser.add_argument("test_list", nargs="*",
                             help="List of tests or test directories to run")
+
+    def maybe_set_default_isolated_script_test_output(self):
+        if self.options.isolated_script_test_output:
+            return
+        default_value = DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT.format(
+            self.options.target)
+        print("--isolated-script-test-output not set, defaulting to %s" %
+              default_value)
+        self.options.isolated_script_test_output = default_value
 
     def do_pre_test_run_tasks(self):
         # Copy the checked-in manifest to the temporary working directory
