@@ -96,8 +96,8 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
     return mock_key_systems_[key_system_name];
   }
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   MockKeySystemMap mock_key_systems_;
   base::ScopedTempDir temp_dir_;
@@ -109,7 +109,7 @@ TEST_F(FuchsiaCdmManagerTest, NoKeySystems) {
   base::RunLoop run_loop;
   drm::ContentDecryptionModulePtr cdm_ptr;
   cdm_ptr.set_error_handler([&](zx_status_t status) {
-    EXPECT_EQ(status, ZX_ERR_NOT_FOUND);
+    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
     run_loop.Quit();
   });
 
