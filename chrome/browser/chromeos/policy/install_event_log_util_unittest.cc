@@ -50,6 +50,7 @@ constexpr char kIsMisconfigurationFailure[] = "isMisconfigurationFailure";
 constexpr char kInstallCreationStage[] = "installCreationStage";
 constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
 constexpr char kUnpackerFailureReason[] = "unpackerFailureReason";
+constexpr char kManifestInvalidError[] = "manifestInvalidError";
 
 void ConvertToValueAndVerify(const em::ExtensionInstallReportLogEvent& event,
                              const std::vector<std::string>& keys) {
@@ -112,6 +113,22 @@ TEST_F(ExtensionInstallEventLogUtilTest, UnpackerFailureReasonEvent) {
   event_.set_stateful_free(kDiskSpaceFreeBytes);
   ConvertToValueAndVerify(event_,
                           {kEventType, kFailureReason, kUnpackerFailureReason,
+                           kStatefulTotal, kStatefulFree});
+}
+
+// Verifies that an event reporting update manifest invalid error is
+// successfully parsed.
+TEST_F(ExtensionInstallEventLogUtilTest, ManifestInvalidFailureReasonEvent) {
+  event_.set_event_type(
+      em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED);
+  event_.set_failure_reason(
+      em::ExtensionInstallReportLogEvent::MANIFEST_INVALID);
+  event_.set_manifest_invalid_error(
+      em::ExtensionInstallReportLogEvent::XML_PARSING_FAILED);
+  event_.set_stateful_total(kDiskSpaceTotalBytes);
+  event_.set_stateful_free(kDiskSpaceFreeBytes);
+  ConvertToValueAndVerify(event_,
+                          {kEventType, kFailureReason, kManifestInvalidError,
                            kStatefulTotal, kStatefulFree});
 }
 

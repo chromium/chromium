@@ -16,9 +16,15 @@
 
 namespace extensions {
 
-// Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
-// update enums.xml (name: ManifestInvalidError) when adding new
-// entries. Some errors are common for the entire fetched update manifest which
+// Note: enum used for UMA. Do NOT reorder or remove entries.
+// 1) Don't forget to update enums.xml (name: ManifestInvalidError) when adding
+// new entries.
+// 2) Don't forget to update device_management_backend.proto (name:
+// ExtensionInstallReportLogEvent::ManifestInvalidError) when adding new
+// entries.
+// 3) Don't forget to update ConvertManifestInvalidErrorToProto method in
+// ExtensionInstallEventLogCollector.
+// Some errors are common for the entire fetched update manifest which
 // contains manifests of different extensions, while some errors are per
 // extension basis.
 enum class ManifestInvalidError {

@@ -51,6 +51,7 @@ constexpr char kIsMisconfigurationFailure[] = "isMisconfigurationFailure";
 constexpr char kInstallCreationStage[] = "installCreationStage";
 constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
 constexpr char kUnpackerFailureReason[] = "unpackerFailureReason";
+constexpr char kManifestInvalidError[] = "manifestInvalidError";
 
 // Calculates hash for the given |event| and |context|, and stores the hash in
 // |hash|. Returns true if |event| and |context| are json serializable and
@@ -219,6 +220,12 @@ base::Value ConvertExtensionEventToValue(
     event.SetIntKey(
         kUnpackerFailureReason,
         extension_install_report_log_event.unpacker_failure_reason());
+  }
+
+  if (extension_install_report_log_event.has_manifest_invalid_error()) {
+    event.SetIntKey(
+        kManifestInvalidError,
+        extension_install_report_log_event.manifest_invalid_error());
   }
 
   base::Value wrapper(base::Value::Type::DICTIONARY);

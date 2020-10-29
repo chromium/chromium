@@ -508,6 +508,30 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
             delegate()->last_request().event.unpacker_failure_reason());
 }
 
+// Verifies that a new event is created when the extension failed due to
+// MANIFEST_INVALID failure reason.
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWitManifestInvalid) {
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
+
+  extensions::InstallStageTracker* tracker =
+      extensions::InstallStageTracker::Get(profile());
+
+  // One extension failed.
+  extensions::ExtensionDownloaderDelegate::FailureData data(
+      extensions::ManifestInvalidError::MISSING_APP_ID);
+  tracker->ReportManifestInvalidFailure(kExtensionId1, data);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->last_request().event.event_type());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::MANIFEST_INVALID,
+            delegate()->last_request().event.failure_reason());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::MISSING_APP_ID,
+            delegate()->last_request().event.manifest_invalid_error());
+}
+
 TEST_F(ExtensionInstallEventLogCollectorTest, InstallExtension) {
   std::unique_ptr<ExtensionInstallEventLogCollector> collector =
       std::make_unique<ExtensionInstallEventLogCollector>(

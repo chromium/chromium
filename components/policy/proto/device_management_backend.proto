@@ -3063,6 +3063,28 @@ message ExtensionInstallReportLogEvent {
     CRX_REQUIRED_PROOF_MISSING = 42;
   }
 
+  // Reason why extension failed due to failure reason MANIFEST_INVALID. See
+  // extensions::ManifestInvalidError for more details.
+  // extensions::ManifestInvalidError is the main enum and this is a
+  // copy used for reporting purposes.
+  enum ManifestInvalidError {
+    MANIFEST_INVALID_ERROR_UNKNOWN = 0;
+    XML_PARSING_FAILED = 1;
+    INVALID_XLMNS_ON_GUPDATE_TAG = 2;
+    MISSING_GUPDATE_TAG = 3;
+    INVALID_PROTOCOL_ON_GUPDATE_TAG = 4;
+    MISSING_APP_ID = 5;
+    MISSING_UPDATE_CHECK_TAGS = 6;
+    MULTIPLE_UPDATE_CHECK_TAGS = 7;
+    INVALID_PRODVERSION_MIN = 8;
+    EMPTY_CODEBASE_URL = 9;
+    INVALID_CODEBASE_URL = 10;
+    MISSING_VERSION_FOR_UPDATE_CHECK = 11;
+    INVALID_VERSION = 12;
+    BAD_UPDATE_SPECIFICATION = 13;
+    BAD_APP_STATUS = 14;
+  };
+
   // Timestamp, in microseconds since epoch. Set for all log
   // events.
   optional int64 timestamp = 1;
@@ -3113,6 +3135,10 @@ message ExtensionInstallReportLogEvent {
 
   // Detailed reason why unpacking of extension failed.
   optional SandboxedUnpackerFailureReason unpacker_failure_reason = 16;
+
+  // Detailed reason why extension failed due to failure reason
+  // MANIFEST_INVALID.
+  optional ManifestInvalidError manifest_invalid_error = 17;
 }
 
 // A single entry in the push-install log for an app.

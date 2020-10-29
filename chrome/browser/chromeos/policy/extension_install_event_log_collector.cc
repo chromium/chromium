@@ -379,6 +379,45 @@ ConvertUnpackerFailureReasonToProto(
   }
 }
 
+// Helper function to convert extensions::ManifestInvalidError to the
+// ExtensionInstallReportLogEvent::ManifestInvalidError proto.
+em::ExtensionInstallReportLogEvent_ManifestInvalidError
+ConvertManifestInvalidErrorToProto(extensions::ManifestInvalidError error) {
+  using ManifestError = extensions::ManifestInvalidError;
+  switch (error) {
+    case ManifestError::XML_PARSING_FAILED:
+      return em::ExtensionInstallReportLogEvent::XML_PARSING_FAILED;
+    case ManifestError::INVALID_XLMNS_ON_GUPDATE_TAG:
+      return em::ExtensionInstallReportLogEvent::INVALID_XLMNS_ON_GUPDATE_TAG;
+    case ManifestError::MISSING_GUPDATE_TAG:
+      return em::ExtensionInstallReportLogEvent::MISSING_GUPDATE_TAG;
+    case ManifestError::INVALID_PROTOCOL_ON_GUPDATE_TAG:
+      return em::ExtensionInstallReportLogEvent::
+          INVALID_PROTOCOL_ON_GUPDATE_TAG;
+    case ManifestError::MISSING_APP_ID:
+      return em::ExtensionInstallReportLogEvent::MISSING_APP_ID;
+    case ManifestError::MISSING_UPDATE_CHECK_TAGS:
+      return em::ExtensionInstallReportLogEvent::MISSING_UPDATE_CHECK_TAGS;
+    case ManifestError::MULTIPLE_UPDATE_CHECK_TAGS:
+      return em::ExtensionInstallReportLogEvent::MULTIPLE_UPDATE_CHECK_TAGS;
+    case ManifestError::INVALID_PRODVERSION_MIN:
+      return em::ExtensionInstallReportLogEvent::INVALID_PRODVERSION_MIN;
+    case ManifestError::EMPTY_CODEBASE_URL:
+      return em::ExtensionInstallReportLogEvent::EMPTY_CODEBASE_URL;
+    case ManifestError::INVALID_CODEBASE_URL:
+      return em::ExtensionInstallReportLogEvent::INVALID_CODEBASE_URL;
+    case ManifestError::MISSING_VERSION_FOR_UPDATE_CHECK:
+      return em::ExtensionInstallReportLogEvent::
+          MISSING_VERSION_FOR_UPDATE_CHECK;
+    case ManifestError::INVALID_VERSION:
+      return em::ExtensionInstallReportLogEvent::INVALID_VERSION;
+    case ManifestError::BAD_UPDATE_SPECIFICATION:
+      return em::ExtensionInstallReportLogEvent::BAD_UPDATE_SPECIFICATION;
+    case ManifestError::BAD_APP_STATUS:
+      return em::ExtensionInstallReportLogEvent::BAD_APP_STATUS;
+  }
+}
+
 }  // namespace
 
 ExtensionInstallEventLogCollector::ExtensionInstallEventLogCollector(
@@ -476,6 +515,12 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
   if (data.unpacker_failure_reason) {
     event->set_unpacker_failure_reason(ConvertUnpackerFailureReasonToProto(
         data.unpacker_failure_reason.value()));
+  }
+  // Manifest invalid error is only reported if the extension failed due to
+  // failure reason MANIFEST_INVALID.
+  if (data.manifest_invalid_error) {
+    event->set_manifest_invalid_error(ConvertManifestInvalidErrorToProto(
+        data.manifest_invalid_error.value()));
   }
   extensions::ForceInstalledTracker* force_installed_tracker =
       extensions::ExtensionSystem::Get(profile_)
