@@ -401,6 +401,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.remoteTabsViewController.preventUpdates = YES;
 }
 
+- (void)closeAllTabsConfirmationClosed {
+  self.topToolbar.pageControl.userInteractionEnabled = YES;
+}
+
 #pragma mark - Public Properties
 
 - (id<GridConsumer>)regularTabsConsumer {
@@ -1329,7 +1333,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // toolbar in order to avoid alignment issues when changing the device
   // orientation to landscape in multi window mode.
   UIBarButtonItem* buttonAnchor = self.topToolbar.leadingButton;
-
+  self.topToolbar.pageControl.userInteractionEnabled = NO;
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsDelegate

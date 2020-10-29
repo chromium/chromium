@@ -476,6 +476,8 @@
 
   self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
 
+  __weak TabGridCoordinator* weakSelf = self;
+
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
                            l10n_util::GetPluralStringFUTF16(
@@ -485,6 +487,7 @@
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridCloseAllTabsConfirmationConfirmed"));
                   [tabGridMediator closeAllItems];
+                  [weakSelf.baseViewController closeAllTabsConfirmationClosed];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
@@ -492,6 +495,7 @@
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridCloseAllTabsConfirmationCanceled"));
+                  [weakSelf.baseViewController closeAllTabsConfirmationClosed];
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];

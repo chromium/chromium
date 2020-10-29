@@ -80,6 +80,10 @@
 - (void)contentDidAppear;
 - (void)contentWillDisappearAnimated:(BOOL)animated;
 
+// Notifies the ViewController that the Close All Tabs confirmation action sheet
+// has been closed.
+- (void)closeAllTabsConfirmationClosed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_TAB_GRID_VIEW_CONTROLLER_H_
