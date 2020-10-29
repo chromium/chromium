@@ -431,8 +431,6 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
   active_requests_.erase(request);
   active_timers_.erase(request);
   active_uploads_.erase(request);
-  received_malware_verdicts_.erase(request);
-  received_dlp_verdicts_.erase(request);
   received_connector_results_.erase(request);
 
   auto token_it = active_tokens_.find(request);
@@ -496,32 +494,6 @@ void BinaryUploadService::RecordRequestMetrics(
           result.status() !=
               enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
     }
-  }
-}
-
-void BinaryUploadService::RecordRequestMetrics(
-    Request* request,
-    Result result,
-    const DeepScanningClientResponse& response) {
-  RecordRequestMetrics(request, result);
-  if (response.has_malware_scan_verdict()) {
-    base::UmaHistogramBoolean("SafeBrowsingBinaryUploadRequest.MalwareResult",
-                              response.malware_scan_verdict().verdict() !=
-                                  MalwareDeepScanningVerdict::SCAN_FAILURE);
-    MalwareDeepScanningVerdict::Verdict verdict_count =
-        static_cast<MalwareDeepScanningVerdict::Verdict>(
-            MalwareDeepScanningVerdict_Verdict_Verdict_ARRAYSIZE);
-    base::UmaHistogramEnumeration(
-        IsAdvancedProtectionRequest(*request)
-            ? "SafeBrowsingBinaryUploadRequest.AdvancedProtectionScanVerdict"
-            : "SafeBrowsingBinaryUploadRequest.MalwareScanVerdict",
-        response.malware_scan_verdict().verdict(), verdict_count);
-  }
-
-  if (response.has_dlp_scan_verdict()) {
-    base::UmaHistogramBoolean("SafeBrowsingBinaryUploadRequest.DlpResult",
-                              response.dlp_scan_verdict().status() ==
-                                  DlpDeepScanningVerdict::SUCCESS);
   }
 }
 
@@ -726,15 +698,6 @@ void BinaryUploadService::ValidateDataUploadRequestConnectorCallback(
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  pending_validate_data_upload_request_ = false;
-  can_upload_enterprise_data_[connector] =
-      (result == BinaryUploadService::Result::SUCCESS);
-}
-
-void BinaryUploadService::ValidateDataUploadRequestCallback(
-    enterprise_connectors::AnalysisConnector connector,
-    BinaryUploadService::Result result,
-    DeepScanningClientResponse response) {
   pending_validate_data_upload_request_ = false;
   can_upload_enterprise_data_[connector] =
       (result == BinaryUploadService::Result::SUCCESS);

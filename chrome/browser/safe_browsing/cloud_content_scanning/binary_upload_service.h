@@ -84,13 +84,12 @@ class BinaryUploadService : public KeyedService {
 
   // Callbacks used to pass along the results of scanning. The response protos
   // will only be populated if the result is SUCCESS.
-  using Callback = base::OnceCallback<void(Result, DeepScanningClientResponse)>;
   using ContentAnalysisCallback =
       base::OnceCallback<void(Result,
                               enterprise_connectors::ContentAnalysisResponse)>;
 
   // A class to encapsulate the a request for upload. This class will provide
-  // all the functionality needed to generate a DeepScanningRequest, and
+  // all the functionality needed to generate a ContentAnalysisRequest, and
   // subclasses will provide different sources of data to upload (e.g. file or
   // string).
   class Request {
@@ -250,10 +249,6 @@ class BinaryUploadService : public KeyedService {
       enterprise_connectors::AnalysisConnector connector,
       BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
-  void ValidateDataUploadRequestCallback(
-      enterprise_connectors::AnalysisConnector connector,
-      BinaryUploadService::Result result,
-      DeepScanningClientResponse response);
 
   // Callback once a request's instance ID is unregistered.
   void InstanceIDUnregisteredCallback(
@@ -265,9 +260,6 @@ class BinaryUploadService : public KeyedService {
       Request* request,
       Result result,
       const enterprise_connectors::ContentAnalysisResponse& response);
-  void RecordRequestMetrics(Request* request,
-                            Result result,
-                            const DeepScanningClientResponse& response);
 
   // Called at the end of the FinishRequest method.
   void FinishRequestCleanup(Request* request, const std::string& instance_id);
@@ -284,10 +276,6 @@ class BinaryUploadService : public KeyedService {
   base::flat_map<Request*, std::unique_ptr<MultipartUploadRequest>>
       active_uploads_;
   base::flat_map<Request*, std::string> active_tokens_;
-  base::flat_map<Request*, std::unique_ptr<MalwareDeepScanningVerdict>>
-      received_malware_verdicts_;
-  base::flat_map<Request*, std::unique_ptr<DlpDeepScanningVerdict>>
-      received_dlp_verdicts_;
 
   // Maps requests to each corresponding tag-result pairs.
   base::flat_map<
