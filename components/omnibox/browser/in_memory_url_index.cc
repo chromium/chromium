@@ -250,6 +250,10 @@ bool InMemoryURLIndex::OnMemoryDump(
   auto* dump = process_memory_dump->CreateAllocatorDump(dump_name);
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes, res);
+
+  // TODO(https://crbug.com/1068883): Remove this code when the bug is fixed.
+  private_data_->OnMemoryAllocatorDump(dump);
+
   return true;
 }
 

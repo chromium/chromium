@@ -36,6 +36,12 @@ class HistoryDatabase;
 class InMemoryURLIndex;
 }
 
+namespace base {
+namespace trace_event {
+class MemoryAllocatorDump;
+}
+}  // namespace base
+
 // Current version of the cache file.
 static const int kCurrentCacheFileVersion = 5;
 
@@ -145,6 +151,8 @@ class URLIndexPrivateData
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
+  void OnMemoryAllocatorDump(
+      base::trace_event::MemoryAllocatorDump* dump) const;
 
   // Returns true if |row| is indexed.
   bool IsUrlRowIndexed(const history::URLRow& row) const;

@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -521,6 +522,75 @@ size_t URLIndexPrivateData::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(word_starts_map_);
 
   return res;
+}
+
+// TODO(https://crbug.com/1068883): Remove this code when the bug is fixed.
+// This code should be deprecated and removed before M90. This method is not
+// merged with EstimateMemoryUsage(...) since it is intended to be removed.
+void URLIndexPrivateData::OnMemoryAllocatorDump(
+    base::trace_event::MemoryAllocatorDump* dump) const {
+  dump->AddScalar("search_term_cache",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  search_term_cache_.size());
+  dump->AddScalar("search_term_cache",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(search_term_cache_));
+
+  dump->AddScalar("word_list",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  word_list_.size());
+  dump->AddScalar("word_list",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(word_list_));
+
+  dump->AddScalar("available_words",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  available_words_.size());
+  dump->AddScalar("available_words",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(available_words_));
+
+  dump->AddScalar("word_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  word_map_.size());
+  dump->AddScalar("word_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(word_map_));
+
+  dump->AddScalar("char_word_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  char_word_map_.size());
+  dump->AddScalar("char_word_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(char_word_map_));
+
+  dump->AddScalar("word_id_history_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  word_id_history_map_.size());
+  dump->AddScalar("word_id_history_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(word_id_history_map_));
+
+  dump->AddScalar("history_id_word_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  history_id_word_map_.size());
+  dump->AddScalar("history_id_word_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(history_id_word_map_));
+
+  dump->AddScalar("history_info_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  history_info_map_.size());
+  dump->AddScalar("history_info_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(history_info_map_));
+
+  dump->AddScalar("word_starts_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  word_starts_map_.size());
+  dump->AddScalar("word_starts_map",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(word_starts_map_));
 }
 
 bool URLIndexPrivateData::IsUrlRowIndexed(const history::URLRow& row) const {
