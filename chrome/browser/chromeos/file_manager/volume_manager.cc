@@ -88,13 +88,6 @@ bool RegisterDownloadsMountPoint(Profile* profile, const base::FilePath& path) {
                                           path);
 }
 
-// Returns true if the "Play files" root should be shown based on the current
-// flag settings (chrome://flags/#android-files-in-files-app).
-bool IsShowAndroidFilesEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kHideAndroidFilesInFilesApp);
-}
-
 // Registers a mount point for Android files to ExternalMountPoints.
 bool RegisterAndroidFilesMountPoint() {
   storage::ExternalMountPoints* const mount_points =
@@ -596,8 +589,7 @@ void VolumeManager::Initialize() {
   if (base::FeatureList::IsEnabled(arc::kMediaViewFeature) &&
       arc::IsArcAllowedForProfile(profile_)) {
     // Registers a mount point for Android files only when the flag is enabled.
-    if (IsShowAndroidFilesEnabled())
-      RegisterAndroidFilesMountPoint();
+    RegisterAndroidFilesMountPoint();
 
     arc::ArcSessionManager::Get()->AddObserver(this);
     OnArcPlayStoreEnabledChanged(
@@ -1151,11 +1143,9 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                  Volume::CreateForMediaView(arc::kVideosRootDocumentId));
     DoMountEvent(chromeos::MOUNT_ERROR_NONE,
                  Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    if (IsShowAndroidFilesEnabled()) {
-      DoMountEvent(chromeos::MOUNT_ERROR_NONE,
-                   Volume::CreateForAndroidFiles(
-                       base::FilePath(util::kAndroidFilesPath)));
-    }
+    DoMountEvent(
+        chromeos::MOUNT_ERROR_NONE,
+        Volume::CreateForAndroidFiles(base::FilePath(util::kAndroidFilesPath)));
   } else {
     DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
                    *Volume::CreateForMediaView(arc::kImagesRootDocumentId));
@@ -1163,11 +1153,9 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                    *Volume::CreateForMediaView(arc::kVideosRootDocumentId));
     DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
                    *Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    if (IsShowAndroidFilesEnabled()) {
-      DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
-                     *Volume::CreateForAndroidFiles(
-                         base::FilePath(util::kAndroidFilesPath)));
-    }
+    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
+                   *Volume::CreateForAndroidFiles(
+                       base::FilePath(util::kAndroidFilesPath)));
   }
 
   documents_provider_root_manager_->SetEnabled(enabled);

@@ -2104,11 +2104,6 @@ const char kShelfHoverPreviewsDescription[] =
     "Shows previews of the open windows for a given running app when hovering "
     "over the shelf.";
 
-const char kShowAndroidFilesInFilesAppName[] =
-    "Show Android files in Files app";
-const char kShowAndroidFilesInFilesAppDescription[] =
-    "Show Android files in Files app if Android is enabled on the device.";
-
 const char kShowAutofillSignaturesName[] = "Show autofill signatures.";
 const char kShowAutofillSignaturesDescription[] =
     "Annotates web forms with Autofill signatures as HTML attributes. Also "

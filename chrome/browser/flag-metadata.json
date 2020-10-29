@@ -108,11 +108,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "android-files-in-files-app",
-    "owners": [ "fukino" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "android-managed-by-menu-item",
     "owners": [ "gangwu@google.com", "twellington" ],
     "expiry_milestone": 90

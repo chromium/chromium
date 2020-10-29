@@ -3761,12 +3761,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(chromeos::switches::kEnableTouchCalibrationSetting)},
 #endif  // defined(OS_CHROMEOS)
 #if defined(OS_CHROMEOS)
-    {"android-files-in-files-app",
-     flag_descriptions::kShowAndroidFilesInFilesAppName,
-     flag_descriptions::kShowAndroidFilesInFilesAppDescription, kOsCrOS,
-     ENABLE_DISABLE_VALUE_TYPE(
-         chromeos::switches::kShowAndroidFilesInFilesApp,
-         chromeos::switches::kHideAndroidFilesInFilesApp)},
     {"camera-system-web-app", flag_descriptions::kCameraSystemWebAppName,
      flag_descriptions::kCameraSystemWebAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCameraSystemWebApp)},

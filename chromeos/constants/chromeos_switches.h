@@ -165,8 +165,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kGuestSession[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kGuestWallpaperLarge[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kGuestWallpaperSmall[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kHasChromeOSKeyboard[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kHideAndroidFilesInFilesApp[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kHomedir[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kIgnoreArcVmDevConf[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -208,8 +206,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kSafeMode[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kSamlPasswordChangeUrl[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kShelfHoverPreviews[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kShelfHotseat[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kShowAndroidFilesInFilesApp[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kShowLoginDevOverlay[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kShowOobeDevOverlay[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
