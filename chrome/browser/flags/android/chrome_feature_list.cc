@@ -174,7 +174,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kNotificationSuspender,
     &kOfflineIndicatorV2,
     &kOmniboxSpareRenderer,
-    &kOverlayNewLayout,
     &kPayWithGoogleV1,
     &kPhotoPickerVideoSupport,
     &kPhotoPickerZoom,
@@ -516,9 +515,6 @@ const base::Feature kOfflineIndicatorV2{"OfflineIndicatorV2",
 
 const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kOverlayNewLayout{"OverlayNewLayout",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(rouslan): Remove this. (Currently used in
 // GooglePayPaymentAppFactory.java)

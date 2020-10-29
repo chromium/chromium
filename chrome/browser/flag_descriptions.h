@@ -999,9 +999,6 @@ extern const char kOsSettingsDeepLinkingDescription[];
 extern const char kEnableDeJellyName[];
 extern const char kEnableDeJellyDescription[];
 
-extern const char kOverlayNewLayoutName[];
-extern const char kOverlayNewLayoutDescription[];
-
 extern const char kOverlayScrollbarsName[];
 extern const char kOverlayScrollbarsDescription[];
 

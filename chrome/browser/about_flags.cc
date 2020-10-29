@@ -4949,9 +4949,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEphemeralTabUsingBottomSheetName,
      flag_descriptions::kEphemeralTabUsingBottomSheetDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEphemeralTabUsingBottomSheet)},
-    {"overlay-new-layout", flag_descriptions::kOverlayNewLayoutName,
-     flag_descriptions::kOverlayNewLayoutDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOverlayNewLayout)},
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS)

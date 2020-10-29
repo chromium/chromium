@@ -58,15 +58,13 @@ abstract class OverlayPanelBase {
      */
     private static final float BASE_PAGE_BRIGHTNESS_STATE_MAXIMIZED = .4f;
 
-    /** The opacity of the arrow icon when the Panel is peeking. */
-    private static final float ARROW_ICON_OPACITY_STATE_PEEKED = 1.f;
-
-    /** The opacity of the arrow icon when the Panel is expanded. */
-    private static final float ARROW_ICON_OPACITY_STATE_EXPANDED = 0.f;
+    // -------------------------------------------------------------------------
+    // TODO(donnd): crbug.com/1143472 - The arrow and close buttons from the
+    // legacy UI are no longer used. Remove code related to these buttons here
+    // and in the native interface.
+    //
+    /** The opacity of the arrow icon. */
     private static final float ARROW_ICON_OPACITY_TRANSPARENT = 0.f;
-
-    /** The opacity of the arrow icon when the Panel is maximized. */
-    private static final float ARROW_ICON_OPACITY_STATE_MAXIMIZED = 0.f;
 
     /** The rotation of the arrow icon. */
     private static final float ARROW_ICON_ROTATION = -90.f;
@@ -91,6 +89,7 @@ abstract class OverlayPanelBase {
 
     /** The id of the close icon drawable. */
     public static final int CLOSE_ICON_DRAWABLE_ID = R.drawable.btn_close;
+    // -------------------------------------------------------------------------
 
     /** The height of the Progress Bar in dps. */
     private static final float PROGRESS_BAR_HEIGHT_DP = 2.f;
@@ -150,8 +149,7 @@ abstract class OverlayPanelBase {
         mProgressBarHeight = PROGRESS_BAR_HEIGHT_DP;
         mBarBorderHeight = BAR_BORDER_HEIGHT_DP;
 
-        int bar_height_dimen = OverlayPanel.isNewLayout() ? R.dimen.overlay_panel_bar_height
-                                                          : R.dimen.overlay_panel_bar_height_legacy;
+        int bar_height_dimen = R.dimen.overlay_panel_bar_height;
         mBarHeight = mContext.getResources().getDimension(bar_height_dimen) * mPxToDp;
 
         final Resources resources = mContext.getResources();
@@ -415,8 +413,6 @@ abstract class OverlayPanelBase {
     private boolean mIsBarBorderVisible;
     private float mBarBorderHeight;
 
-    private float mArrowIconOpacity;
-
     private float mCloseIconOpacity;
     private float mCloseIconWidth;
 
@@ -488,7 +484,7 @@ abstract class OverlayPanelBase {
      * @return The opacity of the arrow icon.
      */
     public float getArrowIconOpacity() {
-        return OverlayPanel.isNewLayout() ? ARROW_ICON_OPACITY_TRANSPARENT : mArrowIconOpacity;
+        return ARROW_ICON_OPACITY_TRANSPARENT;
     }
 
     /**
@@ -966,9 +962,6 @@ abstract class OverlayPanelBase {
         // Bar border.
         mIsBarBorderVisible = false;
 
-        // Arrow Icon.
-        mArrowIconOpacity = ARROW_ICON_OPACITY_STATE_PEEKED;
-
         // Close icon opacity.
         mCloseIconOpacity = CLOSE_ICON_OPACITY_STATE_PEEKED;
 
@@ -1007,12 +1000,6 @@ abstract class OverlayPanelBase {
         // the same percentage.
         float fadingOutPercentage = Math.min(percentage, .5f) / .5f;
         float fadingInPercentage = Math.max(percentage - .5f, 0.f) / .5f;
-
-        // Arrow Icon.
-        mArrowIconOpacity = MathUtils.interpolate(
-                ARROW_ICON_OPACITY_STATE_PEEKED,
-                ARROW_ICON_OPACITY_STATE_EXPANDED,
-                fadingOutPercentage);
 
         // Close Icon.
         mCloseIconOpacity = MathUtils.interpolate(
@@ -1055,9 +1042,6 @@ abstract class OverlayPanelBase {
 
         // Bar border.
         mIsBarBorderVisible = true;
-
-        // Arrow Icon.
-        mArrowIconOpacity = ARROW_ICON_OPACITY_STATE_MAXIMIZED;
 
         // Close Icon.
         mCloseIconOpacity = CLOSE_ICON_OPACITY_STATE_MAXIMIZED;

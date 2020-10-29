@@ -8,7 +8,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarBannerControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
@@ -65,11 +64,9 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         int searchTermViewId = searchBarControl.getSearchTermViewId();
         int searchCaptionViewId = searchBarControl.getCaptionViewId();
 
-        int openNewTabIconId = OverlayPanel.isNewLayout() && panel.canPromoteToNewTab()
-                ? R.drawable.open_in_new_tab
-                : INVALID_RESOURCE_ID;
-        int dragHandlebarId =
-                OverlayPanel.isNewLayout() ? R.drawable.drag_handlebar : INVALID_RESOURCE_ID;
+        int openNewTabIconId =
+                panel.canPromoteToNewTab() ? R.drawable.open_in_new_tab : INVALID_RESOURCE_ID;
+        int dragHandlebarId = R.drawable.drag_handlebar;
 
         int searchPromoViewId = promoControl.getViewId();
         boolean searchPromoVisible = promoControl.isVisible();
@@ -138,20 +135,16 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         WebContents panelWebContents = panel.getWebContents();
 
-        int roundedBarTopResourceId = OverlayPanel.isNewLayout()
-                ? org.chromium.components.browser_ui.styles.R.drawable.top_round
-                : INVALID_RESOURCE_ID;
+        int roundedBarTopResourceId =
+                org.chromium.components.browser_ui.styles.R.drawable.top_round;
         int separatorLineColor = panel.getSeparatorLineColor();
-        // The panel shadow goes all the way around in the old layout, but in the new layout
-        // the top_round resource also includes the shadow so we only need a side shadow.
-        // In either case there's just one shadow-only resource needed.
-        int panelShadowResourceId = OverlayPanel.isNewLayout()
-                ? R.drawable.overlay_side_shadow
-                : R.drawable.contextual_search_bar_background;
-        int closeIconResourceId = OverlayPanel.isNewLayout()
-                ? INVALID_RESOURCE_ID
-                : ContextualSearchPanel.CLOSE_ICON_DRAWABLE_ID;
+        // The top_round resource includes the shadow so we only need a side shadow.
+        int panelShadowResourceId = R.drawable.overlay_side_shadow;
+        int closeIconResourceId = INVALID_RESOURCE_ID;
 
+        // TODO(donnd): crbug.com/1143472 - Remove four parameters for the now
+        // defunct arrow |R.drawable.breadcrumb_arrow| and close buttons from
+        // the interface and the associated code on the native side.
         ContextualSearchSceneLayerJni.get().updateContextualSearchLayer(mNativePtr,
                 ContextualSearchSceneLayer.this, panelShadowResourceId, searchBarBackgroundColor,
                 searchContextViewId, searchTermViewId, searchCaptionViewId,

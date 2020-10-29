@@ -133,14 +133,8 @@ void ContextualSearchLayer::SetProperties(
   // Content setup, to center in space below drag handle (when present).
   // -----------------------------------------------------------------
   bool is_rtl = l10n_util::IsLayoutRtl();
-  int content_height = search_bar_height;
-  int content_top = search_bar_top;
-  bool is_overlay_new_layout =
-      rounded_bar_top_resource_id != kInvalidResourceID;
-  if (is_overlay_new_layout) {
-    content_top += search_bar_margin_top;
-    content_height -= search_bar_margin_top;
-  }
+  int content_height = search_bar_height - search_bar_margin_top;
+  int content_top = search_bar_top + search_bar_margin_top;
 
   // -----------------------------------------------------------------
   // Bar Banner -- obsolete.  TODO(donnd): remove.
@@ -360,11 +354,9 @@ void ContextualSearchLayer::SetProperties(
     if (touch_highlight_layer_->parent() != layer_)
       layer_->AddChild(touch_highlight_layer_);
     // In the new layout don't highlight the whole bar due to rounded corners.
-    int highlight_height =
-        is_overlay_new_layout ? text_layer_height : search_bar_height;
+    int highlight_height = text_layer_height;
     int highlight_top = content_top;
-    highlight_top +=
-        is_overlay_new_layout ? (content_height - text_layer_height) / 2 : 0;
+    highlight_top += (content_height - text_layer_height) / 2;
     gfx::Size background_size(touch_highlight_width, highlight_height);
     touch_highlight_layer_->SetBounds(background_size);
     touch_highlight_layer_->SetPosition(

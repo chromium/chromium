@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -261,12 +260,7 @@ public class ContextualSearchPanel extends OverlayPanel {
                 super.handleBarClick(x, y);
             }
         } else if (isExpanded() || isMaximized()) {
-            if (isCoordinateInsideCloseButton(x)) {
-                closePanel(StateChangeReason.CLOSE_BUTTON, true);
-            } else if (canPromoteToNewTab()
-                    && (!ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
-                            || ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
-                                    && isCoordinateInsideOpenTabButton(x))) {
+            if (canPromoteToNewTab() && isCoordinateInsideOpenTabButton(x)) {
                 mManagementDelegate.promoteToTab();
             } else {
                 peekPanel(StateChangeReason.UNKNOWN);
@@ -342,22 +336,16 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     @Override
     public float getOpenTabIconX() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
-            return super.getOpenTabIconX();
+        if (LocalizationUtils.isLayoutRtl()) {
+            return getOffsetX() + getBarMarginSide();
         } else {
-            if (LocalizationUtils.isLayoutRtl()) {
-                return getOffsetX() + getBarMarginSide();
-            } else {
-                return getOffsetX() + getWidth() - getBarMarginSide() - getCloseIconDimension();
-            }
+            return getOffsetX() + getWidth() - getBarMarginSide() - getCloseIconDimension();
         }
     }
 
     @Override
     protected boolean isCoordinateInsideCloseButton(float x) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) return false;
-
-        return super.isCoordinateInsideCloseButton(x);
+        return false;
     }
 
     @Override
@@ -384,11 +372,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     @Override
     protected float getMaximizedHeight() {
         // Max height does not cover the entire content screen.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
-            return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
-        } else {
-            return super.getMaximizedHeight();
-        }
+        return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
     }
 
     // ============================================================================================

@@ -86,7 +86,6 @@
     <dimen name="contextual_search_bubble_y_inset">-3dp</dimen>
 
     <!-- Overlay panel dimensions -->
-    <dimen name="overlay_panel_bar_height_legacy">56dp</dimen>
     <dimen name="overlay_panel_bar_height">70dp</dimen>
 
     <!-- Preview tab dimensions -->

@@ -3634,11 +3634,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "overlay-new-layout",
-    "owners": [ "donnd", "jinsukkim", "contextual-search-eng@google.com" ],
-    "expiry_milestone": 81
-  },
-  {
     "name": "overlay-scrollbars",
     "owners": [ "chaopeng", "bokan", "input-dev" ],
     "expiry_milestone": 76

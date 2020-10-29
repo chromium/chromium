@@ -12,7 +12,6 @@ import android.widget.TextView;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -43,10 +42,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
                                           ViewGroup container,
                                           DynamicResourceLoader resourceLoader) {
         super(panel, R.layout.contextual_search_term_view, R.id.contextual_search_term_view,
-                context, container, resourceLoader,
-                (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
-                                ? R.dimen.contextual_search_end_padding
-                                : R.dimen.contextual_search_padded_button_width),
+                context, container, resourceLoader, R.dimen.contextual_search_end_padding,
                 R.dimen.contextual_search_padded_button_width);
     }
 

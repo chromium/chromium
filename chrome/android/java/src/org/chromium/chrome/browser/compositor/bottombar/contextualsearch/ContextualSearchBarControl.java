@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -236,12 +235,6 @@ public class ContextualSearchBarControl {
     public void onUpdateFromPeekToExpand(float percentage) {
         mExpandedPercent = percentage;
 
-        // If there is a quick action, the divider line's appearance was animated when the quick
-        // action was set.
-        if (!getQuickActionControl().hasQuickAction()
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
-            mDividerLineVisibilityPercentage = percentage;
-        }
         getImageControl().onUpdateFromPeekToExpand(percentage);
         mCaptionControl.onUpdateFromPeekToExpand(percentage);
         mSearchTermControl.onUpdateFromPeekToExpand(percentage);
@@ -259,7 +252,6 @@ public class ContextualSearchBarControl {
         mQuickActionControl.reset();
         mContextControl.setContextDetails(selection, end);
         resetSearchBarContextOpacity();
-        animateDividerLine(false);
     }
 
     /**
@@ -286,10 +278,6 @@ public class ContextualSearchBarControl {
         mQuickActionControl.reset();
         mSearchTermControl.setSearchTerm(searchTerm);
         resetSearchBarTermOpacity();
-
-        // If the panel is expanded, the divider line should not be hidden. This may happen if the
-        // panel is opened before the search term is resolved.
-        if (mExpandedPercent == TRANSPARENT_OPACITY) animateDividerLine(false);
     }
 
     /**
@@ -376,7 +364,6 @@ public class ContextualSearchBarControl {
             // regular caption?
             mCaptionControl.setCaption(mQuickActionControl.getCaption());
             mImageControl.setCardIconResourceId(mQuickActionControl.getIconResId());
-            animateDividerLine(true);
         }
     }
 
@@ -455,24 +442,6 @@ public class ContextualSearchBarControl {
         }
     }
 
-    /**
-     * Animates the appearance or disappearance of the divider line.
-     * @param visible Whether the divider line should be made visible.
-     */
-    private void animateDividerLine(boolean visible) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) return;
-
-        float endValue = visible ? FULL_OPACITY : TRANSPARENT_OPACITY;
-        if (mDividerLineVisibilityPercentage == endValue) return;
-        if (mDividerLineVisibilityAnimation != null) mDividerLineVisibilityAnimation.cancel();
-        mDividerLineVisibilityAnimation = CompositorAnimator.ofFloat(
-                mContextualSearchPanel.getAnimationHandler(), mDividerLineVisibilityPercentage,
-                endValue, OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
-        mDividerLineVisibilityAnimation.addUpdateListener(
-                animator -> mDividerLineVisibilityPercentage = animator.getAnimatedValue());
-        mDividerLineVisibilityAnimation.start();
-    }
-
     // ============================================================================================
     // Touch Highlight
     // ============================================================================================
@@ -509,44 +478,14 @@ public class ContextualSearchBarControl {
      * @return The x-offset of the touch highlight in pixels.
      */
     public float getTouchHighlightXOffsetPx() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
-            return mTouchHighlightXOffsetPx;
-        }
-
-        if (mWasDividerVisibleOnTouch
-                && ((mWasTouchOnEndButton && !LocalizationUtils.isLayoutRtl())
-                || (!mWasTouchOnEndButton && LocalizationUtils.isLayoutRtl()))) {
-            // If the touch was on the end button in LTR, offset the touch highlight so that it
-            // starts at the beginning of the end button.
-            // If the touch was not on the end button in RTL, offset the touch highlight so that it
-            // starts after the end button.
-            return getDividerLineXOffset() + getDividerLineWidth();
-        }
-
-        return 0;
+        return mTouchHighlightXOffsetPx;
     }
 
     /**
      * @return The width of the touch highlight in pixels.
      */
     public float getTouchHighlightWidthPx() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
-            return mTouchHighlightWidthPx;
-        }
-
-        if (mWasDividerVisibleOnTouch) {
-            // The touch was on the end button so the touch highlight should cover the end button.
-            if (mWasTouchOnEndButton) return mEndButtonWidth;
-
-            // The touch was not on the end button so the touch highlight should cover everything
-            // except the end button.
-            return mContextualSearchPanel.getContentViewWidthPx() - mEndButtonWidth
-                    - getDividerLineWidth();
-        }
-
-        // If the divider line wasn't visible when the Bar was touched, the touch highlight covers
-        // the entire Bar.
-        return mContextualSearchPanel.getContentViewWidthPx();
+        return mTouchHighlightWidthPx;
     }
 
     /**
@@ -571,8 +510,6 @@ public class ContextualSearchBarControl {
      * @param xPx The x-coordinate of a touch location, in pixels.
      */
     private void classifyTouchLocation(float xPx) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT);
-
         // There are 3 cases:
         // 1) The whole Bar (without any icons)
         // 2) The Bar minus icon (when the icon is present)
@@ -619,11 +556,7 @@ public class ContextualSearchBarControl {
         // highlight should not be shown.
         if (!mContextualSearchPanel.isPeeking() && !mCanPromoteToNewTab) return;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
-            classifyTouchLocation(x);
-        } else {
-            mWasDividerVisibleOnTouch = getDividerLineVisibilityPercentage() > TRANSPARENT_OPACITY;
-        }
+        classifyTouchLocation(x);
         mTouchHighlightVisible = true;
 
         // The touch highlight animation is used to ensure the touch highlight is visible for at
