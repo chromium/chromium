@@ -226,7 +226,7 @@ CdmAdapter::CdmAdapter(
   DCHECK(session_expiration_update_cb_);
 
   helper_->SetFileReadCB(
-      base::Bind(&CdmAdapter::OnFileRead, weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&CdmAdapter::OnFileRead, weak_factory_.GetWeakPtr()));
 }
 
 CdmAdapter::~CdmAdapter() {

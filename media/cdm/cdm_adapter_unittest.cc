@@ -140,18 +140,19 @@ class CdmAdapterTestBase : public testing::Test,
     std::unique_ptr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper(
         new StrictMock<MockCdmAuxiliaryHelper>(std::move(allocator)));
     cdm_helper_ = cdm_helper.get();
-    CdmAdapter::Create(GetKeySystemName(), cdm_config, GetCreateCdmFunc(),
-                       std::move(cdm_helper),
-                       base::Bind(&MockCdmClient::OnSessionMessage,
-                                  base::Unretained(&cdm_client_)),
-                       base::Bind(&MockCdmClient::OnSessionClosed,
-                                  base::Unretained(&cdm_client_)),
-                       base::Bind(&MockCdmClient::OnSessionKeysChange,
-                                  base::Unretained(&cdm_client_)),
-                       base::Bind(&MockCdmClient::OnSessionExpirationUpdate,
-                                  base::Unretained(&cdm_client_)),
-                       base::BindOnce(&CdmAdapterTestBase::OnCdmCreated,
-                                      base::Unretained(this), expected_result));
+    CdmAdapter::Create(
+        GetKeySystemName(), cdm_config, GetCreateCdmFunc(),
+        std::move(cdm_helper),
+        base::BindRepeating(&MockCdmClient::OnSessionMessage,
+                            base::Unretained(&cdm_client_)),
+        base::BindRepeating(&MockCdmClient::OnSessionClosed,
+                            base::Unretained(&cdm_client_)),
+        base::BindRepeating(&MockCdmClient::OnSessionKeysChange,
+                            base::Unretained(&cdm_client_)),
+        base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
+                            base::Unretained(&cdm_client_)),
+        base::BindOnce(&CdmAdapterTestBase::OnCdmCreated,
+                       base::Unretained(this), expected_result));
     RunUntilIdle();
     ASSERT_EQ(expected_result == SUCCESS, !!cdm_);
   }

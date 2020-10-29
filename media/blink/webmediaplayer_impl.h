@@ -999,7 +999,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   OverlayInfo overlay_info_;
 
-  base::CancelableClosure update_background_status_cb_;
+  base::CancelableOnceClosure update_background_status_cb_;
 
   mojo::Remote<mojom::MediaMetricsProvider> media_metrics_provider_;
   mojo::Remote<mojom::PlaybackEventsRecorder> playback_events_recorder_;

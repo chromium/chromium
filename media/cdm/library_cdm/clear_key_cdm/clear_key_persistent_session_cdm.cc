@@ -99,10 +99,10 @@ ClearKeyPersistentSessionCdm::ClearKeyPersistentSessionCdm(
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb) {
   cdm_ = base::MakeRefCounted<AesDecryptor>(
-      base::Bind(&ClearKeyPersistentSessionCdm::OnSessionMessage,
-                 weak_factory_.GetWeakPtr()),
-      base::Bind(&ClearKeyPersistentSessionCdm::OnSessionClosed,
-                 weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&ClearKeyPersistentSessionCdm::OnSessionMessage,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&ClearKeyPersistentSessionCdm::OnSessionClosed,
+                          weak_factory_.GetWeakPtr()),
       session_keys_change_cb, session_expiration_update_cb);
 }
 
@@ -129,8 +129,8 @@ void ClearKeyPersistentSessionCdm::CreateSessionAndGenerateRequest(
     // Since it's a persistent session, we need to save the session ID after
     // it's been created.
     new_promise = std::make_unique<NewPersistentSessionCdmPromise>(
-        base::Bind(&ClearKeyPersistentSessionCdm::AddPersistentSession,
-                   weak_factory_.GetWeakPtr()),
+        base::BindOnce(&ClearKeyPersistentSessionCdm::AddPersistentSession,
+                       weak_factory_.GetWeakPtr()),
         std::move(promise));
   }
   cdm_->CreateSessionAndGenerateRequest(session_type, init_data_type, init_data,
