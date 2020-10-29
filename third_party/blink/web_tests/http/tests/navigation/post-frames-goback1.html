@@ -8,8 +8,8 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.dumpBackForwardList();
 }
-   
-onload = function()
+
+onpageshow = function()
 {
     if (sessionStorage.didNav) {
         delete sessionStorage.didNav;
