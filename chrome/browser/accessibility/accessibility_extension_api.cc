@@ -506,17 +506,8 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateEnablePointScanFunction::Run() {
-  std::unique_ptr<accessibility_private::EnablePointScan::Params> params =
-      accessibility_private::EnablePointScan::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (params->enabled) {
-    ash::AccessibilityController::Get()->StartPointScan();
-  }
-
-  // TODO(crbug.com/1061537): Implement (!params->enabled) to disable point scan
-
+AccessibilityPrivateActivatePointScanFunction::Run() {
+  ash::AccessibilityController::Get()->ActivatePointScan();
   return RespondNow(NoArguments());
 }
 

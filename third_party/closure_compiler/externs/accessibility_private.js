@@ -274,11 +274,9 @@ chrome.accessibilityPrivate.forwardKeyEventsToSwitchAccess = function(shouldForw
 chrome.accessibilityPrivate.updateSwitchAccessBubble = function(bubble, show, anchor, actions) {};
 
 /**
- * Enables or disables point scanning in Switch Access.
- * @param {boolean} enabled True for start point scanning, false for end point
- *     scanning.
+ * Activates point scanning in Switch Access.
  */
-chrome.accessibilityPrivate.enablePointScan = function(enabled) {};
+chrome.accessibilityPrivate.activatePointScan = function() {};
 
 /**
  * Sets current ARC app to use native ARC support.

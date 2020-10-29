@@ -5,6 +5,7 @@
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/point_scan_controller.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
@@ -182,9 +183,18 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
       switch_access_key_codes_to_capture_.count(key_event->key_code()) > 0;
 
   if (capture && key_event->type() == ui::ET_KEY_PRESSED) {
-    SwitchAccessCommand command =
-        key_code_to_switch_access_command_[key_event->key_code()];
-    delegate_->SendSwitchAccessCommand(command);
+    AccessibilityControllerImpl* accessibility_controller =
+        Shell::Get()->accessibility_controller();
+
+    if (accessibility_controller->IsPointScanEnabled()) {
+      PointScanController* point_scan_controller =
+          accessibility_controller->GetPointScanController();
+      point_scan_controller->OnPointSelect();
+    } else {
+      SwitchAccessCommand command =
+          key_code_to_switch_access_command_[key_event->key_code()];
+      delegate_->SendSwitchAccessCommand(command);
+    }
   }
   return capture;
 }

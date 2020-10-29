@@ -47,7 +47,7 @@ void FakeAccessibilityController::ShowSwitchAccessMenu(
     const gfx::Rect& anchor,
     std::vector<std::string> actions) {}
 
-void FakeAccessibilityController::StartPointScan() {}
+void FakeAccessibilityController::ActivatePointScan() {}
 
 void FakeAccessibilityController::SetDictationActive(bool is_active) {}
 

@@ -194,8 +194,10 @@ class ActionManager {
       case SwitchAccessMenuAction.SETTINGS:
         chrome.accessibilityPrivate.openSettingsSubpage(
             'manageAccessibility/switchAccess');
+        return true;
       case SwitchAccessMenuAction.POINT_SCAN:
-        chrome.accessibilityPrivate.enablePointScan(true);
+        chrome.accessibilityPrivate.activatePointScan();
+        ActionManager.exitCurrentMenu();
         return true;
       default:
         return false;

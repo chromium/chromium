@@ -332,16 +332,10 @@
         "platforms": ["chromeos"]
       },
       {
-        "name": "enablePointScan",
+        "name": "activatePointScan",
         "type": "function",
-        "description": "Enables or disables point scanning in Switch Access.",
-        "parameters": [
-          {
-            "name": "enabled",
-            "type": "boolean",
-            "description": "True for start point scanning, false for end point scanning."
-          }
-        ],
+        "description": "Activates point scanning in Switch Access.",
+        "parameters": [],
         "platforms": ["chromeos"]
       },
       {

@@ -33,16 +33,38 @@ PointScanLayer::PointScanLayer(AccessibilityLayerDelegate* delegate)
       Shell::GetRootWindowForDisplayId(GetPrimaryDisplay().id());
   CreateOrUpdateLayer(root_window, "PointScanning", gfx::Rect());
   SetOpacity(1.0);
+  bounds_ = GetPrimaryDisplay().bounds();
+  layer()->SetBounds(bounds_);
 }
 
 void PointScanLayer::StartHorizontalScanning() {
-  bounds_ = GetPrimaryDisplay().bounds();
-  layer()->SetBounds(bounds_);
+  gfx::Point end = bounds_.bottom_left();
+  bounds_.set_origin(line_.start);
+  line_.end = end;
+  is_moving_ = true;
+}
 
-  gfx::Point start = bounds_.top_center();
-  gfx::Point end = bounds_.bottom_center();
-  horizontal_.start = start;
-  horizontal_.end = end;
+void PointScanLayer::PauseHorizontalScanning() {
+  is_moving_ = false;
+}
+
+void PointScanLayer::StartVerticalScanning() {
+  gfx::Point end = bounds_.top_right();
+  bounds_.set_origin(line_.start);
+  line_.end = end;
+  is_moving_ = true;
+}
+
+void PointScanLayer::PauseVerticalScanning() {
+  is_moving_ = false;
+}
+
+gfx::Rect PointScanLayer::GetBounds() const {
+  return bounds_;
+}
+
+bool PointScanLayer::IsMoving() const {
+  return is_moving_;
 }
 
 bool PointScanLayer::CanAnimate() const {
@@ -64,8 +86,8 @@ void PointScanLayer::OnPaintLayer(const ui::PaintContext& context) {
   flags.setColor(gfx::kGoogleBlue300);
 
   SkPath path;
-  path.moveTo(horizontal_.start.x(), horizontal_.start.y());
-  path.lineTo(horizontal_.end.x(), horizontal_.end.y());
+  path.moveTo(line_.start.x(), line_.start.y());
+  path.lineTo(line_.end.x(), line_.end.y());
   recorder.canvas()->DrawPath(path, flags);
 }
 

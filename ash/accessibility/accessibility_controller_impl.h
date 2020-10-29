@@ -203,6 +203,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   FloatingMenuPosition GetFloatingMenuPosition();
   FloatingAccessibilityController* GetFloatingMenuController();
 
+  PointScanController* GetPointScanController();
+
   // Update the autoclick menu bounds if necessary. This may need to happen when
   // the display work area changes, or if system ui regions change (like the
   // virtual keyboard position).
@@ -256,6 +258,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   bool IsEnterpriseIconVisibleForSwitchAccess();
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
+  bool IsPointScanEnabled();
 
   bool IsVirtualKeyboardSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForVirtualKeyboard();
@@ -352,7 +355,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;
   void ShowSwitchAccessMenu(const gfx::Rect& anchor,
                             std::vector<std::string> actions_to_show) override;
-  void StartPointScan() override;
+  void ActivatePointScan() override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(

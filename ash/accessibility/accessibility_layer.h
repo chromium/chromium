@@ -50,6 +50,9 @@ class AccessibilityLayer : public ui::LayerDelegate,
   // Set the layer's opacity.
   void SetOpacity(float opacity);
 
+  // Set the layer's offset from parent layer.
+  void SetSubpixelPositionOffset(const gfx::Vector2dF& offset);
+
   // Returns true if this layer is in a composited window with an
   // animation observer.
   virtual bool CanAnimate() const = 0;

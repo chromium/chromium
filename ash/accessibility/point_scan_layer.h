@@ -6,6 +6,7 @@
 #define ASH_ACCESSIBILITY_POINT_SCAN_LAYER_H_
 
 #include "ash/accessibility/accessibility_layer.h"
+#include "ash/accessibility/layer_animation_info.h"
 #include "ash/ash_export.h"
 
 namespace ash {
@@ -22,6 +23,11 @@ class PointScanLayer : public AccessibilityLayer {
   // an x-coordinate.
   // TODO(crbug/1061537): Animate the line across the screen.
   void StartHorizontalScanning();
+  void PauseHorizontalScanning();
+  void StartVerticalScanning();
+  void PauseVerticalScanning();
+  gfx::Rect GetBounds() const;
+  bool IsMoving() const;
 
   // AccessibilityLayer overrides:
   bool CanAnimate() const override;
@@ -31,6 +37,7 @@ class PointScanLayer : public AccessibilityLayer {
  private:
   // ui:LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnLayerChange(LayerAnimationInfo* animation_info);
 
   struct Line {
     gfx::Point start;
@@ -41,7 +48,9 @@ class PointScanLayer : public AccessibilityLayer {
   gfx::Rect bounds_;
 
   // The line currently being drawn.
-  Line horizontal_;
+  Line line_;
+
+  bool is_moving_;
 };
 
 }  // namespace ash

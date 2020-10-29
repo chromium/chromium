@@ -6,6 +6,7 @@
 #define ASH_ACCESSIBILITY_POINT_SCAN_CONTROLLER_H_
 
 #include "ash/accessibility/accessibility_layer.h"
+#include "ash/accessibility/layer_animation_info.h"
 #include "ash/ash_export.h"
 
 namespace ash {
@@ -23,17 +24,40 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   PointScanController(const PointScanController&) = delete;
   PointScanController& operator=(const PointScanController&) = delete;
 
+  enum class PointScanState {
+    // Point scanning is currently scanning horizontally
+    kHorizontalScanning,
+    // Point scanning is currently scanning vertically
+    kVerticalScanning,
+    // Point scanning is not scanning
+    kOff,
+  };
+
   // Starts point scanning, by sweeping a line across the screen and waiting for
   // user input.
   // TODO(crbug/1061537): Animate the line across the screen.
+  void EnablePointScan();
   void Start();
+  void Pause();
+  void Stop();
+  void OnPointSelect();
+  bool IsPointScanEnabled();
 
  private:
   // AccessibilityLayerDelegate implementation:
   void OnDeviceScaleFactorChanged() override;
   void OnAnimationStep(base::TimeTicks timestamp) override;
 
-  std::unique_ptr<PointScanLayer> point_scan_layer_;
+  void UpdateTimeInfo(LayerAnimationInfo* animation_info,
+                      base::TimeTicks timestamp);
+  void AnimateLine(base::TimeTicks timestamp);
+
+  LayerAnimationInfo horizontal_line_layer_info_;
+  std::unique_ptr<PointScanLayer> horizontal_line_layer_;
+  LayerAnimationInfo vertical_line_layer_info_;
+  std::unique_ptr<PointScanLayer> vertical_line_layer_;
+
+  PointScanState state_;
 };
 
 }  // namespace ash

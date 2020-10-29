@@ -36,4 +36,28 @@ void ComputeOpacity(LayerAnimationInfo* animation_info,
   animation_info->opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
 }
 
+void ComputeOffset(LayerAnimationInfo* animation_info,
+                   base::TimeTicks timestamp) {
+  if (timestamp < animation_info->start_time)
+    timestamp = animation_info->start_time;
+
+  float change_delta = (timestamp - animation_info->start_time).InSecondsF();
+
+  if (animation_info->offset > animation_info->offset_bound) {
+    animation_info->offset = animation_info->offset_bound;
+    animation_info->animation_rate *= -1;
+  } else if (animation_info->offset < 0) {
+    animation_info->offset = 0;
+    animation_info->animation_rate *= -1;
+  }
+
+  float offset_delta = animation_info->offset_bound *
+                       (change_delta / animation_info->animation_rate);
+  animation_info->offset += offset_delta;
+
+  if (animation_info->offset > animation_info->offset_bound) {
+    animation_info->offset = 0;
+  }
+}
+
 }  // namespace ash

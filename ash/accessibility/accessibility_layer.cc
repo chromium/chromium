@@ -44,6 +44,11 @@ void AccessibilityLayer::SetOpacity(float opacity) {
   layer_->SetOpacity(std::max(0.f, opacity));
 }
 
+void AccessibilityLayer::SetSubpixelPositionOffset(
+    const gfx::Vector2dF& offset) {
+  layer_->SetSubpixelPositionOffset(offset);
+}
+
 void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
                                              const char* layer_name,
                                              const gfx::Rect& bounds) {

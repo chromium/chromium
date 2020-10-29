@@ -1046,11 +1046,14 @@ void AccessibilityControllerImpl::ShowSwitchAccessMenu(
   switch_access_bubble_controller_->ShowMenu(anchor, actions_to_show);
 }
 
-void AccessibilityControllerImpl::StartPointScan() {
-  if (::switches::IsSwitchAccessPointScanningEnabled()) {
-    if (!point_scan_controller_)
-      point_scan_controller_.reset(new PointScanController());
+bool AccessibilityControllerImpl::IsPointScanEnabled() {
+  return point_scan_controller_.get() &&
+         point_scan_controller_->IsPointScanEnabled();
+}
 
+void AccessibilityControllerImpl::ActivatePointScan() {
+  if (::switches::IsSwitchAccessPointScanningEnabled()) {
+    point_scan_controller_ = std::make_unique<PointScanController>();
     point_scan_controller_->Start();
   }
 }
@@ -1089,6 +1092,10 @@ void AccessibilityControllerImpl::ShowFloatingMenuIfEnabled() {
 FloatingAccessibilityController*
 AccessibilityControllerImpl::GetFloatingMenuController() {
   return floating_menu_controller_.get();
+}
+
+PointScanController* AccessibilityControllerImpl::GetPointScanController() {
+  return point_scan_controller_.get();
 }
 
 void AccessibilityControllerImpl::SetTabletModeShelfNavigationButtonsEnabled(

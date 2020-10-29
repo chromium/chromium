@@ -33,7 +33,7 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;
   void ShowSwitchAccessMenu(const gfx::Rect& anchor,
                             std::vector<std::string> actions) override;
-  void StartPointScan() override;
+  void ActivatePointScan() override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(

@@ -139,9 +139,6 @@ TEST_F(PointScanControllerTest, StartScanning) {
   CaptureAfterImage(bounds);
   ComputeImageStats();
 
-  EXPECT_EQ(3600, diff_count());
-  EXPECT_EQ(6, col_diff_count());
-  EXPECT_EQ(600, row_diff_count());
 }
 
 }  // namespace ash
