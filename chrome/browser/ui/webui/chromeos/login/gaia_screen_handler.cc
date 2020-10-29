@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
-#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -743,8 +742,6 @@ void GaiaScreenHandler::RegisterMessages() {
               &GaiaScreenHandler::HandleSecurityTokenPinEntered);
   AddCallback("onFatalError", &GaiaScreenHandler::HandleOnFatalError);
 
-  // Allow UMA metrics collection from JS.
-  web_ui()->AddMessageHandler(std::make_unique<MetricsHandler>());
   BaseScreenHandler::RegisterMessages();
 }
 
