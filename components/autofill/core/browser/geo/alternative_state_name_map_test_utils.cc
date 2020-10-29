@@ -11,8 +11,8 @@ namespace autofill {
 
 namespace test {
 
-void PopulateStateEntry(const TestStateEntry& test_state_entry,
-                        StateEntry* state_entry) {
+void CreateFakeStateEntry(const TestStateEntry& test_state_entry,
+                          StateEntry* state_entry) {
   state_entry->set_canonical_name(test_state_entry.canonical_name);
   for (const auto& abbr : test_state_entry.abbreviations)
     state_entry->add_abbreviations(abbr);
@@ -31,7 +31,7 @@ void PopulateAlternativeStateNameMapForTesting(
     std::vector<TestStateEntry> test_state_entries) {
   for (const auto& test_state_entry : test_state_entries) {
     StateEntry state_entry;
-    PopulateStateEntry(test_state_entry, &state_entry);
+    CreateFakeStateEntry(test_state_entry, &state_entry);
     std::vector<AlternativeStateNameMap::StateName> alternatives;
     AlternativeStateNameMap::CanonicalStateName canonical_state_name =
         AlternativeStateNameMap::CanonicalStateName(
@@ -50,17 +50,6 @@ void PopulateAlternativeStateNameMapForTesting(
         AlternativeStateNameMap::StateName(base::ASCIIToUTF16(key)),
         state_entry, alternatives, &canonical_state_name);
   }
-}
-
-std::string CreateStatesProtoAsString(std::string country_code) {
-  StatesInCountry states_data;
-  states_data.set_country_code(std::move(country_code));
-  StateEntry* entry = states_data.add_states();
-  PopulateStateEntry(TestStateEntry(), entry);
-
-  std::string serialized_output;
-  DCHECK(states_data.SerializeToString(&serialized_output));
-  return serialized_output;
 }
 
 }  // namespace test
