@@ -139,15 +139,6 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
 void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  // Since layout depends on the bounds of the filter, we need to force layout
-  // when the filter changes. We also need to make sure paint will be
-  // performed, since if the filter changed we will not have cached result from
-  // before and thus will not flag paint in ClientLayoutChanged.
-  if (diff.FilterChanged()) {
-    SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kStyleChange);
-  }
-
   if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
     if (diff.TransformChanged())

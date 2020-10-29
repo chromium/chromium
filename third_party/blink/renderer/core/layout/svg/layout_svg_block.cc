@@ -121,11 +121,6 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
 
-  // Since layout depends on the bounds of the filter, we need to force layout
-  // when the filter changes.
-  if (diff.FilterChanged())
-    SetNeedsLayout(layout_invalidation_reason::kStyleChange);
-
   if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
     if (diff.TransformChanged())
