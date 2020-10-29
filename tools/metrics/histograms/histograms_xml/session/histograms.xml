@@ -421,6 +421,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Session.WebStates.ForwardItemsCountAfterNavigation"
     units="items" expires_after="2020-12-01">
+  <obsolete>
+    Removed 10/2020.
+  </obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -435,6 +438,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Session.WebStates.HasForwardItemsAfterNavigation"
     enum="BooleanPresent" expires_after="2020-12-01">
+  <obsolete>
+    Removed 10/2020.
+  </obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
