@@ -33,6 +33,7 @@
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/debug/alias.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/thread_annotations.h"
@@ -75,19 +76,37 @@ bool Partitions::InitializeOnce() {
   // - BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC): Only one thread cache at a time
   //   is supported, in this case it is already claimed by malloc().
 #if DCHECK_IS_ON() && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  fast_malloc_allocator.init({base::PartitionOptions::Alignment::kRegular,
-                              base::PartitionOptions::ThreadCache::kEnabled});
+  fast_malloc_allocator.init(
+      {base::PartitionOptions::Alignment::kRegular,
+       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::PCScan::kDisabledByDefault});
 #else
-  fast_malloc_allocator.init();
+  fast_malloc_allocator.init(
+      {base::PartitionOptions::Alignment::kRegular,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::PCScan::kDisabledByDefault});
 #endif
-  array_buffer_allocator.init();
-  buffer_allocator.init();
-  layout_allocator.init();
+  array_buffer_allocator.init(
+      {base::PartitionOptions::Alignment::kRegular,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::PCScan::kAlwaysDisabled});
+  buffer_allocator.init({base::PartitionOptions::Alignment::kRegular,
+                         base::PartitionOptions::ThreadCache::kDisabled,
+                         base::PartitionOptions::PCScan::kDisabledByDefault});
+  layout_allocator.init({base::PartitionOptions::Alignment::kRegular,
+                         base::PartitionOptions::ThreadCache::kDisabled,
+                         base::PartitionOptions::PCScan::kDisabledByDefault});
 
   fast_malloc_root_ = fast_malloc_allocator.root();
   array_buffer_root_ = array_buffer_allocator.root();
   buffer_root_ = buffer_allocator.root();
   layout_root_ = layout_allocator.root();
+
+  if (base::features::IsPartitionAllocPCScanEnabled()) {
+    fast_malloc_root_->EnablePCScan();
+    buffer_root_->EnablePCScan();
+    layout_root_->EnablePCScan();
+  }
 
   initialized_ = true;
   return initialized_;

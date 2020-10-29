@@ -92,7 +92,7 @@ struct BASE_EXPORT PartitionAllocator {
   PartitionAllocator() = default;
   ~PartitionAllocator();
 
-  void init(PartitionOptions = {});
+  void init(PartitionOptions);
 
   ALWAYS_INLINE PartitionRoot<thread_safe>* root() { return &partition_root_; }
   ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {

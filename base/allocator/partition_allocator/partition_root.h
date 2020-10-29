@@ -100,12 +100,12 @@ struct PartitionOptions {
     // PartitionRoot::EnablePCScan().
     kDisabledByDefault,
     // PCScan is always enabled.
-    kEnabled,
+    kForcedEnabledForTesting,
   };
 
-  Alignment alignment = Alignment::kRegular;
-  ThreadCache thread_cache = ThreadCache::kDisabled;
-  PCScan pcscan = PCScan::kAlwaysDisabled;
+  Alignment alignment;
+  ThreadCache thread_cache;
+  PCScan pcscan;
 };
 
 // Never instantiate a PartitionRoot directly, instead use
@@ -286,9 +286,7 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   void EnablePCScan() {
-    // TODO(bikineev): Make CHECK once PCScan is enabled.
-    if (!scannable || pcscan.has_value())
-      return;
+    PA_CHECK(scannable && !pcscan.has_value());
     pcscan.emplace(this);
   }
 

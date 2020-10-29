@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -342,7 +343,9 @@ TestDriver::TestDriver()
     : wait_for_ui_thread_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
   base::PartitionAllocGlobalInit(HandleOOM);
-  partition_allocator_.init();
+  partition_allocator_.init({base::PartitionOptions::Alignment::kRegular,
+                             base::PartitionOptions::ThreadCache::kDisabled,
+                             base::PartitionOptions::PCScan::kAlwaysDisabled});
 }
 TestDriver::~TestDriver() {
   base::PartitionAllocGlobalUninitForTesting();

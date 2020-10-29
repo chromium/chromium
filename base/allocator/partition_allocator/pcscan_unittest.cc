@@ -18,7 +18,7 @@ class PCScanTest : public testing::Test {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     allocator_.init({PartitionOptions::Alignment::kRegular,
                      PartitionOptions::ThreadCache::kDisabled,
-                     PartitionOptions::PCScan::kEnabled});
+                     PartitionOptions::PCScan::kForcedEnabledForTesting});
   }
   ~PCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |

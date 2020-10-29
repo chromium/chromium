@@ -375,7 +375,8 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   scannable = (opts.pcscan != PartitionOptions::PCScan::kAlwaysDisabled);
   // Concurrent freeing in PCScan can only safely work on thread-safe
   // partitions.
-  if (thread_safe && opts.pcscan == PartitionOptions::PCScan::kEnabled)
+  if (thread_safe &&
+      opts.pcscan == PartitionOptions::PCScan::kForcedEnabledForTesting)
     pcscan.emplace(this);
 
   // We mark the sentinel slot span as free to make sure it is skipped by our
