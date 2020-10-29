@@ -9,8 +9,8 @@
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_color_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_unit_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -184,8 +184,8 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
   PaintWorkletGlobalScope* global_scope = global_scopes_[base::RandInt(
       0, (PaintWorklet::kNumGlobalScopesPerThread)-1)];
 
-  const PaintWorkletInput* input =
-      static_cast<const PaintWorkletInput*>(compositor_input);
+  const CSSPaintWorkletInput* input =
+      static_cast<const CSSPaintWorkletInput*>(compositor_input);
   CSSPaintDefinition* definition =
       global_scope->FindDefinition(input->NameCopy());
   PaintWorkletStylePropertyMap* style_map =

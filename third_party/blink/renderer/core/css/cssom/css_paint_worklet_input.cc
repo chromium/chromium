@@ -4,11 +4,11 @@
 
 #include <utility>
 
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
+#include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 
 namespace blink {
 
-PaintWorkletInput::PaintWorkletInput(
+CSSPaintWorkletInput::CSSPaintWorkletInput(
     const String& name,
     const FloatSize& container_size,
     float effective_zoom,
@@ -17,13 +17,11 @@ PaintWorkletInput::PaintWorkletInput(
     PaintWorkletStylePropertyMap::CrossThreadData data,
     Vector<std::unique_ptr<CrossThreadStyleValue>> parsed_input_arguments,
     cc::PaintWorkletInput::PropertyKeys property_keys)
-    : name_(name.IsolatedCopy()),
-      container_size_(container_size),
+    : PaintWorkletInput(container_size, worklet_id, property_keys),
+      name_(name.IsolatedCopy()),
       effective_zoom_(effective_zoom),
       device_scale_factor_(device_scale_factor),
-      worklet_id_(worklet_id),
       style_map_data_(std::move(data)),
-      parsed_input_arguments_(std::move(parsed_input_arguments)),
-      property_keys_(std::move(property_keys)) {}
+      parsed_input_arguments_(std::move(parsed_input_arguments)) {}
 
 }  // namespace blink

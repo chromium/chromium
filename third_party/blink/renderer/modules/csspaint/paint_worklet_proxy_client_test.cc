@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
+#include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
@@ -219,8 +219,8 @@ void RunPaintTestOnWorklet(WorkerThread* thread,
   PaintWorkletStylePropertyMap::CrossThreadData data;
   Vector<std::unique_ptr<CrossThreadStyleValue>> input_arguments;
   std::vector<cc::PaintWorkletInput::PropertyKey> property_keys;
-  scoped_refptr<PaintWorkletInput> input =
-      base::MakeRefCounted<PaintWorkletInput>(
+  scoped_refptr<CSSPaintWorkletInput> input =
+      base::MakeRefCounted<CSSPaintWorkletInput>(
           "foo", FloatSize(100, 100), 1.0f, 1.0f, 1, std::move(data),
           std::move(input_arguments), std::move(property_keys));
   sk_sp<PaintRecord> record = proxy_client->Paint(input.get(), {});
