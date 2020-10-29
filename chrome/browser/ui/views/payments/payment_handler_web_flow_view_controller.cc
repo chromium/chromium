@@ -107,6 +107,9 @@ class ReadOnlyOriginView : public views::View {
     columns = origin_layout->AddColumnSet(0);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    if (PaymentsExperimentalFeatures::IsEnabled(
+            features::kPaymentHandlerSecurityIcon))
+      columns->AddPaddingColumn(views::GridLayout::kFixedSize, 4);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
     origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
