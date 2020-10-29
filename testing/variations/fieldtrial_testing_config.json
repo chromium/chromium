@@ -4707,6 +4707,8 @@
                         "OmniboxDynamicMaxAutocompleteUrlCutoff": "2",
                         "OmniboxLocalZeroSuggestAgeThreshold": "7",
                         "OmniboxMaxURLMatches": "7",
+                        "RichAutocompletionAutocompleteNonPrefixAll": "true",
+                        "RichAutocompletionAutocompleteTitles": "true",
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
@@ -4721,6 +4723,7 @@
                         "OmniboxReactiveZeroSuggestionsOnNTPOmnibox",
                         "OmniboxReactiveZeroSuggestionsOnNTPRealbox",
                         "OmniboxRemoveSuggestionsFromClipboard",
+                        "OmniboxRichAutocompletion",
                         "OmniboxRichEntitySuggestions",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
