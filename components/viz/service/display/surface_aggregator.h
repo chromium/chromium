@@ -93,9 +93,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
  private:
   struct ClipData;
   struct PrewalkResult;
-  struct RoundedCornerInfo;
   struct ChildSurfaceInfo;
   struct RenderPassMapEntry;
+  struct MaskFilterInfoExt;
 
   // Helper function that gets a list of render passes and returns a map from
   // render pass ids to render passes.
@@ -115,7 +115,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                          bool ignore_undamaged,
                          gfx::Rect* damage_rect_in_quad_space,
                          bool* damage_rect_in_quad_space_valid,
-                         const RoundedCornerInfo& rounded_corner_info);
+                         const MaskFilterInfoExt& mask_filter_info_pair);
 
   void EmitSurfaceContent(Surface* surface,
                           float parent_device_scale_factor,
@@ -126,14 +126,14 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                           bool ignore_undamaged,
                           gfx::Rect* damage_rect_in_quad_space,
                           bool* damage_rect_in_quad_space_valid,
-                          const RoundedCornerInfo& rounded_corner_info);
+                          const MaskFilterInfoExt& mask_filter_info_pair);
 
   void EmitDefaultBackgroundColorQuad(
       const SurfaceDrawQuad* surface_quad,
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
       AggregatedRenderPass* dest_pass,
-      const RoundedCornerInfo& rounded_corner_info);
+      const MaskFilterInfoExt& mask_filter_info_pair);
 
   void EmitGutterQuadsIfNecessary(
       const gfx::Rect& primary_rect,
@@ -143,14 +143,14 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const ClipData& clip_rect,
       SkColor background_color,
       AggregatedRenderPass* dest_pass,
-      const RoundedCornerInfo& rounded_corner_info);
+      const MaskFilterInfoExt& mask_filter_info_pair);
 
   SharedQuadState* CopySharedQuadState(
       const SharedQuadState* source_sqs,
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
       AggregatedRenderPass* dest_render_pass,
-      const RoundedCornerInfo& rounded_corner_info);
+      const MaskFilterInfoExt& mask_filter_info_pair);
 
   SharedQuadState* CopyAndScaleSharedQuadState(
       const SharedQuadState* source_sqs,
@@ -160,7 +160,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const gfx::Rect& visible_quad_layer_rect,
       const ClipData& clip_rect,
       AggregatedRenderPass* dest_render_pass,
-      const RoundedCornerInfo& rounded_corner_info);
+      const MaskFilterInfoExt& mask_filter_info_pair);
 
   void CopyQuadsToPass(
       const CompositorRenderPass& source_pass,
@@ -170,7 +170,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
       const SurfaceId& surface_id,
-      const RoundedCornerInfo& rounded_corner_info);
+      const MaskFilterInfoExt& mask_filter_info_pair);
 
   // Recursively walks through the render pass and updates the
   // |can_use_backdrop_filter_cache| flag on all RenderPassDrawQuads(RPDQ).
@@ -235,9 +235,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void PropagateCopyRequestPasses();
 
   // Returns true if the quad list from the render pass provided can be merged
-  // with its target render pass based on rounded corners.
-  bool CanMergeRoundedCorner(const RoundedCornerInfo& rounded_corner_info,
-                             const CompositorRenderPass& root_render_pass);
+  // with its target render pass based on mask filter info.
+  bool CanMergeMaskFilterInfo(const MaskFilterInfoExt& mask_filter_info_pair,
+                              const CompositorRenderPass& root_render_pass);
 
   int ChildIdForSurface(Surface* surface);
   bool IsSurfaceFrameIndexSameAsPrevious(const Surface* surface) const;

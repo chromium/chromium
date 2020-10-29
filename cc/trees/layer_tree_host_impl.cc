@@ -1053,9 +1053,9 @@ static void AppendQuadsToFillScreen(
   viz::SharedQuadState* shared_quad_state =
       target_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), root_target_rect,
-                            root_target_rect, gfx::RRectF(), root_target_rect,
-                            false, are_contents_opaque, opacity,
-                            SkBlendMode::kSrcOver, sorting_context_id);
+                            root_target_rect, gfx::MaskFilterInfo(),
+                            root_target_rect, false, are_contents_opaque,
+                            opacity, SkBlendMode::kSrcOver, sorting_context_id);
 
   for (gfx::Rect screen_space_rect : fill_region) {
     gfx::Rect visible_screen_space_rect = screen_space_rect;

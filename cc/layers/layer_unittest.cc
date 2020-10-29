@@ -1811,15 +1811,15 @@ TEST_F(LayerTest, UpdatingRoundedCorners) {
       layer_5->effect_tree_index());
 
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kClipRect), kRoundedCorners),
-            node_1->rounded_corner_bounds);
+            node_1->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kClipRect), kRoundedCorners),
-            node_2->rounded_corner_bounds);
+            node_2->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kClipRect), kRoundedCorners),
-            node_3->rounded_corner_bounds);
+            node_3->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kClipRect), kRoundedCorners),
-            node_4->rounded_corner_bounds);
+            node_4->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(gfx::Rect(kLayerSize)), kRoundedCorners),
-            node_5->rounded_corner_bounds);
+            node_5->mask_filter_info.rounded_corner_bounds());
 
   // Setting clip to layer bounds.
   layer_1->SetMasksToBounds(true);
@@ -1850,18 +1850,18 @@ TEST_F(LayerTest, UpdatingRoundedCorners) {
   EXPECT_EQ(gfx::RRectF(gfx::RectF(gfx::IntersectRects(gfx::Rect(kLayerSize),
                                                        kClipRect)),
                         kUpdatedRoundedCorners),
-            node_1->rounded_corner_bounds);
+            node_1->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(gfx::IntersectRects(gfx::Rect(kLayerSize),
                                                        kClipRect)),
                         kUpdatedRoundedCorners),
-            node_2->rounded_corner_bounds);
+            node_2->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kClipRect), kUpdatedRoundedCorners),
-            node_3->rounded_corner_bounds);
+            node_3->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kUpdatedClipRect), kRoundedCorners),
-            node_4->rounded_corner_bounds);
+            node_4->mask_filter_info.rounded_corner_bounds());
   EXPECT_EQ(
       gfx::RRectF(gfx::RectF(gfx::Rect(kLayerSize)), kUpdatedRoundedCorners),
-      node_5->rounded_corner_bounds);
+      node_5->mask_filter_info.rounded_corner_bounds());
 }
 
 }  // namespace

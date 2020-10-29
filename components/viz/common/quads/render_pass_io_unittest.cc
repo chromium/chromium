@@ -121,11 +121,11 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     ASSERT_TRUE(sqs1);
     gfx::Transform transform;
     transform.MakeIdentity();
-    sqs1->SetAll(transform, gfx::Rect(0, 0, 640, 480),
-                 gfx::Rect(10, 10, 600, 400),
-                 gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f),
-                 gfx::Rect(5, 20, 1000, 200), true, false, 0.5f,
-                 SkBlendMode::kDstOver, 101);
+    sqs1->SetAll(
+        transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f)),
+        gfx::Rect(5, 20, 1000, 200), true, false, 0.5f, SkBlendMode::kDstOver,
+        101);
     sqs1->is_fast_rounded_corner = true;
     sqs1->de_jelly_delta_y = 0.7f;
   }
@@ -141,7 +141,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_TRUE(sqs0->quad_to_target_transform.IsIdentity());
     EXPECT_EQ(gfx::Rect(), sqs0->quad_layer_rect);
     EXPECT_EQ(gfx::Rect(), sqs0->visible_quad_layer_rect);
-    EXPECT_TRUE(sqs0->rounded_corner_bounds.IsEmpty());
+    EXPECT_FALSE(sqs0->mask_filter_info.HasRoundedCorners());
     EXPECT_EQ(gfx::Rect(), sqs0->clip_rect);
     EXPECT_FALSE(sqs0->is_clipped);
     EXPECT_TRUE(sqs0->are_contents_opaque);
@@ -158,10 +158,10 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(gfx::Rect(0, 0, 640, 480), sqs1->quad_layer_rect);
     EXPECT_EQ(gfx::Rect(10, 10, 600, 400), sqs1->visible_quad_layer_rect);
     EXPECT_EQ(gfx::RRectF::Type::kSingle,
-              sqs1->rounded_corner_bounds.GetType());
-    EXPECT_EQ(1.5f, sqs1->rounded_corner_bounds.GetSimpleRadius());
-    EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f),
-              sqs1->rounded_corner_bounds.rect());
+              sqs1->mask_filter_info.rounded_corner_bounds().GetType());
+    EXPECT_EQ(1.5f,
+              sqs1->mask_filter_info.rounded_corner_bounds().GetSimpleRadius());
+    EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f), sqs1->mask_filter_info.bounds());
     EXPECT_EQ(gfx::Rect(5, 20, 1000, 200), sqs1->clip_rect);
     EXPECT_TRUE(sqs1->is_clipped);
     EXPECT_FALSE(sqs1->are_contents_opaque);

@@ -143,19 +143,18 @@ SharedQuadState* CreateTestSharedQuadState(
     gfx::Transform quad_to_target_transform,
     const gfx::Rect& rect,
     CompositorRenderPass* render_pass,
-    const gfx::RRectF& rrect) {
+    const gfx::MaskFilterInfo& mask_filter_info) {
   const gfx::Rect layer_rect = rect;
   const gfx::Rect visible_layer_rect = rect;
   const gfx::Rect clip_rect = rect;
   const bool is_clipped = false;
   const bool are_contents_opaque = false;
   const float opacity = 1.0f;
-  const gfx::RRectF rounded_corner_bounds = rrect;
   const SkBlendMode blend_mode = SkBlendMode::kSrcOver;
   const int sorting_context_id = 0;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
-                       rounded_corner_bounds, clip_rect, is_clipped,
+                       mask_filter_info, clip_rect, is_clipped,
                        are_contents_opaque, opacity, blend_mode,
                        sorting_context_id);
   return shared_state;
@@ -510,7 +509,7 @@ class RendererPerfTest : public testing::Test {
       std::unique_ptr<CompositorRenderPass> pass = CreateTestRootRenderPass();
 
       SharedQuadState* shared_state = CreateTestSharedQuadState(
-          gfx::Transform(), kSurfaceRect, pass.get(), gfx::RRectF());
+          gfx::Transform(), kSurfaceRect, pass.get(), gfx::MaskFilterInfo());
 
       CreateTestTextureDrawQuad(resource_list_.back().id, kSurfaceRect,
                                 /*background_color=*/SK_ColorTRANSPARENT,
@@ -545,7 +544,7 @@ class RendererPerfTest : public testing::Test {
     do {
       std::unique_ptr<CompositorRenderPass> pass = CreateTestRootRenderPass();
       SharedQuadState* shared_state = CreateTestSharedQuadState(
-          gfx::Transform(), kSurfaceRect, pass.get(), gfx::RRectF());
+          gfx::Transform(), kSurfaceRect, pass.get(), gfx::MaskFilterInfo());
 
       for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
@@ -582,7 +581,7 @@ class RendererPerfTest : public testing::Test {
     do {
       std::unique_ptr<CompositorRenderPass> pass = CreateTestRootRenderPass();
       SharedQuadState* shared_state = CreateTestSharedQuadState(
-          gfx::Transform(), kSurfaceRect, pass.get(), gfx::RRectF());
+          gfx::Transform(), kSurfaceRect, pass.get(), gfx::MaskFilterInfo());
 
       for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
@@ -641,7 +640,7 @@ class RendererPerfTest : public testing::Test {
         // SharedQuadState
         SharedQuadState* shared_state = CreateTestSharedQuadState(
             current_transform, gfx::Rect(kSurfaceSize), pass.get(),
-            gfx::RRectF());
+            gfx::MaskFilterInfo());
         ResourceId resource_id =
             share_resources ? resource_list_[0].id : resource_list_[i].id;
         CreateTestTileDrawQuad(resource_id, gfx::Rect(kTileSize), kTextureSize,

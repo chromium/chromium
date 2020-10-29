@@ -18123,8 +18123,8 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapRoundedCorners) {
 
   // Add rounded corners to the layer, which are unable to be hit tested by the
   // simple quad-based logic.
-  CreateEffectNode(rounded_frame_layer).rounded_corner_bounds =
-      gfx::RRectF(25, 25, 50, 50, 5);
+  CreateEffectNode(rounded_frame_layer).mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(25, 25, 50, 50, 5));
 
   UpdateDrawProperties(host_impl_->active_tree());
 

@@ -72,7 +72,7 @@ SharedQuadState* CreateAndAppendTestSharedQuadState(
     const gfx::Size& size) {
   const gfx::Rect layer_rect = gfx::Rect(size);
   const gfx::Rect visible_layer_rect = gfx::Rect(size);
-  const gfx::RRectF rounded_corner_bounds = gfx::RRectF();
+  const gfx::MaskFilterInfo mask_filter_info;
   const gfx::Rect clip_rect = gfx::Rect(size);
   bool is_clipped = false;
   bool are_contents_opaque = false;
@@ -80,7 +80,7 @@ SharedQuadState* CreateAndAppendTestSharedQuadState(
   const SkBlendMode blend_mode = SkBlendMode::kSrcOver;
   auto* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(transform, layer_rect, visible_layer_rect,
-                       rounded_corner_bounds, clip_rect, is_clipped,
+                       mask_filter_info, clip_rect, is_clipped,
                        are_contents_opaque, opacity, blend_mode, 0);
   return shared_state;
 }

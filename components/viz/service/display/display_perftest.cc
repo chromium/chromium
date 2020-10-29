@@ -98,7 +98,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
 
     SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
     state->SetAll(quad_transform, rect, rect,
-                  /*rounded_corner_bounds=*/gfx::RRectF(), rect, is_clipped,
+                  /*mask_filter_info=*/gfx::MaskFilterInfo(), rect, is_clipped,
                   are_contents_opaque, opacity, blend_mode, sorting_context_id);
     return state;
   }

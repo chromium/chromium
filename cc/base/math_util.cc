@@ -804,6 +804,22 @@ void MathUtil::AddToTracedValue(const char* name,
   res->EndArray();
 }
 
+void MathUtil::AddCornerRadiiToTracedValue(
+    const char* name,
+    const gfx::RRectF& rect,
+    base::trace_event::TracedValue* res) {
+  res->BeginArray(name);
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft).x());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft).y());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kUpperRight).x());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kUpperRight).y());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).x());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).y());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x());
+  res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).y());
+  res->EndArray();
+}
+
 double MathUtil::AsDoubleSafely(double value) {
   return std::min(value, std::numeric_limits<double>::max());
 }

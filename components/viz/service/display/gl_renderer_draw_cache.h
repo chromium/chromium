@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "components/viz/service/display/program_binding.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/mask_filter_info.h"
 
 namespace viz {
 
@@ -39,7 +39,7 @@ struct TexturedQuadDrawCache {
   bool needs_blending = false;
   bool nearest_neighbor = false;
   SkColor background_color = 0;
-  gfx::RRectF rounded_corner_bounds;
+  gfx::MaskFilterInfo mask_filter_info;
 
   // A cache for the coalesced quad data.
   std::vector<Float4> uv_xform_data;

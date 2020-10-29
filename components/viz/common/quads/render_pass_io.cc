@@ -1602,7 +1602,8 @@ base::Value SharedQuadStateToDict(const SharedQuadState& sqs) {
   dict.SetKey("quad_layer_rect", RectToDict(sqs.quad_layer_rect));
   dict.SetKey("visible_quad_layer_rect",
               RectToDict(sqs.visible_quad_layer_rect));
-  dict.SetKey("rounded_corner_bounds", RRectFToDict(sqs.rounded_corner_bounds));
+  dict.SetKey("rounded_corner_bounds",
+              RRectFToDict(sqs.mask_filter_info.rounded_corner_bounds()));
   dict.SetKey("clip_rect", RectToDict(sqs.clip_rect));
   dict.SetBoolKey("is_clipped", sqs.is_clipped);
   dict.SetBoolKey("are_contents_opaque", sqs.are_contents_opaque);
@@ -1697,9 +1698,9 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
   if (blend_mode_index < 0)
     return false;
   SkBlendMode t_blend_mode = static_cast<SkBlendMode>(blend_mode_index);
-
+  gfx::MaskFilterInfo mask_filter_info(t_rounded_corner_bounds);
   sqs->SetAll(t_quad_to_target_transform, t_quad_layer_rect,
-              t_visible_quad_layer_rect, t_rounded_corner_bounds, t_clip_rect,
+              t_visible_quad_layer_rect, mask_filter_info, t_clip_rect,
               is_clipped.value(), are_contents_opaque.value(),
               static_cast<float>(opacity.value()), t_blend_mode,
               sorting_context_id.value());

@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <set>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "cc/base/math_util.h"
@@ -163,10 +165,6 @@ bool LayerClipsSubtreeToItsBounds(Layer* layer) {
 bool LayerClipsSubtree(Layer* layer) {
   return LayerClipsSubtreeToItsBounds(layer) || layer->HasRoundedCorner() ||
          !layer->clip_rect().IsEmpty();
-}
-
-gfx::RRectF RoundedCornerBounds(Layer* layer) {
-  return gfx::RRectF(layer->EffectiveClipRect(), layer->corner_radii());
 }
 
 void PropertyTreeBuilderContext::AddClipNodeIfNeeded(
@@ -491,7 +489,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
     // This is currently in the local space of the layer and hence in an invalid
     // space. Once we have the associated transform node for this effect node,
     // we will update this to the transform node's coordinate space.
-    node->rounded_corner_bounds = RoundedCornerBounds(layer);
+    node->mask_filter_info =
+        gfx::MaskFilterInfo(layer->EffectiveClipRect(), layer->corner_radii());
     node->is_fast_rounded_corner = layer->is_fast_rounded_corner();
   }
 
@@ -557,7 +556,8 @@ bool PropertyTreeBuilderContext::UpdateRenderSurfaceIfNeeded(
 
   EffectNode* effect_node =
       effect_tree_.Node(data_for_children->effect_tree_parent);
-  const bool has_rounded_corner = !effect_node->rounded_corner_bounds.IsEmpty();
+  const bool has_rounded_corner =
+      effect_node->mask_filter_info.HasRoundedCorners();
 
   // Having a rounded corner should trigger a transform node.
   if (has_rounded_corner)

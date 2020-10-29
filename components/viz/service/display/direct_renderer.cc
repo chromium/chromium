@@ -920,11 +920,14 @@ bool DirectRenderer::HasAllocatedResourcesForTesting(
 
 bool DirectRenderer::ShouldApplyRoundedCorner(const DrawQuad* quad) const {
   const SharedQuadState* sqs = quad->shared_quad_state;
-  const gfx::RRectF& rounded_corner_bounds = sqs->rounded_corner_bounds;
+  const gfx::MaskFilterInfo& mask_filter_info = sqs->mask_filter_info;
 
   // There is no rounded corner set.
-  if (rounded_corner_bounds.IsEmpty())
+  if (!mask_filter_info.HasRoundedCorners())
     return false;
+
+  const gfx::RRectF& rounded_corner_bounds =
+      mask_filter_info.rounded_corner_bounds();
 
   const gfx::RectF target_quad = cc::MathUtil::MapClippedRect(
       sqs->quad_to_target_transform, gfx::RectF(quad->visible_rect));

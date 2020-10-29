@@ -3326,7 +3326,7 @@ void AddQuad(gfx::Rect quad_rect,
   quad_state->SetAll(
       /*quad_layer_rect=*/quad_to_target_transform, quad_rect,
       /*visible_quad_layer_rect=*/quad_rect,
-      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/gfx::Rect(),
+      /*mask_filter_info=*/gfx::MaskFilterInfo(), /*clip_rect=*/gfx::Rect(),
       /*is_clipped=*/false,
       /*are contents opaque=*/true,
       /*opacity=*/1.f,

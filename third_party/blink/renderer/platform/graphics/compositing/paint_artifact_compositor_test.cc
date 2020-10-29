@@ -3050,7 +3050,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipSimple) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 }
 
@@ -3149,7 +3149,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClip90DegRotationSupported) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 }
 
@@ -3304,7 +3304,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipNested) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 
   ASSERT_EQ(e1_id, cc_filter.parent_id);
@@ -3316,13 +3316,13 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipNested) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_1.blend_mode);
   EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_1.rounded_corner_bounds);
+            mask_isolation_1.mask_filter_info.rounded_corner_bounds());
   EXPECT_TRUE(mask_isolation_1.HasRenderSurface());
 
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_2.blend_mode);
   EXPECT_TRUE(mask_isolation_2.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_2.rounded_corner_bounds);
+            mask_isolation_2.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_2.HasRenderSurface());
 }
 
@@ -3509,7 +3509,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipContiguous) {
 
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 }
 
@@ -3562,7 +3562,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 
   int t1_id = content1->transform_tree_index();
@@ -3582,7 +3582,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDiscontiguous) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_1.blend_mode);
   EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_1.rounded_corner_bounds);
+            mask_isolation_1.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_1.HasRenderSurface());
 }
 
@@ -3643,7 +3643,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipAcrossChildEffect) {
   const cc::EffectNode& cc_e2 = *GetPropertyTrees().effect_tree.Node(e2_id);
   EXPECT_TRUE(cc_e2.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
 }
 
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
@@ -3698,7 +3698,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_0.HasRenderSurface());
 
   EXPECT_EQ(c1_id, content1->clip_tree_index());
@@ -3712,7 +3712,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   ASSERT_EQ(e0_id, cc_e1.parent_id);
   EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_1.rounded_corner_bounds);
+            mask_isolation_1.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_1.HasRenderSurface());
 
   EXPECT_EQ(c1_id, content2->clip_tree_index());
@@ -3725,7 +3725,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRespectOutputClip) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_2.blend_mode);
   EXPECT_TRUE(mask_isolation_2.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_2.rounded_corner_bounds);
+            mask_isolation_2.mask_filter_info.rounded_corner_bounds());
   EXPECT_FALSE(mask_isolation_2.HasRenderSurface());
 }
 
@@ -3783,7 +3783,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
 
   EXPECT_EQ(c1_id, content1->clip_tree_index());
   int e1_id = content1->effect_tree_index();
@@ -3797,7 +3797,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
   EXPECT_EQ(SkBlendMode::kMultiply, mask_isolation_1.blend_mode);
   EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_1.rounded_corner_bounds);
+            mask_isolation_1.mask_filter_info.rounded_corner_bounds());
 
   EXPECT_EQ(c1_id, content2->clip_tree_index());
   int mask_isolation_2_id = content2->effect_tree_index();
@@ -3809,7 +3809,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBlending) {
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
   EXPECT_TRUE(mask_isolation_2.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_2.rounded_corner_bounds);
+            mask_isolation_2.mask_filter_info.rounded_corner_bounds());
 }
 
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
@@ -3881,7 +3881,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_TRUE(mask_isolation_0.is_fast_rounded_corner);
   EXPECT_EQ(1.0f, mask_isolation_0.opacity);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_0.rounded_corner_bounds);
+            mask_isolation_0.mask_filter_info.rounded_corner_bounds());
 
   EXPECT_EQ(t1_id, content1->transform_tree_index());
   int c2_id = content1->clip_tree_index();
@@ -3908,7 +3908,8 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_FALSE(mask_isolation_1.is_fast_rounded_corner);
   // Opacity should also be moved to mask_isolation_1.
   EXPECT_EQ(0.5f, mask_isolation_1.opacity);
-  EXPECT_EQ(gfx::RRectF(), mask_isolation_1.rounded_corner_bounds);
+  EXPECT_EQ(gfx::RRectF(),
+            mask_isolation_1.mask_filter_info.rounded_corner_bounds());
 
   EXPECT_EQ(t0_id, clip_mask1->transform_tree_index());
   EXPECT_EQ(c2_id, clip_mask1->clip_tree_index());
@@ -3936,7 +3937,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_TRUE(mask_isolation_2.is_fast_rounded_corner);
   EXPECT_EQ(1.0f, mask_isolation_2.opacity);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation_2.rounded_corner_bounds);
+            mask_isolation_2.mask_filter_info.rounded_corner_bounds());
 }
 
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
@@ -4004,7 +4005,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
   EXPECT_EQ(c1_id, mask_isolation.clip_id);
   EXPECT_TRUE(mask_isolation.is_fast_rounded_corner);
   EXPECT_EQ(gfx::RRectF(50, 50, 300, 200, 5),
-            mask_isolation.rounded_corner_bounds);
+            mask_isolation.mask_filter_info.rounded_corner_bounds());
 
   EXPECT_EQ(c0_id, content2->clip_tree_index());
   EXPECT_EQ(e0_id, content2->effect_tree_index());

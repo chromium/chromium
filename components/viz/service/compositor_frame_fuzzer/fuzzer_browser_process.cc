@@ -130,7 +130,7 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
   renderer_sqs->SetAll(gfx::Transform(1.0, 0.0, 0.0, 1.0, 0, 80),
                        gfx::Rect(kRendererFrameSize),
                        gfx::Rect(kRendererFrameSize),
-                       /*rounded_corner_bounds=*/gfx::RRectF(),
+                       /*mask_filter_info=*/gfx::MaskFilterInfo(),
                        gfx::Rect(kRendererFrameSize), /*is_clipped=*/false,
                        /*are_contents_opaque=*/false, /*opacity=*/1,
                        SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -144,7 +144,7 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
   auto* toolbar_sqs = pass->CreateAndAppendSharedQuadState();
   toolbar_sqs->SetAll(
       gfx::Transform(), gfx::Rect(kTopBarSize), gfx::Rect(kTopBarSize),
-      /*rounded_corner_bounds=*/gfx::RRectF(), gfx::Rect(kTopBarSize),
+      /*mask_filter_info=*/gfx::MaskFilterInfo(), gfx::Rect(kTopBarSize),
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/1, SkBlendMode::kSrcOver,
       /*sorting_context_id=*/0);

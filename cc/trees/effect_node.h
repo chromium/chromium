@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/mask_filter_info.h"
 #include "ui/gfx/rrect_f.h"
 
 namespace base {
@@ -80,9 +81,10 @@ struct CC_EXPORT EffectNode {
   // image.
   ElementId backdrop_mask_element_id;
 
-  // Bounds of rounded corner rrect in the space of the transform node
-  // associated with this effect node.
-  gfx::RRectF rounded_corner_bounds;
+  // The mask filter information applied to this effect node. The coordinates of
+  // in the mask info is in the space of the transform node associated with this
+  // effect node.
+  gfx::MaskFilterInfo mask_filter_info;
 
   SkBlendMode blend_mode;
 

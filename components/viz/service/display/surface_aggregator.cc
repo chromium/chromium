@@ -113,22 +113,20 @@ struct SurfaceAggregator::PrewalkResult {
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 };
 
-struct SurfaceAggregator::RoundedCornerInfo {
-  RoundedCornerInfo() = default;
-
-  // |target_transform| is the transform that maps |bounds_arg| from its current
-  // space into the desired target space. It must be an axis aligned transform.
-  RoundedCornerInfo(const gfx::RRectF& bounds_arg,
-                    bool is_fast_rounded_corner,
+struct SurfaceAggregator::MaskFilterInfoExt {
+  MaskFilterInfoExt() = default;
+  MaskFilterInfoExt(const gfx::MaskFilterInfo& mask_filter_info_arg,
+                    bool is_fast_rounded_corner_arg,
                     const gfx::Transform target_transform)
-      : bounds(bounds_arg), is_fast_rounded_corner(is_fast_rounded_corner) {
-    if (bounds.IsEmpty())
+      : mask_filter_info(mask_filter_info_arg),
+        is_fast_rounded_corner(is_fast_rounded_corner_arg) {
+    if (mask_filter_info.IsEmpty())
       return;
-    bool success = target_transform.TransformRRectF(&bounds);
+    bool success = mask_filter_info.Transform(target_transform);
     DCHECK(success);
   }
 
-  gfx::RRectF bounds;
+  gfx::MaskFilterInfo mask_filter_info;
   bool is_fast_rounded_corner;
 };
 
@@ -427,7 +425,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
     bool* damage_rect_in_quad_space_valid,
-    const RoundedCornerInfo& rounded_corner_info) {
+    const MaskFilterInfoExt& mask_filter_info) {
   SurfaceId primary_surface_id = surface_quad->surface_range.end();
   Surface* latest_surface =
       manager_->GetLatestInFlightSurface(surface_quad->surface_range);
@@ -450,7 +448,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
   // can happen after a Viz process crash.
   if (!latest_surface || !latest_surface->HasActiveFrame()) {
     EmitDefaultBackgroundColorQuad(surface_quad, target_transform, clip_rect,
-                                   dest_pass, rounded_corner_info);
+                                   dest_pass, mask_filter_info);
     return;
   }
 
@@ -470,13 +468,13 @@ void SurfaceAggregator::HandleSurfaceQuad(
                                surface_quad->shared_quad_state,
                                target_transform, clip_rect,
                                fallback_frame.metadata.root_background_color,
-                               dest_pass, rounded_corner_info);
+                               dest_pass, mask_filter_info);
   }
 
   EmitSurfaceContent(latest_surface, parent_device_scale_factor, surface_quad,
                      target_transform, clip_rect, dest_pass, ignore_undamaged,
                      damage_rect_in_quad_space, damage_rect_in_quad_space_valid,
-                     rounded_corner_info);
+                     mask_filter_info);
 }
 
 void SurfaceAggregator::EmitSurfaceContent(
@@ -489,7 +487,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
     bool* damage_rect_in_quad_space_valid,
-    const RoundedCornerInfo& rounded_corner_info) {
+    const MaskFilterInfoExt& mask_filter_info) {
   // If this surface's id is already in our referenced set then it creates
   // a cycle in the graph and should be dropped.
   SurfaceId surface_id = surface->surface_id();
@@ -578,7 +576,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   bool merge_pass =
       CanPotentiallyMergePass(*surface_quad) && !reflected_and_scaled &&
       copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
-      CanMergeRoundedCorner(rounded_corner_info, *render_pass_list.back());
+      CanMergeMaskFilterInfo(mask_filter_info, *render_pass_list.back());
 
   if (frame.metadata.delegated_ink_metadata) {
     // The metadata must be taken off of the surface, rather than a copy being
@@ -632,7 +630,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
     CopyQuadsToPass(source, copy_pass.get(), frame.device_scale_factor(),
                     child_to_parent_map, gfx::Transform(), {}, surface_id,
-                    RoundedCornerInfo());
+                    MaskFilterInfoExt());
 
     // If the render pass has copy requests, or should be cached, or has
     // moving-pixel filters, or in a moving-pixel surface, we should damage the
@@ -678,7 +676,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
     CopyQuadsToPass(last_pass, dest_pass, frame.device_scale_factor(),
                     child_to_parent_map, combined_transform, quads_clip,
-                    surface_id, rounded_corner_info);
+                    surface_id, mask_filter_info);
   } else {
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
         source_sqs, scaled_quad_to_target_transform, target_transform,
@@ -688,7 +686,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         gfx::ScaleToEnclosingRect(source_sqs->visible_quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
-        clip_rect, dest_pass, rounded_corner_info);
+        clip_rect, dest_pass, mask_filter_info);
 
     // At this point, we need to calculate three values in order to construct
     // the CompositorRenderPassDrawQuad:
@@ -748,14 +746,14 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
     AggregatedRenderPass* dest_pass,
-    const RoundedCornerInfo& rounded_corner_info) {
+    const MaskFilterInfoExt& mask_filter_info) {
   // The primary surface is unavailable and there is no fallback
   // surface specified so create a SolidColorDrawQuad with the default
   // background color.
   SkColor background_color = surface_quad->default_background_color;
   auto* shared_quad_state =
       CopySharedQuadState(surface_quad->shared_quad_state, target_transform,
-                          clip_rect, dest_pass, rounded_corner_info);
+                          clip_rect, dest_pass, mask_filter_info);
 
   auto* solid_color_quad =
       dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -771,7 +769,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const ClipData& clip_rect,
     SkColor background_color,
     AggregatedRenderPass* dest_pass,
-    const RoundedCornerInfo& rounded_corner_info) {
+    const MaskFilterInfoExt& mask_filter_info) {
   bool has_transparent_background = background_color == SK_ColorTRANSPARENT;
 
   // If the fallback Surface's active CompositorFrame has a non-transparent
@@ -789,7 +787,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
         primary_shared_quad_state,
         primary_shared_quad_state->quad_to_target_transform, target_transform,
         right_gutter_rect, right_gutter_rect, clip_rect, dest_pass,
-        rounded_corner_info);
+        mask_filter_info);
 
     auto* right_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -806,7 +804,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
         primary_shared_quad_state,
         primary_shared_quad_state->quad_to_target_transform, target_transform,
         bottom_gutter_rect, bottom_gutter_rect, clip_rect, dest_pass,
-        rounded_corner_info);
+        mask_filter_info);
 
     auto* bottom_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -858,7 +856,7 @@ void SurfaceAggregator::AddColorConversionPass() {
       /*quad_to_target_transform=*/gfx::Transform(),
       /*quad_layer_rect=*/output_rect,
       /*visible_quad_layer_rect=*/output_rect,
-      /*rounded_corner_bounds=*/gfx::RRectF(),
+      /*mask_filter_info=*/gfx::MaskFilterInfo(),
       /*clip_rect=*/gfx::Rect(),
       /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrc, /*sorting_context_id=*/0);
@@ -915,7 +913,7 @@ void SurfaceAggregator::AddDisplayTransformPass() {
       /*quad_to_target_transform=*/root_surface_transform_,
       /*quad_layer_rect=*/output_rect,
       /*visible_quad_layer_rect=*/output_rect,
-      /*rounded_corner_bounds=*/gfx::RRectF(),
+      /*mask_filter_info=*/gfx::MaskFilterInfo(),
       /*clip_rect=*/gfx::Rect(),
       /*is_clipped=*/false, are_contents_opaque, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -935,11 +933,11 @@ SharedQuadState* SurfaceAggregator::CopySharedQuadState(
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
     AggregatedRenderPass* dest_render_pass,
-    const RoundedCornerInfo& rounded_corner_info) {
+    const MaskFilterInfoExt& mask_filter_info) {
   return CopyAndScaleSharedQuadState(
       source_sqs, source_sqs->quad_to_target_transform, target_transform,
       source_sqs->quad_layer_rect, source_sqs->visible_quad_layer_rect,
-      clip_rect, dest_render_pass, rounded_corner_info);
+      clip_rect, dest_render_pass, mask_filter_info);
 }
 
 SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
@@ -950,7 +948,7 @@ SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
     const gfx::Rect& visible_quad_layer_rect,
     const ClipData& clip_rect,
     AggregatedRenderPass* dest_render_pass,
-    const RoundedCornerInfo& rounded_corner_info) {
+    const MaskFilterInfoExt& mask_filter_info_ext) {
   auto* shared_quad_state = dest_render_pass->CreateAndAppendSharedQuadState();
   ClipData new_clip_rect = CalculateClipRect(
       clip_rect, {source_sqs->is_clipped, source_sqs->clip_rect},
@@ -967,12 +965,12 @@ SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
 
   shared_quad_state->SetAll(
       new_transform, quad_layer_rect, visible_quad_layer_rect,
-      rounded_corner_info.bounds, new_clip_rect.rect, new_clip_rect.is_clipped,
-      source_sqs->are_contents_opaque, source_sqs->opacity,
-      source_sqs->blend_mode, source_sqs->sorting_context_id);
+      mask_filter_info_ext.mask_filter_info, new_clip_rect.rect,
+      new_clip_rect.is_clipped, source_sqs->are_contents_opaque,
+      source_sqs->opacity, source_sqs->blend_mode,
+      source_sqs->sorting_context_id);
   shared_quad_state->is_fast_rounded_corner =
-      rounded_corner_info.is_fast_rounded_corner;
-
+      mask_filter_info_ext.is_fast_rounded_corner,
   shared_quad_state->de_jelly_delta_y = source_sqs->de_jelly_delta_y;
 
   return shared_quad_state;
@@ -986,7 +984,7 @@ void SurfaceAggregator::CopyQuadsToPass(
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
     const SurfaceId& surface_id,
-    const RoundedCornerInfo& parent_rounded_corner_info) {
+    const MaskFilterInfoExt& parent_mask_filter_info_ext) {
   const QuadList& source_quad_list = source_pass.quad_list;
   const SharedQuadState* last_copied_source_shared_quad_state = nullptr;
 
@@ -1026,12 +1024,12 @@ void SurfaceAggregator::CopyQuadsToPass(
       ProcessOverlayDamageList(source_pass, dest_pass, target_transform,
                                surface_id, clip_rect, &overlay_damage_index);
 
-  RoundedCornerInfo new_rounded_corner_info = parent_rounded_corner_info;
+  MaskFilterInfoExt new_mask_filter_info_ext = parent_mask_filter_info_ext;
   for (auto* quad : source_quad_list) {
     // Both cannot be set at once. If this happens then a surface is being
     // merged when it should not.
-    DCHECK(quad->shared_quad_state->rounded_corner_bounds.IsEmpty() ||
-           parent_rounded_corner_info.bounds.IsEmpty());
+    DCHECK(quad->shared_quad_state->mask_filter_info.IsEmpty() ||
+           parent_mask_filter_info_ext.mask_filter_info.IsEmpty());
 
     if (quad->material == DrawQuad::Material::kSurfaceContent) {
       const auto* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
@@ -1042,27 +1040,27 @@ void SurfaceAggregator::CopyQuadsToPass(
       if (!surface_quad->surface_range.end().is_valid())
         continue;
 
-      if (parent_rounded_corner_info.bounds.IsEmpty()) {
-        new_rounded_corner_info = RoundedCornerInfo(
-            quad->shared_quad_state->rounded_corner_bounds,
+      if (parent_mask_filter_info_ext.mask_filter_info.IsEmpty()) {
+        new_mask_filter_info_ext = MaskFilterInfoExt(
+            quad->shared_quad_state->mask_filter_info,
             quad->shared_quad_state->is_fast_rounded_corner, target_transform);
       }
 
       HandleSurfaceQuad(
           surface_quad, parent_device_scale_factor, target_transform, clip_rect,
           dest_pass, ignore_undamaged, &damage_rect_in_quad_space,
-          &damage_rect_in_quad_space_valid, new_rounded_corner_info);
+          &damage_rect_in_quad_space_valid, new_mask_filter_info_ext);
     } else {
       if (quad->shared_quad_state != last_copied_source_shared_quad_state) {
-        if (parent_rounded_corner_info.bounds.IsEmpty()) {
-          new_rounded_corner_info =
-              RoundedCornerInfo(quad->shared_quad_state->rounded_corner_bounds,
+        if (parent_mask_filter_info_ext.mask_filter_info.IsEmpty()) {
+          new_mask_filter_info_ext =
+              MaskFilterInfoExt(quad->shared_quad_state->mask_filter_info,
                                 quad->shared_quad_state->is_fast_rounded_corner,
                                 target_transform);
         }
         SharedQuadState* dest_shared_quad_state =
             CopySharedQuadState(quad->shared_quad_state, target_transform,
-                                clip_rect, dest_pass, new_rounded_corner_info);
+                                clip_rect, dest_pass, new_mask_filter_info_ext);
 
         if (quad == quad_with_overlay_damage_index)
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
@@ -1220,7 +1218,7 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
                     child_to_parent_map,
                     apply_surface_transform_to_root_pass ? surface_transform
                                                          : gfx::Transform(),
-                    {}, surface->surface_id(), RoundedCornerInfo());
+                    {}, surface->surface_id(), MaskFilterInfoExt());
 
     // If the render pass has copy requests, or should be cached, or has
     // moving-pixel filters, or in a moving-pixel surface, we should damage the
@@ -1698,23 +1696,24 @@ void SurfaceAggregator::PropagateCopyRequestPasses() {
   }
 }
 
-bool SurfaceAggregator::CanMergeRoundedCorner(
-    const RoundedCornerInfo& rounded_corner_info,
+bool SurfaceAggregator::CanMergeMaskFilterInfo(
+    const MaskFilterInfoExt& mask_filter_info_ext,
     const CompositorRenderPass& root_render_pass) {
-  // If the quad has no rounded corner, then we do not have to block merging.
-  if (rounded_corner_info.bounds.IsEmpty())
+  // If the quad has no mask filter, then we do not have to block merging.
+  if (mask_filter_info_ext.mask_filter_info.IsEmpty())
     return true;
 
   // If the quad has rounded corner and it is not a fast rounded corner, we
   // cannot merge.
-  if (!rounded_corner_info.is_fast_rounded_corner)
+  if (mask_filter_info_ext.mask_filter_info.HasRoundedCorners() &&
+      !mask_filter_info_ext.is_fast_rounded_corner)
     return false;
 
-  // If any of the quads in the root render pass has a rounded corner of its
+  // If any of the quads in the root render pass has a mask filter of its
   // own, then we cannot merge.
   const SharedQuadStateList& sqs_list = root_render_pass.shared_quad_state_list;
   for (const auto* sqs : sqs_list) {
-    if (!sqs->rounded_corner_bounds.IsEmpty())
+    if (!sqs->mask_filter_info.IsEmpty())
       return false;
   }
   return true;
@@ -2212,8 +2211,8 @@ void SurfaceAggregator::AppendDeJellyRenderPass(
   auto* new_state = root_pass->CreateAndAppendSharedQuadState();
   gfx::Transform transform;
   new_state->SetAll(transform, render_pass->output_rect,
-                    render_pass->output_rect, gfx::RRectF(), jelly_clip, true,
-                    false, opacity, blend_mode, 0);
+                    render_pass->output_rect, gfx::MaskFilterInfo(), jelly_clip,
+                    true, false, opacity, blend_mode, 0);
   auto* quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(new_state, render_pass->output_rect, render_pass->output_rect,

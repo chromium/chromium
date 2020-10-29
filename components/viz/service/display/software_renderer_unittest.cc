@@ -153,7 +153,7 @@ TEST_F(SoftwareRendererTest, SolidColorQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                            gfx::RRectF(), outer_rect, false, true, 1.0,
+                            gfx::MaskFilterInfo(), outer_rect, false, true, 1.0,
                             SkBlendMode::kSrcOver, 0);
   auto* inner_quad =
       root_render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -221,7 +221,7 @@ TEST_F(SoftwareRendererTest, TileQuad) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                            gfx::RRectF(), outer_rect, false, true, 1.0,
+                            gfx::MaskFilterInfo(), outer_rect, false, true, 1.0,
                             SkBlendMode::kSrcOver, 0);
   auto* inner_quad = root_render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   inner_quad->SetNew(shared_quad_state, inner_rect, inner_rect, needs_blending,
@@ -283,7 +283,7 @@ TEST_F(SoftwareRendererTest, TileQuadVisibleRect) {
   SharedQuadState* shared_quad_state =
       root_render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(gfx::Transform(), tile_rect, tile_rect,
-                            gfx::RRectF(), tile_rect, false, true, 1.0,
+                            gfx::MaskFilterInfo(), tile_rect, false, true, 1.0,
                             SkBlendMode::kSrcOver, 0);
   auto* quad = root_render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_quad_state, tile_rect, tile_rect, needs_blending,
@@ -444,8 +444,8 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
     SharedQuadState* shared_quad_state =
         root_pass->CreateAndAppendSharedQuadState();
     shared_quad_state->SetAll(gfx::Transform(), outer_rect, outer_rect,
-                              gfx::RRectF(), gfx::Rect(1, 1, 30, 30), true,
-                              true, 1.0, SkBlendMode::kSrcOver, 0);
+                              gfx::MaskFilterInfo(), gfx::Rect(1, 1, 30, 30),
+                              true, true, 1.0, SkBlendMode::kSrcOver, 0);
     auto* outer_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     outer_quad->SetNew(shared_quad_state, outer_rect, outer_rect, SK_ColorGREEN,
                        false);
@@ -458,10 +458,10 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
 
     SharedQuadState* shared_quad_state =
         root_pass->CreateAndAppendSharedQuadState();
-    shared_quad_state->SetAll(gfx::Transform(), inner_rect, inner_rect,
-                              gfx::RRectF(gfx::RectF(5, 5, 10, 10), 2),
-                              inner_rect, false, true, 1.0,
-                              SkBlendMode::kSrcOver, 0);
+    shared_quad_state->SetAll(
+        gfx::Transform(), inner_rect, inner_rect,
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(5, 5, 10, 10), 2)),
+        inner_rect, false, true, 1.0, SkBlendMode::kSrcOver, 0);
     auto* inner_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     inner_quad->SetNew(shared_quad_state, inner_rect, inner_rect, SK_ColorRED,
                        false);

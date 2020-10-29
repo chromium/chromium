@@ -792,7 +792,7 @@ TEST_F(GLRendererWithDefaultHarnessTest, TextureDrawQuadShaderPrecisionHigh) {
       root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
-                       gfx::Rect(1023, 1023), gfx::RRectF(),
+                       gfx::Rect(1023, 1023), gfx::MaskFilterInfo(),
                        gfx::Rect(1023, 1023), false, false, 1,
                        SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(shared_state, gfx::Rect(1023, 1023),
@@ -855,7 +855,7 @@ TEST_F(GLRendererWithDefaultHarnessTest, TextureDrawQuadShaderPrecisionMedium) {
       root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
-                       gfx::Rect(1025, 1025), gfx::RRectF(),
+                       gfx::Rect(1025, 1025), gfx::MaskFilterInfo(),
                        gfx::Rect(1025, 1025), false, false, 1,
                        SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(shared_state, gfx::Rect(1025, 1025),
@@ -913,7 +913,7 @@ class GLRendererTextureDrawQuadHDRTest
         root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
-                         gfx::Rect(kTextureSize), gfx::RRectF(),
+                         gfx::Rect(kTextureSize), gfx::MaskFilterInfo(),
                          gfx::Rect(kTextureSize), false, false, 1,
                          SkBlendMode::kSrcOver, 0);
     overlay_quad->SetNew(shared_state, gfx::Rect(kTextureSize),
@@ -1450,8 +1450,9 @@ TEST_F(GLRendererTest, DrawYUVVideoDrawQuadWithVisibleRect) {
   visible_rect.Inset(10, 20, 30, 40);
 
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), gfx::Rect(), rect, gfx::RRectF(), rect,
-                       false, false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), gfx::Rect(), rect,
+                       gfx::MaskFilterInfo(), rect, false, false, 1,
+                       SkBlendMode::kSrcOver, 0);
 
   YUVVideoDrawQuad* quad =
       root_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
@@ -2003,8 +2004,8 @@ TEST_F(GLRendererSkipTest, DrawQuad) {
 
   // Add rounded corners to the solid color draw quad so that the fast path
   // of drawing using glClear is not used.
-  root_pass->shared_quad_state_list.front()->rounded_corner_bounds =
-      gfx::RRectF(gfx::RectF(quad_rect), 2.f);
+  root_pass->shared_quad_state_list.front()->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(quad_rect), 2.f));
 
   renderer_->DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
   DrawFrame(renderer_.get(), viewport_size);
@@ -2031,8 +2032,8 @@ TEST_F(GLRendererSkipTest, SkipVisibleRect) {
 
   // Add rounded corners to the solid color draw quad so that the fast path
   // of drawing using glClear is not used.
-  root_pass->shared_quad_state_list.front()->rounded_corner_bounds =
-      gfx::RRectF(gfx::RectF(quad_rect), 1.f);
+  root_pass->shared_quad_state_list.front()->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(quad_rect), 1.f));
 
   renderer_->DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
   DrawFrame(renderer_.get(), viewport_size);
@@ -2911,7 +2912,7 @@ TEST_F(GLRendererTest, OverlaySyncTokensAreProcessed) {
       root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
-                       gfx::Rect(viewport_size), gfx::RRectF(),
+                       gfx::Rect(viewport_size), gfx::MaskFilterInfo(),
                        gfx::Rect(viewport_size), false, false, 1,
                        SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(shared_state, gfx::Rect(viewport_size),
@@ -3223,8 +3224,8 @@ TEST_F(GLRendererFastSolidColorTest, RoundedCorners) {
   root_pass->damage_rect = root_pass_damage_rect;
   cc::AddQuad(root_pass, quad_rect, SK_ColorRED);
 
-  root_pass->shared_quad_state_list.front()->rounded_corner_bounds =
-      gfx::RRectF(gfx::RectF(quad_rect), 5.f);
+  root_pass->shared_quad_state_list.front()->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(quad_rect), 5.f));
 
   // Fast Solid color draw quads should not be executed.
   AddExpectations(false /*use_fast_path*/, gfx::Rect());
@@ -3696,8 +3697,8 @@ TEST_F(GLRendererTest, DCLayerOverlaySwitch) {
       gfx::RectF tex_coord_rect(0, 0, 1, 1);
       SharedQuadState* shared_state =
           root_pass->CreateAndAppendSharedQuadState();
-      shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect,
-                           false, false, 1, SkBlendMode::kSrcOver, 0);
+      shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                           rect, false, false, 1, SkBlendMode::kSrcOver, 0);
       YUVVideoDrawQuad* quad =
           root_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
       quad->SetNew(shared_state, rect, rect, needs_blending, tex_coord_rect,
@@ -4111,8 +4112,8 @@ TEST_F(CALayerGLRendererTest, CALayerRoundRects) {
     sqs->is_clipped = true;
     sqs->clip_rect = gfx::Rect(2, 2, 6, 6);
     const float radius = 2;
-    sqs->rounded_corner_bounds =
-        gfx::RRectF(gfx::RectF(sqs->clip_rect), radius);
+    sqs->mask_filter_info =
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(sqs->clip_rect), radius));
 
     switch (subtest) {
       case 0:
@@ -4132,8 +4133,11 @@ TEST_F(CALayerGLRendererTest, CALayerRoundRects) {
         break;
       case 2:
         // Subtest 2 has a non-simple rounded rect.
-        sqs->rounded_corner_bounds.SetCornerRadii(
-            gfx::RRectF::Corner::kUpperLeft, 1, 1);
+        gfx::RRectF rounded_corner_bounds =
+            sqs->mask_filter_info.rounded_corner_bounds();
+        rounded_corner_bounds.SetCornerRadii(gfx::RRectF::Corner::kUpperLeft, 1,
+                                             1);
+        sqs->mask_filter_info = gfx::MaskFilterInfo(rounded_corner_bounds);
         // Called 2 extra times in order to set up the rounded corner
         // parameters in the shader, because the CALayer is not handling
         // the rounded corners.
@@ -5095,7 +5099,7 @@ TEST_F(GLRendererWithGpuFenceTest,
       root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(viewport_size),
-                       gfx::Rect(50, 50), gfx::RRectF(),
+                       gfx::Rect(50, 50), gfx::MaskFilterInfo(),
                        gfx::Rect(viewport_size), false, false, 1,
                        SkBlendMode::kSrcOver, 0);
   overlay_quad->SetNew(

@@ -163,10 +163,10 @@ void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (visible_quad_rect.IsEmpty())
     return;
 
-  updater_->AppendQuads(
-      render_pass, frame_, transform, quad_rect, visible_quad_rect,
-      draw_properties().rounded_corner_bounds, clip_rect(), is_clipped(),
-      contents_opaque(), draw_opacity(), GetSortingContextId());
+  updater_->AppendQuads(render_pass, frame_, transform, quad_rect,
+                        visible_quad_rect, draw_properties().mask_filter_info,
+                        clip_rect(), is_clipped(), contents_opaque(),
+                        draw_opacity(), GetSortingContextId());
 }
 
 void VideoLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {

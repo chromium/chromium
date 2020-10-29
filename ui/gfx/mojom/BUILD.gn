@@ -15,6 +15,7 @@ mojom("mojom") {
     "font_render_params.mojom",
     "gpu_extra_info.mojom",
     "gpu_fence_handle.mojom",
+    "mask_filter_info.mojom",
     "overlay_transform.mojom",
     "presentation_feedback.mojom",
     "rrect_f.mojom",
@@ -224,6 +225,17 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "swap_result_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.MaskFilterInfo"
+          cpp = "::gfx::MaskFilterInfo"
+        },
+      ]
+      traits_sources = [ "mask_filter_info_mojom_traits.cc" ]
+      traits_headers = [ "mask_filter_info_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
   ]

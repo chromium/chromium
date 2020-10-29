@@ -49,7 +49,7 @@ SharedQuadState* CreateSharedQuadState(AggregatedRenderPass* render_pass,
   const gfx::Rect clip_rect = rect;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), layer_rect, visible_layer_rect,
-                       gfx::RRectF(), clip_rect, /*is_clipped=*/false,
+                       gfx::MaskFilterInfo(), clip_rect, /*is_clipped=*/false,
                        /*are_contents_opaque=*/false, /*opacity=*/1.0f,
                        SkBlendMode::kSrcOver,
                        /*sorting_context_id=*/0);

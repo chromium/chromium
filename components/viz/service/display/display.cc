@@ -1111,9 +1111,10 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // If a rounded corner is being applied then the visible rect for the
           // sqs is actually even smaller. Reduce the rect size to get a
           // rounded corner adjusted occluding region.
-          if (!last_sqs->rounded_corner_bounds.IsEmpty()) {
-            sqs_rect_in_target.Intersect(gfx::ToEnclosedRect(
-                GetOccludingRectForRRectF(last_sqs->rounded_corner_bounds)));
+          if (last_sqs->mask_filter_info.HasRoundedCorners()) {
+            sqs_rect_in_target.Intersect(
+                gfx::ToEnclosedRect(GetOccludingRectForRRectF(
+                    last_sqs->mask_filter_info.rounded_corner_bounds())));
           }
 
           if (last_sqs->is_clipped)

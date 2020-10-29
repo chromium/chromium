@@ -53,9 +53,9 @@ TEST(DrawQuadTest, CopySharedQuadState) {
   int sorting_context_id = 65536;
 
   auto state = std::make_unique<SharedQuadState>();
-  state->SetAll(quad_transform, layer_rect, visible_layer_rect, gfx::RRectF(),
-                clip_rect, is_clipped, are_contents_opaque, opacity, blend_mode,
-                sorting_context_id);
+  state->SetAll(quad_transform, layer_rect, visible_layer_rect,
+                gfx::MaskFilterInfo(), clip_rect, is_clipped,
+                are_contents_opaque, opacity, blend_mode, sorting_context_id);
 
   auto copy = std::make_unique<SharedQuadState>(*state);
   EXPECT_EQ(quad_transform, copy->quad_to_target_transform);
@@ -79,9 +79,9 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   SkBlendMode blend_mode = SkBlendMode::kSrcOver;
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
-  state->SetAll(quad_transform, layer_rect, visible_layer_rect, gfx::RRectF(),
-                clip_rect, is_clipped, are_contents_opaque, opacity, blend_mode,
-                sorting_context_id);
+  state->SetAll(quad_transform, layer_rect, visible_layer_rect,
+                gfx::MaskFilterInfo(), clip_rect, is_clipped,
+                are_contents_opaque, opacity, blend_mode, sorting_context_id);
   return state;
 }
 

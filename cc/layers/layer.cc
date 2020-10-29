@@ -551,8 +551,8 @@ void Layer::SetClipRect(const gfx::Rect& clip_rect) {
         effect_tree_index() != EffectTree::kInvalidNodeId) {
       if (EffectNode* node =
               property_trees->effect_tree.Node(effect_tree_index())) {
-        node->rounded_corner_bounds =
-            gfx::RRectF(effective_clip_rect, corner_radii());
+        node->mask_filter_info =
+            gfx::MaskFilterInfo(effective_clip_rect, corner_radii());
         node->effect_changed = true;
         property_trees->effect_tree.set_needs_update(true);
       }
@@ -658,8 +658,8 @@ void Layer::SetRoundedCorner(const gfx::RoundedCornersF& corner_radii) {
   EffectNode* node = nullptr;
   if (property_trees && effect_tree_index() != EffectTree::kInvalidNodeId &&
       (node = property_trees->effect_tree.Node(effect_tree_index()))) {
-    node->rounded_corner_bounds =
-        gfx::RRectF(EffectiveClipRect(), corner_radii);
+    node->mask_filter_info =
+        gfx::MaskFilterInfo(EffectiveClipRect(), corner_radii);
     node->effect_changed = true;
     property_trees->effect_tree.set_needs_update(true);
   } else {

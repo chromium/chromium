@@ -1154,9 +1154,10 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
 
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
+
   quad_state->SetAll(quad_to_target_transform, quad_rect /*quad_layer_rect=*/,
                      quad_rect /*visible_quad_layer_rect=*/,
-                     gfx::RRectF() /*rounded_corner_bounds=*/,
+                     gfx::MaskFilterInfo() /*mask_filter_info=*/,
                      gfx::Rect() /*clip_rect=*/, false /*is_clipped=*/,
                      are_contents_opaque, state_.basic_state.alpha /*opacity=*/,
                      SkBlendMode::kSrcOver /*blend_mode=*/,

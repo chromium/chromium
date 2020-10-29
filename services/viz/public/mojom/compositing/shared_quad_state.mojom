@@ -7,6 +7,7 @@ module viz.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "ui/gfx/mojom/transform.mojom";
+import "ui/gfx/mojom/mask_filter_info.mojom";
 
 // See viz::SharedQuadState.
 struct SharedQuadState {
@@ -20,9 +21,10 @@ struct SharedQuadState {
   // of the quad rects.
   gfx.mojom.Rect visible_quad_layer_rect;
 
-  // This rect lives in the target content space. It defines the corner radius
-  // to clip the quads with.
-  gfx.mojom.RRectF rounded_corner_bounds;
+  // This rect lives in the target content space. It defines the mask filter
+  // info applied to the quad, and also defines rounded corner rects to clip the
+  // quads with.
+  gfx.mojom.MaskFilterInfo mask_filter_info;
 
   // This rect lives in the target content space.
   gfx.mojom.Rect clip_rect;
