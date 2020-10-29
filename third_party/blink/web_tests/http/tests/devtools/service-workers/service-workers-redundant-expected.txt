@@ -3,6 +3,7 @@ ServiceWorkers must be shown correctly even if there is a redundant worker.
 The first ServiceWorker is activated.
 ==== ServiceWorkersView ====
 http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-redundant-scope/
+Network requests
 Update
 Unregister
 Source
@@ -22,6 +23,7 @@ Periodic Sync
 The second Serviceworker is installed.
 ==== ServiceWorkersView ====
 http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-redundant-scope/
+Network requests
 Update
 Unregister
 Source
@@ -46,6 +48,7 @@ Periodic Sync
 The first ServiceWorker worker became redundant and stopped.
 ==== ServiceWorkersView ====
 http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-redundant-scope/
+Network requests
 Update
 Unregister
 Source

@@ -3,6 +3,7 @@ Tests ServiceWorkersView on resources panel.
 Select ServiceWorkers tree element.
 Register ServiceWorker for scope1
 http://127.0.0.1:8000/devtools/service-workers/resources/scope1/
+Network requests
 Update
 Unregister
 Source
@@ -20,6 +21,7 @@ Periodic Sync
 Periodic Sync
 Register ServiceWorker for scope2
 http://127.0.0.1:8000/devtools/service-workers/resources/scope2
+Network requests
 Update
 Unregister
 Source
@@ -36,6 +38,7 @@ Sync
 Periodic Sync
 Periodic Sync
 http://127.0.0.1:8000/devtools/service-workers/resources/scope1/
+Network requests
 Update
 Unregister
 Source
@@ -53,6 +56,7 @@ Periodic Sync
 Periodic Sync
 Unregister ServiceWorker for scope1
 http://127.0.0.1:8000/devtools/service-workers/resources/scope2
+Network requests
 Update
 Unregister
 Source
@@ -69,6 +73,7 @@ Sync
 Periodic Sync
 Periodic Sync
 http://127.0.0.1:8000/devtools/service-workers/resources/scope1/ - deleted
+Network requests
 Update
 Unregister
 Source
