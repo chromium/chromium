@@ -1015,11 +1015,6 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   }
   promise_image_access_helper_.EndAccess();
   output_device_->ScheduleOverlays(std::move(overlays));
-
-  // Release any backings which are not reused by the current frame, probably
-  // because the properties of render passes are changed or render passes are
-  // removed.
-  available_render_pass_overlay_backings_.clear();
 #else
   DCHECK(image_contexts.empty());
   output_device_->ScheduleOverlays(std::move(overlays));
@@ -1356,9 +1351,16 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
+#if defined(OS_APPLE)
+  // Release any backings which are not reused by the current frame, probably
+  // because the properties of render passes are changed or render passes are
+  // removed.
+  available_render_pass_overlay_backings_.clear();
+#endif
+
   if (context_is_lost_)
     return;
-
+ 
   ResetStateOfImages();
   output_device_->PreGrContextSubmit();
   gr_context()->submit();
@@ -1460,7 +1462,7 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
 
 #if defined(OS_APPLE)
   // |available_render_pass_overlay_backings_| are used or released in
-  // ScheduleOverlays() for every frames.
+  // SwapBuffers() for every frames.
   DCHECK(available_render_pass_overlay_backings_.empty());
 
   // Erase mailboxes of render pass overlays from |params.released_overlays| and
