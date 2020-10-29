@@ -431,6 +431,10 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 // ChromeOS Media App. https://crbug.com/996088.
 const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether image annotation is enabled in the ChromeOS media app.
+const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether known extensions for RAW image formats are handled by the ChromeOS
 // Media App.
 const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",

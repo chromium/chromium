@@ -42418,6 +42418,7 @@ from previous Chrome versions.
   <int value="-1322882747" label="disable-datasaver-prompt"/>
   <int value="-1321640296"
       label="AutofillDownstreamCvcPromptUseGooglePayLogo:enabled"/>
+  <int value="-1321212159" label="MediaAppAnnotation:enabled"/>
   <int value="-1320181781" label="ChromeOSDirectVideoDecoder:disabled"/>
   <int value="-1319688939" label="ignore-gpu-blacklist"/>
   <int value="-1318914924" label="OverflowIconsForMediaControls:enabled"/>
@@ -42528,6 +42529,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopSettings:enabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
+  <int value="-1218063855" label="MediaAppAnnotation:disabled"/>
   <int value="-1217623062"
       label="AutofillAlwaysReturnCloudTokenizedCard:disabled"/>
   <int value="-1217462552"

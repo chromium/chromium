@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "url/gurl.h"
 
@@ -37,4 +38,7 @@ base::Optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+  source->AddBoolean(
+      "imageAnnotation",
+      base::FeatureList::IsEnabled(chromeos::features::kMediaAppAnnotation));
 }

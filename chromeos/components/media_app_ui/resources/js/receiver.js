@@ -313,6 +313,12 @@ function mutationCallback(mutationsList, observer) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // TODO(crbug/1138798): Reorder .js deps so this can be done at load time.
+  // Note: go/bbsrc/flags.ts processes this, `window.features` variable.
+  /** @type{{features: Object<string, boolean>}} */ (window).features = {
+    imageAnnotation: loadTimeData.getBoolean('imageAnnotation')
+  };
+
   const app = getApp();
   if (app) {
     initializeApp(app);
