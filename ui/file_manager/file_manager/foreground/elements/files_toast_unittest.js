@@ -16,11 +16,17 @@ async function testToast(done) {
       await new Promise(r => setTimeout(r, 0));
     }
   };
+  const getToastOpacity = () => {
+    return Number(
+        window.getComputedStyle(toast.shadowRoot.querySelector('cr-toast'))
+            .opacity);
+  };
 
   // Toast is hidden to start.
   assertFalse(toast.visible);
 
-  // Show toast1, verify visible, text and action text.
+  // Show toast1, wait for cr-toast to finish animating, and then verify all the
+  // properties and HTML is correct.
   let a1Called = false;
   toast.show('t1', {
     text: 'a1',
@@ -28,6 +34,7 @@ async function testToast(done) {
       a1Called = true;
     }
   });
+  await waitFor(() => getToastOpacity() === 1);
   assertTrue(toast.visible);
   assertEquals('t1', text.innerText);
   assertFalse(action.hidden);
@@ -44,28 +51,36 @@ async function testToast(done) {
   toast.show('t3');
   assertEquals('t1', text.innerText);
 
-  // Invoke toast1 action, callback will be called,
-  // and toast2 will show after animation.
+  // Invoke toast1 action, callback will be called.
   action.dispatchEvent(new MouseEvent('click'));
   assertTrue(a1Called);
-  await waitFor(() => text.innerText === 't2');
+
+  // Wait for toast1 to finish hiding and then wait for toast2 to finish
+  // showing.
+  await waitFor(() => getToastOpacity() === 0);
+  await waitFor(() => getToastOpacity() === 1);
+
   assertTrue(toast.visible);
   assertEquals('t2', text.innerText);
   assertFalse(action.hidden);
   assertEquals('a2', action.innerText);
 
-  // Invoke toast2 action, callback will be called,
-  // and toast3 will show after animation with no action.
+  // Invoke toast2 action, callback will be called.
   action.dispatchEvent(new MouseEvent('click'));
   assertTrue(a2Called);
-  await waitFor(() => text.innerText === 't3');
+
+  // Wait for toast2 to finish hiding and wait for toast3 to finish showing.
+  await waitFor(() => getToastOpacity() === 0);
+  await waitFor(() => getToastOpacity() === 1);
+
   assertTrue(toast.visible);
   assertEquals('t3', text.innerText);
   assertTrue(action.hidden);
 
   // Call hide(), toast should no longer be visible, no more toasts shown.
   toast.hide();
-  await waitFor(() => !toast.visible);
+  await waitFor(() => getToastOpacity() === 0);
+  assertFalse(toast.visible);
 
   done();
 }
