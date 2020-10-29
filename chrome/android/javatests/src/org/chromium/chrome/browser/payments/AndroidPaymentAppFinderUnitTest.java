@@ -132,8 +132,6 @@ public class AndroidPaymentAppFinderUnitTest {
                 .onPaymentAppCreated(Mockito.any(PaymentApp.class));
         Mockito.verify(delegate, Mockito.never())
                 .onPaymentAppCreationError(Mockito.any(String.class));
-        Mockito.verify(delegate, Mockito.never())
-                .onAutofillPaymentAppCreatorAvailable(Mockito.any(AutofillPaymentAppCreator.class));
         Mockito.verify(delegate).onCanMakePaymentCalculated(false);
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
     }

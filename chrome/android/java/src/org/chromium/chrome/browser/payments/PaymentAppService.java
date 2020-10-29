@@ -18,20 +18,21 @@ import java.util.Set;
 
 /** Creates payment apps. */
 public class PaymentAppService implements PaymentAppFactoryInterface {
+    private static final String UNTRACKED_FACTORY_ID_PREFIX = "Untracked factory - ";
     private static PaymentAppService sInstance;
-    List<PaymentAppFactoryInterface> mFactories = new ArrayList<>();
+    private final Map<String, PaymentAppFactoryInterface> mFactories = new HashMap<>();
+    private int mIdMax;
 
     /** @return The singleton instance of this class. */
     public static PaymentAppService getInstance() {
         if (sInstance == null) {
             sInstance = new PaymentAppService();
-            sInstance.addFactory(new AutofillPaymentAppFactory());
-            sInstance.addFactory(new PaymentAppServiceBridge());
-            sInstance.addFactory(new AndroidPaymentAppFactory());
         }
         return sInstance;
     }
 
+    // TODO(crbug.com/1142846): remove this method after we change to use getInstance() to add
+    // GooglePayPaymentFactory.
     @VisibleForTesting
     public static PaymentAppService getInstanceWithoutFactoryForTest() {
         if (sInstance == null) sInstance = new PaymentAppService();
@@ -41,9 +42,12 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
     /** Prevent instantiation. */
     private PaymentAppService() {}
 
+    // TODO(crbug.com/1142846): Remove this method after tests and clank switch to use
+    // addUniqueFactory.
     /** @param factory The factory to add. */
     public void addFactory(PaymentAppFactoryInterface factory) {
-        mFactories.add(factory);
+        String id = UNTRACKED_FACTORY_ID_PREFIX + (mIdMax++);
+        mFactories.put(id, factory);
     }
 
     /** Resets the instance, used by //clank tests. */
@@ -55,11 +59,29 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
     // PaymentAppFactoryInterface implementation.
     @Override
     public void create(PaymentAppFactoryDelegate delegate) {
-        Collector collector = new Collector(new HashSet<>(mFactories), delegate);
-        int numberOfFactories = mFactories.size();
-        for (int i = 0; i < numberOfFactories; i++) {
-            mFactories.get(i).create(/*delegate=*/collector);
+        Collector collector = new Collector(new HashSet<>(mFactories.values()), delegate);
+        for (PaymentAppFactoryInterface factory : mFactories.values()) {
+            factory.create(/*delegate=*/collector);
         }
+    }
+
+    /**
+     * @param factoryId The id that is used to identified a factory in this class.
+     * @return Whether this contains the factory identified with factoryId.
+     */
+    public boolean containsFactory(String factoryId) {
+        return mFactories.containsKey(factoryId);
+    }
+
+    /**
+     * Adds a factory with an id if this id is not added already; otherwise, do nothing.
+     * @param factory The factory to be added.
+     * @param factoryId The id that the caller uses to identify the given factory.
+     */
+    public void addUniqueFactory(PaymentAppFactoryInterface factory, String factoryId) {
+        assert !factoryId.startsWith(UNTRACKED_FACTORY_ID_PREFIX);
+        if (mFactories.containsKey(factoryId)) return;
+        mFactories.put(factoryId, factory);
     }
 
     /**
@@ -93,11 +115,6 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
             if (!canMakePayment || mCanMakePayment) return;
             mCanMakePayment = true;
             mDelegate.onCanMakePaymentCalculated(true);
-        }
-
-        @Override
-        public void onAutofillPaymentAppCreatorAvailable(AutofillPaymentAppCreator creator) {
-            mDelegate.onAutofillPaymentAppCreatorAvailable(creator);
         }
 
         @Override
