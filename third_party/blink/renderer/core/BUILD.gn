@@ -43,6 +43,7 @@ import("//third_party/blink/renderer/core/layout/build.gni")
 import("//third_party/blink/renderer/core/loader/build.gni")
 import("//third_party/blink/renderer/core/mathml/build.gni")
 import("//third_party/blink/renderer/core/messaging/build.gni")
+import("//third_party/blink/renderer/core/mobile_metrics/build.gni")
 import("//third_party/blink/renderer/core/mojo/build.gni")
 import("//third_party/blink/renderer/core/offscreencanvas/build.gni")
 import("//third_party/blink/renderer/core/origin_trials/build.gni")
@@ -215,6 +216,8 @@ component("core") {
   sources += rebase_path(blink_core_sources_loader, "", "loader")
   sources += rebase_path(blink_core_sources_mathml, "", "mathml")
   sources += rebase_path(blink_core_sources_messaging, "", "messaging")
+  sources +=
+      rebase_path(blink_core_sources_mobile_metrics, "", "mobile_metrics")
   sources += rebase_path(blink_core_sources_mojo, "", "mojo")
   sources +=
       rebase_path(blink_core_sources_offscreencanvas, "", "offscreencanvas")
@@ -1436,6 +1439,7 @@ source_set("unit_tests") {
     "loader/web_associated_url_loader_impl_test.cc",
     "messaging/blink_transferable_message_mojom_traits_test.cc",
     "messaging/message_port_descriptor_mojom_traits_test.cc",
+    "mobile_metrics/mobile_friendliness_checker_test.cc",
     "origin_trials/origin_trial_context_test.cc",
     "origin_trials/origin_trials_test.cc",
     "page/autoscroll_controller_test.cc",

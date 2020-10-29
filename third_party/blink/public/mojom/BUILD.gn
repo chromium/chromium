@@ -1315,3 +1315,20 @@ mojom("color_scheme_mojo_bindings") {
   export_define = "BLINK_COMMON_IMPLEMENTATION=1"
   export_header = "third_party/blink/public/common/common_export.h"
 }
+
+mojom("mobile_metrics") {
+  sources = [ "mobile_metrics/mobile_friendliness.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "blink.mojom.MobileFriendliness"
+          cpp = "::blink::MobileFriendliness"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/common/mobile_metrics/mobile_friendliness_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/common/mobile_metrics/mobile_friendliness_mojom_traits.cc" ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
+  ]
+}

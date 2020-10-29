@@ -59,6 +59,7 @@ class PageTimingMetricsSender {
                           uint32_t ng_call_count);
   void DidObserveLazyLoadBehavior(
       blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior);
+  void DidObserveMobileFriendlinessChanged(const blink::MobileFriendliness&);
 
   void DidStartResponse(const GURL& response_url,
                         int resource_id,
@@ -106,6 +107,7 @@ class PageTimingMetricsSender {
   mojom::PageLoadTimingPtr last_timing_;
   mojom::CpuTimingPtr last_cpu_timing_;
   mojom::InputTimingPtr input_timing_delta_;
+  blink::MobileFriendliness mobile_friendliness_;
 
   // The the sender keep track of metadata as it comes in, because the sender is
   // scoped to a single committed load.

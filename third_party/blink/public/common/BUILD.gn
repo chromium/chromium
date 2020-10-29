@@ -152,6 +152,7 @@ source_set("headers") {
     "metrics/document_update_reason.h",
     "metrics/form_element_pii_type.h",
     "mime_util/mime_util.h",
+    "mobile_metrics/mobile_friendliness.h",
     "navigation/triggering_event_info.h",
     "notifications/notification_constants.h",
     "notifications/notification_mojom_traits.h",

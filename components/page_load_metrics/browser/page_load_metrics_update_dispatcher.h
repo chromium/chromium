@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 
 namespace content {
 class NavigationHandle;
@@ -152,7 +153,8 @@ class PageLoadMetricsUpdateDispatcher {
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr new_cpu_timing,
       mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-      mojom::InputTimingPtr input_timing_delta);
+      mojom::InputTimingPtr input_timing_delta,
+      const blink::MobileFriendliness& mobile_friendliness);
 
   void SetUpSharedMemoryForSmoothness(
       content::RenderFrameHost* render_frame_host,
@@ -188,6 +190,9 @@ class PageLoadMetricsUpdateDispatcher {
   const mojom::InputTiming& page_input_timing() const {
     return page_input_timing_;
   }
+  const blink::MobileFriendliness& mobile_friendliness() const {
+    return mobile_friendliness_;
+  }
 
  private:
   using FrameTreeNodeId = int;
@@ -209,6 +214,8 @@ class PageLoadMetricsUpdateDispatcher {
       const mojom::FrameMetadataPtr& frame_metadata);
 
   void UpdatePageRenderData(const mojom::FrameRenderDataUpdate& render_data);
+  void UpdateMobileFriendliness(
+      const blink::MobileFriendliness& mobile_friendliness);
   void UpdateMainFrameRenderData(
       const mojom::FrameRenderDataUpdate& render_data);
   void OnSubFrameRenderDataChanged(
@@ -250,6 +257,9 @@ class PageLoadMetricsUpdateDispatcher {
 
   // InputTiming data accumulated across all frames.
   mojom::InputTiming page_input_timing_;
+
+  // MobileFrienddliness data for current view.
+  blink::MobileFriendliness mobile_friendliness_;
 
   // In general, page_render_data_ contains combined data across all frames on
   // the page, while main_frame_render_data_ contains data specific to the main

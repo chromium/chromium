@@ -35,6 +35,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "ui/base/page_transition_types.h"
 
 namespace page_load_metrics {
@@ -803,7 +804,8 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-    mojom::InputTimingPtr input_timing_delta) {
+    mojom::InputTimingPtr input_timing_delta,
+    const blink::MobileFriendliness& mobile_friendliness) {
   // We may receive notifications from frames that have been navigated away
   // from. We simply ignore them.
   // TODO(crbug.com/1061060): We should not ignore page timings if the page is
@@ -826,7 +828,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
         render_frame_host, std::move(timing), std::move(metadata),
         std::move(new_features), resources, std::move(render_data),
         std::move(cpu_timing), std::move(new_deferred_resource_data),
-        std::move(input_timing_delta));
+        std::move(input_timing_delta), std::move(mobile_friendliness));
   }
 }
 
@@ -858,13 +860,15 @@ void MetricsWebContentsObserver::UpdateTiming(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-    mojom::InputTimingPtr input_timing_delta) {
+    mojom::InputTimingPtr input_timing_delta,
+    const blink::MobileFriendliness& mobile_friendliness) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receiver_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),
                   std::move(new_features), resources, std::move(render_data),
                   std::move(cpu_timing), std::move(new_deferred_resource_data),
-                  std::move(input_timing_delta));
+                  std::move(input_timing_delta),
+                  std::move(mobile_friendliness));
 }
 
 void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(

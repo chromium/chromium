@@ -230,7 +230,8 @@ class ResourceLoadingCancellingThrottle
         page_load_metrics::mojom::FrameRenderDataUpdatePtr(base::in_place),
         page_load_metrics::mojom::CpuTimingPtr(base::in_place),
         page_load_metrics::mojom::DeferredResourceCountsPtr(base::in_place),
-        page_load_metrics::mojom::InputTimingPtr(base::in_place));
+        page_load_metrics::mojom::InputTimingPtr(base::in_place),
+        blink::MobileFriendliness());
   }
 
   DISALLOW_COPY_AND_ASSIGN(ResourceLoadingCancellingThrottle);

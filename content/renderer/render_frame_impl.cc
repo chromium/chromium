@@ -6095,6 +6095,13 @@ void RenderFrameImpl::AssociateInputAndOutputForAec(
                                                               output_device_id);
 }
 
+void RenderFrameImpl::DidChangeMobileFriendliness(
+    const blink::MobileFriendliness& mf) {
+  for (auto& observer : observers_) {
+    observer.OnMobileFriendlinessChanged(mf);
+  }
+}
+
 void RenderFrameImpl::InitializeMediaStreamDeviceObserver() {
   RenderThreadImpl* render_thread = RenderThreadImpl::current();
   if (!render_thread)  // Will be NULL during unit tests.

@@ -439,7 +439,8 @@ PageLoadMetricsUpdateDispatcher::PageLoadMetricsUpdateDispatcher(
       pending_merged_page_timing_(CreatePageLoadTiming()),
       main_frame_metadata_(mojom::FrameMetadata::New()),
       subframe_metadata_(mojom::FrameMetadata::New()),
-      page_input_timing_(mojom::InputTiming()) {}
+      page_input_timing_(mojom::InputTiming()),
+      mobile_friendliness_(blink::MobileFriendliness()) {}
 
 PageLoadMetricsUpdateDispatcher::~PageLoadMetricsUpdateDispatcher() {
   ShutDown();
@@ -467,7 +468,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-    mojom::InputTimingPtr input_timing_delta) {
+    mojom::InputTimingPtr input_timing_delta,
+    const blink::MobileFriendliness& mobile_friendliness) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
     // Extensions can inject child frames into a page. We don't want to track
@@ -496,6 +498,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
   }
   UpdatePageInputTiming(*input_timing_delta);
+  UpdateMobileFriendliness(mobile_friendliness);
   UpdatePageRenderData(*render_data);
   if (!is_main_frame) {
     // This path is just for the AMP metrics.
@@ -721,6 +724,11 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
   page_input_timing_.total_input_delay += input_timing_delta.total_input_delay;
   page_input_timing_.total_adjusted_input_delay +=
       input_timing_delta.total_adjusted_input_delay;
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateMobileFriendliness(
+    const blink::MobileFriendliness& mobile_friendliness) {
+  mobile_friendliness_ = mobile_friendliness;
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(

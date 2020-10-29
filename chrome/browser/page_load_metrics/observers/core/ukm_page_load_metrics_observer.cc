@@ -120,6 +120,16 @@ int SiteInstanceRenderProcessAssignmentToInt(
   return 0;
 }
 
+int BucketWithOffsetAndUnit(int num, int offset, uint32_t unit) {
+  // Bucketing raw number with `offset` centered.
+  const int grid = (num - offset) / unit;
+  const int bucketed =
+      grid == 0 ? 0
+                : grid > 0 ? std::pow(2, static_cast<int>(std::log2(grid)))
+                           : -std::pow(2, static_cast<int>(std::log2(-grid)));
+  return bucketed * unit + offset;
+}
+
 }  // namespace
 
 // static
@@ -333,6 +343,7 @@ void UkmPageLoadMetricsObserver::OnComplete(
   RecordSmoothnessMetrics();
   ReportPerfectHeuristicsMetrics();
   RecordPageEndMetrics(&timing, current_time);
+  RecordMobileFriendlinessMetrics();
 }
 
 void UkmPageLoadMetricsObserver::OnResourceDataUseObserved(
@@ -960,6 +971,27 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
       .Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
+  ukm::builders::MobileFriendliness mf(GetDelegate().GetPageUkmSourceId());
+  mf.SetViewportDeviceWidth(
+        GetDelegate().GetMobileFriendliness().viewport_device_width)
+      .SetAllowUserZoom(GetDelegate().GetMobileFriendliness().allow_user_zoom);
+  const int initial_scale_x10 = std::floor(
+      GetDelegate().GetMobileFriendliness().viewport_initial_scale * 10);
+  if (initial_scale_x10 > 0) {
+    mf.SetViewportInitialScaleX10(
+        ukm::GetExponentialBucketMin(initial_scale_x10, 1.2));
+  }
+
+  const int hardcoded_width =
+      GetDelegate().GetMobileFriendliness().viewport_hardcoded_width;
+  if (hardcoded_width > 0) {
+    mf.SetViewportHardcodedWidth(
+        BucketWithOffsetAndUnit(hardcoded_width, 500, 10));
+  }
+  mf.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(

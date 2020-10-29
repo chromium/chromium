@@ -11,6 +11,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
+#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom.h"
 
 namespace page_load_metrics {
 
@@ -57,6 +58,8 @@ class FakePageTimingSender : public PageTimingSender {
 
     void VerifyExpectedInputTiming() const;
 
+    void VerifyExpectedMobileFriendliness() const;
+
     // PageLoad features that are expected to be sent through SendTiming()
     // should be passed via UpdateExpectedPageLoadFeatures.
     void UpdateExpectPageLoadFeatures(const blink::mojom::WebFeature feature);
@@ -71,6 +74,9 @@ class FakePageTimingSender : public PageTimingSender {
     }
 
     void UpdateExpectedInputTiming(const base::TimeDelta input_delay);
+
+    void UpdateExpectedMobileFriendliness(
+        const blink::MobileFriendliness& mobile_friendliness);
 
     void UpdateExpectFrameIntersectionUpdate(
         const mojom::FrameIntersectionUpdate& frame_intersection_update) {
@@ -101,7 +107,8 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
         const mojom::DeferredResourceCountsPtr& new_deferred_resource_data,
-        const mojom::InputTimingPtr& input_timing);
+        const mojom::InputTimingPtr& input_timing,
+        const blink::MobileFriendliness& mobile_friendliness);
 
    private:
     std::vector<mojom::PageLoadTimingPtr> expected_timings_;
@@ -118,19 +125,24 @@ class FakePageTimingSender : public PageTimingSender {
     mojom::FrameIntersectionUpdatePtr actual_frame_intersection_update_;
     mojom::InputTimingPtr expected_input_timing;
     mojom::InputTimingPtr actual_input_timing;
+    blink::MobileFriendliness expected_mobile_friendliness;
+    blink::MobileFriendliness actual_mobile_friendliness;
     DISALLOW_COPY_AND_ASSIGN(PageTimingValidator);
   };
 
   explicit FakePageTimingSender(PageTimingValidator* validator);
   ~FakePageTimingSender() override;
-  void SendTiming(const mojom::PageLoadTimingPtr& timing,
-                  const mojom::FrameMetadataPtr& metadata,
-                  mojom::PageLoadFeaturesPtr new_features,
-                  std::vector<mojom::ResourceDataUpdatePtr> resources,
-                  const mojom::FrameRenderDataUpdate& render_data,
-                  const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-                  mojom::InputTimingPtr new_input_timing) override;
+  void SendTiming(
+      const mojom::PageLoadTimingPtr& timing,
+      const mojom::FrameMetadataPtr& metadata,
+      mojom::PageLoadFeaturesPtr new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      const mojom::FrameRenderDataUpdate& render_data,
+      const mojom::CpuTimingPtr& cpu_timing,
+      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
+      mojom::InputTimingPtr new_input_timing,
+      const blink::MobileFriendliness& mobile_friendliness) override;
+
   void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 

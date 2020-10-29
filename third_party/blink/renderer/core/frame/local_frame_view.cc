@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
+#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -267,7 +268,9 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, IntRect frame_rect)
       paint_frame_count_(0),
       unique_id_(NewUniqueObjectId()),
       layout_shift_tracker_(MakeGarbageCollected<LayoutShiftTracker>(this)),
-      paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this))
+      paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this)),
+      mobile_friendliness_checker_(
+          MakeGarbageCollected<MobileFriendlinessChecker>(*this))
 #if DCHECK_IS_ON()
       ,
       is_updating_descendant_dependent_flags_(false)
@@ -298,6 +301,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_event_queue_);
   visitor->Trace(layout_shift_tracker_);
   visitor->Trace(paint_timing_detector_);
+  visitor->Trace(mobile_friendliness_checker_);
   visitor->Trace(lifecycle_observers_);
   visitor->Trace(fullscreen_video_elements_);
 }
@@ -4587,6 +4591,11 @@ void LocalFrameView::MapLocalToRemoteMainFrame(
 LayoutUnit LocalFrameView::CaretWidth() const {
   return LayoutUnit(std::max<float>(
       1.0f, GetChromeClient()->WindowToViewportScalar(&GetFrame(), 1.0f)));
+}
+
+void LocalFrameView::DidChangeMobileFriendliness(
+    const blink::MobileFriendliness& mf) {
+  GetFrame().Client()->DidChangeMobileFriendliness(mf);
 }
 
 LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {

@@ -117,6 +117,7 @@ class WebString;
 class WebURL;
 class WebURLResponse;
 struct FramePolicy;
+struct MobileFriendliness;
 struct WebConsoleMessage;
 struct WebContextMenuData;
 struct WebPluginParams;
@@ -700,6 +701,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Notification that the BeginMainFrame completed, was committed into the
   // compositor (thread) and submitted to the display compositor.
   virtual void DidCommitAndDrawCompositorFrame() {}
+
+  // Notification that MobileFriendliness metrics changed.
+  virtual void DidChangeMobileFriendliness(const MobileFriendliness&) {}
 
   // Inform the widget that it was hidden.
   virtual void WasHidden() {}

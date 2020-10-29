@@ -270,6 +270,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory)
       override;
 
+  void DidChangeMobileFriendliness(const MobileFriendliness&) override;
+
  private:
   bool IsLocalFrameClientImpl() const override { return true; }
   WebDevToolsAgentImpl* DevToolsAgent();

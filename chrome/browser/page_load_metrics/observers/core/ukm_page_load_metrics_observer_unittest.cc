@@ -53,6 +53,7 @@ using LargestContentState =
 using LargestContentType =
     page_load_metrics::ContentfulPaintTimingInfo::LargestContentType;
 using PageLoad = ukm::builders::PageLoad;
+using MobileFriendliness = ukm::builders::MobileFriendliness;
 using PageLoad_Internal = ukm::builders::PageLoad_Internal;
 
 const char kTestUrl1[] = "https://www.google.com/";
@@ -1028,6 +1029,40 @@ TEST_F(UkmPageLoadMetricsObserverTest, InputTiming) {
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(),
         PageLoad::kInteractiveTiming_TotalAdjustedInputDelayName, 10);
+  }
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, MobileFriendliness) {
+  NavigateAndCommit(GURL(kTestUrl1));
+  blink::MobileFriendliness mobile_friendliness;
+  mobile_friendliness.viewport_hardcoded_width = 533;
+  mobile_friendliness.viewport_initial_scale = 0.123456;
+  mobile_friendliness.allow_user_zoom = true;
+  const int expected_viewport_hardcoded_width = 520;
+  const double expected_viewport_initial_scale = 1;
+
+  tester()->SimulateMobileFriendlinessUpdate(mobile_friendliness);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          MobileFriendliness::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  for (const auto& kv : merged_entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
+                                                          GURL(kTestUrl1));
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), MobileFriendliness::kViewportDeviceWidthName, false);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), MobileFriendliness::kViewportHardcodedWidthName,
+        expected_viewport_hardcoded_width);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), MobileFriendliness::kViewportInitialScaleX10Name,
+        expected_viewport_initial_scale);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), MobileFriendliness::kAllowUserZoomName, true);
   }
 }
 

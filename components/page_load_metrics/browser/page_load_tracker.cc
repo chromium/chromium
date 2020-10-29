@@ -902,6 +902,10 @@ const PageRenderData& PageLoadTracker::GetPageRenderData() const {
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
   return metrics_update_dispatcher_.page_input_timing();
 }
+const blink::MobileFriendliness& PageLoadTracker::GetMobileFriendliness()
+    const {
+  return metrics_update_dispatcher_.mobile_friendliness();
+}
 
 const PageRenderData& PageLoadTracker::GetMainFrameRenderData() const {
   return metrics_update_dispatcher_.main_frame_render_data();

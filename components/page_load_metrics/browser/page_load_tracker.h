@@ -228,6 +228,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
   const PageRenderData& GetPageRenderData() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
+  const blink::MobileFriendliness& GetMobileFriendliness() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
   const ResourceTracker& GetResourceTracker() const override;
@@ -446,6 +447,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const bool started_in_foreground_;
 
   mojom::PageLoadTimingPtr last_dispatched_merged_page_timing_;
+  blink::MobileFriendliness latest_mobile_friendliness_;
 
   ui::PageTransition page_transition_;
 

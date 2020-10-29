@@ -90,6 +90,7 @@ class LayoutShiftTracker;
 class LayoutSVGRoot;
 class LayoutView;
 class LocalFrame;
+class MobileFriendlinessChecker;
 class Page;
 class PaintLayer;
 class PaintLayerScrollableArea;
@@ -105,6 +106,7 @@ class LocalFrameUkmAggregator;
 class WebPluginContainerImpl;
 struct AnnotatedRegionValue;
 struct IntrinsicSizingInfo;
+struct MobileFriendliness;
 struct PhysicalOffset;
 struct PhysicalRect;
 
@@ -685,6 +687,11 @@ class CORE_EXPORT LocalFrameView final
     return *paint_timing_detector_;
   }
 
+  MobileFriendlinessChecker& GetMobileFriendlinessChecker() const {
+    return *mobile_friendliness_checker_;
+  }
+  void DidChangeMobileFriendliness(const MobileFriendliness& mf);
+
   // Return the UKM aggregator for this frame, creating it if necessary.
   LocalFrameUkmAggregator& EnsureUkmAggregator();
 
@@ -1061,6 +1068,7 @@ class CORE_EXPORT LocalFrameView final
   UniqueObjectId unique_id_;
   Member<LayoutShiftTracker> layout_shift_tracker_;
   Member<PaintTimingDetector> paint_timing_detector_;
+  Member<MobileFriendlinessChecker> mobile_friendliness_checker_;
 
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;
 

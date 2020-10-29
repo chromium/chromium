@@ -161,6 +161,26 @@ TEST_F(PageTimingMetricsSenderTest, SendInputEvents) {
   validator_.VerifyExpectedInputTiming();
 }
 
+TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
+  mojom::PageLoadTiming timing;
+  blink::MobileFriendliness mobile_friendliness;
+  mobile_friendliness.viewport_hardcoded_width = 480;
+  mobile_friendliness.allow_user_zoom = true;
+  InitPageLoadTimingForTest(&timing);
+  metrics_sender_->Update(timing.Clone(),
+                          PageTimingMetadataRecorder::MonotonicTiming());
+  validator_.ExpectPageLoadTiming(timing);
+
+  metrics_sender_->DidObserveMobileFriendlinessChanged(mobile_friendliness);
+
+  blink::MobileFriendliness expected_mf;
+  expected_mf.viewport_hardcoded_width = 480;
+  expected_mf.allow_user_zoom = true;
+  validator_.UpdateExpectedMobileFriendliness(expected_mf);
+  metrics_sender_->mock_timer()->Fire();
+  validator_.VerifyExpectedMobileFriendliness();
+}
+
 TEST_F(PageTimingMetricsSenderTest, SendSingleFeature) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);

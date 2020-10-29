@@ -154,6 +154,8 @@ class UkmPageLoadMetricsObserver
   void RecordInputTimingMetrics();
   void RecordSmoothnessMetrics();
 
+  void RecordMobileFriendlinessMetrics();
+
   // Captures the site engagement score for the committed URL and
   // returns the score rounded to the nearest 10.
   base::Optional<int64_t> GetRoundedSiteEngagementScore() const;

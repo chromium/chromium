@@ -22,7 +22,8 @@ class PageTimingSender {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
       mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-      mojom::InputTimingPtr input_timing_delta) = 0;
+      mojom::InputTimingPtr input_timing_delta,
+      const blink::MobileFriendliness& mobile_friendliness) = 0;
   virtual void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) = 0;
 };

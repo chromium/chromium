@@ -95,6 +95,7 @@ class MetricsRenderFrameObserver
 
   void OnMainFrameIntersectionChanged(
       const blink::WebRect& main_frame_intersection) override;
+  void OnMobileFriendlinessChanged(const blink::MobileFriendliness&) override;
 
   bool SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory) override;

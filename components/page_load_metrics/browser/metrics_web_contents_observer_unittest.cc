@@ -113,7 +113,7 @@ class MetricsWebContentsObserverTest
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(base::in_place), timing.Clone(),
         mojom::DeferredResourceCountsPtr(base::in_place),
-        mojom::InputTimingPtr(base::in_place));
+        mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -139,7 +139,7 @@ class MetricsWebContentsObserverTest
         mojom::FrameRenderDataUpdatePtr(base::in_place),
         mojom::CpuTimingPtr(base::in_place),
         mojom::DeferredResourceCountsPtr(base::in_place),
-        mojom::InputTimingPtr(base::in_place));
+        mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
 
   void AttachObserver() {

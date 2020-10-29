@@ -17,6 +17,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace blink {
+struct MobileFriendliness;
+}  // namespace blink
+
 namespace page_load_metrics {
 
 namespace mojom {
@@ -119,6 +123,7 @@ class PageLoadMetricsObserverDelegate {
   virtual const PageRenderData& GetPageRenderData() const = 0;
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
+  virtual const blink::MobileFriendliness& GetMobileFriendliness() const = 0;
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;
   virtual const ui::ScopedVisibilityTracker& GetVisibilityTracker() const = 0;
   virtual const ResourceTracker& GetResourceTracker() const = 0;

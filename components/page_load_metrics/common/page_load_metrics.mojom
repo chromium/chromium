@@ -8,6 +8,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import
+  "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
 import "third_party/blink/public/mojom/use_counter/css_property_id.mojom";
 import "url/mojom/origin.mojom";
 
@@ -334,7 +336,8 @@ interface PageLoadMetrics {
                FrameRenderDataUpdate render_data,
                CpuTiming cpu_load_timing,
                DeferredResourceCounts new_deferred_resource_data,
-               InputTiming input_timing_delta);
+               InputTiming input_timing_delta,
+               blink.mojom.MobileFriendliness mobile_friendliness);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structure is defined in

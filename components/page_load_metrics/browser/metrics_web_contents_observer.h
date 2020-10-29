@@ -27,6 +27,10 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
+namespace blink {
+struct MobileFriendliness;
+}  // namespace blink
+
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
@@ -162,7 +166,8 @@ class MetricsWebContentsObserver
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr cpu_timing,
       mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-      mojom::InputTimingPtr input_timing_delta);
+      mojom::InputTimingPtr input_timing_delta,
+      const blink::MobileFriendliness& mobile_friendliness);
 
   // Informs the observers of the currently committed load that the event
   // corresponding to |event_key| has occurred. This should not be called within
@@ -181,14 +186,17 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle);
 
   // page_load_metrics::mojom::PageLoadMetrics implementation.
-  void UpdateTiming(mojom::PageLoadTimingPtr timing,
-                    mojom::FrameMetadataPtr metadata,
-                    mojom::PageLoadFeaturesPtr new_features,
-                    std::vector<mojom::ResourceDataUpdatePtr> resources,
-                    mojom::FrameRenderDataUpdatePtr render_data,
-                    mojom::CpuTimingPtr cpu_timing,
-                    mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-                    mojom::InputTimingPtr input_timing) override;
+  void UpdateTiming(
+      mojom::PageLoadTimingPtr timing,
+      mojom::FrameMetadataPtr metadata,
+      mojom::PageLoadFeaturesPtr new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      mojom::FrameRenderDataUpdatePtr render_data,
+      mojom::CpuTimingPtr cpu_timing,
+      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
+      mojom::InputTimingPtr input_timing,
+      const blink::MobileFriendliness& mobile_friendliness) override;
+
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 

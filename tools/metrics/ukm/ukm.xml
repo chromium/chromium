@@ -7819,6 +7819,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MobileFriendliness">
+  <owner>kumagi@chromium.org</owner>
+  <metric name="AllowUserZoom" enum="Boolean">
+    <summary>
+      Whether the page allows the user to zoom in/out.
+    </summary>
+  </metric>
+  <metric name="ViewportDeviceWidth" enum="Boolean">
+    <summary>
+      Whether the width of the viewport specified as device-width or not.
+    </summary>
+  </metric>
+  <metric name="ViewportHardcodedWidth">
+    <summary>
+      Specified hardcoded viewport width in CSS pixels.
+    </summary>
+  </metric>
+  <metric name="ViewportInitialScaleX10">
+    <summary>
+      Specified initial viewport scaling multipled by 10. 1 means 0.1, 100 means
+      10. [1-100].
+    </summary>
+  </metric>
+</event>
+
 <event name="MobileMenu.DirectShare">
   <owner>sayman@chromium.org</owner>
   <summary>

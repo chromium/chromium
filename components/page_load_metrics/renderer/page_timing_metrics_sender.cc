@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -20,7 +21,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace page_load_metrics {
-
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
@@ -135,6 +135,12 @@ void PageTimingMetricsSender::DidObserveLazyLoadBehavior(
       ++new_deferred_resource_data_->images_loaded_after_deferral;
       break;
   }
+}
+
+void PageTimingMetricsSender::DidObserveMobileFriendlinessChanged(
+    const blink::MobileFriendliness& mf) {
+  mobile_friendliness_ = mf;
+  EnsureSendTimer();
 }
 
 void PageTimingMetricsSender::DidStartResponse(
@@ -307,10 +313,11 @@ void PageTimingMetricsSender::SendNow() {
     }
   }
 
-  sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
-                      std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(new_deferred_resource_data_),
-                      std::move(input_timing_delta_));
+  sender_->SendTiming(
+      last_timing_, metadata_, std::move(new_features_), std::move(resources),
+      render_data_, last_cpu_timing_, std::move(new_deferred_resource_data_),
+      std::move(input_timing_delta_), std::move(mobile_friendliness_));
+  mobile_friendliness_ = blink::MobileFriendliness();
   input_timing_delta_ = mojom::InputTiming::New();
   new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
   new_features_ = mojom::PageLoadFeatures::New();

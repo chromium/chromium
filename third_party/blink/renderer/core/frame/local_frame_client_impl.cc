@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-blink.h"
@@ -1161,6 +1162,12 @@ void LocalFrameClientImpl::UpdateSubresourceFactory(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory) {
   DCHECK(web_frame_->Client());
   web_frame_->Client()->UpdateSubresourceFactory(std::move(pending_factory));
+}
+
+void LocalFrameClientImpl::DidChangeMobileFriendliness(
+    const MobileFriendliness& mf) {
+  DCHECK(web_frame_->Client());
+  web_frame_->Client()->DidChangeMobileFriendliness(mf);
 }
 
 }  // namespace blink
