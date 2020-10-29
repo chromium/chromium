@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/chromeos/printing/print_servers_policy_provider.h"
 #include "chrome/browser/chromeos/printing/printer_installation_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
@@ -72,7 +73,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
       std::unique_ptr<PrinterConfigurer> printer_configurer,
       std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,
-      ServerPrintersProvider* server_printers_provider,
+      std::unique_ptr<ServerPrintersProvider> server_printers_provider,
+      std::unique_ptr<PrintServersPolicyProvider> print_servers_provider,
       std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider,
       PrinterEventTracker* event_tracker,
       PrefService* pref_service);
@@ -129,6 +131,14 @@ class CupsPrintersManager : public PrinterInstallationManager,
   // Records the total number of detected network printers and the
   // number of detected network printers that have not been saved.
   virtual void RecordNearbyNetworkPrinterCounts() const = 0;
+
+  // Selects a print server from all the available print servers. Returns true on
+  // successfully selecting the requested print server.
+  virtual bool ChoosePrintServer(
+      const base::Optional<std::string>& selected_print_server_id) = 0;
+
+  // Returns the current fetching mode strategy for print servers.
+  virtual ServerPrintersFetchingMode GetServerPrintersFetchingMode() const = 0;
 };
 
 }  // namespace chromeos

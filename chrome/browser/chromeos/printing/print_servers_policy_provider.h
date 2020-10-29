@@ -1,0 +1,71 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+#ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_SERVERS_POLICY_PROVIDER_H_
+#define CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_SERVERS_POLICY_PROVIDER_H_
+
+#include <map>
+#include <memory>
+#include <string>
+
+#include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/printing/print_server.h"
+#include "chrome/browser/chromeos/printing/print_servers_provider.h"
+#include "components/keyed_service/core/keyed_service.h"
+
+class Profile;
+
+namespace chromeos {
+
+enum ServerPrintersFetchingMode {
+  kStandard,
+  kSingleServerOnly,
+};
+
+// This class observes values provided by the DeviceExternalPrintServers and
+// ExternalPrintServers policies and calculates resultant list of available
+// print servers. This list is propagated to the provided callback.
+class PrintServersPolicyProvider : public KeyedService,
+                                   public PrintServersProvider::Observer {
+ public:
+  PrintServersPolicyProvider(
+      base::WeakPtr<PrintServersProvider> user_policy_provider,
+      base::WeakPtr<PrintServersProvider> device_policy_provider);
+
+  ~PrintServersPolicyProvider() override;
+
+  using OnPrintServersChanged = typename base::RepeatingCallback<
+      void(bool, std::map<GURL, PrintServer>, ServerPrintersFetchingMode)>;
+
+  static std::unique_ptr<PrintServersPolicyProvider> Create(Profile* profile);
+
+  static std::unique_ptr<PrintServersPolicyProvider> CreateForTesting(
+      base::WeakPtr<PrintServersProvider> user_policy_provider,
+      base::WeakPtr<PrintServersProvider> device_policy_provider);
+
+  // Set the callback when print servers has been updated via policy.
+  void SetListener(const OnPrintServersChanged& callback);
+
+  // PrintServersProvider::Observer
+  void OnServersChanged(
+      bool unused_complete,
+      const std::vector<PrintServer>& unused_servers) override;
+
+ private:
+  ServerPrintersFetchingMode GetFetchingMode(
+      const std::map<GURL, PrintServer>& all_servers);
+
+  base::WeakPtr<PrintServersProvider> user_policy_provider_;
+  base::WeakPtr<PrintServersProvider> device_policy_provider_;
+
+  std::map<GURL, PrintServer> all_servers_;
+
+  std::unique_ptr<OnPrintServersChanged> callback_;
+
+  base::WeakPtrFactory<PrintServersPolicyProvider> weak_ptr_factory_{this};
+};
+
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_SERVERS_POLICY_PROVIDER_H_

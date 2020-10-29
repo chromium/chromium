@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_proxy.h"
-#include "chrome/browser/chromeos/printing/server_printers_provider_factory.h"
 #include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -33,7 +32,6 @@ CupsPrintersManagerFactory::CupsPrintersManagerFactory()
           "CupsPrintersManagerFactory",
           BrowserContextDependencyManager::GetInstance()),
       proxy_(CupsPrintersManagerProxy::Create()) {
-  DependsOn(chromeos::ServerPrintersProviderFactory::GetInstance());
   DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
 }
 

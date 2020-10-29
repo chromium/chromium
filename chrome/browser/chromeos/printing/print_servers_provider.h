@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/printing/print_server.h"
@@ -61,6 +62,10 @@ class PrintServersProvider
   virtual void SetData(std::unique_ptr<std::string> data) = 0;
   // Clears the content of the policy.
   virtual void ClearData() = 0;
+
+  // Returns the list of all print servers given from the data provided in
+  // SetData(...) and limited by the allowlist.
+  virtual base::Optional<std::vector<PrintServer>> GetPrintServers() = 0;
 
  protected:
   PrintServersProvider() = default;
