@@ -346,10 +346,11 @@ class ASH_EXPORT TabletModeController
   // present, convertible device cannot see accelerometer data.
   bool have_seen_accelerometer_data_ = false;
 
-  // True if ChromeOS EC lid angle driver is present. In this case Chrome does
-  // not calculate lid angle itself, but will reply on the tablet-mode flag that
-  // EC sends to decide if the device should in tablet mode.
-  bool ec_lid_angle_driver_present_ = false;
+  // If ECLidAngleDriverStatus is supported, Chrome does not calculate lid angle
+  // itself, but will reply on the tablet-mode flag that EC sends to decide if
+  // the device should in tablet mode.
+  ECLidAngleDriverStatus ec_lid_angle_driver_status_ =
+      ECLidAngleDriverStatus::UNKNOWN;
 
   // Whether the lid angle can be detected by browser. If it's true, the device
   // is a convertible device (both screen acclerometer and keyboard acclerometer

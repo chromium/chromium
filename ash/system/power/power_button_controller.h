@@ -228,6 +228,12 @@ class ASH_EXPORT PowerButtonController
   // True if the device has tablet mode switch.
   bool has_tablet_mode_switch_ = false;
 
+  // When ChromeOS EC lid angle driver is supported, there's always tablet mode
+  // switch in device, so PowerButtonController doesn't need to listens to
+  // accelerometer events.
+  ECLidAngleDriverStatus ec_lid_angle_driver_status_ =
+      ECLidAngleDriverStatus::UNKNOWN;
+
   // True if the screen was off when the power button was pressed.
   bool screen_off_when_power_button_down_ = false;
 

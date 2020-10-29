@@ -15,8 +15,6 @@
 
 namespace ash {
 
-enum class ECLidAngleDriver { UNKNOWN, SUPPORTED, NOT_SUPPORTED };
-
 enum class State { INITIALIZING, SUCCESS, FAILED };
 
 // Work that runs on a base::TaskRunner. It determines the accelerometer
@@ -131,10 +129,6 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   void ReadFileAndNotify();
 
   void SetEmitEventsInternal(bool emit_events);
-
-  // State of ChromeOS EC lid angle driver, if SUPPORTED, it means EC can handle
-  // lid angle calculation.
-  ECLidAngleDriver ec_lid_angle_driver_ = ECLidAngleDriver::UNKNOWN;
 
   // The current initialization state of reader.
   State initialization_state_ = State::INITIALIZING;

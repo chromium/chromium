@@ -80,7 +80,7 @@ void SetInternalDisplayRotation(display::Display::Rotation rotation) {
 
 void TriggerLidUpdate(const gfx::Vector3dF& lid) {
   scoped_refptr<AccelerometerUpdate> update(new AccelerometerUpdate());
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, false, lid.x(), lid.y(), lid.z());
+  update->Set(ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(), lid.z());
   Shell::Get()->screen_orientation_controller()->OnAccelerometerUpdated(update);
 }
 

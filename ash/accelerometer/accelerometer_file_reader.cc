@@ -199,9 +199,9 @@ void AccelerometerFileReader::InitializeInternal() {
 
   if (base::SysInfo::IsRunningOnChromeOS() &&
       !base::IsDirectoryEmpty(base::FilePath(kECLidAngleDriverPath))) {
-    ec_lid_angle_driver_ = ECLidAngleDriver::SUPPORTED;
+    ec_lid_angle_driver_status_ = ECLidAngleDriverStatus::SUPPORTED;
   } else {
-    ec_lid_angle_driver_ = ECLidAngleDriver::NOT_SUPPORTED;
+    ec_lid_angle_driver_status_ = ECLidAngleDriverStatus::NOT_SUPPORTED;
   }
 
   // Find trigger to use:
@@ -299,7 +299,7 @@ void AccelerometerFileReader::InitializeInternal() {
 
   // If ChromeOS lid angle driver is not present, start accelerometer read and
   // read is always on.
-  if (ec_lid_angle_driver_ == ECLidAngleDriver::NOT_SUPPORTED)
+  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED)
     EnableAccelerometerReading();
 }
 
@@ -353,7 +353,7 @@ void AccelerometerFileReader::TriggerRead() {
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
   switch (initialization_state_) {
     case State::SUCCESS:
-      if (ec_lid_angle_driver_ == ECLidAngleDriver::SUPPORTED)
+      if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED)
         EnableAccelerometerReading();
       break;
     case State::FAILED:
@@ -370,7 +370,7 @@ void AccelerometerFileReader::TriggerRead() {
 void AccelerometerFileReader::CancelRead() {
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
   if (initialization_state_ == State::SUCCESS &&
-      ec_lid_angle_driver_ == ECLidAngleDriver::SUPPORTED)
+      ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED)
     DisableAccelerometerReading();
 }
 
@@ -413,7 +413,7 @@ void AccelerometerFileReader::OnTabletPhysicalStateChanged() {
   // ON and can't be tuned. Thus AccelerometerFileReader no longer listens to
   // tablet mode event.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (ec_lid_angle_driver_ == ECLidAngleDriver::NOT_SUPPORTED) {
+  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED) {
     tablet_mode_controller->RemoveObserver(this);
     return;
   }
@@ -559,9 +559,7 @@ void AccelerometerFileReader::ReadFileAndNotify() {
     for (AccelerometerSource source : reading_data.sources) {
       DCHECK(configuration_.has[source]);
       int16_t* values = reinterpret_cast<int16_t*>(reading);
-      bool is_driver_existed =
-          (ec_lid_angle_driver_ == ECLidAngleDriver::SUPPORTED) ? true : false;
-      update_->Set(source, is_driver_existed,
+      update_->Set(source,
                    values[configuration_.index[source][0]] *
                        configuration_.scale[source][0],
                    values[configuration_.index[source][1]] *

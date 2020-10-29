@@ -629,12 +629,15 @@ void TabletModeController::OnChromeTerminating() {
 
 void TabletModeController::OnAccelerometerUpdated(
     scoped_refptr<const AccelerometerUpdate> update) {
+  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
+    ec_lid_angle_driver_status_ =
+        AccelerometerReader::GetInstance()->GetECLidAngleDriverStatus();
+  }
+
   // When ChromeOS EC lid angle driver is present, EC can handle lid angle
   // calculation, thus Chrome side lid angle calculation is disabled. In this
   // case, TabletModeController no longer listens to accelerometer events.
-  if (update->HasLidAngleDriver(ACCELEROMETER_SOURCE_SCREEN) ||
-      update->HasLidAngleDriver(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)) {
-    ec_lid_angle_driver_present_ = true;
+  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
     // Reset lid angle that might be calculated before lid angle driver is
     // read.
     lid_angle_ = 0.f;
@@ -1300,7 +1303,8 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
 
   const bool can_enter_tablet_mode =
       IsBoardTypeMarkedAsTabletCapable() && HasActiveInternalDisplay() &&
-      (ec_lid_angle_driver_present_ || have_seen_accelerometer_data_);
+      (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED ||
+       have_seen_accelerometer_data_);
 
   return !has_internal_pointing_device_ && can_enter_tablet_mode &&
          chromeos::IsRunningAsSystemCompositor();

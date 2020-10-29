@@ -42,9 +42,29 @@ void AccelerometerReader::SetEnabled(bool enabled) {
   accelerometer_provider_->SetEmitEvents(enabled);
 }
 
+ECLidAngleDriverStatus AccelerometerReader::GetECLidAngleDriverStatus() const {
+  return accelerometer_provider_->GetECLidAngleDriverStatus();
+}
+
+void AccelerometerReader::SetECLidAngleDriverStatusForTesting(
+    ECLidAngleDriverStatus ec_lid_angle_driver_status) {
+  accelerometer_provider_->SetECLidAngleDriverStatusForTesting(  // IN-TEST
+      ec_lid_angle_driver_status);
+}
+
 AccelerometerReader::AccelerometerReader()
     : accelerometer_provider_(new AccelerometerFileReader()) {}
 
 AccelerometerReader::~AccelerometerReader() = default;
+
+ECLidAngleDriverStatus
+AccelerometerProviderInterface::GetECLidAngleDriverStatus() const {
+  return ec_lid_angle_driver_status_;
+}
+
+void AccelerometerProviderInterface::SetECLidAngleDriverStatusForTesting(
+    ECLidAngleDriverStatus ec_lid_angle_driver_status) {
+  ec_lid_angle_driver_status_ = ec_lid_angle_driver_status;
+}
 
 }  // namespace ash

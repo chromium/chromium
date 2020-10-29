@@ -19,13 +19,14 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+enum class ECLidAngleDriverStatus { UNKNOWN, SUPPORTED, NOT_SUPPORTED };
+
 class AccelerometerProviderInterface;
 
 // Reads an accelerometer device and reports data back to an
 // AccelerometerDelegate.
 class ASH_EXPORT AccelerometerReader {
  public:
-
   // An interface to receive data from the AccelerometerReader.
   class Observer {
    public:
@@ -54,8 +55,16 @@ class ASH_EXPORT AccelerometerReader {
   // be able to control the accelerometer feature.
   void SetEnabled(bool enabled);
 
+  // Return the state of the driver being supported or not.
+  ECLidAngleDriverStatus GetECLidAngleDriverStatus() const;
+
+  void SetECLidAngleDriverStatusForTesting(
+      ECLidAngleDriverStatus ec_lid_angle_driver_status);
+
  protected:
   AccelerometerReader();
+  AccelerometerReader(const AccelerometerReader&) = delete;
+  AccelerometerReader& operator=(const AccelerometerReader&) = delete;
   virtual ~AccelerometerReader();
 
  private:
@@ -65,8 +74,6 @@ class ASH_EXPORT AccelerometerReader {
   // Initialize. It will determine accelerometer configuration, read the data,
   // and notify observers.
   scoped_refptr<AccelerometerProviderInterface> accelerometer_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccelerometerReader);
 };
 
 class AccelerometerProviderInterface
@@ -88,8 +95,19 @@ class AccelerometerProviderInterface
   // Set emitting events (samples) to observers or not.
   virtual void SetEmitEvents(bool emit_events) = 0;
 
+  // Return the state of the driver being supported or not.
+  ECLidAngleDriverStatus GetECLidAngleDriverStatus() const;
+
+  void SetECLidAngleDriverStatusForTesting(
+      ECLidAngleDriverStatus ec_lid_angle_driver_status);
+
  protected:
   virtual ~AccelerometerProviderInterface() = default;
+
+  // State of ChromeOS EC lid angle driver, if SUPPORTED, it means EC can handle
+  // lid angle calculation.
+  ECLidAngleDriverStatus ec_lid_angle_driver_status_ =
+      ECLidAngleDriverStatus::UNKNOWN;
 
  private:
   friend class base::RefCountedThreadSafe<AccelerometerProviderInterface>;
