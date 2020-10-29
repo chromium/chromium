@@ -150,7 +150,7 @@ class LocationBarTablet extends LocationBarLayout {
             mUrlFocusChangeAnimator = null;
         }
 
-        if (getLocationBarDataProvider().getNewTabPageForCurrentTab() == null) {
+        if (mLocationBarDataProvider.getNewTabPageForCurrentTab() == null) {
             finishUrlFocusChange(hasFocus);
             return;
         }
@@ -187,7 +187,7 @@ class LocationBarTablet extends LocationBarLayout {
     public void setUrlFocusChangeFraction(float fraction) {
         super.setUrlFocusChangeFraction(fraction);
 
-        NewTabPage ntp = getLocationBarDataProvider().getNewTabPageForCurrentTab();
+        NewTabPage ntp = mLocationBarDataProvider.getNewTabPageForCurrentTab();
         if (ntp != null) ntp.setUrlFocusChangeAnimationPercent(fraction);
     }
 

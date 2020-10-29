@@ -151,10 +151,6 @@ public final class LocationBarCoordinator
         mLocationBarLayout.updateLoadingState(updateUrl);
     }
 
-    public LocationBarDataProvider getLocationBarDataProvider() {
-        return mLocationBarLayout.getLocationBarDataProvider();
-    }
-
     @Override
     public void showUrlBarCursorWithoutFocusAnimations() {
         mLocationBarLayout.showUrlBarCursorWithoutFocusAnimations();

@@ -65,7 +65,7 @@ class LocationBarPhone extends LocationBarLayout {
 
         // The search engine icon will be the first visible focused view when it's showing.
         shouldShowSearchEngineLogo = SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                getLocationBarDataProvider().isIncognito());
+                mLocationBarDataProvider.isIncognito());
 
         // This branch will be hit if the search engine logo experiment is enabled.
         if (SearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
@@ -180,7 +180,7 @@ class LocationBarPhone extends LocationBarLayout {
     @Override
     public void updateVisualsForState() {
         super.updateVisualsForState();
-        boolean isIncognito = getLocationBarDataProvider().isIncognito();
+        boolean isIncognito = mLocationBarDataProvider.isIncognito();
         setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
         updateStatusVisibility();
     }
@@ -264,7 +264,7 @@ class LocationBarPhone extends LocationBarLayout {
 
         // No offset is required if the experiment is disabled.
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    getLocationBarDataProvider().isIncognito())) {
+                    mLocationBarDataProvider.isIncognito())) {
             return 0;
         }
 
@@ -299,7 +299,7 @@ class LocationBarPhone extends LocationBarLayout {
 
         // No offset is required if the experiment is disabled.
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    getLocationBarDataProvider().isIncognito())) {
+                    mLocationBarDataProvider.isIncognito())) {
             return 0;
         }
 
@@ -342,7 +342,7 @@ class LocationBarPhone extends LocationBarLayout {
 
     /** Update the status visibility according to the current state held in LocationBar. */
     private void updateStatusVisibility() {
-        boolean incognito = getLocationBarDataProvider().isIncognito();
+        boolean incognito = mLocationBarDataProvider.isIncognito();
         if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(incognito)) {
             return;
         }
