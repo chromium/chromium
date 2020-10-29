@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/clipboard/data_transfer_policy_controller.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
 

@@ -67,10 +67,6 @@ component("clipboard") {
     "clipboard_observer.h",
     "custom_data_helper.cc",
     "custom_data_helper.h",
-    "data_transfer_endpoint.cc",
-    "data_transfer_endpoint.h",
-    "data_transfer_policy_controller.cc",
-    "data_transfer_policy_controller.h",
     "scoped_clipboard_writer.cc",
     "scoped_clipboard_writer.h",
   ]
@@ -112,7 +108,10 @@ component("clipboard") {
     "//ui/gfx/geometry",
   ]
 
-  public_deps = [ ":clipboard_types" ]
+  public_deps = [
+    ":clipboard_types",
+    "//ui/base/data_transfer_policy",
+  ]
 
   if (use_aura) {
     # Linux clipboard implementations.

@@ -609,6 +609,8 @@ component("data_exchange") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  public_deps = [ "//ui/base/data_transfer_policy" ]
 }
 
 component("features") {

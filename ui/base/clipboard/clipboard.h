@@ -28,7 +28,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/clipboard/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 class SkBitmap;
 

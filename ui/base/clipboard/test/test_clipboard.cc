@@ -14,8 +14,8 @@
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
-#include "ui/base/clipboard/data_transfer_endpoint.h"
-#include "ui/base/clipboard/data_transfer_policy_controller.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
 

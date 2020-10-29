@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 #include <utility>
-#include "ui/base/clipboard/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/gesture_event_details.h"
 
 #if defined(OS_WIN)

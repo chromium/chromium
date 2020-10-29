@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_CLIPBOARD_DATA_TRANSFER_ENDPOINT_H_
-#define UI_BASE_CLIPBOARD_DATA_TRANSFER_ENDPOINT_H_
+#ifndef UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
+#define UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -38,7 +38,7 @@ enum class EndpointType {
 // DataTransferEndpoint(kDefault, true). Both specify the same types of
 // endpoints (not a URL/ARC++/...etc, and should show a notification to the user
 // if the data read is not allowed.)
-class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) DataTransferEndpoint {
+class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
  public:
   explicit DataTransferEndpoint(const url::Origin& origin,
                                 bool notify_if_restricted = true);
@@ -79,4 +79,4 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) DataTransferEndpoint {
 
 }  // namespace ui
 
-#endif  // UI_BASE_CLIPBOARD_DATA_TRANSFER_ENDPOINT_H_
+#endif  // UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_

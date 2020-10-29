@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
 #include "base/strings/string16.h"
-#include "ui/base/clipboard/data_transfer_policy_controller.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
 class DataTransferEndpoint;

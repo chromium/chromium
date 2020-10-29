@@ -3,6 +3,7 @@ include_rules = [
   "+net",
   "+third_party/skia",
   "+ui/base/clipboard",
+  "+ui/base/data_transfer_policy",
   "+ui/base/test",
   "+ui/gfx/image",
 ]
