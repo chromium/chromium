@@ -257,7 +257,48 @@ testcase.openFileDialogDownloads = () => {
 };
 
 /**
- * Tests opening save file dialog on Downloads and closing it with Ok button.
+ * Tests opening file dialog sets aria-multiselect true on grid and list.
+ */
+testcase.openFileDialogAriaMultipleSelect = async () => {
+  // Open File dialog.
+  chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
+  const appId = await remoteCall.waitForWindow('dialog#');
+
+  // Wait to finish initial load.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Check: <list> has aria-multiselect set to true.
+  const list = 'list#file-list[aria-multiselectable=true]';
+  await remoteCall.waitForElement(appId, list);
+
+  // Check: <grid> has aria-multiselect set to true.
+  const grid = 'grid#file-list[aria-multiselectable=true]';
+  await remoteCall.waitForElement(appId, grid);
+};
+
+/**
+ * Tests opening save file dialog sets aria-multiselect false on grid and list.
+ */
+testcase.saveFileDialogAriaSingleSelect = async () => {
+  // Open Save as dialog.
+  chrome.fileSystem.chooseEntry({type: 'saveFile'}, (entry) => {});
+  const appId = await remoteCall.waitForWindow('dialog#');
+
+  // Wait to finish initial load.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Check: <list> has aria-multiselect set to false.
+  const list = 'list#file-list[aria-multiselectable=false]';
+  await remoteCall.waitForElement(appId, list);
+
+  // Check: <grid> has aria-multiselect set to false.
+  const grid = 'grid#file-list[aria-multiselectable=false]';
+  await remoteCall.waitForElement(appId, grid);
+};
+
+/**
+ * Tests opening save file dialog on Downloads and closing it
+ * with Ok button.
  */
 testcase.saveFileDialogDownloads = () => {
   return saveFileDialogClickOkButton('downloads', TEST_LOCAL_FILE);

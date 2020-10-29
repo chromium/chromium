@@ -127,8 +127,9 @@ function setUp() {
   FileGrid.decorate(grid, metadataModel, volumeManager, historyLoader, a11y);
 
   // Setup the ListContainer and its dependencies
-  listContainer =
-      new ListContainer(queryRequiredElement('#list-container'), table, grid);
+  listContainer = new ListContainer(
+      queryRequiredElement('#list-container'), table, grid,
+      DialogType.FULL_PAGE);
   listContainer.dataModel = dataModel;
   listContainer.selectionModel = new cr.ui.ListSelectionModel();
   listContainer.setCurrentListType(ListContainer.ListType.DETAIL);

@@ -421,6 +421,7 @@ js_library("list_container") {
     ":file_grid",
     ":file_table",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js:dialog_type",
     "//ui/webui/resources/js/cr/ui:list_item",
   ]
 }

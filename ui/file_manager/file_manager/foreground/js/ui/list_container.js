@@ -20,8 +20,9 @@ class ListContainer {
    * @param {!HTMLElement} element Element of the container.
    * @param {!FileTable} table File table.
    * @param {!FileGrid} grid File grid.
+   * @param {DialogType} type The type of the main dialog.
    */
-  constructor(element, table, grid) {
+  constructor(element, table, grid, type) {
     /**
      * The container element of the file list.
      * @type {!HTMLElement}
@@ -144,6 +145,13 @@ class ListContainer {
         e.stopPropagation();
       }
     }.bind(this), true);
+
+    // Ensure the list and grid are marked ARIA single select for save as.
+    if (type === DialogType.SELECT_SAVEAS_FILE) {
+      const list = table.querySelector('#file-list');
+      list.setAttribute('aria-multiselectable', 'false');
+      grid.setAttribute('aria-multiselectable', 'false');
+    }
   }
 
   /**

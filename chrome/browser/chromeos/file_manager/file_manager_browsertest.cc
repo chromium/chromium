@@ -844,6 +844,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("openFileDialogDownloads").WithBrowser().InIncognito(),
         TestCase("openFileDialogPanelsDisabled").WithBrowser(),
+        TestCase("openFileDialogAriaMultipleSelect").WithBrowser(),
+        TestCase("saveFileDialogAriaSingleSelect").WithBrowser(),
         TestCase("saveFileDialogDownloads").WithBrowser(),
         TestCase("saveFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),

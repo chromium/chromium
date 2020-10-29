@@ -439,7 +439,8 @@ class FileManagerUI {
   initAdditionalUI(table, grid, volumeManager) {
     // List container.
     this.listContainer = new ListContainer(
-        queryRequiredElement('#list-container', this.element), table, grid);
+        queryRequiredElement('#list-container', this.element), table, grid,
+        this.dialogType_);
 
     // Location line.
     this.locationLine = new LocationLine(
