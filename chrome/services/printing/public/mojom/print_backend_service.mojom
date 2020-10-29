@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+// The main interface to Chrome's Print Backend Service, which performs
+// printer queries and commands to operating system printer drivers in an
+// isolated process.
+interface PrintBackendService {
+  // Establish the locale to be used for calls with this service and the
+  // interface to the underlying data source.
+  Init(string locale);
+
+  // Gets the default printer name from the data source.
+  // No value for `printer_name` is provided if there is a failure.
+  GetDefaultPrinterName()
+    => (string? printer_name);
+};

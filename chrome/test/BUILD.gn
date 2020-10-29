@@ -3031,6 +3031,14 @@ if (!is_android) {
         "//third_party/widevine/cdm",
       ]
     }
+    if (enable_basic_printing &&
+        (is_win || is_mac || is_linux || is_chromeos)) {
+      sources += [ "../browser/printing/print_backend_browsertest.cc" ]
+      deps += [
+        "//chrome/services/printing:lib",
+        "//printing:test_support",
+      ]
+    }
     if (enable_print_preview) {
       sources += [
         "../browser/printing/pdf_nup_converter_client_browsertest.cc",

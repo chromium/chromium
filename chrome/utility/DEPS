@@ -12,6 +12,7 @@ include_rules = [
   # when Cloud print chrome/service is removed.
   "+chrome/services/printing/pdf_to_emf_converter_factory.h",
   "+chrome/services/printing/printing_service.h",
+  "+chrome/services/printing/print_backend_service_impl.h",
   "+chrome/services/printing/public/mojom",
   "+chrome/services/qrcode_generator",
   "+chrome/services/removable_storage_writer",

@@ -5245,6 +5245,13 @@ static_library("browser") {
     if (is_linux || is_chromeos) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
     }
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [
+        "printing/print_backend_service.cc",
+        "printing/print_backend_service.h",
+      ]
+      deps += [ "//chrome/services/printing/public/mojom" ]
+    }
     if (is_win || enable_print_preview) {
       deps += [ "//chrome/services/printing/public/mojom" ]
     }

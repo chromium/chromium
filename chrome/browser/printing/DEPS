@@ -1,3 +1,9 @@
 include_rules = [
   "+pdf/pdf.h",  # Test only.
 ]
+
+specific_include_rules = {
+  "print_backend_browsertest.cc": [
+    "+chrome/services/printing/print_backend_service_impl.h",
+  ]
+}

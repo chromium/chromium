@@ -53,6 +53,13 @@ source_set("lib") {
 
     deps += [ "//skia" ]
   }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "print_backend_service_impl.cc",
+      "print_backend_service_impl.h",
+    ]
+  }
 }
 
 if (is_chromeos) {

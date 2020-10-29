@@ -25,6 +25,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/utility/utility_thread.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -74,9 +75,15 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+#include "chrome/services/printing/print_backend_service_impl.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#endif
+
 #include "components/services/print_compositor/print_compositor_impl.h"  // nogncheck
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #include "components/services/paint_preview_compositor/paint_preview_compositor_collection_impl.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
@@ -216,13 +223,22 @@ auto RunPaintPreviewCompositor(
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW)
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+auto RunPrintBackendService(
+    mojo::PendingReceiver<printing::mojom::PrintBackendService> receiver) {
+  return std::make_unique<printing::PrintBackendServiceImpl>(
+      std::move(receiver));
+}
+#endif
+
 auto RunPrintCompositor(
     mojo::PendingReceiver<printing::mojom::PrintCompositor> receiver) {
   return std::make_unique<printing::PrintCompositorImpl>(
       std::move(receiver), true /* initialize_environment */,
       content::UtilityThread::Get()->GetIOTaskRunner());
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if defined(OS_CHROMEOS)
 auto RunImeService(
@@ -303,6 +319,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+  services.Add(RunPrintBackendService);
+#endif
   services.Add(RunPrintCompositor);
 #endif
 
