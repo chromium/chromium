@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/net/connectivity_checker.h"
+#include "chromecast/net/time_sync_tracker.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class GURL;
@@ -35,14 +36,16 @@ namespace chromecast {
 // to given url.
 class ConnectivityCheckerImpl
     : public ConnectivityChecker,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver {
+      public network::NetworkConnectionTracker::NetworkConnectionObserver,
+      public TimeSyncTracker::Observer {
  public:
   // Connectivity checking and initialization will run on task_runner.
   static scoped_refptr<ConnectivityCheckerImpl> Create(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      network::NetworkConnectionTracker* network_connection_tracker,
+      TimeSyncTracker* time_sync_tracker);
 
   // ConnectivityChecker implementation:
   bool Connected() const override;
@@ -51,7 +54,8 @@ class ConnectivityCheckerImpl
  protected:
   explicit ConnectivityCheckerImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      network::NetworkConnectionTracker* network_connection_tracker,
+      TimeSyncTracker* time_sync_tracker);
   ~ConnectivityCheckerImpl() override;
 
  private:
@@ -62,6 +66,9 @@ class ConnectivityCheckerImpl
   // network::NetworkConnectionTracker::NetworkConnectionObserver
   // implementation:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
+
+  // TimeSyncTracker::Observer implementation:
+  void OnTimeSynced() override;
 
   void OnConnectionChangedInternal();
 
@@ -93,11 +100,17 @@ class ConnectivityCheckerImpl
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
+  TimeSyncTracker* const time_sync_tracker_;
 
   // connected_lock_ protects access to connected_ which is shared across
   // threads.
   mutable base::Lock connected_lock_;
-  bool connected_;
+  // Represents that the device has network connectivity and that time has
+  // synced.
+  bool connected_and_time_synced_;
+
+  // If the device has network connectivity.
+  bool network_connected_;
 
   network::mojom::ConnectionType connection_type_;
   // Number of connectivity check errors.

@@ -15,6 +15,7 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/net/net_switches.h"
+#include "chromecast/net/time_sync_tracker.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
@@ -67,11 +68,13 @@ scoped_refptr<ConnectivityCheckerImpl> ConnectivityCheckerImpl::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker) {
+    network::NetworkConnectionTracker* network_connection_tracker,
+    TimeSyncTracker* time_sync_tracker) {
   DCHECK(task_runner);
 
   auto connectivity_checker = base::WrapRefCounted(
-      new ConnectivityCheckerImpl(task_runner, network_connection_tracker));
+      new ConnectivityCheckerImpl(task_runner, network_connection_tracker,
+                                  time_sync_tracker));
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::Initialize, connectivity_checker,
@@ -81,11 +84,14 @@ scoped_refptr<ConnectivityCheckerImpl> ConnectivityCheckerImpl::Create(
 
 ConnectivityCheckerImpl::ConnectivityCheckerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    network::NetworkConnectionTracker* network_connection_tracker)
+    network::NetworkConnectionTracker* network_connection_tracker,
+    TimeSyncTracker* time_sync_tracker)
     : ConnectivityChecker(task_runner),
       task_runner_(std::move(task_runner)),
       network_connection_tracker_(network_connection_tracker),
-      connected_(false),
+      time_sync_tracker_(time_sync_tracker),
+      connected_and_time_synced_(false),
+      network_connected_(false),
       connection_type_(network::mojom::ConnectionType::CONNECTION_NONE),
       check_errors_(0),
       network_changed_pending_(false),
@@ -93,6 +99,10 @@ ConnectivityCheckerImpl::ConnectivityCheckerImpl(
   DCHECK(task_runner_);
   DCHECK(network_connection_tracker_);
   weak_this_ = weak_factory_.GetWeakPtr();
+
+  if (time_sync_tracker_) {
+    time_sync_tracker_->AddObserver(this);
+  }
 }
 
 void ConnectivityCheckerImpl::Initialize(
@@ -122,17 +132,27 @@ ConnectivityCheckerImpl::~ConnectivityCheckerImpl() {
 
 bool ConnectivityCheckerImpl::Connected() const {
   base::AutoLock auto_lock(connected_lock_);
-  return connected_;
+  return connected_and_time_synced_;
 }
 
 void ConnectivityCheckerImpl::SetConnected(bool connected) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock auto_lock(connected_lock_);
-    if (connected_ == connected) {
+    network_connected_ = connected;
+
+    // If a time_sync_tracker is not provided, is it assumed that network
+    // connectivity is equivalent to time being synced.
+    bool connected_and_time_synced = network_connected_;
+    if (time_sync_tracker_) {
+      connected_and_time_synced &= time_sync_tracker_->IsTimeSynced();
+    }
+
+    if (connected_and_time_synced_ == connected_and_time_synced) {
       return;
     }
-    connected_ = connected;
+
+    connected_and_time_synced_ = connected_and_time_synced;
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -140,12 +160,14 @@ void ConnectivityCheckerImpl::SetConnected(bool connected) {
       command_line->GetSwitchValueNative(switches::kConnectivityCheckUrl);
   if (check_url_str.empty()) {
     connectivity_check_url_.reset(new GURL(
-      connected ? kHttpConnectivityCheckUrl : kDefaultConnectivityCheckUrl));
+      connected_and_time_synced_ ? kHttpConnectivityCheckUrl
+                                 : kDefaultConnectivityCheckUrl));
     LOG(INFO) << "Change check url=" << *connectivity_check_url_;
   }
 
-  Notify(connected);
-  LOG(INFO) << "Global connection is: " << (connected ? "Up" : "Down");
+  Notify(connected_and_time_synced_);
+  LOG(INFO) << "Global connection is: "
+            << (connected_and_time_synced_ ? "Up" : "Down");
 }
 
 void ConnectivityCheckerImpl::Check() {
@@ -230,6 +252,10 @@ void ConnectivityCheckerImpl::OnConnectionChangedInternal() {
   Check();
 }
 
+void ConnectivityCheckerImpl::OnTimeSynced() {
+  SetConnected(network_connected_);
+}
+
 void ConnectivityCheckerImpl::OnConnectivityCheckComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -254,6 +280,9 @@ void ConnectivityCheckerImpl::OnConnectivityCheckComplete(
     DVLOG(1) << "Connectivity check succeeded";
     check_errors_ = 0;
     SetConnected(true);
+    if (time_sync_tracker_) {
+      time_sync_tracker_->OnNetworkConnected();
+    }
     // Some products don't have an idle screen that makes periodic network
     // requests. Schedule another check to ensure connectivity hasn't dropped.
     task_runner_->PostDelayedTask(
@@ -271,7 +300,7 @@ void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
   ++check_errors_;
   if (check_errors_ > kNumErrorsToNotifyOffline) {
     // Only record event on the connectivity transition.
-    if (connected_) {
+    if (connected_and_time_synced_) {
       metrics::CastMetricsHelper::GetInstance()->RecordEventWithValue(
           kMetricNameNetworkConnectivityCheckingErrorType,
           static_cast<int>(type));

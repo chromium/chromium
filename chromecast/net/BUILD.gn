@@ -46,6 +46,23 @@ cast_source_set("net_switches") {
   ]
 }
 
+cast_source_set("time_sync_tracker") {
+  sources = [
+    "time_sync_tracker.cc",
+    "time_sync_tracker.h",
+  ]
+  deps = [
+    "//base",
+  ]
+
+  if (is_fuchsia) {
+    sources += [
+      "time_sync_tracker_fuchsia.cc",
+      "time_sync_tracker_fuchsia.h",
+    ]
+  }
+}
+
 cast_source_set("connectivity_checker") {
   sources = [
     "connectivity_checker.cc",
@@ -57,6 +74,7 @@ cast_source_set("connectivity_checker") {
   ]
   deps = [
     ":net_switches",
+    ":time_sync_tracker",
     "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base/metrics",
