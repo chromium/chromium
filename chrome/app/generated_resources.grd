@@ -5689,7 +5689,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Edit Bookmark
         </message>
         <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
-          Read Later
+          Add to Reading List
         </message>
         <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
           Mark as Read
@@ -5703,7 +5703,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Edit bookmark
         </message>
         <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
-          Read later
+          Add to reading list
         </message>
         <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
           Mark as read
@@ -6657,8 +6657,8 @@ the Bookmarks menu.">
         </message>
         <message name="IDS_TAB_CXMENU_READ_LATER" desc="The label of the tab context menu item for adding one or more tabs to Read later.">
           {NUM_TABS, plural,
-          =1 {Read tab later}
-          other {Read tabs later}}
+          =1 {Add tab to reading list}
+          other {Add tabs to reading list}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_GROUP" desc="The label of the tab context menu submenu for adding one or more tabs to either a new group or an existing tab group. NOTE: If having no explicit # makes the phrasing awkward, feel free to add a # as necessary. [ICU Syntax]">
           {NUM_TABS, plural,
@@ -6729,8 +6729,8 @@ the Bookmarks menu.">
         </message>
         <message name="IDS_TAB_CXMENU_READ_LATER" desc="In Title Case: The label of the tab context menu item for adding one or more tabs to Read later.">
           {NUM_TABS, plural,
-          =1 {Read Tab Later}
-          other {Read Tabs Later}}
+          =1 {Add Tab to Reading List}
+          other {Add Tabs to Reading List}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_GROUP" desc="In Title Case: The label of the tab context menu submenu for adding one or more tabs to either a new group or an existing tab group. NOTE: If having no explicit # makes the phrasing awkward, feel free to add a # as necessary. [ICU Syntax]">
           {NUM_TABS, plural,
