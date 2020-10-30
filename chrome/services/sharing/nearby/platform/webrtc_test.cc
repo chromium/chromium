@@ -66,7 +66,7 @@ class WebRtcMediumTest : public ::testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   testing::NiceMock<sharing::MockWebRtcDependencies> mojo_impl_;
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
@@ -178,6 +178,12 @@ TEST_F(WebRtcMediumTest, GetMessenger_StartAndStopReceivingMessages) {
             remote.Bind(std::move(listener));
             remote->OnMessage(std::string(message));
           }));
+  EXPECT_CALL(GetMockWebRtcDependencies(), StopReceivingMessages())
+      .WillRepeatedly(testing::Invoke([&]() {
+        if (remote.is_bound()) {
+          remote.reset();
+        }
+      }));
 
   // TODO(https://crbug.com/1142001): Test with non-trivial |location_hint|.
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
@@ -194,10 +200,9 @@ TEST_F(WebRtcMediumTest, GetMessenger_StartAndStopReceivingMessages) {
   EXPECT_TRUE(remote.is_connected());
 
   messenger->StopReceivingMessages();
-
   // Run mojo disconnect handlers.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(remote.is_connected());
+  EXPECT_FALSE(remote.is_bound());
 }
 
 TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
