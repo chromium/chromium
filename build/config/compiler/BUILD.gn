@@ -1569,6 +1569,11 @@ config("default_warnings") {
           "-Wno-implicit-fallthrough",
         ]
 
+        if (is_ios) {
+          # TODO(https://crbug.com/1143700): Clean up and re-enable.
+          cflags_objc = [ "-Wno-gnu-folding-constant" ]
+        }
+
         if (enable_wmax_tokens) {
           cflags += [ "-Wmax-tokens" ]
         } else {
