@@ -609,6 +609,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
     child_iterator = NGBlockChildIterator(NGBlockNode(nullptr), nullptr);
 
   NGLayoutInputNode ruby_text_child(nullptr);
+  NGBlockNode placeholder_child(nullptr);
   for (auto entry = child_iterator.NextChild();
        NGLayoutInputNode child = entry.node;
        entry = child_iterator.NextChild(previous_inline_break_token.get())) {
@@ -653,8 +654,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
     } else if (IsRubyText(child)) {
       ruby_text_child = child;
     } else if (child.IsTextControlPlaceholder()) {
-      HandleTextControlPlaceholder(To<NGBlockNode>(child),
-                                   previous_inflow_position);
+      placeholder_child = To<NGBlockNode>(child);
     } else {
       // If this is the child we had previously determined to break before, do
       // so now and finish layout.
@@ -713,6 +713,8 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
 
   if (ruby_text_child)
     LayoutRubyText(&ruby_text_child);
+  if (placeholder_child)
+    HandleTextControlPlaceholder(placeholder_child, previous_inflow_position);
 
   if (UNLIKELY(ConstraintSpace().IsNewFormattingContext() &&
                !ignore_line_clamp_ && lines_until_clamp_ == 0 &&
@@ -2979,6 +2981,8 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
       ChildAvailableSize(), is_new_fc);
 
   scoped_refptr<const NGLayoutResult> result = placeholder.Layout(space);
+  // TODO(crbug.com/1040826): For LayoutNGTextControlSingleLine, we should
+  // compute the placeholder position from the baseline of the last child.
   container_builder_.AddResult(*result, BorderScrollbarPadding().StartOffset());
   // This function doesn't update previous_inflow_position. Other children in
   // this container should ignore |placeholder|.

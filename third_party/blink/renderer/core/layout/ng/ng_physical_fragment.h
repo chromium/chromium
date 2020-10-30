@@ -171,6 +171,8 @@ class CORE_EXPORT NGPhysicalFragment
            !layout_object_->IsTableCellLegacy();
   }
 
+  bool IsTextControlPlaceholder() const;
+
   // Return true if this fragment is a container established by a fieldset
   // element. Such a fragment contains an optional rendered legend fragment and
   // an optional fieldset contents wrapper fragment (which holds everything

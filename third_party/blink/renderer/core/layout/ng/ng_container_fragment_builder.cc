@@ -181,6 +181,17 @@ void NGContainerFragmentBuilder::AddChildInternal(
     return;
   }
 
+  if (child->IsTextControlPlaceholder()) {
+    // ::placeholder should be followed by another block in order to paint
+    // ::placeholder earlier.
+    const wtf_size_t size = children_.size();
+    if (size > 0) {
+      children_.insert(size - 1,
+                       ChildWithOffset(child_offset, std::move(child)));
+      return;
+    }
+  }
+
   children_.emplace_back(child_offset, std::move(child));
 }
 

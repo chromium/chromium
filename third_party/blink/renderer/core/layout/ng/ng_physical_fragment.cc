@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
@@ -374,6 +375,10 @@ void NGPhysicalFragment::Destroy() const {
 
 bool NGPhysicalFragment::IsBlockFlow() const {
   return !IsLineBox() && layout_object_->IsLayoutBlockFlow();
+}
+
+bool NGPhysicalFragment::IsTextControlPlaceholder() const {
+  return blink::IsTextControlPlaceholder(layout_object_->GetNode());
 }
 
 bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
