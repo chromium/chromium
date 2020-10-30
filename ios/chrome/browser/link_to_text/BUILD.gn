@@ -8,6 +8,9 @@ source_set("link_to_text") {
     "link_to_text_tab_helper.mm",
     "shared_highlight.h",
   ]
-  deps = [ "//ios/web/public" ]
+  deps = [
+    "//ios/chrome/browser/tabs",
+    "//ios/web/public",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

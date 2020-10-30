@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_delegate.h"
 
+@protocol ActivityServiceCommands;
 class WebStateList;
 
 // Mediator that mediates between the browser container views and the
@@ -17,8 +18,9 @@ class WebStateList;
 
 // Initializer for a mediator. |webStateList| is the WebStateList for the
 // Browser whose content is shown within the BrowserContainerConsumer. It must
-// be non-null.
+// be non-null. |handler| is the handler for ActivityServiceCommands.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                             handler:(id<ActivityServiceCommands>)handler
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

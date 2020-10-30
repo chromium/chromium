@@ -25,7 +25,7 @@ class LinkToTextTabHelper : public web::WebStateObserver,
 
   // Synchronously calls the JavaScript to generate a URL linking to the current
   // selected text. Returns the generated URL along with the selected text.
-  SharedHighlight GetLinkToSelectedTextAndQuote();
+  SharedHighlight GetSharedHighlight();
 
  private:
   friend class web::WebStateUserData<LinkToTextTabHelper>;

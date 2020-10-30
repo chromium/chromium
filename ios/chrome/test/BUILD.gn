@@ -266,6 +266,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/infobars:unit_tests",
     "//ios/chrome/browser/ui/infobars/banners:unit_tests",
     "//ios/chrome/browser/ui/keyboard:unit_tests",
+    "//ios/chrome/browser/ui/link_to_text:unit_tests",
     "//ios/chrome/browser/ui/list_model:unit_tests",
     "//ios/chrome/browser/ui/location_bar:unit_tests",
     "//ios/chrome/browser/ui/main:unit_tests",

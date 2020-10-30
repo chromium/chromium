@@ -38151,6 +38151,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Bookmarks Entry"/>
   <int value="5" label="Most Visited Tile"/>
   <int value="6" label="Recent Tabs Entry"/>
+  <int value="7" label="Shared Highlight"/>
 </enum>
 
 <enum name="IOSAppState">

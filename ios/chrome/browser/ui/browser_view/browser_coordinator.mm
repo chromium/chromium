@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
@@ -208,25 +209,25 @@
     return;
 
   DCHECK(!self.viewController);
+
+  // Add commands protocols handled by this class in this array to let the
+  // dispatcher know where to dispatch such commands. This must be done before
+  // starting any child coordinator, otherwise they won't be able to resolve
+  // handlers.
+  NSArray<Protocol*>* protocols = @[
+    @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
+    @protocol(FindInPageCommands), @protocol(PageInfoCommands),
+    @protocol(PasswordBreachCommands), @protocol(TextZoomCommands),
+    @protocol(WhatsNewCommands)
+  ];
+
+  for (Protocol* protocol in protocols) {
+    [self.dispatcher startDispatchingToTarget:self forProtocol:protocol];
+  }
+
   [self startBrowserContainer];
-  [self.dispatcher startDispatchingToTarget:self
-                                forProtocol:@protocol(TextZoomCommands)];
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(WhatsNewCommands)];
-  [self.dispatcher startDispatchingToTarget:self
-                                forProtocol:@protocol(FindInPageCommands)];
   [self createViewController];
   [self startChildCoordinators];
-  [self.dispatcher startDispatchingToTarget:self
-                                forProtocol:@protocol(ActivityServiceCommands)];
-  [self.dispatcher
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(BrowserCoordinatorCommands)];
-  [self.dispatcher startDispatchingToTarget:self
-                                forProtocol:@protocol(PageInfoCommands)];
-  [self.dispatcher startDispatchingToTarget:self
-                                forProtocol:@protocol(PasswordBreachCommands)];
   [self installDelegatesForAllWebStates];
   [self installDelegatesForBrowser];
   [self addWebStateListObserver];
@@ -475,6 +476,25 @@
 
   ActivityParams* params = [[ActivityParams alloc]
       initWithScenario:ActivityScenario::TabShareButton];
+
+  self.sharingCoordinator =
+      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                      params:params
+                                                  originView:shareButton];
+  [self.sharingCoordinator start];
+}
+
+- (void)shareHighlight:(ShareHighlightCommand*)command {
+  // TODO(crbug.com/1099268): Get the right share view origin.
+  UIView* shareButton =
+      [self.viewController.activityServicePositioner shareButtonView];
+
+  ActivityParams* params =
+      [[ActivityParams alloc] initWithURL:command.URL
+                                    title:command.title
+                           additionalText:command.selectedText
+                                 scenario:ActivityScenario::SharedHighlight];
 
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
