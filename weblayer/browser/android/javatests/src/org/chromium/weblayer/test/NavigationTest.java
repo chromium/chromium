@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -995,6 +996,7 @@ public class NavigationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1144246")
     @MinWebLayerVersion(87)
     public void testWebResponseCached() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
@@ -1014,6 +1016,7 @@ public class NavigationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1144246")
     @MinWebLayerVersion(87)
     public void testWebResponseCachedWithSniffedMimeType() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
