@@ -173,6 +173,7 @@ public class ReturnToChromeTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
             + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1) // See https://crbug.com/1091268.
+    @DisabledTest(message="https://crbug.com/1144184")
     public void testTabSwitcherModeNotTriggeredWithinThreshold_NTP() throws Exception {
         // clang-format on
         InstantStartTest.createTabStateFile(new int[] {0, 1});
