@@ -3563,13 +3563,8 @@ TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
   base::string16 sid = OLE2W(sid_str);
 
   if (cloud_policies_enabled) {
-    base::string16 fetch_time_millis = L"0";
-    if (policy_refreshed_recently) {
-      fetch_time_millis = base::NumberToString16(
-          base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds());
-    }
-    ASSERT_EQ(S_OK, SetUserProperty(sid, L"last_policy_refresh_time",
-                                    fetch_time_millis));
+    fake_user_policies_manager.SetUserPolicyStaleOrMissing(
+        sid, !policy_refreshed_recently);
 
     std::string expected_response;
     if (fail_fetch_policies) {

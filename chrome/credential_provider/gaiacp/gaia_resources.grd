@@ -152,6 +152,9 @@
       <message name="IDS_REAUTH_ONLINE_LOGIN_ENFORCED_DESCRIPTION" desc="">
         Sign in with your work account
       </message>
+      <message name="IDS_REAUTH_MISSING_POLICIES_DESCRIPTION" desc="">
+        Sign in with your work account
+      </message>
       <message name="IDS_AUTH_FID_PROVIDER_LABEL" desc="">
         Add work account
       </message>
