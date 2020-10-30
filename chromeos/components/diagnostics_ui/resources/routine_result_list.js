@@ -6,6 +6,7 @@ import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './routine_result_entry.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineName} from './diagnostics_types.js';
 import {ResultStatusItem} from './routine_list_executor.js'
@@ -54,6 +55,32 @@ Polymer({
    */
   addRoutine_(routine) {
     this.push('results_', new ResultStatusItem(routine));
+  },
+
+  /**
+   * Updates the routine's status in the results_ list.
+   * @param {number} index
+   * @param {!ResultStatusItem} status
+   * @private
+   */
+  updateRoutineStatus_(index, status) {
+    assert(index < this.results_.length);
+    this.splice('results_', index, 1, status);
+  },
+
+  /**
+   * Receives the callback from RoutineListExecutor whenever the status of a
+   * routine changed.
+   * @param {!ResultStatusItem} status
+   */
+  onStatusUpdate(status) {
+    assert(this.results_.length > 0);
+    this.results_.forEach((result, index) => {
+      if (result.routine == status.routine) {
+        this.updateRoutineStatus_(index, status);
+        return;
+      }
+    });
   },
 
   /** @override */

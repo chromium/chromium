@@ -6,6 +6,8 @@ import 'chrome://diagnostics/routine_result_entry.js';
 import 'chrome://diagnostics/routine_section.js';
 
 import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
+import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
+import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
@@ -15,8 +17,17 @@ export function routineSectionTestSuite() {
   /** @type {?HTMLElement} */
   let routineSectionElement = null;
 
+  /** @type {!FakeSystemRoutineController} */
+  let routineController;
+
   setup(function() {
     PolymerTest.clearBody();
+
+    // Setup a fake routine controller so that nothing resolves unless
+    // done explicitly.
+    routineController = new FakeSystemRoutineController();
+    routineController.setDelayTimeInMillisecondsForTesting(-1);
+    setSystemRoutineControllerForTesting(routineController);
   });
 
   teardown(function() {
@@ -129,10 +140,50 @@ export function routineSectionTestSuite() {
         .then(() => {
           const entries = getEntries();
           assertEquals(routines.length, entries.length);
-          entries.forEach((entry, index) => {
-            assertEquals(routines[index], entry.item.routine);
-            assertEquals(ExecutionProgress.kNotStarted, entry.item.progress);
-          });
+
+          // First routine should be running.
+          assertEquals(routines[0], entries[0].item.routine);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Second routine is not started.
+          assertEquals(routines[1], entries[1].item.routine);
+          assertEquals(ExecutionProgress.kNotStarted, entries[1].item.progress);
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          const entries = getEntries();
+          assertEquals(routines.length, entries.length);
+
+          // First routine should be completed.
+          assertEquals(routines[0], entries[0].item.routine);
+          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+
+          // Second routine should be running.
+          assertEquals(routines[1], entries[1].item.routine);
+          assertEquals(ExecutionProgress.kRunning, entries[1].item.progress);
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          const entries = getEntries();
+          assertEquals(routines.length, entries.length);
+
+          // First routine should be completed.
+          assertEquals(routines[0], entries[0].item.routine);
+          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+
+          // Second routine should be completed.
+          assertEquals(routines[1], entries[1].item.routine);
+          assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
         });
   });
 }

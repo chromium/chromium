@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/routine_result_list.js';
 
-import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
+import {RoutineName, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
@@ -109,5 +109,83 @@ export function routineResultListTestSuite() {
           // List is empty after clearing.
           assertEquals(0, getEntries().length);
         });
+  });
+
+  test('VerifyStatusUpdates', () => {
+    /** @type {!Array<!RoutineName>} */
+    const routines = [
+      RoutineName.kCpuCache,
+      RoutineName.kFloatingPoint,
+    ];
+
+    return initializeRoutineResultList(routines).then(() => {
+      // Verify the starting state.
+      assertEquals(routines.length, getEntries().length);
+      getEntries().forEach((entry, index) => {
+        // Routines are initialized in the unstarted state.
+        let status = new ResultStatusItem(routines[index]);
+        status.progress = ExecutionProgress.kNotStarted;
+        assertDeepEquals(status, entry.item);
+      });
+
+      let status = new ResultStatusItem(routines[0]);
+      status.progress = ExecutionProgress.kRunning;
+      routineResultListElement.onStatusUpdate(status);
+      return flushTasks()
+          .then(() => {
+            // Verify first routine is running.
+            assertEquals(
+                ExecutionProgress.kRunning, getEntries()[0].item.progress);
+            assertEquals(null, getEntries()[0].item.result);
+
+            // Move the first routine to completed state.
+            status = new ResultStatusItem(routines[0]);
+            status.progress = ExecutionProgress.kCompleted;
+            status.result = {simple_result: StandardRoutineResult.kTestPassed};
+            routineResultListElement.onStatusUpdate(status);
+
+            return flushTasks();
+          })
+          .then(() => {
+            // Verify the first routine is completed.
+            assertEquals(
+                ExecutionProgress.kCompleted, getEntries()[0].item.progress);
+            assertNotEquals(null, getEntries()[0].item.result);
+            assertEquals(
+                StandardRoutineResult.kTestPassed,
+                getEntries()[0].item.result.simple_result);
+
+            status = new ResultStatusItem(routines[1]);
+            status.progress = ExecutionProgress.kRunning;
+            routineResultListElement.onStatusUpdate(status);
+
+            return flushTasks();
+          })
+          .then(() => {
+            // Verify second routine is running.
+            assertEquals(
+                ExecutionProgress.kRunning, getEntries()[1].item.progress);
+            assertEquals(null, getEntries()[1].item.result);
+
+            // Move the second routine to completed state.
+            status = new ResultStatusItem(routines[1]);
+            status.progress = ExecutionProgress.kCompleted;
+            status.result = {simple_result: StandardRoutineResult.kTestPassed};
+            routineResultListElement.onStatusUpdate(status);
+
+            return flushTasks();
+          })
+          .then(() => {
+            // Verify the second routine is completed.
+            assertEquals(
+                ExecutionProgress.kCompleted, getEntries()[1].item.progress);
+            assertNotEquals(null, getEntries()[1].item.result);
+            assertEquals(
+                StandardRoutineResult.kTestPassed,
+                getEntries()[0].item.result.simple_result);
+
+            return flushTasks();
+          });
+    });
   });
 }

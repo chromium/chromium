@@ -9,6 +9,8 @@ import './routine_result_list.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineName} from './diagnostics_types.js';
+import {getSystemRoutineController} from './mojo_interface_provider.js';
+import {RoutineListExecutor} from './routine_list_executor.js'
 
 /**
  * @fileoverview
@@ -20,6 +22,11 @@ Polymer({
   is: 'routine-section',
 
   _template: html`{__html_template__}`,
+
+  /**
+   * @private {?RoutineListExecutor}
+   */
+  executor_: null,
 
   properties: {
     /** @type {!Array<!RoutineName>} */
@@ -38,13 +45,23 @@ Polymer({
   /** @private */
   onRunTestsClicked_() {
     this.isRunTestsDisabled_ = true;
-    this.getListElem_().initializeTestRun(this.routines);
+    const resultListElem = this.getResultListElem_();
+    resultListElem.initializeTestRun(this.routines);
 
-    // TODO(zentaro): Run tests which will also reenable button on completion.
+    this.executor_ = new RoutineListExecutor(getSystemRoutineController());
+    this.executor_
+        .runRoutines(
+            this.routines, resultListElem.onStatusUpdate.bind(resultListElem))
+        .then(() => {
+          this.isRunTestsDisabled_ = false;
+        });
   },
 
-  /** @return {!HTMLElement} */
-  getListElem_() {
+  /**
+   * @return {!HTMLElement}
+   * @private
+   **/
+  getResultListElem_() {
     return /** @type {!HTMLElement} */ (this.$$('routine-result-list'));
   },
 
