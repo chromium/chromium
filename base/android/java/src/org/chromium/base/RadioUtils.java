@@ -4,12 +4,15 @@
 
 package org.chromium.base;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Build;
+import android.os.Process;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 
@@ -21,15 +24,47 @@ import org.chromium.base.annotations.JNINamespace;
  */
 @JNINamespace("base::android")
 public class RadioUtils {
+    // Cached value indicating if app has ACCESS_NETWORK_STATE permission.
+    private static Boolean sHaveAccessNetworkState;
+    // Cached value indicating if app has ACCESS_WIFI_STATE permission.
+    private static Boolean sHaveAccessWifiState;
+
     private RadioUtils() {}
 
     /**
-     * Return whether the current SDK supports necessary functions.
+     * Return whether the current SDK supports necessary functions and the app
+     * has necessary permissions.
      * @return True or false.
      */
     @CalledByNative
     private static boolean isSupported() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && haveAccessNetworkState()
+                && haveAccessWifiState();
+    }
+
+    private static boolean haveAccessNetworkState() {
+        // This could be racy if called on multiple threads, but races will
+        // end in the same result so it's not a problem.
+        if (sHaveAccessNetworkState == null) {
+            sHaveAccessNetworkState =
+                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
+                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),
+                            Process.myUid())
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+        return sHaveAccessNetworkState;
+    }
+
+    private static boolean haveAccessWifiState() {
+        // This could be racy if called on multiple threads, but races will
+        // end in the same result so it's not a problem.
+        if (sHaveAccessWifiState == null) {
+            sHaveAccessWifiState =
+                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
+                            Manifest.permission.ACCESS_WIFI_STATE, Process.myPid(), Process.myUid())
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+        return sHaveAccessWifiState;
     }
 
     /**
