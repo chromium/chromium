@@ -873,6 +873,11 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
             }
         }
 
+        if (mDisplayCutoutController != null) {
+            mDisplayCutoutController.destroy();
+            mDisplayCutoutController = null;
+        }
+
         if (mTabCallbackProxy != null) {
             mTabCallbackProxy.destroy();
             mTabCallbackProxy = null;
