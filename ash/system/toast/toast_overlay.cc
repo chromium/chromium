@@ -118,9 +118,8 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 //  ToastOverlayButton
 class ToastOverlayButton : public views::LabelButton {
  public:
-  ToastOverlayButton(views::ButtonListener* listener,
-                     const base::string16& text)
-      : views::LabelButton(listener, text, CONTEXT_TOAST_OVERLAY) {
+  ToastOverlayButton(PressedCallback callback, const base::string16& text)
+      : views::LabelButton(std::move(callback), text, CONTEXT_TOAST_OVERLAY) {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
 
@@ -163,14 +162,13 @@ class ToastOverlayButton : public views::LabelButton {
 
 ///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlayView
-class ToastOverlayView : public views::View, public views::ButtonListener {
+class ToastOverlayView : public views::View {
  public:
   // This object is not owned by the views hierarchy or by the widget.
   ToastOverlayView(ToastOverlay* overlay,
                    const base::string16& text,
                    const base::Optional<base::string16>& dismiss_text,
-                   const bool is_managed)
-      : overlay_(overlay) {
+                   const bool is_managed) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kToastCornerRounding));
@@ -198,9 +196,11 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
       return;
 
     button_ = AddChildView(std::make_unique<ToastOverlayButton>(
-        this, dismiss_text.value().empty()
-                  ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
-                  : dismiss_text.value()));
+        base::BindRepeating(&ToastOverlay::Show, base::Unretained(overlay),
+                            false),
+        dismiss_text.value().empty()
+            ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
+            : dismiss_text.value()));
 
     const int button_width =
         std::min(button_->GetPreferredSize().width(), kToastButtonMaximumWidth);
@@ -242,13 +242,6 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
     }
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK_EQ(button_, sender);
-    overlay_->Show(false);
-  }
-
-  ToastOverlay* overlay_ = nullptr;       // weak
   ToastOverlayButton* button_ = nullptr;  // weak
   views::ImageView* managed_icon_ = nullptr;
 };
