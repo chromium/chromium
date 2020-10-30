@@ -830,7 +830,7 @@ TEST(CheckedPtr2OrMTEImpl, CrashOnUseAfterFree) {
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
-  allocator.init();
+  allocator.init({});
   void* raw_ptr = allocator.root()->Alloc(sizeof(int), "int");
   // Use the actual CheckedPtr implementation, not a test substitute, to
   // exercise real PartitionAlloc paths.
@@ -851,7 +851,7 @@ TEST(CheckedPtr2OrMTEImpl, CrashOnUseAfterFree_WithOffset) {
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
-  allocator.init();
+  allocator.init({});
   const uint8_t kSize = 100;
   void* raw_ptr = allocator.root()->Alloc(kSize * sizeof(uint8_t), "uint8_t");
   // Use the actual CheckedPtr implementation, not a test substitute, to
@@ -884,7 +884,7 @@ TEST(BackupRefPtrImpl, Basic) {
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
-  allocator.init();
+  allocator.init({});
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(sizeof(uint64_t), ""));
   // Use the actual CheckedPtr implementation, not a test substitute, to
