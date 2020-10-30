@@ -180,6 +180,21 @@ bool IsSiteInstanceCompatibleWithCoopCoepCrossOriginIsolation(
   return true;
 }
 
+// Helper for appending more information to the optional |reason| parameter
+// that some of the RenderFrameHostManager's methods expose for debugging /
+// diagnostic purposes.
+void AppendReason(std::string* reason, const char* value) {
+  if (!reason)
+    return;
+
+  if (!reason->empty())
+    reason->append("; ");
+  reason->append(value);
+
+  DCHECK_LT(reason->size(),
+            static_cast<size_t>(base::debug::CrashKeySize::Size256));
+}
+
 }  // namespace
 
 RenderFrameHostManager::RenderFrameHostManager(FrameTreeNode* frame_tree_node,
@@ -683,7 +698,8 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
 }
 
 RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
-    NavigationRequest* request) {
+    NavigationRequest* request,
+    std::string* reason) {
   DCHECK(!request->common_params().url.SchemeIs(url::kJavaScriptScheme))
       << "Don't call this method for JavaScript URLs as those create a "
          "temporary  NavigationRequest and we don't want to reset an ongoing "
@@ -708,7 +724,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   SiteInstance* current_site_instance = render_frame_host_->GetSiteInstance();
   BrowserContext* browser_context = current_site_instance->GetBrowserContext();
   scoped_refptr<SiteInstance> dest_site_instance =
-      GetSiteInstanceForNavigationRequest(request);
+      GetSiteInstanceForNavigationRequest(request, reason);
 
   // A subframe should always be in the same BrowsingInstance as the parent
   // (see also https://crbug.com/1107269).
@@ -1490,7 +1506,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     bool cross_origin_opener_policy_mismatch,
     bool should_replace_current_entry,
     bool is_speculative,
-    bool* did_same_site_proactive_browsing_instance_swap) {
+    bool* did_same_site_proactive_browsing_instance_swap,
+    std::string* reason) {
   const GURL& dest_url = dest_url_info.url;
   // Make sure |did_same_site_proactive_browsing_instance_swap| is initialized
   // to false at first, as the function might return early before setting this
@@ -1507,8 +1524,11 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   SiteInstance* current_instance = render_frame_host_->GetSiteInstance();
 
   // We do not currently swap processes for navigations in webview tag guests.
-  if (current_instance->IsGuest())
+  if (current_instance->IsGuest()) {
+    AppendReason(reason,
+                 "GetSiteInstanceForNavigation => current_instance (IsGuest)");
     return current_instance;
+  }
 
   // Determine if we need a new BrowsingInstance for this entry.  If true, this
   // implies that it will get a new SiteInstance (and likely process), and that
@@ -1570,7 +1590,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       dest_url_info, cross_origin_isolated_info, source_instance,
       current_instance, dest_instance, transition, is_failure, dest_is_restore,
       dest_is_view_source_mode, should_swap, was_server_redirect,
-      is_speculative);
+      is_speculative, reason);
 
   scoped_refptr<SiteInstance> new_instance = ConvertToSiteInstance(
       new_instance_descriptor, candidate_instance, is_speculative);
@@ -1739,7 +1759,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     bool dest_is_view_source_mode,
     bool force_browsing_instance_swap,
     bool was_server_redirect,
-    bool is_speculative) {
+    bool is_speculative,
+    std::string* reason) {
   // Note that this function should return SiteInstance with
   // SiteInstanceRelation::UNRELATED relation to |current_instance| iff
   // |force_browsing_instance_swap| is true. All cases that result in an
@@ -1776,6 +1797,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
             CHECK(!dest_instance->IsRelatedSiteInstance(
                 render_frame_host_->GetSiteInstance()));
           }
+          AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
           return SiteInstanceDescriptor(dest_instance);
         }
       }
@@ -1792,6 +1814,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // in the same BrowsingInstance to preserve scripting relationships after
     // reloads. In UrlInfo below we use 'false' for |origin_requests_isolation|
     // since error pages cannot request origin isolation.
+    AppendReason(reason, "DetermineSiteInstanceForURL => error-instance");
     return SiteInstanceDescriptor(
         UrlInfo(GURL(kUnreachableWebDataURL),
                 false /* origin_requests_isolation */),
@@ -1803,6 +1826,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // If a swap is required, we need to force the SiteInstance AND
   // BrowsingInstance to be different ones, using CreateForURL.
   if (force_browsing_instance_swap) {
+    AppendReason(reason,
+                 "DetermineSiteInstanceForURL / browsing-instance-swap");
     return SiteInstanceDescriptor(dest_url_info,
                                   SiteInstanceRelation::UNRELATED,
                                   cross_origin_isolated_info);
@@ -1818,6 +1843,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
             dest_url_info.url, parent_site_instance)) {
       // NTP does not define COOP/COEP.
       DCHECK(!cross_origin_isolated_info.is_isolated());
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL => parent_site_instance");
       return SiteInstanceDescriptor(parent_site_instance);
     }
   }
@@ -1829,6 +1856,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   if (CanUseSourceSiteInstance(dest_url_info.url, source_instance,
                                was_server_redirect, is_failure,
                                cross_origin_isolated_info, is_speculative)) {
+    AppendReason(reason, "DetermineSiteInstanceForURL => source_instance");
     return SiteInstanceDescriptor(source_instance);
   }
 
@@ -1870,6 +1898,9 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
     if (current_instance_impl->HasRelatedSiteInstance(dest_site_info) ||
         use_process_per_site) {
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL / !current->HasSite / "
+                   "has-related-site-instance-or-using-process-per-site");
       return SiteInstanceDescriptor(
           dest_url_info, SiteInstanceRelation::RELATED,
           CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
@@ -1880,6 +1911,9 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // will have a non-privileged RenderProcessHost. Create a new SiteInstance
     // for this URL instead (with the correct process type).
     if (!current_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL / !current->HasSite / "
+                   "!current_instance->IsSuitable");
       return SiteInstanceDescriptor(
           dest_url_info, SiteInstanceRelation::RELATED,
           CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
@@ -1904,6 +1938,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
       current_instance_impl->ConvertToDefaultOrSetSite(dest_url_info);
     }
 
+    AppendReason(reason,
+                 "DetermineSiteInstanceForURL => current_instance_impl");
     return SiteInstanceDescriptor(current_instance_impl);
   }
 
@@ -1914,6 +1950,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
           render_frame_host_->GetSiteInstance(),
           frame_tree_node_->IsMainFrame(), dest_url_info.url,
           cross_origin_isolated_info, is_speculative)) {
+    AppendReason(reason, "DetermineSiteInstanceForURL / same-site-navigation");
     return SiteInstanceDescriptor(render_frame_host_->GetSiteInstance());
   }
 
@@ -1936,18 +1973,29 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     RenderFrameHostImpl* main_frame =
         frame_tree_node_->frame_tree()->root()->current_frame_host();
     if (IsCandidateSameSite(main_frame, dest_url_info,
-                            cross_origin_isolated_info))
+                            cross_origin_isolated_info)) {
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL / subframe-reuse => "
+                   "main-frame-instance");
       return SiteInstanceDescriptor(main_frame->GetSiteInstance());
+    }
     RenderFrameHostImpl* parent = frame_tree_node_->parent();
-    if (IsCandidateSameSite(parent, dest_url_info, cross_origin_isolated_info))
+    if (IsCandidateSameSite(parent, dest_url_info,
+                            cross_origin_isolated_info)) {
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL / subframe-reuse => "
+                   "parent-instance");
       return SiteInstanceDescriptor(parent->GetSiteInstance());
+    }
   }
   if (frame_tree_node_->opener()) {
     RenderFrameHostImpl* opener_frame =
         frame_tree_node_->opener()->current_frame_host();
     if (IsCandidateSameSite(opener_frame, dest_url_info,
-                            cross_origin_isolated_info))
+                            cross_origin_isolated_info)) {
+      AppendReason(reason, "DetermineSiteInstanceForURL => opener-instance");
       return SiteInstanceDescriptor(opener_frame->GetSiteInstance());
+    }
   }
 
   // Keep subframes in the parent's SiteInstance unless a dedicated process is
@@ -1974,6 +2022,9 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
           parent_isolation_context, dest_url_info, cross_origin_isolated_info);
       if (!parent->GetSiteInstance()->RequiresDedicatedProcess() &&
           !site_info.RequiresDedicatedProcess(parent_isolation_context)) {
+        AppendReason(reason,
+                     "DetermineSiteInstanceForURL => parent-instance"
+                     " (no-strict-site-instances)");
         return SiteInstanceDescriptor(parent->GetSiteInstance());
       }
     }
@@ -1985,9 +2036,13 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
           render_frame_host_->GetSiteInstance(),
           frame_tree_node_->IsMainFrame(), dest_url_info.url,
           cross_origin_isolated_info, is_speculative)) {
+    AppendReason(reason,
+                 "DetermineSiteInstanceForURL / fallback / coop-compatible");
     return SiteInstanceDescriptor(dest_url_info, SiteInstanceRelation::RELATED,
                                   cross_origin_isolated_info);
   } else {
+    AppendReason(
+        reason, "DetermineSiteInstanceForURL / fallback / not-coop-compatible");
     return SiteInstanceDescriptor(dest_url_info,
                                   SiteInstanceRelation::UNRELATED,
                                   cross_origin_isolated_info);
@@ -2565,20 +2620,29 @@ RenderFrameHostManager::GetCoopCoepCrossOriginIsolationInfo(
 
 scoped_refptr<SiteInstance>
 RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
-    NavigationRequest* request) {
+    NavigationRequest* request,
+    std::string* reason) {
   SiteInstance* current_site_instance = render_frame_host_->GetSiteInstance();
 
   // All children of MHTML documents must be MHTML documents. They all live in
   // the same process.
-  if (request->IsForMhtmlSubframe())
+  if (request->IsForMhtmlSubframe()) {
+    AppendReason(reason,
+                 "GetSiteInstanceForNavigationRequest => current_site_instance"
+                 " (IsForMhtmlSubframe)");
     return base::WrapRefCounted(current_site_instance);
+  }
 
   // Srcdoc documents are always in the same SiteInstance as their parent. They
   // load their content from the "srcdoc" iframe attribute which lives in the
   // parent's process.
   RenderFrameHostImpl* parent = render_frame_host_->GetParent();
-  if (parent && request->common_params().url.IsAboutSrcdoc())
+  if (parent && request->common_params().url.IsAboutSrcdoc()) {
+    AppendReason(reason,
+                 "GetSiteInstanceForNavigationRequest => parent-instance"
+                 " (IsAboutSrcdoc)");
     return base::WrapRefCounted(parent->GetSiteInstance());
+  }
 
   // Compute the SiteInstance that the navigation should use, which will be
   // either the current SiteInstance or a new one.
@@ -2611,7 +2675,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->common_params().should_replace_current_entry,
       request->state() < NavigationRequest::NavigationState::
                              WILL_REDIRECT_REQUEST /* is_speculative */,
-      &did_same_site_proactive_browsing_instance_swap);
+      &did_same_site_proactive_browsing_instance_swap, reason);
 
   // Save whether we're doing a same-site proactive BrowsingInstance swap or not
   // for this navigation. This will be used at DidCommitNavigation time for

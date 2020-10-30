@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -1398,8 +1399,18 @@ void NavigationRequest::BeginNavigation() {
     ComputeSandboxFlagsToCommit();
 
     // Select an appropriate RenderFrameHost.
+    //
+    // TODO(lukasza): https://crbug.com/1116320: Remove the ad-hoc
+    // |frame_host_choice_reason| crash key once the bug investigation
+    // completes.  Note that the crash related to crbug/1116320 is expected to
+    // happen inside the call to CommitNavigation below, a few statements down.
+    std::string frame_host_choice_reason;
     render_frame_host_ =
-        frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+        frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+            this, &frame_host_choice_reason);
+    SCOPED_CRASH_KEY_STRING256("nav_request", host_choice_reason,
+                               frame_host_choice_reason);
+
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {

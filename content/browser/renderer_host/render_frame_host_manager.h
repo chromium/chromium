@@ -326,7 +326,13 @@ class CONTENT_EXPORT RenderFrameHostManager
   // appropriate RenderFrameHost for the provided URL. The returned pointer will
   // be for the current or the speculative RenderFrameHost and the instance is
   // owned by this manager.
-  RenderFrameHostImpl* GetFrameHostForNavigation(NavigationRequest* request);
+  //
+  // |reason| is an optional out-parameter that will be populated with
+  // engineer-readable information describing the reason for the method
+  // behavior.  The returned |reason| should fit into
+  // base::debug::CrashKeySize::Size256.
+  RenderFrameHostImpl* GetFrameHostForNavigation(NavigationRequest* request,
+                                                 std::string* reason = nullptr);
 
   // Clean up any state for any ongoing navigation.
   void CleanUpNavigation();
@@ -503,8 +509,14 @@ class CONTENT_EXPORT RenderFrameHostManager
   // initialized RenderProcessHost. It will only be initialized when
   // GetProcess() is called on the SiteInstance. In particular, calling this
   // function will never lead to a process being created for the navigation.
+  //
+  // |reason| is an optional out-parameter that will be populated with
+  // engineer-readable information describing the reason for the method
+  // behavior.  The returned |reason| should fit into
+  // base::debug::CrashKeySize::Size256.
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigationRequest(
-      NavigationRequest* navigation_request);
+      NavigationRequest* navigation_request,
+      std::string* reason = nullptr);
 
   // Helper to initialize the main RenderFrame if it's not initialized.
   // TODO(https://crbug.com/936696): Remove this. For now debug URLs and
@@ -654,6 +666,8 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool should_replace_current_entry);
 
   // Returns the SiteInstance to use for the navigation.
+  //
+  // This is a helper function for GetSiteInstanceForNavigationRequest.
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigation(
       const UrlInfo& dest_url_info,
       const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
@@ -670,7 +684,8 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool cross_origin_opener_policy_mismatch,
       bool should_replace_current_entry,
       bool is_speculative,
-      bool* did_same_site_proactive_browsing_instance_swap);
+      bool* did_same_site_proactive_browsing_instance_swap,
+      std::string* reason);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given
   // |dest_url_info|, possibly reusing the current, source or destination
@@ -707,7 +722,8 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool dest_is_view_source_mode,
       bool force_browsing_instance_swap,
       bool was_server_redirect,
-      bool is_speculative);
+      bool is_speculative,
+      std::string* reason);
 
   // Returns true if a navigation to |dest_url| that uses the specified
   // PageTransition in the current frame is allowed to swap BrowsingInstances.
