@@ -5,6 +5,7 @@
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/language_picker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,7 +20,8 @@
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/close"
         android:scaleType="center"
-        android:src="@drawable/btn_close" />
+        android:src="@drawable/btn_close"
+        app:tint="@color/default_icon_color_tint_list" />
 
     <TextView
         android:id="@+id/title_view"

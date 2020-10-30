@@ -148,6 +148,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/video_tutorials/PlaybackStateObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerMediatorUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/metrics/VideoTutorialMetricsUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerMediatorUnitTest.java",
     ]
 

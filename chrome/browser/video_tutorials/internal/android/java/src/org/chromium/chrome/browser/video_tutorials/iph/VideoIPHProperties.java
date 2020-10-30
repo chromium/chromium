@@ -22,6 +22,13 @@ class VideoIPHProperties {
     public static final WritableObjectPropertyKey<String> VIDEO_LENGTH =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * Whether or not to show the video length text. Typically if the video length is zero, the
+     * view will be hidden, e.g. summary card.
+     */
+    public static final WritableBooleanPropertyKey SHOW_VIDEO_LENGTH =
+            new WritableBooleanPropertyKey();
+
     /** The thumbnail provider to supply thumbnail images. */
     public static final WritableObjectPropertyKey<AsyncImageView.Factory> THUMBNAIL_PROVIDER =
             new WritableObjectPropertyKey<>();
@@ -36,5 +43,5 @@ class VideoIPHProperties {
 
     /** All keys associated with the model. */
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBILITY, DISPLAY_TITLE,
-            VIDEO_LENGTH, THUMBNAIL_PROVIDER, CLICK_LISTENER, DISMISS_LISTENER};
+            VIDEO_LENGTH, SHOW_VIDEO_LENGTH, THUMBNAIL_PROVIDER, CLICK_LISTENER, DISMISS_LISTENER};
 }

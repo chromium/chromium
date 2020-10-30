@@ -53,6 +53,7 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
         mModel.set(VideoIPHProperties.DISPLAY_TITLE, tutorial.title);
         mModel.set(VideoIPHProperties.VIDEO_LENGTH,
                 VideoTutorialUtils.getVideoLengthString(tutorial.videoLength));
+        mModel.set(VideoIPHProperties.SHOW_VIDEO_LENGTH, tutorial.videoLength != 0);
         mModel.set(VideoIPHProperties.CLICK_LISTENER, () -> mOnClickListener.onResult(tutorial));
         mModel.set(
                 VideoIPHProperties.DISMISS_LISTENER, () -> mOnDismissListener.onResult(tutorial));

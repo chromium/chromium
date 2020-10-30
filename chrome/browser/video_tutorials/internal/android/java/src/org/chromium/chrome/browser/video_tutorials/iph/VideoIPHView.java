@@ -42,6 +42,11 @@ class VideoIPHView {
         view.setText(videoLength);
     }
 
+    private void showVideoLength(boolean show) {
+        TextView view = mCardView.findViewById(R.id.video_length);
+        view.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
     private View getThumbnailView() {
         return mCardView.findViewById(R.id.thumbnail);
     }
@@ -66,6 +71,8 @@ class VideoIPHView {
             view.setTitle(model.get(VideoIPHProperties.DISPLAY_TITLE));
         } else if (propertyKey == VideoIPHProperties.VIDEO_LENGTH) {
             view.setVideoLength(model.get(VideoIPHProperties.VIDEO_LENGTH));
+        } else if (propertyKey == VideoIPHProperties.SHOW_VIDEO_LENGTH) {
+            view.showVideoLength(model.get(VideoIPHProperties.SHOW_VIDEO_LENGTH));
         } else if (propertyKey == VideoIPHProperties.CLICK_LISTENER) {
             view.setClickListener(model.get(VideoIPHProperties.CLICK_LISTENER));
         } else if (propertyKey == VideoIPHProperties.DISMISS_LISTENER) {

@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -46,7 +47,7 @@ public class VideoPlayerViewBinderTest {
             new ActivityTestRule<>(DummyUiActivity.class);
 
     private Activity mActivity;
-    private View mMainView;
+    private VideoPlayerView mVideoPlayerView;
     private View mLoadingView;
     private View mLanguagePickerView;
     private View mControls;
@@ -67,24 +68,25 @@ public class VideoPlayerViewBinderTest {
             FrameLayout thinWebViewLayout = new FrameLayout(mActivity);
             Mockito.when(mThinWebView.getView()).thenReturn(thinWebViewLayout);
 
-            VideoPlayerView videoPlayerView = new VideoPlayerView(mActivity, mModel, mThinWebView);
-            mMainView = videoPlayerView.getView();
-            mActivity.setContentView(mMainView);
+            mVideoPlayerView = new VideoPlayerView(mActivity, mModel, mThinWebView);
+            View mainView = mVideoPlayerView.getView();
+            mActivity.setContentView(mainView);
 
-            mLanguagePickerView = mMainView.findViewById(R.id.language_picker);
-            mLoadingView = mMainView.findViewById(R.id.loading_root);
-            mControls = mMainView.findViewById(R.id.player_root);
+            mLanguagePickerView = mainView.findViewById(R.id.language_picker);
+            mLoadingView = mainView.findViewById(R.id.loading_root);
+            mControls = mainView.findViewById(R.id.player_root);
             mLanguagePickerView.setVisibility(View.GONE);
             mLoadingView.setVisibility(View.GONE);
             mControls.setVisibility(View.GONE);
             mMCP = PropertyModelChangeProcessor.create(
-                    mModel, videoPlayerView, new VideoPlayerViewBinder());
+                    mModel, mVideoPlayerView, new VideoPlayerViewBinder());
         });
     }
 
     @After
     public void tearDown() throws Exception {
         mMCP.destroy();
+        mVideoPlayerView.destroy();
     }
 
     @Test
@@ -118,9 +120,13 @@ public class VideoPlayerViewBinderTest {
     @SmallTest
     public void testTryNowButton() {
         View tryNowButton = mControls.findViewById(R.id.try_now);
+        mModel.set(VideoPlayerProperties.SHOW_TRY_NOW, false);
+        assertEquals(View.GONE, tryNowButton.getVisibility());
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW, true);
         assertEquals(View.VISIBLE, tryNowButton.getVisibility());
 
+        mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.PAUSED);
+        mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.ENDED);
         AtomicBoolean buttonClicked = new AtomicBoolean();
         mModel.set(VideoPlayerProperties.CALLBACK_TRY_NOW, () -> buttonClicked.set(true));
         tryNowButton.performClick();
@@ -132,6 +138,8 @@ public class VideoPlayerViewBinderTest {
     @SmallTest
     public void testWatchNextButton() {
         View watchNextButton = mControls.findViewById(R.id.watch_next);
+        mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, false);
+        assertEquals(View.GONE, watchNextButton.getVisibility());
         mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, true);
         assertEquals(View.VISIBLE, watchNextButton.getVisibility());
 
@@ -147,6 +155,8 @@ public class VideoPlayerViewBinderTest {
     public void testChangeLanguageButton() {
         TextView changeLanguage = mControls.findViewById(R.id.change_language);
         String languageName = "XYZ";
+        mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, false);
+        assertEquals(View.GONE, changeLanguage.getVisibility());
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, true);
         mModel.set(VideoPlayerProperties.CHANGE_LANGUAGE_BUTTON_TEXT, languageName);
         assertEquals(View.VISIBLE, changeLanguage.getVisibility());

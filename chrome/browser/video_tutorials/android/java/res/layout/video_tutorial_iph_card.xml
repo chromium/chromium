@@ -60,7 +60,9 @@
         android:layout_width="48dp"
         android:layout_alignParentEnd="true"
         android:background="?attr/selectableItemBackground"
-        android:contentDescription="@string/close" 
-        android:src="@drawable/btn_close" />
+        android:contentDescription="@string/close"
+        android:scaleType="center"
+        android:src="@drawable/btn_close"
+        app:tint="@color/default_icon_color_tint_list" />
 
 </RelativeLayout>

@@ -44,11 +44,11 @@ public class VideoTutorialUtils {
     /** @return Whether or not to show the Try Now button on the video player. */
     public static boolean shouldShowTryNow(@FeatureType int featureType) {
         switch (featureType) {
-            case FeatureType.DOWNLOAD:
             case FeatureType.SEARCH:
             case FeatureType.VOICE_SEARCH:
                 return true;
             case FeatureType.CHROME_INTRO:
+            case FeatureType.DOWNLOAD:
             default:
                 return false;
         }

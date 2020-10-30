@@ -210,7 +210,7 @@ public class VideoPlayerMediatorUnitTest {
     @Test
     public void testTryNowEnabledForFeatures() {
         Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(FeatureType.CHROME_INTRO));
-        Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.DOWNLOAD));
+        Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(FeatureType.DOWNLOAD));
         Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.SEARCH));
         Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.VOICE_SEARCH));
         Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(99));

@@ -71,6 +71,8 @@ public class PlaybackStateObserverUnitTest {
 
     @Test
     public void testPlaybackComplete() {
+        mPlaybackStateObserver.reset();
+
         long initialSystemTime = 30000L;
         PlaybackStateObserver.setCurrentSystemTimeForTesting(initialSystemTime);
         MediaPosition position = new MediaPosition(DURATION_MS, 0, 1.f, initialSystemTime);

@@ -5,6 +5,7 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/video_tutorial_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -36,7 +37,8 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/close"
             android:scaleType="center"
-            android:src="@drawable/btn_close" />
+            android:src="@drawable/btn_close"
+            app:tint="@color/default_icon_color_tint_list" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
