@@ -287,7 +287,6 @@ void AppCacheURLLoader::OnResponseBodyStreamReady(MojoResult result) {
   // TODO(ananta)
   // Add proper error handling here.
   if (result != MOJO_RESULT_OK) {
-    DCHECK(false);
     NotifyCompleted(net::ERR_FAILED);
     return;
   }
