@@ -16580,6 +16580,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="35" label="keyboardShortcutEditor"/>
   <int value="36" label="cssFlexboxFeatures"/>
   <int value="37" label="showWebVitalsInPerformancePanel"/>
+  <int value="38" label="recorder"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
