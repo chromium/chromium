@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/ntp/core_app_launcher_handler.h"
+#include "chrome/browser/ui/webui/ntp/ephemeral_guest_signin_handler.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
@@ -63,6 +64,9 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       web_ui->AddMessageHandler(
           std::make_unique<CookieControlsHandler>(profile));
     }
+  } else if (profile->IsEphemeralGuestProfile()) {
+    web_ui->AddMessageHandler(
+        std::make_unique<EphemeralGuestSigninHandler>(profile));
   }
 
   // content::URLDataSource assumes the ownership of the html source.

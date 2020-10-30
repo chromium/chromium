@@ -177,4 +177,56 @@
         When on, sites can't use cookies that track you across the web. Features on some sites may break.
       </message>
 
+      <!-- Ephemeral Guest Tab strings -->
+      <!-- TODO(crbug.com/1125474): Rename strings to *GUEST* instead of *EPHEMERAL_GUEST* once all audit is done and all instances of non-ephemeral Guest profiles are deprecated.-->
+
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_HEADING_SIGNED_OUT"
+            desc="This is a greeting message that apprears when the user opens a new ephemeral guest tab while they are signed out of chrome guest session.">
+        You’re browsing as a Guest
+      </message>
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_HEADING_SIGNED_IN"
+            desc="This is greeting message with the user's name, appears when user opens a new ephemeral guest tab while they are signed in to chrome guest session.">
+        Hi <ph name="USERNAME">%s<ex>Mariam</ex></ph>,
+        <ph name="BR">&lt;br&gt;</ph>
+        You’re browsing as a Guest
+      </message>
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_DESCRIPTION_SIGNED_OUT"
+            desc="This is a message displayed on the ephemeral guest NTP when the user is signed out of chrome guest session emphasing that no chrome profile info will be available unless the user chooses to sign in. The user can click on 'sign in' to start the sign in to chrome guest session flow.">
+        You won't see any Chrome profile's info in Guest mode. You can <ph name="LINK_BEGIN">&lt;a id="change-sign-in-status"&gt;</ph>sign in<ph name="LINK_END">&lt;/a&gt;</ph> to access your Google account info like passwords and payment methods.
+      </message>
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_SESSION_DESCRIPTION_SIGNED_IN"
+            desc="This is a message displayed on the ephemeral guest NTP when the user is signed in to chrome guest session to encourage closing all open guest windows in order to delete their browsing activity from the device in use.">
+        Close all Guest windows so your browsing activity is deleted from this device.
+      </message>
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_NOT_SAVED_SIGNED_OUT"
+            desc="A list of bullet points that appears on the ephemeral guest NTP listing data that won't be saved on the device after closing all guest windows. This shows when the user is signed out of chrome guest session.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>
+        Activity that won't stay on this device:
+        <ph name="END_BOLD">&lt;/b&gt;</ph>
+        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Pages you view in this window
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Cookies and site data
+        <ph name="END_LIST">&lt;/ul&gt;</ph>
+      </message>
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_NOT_SAVED_SIGNED_IN"
+            desc="A list of bullet points that appears on the ephemeral guest NTP listing data that won't be saved on the device after closing all guest windows. The user can click 'sign out' to sign out of the guest session. This shows when the user is signed in to chrome guest session.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>
+        Activity that won't stay on this device:
+        <ph name="END_BOLD">&lt;/b&gt;</ph>
+        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Pages you view in this window
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Cookies and site data
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Account information (<ph name="LINK_BEGIN">&lt;a id="change-sign-in-status"&gt;</ph>sign out<ph name="LINK_END">&lt;/a&gt;</ph>)
+        <ph name="END_LIST">&lt;/ul&gt;</ph>
+      </message>
+      <message name="IDS_NEW_TAB_EPHEMERAL_GUEST_SAVED"
+            desc="A list of bullet points that appears on the ephemeral guest NTP listing data that will be saved on the device after closing all guest windows.">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>
+        Your activity that stays on this device:
+        <ph name="END_BOLD">&lt;/b&gt;</ph>
+        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Any files you download in this window
+        <ph name="END_LIST">&lt;/ul&gt;</ph>
+      </message>
+
 </grit-part>

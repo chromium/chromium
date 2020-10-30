@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/scoped_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -50,6 +51,7 @@ class NTPResourceCache : public content::NotificationObserver,
   explicit NTPResourceCache(Profile* profile);
   ~NTPResourceCache() override;
 
+  base::RefCountedMemory* GetNewTabGuestHTML();
   base::RefCountedMemory* GetNewTabHTML(WindowType win_type);
   base::RefCountedMemory* GetNewTabCSS(WindowType win_type);
 
@@ -62,6 +64,28 @@ class NTPResourceCache : public content::NotificationObserver,
       Profile* profile, content::RenderProcessHost* render_host);
 
  private:
+  struct GuestNTPInfo {
+    explicit GuestNTPInfo(const char* learn_more_link,
+                          int html_idr,
+                          int heading_ids,
+                          int description_ids,
+                          int features_ids = -1,
+                          int warnings_ids = -1)
+        : learn_more_link(learn_more_link),
+          html_idr(html_idr),
+          heading_ids(heading_ids),
+          description_ids(description_ids),
+          features_ids(features_ids),
+          warnings_ids(warnings_ids) {}
+
+    const char* learn_more_link;
+    int html_idr;
+    int heading_ids;
+    int description_ids;
+    int features_ids;
+    int warnings_ids;
+  };
+
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* updated_theme) override;
 
@@ -84,7 +108,13 @@ class NTPResourceCache : public content::NotificationObserver,
   void CreateNewTabIncognitoHTML();
   void CreateNewTabIncognitoCSS();
 
-  void CreateNewTabGuestHTML();
+  scoped_refptr<base::RefCountedString> CreateNewTabGuestHTML(
+      const GuestNTPInfo& guest_ntp_info);
+  // TODO(crbug.com/1125474): Rename to CreateNewTabGuestSigned{In|Out}HTML once
+  // all audit is done and all instances of non-ephemeral Guest profiles are
+  // deprecated.
+  base::RefCountedMemory* CreateNewTabEphemeralGuestSignedInHTML();
+  base::RefCountedMemory* CreateNewTabEphemeralGuestSignedOutHTML();
 
   void SetDarkKey(base::Value* dict);
 
@@ -93,6 +123,8 @@ class NTPResourceCache : public content::NotificationObserver,
   scoped_refptr<base::RefCountedMemory> new_tab_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_guest_html_;
+  scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_in_html_;
+  scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_out_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
   content::NotificationRegistrar registrar_;

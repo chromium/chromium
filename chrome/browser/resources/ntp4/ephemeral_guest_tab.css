@@ -1,0 +1,22 @@
+/* Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * Ephemeral Guest Profile CSS.
+ * TODO(crbug.com/1125474): move styling to guest tab.css and remove this file
+ * once all instances of non-ephemeral Guest profiles are deprecated.
+ */
+
+a {
+  color: rgb(51, 103, 214);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    background: rgb(53, 54, 58);
+    color: rgb(232, 234, 237);  /* --google-grey-200 */
+  }
+  :-webkit-any(a, .learn-more-button) {
+    color: rgb(138, 180, 248);  /* --google-blue-refresh-300 */
+  }
+}

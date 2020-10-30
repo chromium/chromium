@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/supports_user_data.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -47,6 +46,7 @@ namespace signin_util {
 namespace {
 
 constexpr char kSignoutSettingKey[] = "signout_setting";
+constexpr char kGuestSignedInUserDataKey[] = "guest_signin";
 
 #if defined(CAN_DELETE_PROFILE)
 // Manager that presents the profile will be deleted dialog on the first active
@@ -258,6 +258,29 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
       break;
   }
 #endif  // !defined(OS_CHROMEOS)
+}
+
+// TODO(crbug.com/1134111): Remove GuestSignedInUserData when Ephemeral Guest
+// sign in functioncality is implemented.
+void GuestSignedInUserData::SetIsSignedIn(Profile* profile, bool is_signed_in) {
+  GuestSignedInUserData* data = GetForProfile(profile);
+  data->is_signed_in_ = is_signed_in;
+}
+
+bool GuestSignedInUserData::IsSignedIn(Profile* profile) {
+  return GetForProfile(profile)->is_signed_in_;
+}
+
+GuestSignedInUserData* GuestSignedInUserData::GetForProfile(Profile* profile) {
+  GuestSignedInUserData* data = static_cast<GuestSignedInUserData*>(
+      profile->GetUserData(kGuestSignedInUserDataKey));
+  if (!data) {
+    profile->SetUserData(kGuestSignedInUserDataKey,
+                         std::make_unique<GuestSignedInUserData>());
+    data = static_cast<GuestSignedInUserData*>(
+        profile->GetUserData(kGuestSignedInUserDataKey));
+  }
+  return data;
 }
 
 }  // namespace signin_util

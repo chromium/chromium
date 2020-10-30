@@ -1370,6 +1370,8 @@ static_library("ui") {
       "webui/ntp/cookie_controls_handler.h",
       "webui/ntp/core_app_launcher_handler.cc",
       "webui/ntp/core_app_launcher_handler.h",
+      "webui/ntp/ephemeral_guest_signin_handler.cc",
+      "webui/ntp/ephemeral_guest_signin_handler.h",
       "webui/ntp/new_tab_ui.cc",
       "webui/ntp/new_tab_ui.h",
       "webui/ntp/ntp_resource_cache.cc",
