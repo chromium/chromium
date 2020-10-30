@@ -1559,8 +1559,9 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
 
   // Only gets ime text spans when there is no selection range.
   // ie. the selection range is just a cursor position.
-  if (info.selection_start == info.selection_end) {
-    info.ime_text_spans = GetImeTextSpansAroundPosition(info.selection_start);
+  if (first_range.IsCollapsed()) {
+    info.ime_text_spans =
+        GetImeTextSpansAroundPosition(first_range.StartPosition());
   }
 
   EphemeralRange range = CompositionEphemeralRange();
@@ -1791,7 +1792,7 @@ void InputMethodController::Trace(Visitor* visitor) const {
 }
 
 WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpansAroundPosition(
-    unsigned position) const {
+    const Position& position) const {
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
   Element* target = GetDocument().FocusedElement();
   if (!target)
@@ -1805,14 +1806,12 @@ WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpansAroundPosition(
     return WebVector<ui::ImeTextSpan>();
 
   WebVector<ui::ImeTextSpan> ime_text_spans;
-  const EphemeralRange range =
-      PlainTextRange(position, position).CreateRange(*editable);
   // Only queries Suggestion markers for now.
   // This can be expanded when browser needs information for
   // other types of markers.
   const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
       node_marker_pairs = GetDocument().Markers().MarkersAroundPosition(
-          ToPositionInFlatTree(range.StartPosition()),
+          ToPositionInFlatTree(position),
           DocumentMarker::MarkerTypes::Suggestion());
 
   for (const std::pair<Member<const Text>, Member<DocumentMarker>>&
@@ -1826,6 +1825,9 @@ WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpansAroundPosition(
       const EphemeralRange& marker_ephemeral_range =
           EphemeralRange(Position(node, marker->StartOffset()),
                          Position(node, marker->EndOffset()));
+      // TODO(yosin): We should have another way to converting DOM position
+      // to offset in root editable, because root editable has big text
+      // content, |PlainTextRangeForEphemeralRange()| is slow.
       PlainTextRange marker_plain_text_range =
           PlainTextRangeForEphemeralRange(marker_ephemeral_range).second;
 
