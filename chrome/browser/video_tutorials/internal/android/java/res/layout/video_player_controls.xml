@@ -30,39 +30,48 @@
         android:scaleType="center"
         android:src="@drawable/ic_share_white_24dp" />
 
-    <View
-        android:id="@+id/dummy_center"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/dummy_center"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        <Space
+            android:id="@+id/top_half"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5" />
 
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/try_now"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="@string/video_tutorials_try_now"
-            style="@style/FilledButton.Flat" />
+        <LinearLayout
+            android:id="@+id/bottom_half"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:paddingTop="40dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/watch_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextButton"
-            android:text="@string/video_tutorials_watch_next_video" />
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/try_now"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/video_tutorials_try_now"
+                style="@style/FilledButton.Flat" />
 
-        <TextView
-            android:id="@+id/change_language"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextButton" />
+            <TextView
+                android:id="@+id/watch_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                style="@style/TextButton"
+                android:text="@string/video_tutorials_watch_next_video" />
+
+            <TextView
+                android:id="@+id/change_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                style="@style/TextButton" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

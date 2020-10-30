@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
+import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
@@ -123,6 +124,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, false);
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
                 VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
+        mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.PAUSED);
     }
 
     @Override
@@ -133,6 +135,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         maybeShowWatchNextVideoButton();
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
                 VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
+        mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.ENDED);
         updateChangeLanguageButtonText();
     }
 

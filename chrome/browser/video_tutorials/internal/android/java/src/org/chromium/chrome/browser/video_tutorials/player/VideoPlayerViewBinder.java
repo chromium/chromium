@@ -63,6 +63,8 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
             view.getView().findViewById(R.id.change_language).setOnClickListener(v -> {
                 model.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
             });
+        } else if (propertyKey == VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW) {
+            view.setTryNowButtonPosition(model.get(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW));
         }
     }
 }

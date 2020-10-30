@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.video_tutorials.player;
 
+import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -28,9 +29,10 @@ interface VideoPlayerProperties {
     WritableObjectPropertyKey<Runnable> CALLBACK_TRY_NOW = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Runnable> CALLBACK_SHARE = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Runnable> CALLBACK_CLOSE = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<State> WATCH_STATE_FOR_TRY_NOW = new WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS = new PropertyKey[] {SHOW_LOADING_SCREEN, SHOW_MEDIA_CONTROLS,
             SHOW_LANGUAGE_PICKER, SHOW_TRY_NOW, SHOW_WATCH_NEXT, SHOW_CHANGE_LANGUAGE,
             CHANGE_LANGUAGE_BUTTON_TEXT, CALLBACK_WATCH_NEXT, CALLBACK_CHANGE_LANGUAGE,
-            CALLBACK_TRY_NOW, CALLBACK_SHARE, CALLBACK_CLOSE};
+            CALLBACK_TRY_NOW, CALLBACK_SHARE, CALLBACK_CLOSE, WATCH_STATE_FOR_TRY_NOW};
 }

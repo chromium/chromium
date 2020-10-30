@@ -8,13 +8,17 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 
+import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo;
+import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- *  Represents the view component of the media player. Contains loading screen, language picker, and
+ * Represents the view component of the media player. Contains loading screen, language picker, and
  * media controls.
  */
 class VideoPlayerView {
@@ -59,5 +63,21 @@ class VideoPlayerView {
 
     void showLanguagePicker(boolean show) {
         mLanguagePickerView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    void setTryNowButtonPosition(WatchStateInfo.State state) {
+        View topHalf = mControls.findViewById(R.id.top_half);
+        View bottomHalf = mControls.findViewById(R.id.bottom_half);
+        LinearLayout.LayoutParams topLayoutParams = (LayoutParams) topHalf.getLayoutParams();
+        LinearLayout.LayoutParams bottomLayoutParams = (LayoutParams) bottomHalf.getLayoutParams();
+        if (state == State.PAUSED) {
+            topLayoutParams.weight = 0.5f;
+            bottomLayoutParams.weight = 0.5f;
+        } else if (state == State.ENDED) {
+            topLayoutParams.weight = 0.62f;
+            bottomLayoutParams.weight = 0.38f;
+        } else {
+            assert false : "Unexpected state " + state;
+        }
     }
 }
