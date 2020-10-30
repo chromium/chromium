@@ -96,6 +96,8 @@ component("base") {
     "dragdrop/os_exchange_data.h",
     "dragdrop/os_exchange_data_provider_factory.cc",
     "dragdrop/os_exchange_data_provider_factory.h",
+    "ime/utf_offset.cc",
+    "ime/utf_offset.h",
     "l10n/formatter.cc",
     "l10n/formatter.h",
     "l10n/l10n_font_util.cc",
@@ -854,6 +856,7 @@ test("ui_base_unittests") {
 
   sources = [
     "class_property_unittest.cc",
+    "ime/utf_offset_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
     "layout_unittest.cc",

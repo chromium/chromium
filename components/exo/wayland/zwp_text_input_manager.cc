@@ -9,12 +9,14 @@
 #include <wayland-server-protocol-core.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/display.h"
 #include "components/exo/text_input.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/xkb_tracker.h"
+#include "ui/base/ime/utf_offset.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -77,17 +79,22 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
           style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT;
           break;
       }
-      const size_t start =
-          OffsetFromUTF16Offset(composition.text, span.start_offset);
-      const size_t end =
-          OffsetFromUTF16Offset(composition.text, span.end_offset);
-      zwp_text_input_v1_send_preedit_styling(text_input_, start, end - start,
+      const auto start =
+          ui::Utf8OffsetFromUtf16Offset(composition.text, span.start_offset);
+      if (!start)
+        continue;
+      const auto end =
+          ui::Utf8OffsetFromUtf16Offset(composition.text, span.end_offset);
+      if (!end)
+        continue;
+      zwp_text_input_v1_send_preedit_styling(text_input_, *start, *end - *start,
                                              style);
     }
 
-    const size_t pos =
-        OffsetFromUTF16Offset(composition.text, composition.selection.start());
-    zwp_text_input_v1_send_preedit_cursor(text_input_, pos);
+    const auto pos = ui::Utf8OffsetFromUtf16Offset(
+        composition.text, composition.selection.start());
+    if (pos)
+      zwp_text_input_v1_send_preedit_cursor(text_input_, *pos);
 
     const std::string utf8 = base::UTF16ToUTF8(composition.text);
     zwp_text_input_v1_send_preedit_string(
@@ -224,9 +231,14 @@ void text_input_set_surrounding_text(wl_client* client,
                                      uint32_t cursor,
                                      uint32_t anchor) {
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
-  text_input->SetSurroundingText(base::UTF8ToUTF16(text),
-                                 OffsetFromUTF8Offset(text, cursor),
-                                 OffsetFromUTF8Offset(text, anchor));
+  auto utf16_cursor = ui::Utf16OffsetFromUtf8Offset(text, cursor);
+  if (!utf16_cursor)
+    return;
+  auto utf16_anchor = ui::Utf16OffsetFromUtf8Offset(text, anchor);
+  if (!utf16_anchor)
+    return;
+  text_input->SetSurroundingText(base::UTF8ToUTF16(text), *utf16_cursor,
+                                 *utf16_anchor);
 }
 
 void text_input_set_content_type(wl_client* client,

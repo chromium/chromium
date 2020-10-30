@@ -8,7 +8,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/string16.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -25,9 +25,6 @@ class KeyboardUIController;
 
 namespace exo {
 class Surface;
-
-size_t OffsetFromUTF8Offset(const base::StringPiece& text, uint32_t offset);
-size_t OffsetFromUTF16Offset(const base::StringPiece16& text, uint32_t offset);
 
 // This class bridges the ChromeOS input method and a text-input context.
 class TextInput : public ui::TextInputClient,

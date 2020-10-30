@@ -7,13 +7,14 @@
 #include <algorithm>
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/utf_offset.h"
 #include "ui/events/event.h"
 
 namespace exo {
@@ -27,14 +28,6 @@ ui::InputMethod* GetInputMethod(aura::Window* window) {
 }
 
 }  // namespace
-
-size_t OffsetFromUTF8Offset(const base::StringPiece& text, uint32_t offset) {
-  return base::UTF8ToUTF16(text.substr(0, offset)).size();
-}
-
-size_t OffsetFromUTF16Offset(const base::StringPiece16& text, uint32_t offset) {
-  return base::UTF16ToUTF8(text.substr(0, offset)).size();
-}
 
 TextInput::TextInput(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {}
@@ -222,18 +215,26 @@ bool TextInput::GetEditableSelectionRange(gfx::Range* range) const {
 bool TextInput::SetEditableSelectionRange(const gfx::Range& range) {
   if (surrounding_text_.size() < range.GetMax())
     return false;
-  delegate_->SetCursor(
-      gfx::Range(OffsetFromUTF16Offset(surrounding_text_, range.start()),
-                 OffsetFromUTF16Offset(surrounding_text_, range.end())));
+  auto start = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, range.start());
+  if (!start)
+    return false;
+  auto end = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, range.end());
+  if (!end)
+    return false;
+  delegate_->SetCursor(gfx::Range(*start, *end));
   return true;
 }
 
 bool TextInput::DeleteRange(const gfx::Range& range) {
   if (surrounding_text_.size() < range.GetMax())
     return false;
-  delegate_->DeleteSurroundingText(
-      gfx::Range(OffsetFromUTF16Offset(surrounding_text_, range.start()),
-                 OffsetFromUTF16Offset(surrounding_text_, range.end())));
+  auto start = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, range.start());
+  if (!start)
+    return false;
+  auto end = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, range.end());
+  if (!end)
+    return false;
+  delegate_->DeleteSurroundingText(gfx::Range(*start, *end));
   return true;
 }
 
@@ -294,13 +295,18 @@ bool TextInput::ChangeTextDirectionAndLayoutAlignment(
 void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
   if (!cursor_pos_)
     return;
-  uint32_t start =
+  size_t utf16_start =
       (cursor_pos_->GetMin() < before) ? 0 : (cursor_pos_->GetMin() - before);
-  uint32_t end =
+  size_t utf16_end =
       std::min(cursor_pos_->GetMax() + after, surrounding_text_.size());
-  delegate_->DeleteSurroundingText(
-      gfx::Range(OffsetFromUTF16Offset(surrounding_text_, start),
-                 OffsetFromUTF16Offset(surrounding_text_, end)));
+  auto start = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, utf16_start);
+  if (!start)
+    return;
+  auto end = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, utf16_end);
+  if (!end)
+    return;
+
+  delegate_->DeleteSurroundingText(gfx::Range(*start, *end));
 }
 
 void TextInput::EnsureCaretNotInRect(const gfx::Rect& rect) {}
