@@ -128,10 +128,8 @@ void ContentViewRenderView::SurfaceChanged(
     jint width,
     jint height,
     const JavaParamRef<jobject>& surface) {
-  if (current_surface_format_ != format) {
-    current_surface_format_ = format;
-    compositor_->SetSurface(surface, can_be_used_with_surface_control);
-  }
+  current_surface_format_ = format;
+  compositor_->SetSurface(surface, can_be_used_with_surface_control);
   compositor_->SetWindowBounds(gfx::Size(width, height));
 }
 
