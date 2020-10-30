@@ -221,19 +221,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, TestNavigation) {
 }
 
 // Checks that the correct node ID is returned when performing hit testing.
-// TODO(https://crbug.com/1050049): Re-enable once flake is fixed.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DISABLED_HitTest) {
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, HitTest) {
   LoadPage(kPage1Path, kPage1Title);
+  semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
 
-  fuchsia::accessibility::semantics::Node* hit_test_node =
+  fuchsia::accessibility::semantics::Node* target_node =
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kParagraphName);
-  EXPECT_TRUE(hit_test_node);
+  EXPECT_TRUE(target_node);
 
-  fuchsia::math::PointF target_point =
-      GetCenterOfBox(hit_test_node->location());
+  fuchsia::math::PointF target_point = GetCenterOfBox(target_node->location());
 
-  EXPECT_EQ(hit_test_node->node_id(),
-            semantics_manager_.HitTestAtPointSync(std::move(target_point)));
+  uint32_t hit_node_id =
+      semantics_manager_.HitTestAtPointSync(std::move(target_point));
+  fuchsia::accessibility::semantics::Node* hit_node =
+      semantics_manager_.semantic_tree()->GetNodeWithId(hit_node_id);
+
+  EXPECT_EQ(hit_node->attributes().label(), kParagraphName);
 
   // Expect hit testing to return the root when the point given is out of
   // bounds or there is no semantic node at that position.
