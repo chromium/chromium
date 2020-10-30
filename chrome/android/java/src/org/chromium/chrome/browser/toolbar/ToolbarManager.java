@@ -449,7 +449,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
                 assert tab == mLocationBarModel.getTab();
                 mLocationBar.updateStatusIcon();
-                mLocationBar.setUrlToPageUrl();
+                mLocationBarModel.notifyUrlChanged();
             }
 
             @Override
@@ -544,7 +544,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (tab.getWebContents() != null
                         && tab.getWebContents().getNavigationController() != null
                         && tab.getWebContents().getNavigationController().isInitialNavigation()) {
-                    mLocationBar.setUrlToPageUrl();
+                    mLocationBarModel.notifyUrlChanged();
                 }
             }
 
@@ -1416,7 +1416,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void updateCurrentTabDisplayStatus() {
-        mLocationBar.setUrlToPageUrl();
+        mLocationBarModel.notifyUrlChanged();
         updateTabLoadingState(true);
     }
 

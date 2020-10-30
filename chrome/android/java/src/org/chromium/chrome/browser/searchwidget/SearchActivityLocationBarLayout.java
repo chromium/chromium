@@ -67,7 +67,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    public void setUrlToPageUrl() {
+    protected void setUrl(String url) {
         // Explicitly do nothing.  The tab is invisible, so showing its URL would be confusing.
     }
 

@@ -32,7 +32,8 @@ public interface LocationBarDataProvider {
     interface Observer {
         void onTitleChanged();
         // TODO(https://crbug.com/1139481): Add methods for other LocationBarDataProvider
-        // data, e.g. url, NTP, and security state.
+        // data, e.g. NTP and security state.
+        void onUrlChanged();
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */

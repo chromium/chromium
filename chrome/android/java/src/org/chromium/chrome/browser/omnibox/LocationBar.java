@@ -31,15 +31,6 @@ public interface LocationBar extends Destroyable {
     void updateVisualsForState();
 
     /**
-     * Sets the displayed URL to be the URL of the page currently showing.
-     *
-     * <p>The URL is converted to the most user friendly format (removing HTTP:// for example).
-     *
-     * <p>If the current tab is null, the URL text will be cleared.
-     */
-    void setUrlToPageUrl();
-
-    /**
      * Sets whether the location bar should have a layout showing a title.
      *
      * @param showTitle Whether the title should be shown.

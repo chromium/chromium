@@ -149,4 +149,22 @@ public class LocationBarModelTest {
         regularLocationBarModel.notifyTitleChanged();
         verify(mLocationBarDataObserver, times(2)).onTitleChanged();
     }
+
+    @Test
+    @MediumTest
+    public void testObserversNotified_urlChange() {
+        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        regularLocationBarModel.addObserver(mLocationBarDataObserver);
+        verify(mLocationBarDataObserver, never()).onUrlChanged();
+
+        regularLocationBarModel.notifyUrlChanged();
+        verify(mLocationBarDataObserver).onUrlChanged();
+
+        regularLocationBarModel.setTab(mRegularTabMock, false);
+        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
+
+        regularLocationBarModel.removeObserver(mLocationBarDataObserver);
+        regularLocationBarModel.notifyUrlChanged();
+        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
+    }
 }

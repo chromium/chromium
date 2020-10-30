@@ -517,7 +517,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mLocationBarModel.notifyTitleChanged();
-        mLocationBar.setUrlToPageUrl();
+        mLocationBarModel.notifyUrlChanged();
     }
 
     @Override
@@ -703,7 +703,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public void setUrlToPageUrl() {
+        public void onUrlChanged() {
             Tab tab = getCurrentTab();
             if (tab == null) {
                 mUrlCoordinator.setUrlBarData(
@@ -766,7 +766,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void updateLoadingState(boolean updateUrl) {
-            if (updateUrl) setUrlToPageUrl();
+            if (updateUrl) onUrlChanged();
             updateStatusIcon();
         }
 
@@ -776,7 +776,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             updateStatusIcon();
             updateButtonsTint();
             if (mUrlCoordinator.setUseDarkTextColors(mUseDarkColors)) {
-                setUrlToPageUrl();
+                onUrlChanged();
             }
 
             mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(resources,
@@ -814,7 +814,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             String contentDescription = getContext().getString(contentDescriptionId);
             mSecurityButton.setContentDescription(contentDescription);
 
-            setUrlToPageUrl();
+            onUrlChanged();
             mUrlBar.invalidate();
         }
 

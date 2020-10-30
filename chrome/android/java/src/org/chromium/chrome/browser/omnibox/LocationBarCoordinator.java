@@ -40,8 +40,9 @@ import java.util.List;
  *
  * <p>The coordinator creates and owns elements within this component.
  */
-public final class LocationBarCoordinator
-        implements LocationBar, FakeboxDelegate, UrlBar.UrlBarDelegate, NativeInitObserver {
+public final class LocationBarCoordinator implements LocationBar, FakeboxDelegate,
+                                                     UrlBar.UrlBarDelegate, NativeInitObserver,
+                                                     LocationBarDataProvider.Observer {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator extends Destroyable {}
 
@@ -49,6 +50,7 @@ public final class LocationBarCoordinator
     @Nullable
     private SubCoordinator mSubCoordinator;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private LocationBarDataProvider mLocationbarDataProvider;
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -97,7 +99,9 @@ public final class LocationBarCoordinator
             throw new IllegalArgumentException(locationBarLayout.getClass().toString());
         }
 
+        mLocationbarDataProvider = locationBarDataProvider;
         mLocationBarLayout.setLocationBarDataProvider(locationBarDataProvider);
+        locationBarDataProvider.addObserver(this);
         mLocationBarLayout.setProfileSupplier(profileObservableSupplier);
         mLocationBarLayout.setDefaultTextEditActionModeCallback(actionModeCallback);
         mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
@@ -122,6 +126,10 @@ public final class LocationBarCoordinator
             mLocationBarLayout.destroy();
             mLocationBarLayout = null;
         }
+        if (mLocationbarDataProvider != null) {
+            mLocationbarDataProvider.removeObserver(this);
+            mLocationbarDataProvider = null;
+        }
     }
 
     @Override
@@ -142,11 +150,6 @@ public final class LocationBarCoordinator
     @Override
     public void updateVisualsForState() {
         mLocationBarLayout.updateVisualsForState();
-    }
-
-    @Override
-    public void setUrlToPageUrl() {
-        mLocationBarLayout.setUrlToPageUrl();
     }
 
     @Override
@@ -258,6 +261,15 @@ public final class LocationBarCoordinator
     @Override
     public FakeboxDelegate getFakeboxDelegate() {
         return this;
+    }
+
+    // LocationBarDataObserver implementation
+    @Override
+    public void onTitleChanged() {}
+
+    @Override
+    public void onUrlChanged() {
+        mLocationBarLayout.setUrl(mLocationbarDataProvider.getCurrentUrl());
     }
 
     /**

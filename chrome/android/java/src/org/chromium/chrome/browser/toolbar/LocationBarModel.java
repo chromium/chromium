@@ -114,6 +114,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mIsIncognito = isIncognito;
         updateUsingBrandColor();
         notifyTitleChanged();
+        notifyUrlChanged();
     }
 
     @Override
@@ -152,6 +153,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         // Tab.getUrl() returns empty string if it does not have a URL.
         return getTab().getUrlString().trim();
+    }
+
+    public void notifyUrlChanged() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onUrlChanged();
+        }
     }
 
     @Override

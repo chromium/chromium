@@ -405,7 +405,7 @@ public class LocationBarLayout
 
     public void revertChanges() {
         if (!mUrlHasFocus) {
-            setUrlToPageUrl();
+            setUrl(mLocationBarDataProvider.getCurrentUrl());
         } else {
             String currentUrl = mLocationBarDataProvider.getCurrentUrl();
             if (NativePageFactory.isNativePageUrl(
@@ -472,7 +472,7 @@ public class LocationBarLayout
     public void updateStatusIcon() {
         mStatusCoordinator.updateStatusIcon();
         // Update the URL in case the scheme change triggers a URL emphasis change.
-        setUrlToPageUrl();
+        setUrl(mLocationBarDataProvider.getCurrentUrl());
     }
 
     @Override
@@ -579,7 +579,7 @@ public class LocationBarLayout
     public void backKeyPressed() {
         setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         // Revert the URL to match the current page.
-        setUrlToPageUrl();
+        setUrl(mLocationBarDataProvider.getCurrentUrl());
         focusCurrentTab();
     }
 
@@ -594,7 +594,7 @@ public class LocationBarLayout
      * @param updateUrl Whether to update the URL as a result of this call.
      */
     public void updateLoadingState(boolean updateUrl) {
-        if (updateUrl) setUrlToPageUrl();
+        if (updateUrl) setUrl(mLocationBarDataProvider.getCurrentUrl());
         mStatusCoordinator.updateStatusIcon();
     }
 
@@ -707,7 +707,7 @@ public class LocationBarLayout
         // If the URL changed colors and is not focused, update the URL to account for the new
         // color scheme.
         if (mUrlCoordinator.setUseDarkTextColors(useDarkColors) && !mUrlBar.hasFocus()) {
-            setUrlToPageUrl();
+            setUrl(mLocationBarDataProvider.getCurrentUrl());
         }
 
         mStatusCoordinator.setUseDarkColors(useDarkColors);
@@ -770,9 +770,7 @@ public class LocationBarLayout
      *
      * <p>If the current tab is null, the URL text will be cleared.
      */
-    public void setUrlToPageUrl() {
-        String currentUrl = mLocationBarDataProvider.getCurrentUrl();
-
+    protected void setUrl(String currentUrl) {
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
         if (mUrlBar.hasFocus()) {
@@ -1042,7 +1040,7 @@ public class LocationBarLayout
 
             // Focus change caused by a close-tab may result in an invalid current tab.
             if (mLocationBarDataProvider.hasTab()) {
-                setUrlToPageUrl();
+                setUrl(mLocationBarDataProvider.getCurrentUrl());
             }
 
             // Moving focus away from UrlBar(EditText) to a non-editable focus holder, such as
@@ -1214,8 +1212,8 @@ public class LocationBarLayout
 
     /**
      * Changes the text on the url bar.  The text update will be applied regardless of the current
-     * focus state (comparing to {@link #setUrlToPageUrl()} which only applies text updates when
-     * not focused).
+     * focus state (comparing to {@link #setUrlToPageUrl(mLocationBarDataProvider.getCurrentUrl())}
+     * which only applies text updates when not focused).
      *
      * @param urlBarData The contents of the URL bar, both for editing and displaying.
      * @param scrollType Specifies how the text should be scrolled in the unfocused state.
