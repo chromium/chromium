@@ -16091,6 +16091,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage.MostVisited.Clicked">
+  <owner>justincohen@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user clicked on a most visited tile. This action is logged every time
+    the NewTabPage.MostVisited histogram is logged.
+
+    This action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Accepted">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>

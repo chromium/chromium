@@ -843,6 +843,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Histogram for user clicks of the most visited tile. The value is equal to
     the index of the tile.
 
+    The user action NewTabPage.MostVisited.Clicked is also logged at the same
+    time as this histogram.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>

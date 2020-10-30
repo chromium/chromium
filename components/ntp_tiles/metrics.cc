@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/ntp_tiles/constants.h"
@@ -151,6 +152,7 @@ void RecordTileImpression(const NTPTileImpression& impression) {
 void RecordTileClick(const NTPTileImpression& impression) {
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.MostVisited", impression.index,
                             kMaxNumTiles);
+  base::RecordAction(base::UserMetricsAction("NewTabPage.MostVisited.Clicked"));
 
   std::string source_name = GetSourceHistogramName(impression.source);
   base::UmaHistogramExactLinear(
