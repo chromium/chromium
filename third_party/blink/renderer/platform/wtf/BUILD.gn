@@ -252,8 +252,9 @@ component("wtf") {
     sources -= [ "text/atomic_string_cf.cc" ]
   }
 
-  if (using_mismatched_sample_profile) {
-    configs -= [ "//build/config/compiler:afdo_optimize_size" ]
+  if (!is_debug && !optimize_for_size) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
   }
 
   configs -= [ "//build/config/compiler:default_symbols" ]
