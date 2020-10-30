@@ -226,7 +226,7 @@ bool MockCryptoClientStream::CryptoConnect() {
     case COLD_START_WITH_CHLO_SENT: {
       handshake_confirmed_ = false;
       encryption_established_ = false;
-      SendHandshakeMessage(GetDummyCHLOMessage());
+      SendHandshakeMessage(GetDummyCHLOMessage(), ENCRYPTION_INITIAL);
       break;
     }
   }

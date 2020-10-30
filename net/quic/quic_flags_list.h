@@ -318,3 +318,8 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_fix_willing_and_able_to_write2, true)
 
 // If true, do not send control frames before encryption is established.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_encrypted_control_frames, false)
+
+// If true, use WriteOrBufferDataAtLevel to send crypto data. Existing
+// WriteOrBufferData is used to send application data.
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_use_write_or_buffer_data_at_level,
+          false)
