@@ -140,27 +140,26 @@ void BrowserMessageFilter::OnDestruct() const {
 }
 
 bool BrowserMessageFilter::Send(IPC::Message* message) {
-  if (message->is_sync()) {
-    // We don't support sending synchronous messages from the browser.  If we
-    // really needed it, we can make this class derive from SyncMessageFilter
-    // but it seems better to not allow sending synchronous messages from the
-    // browser, since it might allow a corrupt/malicious renderer to hang us.
-    NOTREACHED() << "Can't send sync message through BrowserMessageFilter!";
-    return false;
-  }
+  std::unique_ptr<IPC::Message> msg(message);
+
+  // We don't support sending synchronous messages from the browser.  If we
+  // really needed it, we can make this class derive from SyncMessageFilter
+  // but it seems better to not allow sending synchronous messages from the
+  // browser, since it might allow a corrupt/malicious renderer to hang us.
+  DCHECK(!msg->is_sync())
+    << "Can't send sync message through BrowserMessageFilter!";
 
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&BrowserMessageFilter::Send), this,
-                       message));
+                       msg.release()));
     return true;
   }
 
   if (sender_)
-    return sender_->Send(message);
+    return sender_->Send(msg.release());
 
-  delete message;
   return false;
 }
 
