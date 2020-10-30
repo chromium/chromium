@@ -86,8 +86,11 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    render_view_routing_id_ =
-        shell()->web_contents()->GetRenderViewHost()->GetRoutingID();
+    render_view_routing_id_ = shell()
+                                  ->web_contents()
+                                  ->GetMainFrame()
+                                  ->GetRenderViewHost()
+                                  ->GetRoutingID();
   }
 
   // DomSerializerDelegate.
@@ -136,8 +139,11 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
     navigation_observer.Wait();
     // After navigations, the RenderView for the new document might be a new
     // one.
-    render_view_routing_id_ =
-        shell()->web_contents()->GetRenderViewHost()->GetRoutingID();
+    render_view_routing_id_ = shell()
+                                  ->web_contents()
+                                  ->GetMainFrame()
+                                  ->GetRenderViewHost()
+                                  ->GetRoutingID();
   }
 
   class SingleLinkRewritingDelegate
