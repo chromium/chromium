@@ -189,6 +189,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chromeos/chromeos_scanning_app_resources.pak",
         "$root_gen_dir/chromeos/connectivity_diagnostics_resources.pak",
         "$root_gen_dir/third_party/ink/ink_resources.pak",
+        "$root_gen_dir/ui/file_manager/file_manager_gen_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
       deps += [
@@ -214,6 +215,7 @@ template("chrome_extra_paks") {
         "//chromeos/resources:print_management_resources",
         "//chromeos/resources:scanning_app_resources",
         "//third_party/ink:ink_resources",
+        "//ui/file_manager:file_manager_gen_resources",
         "//ui/file_manager:resources",
       ]
 
