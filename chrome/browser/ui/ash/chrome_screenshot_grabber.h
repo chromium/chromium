@@ -124,10 +124,6 @@ class ChromeScreenshotGrabber : public ash::ScreenshotDelegate {
 
   bool IsScreenshotAllowed(const ScreenshotArea& area) const;
 
-  // Checks whether screenshots are restricted due to current DLP policy.
-  // |window| might be nullptr for full- or partial-screenshots.
-  bool IsScreenshotRestricted(aura::Window* window) const;
-
   std::unique_ptr<ui::ScreenshotGrabber> screenshot_grabber_;
 
   // Forwards OnScreenshotCompleted() events to a test.

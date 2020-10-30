@@ -4455,7 +4455,7 @@
     Screenshot taken
   </message>
   <message name="IDS_SCREENSHOT_NOTIFICATION_TITLE_DISABLED" desc="The title of the notification when taking a screenshot failed because screenshots are disabled.">
-    Screenshots disabled
+    Screenshot is blocked
   </message>
   <message name="IDS_SCREENSHOT_NOTIFICATION_TITLE_FAIL" desc="The title of the notification when taking a screenshot failed.">
     An error occurred
@@ -4464,7 +4464,7 @@
     Show in folder
   </message>
   <message name="IDS_SCREENSHOT_NOTIFICATION_TEXT_DISABLED" desc="The text of the notification when taking a screenshot failed because screenshots are disabled by administrator policy.">
-    The ability to take screenshots has been disabled by your administrator.
+    The ability to take a screenshot of the content on your screen is blocked by your administrator.
   </message>
   <message name="IDS_SCREENSHOT_NOTIFICATION_TEXT_FAIL" desc="The text of the notification when taking a screenshot failed.">
     Failed to save screenshot

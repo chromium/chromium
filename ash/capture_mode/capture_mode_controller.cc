@@ -170,10 +170,21 @@ void ShowNotification(
 // Shows a notification informing the user that Capture Mode operations are
 // currently disabled.
 void ShowDisabledNotification() {
-  ShowNotification(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISABLED_TITLE),
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISABLED_MESSAGE),
-      /*optional_fields=*/{}, /*delegate=*/nullptr);
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kScreenCaptureNotificationId,
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISABLED_TITLE),
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISABLED_MESSAGE),
+          /*display_source=*/base::string16(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kScreenCaptureNotifierId),
+          /*optional_fields=*/{}, /*delegate=*/nullptr,
+          vector_icons::kBusinessIcon,
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 // Shows a notification informing the user that a Capture Mode operation has

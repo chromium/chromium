@@ -46,6 +46,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -524,7 +525,7 @@ void ChromeScreenshotGrabber::OnReadScreenshotFileForPreviewCompleted(
           kNotificationId,
           l10n_util::GetStringUTF16(GetScreenshotNotificationTitle(result)),
           l10n_util::GetStringUTF16(GetScreenshotNotificationText(result)),
-          l10n_util::GetStringUTF16(IDS_SCREENSHOT_NOTIFICATION_NOTIFIER_NAME),
+          /*display_source=*/base::string16() /*system name*/,
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -532,8 +533,8 @@ void ChromeScreenshotGrabber::OnReadScreenshotFileForPreviewCompleted(
           optional_field,
           new ScreenshotGrabberNotificationDelegate(success, GetProfile(),
                                                     screenshot_path),
-          kNotificationImageIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
+          vector_icons::kBusinessIcon,
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   NotificationDisplayService::GetForProfile(GetProfile())
       ->Display(NotificationHandler::Type::TRANSIENT, *notification,

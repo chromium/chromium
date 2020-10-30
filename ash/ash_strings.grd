@@ -2964,7 +2964,7 @@ Here are some things you can try to get started.
 
       <!-- Capture Mode -->
       <message name="IDS_ASH_SCREEN_CAPTURE_DISABLED_TITLE" desc="The title of the notification when capture mode is disabled.">
-        Screen capture disabled
+        Screen capture is blocked
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_FAILURE_TITLE" desc="The title of the notification when capture mode fails.">
         An error occurred
@@ -2973,7 +2973,7 @@ Here are some things you can try to get started.
         Screen recording stopped
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_DISABLED_MESSAGE" desc="The text of the notification when capture mode is disabled.">
-        The ability to screen capture has been disabled by your administrator.
+        The ability to take a screen capture of the content on your screen is blocked by your administrator.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_FAILURE_MESSAGE" desc="The text of the notification when capture mode fails.">
         Failed to capture screen
