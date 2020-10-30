@@ -393,7 +393,8 @@ export class TabSearchAppElement extends PolymerElement {
 
       // For some reasons setting combobox/aria-activedescendant on tab-search-search-field
       // has no effect, so manually announce a11y message here.
-      this.announceA11y_(this.ariaLabel_(this.getSelectedTab_()));
+      this.announceA11y_(
+          this.ariaLabel_(this.filteredOpenTabs_[this.getSelectedIndex()]));
     } else if (e.key === 'Enter') {
       this.apiProxy_.switchToTab(
           {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
@@ -409,11 +410,12 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * @param {!TabData} tabData
    * @return {string}
    * @private
    */
-  ariaLabel_(item) {
-    return `${item.title} ${item.hostname}`;
+  ariaLabel_(tabData) {
+    return `${tabData.tab.title} ${tabData.hostname}`;
   }
 
   /**
