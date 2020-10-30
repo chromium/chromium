@@ -13,7 +13,8 @@
 namespace gpu {
 namespace gles2 {
 
-class MockCopyTexImageResourceManager : public CopyTexImageResourceManager {
+class MockCopyTexImageResourceManager final
+    : public CopyTexImageResourceManager {
  public:
   MockCopyTexImageResourceManager(const gles2::FeatureInfo* feature_info);
   ~MockCopyTexImageResourceManager() final;
@@ -60,7 +61,7 @@ class MockCopyTexImageResourceManager : public CopyTexImageResourceManager {
   DISALLOW_COPY_AND_ASSIGN(MockCopyTexImageResourceManager);
 };
 
-class MockCopyTextureResourceManager
+class MockCopyTextureResourceManager final
     : public CopyTextureCHROMIUMResourceManager {
  public:
   MockCopyTextureResourceManager();

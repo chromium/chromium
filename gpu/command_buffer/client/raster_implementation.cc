@@ -135,7 +135,7 @@ class ScopedSharedMemoryPtr {
 }  // namespace
 
 // Helper to copy data to the GPU service over the transfer cache.
-class RasterImplementation::TransferCacheSerializeHelperImpl
+class RasterImplementation::TransferCacheSerializeHelperImpl final
     : public cc::TransferCacheSerializeHelper {
  public:
   explicit TransferCacheSerializeHelperImpl(RasterImplementation* ri)
