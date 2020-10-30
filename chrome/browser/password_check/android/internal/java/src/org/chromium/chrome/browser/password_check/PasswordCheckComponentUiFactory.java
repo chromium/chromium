@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.password_check;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi.CustomTabIntentHelper;
+import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi.TrustedIntentHelper;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
+
 /**
  * Use {@link #create()} to instantiate a {@link PasswordCheckComponentUi}.
  */
@@ -18,10 +23,15 @@ public class PasswordCheckComponentUiFactory {
         /**
          * Returns a component that connects to the given fragment and manipulates its data.
          * @param fragmentView A {@link PasswordCheckFragmentView}.
+         * @param helpAndFeedbackLauncher A {@link HelpAndFeedbackLauncher}.
          * @return A non-null {@link PasswordCheckComponentUi}.
          */
-        PasswordCheckComponentUi create(PasswordCheckFragmentView fragmentView);
+        PasswordCheckComponentUi create(PasswordCheckFragmentView fragmentView,
+                HelpAndFeedbackLauncher helpAndFeedbackLauncher, SettingsLauncher settingsLauncher,
+                CustomTabIntentHelper customTabIntentHelper,
+                TrustedIntentHelper trustedIntentHelper);
     }
+
     private static CreationStrategy sCreationStrategy = PasswordCheckCoordinator::new;
 
     private PasswordCheckComponentUiFactory() {}
@@ -31,8 +41,12 @@ public class PasswordCheckComponentUiFactory {
      * @param fragmentView the view which will be managed by the coordinator.
      * @return A {@link PasswordCheckComponentUi}.
      */
-    public static PasswordCheckComponentUi create(PreferenceFragmentCompat fragmentView) {
-        return sCreationStrategy.create((PasswordCheckFragmentView) fragmentView);
+    public static PasswordCheckComponentUi create(PreferenceFragmentCompat fragmentView,
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher, SettingsLauncher settingsLauncher,
+            CustomTabIntentHelper customTabIntentHelper, TrustedIntentHelper trustedIntentHelper) {
+        return sCreationStrategy.create((PasswordCheckFragmentView) fragmentView,
+                helpAndFeedbackLauncher, settingsLauncher, customTabIntentHelper,
+                trustedIntentHelper);
     }
 
     @VisibleForTesting

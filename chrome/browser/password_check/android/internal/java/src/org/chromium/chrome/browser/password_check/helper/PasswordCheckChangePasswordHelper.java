@@ -13,12 +13,10 @@ import android.provider.Browser;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
+import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 
 import java.util.Objects;
 
@@ -36,9 +34,17 @@ public class PasswordCheckChangePasswordHelper {
     private static final String INTENT = "PASSWORD_CHANGE";
 
     private final Context mContext;
+    private final SettingsLauncher mSettingsLauncher;
+    private final PasswordCheckComponentUi.CustomTabIntentHelper mCustomTabIntentHelper;
+    private final PasswordCheckComponentUi.TrustedIntentHelper mTrustedIntentHelper;
 
-    public PasswordCheckChangePasswordHelper(Context context) {
+    public PasswordCheckChangePasswordHelper(Context context, SettingsLauncher settingsLauncher,
+            PasswordCheckComponentUi.CustomTabIntentHelper customTabIntentHelper,
+            PasswordCheckComponentUi.TrustedIntentHelper trustedIntentHelper) {
         mContext = context;
+        mSettingsLauncher = settingsLauncher;
+        mCustomTabIntentHelper = customTabIntentHelper;
+        mTrustedIntentHelper = trustedIntentHelper;
     }
 
     /**
@@ -83,11 +89,10 @@ public class PasswordCheckChangePasswordHelper {
      * @param credential A {@link CompromisedCredential} to change.
      */
     public void launchEditPage(CompromisedCredential credential) {
-        SettingsLauncher launcher = new SettingsLauncherImpl();
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putParcelable(
                 PasswordCheckEditFragmentView.EXTRA_COMPROMISED_CREDENTIAL, credential);
-        launcher.launchSettingsActivity(
+        mSettingsLauncher.launchSettingsActivity(
                 mContext, PasswordCheckEditFragmentView.class, fragmentArgs);
     }
 
@@ -106,11 +111,11 @@ public class PasswordCheckChangePasswordHelper {
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
         customTabIntent.intent.setData(Uri.parse(initialUrl));
-        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
+        Intent intent = mCustomTabIntentHelper.createCustomTabActivityIntent(
                 mContext, customTabIntent.intent);
         intent.setPackage(mContext.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
-        IntentHandler.addTrustedIntentExtras(intent);
+        mTrustedIntentHelper.addTrustedIntentExtras(intent);
         return intent;
     }
 

@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePass
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper.ReauthReason;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.ListModel;
@@ -119,6 +120,8 @@ public class PasswordCheckControllerTest {
     @Mock
     private PasswordCheckReauthenticationHelper mReauthenticationHelper;
     @Mock
+    private SettingsLauncher mSettingsLauncher;
+    @Mock
     private PasswordCheckIconHelper mIconHelper;
     @Mock
     private RecordHistogram.Natives mRecordHistogramBridge;
@@ -136,7 +139,7 @@ public class PasswordCheckControllerTest {
         mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mRecordHistogramBridge);
         mModel = PasswordCheckProperties.createDefaultModel();
         mMediator = new PasswordCheckMediator(
-                mChangePasswordDelegate, mReauthenticationHelper, mIconHelper);
+                mChangePasswordDelegate, mReauthenticationHelper, mSettingsLauncher, mIconHelper);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator.initialize(mModel, mDelegate, PasswordCheckReferrer.PASSWORD_SETTINGS, () -> {});
         PasswordCheckMediator.setStatusUpdateDelayMillis(0);

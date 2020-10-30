@@ -102,7 +102,7 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPasswordCheck = PasswordCheckFactory.getOrCreate();
+        mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
     }
 
     @Override

@@ -150,11 +150,13 @@ public class PasswordCheckViewTest {
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
-        PasswordCheckComponentUiFactory.setCreationStrategy(fragmentView -> {
-            mPasswordCheckView = (PasswordCheckFragmentView) fragmentView;
-            mPasswordCheckView.setComponentDelegate(mComponentUi);
-            return mComponentUi;
-        });
+        PasswordCheckComponentUiFactory.setCreationStrategy(
+                (fragmentView, helpAndFeedbackLauncher, settingsLauncher, customTabIntentHelper,
+                        trustedIntentHelper) -> {
+                    mPasswordCheckView = (PasswordCheckFragmentView) fragmentView;
+                    mPasswordCheckView.setComponentDelegate(mComponentUi);
+                    return mComponentUi;
+                });
         setUpUiLaunchedFromSettings();
         runOnUiThreadBlocking(() -> {
             PasswordCheckCoordinator.setUpModelChangeProcessors(mModel, mPasswordCheckView);

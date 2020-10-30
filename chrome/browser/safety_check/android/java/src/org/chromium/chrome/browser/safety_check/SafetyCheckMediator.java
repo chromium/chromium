@@ -253,7 +253,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.SIGNED_OUT);
             updatePasswordElementClickDestination();
         }
-        PasswordCheckFactory.getOrCreate().addObserver(this, true);
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, true);
         if (mPasswordsLoaded && mLeaksLoaded) {
             determinePasswordStateOnLoadComplete();
         }
@@ -282,11 +282,11 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
         // Start all the checks.
         mSafetyCheckBridge.checkSafeBrowsing();
         // Start observing the password check events (including data loads).
-        PasswordCheckFactory.getOrCreate().addObserver(this, false);
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, false);
         // This indicates that the results of the initial data load should not be applied even if
         // they become available during the check.
         mLoadStage = PasswordCheckLoadStage.IDLE;
-        PasswordCheckFactory.getOrCreate().startCheck();
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).startCheck();
         mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
     }
 
@@ -413,7 +413,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
         if (mLoadStage == PasswordCheckLoadStage.IDLE) return;
         // If something is blocked, that means the passwords check is being observed. At this point,
         // no further events need to be observed.
-        PasswordCheckFactory.getOrCreate().removeObserver(this);
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).removeObserver(this);
         // Only delay updating the UI on the user-triggered check and not initially.
         if (mLoadStage == PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD) {
             updatePasswordsStateOnDataLoaded();
@@ -427,7 +427,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
     /** Applies the results of the password check to the model. Only called when data is loaded. */
     private void updatePasswordsStateOnDataLoaded() {
         // Always display the compromised state.
-        int compromised = PasswordCheckFactory.getOrCreate().getCompromisedCredentialsCount();
+        int compromised = PasswordCheckFactory.getOrCreate(mSettingsLauncher)
+                                  .getCompromisedCredentialsCount();
         if (compromised != 0) {
             mModel.set(SafetyCheckProperties.COMPROMISED_PASSWORDS, compromised);
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.COMPROMISED_EXIST);
@@ -435,7 +436,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
                 && !mShowSafePasswordState) {
             // Cannot show the safe state at the initial load if last run is older than 10 mins.
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.UNCHECKED);
-        } else if (PasswordCheckFactory.getOrCreate().getSavedPasswordsCount() == 0) {
+        } else if (PasswordCheckFactory.getOrCreate(mSettingsLauncher).getSavedPasswordsCount()
+                == 0) {
             // Can show safe state: display no passwords.
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.NO_PASSWORDS);
         } else {
@@ -474,8 +476,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
                         SafetyCheckInteractions.PASSWORDS_MANAGE,
                         SafetyCheckInteractions.MAX_VALUE);
                 // Open the Password Check UI.
-                PasswordCheckFactory.getOrCreate().showUi(
-                        p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
+                PasswordCheckFactory.getOrCreate(mSettingsLauncher)
+                        .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                 return true;
             };
         } else {

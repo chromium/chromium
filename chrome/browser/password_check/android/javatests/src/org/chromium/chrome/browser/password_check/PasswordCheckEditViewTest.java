@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.url.GURL;
@@ -89,6 +90,8 @@ public class PasswordCheckEditViewTest {
 
     @Mock
     private PasswordCheck mPasswordCheck;
+    @Mock
+    private SettingsLauncher mMockSettingsLauncher;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -97,7 +100,8 @@ public class PasswordCheckEditViewTest {
         setUpUiLaunchedFromSettings();
 
         pollUiThread(() -> mPasswordCheckEditView != null);
-        mPasswordCheckEditView.setCheckProvider(PasswordCheckFactory::getOrCreate);
+        mPasswordCheckEditView.setCheckProvider(
+                () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
     }
 
     @Test

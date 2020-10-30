@@ -11,7 +11,6 @@ import android.os.Bundle;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.password_check.PasswordCheckBridge.PasswordCheckObserver;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 
 /**
  * This class is responsible for managing the saved passwords check for signed-in users.
@@ -19,25 +18,27 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     private final PasswordCheckBridge mPasswordCheckBridge;
     private final ObserverList<Observer> mObserverList;
+    private final SettingsLauncher mSettingsLauncher;
 
     private boolean mCompromisedCredentialsFetched;
     private boolean mSavedPasswordsFetched;
     private @PasswordCheckUIStatus int mStatus = PasswordCheckUIStatus.IDLE;
 
-    PasswordCheckImpl() {
+    PasswordCheckImpl(SettingsLauncher settingsLauncher) {
         mCompromisedCredentialsFetched = false;
         mSavedPasswordsFetched = false;
         mPasswordCheckBridge = new PasswordCheckBridge(this);
         mObserverList = new ObserverList<>();
+        mSettingsLauncher = settingsLauncher;
     }
 
     @Override
     public void showUi(Context context, @PasswordCheckReferrer int passwordCheckReferrer) {
-        SettingsLauncher launcher = new SettingsLauncherImpl();
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(
                 PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER, passwordCheckReferrer);
-        launcher.launchSettingsActivity(context, PasswordCheckFragmentView.class, fragmentArgs);
+        mSettingsLauncher.launchSettingsActivity(
+                context, PasswordCheckFragmentView.class, fragmentArgs);
         mPasswordCheckBridge.refreshScripts();
     }
 

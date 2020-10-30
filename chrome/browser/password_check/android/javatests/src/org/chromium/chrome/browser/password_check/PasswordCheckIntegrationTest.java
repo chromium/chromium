@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_check;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
@@ -24,8 +25,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -50,6 +51,8 @@ public class PasswordCheckIntegrationTest {
 
     @Mock
     private PasswordCheckBridge.Natives mPasswordCheckBridge;
+    @Mock
+    private SettingsLauncher mMockSettingsLauncher;
 
     @Before
     public void setUp() {
@@ -61,8 +64,8 @@ public class PasswordCheckIntegrationTest {
     @MediumTest
     @DisabledTest(message = "crbug.com/1110965")
     public void testDestroysComponentIfFirstInSettingsStack() {
-        PasswordCheckFactory.getOrCreate();
-        SettingsActivity activity = setUpUiLaunchedFromDialog();
+        PasswordCheckFactory.getOrCreate(mMockSettingsLauncher);
+        Activity activity = setUpUiLaunchedFromDialog();
         activity.finish();
         CriteriaHelper.pollInstrumentationThread(() -> activity.isDestroyed());
         assertNull(PasswordCheckFactory.getPasswordCheckInstance());
@@ -72,8 +75,8 @@ public class PasswordCheckIntegrationTest {
     @MediumTest
     @DisabledTest(message = "crbug.com/1114096")
     public void testDoesNotDestroyComponentIfNotFirstInSettingsStack() {
-        PasswordCheckFactory.getOrCreate();
-        SettingsActivity activity = setUpUiLaunchedFromSettings();
+        PasswordCheckFactory.getOrCreate(mMockSettingsLauncher);
+        Activity activity = setUpUiLaunchedFromSettings();
         activity.finish();
         CriteriaHelper.pollInstrumentationThread(() -> activity.isDestroyed());
         assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
@@ -81,21 +84,17 @@ public class PasswordCheckIntegrationTest {
         PasswordCheckFactory.destroy();
     }
 
-    private SettingsActivity setUpUiLaunchedFromSettings() {
+    private Activity setUpUiLaunchedFromSettings() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER,
                 PasswordCheckReferrer.PASSWORD_SETTINGS);
-        SettingsActivity activity = mTestRule.startSettingsActivity(fragmentArgs);
-
-        return activity;
+        return mTestRule.startSettingsActivity(fragmentArgs);
     }
 
-    private SettingsActivity setUpUiLaunchedFromDialog() {
+    private Activity setUpUiLaunchedFromDialog() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER,
                 PasswordCheckReferrer.LEAK_DIALOG);
-        SettingsActivity activity = mTestRule.startSettingsActivity(fragmentArgs);
-
-        return activity;
+        return mTestRule.startSettingsActivity(fragmentArgs);
     }
 }

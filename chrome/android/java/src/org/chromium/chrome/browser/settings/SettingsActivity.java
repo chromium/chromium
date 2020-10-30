@@ -28,6 +28,8 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
@@ -299,14 +301,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
-                    new SafetyCheckUpdatesDelegateImpl(this), new SettingsLauncherImpl(),
+                    new SafetyCheckUpdatesDelegateImpl(this), mSettingsLauncher,
                     SigninActivityLauncherImpl.get());
         }
         if (fragment instanceof PasswordCheckFragmentView) {
-            PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment);
+            PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,
+                    HelpAndFeedbackLauncherImpl.getInstance(), mSettingsLauncher,
+                    LaunchIntentDispatcher::createCustomTabActivityIntent,
+                    IntentHandler::addTrustedIntentExtras);
         } else if (fragment instanceof PasswordCheckEditFragmentView) {
             PasswordCheckEditFragmentView editFragment = (PasswordCheckEditFragmentView) fragment;
-            editFragment.setCheckProvider(PasswordCheckFactory::getOrCreate);
+            editFragment.setCheckProvider(
+                    () -> PasswordCheckFactory.getOrCreate(mSettingsLauncher));
         }
         if (fragment instanceof ImageDescriptionsSettings) {
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;

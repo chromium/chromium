@@ -174,7 +174,7 @@ public class PasswordSettings
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPasswordCheck = PasswordCheckFactory.getOrCreate();
+        mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
     }
 
     @Override
@@ -527,7 +527,8 @@ public class PasswordSettings
         mCheckPasswords.setOnPreferenceClickListener(preference -> {
             getPrefService().setInteger(
                     Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS, numCheckLaunched + 1);
-            PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate();
+            PasswordCheck passwordCheck =
+                    PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
             passwordCheck.showUi(getStyledContext(), PasswordCheckReferrer.PASSWORD_SETTINGS);
             // Return true to notify the click was handled
             return true;
