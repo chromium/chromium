@@ -31,7 +31,6 @@ COMMIT_FOOTER = \
 '''
 Bug: TODO. Remove the Tricium: line below when filling this in.
 Tricium: skip
-
 Cq-Include-Trybots: chromium/try:chromeos-amd64-generic-cfi-thin-lto-rel
 Cq-Include-Trybots: chromium/try:dawn-win10-x86-deps-rel
 Cq-Include-Trybots: chromium/try:linux-chromeos-dbg
