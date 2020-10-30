@@ -126,7 +126,6 @@ class CORE_EXPORT WebPluginContainerImpl final
   void ScheduleAnimation() override;
   void ReportGeometry() override;
   v8::Local<v8::Object> V8ObjectForElement() override;
-  WebString ExecuteScriptURL(const WebURL&, bool popups_allowed) override;
   void LoadFrameRequest(const WebURLRequest&, const WebString& target) override;
   bool IsRectTopmost(const WebRect&) override;
   void RequestTouchEventType(TouchEventRequestType) override;

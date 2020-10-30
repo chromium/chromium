@@ -38,7 +38,6 @@
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -582,45 +581,6 @@ v8::Local<v8::Object> WebPluginContainerImpl::V8ObjectForElement() {
   DCHECK(v8value->IsObject());
 
   return v8::Local<v8::Object>::Cast(v8value);
-}
-
-// TODO(hiroshige): Consider merging with LocalFrame::ExecuteJavaScriptURL().
-WebString WebPluginContainerImpl::ExecuteScriptURL(const WebURL& url,
-                                                   bool popups_allowed) {
-  LocalDOMWindow* window = element_->GetDocument().domWindow();
-  if (!window)
-    return WebString();
-
-  const KURL& kurl = url;
-  DCHECK(kurl.ProtocolIs("javascript"));
-
-  String script = DecodeURLEscapeSequences(kurl.GetString(),
-                                           DecodeURLMode::kUTF8OrIsomorphic);
-
-  if (!element_->GetExecutionContext()->GetContentSecurityPolicy()->AllowInline(
-          ContentSecurityPolicy::InlineType::kNavigation, element_, script,
-          String() /* nonce */, element_->GetDocument().Url(),
-          OrdinalNumber())) {
-    return WebString();
-  }
-  script = script.Substring(strlen("javascript:"));
-
-  if (popups_allowed) {
-    LocalFrame::NotifyUserActivation(
-        window->GetFrame(),
-        mojom::blink::UserActivationNotificationType::kPlugin);
-  }
-
-  v8::HandleScope handle_scope(window->GetIsolate());
-  v8::Local<v8::Value> result =
-      ClassicScript::CreateUnspecifiedScript(
-          ScriptSourceCode(script, ScriptSourceLocationType::kJavascriptUrl))
-          ->RunScriptAndReturnValue(window);
-
-  // Failure is reported as a null string.
-  if (result.IsEmpty() || !result->IsString())
-    return WebString();
-  return ToCoreString(v8::Local<v8::String>::Cast(result));
 }
 
 void WebPluginContainerImpl::LoadFrameRequest(const WebURLRequest& request,

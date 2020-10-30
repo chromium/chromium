@@ -46,7 +46,6 @@ class WebDocument;
 class WebElement;
 class WebPlugin;
 class WebString;
-class WebURL;
 class WebURLRequest;
 class WebDOMMessageEvent;
 struct WebRect;
@@ -91,11 +90,6 @@ class WebPluginContainer {
   // Returns the scriptable object associated with the DOM element
   // containing the plugin as a native v8 object.
   virtual v8::Local<v8::Object> V8ObjectForElement() = 0;
-
-  // Executes a "javascript:" URL on behalf of the plugin in the context
-  // of the frame containing the plugin.  Returns the result of script
-  // execution, if any.
-  virtual WebString ExecuteScriptURL(const WebURL&, bool popups_allowed) = 0;
 
   // Loads an URL in the specified frame (or the frame containing this
   // plugin if target is empty).  If notifyNeeded is true, then upon

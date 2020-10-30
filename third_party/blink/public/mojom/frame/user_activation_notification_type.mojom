@@ -24,9 +24,8 @@ enum UserActivationNotificationType {
   // An extension API caused the notification call through GuestView.
   kExtensionGuestView,
 
-  // An extension messaging API caused the notification call.  This enum value
-  // is deprecated by more specific enums kExtensionMessaging* below, we are
-  // preserving this enum value only for UMA consistency.
+  // An extension messaging API caused the notification call.  Deprecated,
+  // preserved only for UMA consistency.  See more specific enums below.
   kExtensionMessaging,
 
   // A media API caused the notification call.
@@ -35,7 +34,8 @@ enum UserActivationNotificationType {
   // An NFS API caused the notification call.
   kNativeFileSystem,
 
-  // A plugin API caused the notification call.
+  // A plugin API caused the notification call.  Deprecated, preserved only for
+  // UMA consistency.
   kPlugin,
 
   // A test API caused the notification call.  This should not affect
