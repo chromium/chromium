@@ -18,7 +18,8 @@
         "args": [
           "--gtest_filter=WebRtc*",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter"
         ],
         "merge": {
           "args": [
@@ -69,7 +70,8 @@
         "args": [
           "--gtest_filter=WebRtc*",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter"
         ],
         "merge": {
           "args": [
