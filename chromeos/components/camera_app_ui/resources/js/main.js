@@ -21,6 +21,7 @@ import * as error from './error.js';
 import {GalleryButton} from './gallerybutton.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
+import {notifyCameraResourceReady} from './mojo/device_operator.js';
 import * as nav from './nav.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
@@ -35,7 +36,8 @@ import {
   ResolutionSettings,
 } from './views/settings.js';
 import {View} from './views/view.js';
-import {Warning} from './views/warning.js';
+import {Warning, WarningType} from './views/warning.js';
+import {WaitableEvent} from './waitable_event.js';
 import {windowController} from './window_controller/window_controller.js';
 
 /**
@@ -202,8 +204,6 @@ export class App {
    */
   async start() {
     document.documentElement.dir = browserProxy.getTextDirection();
-    await this.cameraView_.initialize();
-
     try {
       await filesystem.initialize();
       const cameraDir = filesystem.getCameraDirectory();
@@ -211,7 +211,7 @@ export class App {
       this.galleryButton_.initialize(cameraDir);
     } catch (error) {
       console.error(error);
-      nav.open(ViewName.WARNING, 'filesystem-failure');
+      nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
     }
 
     const showWindow = (async () => {
@@ -219,8 +219,29 @@ export class App {
       windowController.enable();
       this.backgroundOps_.notifyActivation();
     })();
+
+    const cameraResourceInitialized = new WaitableEvent();
+    const exploitUsage = async () => {
+      if (cameraResourceInitialized.isSignaled()) {
+        await this.resume();
+      } else {
+        // CCA must get camera usage for completing its initialization when
+        // first launched.
+        await this.cameraView_.initialize();
+        notifyCameraResourceReady();
+        cameraResourceInitialized.signal();
+      }
+    };
+    const releaseUsage = async () => {
+      assert(cameraResourceInitialized.isSignaled());
+      await this.suspend();
+    };
+    await browserProxy.initCameraUsageMonitor(exploitUsage, releaseUsage);
+
     const startCamera = (async () => {
+      await cameraResourceInitialized.wait();
       const isSuccess = await this.cameraView_.start();
+
       nav.close(ViewName.SPLASH);
       nav.open(ViewName.CAMERA);
       await browserProxy.setLaunchingFromWindowCreationStartTime(async () => {
@@ -258,6 +279,7 @@ export class App {
     await this.cameraView_.start();
     windowController.disable();
     this.backgroundOps_.notifySuspension();
+    nav.open(ViewName.WARNING, WarningType.CAMERA_BEING_USED);
   }
 
   /**
@@ -267,6 +289,7 @@ export class App {
     state.set(state.State.SUSPEND, false);
     windowController.enable();
     this.backgroundOps_.notifyActivation();
+    nav.close(ViewName.WARNING, WarningType.CAMERA_BEING_USED);
   }
 }
 

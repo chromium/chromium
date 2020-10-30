@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/trace_event/trace_event.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 
 namespace chromeos_camera {
@@ -44,7 +45,8 @@ CameraAppHelperImpl::CameraAppHelperImpl(
     aura::Window* window)
     : camera_app_ui_(camera_app_ui),
       camera_result_callback_(std::move(camera_result_callback)),
-      has_external_screen_(HasExternalScreen()) {
+      has_external_screen_(HasExternalScreen()),
+      window_(window) {
   DCHECK(window);
   window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
   ash::TabletMode::Get()->AddObserver(this);
@@ -132,6 +134,14 @@ void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
 void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
   DCHECK_NE(camera_app_ui_, nullptr);
   camera_app_ui_->delegate()->OpenFeedbackDialog(placeholder);
+}
+
+void CameraAppHelperImpl::SetCameraUsageMonitor(
+    mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
+    SetCameraUsageMonitorCallback callback) {
+  DCHECK_NE(camera_app_ui_, nullptr);
+  camera_app_ui_->app_window_manager()->SetCameraUsageMonitor(
+      window_, std::move(usage_monitor), std::move(callback));
 }
 
 void CameraAppHelperImpl::OnTabletModeStarted() {

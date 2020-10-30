@@ -170,6 +170,12 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
+  async initCameraUsageMonitor(exploitUsage, releaseUsage) {
+    return ChromeHelper.getInstance().initCameraUsageMonitor(
+        exploitUsage, releaseUsage);
+  }
+
+  /** @override */
   setupUnloadListener(listener) {
     window.addEventListener('unload', listener);
   }

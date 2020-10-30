@@ -156,8 +156,9 @@ export class Preview {
 
   /**
    * Stops the preview.
+   * @return {!Promise}
    */
-  stop() {
+  async stop() {
     if (this.watchdog_) {
       clearInterval(this.watchdog_);
       this.watchdog_ = null;
@@ -165,7 +166,13 @@ export class Preview {
     // Pause video element to avoid black frames during transition.
     this.video_.pause();
     if (this.stream_) {
-      this.stream_.getVideoTracks()[0].stop();
+      const track = this.stream_.getVideoTracks()[0];
+      const {deviceId} = track.getSettings();
+      track.stop();
+      const deviceOperator = await DeviceOperator.getInstance();
+      if (deviceOperator !== null) {
+        await deviceOperator.waitForDeviceClose(deviceId);
+      }
       this.stream_ = null;
     }
     state.set(state.State.STREAMING, false);

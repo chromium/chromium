@@ -8,6 +8,8 @@
 #include "base/macros.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui_delegate.h"
+#include "chromeos/components/camera_app_ui/camera_app_window_manager.h"
+#include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -55,9 +57,11 @@ class CameraAppUI : public ui::MojoWebUIController {
 
   CameraAppUIDelegate* delegate() { return delegate_.get(); }
 
- private:
   aura::Window* window();
 
+  CameraAppWindowManager* app_window_manager();
+
+ private:
   std::unique_ptr<CameraAppUIDelegate> delegate_;
 
   std::unique_ptr<media::CameraAppDeviceProviderImpl> provider_;

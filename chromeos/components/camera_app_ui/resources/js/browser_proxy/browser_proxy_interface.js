@@ -124,6 +124,13 @@ export class BrowserProxy {
   openFeedback() {}
 
   /**
+   * @param {function(): !Promise} exploitUsage
+   * @param {function(): !Promise} releaseUsage
+   * @abstract
+   */
+  async initCameraUsageMonitor(exploitUsage, releaseUsage) {}
+
+  /**
    * @param {function(): void} listener
    * @abstract
    */

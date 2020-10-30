@@ -44,6 +44,7 @@ import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
 import * as timertick from './camera/timertick.js';
 import {View} from './view.js';
+import {WarningType} from './warning.js';
 
 /**
  * Thrown when app window suspended during stream reconfiguration.
@@ -517,7 +518,7 @@ export class Camera extends View {
           await this.endTake_();
         }
       } finally {
-        this.preview_.stop();
+        await this.preview_.stop();
       }
       return this.start_();
     })();
@@ -566,7 +567,7 @@ export class Camera extends View {
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
               mode, stream, this.facingMode_, deviceId, captureR);
-          nav.close(ViewName.WARNING, 'no-camera');
+          nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {
           this.preview_.stop();
@@ -633,7 +634,7 @@ export class Camera extends View {
       this.activeDeviceId_ = null;
       if (!(error instanceof CameraSuspendedError)) {
         console.error(error);
-        nav.open(ViewName.WARNING, 'no-camera');
+        nav.open(ViewName.WARNING, WarningType.NO_CAMERA);
       }
       // Schedule to retry.
       if (this.retryStartTimeout_) {

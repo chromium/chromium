@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '../chrome_util.js';
+import {assert, assertNotReached} from '../chrome_util.js';
 import {
   Facing,
   FpsRangeList,  // eslint-disable-line no-unused-vars
@@ -10,6 +10,7 @@ import {
   ResolutionList,  // eslint-disable-line no-unused-vars
   VideoConfig,     // eslint-disable-line no-unused-vars
 } from '../type.js';
+import {WaitableEvent} from '../waitable_event.js';
 
 /**
  * Parse the entry data according to its type.
@@ -79,6 +80,19 @@ function getMetadataData(metadata, tag) {
 let instance = null;
 
 /**
+ * A ready event which should be signaled once the camera resource is ready.
+ * @type {!WaitableEvent}
+ */
+const readyEvent = new WaitableEvent();
+
+/**
+ * Notified when the camera resource is ready.
+ */
+export function notifyCameraResourceReady() {
+  readyEvent.signal();
+}
+
+/**
  * Operates video capture device through CrOS Camera App Mojo interface.
  */
 export class DeviceOperator {
@@ -103,6 +117,23 @@ export class DeviceOperator {
         this.deviceProvider_.isSupported().then(({isSupported}) => {
           return isSupported;
         });
+
+    /**
+     * Map which maps from device id to the remote of devices. We want to have
+     * only one remote for each devices to avoid unnecessary wastes of resources
+     * and also makes it easier to control the connection.
+     * @type {!Map<string, !cros.mojom.CameraAppDeviceRemote>}
+     * @private
+     */
+    this.devices_ = new Map();
+
+    /**
+     * Map which maps from device id to the events which will be triggered when
+     * the corresponding device is stopped.
+     * @type {!Map<string, !WaitableEvent>}
+     * @private
+     */
+    this.onDeviceStoppedEvents_ = new Map();
   }
 
   /**
@@ -113,6 +144,11 @@ export class DeviceOperator {
    * @throws {!Error} Thrown when given device id is invalid.
    */
   async getDevice_(deviceId) {
+    const d = this.devices_.get(deviceId);
+    if (d !== undefined) {
+      return d;
+    }
+
     const {device, status} =
         await this.deviceProvider_.getCameraAppDevice(deviceId);
     if (status === cros.mojom.GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
@@ -121,6 +157,16 @@ export class DeviceOperator {
     if (device === null) {
       throw new Error('Unknown error');
     }
+    device.onConnectionError.addListener(() => {
+      this.devices_.delete(deviceId);
+      const event = this.onDeviceStoppedEvents_.get(deviceId);
+      assert(event !== undefined);
+      if (!event.isSignaled()) {
+        event.signal();
+      }
+    });
+    this.devices_.set(deviceId, device);
+    this.onDeviceStoppedEvents_.set(deviceId, new WaitableEvent());
     return device;
   }
 
@@ -458,11 +504,23 @@ export class DeviceOperator {
   }
 
   /**
+   * Waits until the connection to the device is dropped.
+   * @param {string} deviceId Id of the target device.
+   * @return {!Promise}
+   */
+  async waitForDeviceClose(deviceId) {
+    const event = this.onDeviceStoppedEvents_.get(deviceId);
+    assert(event !== undefined);
+    return event.wait();
+  }
+
+  /**
    * Creates a new instance of DeviceOperator if it is not set. Returns the
    *     exist instance.
    * @return {!Promise<?DeviceOperator>} The singleton instance.
    */
   static async getInstance() {
+    await readyEvent.wait();
     if (instance === null) {
       instance = new DeviceOperator();
     }

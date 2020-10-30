@@ -86,6 +86,28 @@ export class ChromeHelper {
   }
 
   /**
+   * Starts camera usage monitor.
+   * @param {function()} exploitUsage
+   * @param {function()} releaseUsage
+   * @return {!Promise}
+   */
+  async initCameraUsageMonitor(exploitUsage, releaseUsage) {
+    const usageCallbackRouter =
+        new chromeosCamera.mojom.CameraUsageOwnershipMonitorCallbackRouter();
+
+    usageCallbackRouter.onCameraUsageOwnershipChanged.addListener(
+        async (hasUsage) => {
+          if (hasUsage) {
+            await exploitUsage();
+          } else {
+            await releaseUsage();
+          }
+        });
+    await this.remote_.setCameraUsageMonitor(
+        usageCallbackRouter.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
    * Triggers the begin of event tracing in Chrome.
    * @param {string} event Name of the event.
    */

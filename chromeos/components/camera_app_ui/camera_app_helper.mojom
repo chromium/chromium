@@ -38,6 +38,12 @@ interface ExternalScreenMonitor {
   Update(bool has_external_screen);
 };
 
+// Interface to monitor camera usage ownership changes.
+interface CameraUsageOwnershipMonitor {
+  // Updates when the camera usage ownership is changed.
+  OnCameraUsageOwnershipChanged(bool has_usage) => ();
+};
+
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -89,4 +95,8 @@ interface CameraAppHelper {
   // field. It is only usable for SWA version. For platform app version, we send
   // message to Feedback extension via chrome.runtime API.
   OpenFeedbackDialog(string placeholder);
+
+  // Sets the monitor to monitor the camera usage ownership changed.
+  SetCameraUsageMonitor(
+      pending_remote<CameraUsageOwnershipMonitor> usage_monitor) => ();
 };

@@ -13,12 +13,9 @@
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace chromeos_camera {
 
@@ -35,6 +32,7 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   using TabletModeMonitor = mojom::TabletModeMonitor;
   using ScreenStateMonitor = mojom::ScreenStateMonitor;
   using ExternalScreenMonitor = mojom::ExternalScreenMonitor;
+  using CameraUsageOwnershipMonitor = mojom::CameraUsageOwnershipMonitor;
 
   CameraAppHelperImpl(chromeos::CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
@@ -61,6 +59,9 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
       SetExternalScreenMonitorCallback callback) override;
   void OpenFileInGallery(const std::string& name) override;
   void OpenFeedbackDialog(const std::string& placeholder) override;
+  void SetCameraUsageMonitor(
+      mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
+      SetCameraUsageMonitorCallback callback) override;
 
  private:
   void CheckExternalScreenState();
@@ -85,6 +86,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   CameraResultCallback camera_result_callback_;
 
   bool has_external_screen_;
+
+  aura::Window* window_;
 
   mojo::Remote<TabletModeMonitor> tablet_monitor_;
   mojo::Remote<ScreenStateMonitor> screen_state_monitor_;

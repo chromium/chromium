@@ -14,6 +14,10 @@ static_library("camera_app_ui") {
     "camera_app_ui.cc",
     "camera_app_ui.h",
     "camera_app_ui_delegate.h",
+    "camera_app_window_manager.cc",
+    "camera_app_window_manager.h",
+    "camera_app_window_manager_factory.cc",
+    "camera_app_window_manager_factory.h",
     "resources.h",
     "url_constants.cc",
     "url_constants.h",
@@ -30,6 +34,8 @@ static_library("camera_app_ui") {
     "//chromeos/strings",
     "//chromeos/system",
     "//components/arc",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
     "//content/public/browser",
     "//content/public/common",
     "//media/capture:capture_lib",
@@ -37,6 +43,7 @@ static_library("camera_app_ui") {
     "//mojo/public/cpp/platform",
     "//mojo/public/js:resources_grit",
     "//services/network/public/mojom",
+    "//ui/views",
     "//ui/webui",
   ]
 }

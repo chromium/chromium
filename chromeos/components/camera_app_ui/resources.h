@@ -104,6 +104,7 @@ const struct {
     {"banner_title", IDS_BANNER_TITLE},
     {"banner_msg", IDS_BANNER_MSG},
     {"banner_close_button", IDS_BANNER_CLOSE_BUTTON},
+    {"error_msg_camera_being_used", IDS_ERROR_MSG_CAMERA_BEING_USED},
 };
 
 const struct {

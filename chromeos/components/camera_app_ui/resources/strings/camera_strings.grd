@@ -452,6 +452,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for close introducing new camera App UI banner button." name="IDS_BANNER_CLOSE_BUTTON">
         Close
       </message>
+      <message desc="Error message shown when the camera is being used by some other instance." name="IDS_ERROR_MSG_CAMERA_BEING_USED">
+        Your camera is being used by another app
+      </message>
     </messages>
   </release>
 </grit>

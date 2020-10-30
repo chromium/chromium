@@ -8,6 +8,16 @@ import {ViewName} from '../type.js';
 import {View} from './view.js';
 
 /**
+ * The type of warning.
+ * @enum {string}
+ */
+export const WarningType = {
+  NO_CAMERA: 'error_msg_no_camera',
+  FILESYSTEM_FAILURE: 'error_msg_file_system_failed',
+  CAMERA_BEING_USED: 'error_msg_camera_being_used',
+};
+
+/**
  * Creates the warning-view controller.
  */
 export class Warning extends View {
@@ -29,15 +39,7 @@ export class Warning extends View {
    * @private
    */
   updateMessage_() {
-    let message = '';
-    switch (this.errorNames_[this.errorNames_.length - 1]) {
-      case 'no-camera':
-        message = 'error_msg_no_camera';
-        break;
-      case 'filesystem-failure':
-        message = 'error_msg_file_system_failed';
-        break;
-    }
+    const message = this.errorNames_[this.errorNames_.length - 1];
     document.querySelector('#error-msg').textContent =
         browserProxy.getI18nMessage(message);
   }
