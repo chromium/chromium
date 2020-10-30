@@ -136,6 +136,7 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
   scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   scopes.insert(GaiaConstants::kAuditRecordingOAuth2Scope);
   scopes.insert(GaiaConstants::kClearCutOAuth2Scope);
+  scopes.insert(GaiaConstants::kKidManagementPrivilegedOAuth2Scope);
 
   // Start fetching oauth access token.
   access_token_fetcher_ =
