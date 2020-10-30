@@ -35,14 +35,14 @@ inline char SpdyHexDigitToIntImpl(char c) {
 }
 
 inline std::string SpdyHexDecodeImpl(absl::string_view data) {
-  return quiche::QuicheTextUtils::HexDecode(data);
+  return absl::HexStringToBytes(data);
 }
 
 NET_EXPORT_PRIVATE bool SpdyHexDecodeToUInt32Impl(absl::string_view data,
                                                   uint32_t* out);
 
 inline std::string SpdyHexEncodeImpl(const char* bytes, size_t size) {
-  return quiche::QuicheTextUtils::HexEncode(bytes, size);
+  return absl::BytesToHexString(absl::string_view(bytes, size));
 }
 
 inline std::string SpdyHexEncodeUInt32AndTrimImpl(uint32_t data) {

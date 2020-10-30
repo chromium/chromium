@@ -134,24 +134,8 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_enable_mtu_discovery_at_server, false)
 // of the packet.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier, false)
 
-// If true, neuter initial packet in the coalescer when discarding initial keys.
-QUIC_FLAG(
-    FLAGS_quic_reloadable_flag_quic_neuter_initial_packet_in_coalescer_with_initial_key_discarded,
-    true)
-
-// If true, convert bytes_left_for_batch_write_ to unsigned int.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_fix_bytes_left_for_batch_write, true)
-
-// If true, add missing connected checks.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_add_missing_connected_checks, true)
-
 // If true, QuicStream::kDefaultUrgency is 3, otherwise 1.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_http3_new_default_urgency_value, true)
-
-// If true, close connection on packet serialization failures
-QUIC_FLAG(
-    FLAGS_quic_reloadable_flag_quic_close_connection_on_serialization_failure,
-    true)
 
 // If true, send PATH_RESPONSE upon receiving PATH_CHALLENGE regardless
 // of perspective.
@@ -207,9 +191,6 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_abort_qpack_on_stream_close, true)
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_fix_arm_pto_for_application_data,
           true)
 
-// If true, cap client suggested initial RTT to 1s if it is longer than 1s.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_cap_large_client_initial_rtt, true)
-
 // If true, fix a potential out of order sending caused by handshake gets
 // confirmed while the coalescer is not empty.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_fix_out_of_order_sending2, true)
@@ -230,10 +211,6 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_bbr2_use_tcp_inflight_hi_headroom,
 
 // If true, HTTP/3 will treat HTTP/2 specific SETTINGS as error.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_reject_spdy_settings, true)
-
-// If true, discard 0-RTT keys after installing 1-RTT keys on the client side.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_postpone_discarding_zero_rtt_keys,
-          true)
 
 // If true, for IETF QUIC, uses 2 * RTTVAR when calculating PTO delay.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_default_to_2_rttvar, true)
@@ -266,11 +243,6 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_connection_set_initial_self_address,
 
 // If true, let QUIC connection handle PINGs instead of going through session.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_let_connection_handle_pings, true)
-
-// If true, BBRv2 will 1) change the default STARTUP and DRAIN cwnd gain to 2.0,
-// and 2) change the meaning of connection option BBQ2 to use 2.885 for STARTUP
-// and DRAIN cwnd gain.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_bbr2_flip_bbq2, true)
 
 // If true, use http2::HuffmanEncodeFast() instead of HuffmanEncode() and
 // eliminate one string copy for QPACK encoding used in IETF QUIC.
@@ -343,3 +315,6 @@ QUIC_FLAG(
 // If true, fix QuicSession::WillingAndAbleToWrite to check write keys when
 // using CRYPTO frames.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_fix_willing_and_able_to_write2, true)
+
+// If true, do not send control frames before encryption is established.
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_encrypted_control_frames, false)

@@ -42,7 +42,7 @@ inline std::string Http2HexEncodeImpl(const void* bytes, size_t size) {
 }
 
 inline std::string Http2HexDecodeImpl(absl::string_view data) {
-  return quiche::QuicheTextUtils::HexDecode(data);
+  return absl::HexStringToBytes(data);
 }
 
 inline std::string Http2HexDumpImpl(absl::string_view data) {

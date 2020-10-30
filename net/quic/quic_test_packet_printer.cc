@@ -72,16 +72,16 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   bool OnStreamFrame(const QuicStreamFrame& frame) override {
     *output_ << "OnStreamFrame: " << frame;
     *output_ << "         data: { "
-             << quiche::QuicheTextUtils::HexEncode(frame.data_buffer,
-                                                   frame.data_length)
+             << absl::BytesToHexString(
+                    absl::string_view(frame.data_buffer, frame.data_length))
              << " }\n";
     return true;
   }
   bool OnCryptoFrame(const QuicCryptoFrame& frame) override {
     *output_ << "OnCryptoFrame: " << frame;
     *output_ << "         data: { "
-             << quiche::QuicheTextUtils::HexEncode(frame.data_buffer,
-                                                   frame.data_length)
+             << absl::BytesToHexString(
+                    absl::string_view(frame.data_buffer, frame.data_length))
              << " }\n";
     return true;
   }

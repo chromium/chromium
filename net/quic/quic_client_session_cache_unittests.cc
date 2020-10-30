@@ -128,8 +128,7 @@ class QuicClientSessionCacheTest : public testing::Test {
 
  protected:
   bssl::UniquePtr<SSL_SESSION> NewSSLSession() {
-    std::string cached_session =
-        quiche::QuicheTextUtils::HexDecode(kCachedSession);
+    std::string cached_session = absl::HexStringToBytes(kCachedSession);
     SSL_SESSION* session = SSL_SESSION_from_bytes(
         reinterpret_cast<const uint8_t*>(cached_session.data()),
         cached_session.size(), ssl_ctx_.get());

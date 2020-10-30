@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
   quic::CryptoFramer framer;
   framer.set_visitor(&printer);
   framer.set_process_truncated_messages(true);
-  std::string input = quiche::QuicheTextUtils::HexDecode(argv[1]);
+  std::string input = absl::HexStringToBytes(argv[1]);
   if (!framer.ProcessInput(input)) {
     return 1;
   }
