@@ -40307,6 +40307,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Tab hidden"/>
   <int value="7" label="Omnibox navigation"/>
   <int value="8" label="Tab crash"/>
+  <int value="9" label="Unknown"/>
 </enum>
 
 <enum name="LinkMonitorFailureType">
