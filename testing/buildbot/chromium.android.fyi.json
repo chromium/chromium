@@ -3009,7 +3009,7 @@
       }
     ]
   },
-  "android-weblayer-pie-x86-fyi-rel": {
+  "android-weblayer-pie-x86-rel-tests": {
     "gtest_tests": [
       {
         "args": [

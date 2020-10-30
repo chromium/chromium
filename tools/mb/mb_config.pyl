@@ -129,7 +129,6 @@
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_invert_fieldtrials',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-weblayer-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
-      'android-weblayer-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
     },
 
     'chromium.chromiumos': {

@@ -974,11 +974,12 @@ ci.android_fyi_builder(
 )
 
 ci.android_fyi_builder(
-    name = "android-weblayer-pie-x86-fyi-rel",
+    name = "android-weblayer-pie-x86-rel-tests",
     console_view_entry = ci.console_view_entry(
-        category = "weblayer",
-        short_name = "p-x86-rel",
+        category = "tester|weblayer",
+        short_name = "P",
     ),
+    triggered_by = ["android-weblayer-x86-fyi-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
@@ -997,6 +998,7 @@ ci.android_fyi_builder(
         short_name = "10",
     ),
     triggered_by = ["android-weblayer-x86-fyi-rel"],
+    notifies = ["weblayer-sheriff"],
 )
 
 ci.android_fyi_builder(

@@ -1065,7 +1065,7 @@
         'use_swarming': True,
         'os_type': 'android',
       },
-      'android-weblayer-pie-x86-fyi-rel': {
+      'android-weblayer-pie-x86-rel-tests': {
         'mixins': [
           'pie-x86-emulator',
           'emulator-4-cores',
