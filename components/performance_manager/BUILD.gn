@@ -244,6 +244,8 @@ source_set("unit_tests") {
     "v8_memory/v8_context_tracker_internal_unittest.cc",
     "v8_memory/v8_context_tracker_unittest.cc",
     "v8_memory/v8_detailed_memory_unittest.cc",
+    "v8_memory/v8_memory_test_helpers.cc",
+    "v8_memory/v8_memory_test_helpers.h",
     "v8_memory/web_memory_aggregator_unittest.cc",
     "web_contents_proxy_unittest.cc",
     "worker_watcher_unittest.cc",

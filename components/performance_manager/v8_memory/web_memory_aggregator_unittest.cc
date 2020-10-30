@@ -4,16 +4,14 @@
 
 #include "components/performance_manager/v8_memory/web_memory_aggregator.h"
 
-#include <memory>
-#include <tuple>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/gtest_util.h"
-#include "base/time/time.h"
+#include "base/test/task_environment.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -21,7 +19,8 @@
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "content/public/test/test_utils.h"
+#include "components/performance_manager/v8_memory/v8_memory_test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -29,6 +28,8 @@
 namespace performance_manager {
 
 namespace v8_memory {
+
+using WebMemoryAggregatorPMTest = V8MemoryPerformanceManagerTestHarness;
 
 class WebMemoryAggregatorTest : public GraphTestHarness {
  public:
@@ -139,6 +140,48 @@ TEST_F(WebMemoryAggregatorTest, SkipUnrelatedFrames) {
   AddFrameNode("http://foo.com/unrelated", BrowsingInstance{1}, Bytes{20});
 
   MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}}});
+}
+
+TEST_F(WebMemoryAggregatorPMTest, WebMeasureMemory) {
+  blink::LocalFrameToken frame_token =
+      blink::LocalFrameToken(main_frame()->GetFrameToken());
+
+  // Call WebMemory::Measure on the performance manager sequence and verify
+  // that the result matches the data provided by the mock reporter.
+  base::RunLoop run_loop;
+  auto measurement_callback =
+      base::BindLambdaForTesting([&](mojom::WebMemoryMeasurementPtr result) {
+        EXPECT_EQ(1u, result->breakdown.size());
+        const auto& entry = result->breakdown[0];
+        EXPECT_EQ(1u, entry->attribution.size());
+        EXPECT_EQ(kMainFrameUrl, *(entry->attribution[0]->url));
+        EXPECT_EQ(1001u, entry->bytes);
+        run_loop.Quit();
+      });
+
+  base::WeakPtr<FrameNode> frame_node_wrapper =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ASSERT_TRUE(frame_node_wrapper);
+        FrameNode* frame_node = frame_node_wrapper.get();
+        WebMeasureMemory(frame_node,
+                         mojom::WebMemoryMeasurement::Mode::kDefault,
+                         std::move(measurement_callback));
+      }));
+
+  // Set up and bind the mock reporter.
+  MockV8DetailedMemoryReporter mock_reporter;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
+    ExpectBindAndRespondToQuery(&mock_reporter, std::move(data),
+                                main_process_id());
+  }
+
+  // Finally, run all tasks to verify that the memory measurement callback
+  // is actually invoked. The test will time out if not.
+  run_loop.Run();
 }
 
 }  // namespace v8_memory
