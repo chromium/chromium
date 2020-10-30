@@ -20,8 +20,9 @@ class VulkanSurfaceX11::ExposeEventForwarder : public ui::XEventDispatcher {
   explicit ExposeEventForwarder(VulkanSurfaceX11* surface) : surface_(surface) {
     if (auto* event_source = ui::X11EventSource::GetInstance()) {
       x11::Connection::Get()->ChangeWindowAttributes(
-          {.window = static_cast<x11::Window>(surface_->window_),
-           .event_mask = x11::EventMask::Exposure});
+          x11::ChangeWindowAttributesRequest{
+              .window = static_cast<x11::Window>(surface_->window_),
+              .event_mask = x11::EventMask::Exposure});
       event_source->AddXEventDispatcher(this);
     }
   }
@@ -57,7 +58,7 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
   }
 
   auto window = connection->GenerateId<x11::Window>();
-  connection->CreateWindow({
+  connection->CreateWindow(x11::CreateWindowRequest{
       .wid = window,
       .parent = parent_window,
       .width = geometry->width,
@@ -114,8 +115,8 @@ bool VulkanSurfaceX11::Reshape(const gfx::Size& size,
   DCHECK_EQ(pre_transform, gfx::OVERLAY_TRANSFORM_NONE);
 
   auto* connection = x11::Connection::Get();
-  connection->ConfigureWindow(
-      {.window = window_, .width = size.width(), .height = size.height()});
+  connection->ConfigureWindow(x11::ConfigureWindowRequest{
+      .window = window_, .width = size.width(), .height = size.height()});
   connection->Flush();
   return VulkanSurface::Reshape(size, pre_transform);
 }
