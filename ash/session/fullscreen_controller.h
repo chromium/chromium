@@ -5,11 +5,15 @@
 #ifndef ASH_SESSION_FULLSCREEN_CONTROLLER_H_
 #define ASH_SESSION_FULLSCREEN_CONTROLLER_H_
 
+#include <memory>
+
+#include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
 class SessionControllerImpl;
+class FullscreenAlertBubble;
 
 class FullscreenController : public chromeos::PowerManagerClient::Observer {
  public:
@@ -21,13 +25,24 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
 
   static void MaybeExitFullscreen();
 
+  void MaybeShowAlert();
+
  private:
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void ScreenIdleStateChanged(
       const power_manager::ScreenIdleState& proto) override;
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        const base::TimeTicks& timestamp) override;
 
   const SessionControllerImpl* const session_controller_;
+
+  std::unique_ptr<FullscreenAlertBubble> bubble_;
+
+  // Whether the screen brightness is low enough to make display dark.
+  bool device_in_dark_ = false;
 };
 
 }  // namespace ash
