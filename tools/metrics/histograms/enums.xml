@@ -9642,6 +9642,14 @@ histogram as enum -->
   <int value="2" label="External"/>
 </enum>
 
+<enum name="ChromeOSChannel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Canary"/>
+  <int value="2" label="Dev"/>
+  <int value="3" label="Beta"/>
+  <int value="4" label="Stable"/>
+</enum>
+
 <enum name="ChromeOSColorProfile">
   <summary>See ui/display/display_constants.h for the variation.</summary>
   <int value="0" label="Standard"/>

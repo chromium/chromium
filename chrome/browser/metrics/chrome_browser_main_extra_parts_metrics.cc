@@ -21,6 +21,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -73,6 +74,10 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/shell_integration_win.h"
 #endif  // defined(OS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -132,6 +137,38 @@ enum UMATouchEventFeatureDetectionState {
   UMA_TOUCH_EVENT_FEATURE_DETECTION_STATE_COUNT
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// These values are written to logs.  New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+enum class ChromeOSChannel {
+  kUnknown = 0,
+  kCanary = 1,
+  kDev = 2,
+  kBeta = 3,
+  kStable = 4,
+  kMaxValue = kStable,
+};
+
+// Records the underlying Chrome OS release channel, which may be different than
+// the Lacros browser's release channel.
+void RecordChromeOSChannel() {
+  ChromeOSChannel os_channel = ChromeOSChannel::kUnknown;
+  std::string release_track;
+  if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
+                                        &release_track)) {
+    if (release_track == crosapi::kReleaseChannelStable)
+      os_channel = ChromeOSChannel::kStable;
+    else if (release_track == crosapi::kReleaseChannelBeta)
+      os_channel = ChromeOSChannel::kBeta;
+    else if (release_track == crosapi::kReleaseChannelDev)
+      os_channel = ChromeOSChannel::kDev;
+    else if (release_track == crosapi::kReleaseChannelCanary)
+      os_channel = ChromeOSChannel::kCanary;
+  }
+  base::UmaHistogramEnumeration("ChromeOS.Lacros.OSChannel", os_channel);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void RecordMicroArchitectureStats() {
 #if defined(ARCH_CPU_X86_FAMILY)
   base::CPU cpu;
@@ -186,6 +223,10 @@ void RecordStartupMetrics() {
                                 shell_integration::NUM_DEFAULT_STATES);
 
   authenticator_utility::ReportUVPlatformAuthenticatorAvailability();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  RecordChromeOSChannel();
+#endif
 }
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
