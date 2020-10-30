@@ -61,7 +61,8 @@ FeaturePromoControllerViews* FeaturePromoControllerViews::GetForView(
 
 bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
     const base::Feature& iph_feature,
-    const FeaturePromoBubbleParams& params) {
+    const FeaturePromoBubbleParams& params,
+    BubbleCloseCallback close_callback) {
   if (promos_blocked_for_testing_)
     return false;
 
@@ -95,6 +96,7 @@ bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
                                 snooze_service_->kUmaMaxSnoozeCount);
 
   ShowPromoBubbleImpl(params);
+  close_callback_ = std::move(close_callback);
 
   return true;
 }
@@ -135,13 +137,15 @@ void FeaturePromoControllerViews::CloseBubbleForCriticalPromo(
 }
 
 bool FeaturePromoControllerViews::MaybeShowPromo(
-    const base::Feature& iph_feature) {
+    const base::Feature& iph_feature,
+    BubbleCloseCallback close_callback) {
   base::Optional<FeaturePromoBubbleParams> params =
       FeaturePromoRegistry::GetInstance()->GetParamsForFeature(iph_feature,
                                                                browser_view_);
   if (!params)
     return false;
-  return MaybeShowPromoWithParams(iph_feature, *params);
+  return MaybeShowPromoWithParams(iph_feature, *params,
+                                  std::move(close_callback));
 }
 
 void FeaturePromoControllerViews::OnUserSnooze(
@@ -185,6 +189,9 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
+
+  if (close_callback_)
+    std::move(close_callback_).Run();
 
   // Record count of previous snoozes when the IPH gets dismissed by user
   // following the promo. e.g. clicking on relevant controls.
@@ -259,6 +266,9 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
+
+  if (close_callback_)
+    std::move(close_callback_).Run();
 
   if (current_iph_feature_) {
     tracker_->Dismissed(*current_iph_feature_);

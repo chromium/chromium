@@ -80,7 +80,7 @@ TEST_F(ReopenTabInProductHelpTest, TriggersIPH) {
   ReopenTabInProductHelp reopen_tab_iph(profile(), clock());
 
   EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature)))
+              MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature), _))
       .Times(1)
       .WillOnce(Return(true));
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_CONTROLLER_H_
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -18,18 +19,26 @@ class FeaturePromoController {
   FeaturePromoController() = default;
   virtual ~FeaturePromoController() = default;
 
+  using BubbleCloseCallback = base::OnceCallback<void()>;
+
   // Starts the promo if possible. Returns whether it started.
   // |iph_feature| must be an IPH feature defined in
   // components/feature_engagement/public/feature_list.cc and registered
   // with |FeaturePromoRegistry|. Note that this is different than the
   // feature that the IPH is showing for.
   //
+  // If a bubble was shown and |close_callback| was provided, it will be
+  // called when the bubble closes. |close_callback| must be valid as
+  // long as the bubble shows.
+  //
   // For users that can't register their parameters with
   // FeaturePromoRegistry, see
   // |FeaturePromoControllerViews::MaybeShowPromoWithParams()|. Prefer
   // statically registering params with FeaturePromoRegistry and using
   // this method when possible.
-  virtual bool MaybeShowPromo(const base::Feature& iph_feature) = 0;
+  virtual bool MaybeShowPromo(
+      const base::Feature& iph_feature,
+      BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
 
   // Returns whether a bubble is showing for the given IPH. Note that if
   // this is false, a promo might still be in progress; for example, a

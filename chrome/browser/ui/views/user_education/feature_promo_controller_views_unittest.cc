@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
@@ -99,6 +101,8 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
   }
 };
 
+using BubbleCloseCallback = FeaturePromoControllerViews::BubbleCloseCallback;
+
 TEST_F(FeaturePromoControllerViewsTest, GetForView) {
   EXPECT_EQ(controller_,
             FeaturePromoControllerViews::GetForView(GetAnchorView()));
@@ -112,8 +116,12 @@ TEST_F(FeaturePromoControllerViewsTest, AsksBackendToShowPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .Times(1)
       .WillOnce(Return(false));
-  EXPECT_FALSE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
-                                                     DefaultBubbleParams()));
+
+  base::MockCallback<BubbleCloseCallback> close_callback;
+  EXPECT_CALL(close_callback, Run()).Times(0);
+
+  EXPECT_FALSE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), close_callback.Get()));
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_FALSE(controller_->promo_bubble_for_testing());
 }
@@ -144,8 +152,10 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsWhenRequested) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
-  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
-                                                    DefaultBubbleParams()));
+
+  base::MockCallback<BubbleCloseCallback> close_callback;
+  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), close_callback.Get()));
 
   // Only valid before the widget is closed.
   FeaturePromoBubbleView* const bubble =
@@ -156,6 +166,8 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsWhenRequested) {
   views::test::WidgetClosingObserver widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  EXPECT_CALL(close_callback, Run()).Times(1);
+
   EXPECT_TRUE(controller_->CloseBubble(kTestIPHFeature));
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_FALSE(controller_->promo_bubble_for_testing());
@@ -187,8 +199,10 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsOnBubbleClosure) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
-  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
-                                                    DefaultBubbleParams()));
+
+  base::MockCallback<BubbleCloseCallback> close_callback;
+  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), close_callback.Get()));
 
   // Only valid before the widget is closed.
   FeaturePromoBubbleView* const bubble =
@@ -199,6 +213,7 @@ TEST_F(FeaturePromoControllerViewsTest, PromoEndsOnBubbleClosure) {
   views::test::WidgetClosingObserver widget_observer(bubble->GetWidget());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  EXPECT_CALL(close_callback, Run());
   bubble->GetWidget()->Close();
   widget_observer.Wait();
 
@@ -211,8 +226,10 @@ TEST_F(FeaturePromoControllerViewsTest, ContinuedPromoDefersBackendDismissed) {
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
-  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
-                                                    DefaultBubbleParams()));
+
+  base::MockCallback<BubbleCloseCallback> close_callback;
+  ASSERT_TRUE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), close_callback.Get()));
 
   // Only valid before the widget is closed.
   FeaturePromoBubbleView* const bubble =
@@ -225,6 +242,7 @@ TEST_F(FeaturePromoControllerViewsTest, ContinuedPromoDefersBackendDismissed) {
   // First check that CloseBubbleAndContinuePromo() actually closes the
   // bubble, but doesn't yet tell the backend the promo finished.
 
+  EXPECT_CALL(close_callback, Run()).Times(1);
   base::Optional<FeaturePromoController::PromoHandle> promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
@@ -315,12 +333,16 @@ TEST_F(FeaturePromoControllerViewsTest, CriticalPromoPreemptsNormalPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .Times(1)
       .WillOnce(Return(true));
-  EXPECT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
-                                                    DefaultBubbleParams()));
+
+  base::MockCallback<BubbleCloseCallback> close_callback;
+  EXPECT_TRUE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), close_callback.Get()));
   EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_TRUE(controller_->promo_bubble_for_testing());
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  EXPECT_CALL(close_callback, Run()).Times(1);
+
   EXPECT_TRUE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_TRUE(controller_->promo_bubble_for_testing());

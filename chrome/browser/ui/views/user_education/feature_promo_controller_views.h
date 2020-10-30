@@ -51,8 +51,10 @@ class FeaturePromoControllerViews : public FeaturePromoController,
 
   // For IPH not registered with |FeaturePromoRegistry|. Only use this
   // if it is infeasible to pre-register your IPH.
-  bool MaybeShowPromoWithParams(const base::Feature& iph_feature,
-                                const FeaturePromoBubbleParams& params);
+  bool MaybeShowPromoWithParams(
+      const base::Feature& iph_feature,
+      const FeaturePromoBubbleParams& params,
+      BubbleCloseCallback close_callback = BubbleCloseCallback());
 
   // Only for security or privacy critical promos. Immedialy shows a
   // promo with |params|, cancelling any normal promo and blocking any
@@ -67,7 +69,9 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   void CloseBubbleForCriticalPromo(const base::Token& critical_promo_id);
 
   // FeaturePromoController:
-  bool MaybeShowPromo(const base::Feature& iph_feature) override;
+  bool MaybeShowPromo(
+      const base::Feature& iph_feature,
+      BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
   bool BubbleIsShowing(const base::Feature& iph_feature) const override;
   bool CloseBubble(const base::Feature& iph_feature) override;
   PromoHandle CloseBubbleAndContinuePromo(
@@ -130,6 +134,11 @@ class FeaturePromoControllerViews : public FeaturePromoController,
 
   // The bubble currently showing, if any.
   FeaturePromoBubbleView* promo_bubble_ = nullptr;
+
+  // If present, called when |current_iph_feature_|'s bubble stops
+  // showing. Only valid if |current_iph_feature_| and |promo_bubble_|
+  // are both non-null.
+  BubbleCloseCallback close_callback_;
 
   // Stores the bubble anchor view so we can set/unset a highlight on
   // it.
