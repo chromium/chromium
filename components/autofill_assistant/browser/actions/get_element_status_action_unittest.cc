@@ -95,11 +95,9 @@ TEST_F(GetElementStatusActionTest, ActionReportsAllVariations) {
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
           Property(
               &ProcessedActionProto::get_element_status_result,
-              AllOf(
-                  Property(&GetElementStatusProto::Result::not_empty, true),
-                  Property(&GetElementStatusProto::Result::match_success, true),
-                  Property(&GetElementStatusProto::Result::reports,
-                           SizeIs(4))))))));
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
+                    Property(&GetElementStatusProto::Result::reports,
+                             SizeIs(4))))))));
   Run();
 }
 
@@ -159,11 +157,9 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForNoExpectation) {
       callback_,
       Run(Pointee(AllOf(
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(
-              &ProcessedActionProto::get_element_status_result,
-              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
-                    Property(&GetElementStatusProto::Result::match_success,
-                             true)))))));
+          Property(&ProcessedActionProto::get_element_status_result,
+                   AllOf(Property(&GetElementStatusProto::Result::not_empty,
+                                  true)))))));
   Run();
 }
 
@@ -349,11 +345,16 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForFullMatchWithoutSpaces) {
 
 TEST_F(GetElementStatusActionTest, EmptyTextForEmptyValueIsSuccess) {
   ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
-      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), ""));
+      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), std::string()));
 
   Selector selector({"#element"});
   *proto_.mutable_element() = selector.proto;
-  proto_.mutable_expected_value_match()->mutable_text_match()->set_value("");
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_value(
+      std::string());
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_full_match(true);
   proto_.set_mismatch_should_fail(true);
 
   EXPECT_CALL(
@@ -362,9 +363,11 @@ TEST_F(GetElementStatusActionTest, EmptyTextForEmptyValueIsSuccess) {
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
           Property(
               &ProcessedActionProto::get_element_status_result,
-              AllOf(Property(&GetElementStatusProto::Result::not_empty, false),
-                    Property(&GetElementStatusProto::Result::match_success,
-                             true)))))));
+              AllOf(
+                  Property(&GetElementStatusProto::Result::not_empty, false),
+                  Property(&GetElementStatusProto::Result::match_success, true),
+                  Property(&GetElementStatusProto::Result::expected_empty_match,
+                           true)))))));
   Run();
 }
 
@@ -374,6 +377,10 @@ TEST_F(GetElementStatusActionTest, InnerTextLookupSuccess) {
   proto_.mutable_expected_value_match()->mutable_text_match()->set_value(
       kValue);
   proto_.set_value_source(GetElementStatusProto::INNER_TEXT);
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_full_match(true);
   proto_.set_mismatch_should_fail(true);
 
   auto expected_element =
@@ -473,11 +480,15 @@ TEST_F(GetElementStatusActionTest, ActionFailsForRegexMismatchIfRequired) {
 
 TEST_F(GetElementStatusActionTest, EmptyRegexpForEmptyValueIsSuccess) {
   ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
-      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), ""));
+      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), std::string()));
 
   Selector selector({"#element"});
   *proto_.mutable_element() = selector.proto;
   proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("^$");
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_full_match(true);
   proto_.set_mismatch_should_fail(true);
 
   EXPECT_CALL(
@@ -486,9 +497,46 @@ TEST_F(GetElementStatusActionTest, EmptyRegexpForEmptyValueIsSuccess) {
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
           Property(
               &ProcessedActionProto::get_element_status_result,
-              AllOf(Property(&GetElementStatusProto::Result::not_empty, false),
-                    Property(&GetElementStatusProto::Result::match_success,
-                             true)))))));
+              AllOf(
+                  Property(&GetElementStatusProto::Result::not_empty, false),
+                  Property(&GetElementStatusProto::Result::match_success, true),
+                  Property(&GetElementStatusProto::Result::expected_empty_match,
+                           true)))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, BlankTextWithRemovingSpacesIsExpectedEmpty) {
+  ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
+      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), "   "));
+
+  Selector selector({"#element"});
+  *proto_.mutable_element() = selector.proto;
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_value("   ");
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->mutable_match_options()
+      ->set_remove_space(true);
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_full_match(true);
+  proto_.set_mismatch_should_fail(true);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(
+                  // The field is not empty (it is blank), but the match is
+                  // still a success and expects to be empty given the
+                  // configuration.
+                  Property(&GetElementStatusProto::Result::not_empty, true),
+                  Property(&GetElementStatusProto::Result::match_success, true),
+                  Property(&GetElementStatusProto::Result::expected_empty_match,
+                           true)))))));
   Run();
 }
 

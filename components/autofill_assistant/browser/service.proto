@@ -2496,6 +2496,10 @@ message GetElementStatusProto {
     optional bool not_empty = 1;
     // The field matches the expected input.
     optional bool match_success = 2;
+    // The field was expected to match an empty expectation. For a value this
+    // means an empty expected value, for a RegExp this means the extracted
+    // match was empty.
+    optional bool expected_empty_match = 4;
 
     // For logging and debugging.
     repeated ComparisonReport reports = 3;
@@ -2554,5 +2558,6 @@ message GetElementStatusProto {
     optional bool ends_with = 5;
 
     optional bool empty = 6;
+    optional bool expected_empty_match = 7;
   }
 }

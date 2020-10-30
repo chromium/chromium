@@ -42,8 +42,12 @@ GetElementStatusProto::ComparisonReport CreateComparisonReport(
       remove_space ? RemoveWhitespace(actual) : actual;
   report.set_empty(actual_for_match.empty());
 
-  if (!re2.is_re2 && re2.value.empty()) {
+  std::string value_for_match =
+      !re2.is_re2 && remove_space ? RemoveWhitespace(re2.value) : re2.value;
+
+  if (!re2.is_re2 && value_for_match.empty()) {
     if (actual_for_match.empty()) {
+      report.set_expected_empty_match(true);
       report.set_full_match(true);
       report.set_contains(true);
       report.set_starts_with(true);
@@ -53,9 +57,7 @@ GetElementStatusProto::ComparisonReport CreateComparisonReport(
   }
 
   std::string re2_for_match =
-      re2.is_re2 ? re2.value
-                 : re2::RE2::QuoteMeta(
-                       remove_space ? RemoveWhitespace(re2.value) : re2.value);
+      re2.is_re2 ? re2.value : re2::RE2::QuoteMeta(value_for_match);
 
   re2::RE2::Options options;
   options.set_case_sensitive(case_sensitive);
@@ -67,6 +69,7 @@ GetElementStatusProto::ComparisonReport CreateComparisonReport(
     return report;
   }
 
+  report.set_expected_empty_match(match.empty());
   report.set_full_match(actual_for_match == match);
   size_t pos = actual_for_match.find(match);
   report.set_contains(pos != std::string::npos);
@@ -200,9 +203,11 @@ void GetElementStatusAction::OnGetStringAttribute(const ClientStatus& status,
         success = report.ends_with();
         break;
     }
+
+    result->set_expected_empty_match(report.expected_empty_match());
+    result->set_match_success(success);
   }
 
-  result->set_match_success(success);
   EndAction(!success && proto_.get_element_status().mismatch_should_fail()
                 ? ClientStatus(ELEMENT_MISMATCH)
                 : OkClientStatus());
