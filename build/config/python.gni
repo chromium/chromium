@@ -133,7 +133,7 @@ template("python2_action_foreach") {
                              "visibility",
                            ])
 
-    script = "//build/run_under_python2.py"
+    script = "//build/util/python2_action.py"
     if (!defined(invoker.inputs)) {
       inputs = [ invoker.script ]
     } else {
@@ -202,7 +202,7 @@ template("action_with_pydeps") {
       _args = args
       args = []
       args = [ rebase_path(invoker.script, root_build_dir) ] + _args
-      script = "//build/run_under_python2.py"
+      script = "//build/util/python2_action.py"
     }
   }
 }
@@ -251,7 +251,7 @@ template("action_foreach_with_pydeps") {
       _args = args
       args = []
       args = [ rebase_path(invoker.script, root_build_dir) ] + _args
-      script = "//build/run_under_python2.py"
+      script = "//build/util/python2_action.py"
     }
   }
 }
