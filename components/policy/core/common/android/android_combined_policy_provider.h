@@ -43,7 +43,6 @@ class POLICY_EXPORT AndroidCombinedPolicyProvider
 
   // ConfigurationPolicyProvider:
   bool IsInitializationComplete(PolicyDomain domain) const override;
-  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies() override;
 
   // For testing

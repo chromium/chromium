@@ -102,11 +102,14 @@ PolicyServiceImpl::PolicyServiceImpl(Providers providers,
       migrators_(std::move(migrators)),
       initialization_throttled_(initialization_throttled) {
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
-    policy_domain_status_[domain] = PolicyDomainStatus::kUninitialized;
-
-  for (auto* provider : providers_)
+    initialization_complete_[domain] = true;
+  for (auto* provider : providers_) {
     provider->AddObserver(this);
-  CheckPolicyDomainStatus();
+    for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain) {
+      initialization_complete_[domain] &=
+          provider->IsInitializationComplete(static_cast<PolicyDomain>(domain));
+    }
+  }
   // There are no observers yet, but calls to GetPolicies() should already get
   // the processed policy values.
   MergeAndTriggerUpdates();
@@ -175,15 +178,9 @@ const PolicyMap& PolicyServiceImpl::GetPolicies(
 bool PolicyServiceImpl::IsInitializationComplete(PolicyDomain domain) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(domain >= 0 && domain < POLICY_DOMAIN_SIZE);
-  return !initialization_throttled_ &&
-         policy_domain_status_[domain] != PolicyDomainStatus::kUninitialized;
-}
-
-bool PolicyServiceImpl::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(domain >= 0 && domain < POLICY_DOMAIN_SIZE);
-  return !initialization_throttled_ &&
-         policy_domain_status_[domain] == PolicyDomainStatus::kPolicyReady;
+  if (initialization_throttled_)
+    return false;
+  return initialization_complete_[domain];
 }
 
 void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
@@ -225,7 +222,7 @@ void PolicyServiceImpl::UnthrottleInitialization() {
 
   initialization_throttled_ = false;
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
-    MaybeNotifyPolicyDomainStatusChange(static_cast<PolicyDomain>(domain));
+    MaybeNotifyInitializationComplete(static_cast<PolicyDomain>(domain));
 }
 
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
@@ -360,56 +357,46 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   for (; it_old != end_old; ++it_old)
     NotifyNamespaceUpdated(it_old->first, *it_old->second, kEmpty);
 
-  CheckPolicyDomainStatus();
+  CheckInitializationComplete();
   CheckRefreshComplete();
   NotifyProviderUpdatesPropagated();
 }
 
-void PolicyServiceImpl::CheckPolicyDomainStatus() {
+void PolicyServiceImpl::CheckInitializationComplete() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Check if all the providers just became initialized for each domain; if so,
-  // notify that domain's observers. If they were initialized, check if they had
-  // their first policies loaded.
+  // notify that domain's observers.
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain) {
-    PolicyDomain policy_domain = static_cast<PolicyDomain>(domain);
-    if (policy_domain_status_[domain] == PolicyDomainStatus::kPolicyReady)
+    if (initialization_complete_[domain])
       continue;
 
-    PolicyDomainStatus new_status = PolicyDomainStatus::kPolicyReady;
+    PolicyDomain policy_domain = static_cast<PolicyDomain>(domain);
 
+    bool all_complete = true;
     for (auto* provider : providers_) {
       if (!provider->IsInitializationComplete(policy_domain)) {
-        new_status = PolicyDomainStatus::kUninitialized;
+        all_complete = false;
         break;
-      } else if (!provider->IsFirstPolicyLoadComplete(policy_domain)) {
-        new_status = PolicyDomainStatus::kInitialized;
       }
     }
-
-    if (new_status == policy_domain_status_[domain])
-      continue;
-
-    policy_domain_status_[domain] = new_status;
-    MaybeNotifyPolicyDomainStatusChange(policy_domain);
+    if (all_complete) {
+      initialization_complete_[domain] = true;
+      MaybeNotifyInitializationComplete(policy_domain);
+    }
   }
 }
-void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
+
+void PolicyServiceImpl::MaybeNotifyInitializationComplete(
     PolicyDomain policy_domain) {
-  if (initialization_throttled_ || policy_domain_status_[policy_domain] ==
-                                       PolicyDomainStatus::kUninitialized) {
+  if (initialization_throttled_)
     return;
-  }
-
+  if (!initialization_complete_[policy_domain])
+    return;
   auto iter = observers_.find(policy_domain);
-  if (iter == observers_.end())
-    return;
-
-  for (auto& observer : *iter->second) {
-    observer.OnPolicyServiceInitialized(policy_domain);
-    if (policy_domain_status_[policy_domain] ==
-        PolicyDomainStatus::kPolicyReady)
-      observer.OnFirstPoliciesLoaded(policy_domain);
+  if (iter != observers_.end()) {
+    for (auto& observer : *iter->second)
+      observer.OnPolicyServiceInitialized(policy_domain);
   }
 }
 

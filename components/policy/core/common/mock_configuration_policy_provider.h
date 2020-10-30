@@ -24,7 +24,6 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
   ~MockConfigurationPolicyProvider() override;
 
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
-  MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
   MOCK_METHOD0(RefreshPolicies, void());
 
   // Make public for tests.

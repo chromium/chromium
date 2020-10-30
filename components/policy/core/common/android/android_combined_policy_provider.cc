@@ -61,10 +61,5 @@ bool AndroidCombinedPolicyProvider::IsInitializationComplete(
   return initialized_;
 }
 
-bool AndroidCombinedPolicyProvider::IsFirstPolicyLoadComplete(
-    PolicyDomain domain) const {
-  return IsInitializationComplete(domain);
-}
-
 }  // namespace android
 }  // namespace policy

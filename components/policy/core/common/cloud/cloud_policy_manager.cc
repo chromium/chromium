@@ -73,10 +73,6 @@ bool CloudPolicyManager::IsInitializationComplete(PolicyDomain domain) const {
   return true;
 }
 
-bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
-  return store()->first_policies_loaded();
-}
-
 void CloudPolicyManager::RefreshPolicies() {
   if (service()) {
     waiting_for_policy_refresh_ = true;

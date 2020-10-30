@@ -80,8 +80,6 @@ class PolicyPrefsTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     EXPECT_CALL(provider_, IsInitializationComplete(_))
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
     BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 

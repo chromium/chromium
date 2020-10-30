@@ -67,7 +67,6 @@ class POLICY_EXPORT SchemaRegistryTrackingPolicyProvider
   // provider doesn't have a "real" policy source of its own.
   void Init(SchemaRegistry* registry) override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
-  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies() override;
   void OnSchemaRegistryReady() override;
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;

@@ -113,12 +113,6 @@ class PolicyServiceTest : public testing::Test {
         .WillRepeatedly(Return(true));
     EXPECT_CALL(provider2_, IsInitializationComplete(_))
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(provider0_, IsFirstPolicyLoadComplete(_))
-        .WillRepeatedly(Return(true));
-    EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(_))
-        .WillRepeatedly(Return(true));
-    EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
-        .WillRepeatedly(Return(true));
 
     provider0_.Init();
     provider1_.Init();
@@ -641,10 +635,6 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
       .WillRepeatedly(Return(false));
   EXPECT_CALL(provider2_, IsInitializationComplete(_))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
   PolicyServiceImpl::Providers providers;
   providers.push_back(&provider0_);
   providers.push_back(&provider1_);
@@ -664,8 +654,6 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
   policy_service_->AddObserver(POLICY_DOMAIN_SIGNIN_EXTENSIONS, &observer);
   EXPECT_CALL(observer, OnPolicyServiceInitialized(_)).Times(0);
   Mock::VerifyAndClearExpectations(&provider1_);
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
   EXPECT_CALL(provider1_, IsInitializationComplete(POLICY_DOMAIN_CHROME))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(provider1_, IsInitializationComplete(POLICY_DOMAIN_EXTENSIONS))
@@ -685,8 +673,6 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
   // Same if |provider1_| doesn't have POLICY_DOMAIN_EXTENSIONS initialized.
   EXPECT_CALL(observer, OnPolicyServiceInitialized(_)).Times(0);
   Mock::VerifyAndClearExpectations(&provider2_);
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
   EXPECT_CALL(provider2_, IsInitializationComplete(POLICY_DOMAIN_CHROME))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(provider2_, IsInitializationComplete(POLICY_DOMAIN_EXTENSIONS))
@@ -705,8 +691,6 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
   // Now initialize POLICY_DOMAIN_CHROME on all the providers.
   EXPECT_CALL(observer, OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME));
   Mock::VerifyAndClearExpectations(&provider2_);
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
   EXPECT_CALL(provider2_, IsInitializationComplete(POLICY_DOMAIN_CHROME))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(provider2_, IsInitializationComplete(POLICY_DOMAIN_EXTENSIONS))
@@ -728,8 +712,6 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
   EXPECT_CALL(observer,
               OnPolicyServiceInitialized(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
   Mock::VerifyAndClearExpectations(&provider1_);
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
   EXPECT_CALL(provider1_, IsInitializationComplete(POLICY_DOMAIN_CHROME))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(provider1_, IsInitializationComplete(POLICY_DOMAIN_EXTENSIONS))
@@ -754,7 +736,7 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
 // Tests initialization throttling of PolicyServiceImpl.
 // This actually tests two cases:
 // (1) A domain was initialized before UnthrottleInitialization is called.
-//     Observers only get notified after calling UnthrottleInitialization.
+//     Observers only get notified after calling UntrhottleInitialization.
 //     This is tested on POLICY_DOMAIN_CHROME.
 // (2) A domain becomes initialized after UnthrottleInitialization has already
 //     been called. Because initialization is not throttled anymore, observers
@@ -766,8 +748,6 @@ TEST_F(PolicyServiceTest, InitializationThrottled) {
   // no domain initialized.
   Mock::VerifyAndClearExpectations(&provider2_);
   EXPECT_CALL(provider2_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
       .WillRepeatedly(Return(false));
   PolicyServiceImpl::Providers providers;
   providers.push_back(&provider0_);
@@ -781,13 +761,6 @@ TEST_F(PolicyServiceTest, InitializationThrottled) {
   EXPECT_FALSE(policy_service_->IsInitializationComplete(
       POLICY_DOMAIN_SIGNIN_EXTENSIONS));
 
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
   MockPolicyServiceObserver observer;
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, &observer);
   policy_service_->AddObserver(POLICY_DOMAIN_EXTENSIONS, &observer);
@@ -795,8 +768,7 @@ TEST_F(PolicyServiceTest, InitializationThrottled) {
 
   // Now additionally initialize POLICY_DOMAIN_CHROME on |provider2_|.
   // Note: VerifyAndClearExpectations is called to reset the previously set
-  // action for IsInitializationComplete and IsFirstPolicyLoadComplete on
-  // |provider_2|.
+  // action for IsInitializtionComplete on |provider_2|.
   Mock::VerifyAndClearExpectations(&provider2_);
   EXPECT_CALL(provider2_, IsInitializationComplete(POLICY_DOMAIN_CHROME))
       .WillRepeatedly(Return(true));
@@ -806,17 +778,8 @@ TEST_F(PolicyServiceTest, InitializationThrottled) {
               IsInitializationComplete(POLICY_DOMAIN_SIGNIN_EXTENSIONS))
       .WillRepeatedly(Return(false));
 
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider2_,
-              IsFirstPolicyLoadComplete(POLICY_DOMAIN_SIGNIN_EXTENSIONS))
-      .WillRepeatedly(Return(false));
-
   // Nothing will happen because initialization is still throttled.
   EXPECT_CALL(observer, OnPolicyServiceInitialized(_)).Times(0);
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(_)).Times(0);
   const PolicyMap kPolicyMap;
   provider2_.UpdateChromePolicy(kPolicyMap);
   Mock::VerifyAndClearExpectations(&observer);
@@ -826,19 +789,10 @@ TEST_F(PolicyServiceTest, InitializationThrottled) {
   EXPECT_FALSE(policy_service_->IsInitializationComplete(
       POLICY_DOMAIN_SIGNIN_EXTENSIONS));
 
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
   // Unthrottle initialization. This will signal that POLICY_DOMAIN_CHROME is
   // initialized, the other domains should still not be initialized because
-  // |provider2_| is returning false in IsInitializationComplete and
-  // IsFirstPolicyLoadComplete for them.
+  // |provider2_| is returning false in IsInitializationComplete for them.
   EXPECT_CALL(observer, OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_CHROME));
   policy_service_->UnthrottleInitialization();
   Mock::VerifyAndClearExpectations(&observer);
   EXPECT_TRUE(policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -847,39 +801,22 @@ TEST_F(PolicyServiceTest, InitializationThrottled) {
   EXPECT_FALSE(policy_service_->IsInitializationComplete(
       POLICY_DOMAIN_SIGNIN_EXTENSIONS));
 
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
   // Initialize the remaining domains.
   // Note: VerifyAndClearExpectations is called to reset the previously set
-  // action for IsInitializationComplete and IsFirstPolicyLoadComplete on
-  // |provider_2|.
+  // action for IsInitializtionComplete on |provider_2|.
   Mock::VerifyAndClearExpectations(&provider2_);
   EXPECT_CALL(provider2_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
       .WillRepeatedly(Return(true));
 
   EXPECT_CALL(observer, OnPolicyServiceInitialized(POLICY_DOMAIN_EXTENSIONS));
   EXPECT_CALL(observer,
               OnPolicyServiceInitialized(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
   provider2_.UpdateChromePolicy(kPolicyMap);
   Mock::VerifyAndClearExpectations(&observer);
   EXPECT_TRUE(policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_TRUE(
       policy_service_->IsInitializationComplete(POLICY_DOMAIN_EXTENSIONS));
   EXPECT_TRUE(policy_service_->IsInitializationComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_TRUE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(
       POLICY_DOMAIN_SIGNIN_EXTENSIONS));
 
   // Cleanup.
@@ -902,13 +839,6 @@ TEST_F(PolicyServiceTest, InitializationThrottledProvidersAlreadyInitialized) {
   EXPECT_FALSE(policy_service_->IsInitializationComplete(
       POLICY_DOMAIN_SIGNIN_EXTENSIONS));
 
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
   MockPolicyServiceObserver observer;
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, &observer);
   policy_service_->AddObserver(POLICY_DOMAIN_EXTENSIONS, &observer);
@@ -920,141 +850,12 @@ TEST_F(PolicyServiceTest, InitializationThrottledProvidersAlreadyInitialized) {
   EXPECT_CALL(observer, OnPolicyServiceInitialized(POLICY_DOMAIN_EXTENSIONS));
   EXPECT_CALL(observer,
               OnPolicyServiceInitialized(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_CHROME));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
   policy_service_->UnthrottleInitialization();
   Mock::VerifyAndClearExpectations(&observer);
   EXPECT_TRUE(policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_TRUE(
       policy_service_->IsInitializationComplete(POLICY_DOMAIN_EXTENSIONS));
   EXPECT_TRUE(policy_service_->IsInitializationComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_TRUE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  // Cleanup.
-  policy_service_->RemoveObserver(POLICY_DOMAIN_CHROME, &observer);
-  policy_service_->RemoveObserver(POLICY_DOMAIN_EXTENSIONS, &observer);
-  policy_service_->RemoveObserver(POLICY_DOMAIN_SIGNIN_EXTENSIONS, &observer);
-}
-
-TEST_F(PolicyServiceTest, IsFirstPolicyLoadComplete) {
-  // |provider0_| has all domains initialized.
-  Mock::VerifyAndClearExpectations(&provider1_);
-  Mock::VerifyAndClearExpectations(&provider2_);
-  EXPECT_CALL(provider1_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(false));
-  PolicyServiceImpl::Providers providers;
-  providers.push_back(&provider0_);
-  providers.push_back(&provider1_);
-  providers.push_back(&provider2_);
-  policy_service_ = std::make_unique<PolicyServiceImpl>(std::move(providers));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  // |provider2_| still doesn't have POLICY_DOMAIN_CHROME initialized, so
-  // the initialization status of that domain won't change.
-  MockPolicyServiceObserver observer;
-  policy_service_->AddObserver(POLICY_DOMAIN_CHROME, &observer);
-  policy_service_->AddObserver(POLICY_DOMAIN_EXTENSIONS, &observer);
-  policy_service_->AddObserver(POLICY_DOMAIN_SIGNIN_EXTENSIONS, &observer);
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(_)).Times(0);
-  Mock::VerifyAndClearExpectations(&provider1_);
-  EXPECT_CALL(provider1_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider1_,
-              IsFirstPolicyLoadComplete(POLICY_DOMAIN_SIGNIN_EXTENSIONS))
-      .WillRepeatedly(Return(false));
-  const PolicyMap kPolicyMap;
-  provider1_.UpdateChromePolicy(kPolicyMap);
-  Mock::VerifyAndClearExpectations(&observer);
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  // Same if |provider1_| doesn't have POLICY_DOMAIN_EXTENSIONS initialized.
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(_)).Times(0);
-  Mock::VerifyAndClearExpectations(&provider2_);
-  EXPECT_CALL(provider2_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_,
-              IsFirstPolicyLoadComplete(POLICY_DOMAIN_SIGNIN_EXTENSIONS))
-      .WillRepeatedly(Return(true));
-  provider2_.UpdateChromePolicy(kPolicyMap);
-  Mock::VerifyAndClearExpectations(&observer);
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  // Now initialize POLICY_DOMAIN_CHROME on all the providers.
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_CHROME));
-  Mock::VerifyAndClearExpectations(&provider2_);
-  EXPECT_CALL(provider2_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider2_,
-              IsFirstPolicyLoadComplete(POLICY_DOMAIN_SIGNIN_EXTENSIONS))
-      .WillRepeatedly(Return(true));
-  provider2_.UpdateChromePolicy(kPolicyMap);
-  Mock::VerifyAndClearExpectations(&observer);
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  // Other domains are still not initialized.
-  EXPECT_FALSE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_FALSE(policy_service_->IsFirstPolicyLoadComplete(
-      POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-
-  // Initialize the remaining domains.
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_CALL(observer, OnFirstPoliciesLoaded(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-  Mock::VerifyAndClearExpectations(&provider1_);
-  EXPECT_CALL(provider1_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider1_, IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider1_,
-              IsFirstPolicyLoadComplete(POLICY_DOMAIN_SIGNIN_EXTENSIONS))
-      .WillRepeatedly(Return(true));
-  provider1_.UpdateChromePolicy(kPolicyMap);
-  Mock::VerifyAndClearExpectations(&observer);
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
-  EXPECT_TRUE(
-      policy_service_->IsFirstPolicyLoadComplete(POLICY_DOMAIN_EXTENSIONS));
-  EXPECT_TRUE(policy_service_->IsFirstPolicyLoadComplete(
       POLICY_DOMAIN_SIGNIN_EXTENSIONS));
 
   // Cleanup.

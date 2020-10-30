@@ -41,11 +41,6 @@ bool ConfigurationPolicyProvider::IsInitializationComplete(
   return true;
 }
 
-bool ConfigurationPolicyProvider::IsFirstPolicyLoadComplete(
-    PolicyDomain domain) const {
-  return true;
-}
-
 void ConfigurationPolicyProvider::UpdatePolicy(
     std::unique_ptr<PolicyBundle> bundle) {
   if (bundle) {

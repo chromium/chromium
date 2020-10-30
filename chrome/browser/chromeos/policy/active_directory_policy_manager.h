@@ -45,7 +45,6 @@ class ActiveDirectoryPolicyManager
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
-  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies() override;
 
   // CloudPolicyStore::Observer:

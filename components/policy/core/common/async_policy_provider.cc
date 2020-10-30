@@ -21,7 +21,7 @@ namespace policy {
 AsyncPolicyProvider::AsyncPolicyProvider(
     SchemaRegistry* registry,
     std::unique_ptr<AsyncPolicyLoader> loader)
-    : loader_(std::move(loader)), first_policies_loaded_(false) {
+    : loader_(std::move(loader)) {
   // Make an immediate synchronous load on startup.
   OnLoaderReloaded(loader_->InitialLoad(registry->schema_map()));
 }
@@ -85,11 +85,6 @@ void AsyncPolicyProvider::RefreshPolicies() {
                                            refresh_callback_.callback());
 }
 
-bool AsyncPolicyProvider::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return first_policies_loaded_;
-}
-
 void AsyncPolicyProvider::ReloadAfterRefreshSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There can't be another refresh callback pending now, since its creation
@@ -109,7 +104,6 @@ void AsyncPolicyProvider::ReloadAfterRefreshSync() {
 void AsyncPolicyProvider::OnLoaderReloaded(
     std::unique_ptr<PolicyBundle> bundle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  first_policies_loaded_ = true;
   // Only propagate policy updates if there are no pending refreshes, and if
   // Shutdown() hasn't been called yet.
   if (refresh_callback_.IsCancelled() && loader_)
