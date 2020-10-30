@@ -28,21 +28,24 @@ namespace {
 LayoutSVGResourceClipper* ResolveElementReference(
     const LayoutObject& layout_object,
     const ReferenceClipPathOperation& reference_clip_path_operation) {
+  LayoutSVGResourceClipper* resource_clipper = nullptr;
   if (layout_object.IsSVGChild()) {
     // The reference will have been resolved in
     // SVGResources::buildResources, so we can just use the LayoutObject's
     // SVGResources.
     SVGResources* resources =
         SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
-    return resources ? resources->Clipper() : nullptr;
+    resource_clipper = resources ? resources->Clipper() : nullptr;
+  } else {
+    // TODO(fs): Doesn't work with external SVG references (crbug.com/109212.)
+    resource_clipper = GetSVGResourceAsType<LayoutSVGResourceClipper>(
+        reference_clip_path_operation.Resource());
   }
-  // TODO(fs): Doesn't work with external SVG references (crbug.com/109212.)
-  SVGResource* resource = reference_clip_path_operation.Resource();
-  LayoutSVGResourceContainer* container =
-      resource ? resource->ResourceContainer() : nullptr;
-  if (!container || container->ResourceType() != kClipperResourceType)
-    return nullptr;
-  return ToLayoutSVGResourceClipper(container);
+  if (resource_clipper) {
+    SECURITY_DCHECK(!resource_clipper->NeedsLayout());
+    resource_clipper->ClearInvalidationMask();
+  }
+  return resource_clipper;
 }
 
 }  // namespace
@@ -72,11 +75,9 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
   FloatRect reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
   if (clip_path.GetType() == ClipPathOperation::SHAPE) {
-    ShapeClipPathOperation& shape = To<ShapeClipPathOperation>(clip_path);
-    if (!shape.IsValid())
-      return base::nullopt;
     auto zoom =
         UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
+    auto& shape = To<ShapeClipPathOperation>(clip_path);
     FloatRect bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
     bounding_box.Intersect(LayoutRect::InfiniteIntRect());
     return bounding_box;
@@ -102,27 +103,6 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
   return bounding_box;
 }
 
-// Note: Return resolved LayoutSVGResourceClipper for caller's convenience,
-// if the clip path is a reference to SVG.
-static bool IsClipPathOperationValid(
-    const ClipPathOperation& clip_path,
-    const LayoutObject& search_scope,
-    LayoutSVGResourceClipper*& resource_clipper) {
-  if (clip_path.GetType() == ClipPathOperation::SHAPE) {
-    if (!To<ShapeClipPathOperation>(clip_path).IsValid())
-      return false;
-  } else {
-    DCHECK_EQ(clip_path.GetType(), ClipPathOperation::REFERENCE);
-    resource_clipper = ResolveElementReference(
-        search_scope, To<ReferenceClipPathOperation>(clip_path));
-    if (!resource_clipper)
-      return false;
-    SECURITY_DCHECK(!resource_clipper->NeedsLayout());
-    resource_clipper->ClearInvalidationMask();
-  }
-  return true;
-}
-
 static AffineTransform MaskToContentTransform(
     const LayoutSVGResourceClipper& resource_clipper,
     bool uses_zoomed_reference_box,
@@ -146,12 +126,12 @@ static base::Optional<Path> PathBasedClipInternal(
     bool uses_zoomed_reference_box,
     const FloatRect& reference_box) {
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
-  LayoutSVGResourceClipper* resource_clipper = nullptr;
-  if (!IsClipPathOperationValid(clip_path, clip_path_owner, resource_clipper))
-    return base::nullopt;
-
-  if (resource_clipper) {
-    DCHECK_EQ(clip_path.GetType(), ClipPathOperation::REFERENCE);
+  if (const auto* reference_clip =
+          DynamicTo<ReferenceClipPathOperation>(clip_path)) {
+    LayoutSVGResourceClipper* resource_clipper =
+        ResolveElementReference(clip_path_owner, *reference_clip);
+    if (!resource_clipper)
+      return base::nullopt;
     base::Optional<Path> path = resource_clipper->AsPath();
     if (!path)
       return path;
@@ -203,9 +183,11 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     const ClipPathOperation* clip_path = current_object->StyleRef().ClipPath();
     if (!clip_path)
       break;
-    LayoutSVGResourceClipper* resource_clipper = nullptr;
-    if (!IsClipPathOperationValid(*clip_path, *current_object,
-                                  resource_clipper))
+    // We wouldn't have reached here if the current clip-path is a shape,
+    // because it would have been applied as a path-based clip already.
+    LayoutSVGResourceClipper* resource_clipper = ResolveElementReference(
+        *current_object, To<ReferenceClipPathOperation>(*clip_path));
+    if (!resource_clipper)
       break;
 
     if (is_first)
@@ -213,10 +195,6 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     else
       context.BeginLayer(1.f, SkBlendMode::kDstIn);
 
-    // We wouldn't have reached here if the current clip-path is a shape,
-    // because it would have been applied as path-based clip already.
-    DCHECK(resource_clipper);
-    DCHECK_EQ(clip_path->GetType(), ClipPathOperation::REFERENCE);
     if (resource_clipper->StyleRef().ClipPath()) {
       // Try to apply nested clip-path as path-based clip.
       if (const base::Optional<Path>& path = PathBasedClipInternal(
@@ -243,13 +221,15 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
   if (object.IsText())
     return false;
-  const ClipPathOperation* clip_path = object.StyleRef().ClipPath();
-  if (!clip_path)
+  const auto* reference_clip =
+      DynamicTo<ReferenceClipPathOperation>(object.StyleRef().ClipPath());
+  if (!reference_clip)
     return false;
-  LayoutSVGResourceClipper* resource_clipper = nullptr;
-  if (!IsClipPathOperationValid(*clip_path, object, resource_clipper))
+  LayoutSVGResourceClipper* resource_clipper =
+      ResolveElementReference(object, *reference_clip);
+  if (!resource_clipper)
     return false;
-  return resource_clipper && !resource_clipper->AsPath();
+  return !resource_clipper->AsPath();
 }
 
 base::Optional<Path> ClipPathClipper::PathBasedClip(
