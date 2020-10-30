@@ -50,7 +50,7 @@ class LogOutputStream : public OutputStreamInterface {
     virtual size_t LineWidth() = 0;
   };
 
-  LogOutputStream(std::unique_ptr<Delegate> delegate);
+  explicit LogOutputStream(std::unique_ptr<Delegate> delegate);
   ~LogOutputStream() override;
 
   // OutputStreamInterface:

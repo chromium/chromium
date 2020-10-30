@@ -25,7 +25,9 @@ namespace {
 
 using IOSExceptionProcessor = PlatformTest;
 
-TEST_F(IOSExceptionProcessor, SelectorExists) {
+// TODO(crbug.com/crashpad/358): Re-enable once iOS14 redacted symbol issue is
+// fixed.
+TEST_F(IOSExceptionProcessor, DISABLED_SelectorExists) {
   IMP uigesture_deliver_event_imp = class_getMethodImplementation(
       NSClassFromString(@"UIGestureEnvironment"),
       NSSelectorFromString(@"_deliverEvent:toGestureRecognizers:usingBlock:"));

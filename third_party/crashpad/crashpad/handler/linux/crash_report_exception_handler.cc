@@ -43,10 +43,10 @@
 namespace crashpad {
 namespace {
 
-class Logger : public LogOutputStream::Delegate {
+class Logger final : public LogOutputStream::Delegate {
  public:
   Logger() = default;
-  ~Logger() = default;
+  ~Logger() override = default;
 
 #if defined(OS_ANDROID)
   int Log(const char* buf) override {

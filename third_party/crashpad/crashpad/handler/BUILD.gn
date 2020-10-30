@@ -181,7 +181,7 @@ if (crashpad_is_android) {
 
     deps = [ "../util:no_cfi_icall" ]
 
-    ldflags = [ "-llog" ]
+    libs = [ "log" ]
 
     if (crashpad_is_in_chromium) {
       no_default_deps = true
