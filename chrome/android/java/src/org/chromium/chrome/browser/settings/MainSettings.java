@@ -219,11 +219,6 @@ public class MainSettings extends PreferenceFragmentCompat
             TemplateUrlServiceFactory.get().load();
         }
 
-        // This checks whether the flag for Downloads Preferences is enabled.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)) {
-            getPreferenceScreen().removePreference(findPreference(PREF_DOWNLOADS));
-        }
-
         // Only show the Safety check section if both Safety check and Password check flags are on.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_CHECK_ANDROID)
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHECK)) {
