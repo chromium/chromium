@@ -645,6 +645,17 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ServiceWorkerRegistry::GetRegisteredOrigins(
+    GetRegisteredOriginsCallback callback) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  GetRemoteStorageControl()->GetRegisteredOrigins(std::move(callback));
+}
+
+void ServiceWorkerRegistry::PerformStorageCleanup(base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  GetRemoteStorageControl()->PerformStorageCleanup(std::move(callback));
+}
+
 void ServiceWorkerRegistry::PrepareForDeleteAndStarOver() {
   should_schedule_delete_and_start_over_ = false;
   GetRemoteStorageControl()->Disable();

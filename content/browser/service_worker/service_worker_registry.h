@@ -47,6 +47,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   using FindRegistrationCallback = base::OnceCallback<void(
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration)>;
+  using GetRegisteredOriginsCallback =
+      storage::mojom::ServiceWorkerStorageControl::GetRegisteredOriginsCallback;
   using GetRegistrationsCallback = base::OnceCallback<void(
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
@@ -229,16 +231,16 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void GetUserDataForAllRegistrationsByKeyPrefix(
       const std::string& key_prefix,
       GetUserDataForAllRegistrationsCallback callback);
-
-  mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
-  GetRemoteStorageControl();
-
+  void GetRegisteredOrigins(GetRegisteredOriginsCallback callback);
+  void PerformStorageCleanup(base::OnceClosure callback);
   // Disables the internal storage to prepare for error recovery.
   void PrepareForDeleteAndStarOver();
-
   // Deletes this registry and internal storage, then starts over for error
   // recovery.
   void DeleteAndStartOver(StatusCallback callback);
+
+  mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
+  GetRemoteStorageControl();
 
   void SimulateStorageRestartForTesting();
 

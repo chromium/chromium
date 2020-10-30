@@ -555,7 +555,7 @@ void ServiceWorkerContextCore::DeleteForOrigin(const url::Origin& origin,
 void ServiceWorkerContextCore::PerformStorageCleanup(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  GetStorageControl()->PerformStorageCleanup(std::move(callback));
+  registry()->PerformStorageCleanup(std::move(callback));
 }
 
 void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForOrigin(

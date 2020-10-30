@@ -304,12 +304,11 @@ class ServiceWorkerRegistryTest : public testing::Test {
   std::vector<url::Origin> GetRegisteredOrigins() {
     std::vector<url::Origin> result;
     base::RunLoop loop;
-    registry()->GetRemoteStorageControl()->GetRegisteredOrigins(
-        base::BindLambdaForTesting(
-            [&](const std::vector<url::Origin>& origins) {
-              result = origins;
-              loop.Quit();
-            }));
+    registry()->GetRegisteredOrigins(base::BindLambdaForTesting(
+        [&](const std::vector<url::Origin>& origins) {
+          result = origins;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }

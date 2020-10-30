@@ -596,11 +596,10 @@ void ServiceWorkerContextWrapper::GetInstalledRegistrationOriginsOnCoreThread(
     return;
   }
 
-  context()->registry()->GetRemoteStorageControl()->GetRegisteredOrigins(
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::
-              DidGetRegisteredOriginsForGetInstalledRegistrationOrigins,
-          host_filter, std::move(callback), task_runner_for_callback));
+  context()->registry()->GetRegisteredOrigins(base::BindOnce(
+      &ServiceWorkerContextWrapper::
+          DidGetRegisteredOriginsForGetInstalledRegistrationOrigins,
+      host_filter, std::move(callback), task_runner_for_callback));
 }
 
 void ServiceWorkerContextWrapper::GetAllOriginsInfo(
@@ -1568,9 +1567,8 @@ void ServiceWorkerContextWrapper::InitOnCoreThread(
       core_observer_list_.get(), this);
 
   if (storage_partition_) {
-    context()->registry()->GetRemoteStorageControl()->GetRegisteredOrigins(
-        base::BindOnce(&ServiceWorkerContextWrapper::DidGetRegisteredOrigins,
-                       this));
+    context()->registry()->GetRegisteredOrigins(base::BindOnce(
+        &ServiceWorkerContextWrapper::DidGetRegisteredOrigins, this));
   }
 }
 
