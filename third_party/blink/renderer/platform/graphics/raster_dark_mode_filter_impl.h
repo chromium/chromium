@@ -21,13 +21,9 @@ class PLATFORM_EXPORT RasterDarkModeFilterImpl
  public:
   explicit RasterDarkModeFilterImpl(const DarkModeSettings& settings);
 
-  // RasterDarkModeFilter APIs.
-  Result AnalyzeShouldApplyToImage(const SkIRect& src,
-                                   const SkIRect& dst) const override;
+  // RasterDarkModeFilter API.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                    const SkIRect& src,
-                                    const SkIRect& dst) const override;
-  sk_sp<SkColorFilter> GetImageFilter() const override;
+                                    const SkIRect& src) const override;
 
  private:
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;

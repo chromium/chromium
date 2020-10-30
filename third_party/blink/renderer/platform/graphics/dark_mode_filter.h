@@ -60,14 +60,14 @@ class PLATFORM_EXPORT DarkModeFilter {
   // policy is set to DarkModeImagePolicy::kFilterSmart. This API is
   // thread-safe.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                    const SkIRect& src,
-                                    const SkIRect& dst) const;
+                                    const SkIRect& src) const;
 
   // Returns dark mode color filter for images. Before calling this function
   // AnalyzeShouldApplyToImage() must be called for early out or deciding
   // appropriate function call. This function should be called only if image
   // policy is set to DarkModeImagePolicy::kFilterAll. This API is thread-safe.
   sk_sp<SkColorFilter> GetImageFilter() const;
+
  private:
   friend class ScopedDarkModeElementRoleOverride;
 

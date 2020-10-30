@@ -72,7 +72,7 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
   // Lock and reuse the entry if possible.
   const EntryKey entry_key(TransferCacheEntryType::kImage, image_id);
   if (LockEntryDirect(entry_key)) {
-    return ScopedResult(DecodedDrawImage(image_id, SkSize::MakeEmpty(),
+    return ScopedResult(DecodedDrawImage(image_id, nullptr, SkSize::MakeEmpty(),
                                          draw_image.scale(),
                                          draw_image.filter_quality(), false));
   }
@@ -96,7 +96,7 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
 
   CreateEntryDirect(entry_key, base::span<uint8_t>(data.data(), data.size()));
 
-  return ScopedResult(DecodedDrawImage(image_id, SkSize::MakeEmpty(),
+  return ScopedResult(DecodedDrawImage(image_id, nullptr, SkSize::MakeEmpty(),
                                        draw_image.scale(),
                                        draw_image.filter_quality(), false));
 }

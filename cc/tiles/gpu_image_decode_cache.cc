@@ -1189,11 +1189,20 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
 
   // We may or may not need to decode and upload the image we've found, the
   // following functions early-out to if we already decoded.
-  DecodeImageIfNecessary(draw_image, image_data, TaskType::kInRaster);
+  DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data,
+                                                  TaskType::kInRaster);
   UploadImageIfNecessary(draw_image, image_data);
   // Unref the image decode, but not the image. The image ref will be released
   // in DrawWithImageFinished.
   UnrefImageDecode(draw_image, cache_key);
+
+  sk_sp<SkColorFilter> dark_mode_color_filter = nullptr;
+  if (draw_image.use_dark_mode()) {
+    auto it = image_data->decode.dark_mode_color_filter_cache.find(
+        draw_image.src_rect());
+    if (it != image_data->decode.dark_mode_color_filter_cache.end())
+      dark_mode_color_filter = it->second;
+  }
 
   if (image_data->mode == DecodedDataMode::kTransferCache) {
     DCHECK(use_transfer_cache_);
@@ -1205,8 +1214,8 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
     SkSize scale_factor = CalculateScaleFactorForMipLevel(
         draw_image, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
-        id, SkSize(), scale_factor, CalculateDesiredFilterQuality(draw_image),
-        image_data->needs_mips);
+        id, std::move(dark_mode_color_filter), SkSize(), scale_factor,
+        CalculateDesiredFilterQuality(draw_image), image_data->needs_mips);
     return decoded_draw_image;
   } else {
     DCHECK(!use_transfer_cache_);
@@ -1218,8 +1227,8 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
     SkSize scale_factor = CalculateScaleFactorForMipLevel(
         draw_image, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
-        std::move(image), SkSize(), scale_factor,
-        CalculateDesiredFilterQuality(draw_image));
+        std::move(image), std::move(dark_mode_color_filter), SkSize(),
+        scale_factor, CalculateDesiredFilterQuality(draw_image));
     return decoded_draw_image;
   }
 }
@@ -1514,7 +1523,8 @@ void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image,
       draw_image, InUseCacheKey::FromDrawImage(draw_image));
   DCHECK(image_data);
   DCHECK(image_data->is_budgeted) << "Must budget an image for pre-decoding";
-  DecodeImageIfNecessary(draw_image, image_data, task_type);
+  DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data,
+                                                  task_type);
 }
 
 void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
@@ -1536,7 +1546,8 @@ void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
   DCHECK(image_data->is_budgeted) << "Must budget an image for pre-decoding";
 
   if (image_data->is_bitmap_backed)
-    DecodeImageIfNecessary(draw_image, image_data, TaskType::kInRaster);
+    DecodeImageAndGenerateDarkModeFilterIfNecessary(draw_image, image_data,
+                                                    TaskType::kInRaster);
   UploadImageIfNecessary(draw_image, image_data);
 }
 
@@ -1867,9 +1878,50 @@ void GpuImageDecodeCache::InsertTransferCacheEntry(
   }
 }
 
-void GpuImageDecodeCache::DecodeImageIfNecessary(const DrawImage& draw_image,
-                                                 ImageData* image_data,
-                                                 TaskType task_type) {
+bool GpuImageDecodeCache::NeedsDarkModeFilter(const DrawImage& draw_image,
+                                              ImageData* image_data) {
+  DCHECK(image_data);
+
+  // |draw_image| does not need dark mode to be applied.
+  if (!draw_image.use_dark_mode())
+    return false;
+
+  // |dark_mode_filter_| must be valid, if |draw_image| has use_dark_mode set.
+  DCHECK(dark_mode_filter_);
+
+  // TODO(prashant.n): RSDM - Add support for YUV decoded data.
+  if (image_data->is_yuv)
+    return false;
+
+  // Dark mode filter is already generated and cached.
+  if (image_data->decode.dark_mode_color_filter_cache.find(
+          draw_image.src_rect()) !=
+      image_data->decode.dark_mode_color_filter_cache.end())
+    return false;
+
+  return true;
+}
+
+void GpuImageDecodeCache::DecodeImageAndGenerateDarkModeFilterIfNecessary(
+    const DrawImage& draw_image,
+    ImageData* image_data,
+    TaskType task_type) {
+  lock_.AssertAcquired();
+
+  // Check if image needs dark mode to be applied, based on this image may be
+  // decoded again if decoded data is not available.
+  bool needs_dark_mode_filter = NeedsDarkModeFilter(draw_image, image_data);
+  DecodeImageIfNecessary(draw_image, image_data, task_type,
+                         needs_dark_mode_filter);
+  if (needs_dark_mode_filter)
+    GenerateDarkModeFilter(draw_image, image_data);
+}
+
+void GpuImageDecodeCache::DecodeImageIfNecessary(
+    const DrawImage& draw_image,
+    ImageData* image_data,
+    TaskType task_type,
+    bool needs_decode_for_dark_mode) {
   lock_.AssertAcquired();
 
   DCHECK_GT(image_data->decode.ref_count, 0u);
@@ -1885,8 +1937,10 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(const DrawImage& draw_image,
   }
 
   if (image_data->HasUploadedData() &&
-      TryLockImage(HaveContextLock::kNo, draw_image, image_data)) {
-    // We already have an uploaded image, no reason to decode.
+      TryLockImage(HaveContextLock::kNo, draw_image, image_data) &&
+      !needs_decode_for_dark_mode) {
+    // We already have an uploaded image and we don't need a decode for dark
+    // mode too, so no reason to decode.
     return;
   }
 
@@ -1994,6 +2048,28 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(const DrawImage& draw_image,
                                      std::move(image),
                                      task_type == TaskType::kOutOfRaster);
   }
+}
+
+void GpuImageDecodeCache::GenerateDarkModeFilter(const DrawImage& draw_image,
+                                                 ImageData* image_data) {
+  DCHECK(dark_mode_filter_);
+  // Caller must ensure draw image needs dark mode to be applied.
+  DCHECK(NeedsDarkModeFilter(draw_image, image_data));
+  // Caller must ensure image is valid and has decoded data.
+  DCHECK(image_data->decode.image());
+
+  // TODO(prashant.n): Calling ApplyToImage() from |dark_mode_filter_| can be
+  // expensive. Check the possibilitiy of holding |lock_| only for accessing and
+  // storing dark mode result on |image_data|.
+  lock_.AssertAcquired();
+
+  if (image_data->decode.decode_failure)
+    return;
+
+  SkPixmap pixmap;
+  image_data->decode.image()->peekPixels(&pixmap);
+  image_data->decode.dark_mode_color_filter_cache[draw_image.src_rect()] =
+      dark_mode_filter_->ApplyToImage(pixmap, draw_image.src_rect());
 }
 
 void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
@@ -2785,6 +2861,24 @@ sk_sp<SkImage> GpuImageDecodeCache::GetUploadedPlaneForTesting(
     default:
       return nullptr;
   }
+}
+
+size_t GpuImageDecodeCache::GetDarkModeImageCacheSizeForTesting(
+    const DrawImage& draw_image) {
+  base::AutoLock lock(lock_);
+  ImageData* image_data = GetImageDataForDrawImage(
+      draw_image, InUseCacheKey::FromDrawImage(draw_image));
+  return image_data ? image_data->decode.dark_mode_color_filter_cache.size()
+                    : 0u;
+}
+
+bool GpuImageDecodeCache::NeedsDarkModeFilterForTesting(
+    const DrawImage& draw_image) {
+  base::AutoLock lock(lock_);
+  ImageData* image_data = GetImageDataForDrawImage(
+      draw_image, InUseCacheKey::FromDrawImage(draw_image));
+
+  return NeedsDarkModeFilter(draw_image, image_data);
 }
 
 void GpuImageDecodeCache::OnMemoryPressure(

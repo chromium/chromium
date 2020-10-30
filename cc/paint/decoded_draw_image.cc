@@ -9,10 +9,12 @@
 namespace cc {
 
 DecodedDrawImage::DecodedDrawImage(sk_sp<const SkImage> image,
+                                   sk_sp<SkColorFilter> dark_mode_color_filter,
                                    const SkSize& src_rect_offset,
                                    const SkSize& scale_adjustment,
                                    SkFilterQuality filter_quality)
     : image_(std::move(image)),
+      dark_mode_color_filter_(std::move(dark_mode_color_filter)),
       src_rect_offset_(src_rect_offset),
       scale_adjustment_(scale_adjustment),
       filter_quality_(filter_quality) {}
@@ -26,11 +28,13 @@ DecodedDrawImage::DecodedDrawImage(const gpu::Mailbox& mailbox,
 
 DecodedDrawImage::DecodedDrawImage(
     base::Optional<uint32_t> transfer_cache_entry_id,
+    sk_sp<SkColorFilter> dark_mode_color_filter,
     const SkSize& src_rect_offset,
     const SkSize& scale_adjustment,
     SkFilterQuality filter_quality,
     bool needs_mips)
     : transfer_cache_entry_id_(transfer_cache_entry_id),
+      dark_mode_color_filter_(std::move(dark_mode_color_filter)),
       src_rect_offset_(src_rect_offset),
       scale_adjustment_(scale_adjustment),
       filter_quality_(filter_quality),
@@ -38,6 +42,7 @@ DecodedDrawImage::DecodedDrawImage(
 
 DecodedDrawImage::DecodedDrawImage()
     : DecodedDrawImage(nullptr,
+                       nullptr,
                        SkSize::MakeEmpty(),
                        SkSize::Make(1.f, 1.f),
                        kNone_SkFilterQuality) {}

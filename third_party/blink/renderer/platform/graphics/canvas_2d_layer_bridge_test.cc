@@ -92,7 +92,7 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
     bitmap.allocPixelsFlags(SkImageInfo::MakeN32Premul(10, 10),
                             SkBitmap::kZeroPixels_AllocFlag);
     sk_sp<SkImage> sk_image = SkImage::MakeFromBitmap(bitmap);
-    return cc::DecodedDrawImage(sk_image, SkSize::Make(0, 0),
+    return cc::DecodedDrawImage(sk_image, nullptr, SkSize::Make(0, 0),
                                 SkSize::Make(1, 1), kLow_SkFilterQuality);
   }
 

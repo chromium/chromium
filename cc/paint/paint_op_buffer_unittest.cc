@@ -2809,8 +2809,8 @@ class MockImageProvider : public ImageProvider {
                             SkBitmap::kZeroPixels_AllocFlag);
     sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
     size_t i = index_++;
-    return ScopedResult(
-        DecodedDrawImage(image, src_rect_offset_[i], scale_[i], quality_[i]));
+    return ScopedResult(DecodedDrawImage(image, nullptr, src_rect_offset_[i],
+                                         scale_[i], quality_[i]));
   }
 
   void SetRecord(sk_sp<PaintRecord> record) { record_ = std::move(record); }

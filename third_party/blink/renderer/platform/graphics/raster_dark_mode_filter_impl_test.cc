@@ -13,30 +13,12 @@
 namespace blink {
 namespace {
 
-TEST(RasterDarkModeFilterImplTest, AnalyzeShouldApplyToImageAPI) {
-  DarkModeSettings settings;
-  settings.image_policy = DarkModeImagePolicy::kFilterSmart;
-  RasterDarkModeFilterImpl filter(settings);
-  EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(500, 500),
-                                             SkIRect::MakeWH(500, 500)),
-            cc::RasterDarkModeFilter::Result::kDoNotApplyFilter);
-}
-
 TEST(RasterDarkModeFilterImplTest, ApplyToImageAPI) {
   DarkModeSettings settings;
   settings.image_policy = DarkModeImagePolicy::kFilterSmart;
   RasterDarkModeFilterImpl filter(settings);
   SkPixmap pixmap;
-  EXPECT_EQ(filter.ApplyToImage(pixmap, SkIRect::MakeWH(50, 50),
-                                SkIRect::MakeWH(50, 50)),
-            nullptr);
-}
-
-TEST(RasterDarkModeFilterImplTest, GetImageFilterAPI) {
-  DarkModeSettings settings;
-  settings.image_policy = DarkModeImagePolicy::kFilterAll;
-  RasterDarkModeFilterImpl filter(settings);
-  EXPECT_NE(filter.GetImageFilter(), nullptr);
+  EXPECT_EQ(filter.ApplyToImage(pixmap, SkIRect::MakeWH(50, 50)), nullptr);
 }
 
 }  // namespace

@@ -208,9 +208,11 @@ class CC_EXPORT GpuImageDecodeCache
   sk_sp<SkImage> GetSWImageDecodeForTesting(const DrawImage& image);
   sk_sp<SkImage> GetUploadedPlaneForTesting(const DrawImage& draw_image,
                                             YUVIndex index);
+  size_t GetDarkModeImageCacheSizeForTesting(const DrawImage& draw_image);
   size_t paint_image_entries_count_for_testing() const {
     return paint_image_entries_.size();
   }
+  bool NeedsDarkModeFilterForTesting(const DrawImage& draw_image);
 
  private:
   enum class DecodedDataMode { kGpu, kCpu, kTransferCache };
@@ -309,6 +311,17 @@ class CC_EXPORT GpuImageDecodeCache
     // Similar to |task|, but only is generated if there is no associated upload
     // generated for this task (ie, this is an out-of-raster request for decode.
     scoped_refptr<TileTask> stand_alone_task;
+
+    // Dark mode color filter cache.
+    struct SkIRectCompare {
+      bool operator()(const SkIRect& a, const SkIRect& b) const {
+        return a.fLeft < b.fLeft || a.fTop < b.fTop || a.fRight < b.fRight ||
+               a.fBottom < b.fBottom;
+      }
+    };
+
+    base::flat_map<SkIRect, sk_sp<SkColorFilter>, SkIRectCompare>
+        dark_mode_color_filter_cache;
 
    private:
     void ReportUsageStats() const;
@@ -610,9 +623,17 @@ class CC_EXPORT GpuImageDecodeCache
   void InsertTransferCacheEntry(
       const ClientImageTransferCacheEntry& image_entry,
       ImageData* image_data);
+  bool NeedsDarkModeFilter(const DrawImage& draw_image, ImageData* image_data);
+  void DecodeImageAndGenerateDarkModeFilterIfNecessary(
+      const DrawImage& draw_image,
+      ImageData* image_data,
+      TaskType task_type);
   void DecodeImageIfNecessary(const DrawImage& draw_image,
                               ImageData* image_data,
-                              TaskType task_type);
+                              TaskType task_type,
+                              bool needs_decode_for_dark_mode);
+  void GenerateDarkModeFilter(const DrawImage& draw_image,
+                              ImageData* image_data);
   sk_sp<SkImage> CreateImageFromYUVATexturesInternal(
       const SkImage* uploaded_y_image,
       const SkImage* uploaded_u_image,

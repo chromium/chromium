@@ -131,9 +131,7 @@ DarkModeResult DarkModeFilter::AnalyzeShouldApplyToImage(
 }
 
 sk_sp<SkColorFilter> DarkModeFilter::ApplyToImage(const SkPixmap& pixmap,
-                                                  const SkIRect& src,
-                                                  const SkIRect& dst) const {
-  DCHECK(AnalyzeShouldApplyToImage(src, dst) == DarkModeResult::kNotClassified);
+                                                  const SkIRect& src) const {
   DCHECK(immutable_.settings.image_policy == DarkModeImagePolicy::kFilterSmart);
   DCHECK(immutable_.image_filter);
 
