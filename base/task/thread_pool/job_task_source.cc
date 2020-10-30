@@ -149,11 +149,10 @@ bool JobTaskSource::RunJoinTask() {
 }
 
 void JobTaskSource::Cancel(TaskSource::Transaction* transaction) {
-  CheckedAutoLock auto_lock(worker_lock_);
   // Sets the kCanceledMask bit on |state_| so that further calls to
-  // WillRunTask() never succeed. std::memory_order_relaxed is sufficient
-  // because this task source never needs to be re-enqueued after Cancel().
-  state_.Cancel();
+  // WillRunTask() never succeed. std::memory_order_relaxed without a lock is
+  // safe because this task source never needs to be re-enqueued after Cancel().
+  TS_UNCHECKED_READ(state_).Cancel();
 }
 
 // EXCLUSIVE_LOCK_REQUIRED(worker_lock_)

@@ -192,7 +192,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   mutable CheckedLock worker_lock_{UniversalSuccessor()};
 
   // Current atomic state (atomic despite the lock to allow optimistic reads
-  // without the lock).
+  // and cancellation without the lock).
   State state_ GUARDED_BY(worker_lock_);
   // Normally, |join_flag_| is protected by |lock_|, except in ShouldYield()
   // hence the use of atomics.
