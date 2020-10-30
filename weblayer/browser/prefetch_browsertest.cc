@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind_test_util.h"
+#include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -78,7 +79,13 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchWorks) {
 // https://crbug.com/922362: When the prefetched request is redirected, DCHECKs
 // in PrefetchURLLoader::FollowRedirect() failed due to "X-Client-Data" in
 // removed_headers. Verify that it no longer does.
-IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
+// TODO(https://crbug.com/1144142): Fails on TSan due to data race.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_RedirectedPrefetch DISABLED_RedirectedPrefetch
+#else
+#define MAYBE_RedirectedPrefetch RedirectedPrefetch
+#endif
+IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, MAYBE_RedirectedPrefetch) {
   std::vector<net::test_server::HttpRequest> requests;
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(base::BindLambdaForTesting(
