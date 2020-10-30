@@ -204,6 +204,35 @@ TEST_F(CallbackTest, ThenResetsOriginalCallback) {
   }
 }
 
+// A RepeatingCallback will implicitly convert to a OnceCallback, so a
+// once_callback.Then(repeating_callback) should turn into a OnceCallback
+// that holds 2 OnceCallbacks which it will run.
+TEST_F(CallbackTest, ThenCanConvertRepeatingToOnce) {
+  {
+    RepeatingClosure repeating_closure = base::BindRepeating([]() {});
+    OnceClosure once_closure = base::BindOnce([]() {});
+    std::move(once_closure).Then(repeating_closure).Run();
+
+    RepeatingCallback<int(int)> repeating_callback =
+        base::BindRepeating([](int i) { return i + 1; });
+    OnceCallback<int(int)> once_callback =
+        base::BindOnce([](int i) { return i * 2; });
+    EXPECT_EQ(3, std::move(once_callback).Then(repeating_callback).Run(1));
+  }
+  {
+    RepeatingClosure repeating_closure = base::BindRepeating([]() {});
+    OnceClosure once_closure = base::BindOnce([]() {});
+    std::move(once_closure).Then(std::move(repeating_closure)).Run();
+
+    RepeatingCallback<int(int)> repeating_callback =
+        base::BindRepeating([](int i) { return i + 1; });
+    OnceCallback<int(int)> once_callback =
+        base::BindOnce([](int i) { return i * 2; });
+    EXPECT_EQ(
+        3, std::move(once_callback).Then(std::move(repeating_callback)).Run(1));
+  }
+}
+
 // A factory class for building an outer and inner callback for calling
 // Then() on either a OnceCallback or RepeatingCallback with combinations of
 // void return types, non-void, and move-only return types.

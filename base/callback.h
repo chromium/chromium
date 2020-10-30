@@ -125,6 +125,13 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
         internal::ThenHelper<OnceCallback, OnceCallback<U>, R, Args...>(),
         std::move(*this), std::move(then));
   }
+  template <typename U, typename R2 = internal::ExtractReturnType<U>>
+  OnceCallback<R2(Args...)> Then(RepeatingCallback<U> then) && {
+    // RepeatingCallback can convert to OnceCallback, but it does not implicitly
+    // convert to OnceCallback<U> for the above method, so we have to do that
+    // explicitly here.
+    return std::move(*this).Then(static_cast<OnceCallback<U>>(std::move(then)));
+  }
 };
 
 template <typename R, typename... Args>
