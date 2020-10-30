@@ -242,5 +242,48 @@ TEST_F(NGFragmentationTest, HasSeenAllChildrenIfc) {
   EXPECT_FALSE(break_token);
 }
 
+TEST_F(NGFragmentationTest, InkOverflowInline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container {
+      font-size: 10px;
+      column-width: 100px;
+      column-gap: 10px;
+      width: 210px;
+      line-height: 15px;
+      height: 15px;
+    }
+    atomic {
+      display: inline-block;
+      width: 100px;
+      height: 10px;
+      background: blue;
+    }
+    .w15 {
+      width: 150px;
+      background: orange;
+    }
+    </style>
+    <div id="container">
+      <div>
+        <!-- 1st column does not have ink overflow. -->
+        <atomic></atomic>
+        <!-- 2nd column has 50px ink overflow to right. -->
+        <atomic><atomic class="w15"></atomic></atomic>
+      </div>
+    </div>
+  )HTML");
+  const auto* container =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  const auto* flow_thread = To<LayoutBlockFlow>(container->FirstChild());
+  DCHECK(flow_thread->IsLayoutFlowThread());
+  // |flow_thread| is in the stitched coordinate system.
+  EXPECT_EQ(flow_thread->PhysicalVisualOverflowRect(),
+            PhysicalRect(0, 0, 150, 30));
+  // TOOD(crbug.com/1144203): This should be (0, 0, 260, 15).
+  EXPECT_EQ(container->PhysicalVisualOverflowRect(),
+            PhysicalRect(0, 0, 210, 15));
+}
+
 }  // anonymous namespace
 }  // namespace blink
