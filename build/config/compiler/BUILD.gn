@@ -1662,11 +1662,7 @@ config("chromium_code") {
     # ChromeOS: http://crbug.com/940863
     # Chromecast: http://crbug.com/942554
     has_dchecks = is_debug || dcheck_always_on
-    if (!has_dchecks && is_ios && use_xcode_clang) {
-      # TODO(thakis): Remove this branch once Xcode's clang has clang r356148.
-      cflags_c = [ "-Wextra-semi" ]
-      cflags_cc = [ "-Wextra-semi" ]
-    } else if (!has_dchecks && is_chromeos && is_chrome_branded) {
+    if (!has_dchecks && is_chromeos && is_chrome_branded) {
       # Temporarily disable -Wextra-semi for Chrome on Chrome OS.
     } else if (is_chromecast && chromecast_branding != "public") {
       # Temporarily disable -Wextra-semi for Chromecast.
