@@ -191,7 +191,7 @@
     transition-delay: 0s;
   }
 </style>
-<div id="container"
+<div id="container" hidden$="[[!visible_]]"
     style="--column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
