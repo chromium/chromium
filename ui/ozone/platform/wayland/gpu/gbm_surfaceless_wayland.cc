@@ -11,6 +11,8 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
@@ -18,12 +20,6 @@
 namespace ui {
 
 namespace {
-
-void WaitForEGLFence(EGLDisplay display, EGLSyncKHR fence) {
-  eglClientWaitSyncKHR(display, fence, EGL_SYNC_FLUSH_COMMANDS_BIT_KHR,
-                       EGL_FOREVER_KHR);
-  eglDestroySyncKHR(display, fence);
-}
 
 void WaitForGpuFences(std::vector<std::unique_ptr<gfx::GpuFence>> fences) {
   for (auto& fence : fences)
@@ -38,8 +34,6 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
     : SurfacelessEGL(gfx::Size()),
       buffer_manager_(buffer_manager),
       widget_(widget),
-      has_implicit_external_sync_(
-          HasEGLExtension("EGL_ARM_implicit_external_sync")),
       weak_factory_(this) {
   buffer_manager_->RegisterSurface(widget_, this);
   unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
@@ -60,9 +54,9 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     const gfx::RectF& crop_rect,
     bool enable_blend,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  unsubmitted_frames_.back()->overlays.push_back(
-      gl::GLSurfaceOverlay(z_order, transform, image, bounds_rect, crop_rect,
-                           enable_blend, std::move(gpu_fence)));
+  unsubmitted_frames_.back()->overlays.emplace_back(
+      z_order, transform, image, bounds_rect, crop_rect, enable_blend,
+      std::move(gpu_fence));
   return true;
 }
 
@@ -121,26 +115,34 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
     return;
   }
 
+  // If Wayland server supports linux_explicit_synchronization_protocol, fences
+  // should be shipped with buffers. Otherwise, we will wait for fences.
+  if (buffer_manager_->supports_acquire_fence()) {
+    DCHECK_LT(0, std::count_if(
+                     frame->planes.begin(), frame->planes.end(),
+                     [](const std::pair<const BufferId, OverlayPlane>& plane) {
+                       return !!plane.second.gpu_fence;
+                     }));
+
+    frame->ready = true;
+    MaybeSubmitFrames();
+    return;
+  }
+
+  // linux_explicit_synchronization_protocol is not supported, we need to wait
+  // for in-fences here.
   std::vector<std::unique_ptr<gfx::GpuFence>> fences;
-  // Uset in-fences provided in the overlays. If there are none, we insert our
+  // Use in-fences provided in the overlays. If there are none, we insert our
   // own fence and wait.
   for (auto& plane : frame->planes) {
+    DCHECK(plane.second.z_order != 0 || plane.second.gpu_fence);
     if (plane.second.gpu_fence)
       fences.push_back(std::move(plane.second.gpu_fence));
   }
+  DCHECK(!fences.empty());
 
   base::OnceClosure fence_wait_task;
-  if (!fences.empty()) {
-    fence_wait_task = base::BindOnce(&WaitForGpuFences, std::move(fences));
-  } else {
-    // TODO(fangzhoug): the following should be replaced by a per surface flush
-    // as it gets implemented in GL drivers.
-    EGLSyncKHR fence = InsertFence(has_implicit_external_sync_);
-    CHECK_NE(fence, EGL_NO_SYNC_KHR) << "eglCreateSyncKHR failed";
-
-    fence_wait_task = base::BindOnce(&WaitForEGLFence, GetDisplay(), fence);
-  }
-
+  fence_wait_task = base::BindOnce(&WaitForGpuFences, std::move(fences));
   base::OnceClosure fence_retired_callback = base::BindOnce(
       &GbmSurfacelessWayland::FenceRetired, weak_factory_.GetWeakPtr(), frame);
 
@@ -190,6 +192,10 @@ void GbmSurfacelessWayland::SetRelyOnImplicitSync() {
   use_egl_fence_sync_ = false;
 }
 
+bool GbmSurfacelessWayland::SupportsPlaneGpuFences() const {
+  return true;
+}
+
 gfx::SurfaceOrigin GbmSurfacelessWayland::GetOrigin() const {
   // GbmSurfacelessWayland's y-axis is flipped compare to GL - (0,0) is at top
   // left corner.
@@ -200,9 +206,9 @@ GbmSurfacelessWayland::~GbmSurfacelessWayland() {
   buffer_manager_->UnregisterSurface(widget_);
 }
 
-GbmSurfacelessWayland::PendingFrame::PendingFrame() {}
+GbmSurfacelessWayland::PendingFrame::PendingFrame() = default;
 
-GbmSurfacelessWayland::PendingFrame::~PendingFrame() {}
+GbmSurfacelessWayland::PendingFrame::~PendingFrame() = default;
 
 void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
     gfx::AcceleratedWidget widget) {
@@ -238,26 +244,21 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
     }
 
     std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-    for (const auto& plane : submitted_frame->planes) {
+    for (auto& plane : submitted_frame->planes) {
       overlay_configs.push_back(
           ui::ozone::mojom::WaylandOverlayConfig::From(plane.second));
       overlay_configs.back()->buffer_id = plane.first;
       if (plane.second.z_order == 0) {
+        DCHECK(!buffer_manager_->supports_acquire_fence() ||
+               plane.second.gpu_fence);
         overlay_configs.back()->damage_region = submitted_frame->damage_region_;
-        submitted_frame->buffer_id = plane.first;
       }
+      plane.second.gpu_fence.reset();
     }
+
     buffer_manager_->CommitOverlays(widget_, std::move(overlay_configs));
     submitted_frames_.push_back(std::move(submitted_frame));
   }
-}
-
-EGLSyncKHR GbmSurfacelessWayland::InsertFence(bool implicit) {
-  const EGLint attrib_list[] = {EGL_SYNC_CONDITION_KHR,
-                                EGL_SYNC_PRIOR_COMMANDS_IMPLICIT_EXTERNAL_ARM,
-                                EGL_NONE};
-  return eglCreateSyncKHR(GetDisplay(), EGL_SYNC_FENCE_KHR,
-                          implicit ? attrib_list : nullptr);
 }
 
 void GbmSurfacelessWayland::FenceRetired(PendingFrame* frame) {
