@@ -197,6 +197,7 @@ source_set("common") {
     "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",
     "//content/public/common:service_names",
+    "//content/public/common/zygote:buildflags",
     "//device/base/synchronization",
     "//device/bluetooth",
     "//gpu",
