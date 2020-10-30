@@ -10,7 +10,11 @@
 #endif
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_LIBC_SYMBOLS_H_
 
+#if defined(OS_APPLE)
+#include <malloc/malloc.h>
+#else
 #include <malloc.h>
+#endif
 
 #include "base/allocator/allocator_shim_internals.h"
 
@@ -56,7 +60,7 @@ SHIM_ALWAYS_EXPORT int posix_memalign(void** r, size_t a, size_t s) __THROW {
   return ShimPosixMemalign(r, a, s);
 }
 
-SHIM_ALWAYS_EXPORT size_t malloc_size(void* address) __THROW {
+SHIM_ALWAYS_EXPORT size_t malloc_size(const void* address) __THROW {
   return ShimGetSizeEstimate(address, nullptr);
 }
 
