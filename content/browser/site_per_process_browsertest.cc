@@ -13620,16 +13620,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
     EXPECT_EQ(expected_touch_action, allowed_touch_action.value());
 }
 
-// Failes on Win.  https://crbug.com/1097060
-#if defined(OS_WIN)
-#define MAYBE_ChildFrameCrashMetrics_KilledWhileVisible \
-  DISABLED_ChildFrameCrashMetrics_KilledWhileVisible
-#else
-#define MAYBE_ChildFrameCrashMetrics_KilledWhileVisible \
-  ChildFrameCrashMetrics_KilledWhileVisible
-#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_ChildFrameCrashMetrics_KilledWhileVisible) {
+                       ChildFrameCrashMetrics_KilledWhileVisible) {
   // Set-up a frame tree that helps verify what the metrics tracks:
   // 1) frames (12 frames are affected if B process gets killed) or
   // 2) crashes (simply 1 crash if B process gets killed)?
@@ -13641,7 +13633,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
 
-  // Kill the child frame.
+  std::vector<std::unique_ptr<SadFrameShownObserver>> observers;
+  for (size_t i = 0U; i < root->child_count(); i++) {
+    // At this point, all b.com subframes should be considered visible.
+    RenderFrameProxyHost* proxy_to_parent =
+        root->child_at(i)->render_manager()->GetProxyToParent();
+    CrossProcessFrameConnector* connector =
+        proxy_to_parent->cross_process_frame_connector();
+    EXPECT_TRUE(connector->IsVisible())
+        << " subframe " << i << " with URL " << root->child_at(i)->current_url()
+        << " is hidden";
+    observers.push_back(
+        std::make_unique<SadFrameShownObserver>(root->child_at(i)));
+  }
+
+  // Kill the child frame and wait for each of the subframe FrameTreeNodes to
+  // show a sad frame.
   base::HistogramTester histograms;
   RenderProcessHost* child_process =
       root->child_at(0)->current_frame_host()->GetProcess();
@@ -13649,6 +13656,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       child_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   child_process->Shutdown(0);
   crash_observer.Wait();
+  for (size_t i = 0U; i < root->child_count(); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << " Waiting for sad frame from subframe " << i
+                 << " with URL:" << root->child_at(i)->current_url());
+    observers[i]->Wait();
+  }
 
   // Verify that the expected metrics got logged.
   histograms.ExpectUniqueSample(
@@ -13696,10 +13709,8 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Test is flaky (crbug.com/1097060)
-IN_PROC_BROWSER_TEST_P(
-    SitePerProcessBrowserTestWithoutSadFrameTabReload,
-    DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSadFrameTabReload,
+                       ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {
   // Set-up a frame tree that helps verify what the metrics tracks:
   // 1) frames (12 frames are affected if B process gets killed) or
   // 2) widgets (10 b widgets and 1 c widget are affected if B is killed) or
@@ -13710,9 +13721,19 @@ IN_PROC_BROWSER_TEST_P(
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
 
   // Hide the web contents (UpdateWebContentsVisibility is called twice to avoid
-  // hitting the |!did_first_set_visible_| case).
+  // hitting the |!did_first_set_visible_| case).  Make sure all subframes are
+  // considered hidden at this point.
   web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
   web_contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  for (size_t i = 0U; i < root->child_count(); i++) {
+    RenderFrameProxyHost* proxy_to_parent =
+        root->child_at(i)->render_manager()->GetProxyToParent();
+    CrossProcessFrameConnector* connector =
+        proxy_to_parent->cross_process_frame_connector();
+    EXPECT_FALSE(connector->IsVisible())
+        << " subframe " << i << " with URL " << root->child_at(i)->current_url()
+        << " is visible";
+  }
 
   // Kill the subframe.
   base::HistogramTester histograms;
@@ -13729,8 +13750,23 @@ IN_PROC_BROWSER_TEST_P(
   histograms.ExpectTotalCount(
       "Stability.ChildFrameCrash.ShownAfterCrashingReason", 0);
 
-  // Show the web contents and verify that the expected metrics got logged.
+  // Show the web contents, wait for each of the subframe FrameTreeNodes to
+  // show a sad frame, and verify that the expected metrics got logged.
+  std::vector<std::unique_ptr<SadFrameShownObserver>> observers;
+  for (size_t i = 0U; i < root->child_count(); i++) {
+    observers.push_back(
+        std::make_unique<SadFrameShownObserver>(root->child_at(i)));
+  }
+
   web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+
+  for (size_t i = 0U; i < root->child_count(); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << " Waiting for sad frame from subframe " << i
+                 << " with URL:" << root->child_at(i)->current_url());
+    observers[i]->Wait();
+  }
+
   histograms.ExpectUniqueSample(
       "Stability.ChildFrameCrash.Visibility",
       CrossProcessFrameConnector::CrashVisibility::kShownAfterCrashing, 10);
