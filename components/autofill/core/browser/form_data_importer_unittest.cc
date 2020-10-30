@@ -582,18 +582,6 @@ TEST_P(FormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
   // Assign the address field another section than the other fields.
   form_structure.field(3)->section = "another_section";
 
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndDisableFeature(
-      features::kAutofillProfileImportFromUnifiedSection);
-
-  // Without the feature, the import is expected to fail.
-  ImportAddressProfiles(/*extraction_successful=*/false, form_structure);
-
-  // After enabled the feature, the import is expected to succeed.
-  scoped_feature.Reset();
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillProfileImportFromUnifiedSection);
-
   ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);

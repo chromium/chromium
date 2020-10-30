@@ -928,10 +928,12 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
            {.role = ServerFieldType::ADDRESS_HOME_CITY,
             .value = "New York",
             .autocomplete_attribute = "section-billing locality"},
+           // Add the last field of the form into a new section.
            {.role = ServerFieldType::ADDRESS_HOME_STATE,
             .value = "CA",
             .autocomplete_attribute = "section-shipping address-level1"}}});
 
+  // Set the heuristic types.
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
                                                   ADDRESS_HOME_LINE1,
                                                   ADDRESS_HOME_ZIP,
@@ -939,6 +941,8 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
                                                   PHONE_HOME_CITY_AND_NUMBER,
                                                   ADDRESS_HOME_CITY,
                                                   ADDRESS_HOME_STATE};
+
+  // Set the server types.
   std::vector<ServerFieldType> server_types = {NAME_FULL,
                                                ADDRESS_HOME_LINE1,
                                                ADDRESS_HOME_ZIP,
@@ -957,39 +961,16 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
   base::HistogramTester histogram_tester;
   std::string histogram = "Autofill.AddressProfileImportStatus";
 
-  // Disable the union import feature.
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillProfileImportFromUnifiedSection);
-
-  // Simulate form submission.
   autofill_manager_->OnFormSubmitted(form, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
+  // Verify that one profile was imported using the union of the two sections.
   histogram_tester.ExpectBucketCount(
       histogram,
       AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT, 0);
   histogram_tester.ExpectBucketCount(
       histogram, AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT,
-      1);
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::SECTION_UNION_IMPORT,
       0);
-
-  // Enable the union import feature.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillProfileImportFromUnifiedSection);
-  // Simulate form submission.
-  autofill_manager_->OnFormSubmitted(form, false,
-                                     SubmissionSource::FORM_SUBMISSION);
-
-  histogram_tester.ExpectBucketCount(
-      histogram,
-      AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT, 0);
-  histogram_tester.ExpectBucketCount(
-      histogram, AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT,
-      1);
   histogram_tester.ExpectBucketCount(
       histogram,
       AutofillMetrics::AddressProfileImportStatusMetric::SECTION_UNION_IMPORT,

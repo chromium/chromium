@@ -217,10 +217,6 @@ const base::Feature kAutofillProbableFormSubmissionInBrowser{
 const base::Feature kAutofillProfileClientValidation{
     "AutofillProfileClientValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAutofillProfileImportFromUnifiedSection{
-    "AutofillProfileImportFromUnifiedSection",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // TODO(crbug.com/1101280): Remove once feature is tested.
 const base::Feature kAutofillProfileImportFromUnfocusableFields{
     "AutofillProfileImportFromUnfocusableFields",
