@@ -168,7 +168,7 @@ void AmbientAshTestBase::TearDown() {
 }
 
 void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
-  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       ambient::prefs::kAmbientModeEnabled, enabled);
 }
 

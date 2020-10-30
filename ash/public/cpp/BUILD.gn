@@ -392,8 +392,6 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "test/test_ambient_client.cc",
-    "test/test_ambient_client.h",
     "test/test_image_downloader.cc",
     "test/test_image_downloader.h",
     "test/test_keyboard_controller_observer.cc",

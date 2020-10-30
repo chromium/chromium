@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/test/test_ambient_client.h"
+#include "ash/ambient/test/test_ambient_client.h"
 
 #include <utility>
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -27,7 +29,8 @@ TestAmbientClient::TestAmbientClient(
 TestAmbientClient::~TestAmbientClient() = default;
 
 bool TestAmbientClient::IsAmbientModeAllowed() {
-  return true;
+  // Only enable ambient mode for primary user to test multi login.
+  return Shell::Get()->session_controller()->IsUserPrimary();
 }
 
 void TestAmbientClient::RequestAccessToken(GetAccessTokenCallback callback) {

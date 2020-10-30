@@ -112,10 +112,9 @@ bool IsAmbientModeEnabled() {
   if (!AmbientClient::Get()->IsAmbientModeAllowed())
     return false;
 
-  ash::SessionControllerImpl* controller = Shell::Get()->session_controller();
-  PrefService* prefs = controller->GetActivePrefService();
-  DCHECK(prefs);
-  return prefs->GetBoolean(ambient::prefs::kAmbientModeEnabled);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  return prefs && prefs->GetBoolean(ambient::prefs::kAmbientModeEnabled);
 }
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {

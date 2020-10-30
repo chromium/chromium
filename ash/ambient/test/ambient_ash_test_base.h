@@ -10,8 +10,8 @@
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
-#include "ash/public/cpp/test/test_ambient_client.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,7 +41,7 @@ class AmbientAshTestBase : public AshTestBase {
   void SetUp() override;
   void TearDown() override;
 
-  // Enables/disables ambient mode.
+  // Enables/disables ambient mode for the currently active user session.
   void SetAmbientModeEnabled(bool enabled);
 
   // Creates ambient screen in its own widget.

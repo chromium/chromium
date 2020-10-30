@@ -170,6 +170,10 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
   EXPECT_TRUE(ambient_controller()->IsShown());
 
   SimulateUserLogin(kUser2);
+  SetAmbientModeEnabled(true);
+
+  // Ambient mode should not show for second user even if that user has the pref
+  // turned on.
   EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
             AmbientUiVisibility::kClosed);
   EXPECT_FALSE(ambient_controller()->IsShown());

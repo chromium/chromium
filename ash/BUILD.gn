@@ -2500,6 +2500,8 @@ static_library("test_support") {
     "accessibility/test_accessibility_controller_client.h",
     "ambient/test/ambient_ash_test_base.cc",
     "ambient/test/ambient_ash_test_base.h",
+    "ambient/test/test_ambient_client.cc",
+    "ambient/test/test_ambient_client.h",
     "app_list/app_list_test_api.cc",
     "app_list/test/app_list_test_helper.cc",
     "app_list/test/app_list_test_helper.h",
