@@ -1135,14 +1135,12 @@ void FormStructure::RetrieveFromCache(
           field->value = cached_field->value;
           value_from_dynamic_change_form_ = true;
         } else if (field->value == cached_field->value &&
-                   (!base::FeatureList::IsEnabled(
-                        features::
-                            kAutofillImportPrefilledCountryAndStateValues) ||
-                    (field->server_type() != ADDRESS_HOME_COUNTRY &&
-                     field->server_type() != ADDRESS_HOME_STATE))) {
-          // TODO(crbug.com/1100231): Remove feature check once launched.
+                   (field->server_type() != ADDRESS_HOME_COUNTRY &&
+                    field->server_type() != ADDRESS_HOME_STATE)) {
           // From the perspective of learning user data, text fields containing
           // default values are equivalent to empty fields.
+          // Since a website can prefill country and state values basedw on
+          // GeoIp, the mechanism is deactivated for state and country fields.
           field->value = base::string16();
         }
       }

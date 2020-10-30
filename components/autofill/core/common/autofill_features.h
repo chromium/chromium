@@ -46,7 +46,6 @@ extern const base::Feature kAutofillEnforceMinRequiredFieldsForQuery;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForUpload;
 extern const base::Feature kAutofillExtractAllDatalists;
 extern const base::Feature kAutofillFixFillableFieldTypes;
-extern const base::Feature kAutofillImportPrefilledCountryAndStateValues;
 extern const base::Feature kAutofillKeepInitialFormValuesInCache;
 extern const base::Feature kAutofillRetrieveFromCacheWithRendererIds;
 extern const base::Feature

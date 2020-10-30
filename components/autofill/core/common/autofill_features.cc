@@ -158,13 +158,6 @@ const base::Feature kAutofillExtractAllDatalists{
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, prefilled country and state values are not reset before
-// an address profile import.
-// TODO(crbug.com/1100231): Remove once fix is tested.
-const base::Feature kAutofillImportPrefilledCountryAndStateValues{
-    "AutofillImportPrefilledCountryAndStateValues",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, Autofill keeps the initial field values in the |FormStructure|
 // cache for all field types.
 const base::Feature kAutofillKeepInitialFormValuesInCache{
