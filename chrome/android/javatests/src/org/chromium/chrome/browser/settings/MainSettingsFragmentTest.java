@@ -220,8 +220,8 @@ public class MainSettingsFragmentTest {
 
         // SignInPreference status check.
         // As the user is not signed in, sign in promo will show, section header will be hidden.
-        Assert.assertNull("Account section header should be hidden.",
-                mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION));
+        Assert.assertFalse("Account section header should be hidden.",
+                mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION).isVisible());
 
         // Assert for "Basics" section
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
@@ -379,8 +379,8 @@ public class MainSettingsFragmentTest {
                 (SignInPreference) assertSettingsExists(MainSettings.PREF_SIGN_IN, null);
         Assert.assertEquals("SignInPreference should be at the personalized promo state. ",
                 signInPreference.getState(), State.PERSONALIZED_PROMO);
-        Assert.assertNull("Account section header should be hidden when promo is shown.",
-                mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION));
+        Assert.assertFalse("Account section header should be hidden when promo is shown.",
+                mMainSettings.findPreference(MainSettings.PREF_ACCOUNT_SECTION).isVisible());
 
         // SignIn to see the changes
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();

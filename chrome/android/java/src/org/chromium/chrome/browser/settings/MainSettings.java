@@ -131,7 +131,6 @@ public class MainSettings extends PreferenceFragmentCompat
                 Profile.getLastUsedRegularProfile());
         if (signinManager.isSigninSupported()) {
             signinManager.addSignInStateObserver(this);
-            mSignInPreference.registerForUpdates();
         }
         ProfileSyncService syncService = ProfileSyncService.get();
         if (syncService != null) {
@@ -146,7 +145,6 @@ public class MainSettings extends PreferenceFragmentCompat
                 Profile.getLastUsedRegularProfile());
         if (signinManager.isSigninSupported()) {
             signinManager.removeSignInStateObserver(this);
-            mSignInPreference.unregisterForUpdates();
         }
         ProfileSyncService syncService = ProfileSyncService.get();
         if (syncService != null) {
@@ -409,14 +407,10 @@ public class MainSettings extends PreferenceFragmentCompat
         // "You and Google" section header if the personalized sync promo is shown.
         boolean isShowingPersonalizedPromo =
                 mSignInPreference.getState() == SignInPreference.State.PERSONALIZED_PROMO;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            findPreference(PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
-                    .setVisible(!isShowingPersonalizedPromo);
-        } else if (isShowingPersonalizedPromo) {
-            removePreferenceIfPresent(PREF_ACCOUNT_SECTION);
-        } else {
-            addPreferenceIfAbsent(PREF_ACCOUNT_SECTION);
-        }
+        String prefName = ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                ? PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION
+                : PREF_ACCOUNT_SECTION;
+        findPreference(prefName).setVisible(!isShowingPersonalizedPromo);
     }
 
     // TemplateUrlService.LoadListener implementation.

@@ -337,7 +337,6 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
     public void onStart() {
         super.onStart();
         mProfileSyncService.addSyncStateChangedListener(this);
-        mSigninPreference.registerForUpdates();
 
         if (!mIsFromSigninScreen
                 || IdentityServicesProvider.get()
@@ -363,7 +362,6 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
     public void onStop() {
         super.onStop();
 
-        mSigninPreference.unregisterForUpdates();
         mProfileSyncService.removeSyncStateChangedListener(this);
     }
 

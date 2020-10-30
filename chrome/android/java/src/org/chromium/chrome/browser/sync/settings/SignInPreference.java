@@ -94,10 +94,10 @@ public class SignInPreference
         mState = State.SIGNED_IN;
     }
 
-    /**
-     * Starts listening for updates to the sign-in and sync state.
-     */
-    public void registerForUpdates() {
+    @Override
+    public void onAttached() {
+        super.onAttached();
+
         mAccountManagerFacade.addObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
@@ -114,11 +114,10 @@ public class SignInPreference
         update();
     }
 
-    /**
-     * Stops listening for updates to the sign-in and sync state. Every call to registerForUpdates()
-     * must be matched with a call to this method.
-     */
-    public void unregisterForUpdates() {
+    @Override
+    public void onDetached() {
+        super.onDetached();
+
         mAccountManagerFacade.removeObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
