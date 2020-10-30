@@ -14,13 +14,13 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
-    ":closure_jsmodules",
+    ":closure_compile_jsmodules",
     ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
   ]
 }
 
-js_type_check("closure_jsmodules") {
+js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
     ":image_orientation.m",
@@ -143,7 +143,6 @@ js_library("image_orientation") {
 
 js_library("image_orientation.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/image_orientation.m.js" ]
-  deps = []
 
   extra_deps = [ ":modulize" ]
 }
@@ -209,7 +208,6 @@ js_library("metadata_item") {
 
 js_library("metadata_item.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/metadata_item.m.js" ]
-  deps = []
 
   extra_deps = [ ":modulize" ]
 }
@@ -263,7 +261,6 @@ js_library("metadata_request") {
 
 js_library("metadata_request.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/metadata_request.m.js" ]
-  deps = []
 
   extra_deps = [ ":modulize" ]
 }
