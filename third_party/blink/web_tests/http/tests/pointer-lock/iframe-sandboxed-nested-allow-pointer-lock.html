@@ -1,33 +1,32 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="/js-test-resources/js-test.js"></script>
 <script src="../resources/pointer-lock/pointer-lock-test-harness.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
-<body>
-<div>
-  <div id="target1"></div>
-  <iframe src="../resources/pointer-lock/iframe-allows-inner-iframe.html" sandbox="allow-pointer-lock allow-scripts" onload="doNextStepWithUserGesture()"></iframe>
-</div>
+<body>>
 <script>
-    description("Test nested sandboxed iframes with allow-pointer-lock allow pointer lock.");
-    window.jsTestIsAsync = true;
-
-    targetDiv1 = document.getElementById("target1");
-    iframe = document.getElementsByTagName("iframe")[0];
-
-    todo = [
-      function () {
-          iframe.contentWindow.postMessage(["pass message down", "eval", 'document.body.requestPointerLock()'], "*");
-          window.onmessage = function (messageEvent) {
-              message = messageEvent.data;
-              shouldBeEqualToString("message", "inner-iframe.html onpointerlockchange, document.pointerLockElement = [object HTMLBodyElement]");
-              window.onmessage = null;
-              doNextStep();
-          }
-      },
-    ];
-    // doNextStep() called by iframe onload handler.
+  promise_test(() => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('message', (event) => {
+        if (event.data == "inner-iframe.html onpointerlockchange, document.pointerLockElement = [object HTMLBodyElement]") {
+          resolve();
+        } else if (event.data != 'inner frame load') {
+          reject(event.data);
+        }
+      });
+      window.addEventListener('message', (event) => {
+        if (event.data == 'inner frame load') {
+          clickOnElement(iframe);
+        }
+      });
+      var iframe = document.createElement('iframe');
+      iframe.sandbox = 'allow-pointer-lock allow-scripts';
+      iframe.src = '../resources/pointer-lock/iframe-allows-inner-iframe.html';
+      document.body.appendChild(iframe);
+    });
+  }, 'Test sandboxed nested iframe with allow-pointer-lock allows pointer lock.');
 </script>
 </body>
 </html>

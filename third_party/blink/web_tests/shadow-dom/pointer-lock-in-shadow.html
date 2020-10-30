@@ -2,6 +2,8 @@
 <script src='../resources/testharness.js'></script>
 <script src='../resources/testharnessreport.js'></script>
 <script src='resources/shadow-dom.js'></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
 
 <div id='host'>
   <template data-mode='open'>
@@ -29,7 +31,7 @@
 </div>
 
 <script>
-async_test((test) => {
+promise_test(async (test) => {
     document.onpointerlockerror = test.unreached_func('onpointerlockerror is not expected.');
 
     document.onpointerlockchange = test.step_func(() => {
@@ -64,6 +66,8 @@ async_test((test) => {
     });
 
     var canvas = host3.shadowRoot.querySelector('canvas');
-    canvas.requestPointerLock();
+    await test_driver.bless('user gesture requests pointer lock', async () => {
+      canvas.requestPointerLock();
+    });
 }, 'Test for pointerLockElement adjustment for Shadow DOM.');
 </script>

@@ -49,6 +49,23 @@ function doNextStepWithUserGesture()
     doNextStep({withUserGesture: true});
 }
 
+function clickOnElement(element) {
+    var viewportOffset = element.getBoundingClientRect();
+    var top = viewportOffset.top;
+    var bottom = viewportOffset.bottom;
+    var left = viewportOffset.left;
+    var right = viewportOffset.right;
+    var vertical_center = top + (bottom - top) / 2;
+    var horizontal_center = left + (right - left) / 2;
+
+    if (window.testRunner) {
+        eventSender.mouseMoveTo(horizontal_center, vertical_center);
+        eventSender.mouseDown(0);
+        eventSender.mouseUp(0);
+    }
+
+}
+
 function eventExpected(eventHandlerName, message, expectedCalls, targetHanderNode)
 {
     targetHanderNode[eventHandlerName] = function () {

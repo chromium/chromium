@@ -5,6 +5,7 @@
 #include "content/web_test/browser/web_test_shell_platform_delegate.h"
 
 #include "base/command_line.h"
+#include "content/public/browser/web_contents.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/browser/web_test_javascript_dialog_manager.h"
 #include "content/web_test/common/web_test_switches.h"
@@ -46,6 +47,11 @@ bool WebTestShellPlatformDelegate::HandleRequestToLockMouse(
     WebContents* web_contents,
     bool user_gesture,
     bool last_unlocked_by_target) {
+  if (!user_gesture && !last_unlocked_by_target) {
+    web_contents->GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kRequiresUserGesture);
+  }
+
   WebTestControlHost::Get()->RequestToLockMouse(web_contents);
   // Always indicate that we have handled the request to lock the mouse.
   return true;

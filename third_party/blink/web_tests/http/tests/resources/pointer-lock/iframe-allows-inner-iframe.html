@@ -3,9 +3,16 @@
 <head>
 <script src="iframe-common.js"></script>
 </head>
+<script>
+    function onInnerFrameLoad() {
+        parent.postMessage('inner frame load', '*');
+    }
+    window.addEventListener('message', (event) => {
+        parent.postMessage(event.data, '*');
+    });
+</script>
 <body>
+    <iframe src="inner-iframe.html" sandbox="allow-pointer-lock allow-scripts" onload="onInnerFrameLoad()"></iframe>
     iframe-allows-inner-iframe.html
-    <iframe src="inner-iframe.html" sandbox="allow-pointer-lock allow-scripts"></iframe>
 </body>
 </html>
-

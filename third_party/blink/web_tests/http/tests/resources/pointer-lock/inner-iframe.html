@@ -2,6 +2,11 @@
 <html>
 <head>
 <script src="iframe-common.js"></script>
+<script>
+    document.addEventListener('click', () => {
+        document.body.requestPointerLock();
+    })
+</script>
 </head>
 <body>
     inner-iframe.html
