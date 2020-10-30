@@ -9,178 +9,47 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
-#include "base/memory/ref_counted.h"
-#include "base/path_service.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_data.h"
 #include "content/public/browser/plugin_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/content_constants.h"
-#include "content/public/common/content_paths.h"
-#include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
-#include "net/base/filename_util.h"
 
-#if defined(OS_WIN)
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#endif
+namespace {
 
-class ChromePluginTest : public InProcessBrowserTest {
- protected:
-  ChromePluginTest() {}
-
-  static GURL GetURL(const char* filename) {
-    base::FilePath path;
-    base::PathService::Get(content::DIR_TEST_DATA, &path);
-    path = path.AppendASCII("plugin").AppendASCII(filename);
-    CHECK(base::PathExists(path));
-    return net::FilePathToFileURL(path);
-  }
-
-  static void LoadAndWait(Browser* window, const GURL& url, bool pass) {
-    content::WebContents* web_contents =
-        window->tab_strip_model()->GetActiveWebContents();
-    base::string16 expected_title(
-        base::ASCIIToUTF16(pass ? "OK" : "plugin_not_found"));
-    content::TitleWatcher title_watcher(web_contents, expected_title);
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(
-        pass ? "plugin_not_found" : "OK"));
-    ui_test_utils::NavigateToURL(window, url);
-    ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  }
-
-  static void CrashFlash() {
-    scoped_refptr<content::MessageLoopRunner> runner =
-        new content::MessageLoopRunner;
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CrashFlashInternal, runner->QuitClosure()));
-    runner->Run();
-  }
-
-  static void GetFlashPath(std::vector<base::FilePath>* paths) {
-    paths->clear();
-    std::vector<content::WebPluginInfo> plugins = GetPlugins();
-    for (std::vector<content::WebPluginInfo>::const_iterator it =
-             plugins.begin(); it != plugins.end(); ++it) {
-      if (it->name == base::ASCIIToUTF16(content::kFlashPluginName))
-        paths->push_back(it->path);
-    }
-  }
-
-  static std::vector<content::WebPluginInfo> GetPlugins() {
-    std::vector<content::WebPluginInfo> plugins;
-    scoped_refptr<content::MessageLoopRunner> runner =
-        new content::MessageLoopRunner;
-    content::PluginService::GetInstance()->GetPlugins(base::BindOnce(
-        &GetPluginsInfoCallback, &plugins, runner->QuitClosure()));
-    runner->Run();
-    return plugins;
-  }
-
-  static void EnsureFlashProcessCount(int expected) {
-    int actual = 0;
-    scoped_refptr<content::MessageLoopRunner> runner =
-        new content::MessageLoopRunner;
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CountPluginProcesses, &actual, runner->QuitClosure()));
-    runner->Run();
-    ASSERT_EQ(expected, actual);
-  }
-
- private:
-  static void CrashFlashInternal(base::OnceClosure quit_task) {
-    bool found = false;
-    for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-      if (iter.GetData().process_type != content::PROCESS_TYPE_PPAPI_PLUGIN)
-        continue;
-      iter.GetData().GetProcess().Terminate(0, true);
-      found = true;
-    }
-    ASSERT_TRUE(found) << "Didn't find Flash process!";
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(quit_task));
-  }
-
-  static void GetPluginsInfoCallback(
-      std::vector<content::WebPluginInfo>* rv,
-      base::OnceClosure quit_task,
-      const std::vector<content::WebPluginInfo>& plugins) {
-    *rv = plugins;
-    std::move(quit_task).Run();
-  }
-
-  static void CountPluginProcesses(int* count, base::OnceClosure quit_task) {
-    for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-      if (iter.GetData().process_type == content::PROCESS_TYPE_PPAPI_PLUGIN)
-        (*count)++;
-    }
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(quit_task));
-  }
-};
-
-// Tests a bunch of basic scenarios with Flash.
-// This test fails under ASan on Mac, see http://crbug.com/147004.
-// It fails elsewhere, too.  See http://crbug.com/152071.
-IN_PROC_BROWSER_TEST_F(ChromePluginTest, DISABLED_Flash) {
-  // Official builds always have bundled Flash.
-#if !defined(OFFICIAL_BUILD)
-  std::vector<base::FilePath> flash_paths;
-  GetFlashPath(&flash_paths);
-  if (flash_paths.empty()) {
-    LOG(INFO) << "Test not running because couldn't find Flash.";
-    return;
-  }
-#endif
-
-  GURL url = GetURL("flash.html");
-  EnsureFlashProcessCount(0);
-
-  // Try a single tab.
-  ASSERT_NO_FATAL_FAILURE(LoadAndWait(browser(), url, true));
-  EnsureFlashProcessCount(1);
-  Profile* profile = browser()->profile();
-  // Try another tab.
-  ASSERT_NO_FATAL_FAILURE(LoadAndWait(CreateBrowser(profile), url, true));
-  // Try an incognito window.
-  ASSERT_NO_FATAL_FAILURE(LoadAndWait(CreateIncognitoBrowser(), url, true));
-  EnsureFlashProcessCount(1);
-
-  // Now kill Flash process and verify it reloads.
-  CrashFlash();
-  EnsureFlashProcessCount(0);
-
-  ASSERT_NO_FATAL_FAILURE(LoadAndWait(browser(), url, true));
-  EnsureFlashProcessCount(1);
+void GetPluginsInfoCallback(
+    std::vector<content::WebPluginInfo>* rv,
+    base::OnceClosure quit_task,
+    const std::vector<content::WebPluginInfo>& plugins) {
+  *rv = plugins;
+  std::move(quit_task).Run();
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+std::vector<content::WebPluginInfo> GetPlugins() {
+  std::vector<content::WebPluginInfo> plugins;
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindOnce(&GetPluginsInfoCallback, &plugins, run_loop.QuitClosure());
+  content::PluginService::GetInstance()->GetPlugins(std::move(callback));
+  run_loop.RunUntilIdle();
+  return plugins;
+}
+
+}  // namespace
+
+using ChromePluginTest = InProcessBrowserTest;
+
 // Verify that the official builds have the known set of plugins.
 IN_PROC_BROWSER_TEST_F(ChromePluginTest, InstalledPlugins) {
   const char* expected[] = {
     "Chrome PDF Viewer",
-    "Shockwave Flash",
     "Native Client",
   };
 
@@ -194,4 +63,3 @@ IN_PROC_BROWSER_TEST_F(ChromePluginTest, InstalledPlugins) {
     ASSERT_TRUE(j != plugins.size()) << "Didn't find " << expected[i];
   }
 }
-#endif

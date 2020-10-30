@@ -988,7 +988,6 @@ if (!is_android) {
       "../browser/chrome_main_browsertest.cc",
       "../browser/chrome_navigation_browsertest.cc",
       "../browser/chrome_origin_trials_browsertest.cc",
-      "../browser/chrome_plugin_browsertest.cc",
       "../browser/chrome_private_network_request_browsertest.cc",
       "../browser/chrome_security_exploit_browsertest.cc",
       "../browser/chrome_service_worker_browsertest.cc",
@@ -2335,6 +2334,7 @@ if (!is_android) {
     if (is_chrome_branded) {
       data +=
           [ "//chrome/browser/internal/resources/signin/test_accounts.json" ]
+      sources += [ "../browser/chrome_plugin_browsertest.cc" ]
     }
 
     # Browser tests for functionality that is only intended to be present in
