@@ -44,8 +44,7 @@ class LoadMoreTask : public offline_pages::Task {
   }
 
   void UploadActionsComplete(UploadActionsTask::Result result);
-  void QueryRequestComplete(bool was_signed_in_request,
-                            FeedNetwork::QueryRequestResult result);
+  void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
   void Done(LoadStreamStatus status);
 
   FeedStream* stream_;  // Unowned.

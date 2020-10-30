@@ -48,9 +48,23 @@ void LoadMoreTask::Run() {
 }
 
 void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
+  StreamModel* model = stream_->GetModel();
+  DCHECK(model) << "Model was unloaded outside of a Task";
+
+  // Determine whether the load more request should be forced signed-out
+  // regardless of the live sign-in state of the client.
+  //
+  // The signed-in state of the model is used instead of using
+  // FeedStream#ShouldForceSignedOutFeedQueryRequest because the load more
+  // requests should be in the same signed-in state as the prior requests that
+  // filled the model to have consistent data.
+  //
+  // The sign-in state of the load stream request that brings the initial
+  // content determines the sign-in state of the subsequent load more requests.
+  // This avoids a possible situation where there would be a mix of signed-in
+  // and signed-out content, which we don't want.
+  bool force_signed_out_request = !model->signed_in();
   // Send network request.
-  bool force_signed_out_request =
-      stream_->ShouldForceSignedOutFeedQueryRequest();
   fetch_start_time_ = stream_->GetTickClock()->NowTicks();
   stream_->GetNetwork()->SendQueryRequest(
       CreateFeedQueryLoadMoreRequest(
@@ -58,12 +72,10 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
           stream_->GetMetadata()->GetConsistencyToken(),
           stream_->GetModel()->GetNextPageToken()),
       force_signed_out_request,
-      base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr(),
-                     force_signed_out_request));
+      base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
 }
 
 void LoadMoreTask::QueryRequestComplete(
-    bool was_forced_signed_out_request,
     FeedNetwork::QueryRequestResult result) {
   StreamModel* model = stream_->GetModel();
   DCHECK(model) << "Model was unloaded outside of a Task";
@@ -71,14 +83,11 @@ void LoadMoreTask::QueryRequestComplete(
   if (!result.response_body)
     return Done(LoadStreamStatus::kNoResponseBody);
 
-  bool was_signed_in_request =
-      !was_forced_signed_out_request && stream_->IsSignedIn();
-
   RefreshResponseData translated_response =
       stream_->GetWireResponseTranslator()->TranslateWireResponse(
           *result.response_body,
           StreamModelUpdateRequest::Source::kNetworkLoadMore,
-          was_signed_in_request, stream_->GetClock()->Now());
+          result.response_info.was_signed_in, stream_->GetClock()->Now());
 
   if (!translated_response.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);

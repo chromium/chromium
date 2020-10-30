@@ -760,9 +760,14 @@ void FeedStream::DeclareHasReachedConditionsToUploadActionsWithNoticeCard() {
 void FeedStream::UpdateShownSlicesUploadCondition(int viewed_slice_index) {
   constexpr int kShownSlicesThreshold = 2;
 
+  DCHECK(model_) << "Model was unloaded while handling a viewed slice";
+
   // Don't take shown slices into consideration when the upload conditions has
   // already been reached.
   if (HasReachedConditionsToUploadActionsWithNoticeCard())
+    return;
+
+  if (!model_->signed_in())
     return;
 
   if (viewed_slice_index + 1 >= kShownSlicesThreshold)

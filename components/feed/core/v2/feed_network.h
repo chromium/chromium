@@ -30,6 +30,8 @@ class FeedNetwork {
     NetworkResponseInfo response_info;
     // Response body if one was received.
     std::unique_ptr<feedwire::Response> response_body;
+    // Whether the request was signed in.
+    bool was_signed_in;
   };
 
   // Result of SendActionRequest.

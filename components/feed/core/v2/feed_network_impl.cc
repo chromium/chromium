@@ -329,6 +329,7 @@ class FeedNetworkImpl::NetworkFetch {
         tick_clock_->NowTicks() - entire_send_start_ticks_;
     response_info.fetch_time = base::Time::Now();
     response_info.base_request_url = GetUrlWithoutQuery(url_);
+    response_info.was_signed_in = !access_token_.empty();
 
     // If overriding the feed host, try to grab the Bless nonce. This is
     // strictly informational, and only displayed in snippets-internals.

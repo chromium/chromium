@@ -277,6 +277,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
       "https://www.google.com/httpservice/retry/TrellisClankService/FeedQuery",
       result.response_info.base_request_url);
   EXPECT_NE(base::Time(), result.response_info.fetch_time);
+  EXPECT_TRUE(result.response_info.was_signed_in);
   EXPECT_EQ(GetTestFeedResponse().response_version(),
             result.response_body->response_version());
 }

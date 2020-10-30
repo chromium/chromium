@@ -126,12 +126,10 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
           GetRequestReason(load_type_), stream_->GetRequestMetadata(),
           stream_->GetMetadata()->GetConsistencyToken()),
       force_signed_out_request,
-      base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr(),
-                     force_signed_out_request));
+      base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
 }
 
 void LoadStreamTask::QueryRequestComplete(
-    bool was_forced_signed_out_request,
     FeedNetwork::QueryRequestResult result) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
@@ -149,14 +147,11 @@ void LoadStreamTask::QueryRequestComplete(
       return Done(LoadStreamStatus::kNoResponseBody);
   }
 
-  bool was_signed_in_request =
-      !was_forced_signed_out_request && stream_->IsSignedIn();
-
   RefreshResponseData response_data =
       stream_->GetWireResponseTranslator()->TranslateWireResponse(
           *result.response_body,
           StreamModelUpdateRequest::Source::kNetworkUpdate,
-          was_signed_in_request, stream_->GetClock()->Now());
+          result.response_info.was_signed_in, stream_->GetClock()->Now());
   if (!response_data.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 

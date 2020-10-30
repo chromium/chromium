@@ -48,6 +48,7 @@ struct NetworkResponseInfo {
   std::string bless_nonce;
   GURL base_request_url;
   size_t response_body_bytes = 0;
+  bool was_signed_in = false;
 };
 
 struct NetworkResponse {

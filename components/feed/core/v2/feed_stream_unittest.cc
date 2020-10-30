@@ -303,6 +303,7 @@ class TestFeedNetwork : public FeedNetwork {
     result.response_info.status_code = 200;
     result.response_info.response_body_bytes = 100;
     result.response_info.fetch_duration = base::TimeDelta::FromMilliseconds(42);
+    result.response_info.was_signed_in = true;
     if (injected_response_) {
       result.response_body = std::make_unique<feedwire::Response>(
           std::move(injected_response_.value()));
@@ -1809,6 +1810,29 @@ TEST_F(FeedStreamTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
                                1, 1);
 }
 
+TEST_F(FeedStreamConditionalActionsUploadTest,
+       DontTriggerActionsUploadWhenWasNotSignedIn) {
+  auto update_request = MakeTypicalInitialModelState();
+  update_request->stream_data.set_signed_in(false);
+  response_translator_.InjectResponse(std::move(update_request));
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Try to reach conditions.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  // Try to trigger an upload through a query.
+  stream_->OnEnterBackground();
+  WaitForIdleTaskQueue();
+
+  // Verify that even if the conditions were reached, the pref that enables the
+  // upload wasn't set to true because the latest refresh request wasn't signed
+  // in.
+  ASSERT_FALSE(stream_->CanUploadActions());
+}
+
 TEST_F(FeedStreamTest, LoadStreamFromNetworkUploadsActions) {
   stream_->UploadAction(MakeFeedAction(99ul), false, base::DoNothing());
   WaitForIdleTaskQueue();
@@ -1893,7 +1917,9 @@ TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
         CallbackReceiver<bool> callback;
         stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
         WaitForIdleTaskQueue();
-        EXPECT_EQ(stream_->IsActivityLoggingEnabled(), signed_in && waa_on);
+        EXPECT_EQ(stream_->IsActivityLoggingEnabled(), signed_in && waa_on)
+            << "signed_in=" << signed_in << " waa_on=" << waa_on
+            << " privacy_notice_fulfilled=" << privacy_notice_fulfilled;
       }
     }
   }
@@ -1911,7 +1937,6 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   response_translator_.InjectResponse(MakeTypicalNextPageState(
       /* first_cluster_id= */ 0,
       /* last_added_time= */ kTestTimeEpoch,
-      /* signed_in= */ true,
       /* logging_enabled= */ true,
       /* privacy_notice_fulfilled= */ false));
 
