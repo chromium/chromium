@@ -87,6 +87,7 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
       bool hidden,
       bool never_composited);
   ~WebFrameWidgetImpl() override;

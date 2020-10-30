@@ -306,7 +306,7 @@ class WebViewTest : public testing::Test {
     return blink::WebFrameWidget::CreateForMainFrame(
         client, frame, frame_widget_host.Unbind(),
         std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-        std::move(widget_receiver));
+        std::move(widget_receiver), viz::FrameSinkId());
   }
 
   std::string base_url_;
@@ -4243,7 +4243,7 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
     WebFrameWidget* widget = blink::WebFrameWidget::CreateForMainFrame(
         &web_widget_client, frame, std::move(blink_frame_widget_host),
         std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-        std::move(widget_receiver));
+        std::move(widget_receiver), viz::FrameSinkId());
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
     web_widget_client.set_layer_tree_host(widget->InitializeCompositing(

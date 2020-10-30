@@ -76,6 +76,7 @@ class CORE_EXPORT WebFrameWidgetBase
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
       bool hidden,
       bool never_composited,
       bool is_for_child_local_root);
@@ -282,6 +283,7 @@ class CORE_EXPORT WebFrameWidgetBase
   bool IsPasting() override;
   bool HandlingSelectRange() override;
   void ReleaseMouseLockAndPointerCaptureForTesting() override;
+  const viz::FrameSinkId& GetFrameSinkId() override;
 
   // Called when a drag-n-drop operation should begin.
   void StartDragging(const WebDragData&,
@@ -680,6 +682,8 @@ class CORE_EXPORT WebFrameWidgetBase
   static bool ignore_input_events_;
 
   WebWidgetClient* client_;
+
+  const viz::FrameSinkId frame_sink_id_;
 
   // WebFrameWidget is associated with a subtree of the frame tree,
   // corresponding to a maximal connected tree of LocalFrames. This member

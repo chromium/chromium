@@ -126,6 +126,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
         mojo_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         mojo_widget,
+    const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
     bool hidden,
     bool never_composited) {
@@ -148,7 +149,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        is_for_nested_main_frame, hidden, never_composited);
+        frame_sink_id, is_for_nested_main_frame, hidden, never_composited);
   } else {
     // Note: this isn't a leak, as the object has a self-reference that the
     // caller needs to release by calling Close().
@@ -158,7 +159,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        is_for_nested_main_frame, hidden, never_composited);
+        frame_sink_id, is_for_nested_main_frame, hidden, never_composited);
   }
   widget->BindLocalRoot(*main_frame);
   return widget;
@@ -175,6 +176,7 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
         mojo_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         mojo_widget,
+    const viz::FrameSinkId& frame_sink_id,
     bool hidden,
     bool never_composited) {
   DCHECK(client) << "A valid WebWidgetClient must be supplied.";
@@ -191,7 +193,7 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
       std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
       std::move(mojo_widget_host), std::move(mojo_widget),
       local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-      hidden, never_composited);
+      frame_sink_id, hidden, never_composited);
   widget->BindLocalRoot(*local_root);
   return widget;
 }
@@ -208,6 +210,7 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const viz::FrameSinkId& frame_sink_id,
     bool hidden,
     bool never_composited)
     : WebFrameWidgetBase(client,
@@ -216,6 +219,7 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                          std::move(widget_host),
                          std::move(widget),
                          std::move(task_runner),
+                         frame_sink_id,
                          hidden,
                          never_composited,
                          /*is_for_child_local_root=*/true),

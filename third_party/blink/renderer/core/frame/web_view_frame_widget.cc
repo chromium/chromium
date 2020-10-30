@@ -31,6 +31,7 @@ WebViewFrameWidget::WebViewFrameWidget(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
     bool hidden,
     bool never_composited)
@@ -40,6 +41,7 @@ WebViewFrameWidget::WebViewFrameWidget(
                          std::move(widget_host),
                          std::move(widget),
                          task_runner,
+                         frame_sink_id,
                          hidden,
                          never_composited,
                          /*is_for_child_local_root=*/false),

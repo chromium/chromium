@@ -1600,6 +1600,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       render_widget.get(), web_frame, std::move(params->frame_widget_host),
       std::move(params->frame_widget), std::move(params->widget_host),
       std::move(params->widget),
+      viz::FrameSinkId(RenderThread::Get()->GetClientId(),
+                       params->main_frame_widget_routing_id),
       /*is_for_nested_main_frame=*/params->type !=
           mojom::ViewWidgetType::kTopLevel,
       /*hidden=*/true, render_view->widgets_never_composited());
@@ -1772,6 +1774,8 @@ void RenderFrameImpl::CreateFrame(
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
+        viz::FrameSinkId(RenderThread::Get()->GetClientId(),
+                         widget_params->routing_id),
         /*is_for_nested_main_frame=*/false,
         /*hidden=*/true, render_view->widgets_never_composited());
 
@@ -1822,6 +1826,8 @@ void RenderFrameImpl::CreateFrame(
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
+        viz::FrameSinkId(RenderThread::Get()->GetClientId(),
+                         widget_params->routing_id),
         /*hidden=*/true, render_view->widgets_never_composited());
 
     // Adds a reference on RenderWidget, making it self-referencing. So it
@@ -3789,7 +3795,7 @@ blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
     const blink::WebString& sink_id) {
   return media_factory_.CreateMediaPlayer(
       source, client, inspector_context, encrypted_client, initial_cdm, sink_id,
-      GetLocalRootRenderWidget()->GetFrameSinkId(),
+      GetLocalRootRenderWidget()->GetFrameWidget()->GetFrameSinkId(),
       GetLocalRootRenderWidget()->layer_tree_host()->GetSettings());
 }
 

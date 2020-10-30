@@ -167,6 +167,7 @@ WebFrameWidgetBase::WebFrameWidgetBase(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const viz::FrameSinkId& frame_sink_id,
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root)
@@ -177,7 +178,8 @@ WebFrameWidgetBase::WebFrameWidgetBase(
                                                 hidden,
                                                 never_composited,
                                                 is_for_child_local_root)),
-      client_(&client) {
+      client_(&client),
+      frame_sink_id_(frame_sink_id) {
   DCHECK(task_runner);
   frame_widget_host_.Bind(std::move(frame_widget_host), task_runner);
   receiver_.Bind(std::move(frame_widget), task_runner);
@@ -443,11 +445,11 @@ viz::FrameSinkId WebFrameWidgetBase::GetFrameSinkIdAtPoint(
   // call the hit-testing API. Either way it might be better to have
   // a DCHECK for the node rather than a null check here.
   if (!result_node) {
-    return client_->GetFrameSinkId();
+    return frame_sink_id_;
   }
 
-  viz::FrameSinkId frame_sink_id = GetRemoteFrameSinkId(result);
-  if (frame_sink_id.is_valid()) {
+  viz::FrameSinkId remote_frame_sink_id = GetRemoteFrameSinkId(result);
+  if (remote_frame_sink_id.is_valid()) {
     FloatPoint local_point = FloatPoint(result.LocalPoint());
     LayoutObject* object = result.GetLayoutObject();
     if (object->IsBox()) {
@@ -457,13 +459,13 @@ viz::FrameSinkId WebFrameWidgetBase::GetFrameSinkIdAtPoint(
 
     *local_point_in_dips =
         widget_base_->BlinkSpaceToDIPs(gfx::PointF(local_point));
-    return frame_sink_id;
+    return remote_frame_sink_id;
   }
 
   // Return the FrameSinkId for the current widget if the point did not hit
   // test to a remote frame, or the point is outside of the remote frame's
   // content box, or the remote frame doesn't have a valid FrameSinkId yet.
-  return client_->GetFrameSinkId();
+  return frame_sink_id_;
 }
 
 gfx::RectF WebFrameWidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
@@ -2318,6 +2320,13 @@ KURL WebFrameWidgetBase::GetURLForDebugTrace() {
 void WebFrameWidgetBase::ReleaseMouseLockAndPointerCaptureForTesting() {
   GetPage()->GetPointerLockController().ExitPointerLock();
   MouseCaptureLost();
+}
+
+const viz::FrameSinkId& WebFrameWidgetBase::GetFrameSinkId() {
+  // It is valid to create a WebFrameWidget with an invalid frame sink id for
+  // printing and placeholders. But if we go to use it, it should be valid.
+  DCHECK(frame_sink_id_.is_valid());
+  return frame_sink_id_;
 }
 
 WebPlugin* WebFrameWidgetBase::GetFocusedPluginContainer() {

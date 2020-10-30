@@ -236,6 +236,10 @@ class PLATFORM_EXPORT FrameWidget
 
   // Indicate composition is complete to plugin.
   virtual void ImeFinishComposingTextForPlugin(bool keep_selection) = 0;
+
+  // Returns the FrameSinkId for this widget which is used for identifying
+  // frames submitted from the compositor.
+  virtual const viz::FrameSinkId& GetFrameSinkId() = 0;
 };
 
 }  // namespace blink

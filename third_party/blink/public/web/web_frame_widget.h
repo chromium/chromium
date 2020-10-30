@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -64,6 +65,7 @@ class WebFrameWidget : public WebWidget {
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+      const viz::FrameSinkId& frame_sink_id,
       bool is_for_nested_main_frame = false,
       bool hidden = false,
       bool never_composited = false);
@@ -79,6 +81,7 @@ class WebFrameWidget : public WebWidget {
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+      const viz::FrameSinkId& frame_sink_id,
       bool hidden = false,
       bool never_composited = false);
 
@@ -207,6 +210,10 @@ class WebFrameWidget : public WebWidget {
   // Release any mouse lock or pointer capture held. This is used to reset
   // state between WebTest runs.
   virtual void ReleaseMouseLockAndPointerCaptureForTesting() = 0;
+
+  // Returns the FrameSinkId for this widget which is used for identifying
+  // frames submitted from the compositor.
+  virtual const viz::FrameSinkId& GetFrameSinkId() = 0;
 
  private:
   // This private constructor and the class/friend declaration ensures that

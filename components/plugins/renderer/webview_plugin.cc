@@ -282,7 +282,8 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::FrameWidgetInterfaceBase>(),
       blink_widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote(),
-      blink_widget_.BindNewEndpointAndPassDedicatedReceiver());
+      blink_widget_.BindNewEndpointAndPassDedicatedReceiver(),
+      viz::FrameSinkId());
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call

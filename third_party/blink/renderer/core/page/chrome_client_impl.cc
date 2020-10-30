@@ -867,8 +867,7 @@ bool ChromeClientImpl::ShouldOpenUIElementDuringPageDismissal(
 }
 
 viz::FrameSinkId ChromeClientImpl::GetFrameSinkId(LocalFrame* frame) {
-  WebWidgetClient* client = frame->GetWidgetForLocalRoot()->Client();
-  return client->GetFrameSinkId();
+  return frame->GetWidgetForLocalRoot()->GetFrameSinkId();
 }
 
 void ChromeClientImpl::RequestDecode(LocalFrame* frame,

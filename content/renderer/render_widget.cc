@@ -254,8 +254,4 @@ void RenderWidget::UpdateSelectionBounds() {
   GetWebWidget()->UpdateSelectionBounds();
 }
 
-viz::FrameSinkId RenderWidget::GetFrameSinkId() {
-  return viz::FrameSinkId(RenderThread::Get()->GetClientId(), routing_id());
-}
-
 }  // namespace content

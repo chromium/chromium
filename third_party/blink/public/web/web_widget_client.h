@@ -39,7 +39,6 @@
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "cc/trees/layer_tree_host.h"
-#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -101,11 +100,6 @@ class WebWidgetClient {
                                       const SkBitmap& drag_image,
                                       const gfx::Point& drag_image_offset) {
     return false;
-  }
-
-  virtual viz::FrameSinkId GetFrameSinkId() {
-    NOTREACHED();
-    return viz::FrameSinkId();
   }
 
   // For more information on the sequence of when these callbacks are made

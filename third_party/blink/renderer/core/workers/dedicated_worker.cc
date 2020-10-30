@@ -283,9 +283,8 @@ BeginFrameProviderParams DedicatedWorker::CreateBeginFrameProviderParams() {
     if (frame) {
       WebFrameWidgetBase* widget =
           WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-      WebWidgetClient* client = widget->Client();
       begin_frame_provider_params.parent_frame_sink_id =
-          client->GetFrameSinkId();
+          widget->GetFrameSinkId();
     }
     begin_frame_provider_params.frame_sink_id =
         Platform::Current()->GenerateFrameSinkId();

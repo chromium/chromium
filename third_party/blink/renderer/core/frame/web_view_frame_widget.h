@@ -52,6 +52,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
       bool is_for_nested_main_frame,
       bool hidden,
       bool never_composited);
@@ -236,6 +237,7 @@ using CreateWebViewFrameWidgetFunction =
                                 mojom::blink::WidgetInterfaceBase> widget,
                             scoped_refptr<base::SingleThreadTaskRunner>
                                 task_runner,
+                            const viz::FrameSinkId& frame_sink_id,
                             bool is_for_nested_main_frame,
                             bool hidden,
                             bool never_composited);

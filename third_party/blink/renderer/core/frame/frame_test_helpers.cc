@@ -118,8 +118,11 @@ T* CreateDefaultClientIfNeeded(T* client, std::unique_ptr<T>& owned_client) {
   return owned_client.get();
 }
 
-// A static increasing count of frame sinks created so they are all unique.
-static uint32_t s_frame_sink_count = 0;
+viz::FrameSinkId AllocateFrameSinkId() {
+  // A static increasing count of frame sinks created so they are all unique.
+  static uint32_t s_frame_sink_count = 0;
+  return viz::FrameSinkId(++s_frame_sink_count, 1);
+}
 
 }  // namespace
 
@@ -282,7 +285,7 @@ WebLocalFrameImpl* CreateProvisional(WebRemoteFrame& old_frame,
     WebFrameWidget* frame_widget = WebFrameWidget::CreateForMainFrame(
         widget_client.get(), frame, frame_widget_host.Unbind(),
         std::move(frame_widget_receiver), widget_client->BindNewWidgetHost(),
-        std::move(widget_receiver));
+        std::move(widget_receiver), AllocateFrameSinkId());
     widget_client->SetFrameWidget(frame_widget, std::move(widget_remote));
     // The WebWidget requires the compositor to be set before it is used.
     cc::LayerTreeSettings layer_tree_settings =
@@ -299,7 +302,7 @@ WebLocalFrameImpl* CreateProvisional(WebRemoteFrame& old_frame,
     WebFrameWidget* frame_widget = WebFrameWidget::CreateForChildLocalRoot(
         widget_client.get(), frame, frame_widget_host.Unbind(),
         std::move(frame_widget_receiver), widget_client->BindNewWidgetHost(),
-        std::move(widget_receiver));
+        std::move(widget_receiver), AllocateFrameSinkId());
     widget_client->SetFrameWidget(frame_widget, std::move(widget_remote));
     // The WebWidget requires the compositor to be set before it is used.
     cc::LayerTreeSettings layer_tree_settings =
@@ -367,7 +370,7 @@ WebLocalFrameImpl* CreateLocalChild(WebRemoteFrame& parent,
   WebFrameWidget* frame_widget = WebFrameWidget::CreateForChildLocalRoot(
       widget_client, frame, frame_widget_host.Unbind(),
       std::move(frame_widget_receiver), widget_client->BindNewWidgetHost(),
-      std::move(widget_receiver));
+      std::move(widget_receiver), AllocateFrameSinkId());
   // The WebWidget requires the compositor to be set before it is used.
   widget_client->SetFrameWidget(frame_widget, std::move(widget_remote));
   cc::LayerTreeSettings layer_tree_settings =
@@ -461,7 +464,8 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   WebFrameWidget* widget = blink::WebFrameWidget::CreateForMainFrame(
       test_web_widget_client_, frame, frame_widget_host.Unbind(),
       std::move(frame_widget_receiver),
-      test_web_widget_client_->BindNewWidgetHost(), std::move(widget_receiver));
+      test_web_widget_client_->BindNewWidgetHost(), std::move(widget_receiver),
+      AllocateFrameSinkId());
   // The WebWidget requires the compositor to be set before it is used.
   test_web_widget_client_->SetFrameWidget(widget, std::move(widget_remote));
   cc::LayerTreeSettings layer_tree_settings =
@@ -763,8 +767,7 @@ void TestWebRemoteFrameClient::FrameDetached(DetachType type) {
   self_owned_.reset();
 }
 
-TestWebWidgetClient::TestWebWidgetClient()
-    : frame_sink_id_(viz::FrameSinkId(++s_frame_sink_count, 1)) {}
+TestWebWidgetClient::TestWebWidgetClient() = default;
 
 void TestWebWidgetClient::SetFrameWidget(
     WebFrameWidget* widget,
@@ -800,10 +803,6 @@ TestWebWidgetClient::BindNewWidgetHost() {
 
 bool TestWebWidgetClient::HaveScrollEventHandlers() const {
   return layer_tree_host()->have_scroll_event_handlers();
-}
-
-viz::FrameSinkId TestWebWidgetClient::GetFrameSinkId() {
-  return frame_sink_id_;
 }
 
 std::unique_ptr<cc::LayerTreeFrameSink>

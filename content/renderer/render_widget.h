@@ -179,7 +179,6 @@ class CONTENT_EXPORT RenderWidget
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
   void BrowserClosedIpcChannelForPopupWidget() override;
-  viz::FrameSinkId GetFrameSinkId() override;
 
   void ConvertViewportToWindow(blink::WebRect* rect);
   void UpdateTextInputState();

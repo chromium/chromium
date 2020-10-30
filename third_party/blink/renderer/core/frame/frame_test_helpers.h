@@ -239,7 +239,6 @@ class TestWebWidgetClient : public WebWidgetClient,
 
   // WebWidgetClient overrides;
   void ScheduleAnimation() override { animation_scheduled_ = true; }
-  viz::FrameSinkId GetFrameSinkId() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;
   void WillQueueSyntheticEvent(const WebCoalescedInputEvent& event) override;

@@ -717,7 +717,7 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   blink::WebFrameWidget::CreateForMainFrame(
       &web_widget_client, frame, frame_widget_host.Unbind(),
       std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-      std::move(widget_receiver));
+      std::move(widget_receiver), viz::FrameSinkId());
   web_view->DidAttachLocalMainFrame();
 
   base::Value html(
@@ -976,7 +976,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
   blink::WebFrameWidget::CreateForMainFrame(
       this, main_frame, frame_widget_host.Unbind(),
       std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-      std::move(widget_receiver));
+      std::move(widget_receiver), viz::FrameSinkId());
   web_view->DidAttachLocalMainFrame();
   node_to_print_.Reset();
 

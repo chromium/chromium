@@ -92,7 +92,7 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
   viz::FrameSinkId main_frame_sink_id =
       WebView().MainFrameViewWidget()->GetFrameSinkIdAtPoint(
           gfx::PointF(10.43, 10.74), &point);
-  EXPECT_EQ(WebView().MainFrameViewWidget()->Client()->GetFrameSinkId(),
+  EXPECT_EQ(WebView().MainFrameViewWidget()->GetFrameSinkId(),
             main_frame_sink_id);
   EXPECT_EQ(gfx::PointF(10.43, 10.74), point);
 
@@ -233,13 +233,14 @@ WebViewFrameWidget* CreateWebViewFrameWidget(
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
     bool hidden,
     bool never_composited) {
   return MakeGarbageCollected<MockWebViewFrameWidget>(
       pass_key, client, web_view_impl, std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
-      std::move(task_runner), is_for_nested_main_frame, hidden,
+      std::move(task_runner), frame_sink_id, is_for_nested_main_frame, hidden,
       never_composited);
 }
 
