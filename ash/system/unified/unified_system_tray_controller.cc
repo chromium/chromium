@@ -8,6 +8,7 @@
 #include "ash/metrics/user_metrics_action.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -54,12 +55,12 @@
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/compositor/animation_metrics_reporter.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
@@ -70,32 +71,19 @@ namespace ash {
 void RecordPageSwitcherSourceByEventType(ui::EventType type,
                                          bool is_tablet_mode) {}
 
-class UnifiedSystemTrayController::SystemTrayTransitionAnimationMetricsReporter
-    : public ui::AnimationMetricsReporter {
- public:
-  SystemTrayTransitionAnimationMetricsReporter() = default;
-  ~SystemTrayTransitionAnimationMetricsReporter() override = default;
+void ReportExpandAnimationSmoothness(int smoothness) {
+  UMA_HISTOGRAM_PERCENTAGE(
+      "ChromeOS.SystemTray.AnimationSmoothness."
+      "TransitionToExpanded",
+      smoothness);
+}
 
-  void set_target_expanded_state(bool expanded) { target_expanded_ = expanded; }
-
- private:
-  // ui:AnimationMetricsReporter
-  void Report(int value) override {
-    if (target_expanded_) {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "ChromeOS.SystemTray.AnimationSmoothness."
-          "TransitionToExpanded",
-          value);
-    } else {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "ChromeOS.SystemTray.AnimationSmoothness."
-          "TransitionToCollapsed",
-          value);
-    }
-  }
-
-  bool target_expanded_;
-};
+void ReportCollapseAnimationSmoothness(int smoothness) {
+  UMA_HISTOGRAM_PERCENTAGE(
+      "ChromeOS.SystemTray.AnimationSmoothness."
+      "TransitionToCollapsed",
+      smoothness);
+}
 
 UnifiedSystemTrayController::UnifiedSystemTrayController(
     UnifiedSystemTrayModel* model,
@@ -104,8 +92,6 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
     : views::AnimationDelegateViews(owner_view),
       model_(model),
       bubble_(bubble),
-      animation_metrics_reporter_(
-          std::make_unique<SystemTrayTransitionAnimationMetricsReporter>()),
       animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   animation_->Reset(model_->IsExpandedOnOpen() ? 1.0 : 0.0);
   animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(
@@ -124,8 +110,6 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
   Shell::Get()->metrics()->RecordUserMetricsAction(UMA_STATUS_AREA_MENU_OPENED);
   UMA_HISTOGRAM_BOOLEAN("ChromeOS.SystemTray.IsExpandedOnOpen",
                         model_->IsExpandedOnOpen());
-
-  SetAnimationMetricsReporter(animation_metrics_reporter_.get());
 }
 
 UnifiedSystemTrayController::~UnifiedSystemTrayController() = default;
@@ -249,7 +233,16 @@ void UnifiedSystemTrayController::UpdateDrag(const gfx::PointF& location) {
 }
 
 void UnifiedSystemTrayController::StartAnimation(bool expand) {
-  animation_metrics_reporter_->set_target_expanded_state(expand);
+  // UnifiedSystemTrayControllerTest does not add |unified_view_| to a widget.
+  if (unified_view_->GetWidget()) {
+    animation_tracker_.emplace(unified_view_->GetWidget()
+                                   ->GetCompositor()
+                                   ->RequestNewThroughputTracker());
+    animation_tracker_->Start(metrics_util::ForSmoothness(
+        expand ? base::BindRepeating(&ReportExpandAnimationSmoothness)
+               : base::BindRepeating(&ReportCollapseAnimationSmoothness)));
+  }
+
   if (expand) {
     animation_->Show();
   } else {
@@ -408,6 +401,11 @@ void UnifiedSystemTrayController::EnsureExpanded() {
 
 void UnifiedSystemTrayController::AnimationEnded(
     const gfx::Animation* animation) {
+  if (animation_tracker_) {
+    animation_tracker_->Stop();
+    animation_tracker_.reset();
+  }
+
   UpdateExpandedAmount();
 }
 
