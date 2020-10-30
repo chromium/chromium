@@ -4791,13 +4791,17 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
+      'chromium_gtests_for_linux_and_mac_only',
+      'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
+      'linux_flavor_specific_chromium_gtests',
+      'linux_specific_xr_gtests',
       'gl_gtests_validating',
       'gpu_fyi_vulkan_swiftshader_gtests',
-      'linux_flavor_specific_chromium_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_gtests',
     ],
 
     # gl_tests requires dedicated slaves with GPUs on linux, so have a separate
@@ -4807,12 +4811,16 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
+      'chromium_gtests_for_linux_and_mac_only',
+      'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
-      'gl_gtests_validating',
       'linux_flavor_specific_chromium_gtests',
+      'linux_specific_xr_gtests',
+      'gl_gtests_validating',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
+      'weblayer_gtests',
     ],
 
     'chromium_linux_cast_audio_gtests': [
@@ -4834,6 +4842,8 @@
       'telemetry_perf_unittests_isolated_scripts',
     ],
 
+    # When changing something here, change chromium_linux_and_gl_gtests and
+    # chromium_linux_and_gl_and_vulkan_gtests in the same way.
     'chromium_linux_gtests': [
       'aura_gtests',
       'chromium_gtests',
