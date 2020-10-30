@@ -275,6 +275,8 @@ def write_simple_test_results(return_code, output_filepath, benchmark_name):
 
 
 def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False):
+  start = time.time()
+
   env = os.environ.copy()
   # Assume we want to set up the sandbox environment variables all the
   # time; doing so is harmless on non-Linux platforms and is needed
@@ -336,6 +338,10 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False):
     return_code = 1
   write_simple_test_results(return_code, output_paths.test_results,
                             output_paths.name)
+
+  print_duration(
+      'executing gtest %s' % command_generator.executable_name, start)
+
   return return_code
 
 
