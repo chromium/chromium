@@ -234140,7 +234140,23 @@
     "spec.src.json": [
      "b001317d5784de8d7e0b15e4cdcf616c1022c84b",
      []
-    ]
+    ],
+    "tentative": {
+     "resources": {
+      "pass.png": [
+       "2fa1e0ac0663a65deae6602621521cc2844b93de",
+       []
+      ],
+      "test.ogv": [
+       "0f83996e5dcf31a32a801b6800315bd91642d29c",
+       []
+      ],
+      "test.wav": [
+       "85dc1ea9044e28eeeac6176bae61285c25ebf711",
+       []
+      ]
+     }
+    }
    },
    "mst-content-hint": {
     "META.yml": [
@@ -249795,7 +249811,7 @@
         []
        ],
        "base.py": [
-        "99f6e5cff4c8b826d1390b482eb686da5915083c",
+        "f2205b160f61023f4757732243ca2eade32a3713",
         []
        ],
        "chrome.py": [
@@ -249831,11 +249847,11 @@
         []
        ],
        "firefox.py": [
-        "151530897d9b1f77e9dcd4f1971bed1c4d6ff8b0",
+        "75cebb9f7f103daa0e35d96fddc67d7a1d49fd27",
         []
        ],
        "firefox_android.py": [
-        "a6cb8f0dd3e0f669d47b4a9a4a728d99fc648988",
+        "bea0d9f4ee33ab051b00cba5b8a4afc017c37501",
         []
        ],
        "ie.py": [
@@ -249909,7 +249925,7 @@
         []
        ],
        "executormarionette.py": [
-        "7e2cc8e38a44c06a0d6c726fc917ca36776c0861",
+        "da8941b69e33b0986f999f286c4a64e584349ecc",
         []
        ],
        "executoropera.py": [
@@ -250084,7 +250100,7 @@
        []
       ],
       "testrunner.py": [
-       "0bde5ba348ea08984c1b95f78d926218b3713890",
+       "961c40fc5b8099136f341d1263cd855180bff9bd",
        []
       ],
       "update": {
@@ -250126,7 +250142,7 @@
        []
       ],
       "wptcommandline.py": [
-       "9d1d4048095435de35f00d65e6d4d7de3f427e95",
+       "15d2322494dbe5c281cb77db7a1c0dd754e7db2a",
        []
       ],
       "wptlogging.py": [
@@ -250200,7 +250216,7 @@
        []
       ],
       "wpttest.py": [
-       "aafe3fa6e00e0233e530f1693e83c9caa8c2ced7",
+       "e21041b6430a2661e437f3e4a9a73def63ee6f1b",
        []
       ]
      },
@@ -281310,7 +281326,7 @@
       ]
      ],
      "schemeful-websockets.sub.tentative.html": [
-      "2626d1cd9e8e9eaebf6548f37acfcb47827b1818",
+      "7095eee21e048e34334873605e7968f96fcdfd93",
       [
        null,
        {}
@@ -382406,7 +382422,32 @@
       null,
       {}
      ]
-    ]
+    ],
+    "tentative": {
+     "autoupgrades": {
+      "audio-upgrade.https.sub.html": [
+       "0731ef69c15f29d5a93999dabee9bf5dea2cbc17",
+       [
+        null,
+        {}
+       ]
+      ],
+      "image-upgrade.https.sub.html": [
+       "03b5c3e69dea8e640ab4ed560d4a4d7d278d4853",
+       [
+        null,
+        {}
+       ]
+      ],
+      "video-upgrade.https.sub.html": [
+       "45ec71848d02c0b8608dd895a04e9afe494fd4a3",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
+    }
    },
    "mst-content-hint": {
     "MediaStreamTrack-contentHint.html": [
