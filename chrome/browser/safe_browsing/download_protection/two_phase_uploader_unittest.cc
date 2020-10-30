@@ -108,7 +108,7 @@ TEST_F(TwoPhaseUploaderTest, UploadFile) {
   Delegate delegate;
   std::unique_ptr<TwoPhaseUploader> uploader(TwoPhaseUploader::Create(
       shared_url_loader_factory_, task_runner_.get(),
-      test_server.GetURL("start"), "metadata", GetTestFilePath(),
+      test_server.GetURL("/start"), "metadata", GetTestFilePath(),
       base::BindOnce(&Delegate::FinishCallback, base::Unretained(&delegate),
                      runner),
       TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -131,7 +131,7 @@ TEST_F(TwoPhaseUploaderTest, BadPhaseOneResponse) {
   Delegate delegate;
   std::unique_ptr<TwoPhaseUploader> uploader(TwoPhaseUploader::Create(
       shared_url_loader_factory_, task_runner_.get(),
-      test_server.GetURL("start?p1code=500"), "metadata", GetTestFilePath(),
+      test_server.GetURL("/start?p1code=500"), "metadata", GetTestFilePath(),
       base::BindOnce(&Delegate::FinishCallback, base::Unretained(&delegate),
                      runner),
       TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -150,7 +150,7 @@ TEST_F(TwoPhaseUploaderTest, BadPhaseTwoResponse) {
   Delegate delegate;
   std::unique_ptr<TwoPhaseUploader> uploader(TwoPhaseUploader::Create(
       shared_url_loader_factory_, task_runner_.get(),
-      test_server.GetURL("start?p2code=500"), "metadata", GetTestFilePath(),
+      test_server.GetURL("/start?p2code=500"), "metadata", GetTestFilePath(),
       base::BindOnce(&Delegate::FinishCallback, base::Unretained(&delegate),
                      runner),
       TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -173,7 +173,7 @@ TEST_F(TwoPhaseUploaderTest, PhaseOneConnectionClosed) {
   Delegate delegate;
   std::unique_ptr<TwoPhaseUploader> uploader(TwoPhaseUploader::Create(
       shared_url_loader_factory_, task_runner_.get(),
-      test_server.GetURL("start?p1close=1"), "metadata", GetTestFilePath(),
+      test_server.GetURL("/start?p1close=1"), "metadata", GetTestFilePath(),
       base::BindOnce(&Delegate::FinishCallback, base::Unretained(&delegate),
                      runner),
       TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -191,7 +191,7 @@ TEST_F(TwoPhaseUploaderTest, PhaseTwoConnectionClosed) {
   Delegate delegate;
   std::unique_ptr<TwoPhaseUploader> uploader(TwoPhaseUploader::Create(
       shared_url_loader_factory_, task_runner_.get(),
-      test_server.GetURL("start?p2close=1"), "metadata", GetTestFilePath(),
+      test_server.GetURL("/start?p2close=1"), "metadata", GetTestFilePath(),
       base::BindOnce(&Delegate::FinishCallback, base::Unretained(&delegate),
                      runner),
       TRAFFIC_ANNOTATION_FOR_TESTS));
