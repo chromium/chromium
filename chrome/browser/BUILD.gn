@@ -5171,7 +5171,9 @@ static_library("browser") {
       "chrome_browser_main_extra_parts_ozone.cc",
       "chrome_browser_main_extra_parts_ozone.h",
     ]
-    deps += [ "//ui/ozone" ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 
   if (enable_background_mode) {
