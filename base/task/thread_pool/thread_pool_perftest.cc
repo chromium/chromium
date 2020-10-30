@@ -73,6 +73,8 @@ class PostingThread : public SimpleThread {
         completion_(std::move(completion)) {
     Start();
   }
+  PostingThread(const PostingThread&) = delete;
+  PostingThread& operator=(const PostingThread&) = delete;
 
   void Run() override {
     start_event_->Wait();
@@ -84,12 +86,13 @@ class PostingThread : public SimpleThread {
   WaitableEvent* const start_event_;
   base::OnceClosure action_;
   base::OnceClosure completion_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostingThread);
 };
 
 class ThreadPoolPerfTest : public testing::Test {
  public:
+  ThreadPoolPerfTest(const ThreadPoolPerfTest&) = delete;
+  ThreadPoolPerfTest& operator=(const ThreadPoolPerfTest&) = delete;
+
   // Posting actions:
 
   void ContinuouslyBindAndPostNoOpTasks(size_t num_tasks) {
@@ -124,8 +127,8 @@ class ThreadPoolPerfTest : public testing::Test {
     base::RepeatingClosure closure = base::BindRepeating(
         [](std::atomic_size_t* num_task_pending, base::TimeDelta duration) {
           base::TimeTicks end_time = base::TimeTicks::Now() + duration;
-          while (base::TimeTicks::Now() < end_time)
-            ;
+          while (base::TimeTicks::Now() < end_time) {
+          }
           (*num_task_pending)--;
         },
         Unretained(&num_tasks_pending_), duration);
@@ -206,8 +209,6 @@ class ThreadPoolPerfTest : public testing::Test {
   std::atomic_size_t num_posted_tasks_{0};
 
   std::vector<std::unique_ptr<PostingThread>> threads_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolPerfTest);
 };
 
 }  // namespace

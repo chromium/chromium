@@ -10,11 +10,11 @@
 #include <limits>
 #include <memory>
 #include <queue>
+#include <string>
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -54,8 +54,9 @@ class BASE_EXPORT TaskTracker {
  public:
   // |histogram_label| is used to label histograms. No histograms are recorded
   // if it is empty.
-  TaskTracker(StringPiece histogram_label);
-
+  explicit TaskTracker(StringPiece histogram_label);
+  TaskTracker(const TaskTracker&) = delete;
+  TaskTracker& operator=(const TaskTracker&) = delete;
   virtual ~TaskTracker();
 
   // Initiates shutdown. Once this is called, only BLOCK_SHUTDOWN tasks will
@@ -269,8 +270,6 @@ class BASE_EXPORT TaskTracker {
   // destroying the TaskTracker (e.g. in test environments).
   // Ref. https://crbug.com/827615.
   TrackedRefFactory<TaskTracker> tracked_ref_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTracker);
 };
 
 }  // namespace internal

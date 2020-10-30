@@ -25,6 +25,8 @@ class PriorityQueue::TaskSourceAndSortKey {
       : task_source_(std::move(task_source)), sort_key_(sort_key) {
     DCHECK(task_source_);
   }
+  TaskSourceAndSortKey(const TaskSourceAndSortKey&) = delete;
+  TaskSourceAndSortKey& operator=(const TaskSourceAndSortKey&) = delete;
 
   // Note: while |task_source_| should always be non-null post-move (i.e. we
   // shouldn't be moving an invalid TaskSourceAndSortKey around), there can't be
@@ -78,8 +80,6 @@ class PriorityQueue::TaskSourceAndSortKey {
  private:
   RegisteredTaskSource task_source_;
   TaskSourceSortKey sort_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSourceAndSortKey);
 };
 
 PriorityQueue::PriorityQueue() = default;

@@ -17,8 +17,6 @@ AtomicSequenceNumber g_sequence_nums_for_tracing;
 
 }  // namespace
 
-Task::Task() = default;
-
 Task::Task(const Location& posted_from, OnceClosure task, TimeDelta delay)
     : PendingTask(posted_from,
                   std::move(task),
@@ -36,8 +34,6 @@ Task::Task(const Location& posted_from, OnceClosure task, TimeDelta delay)
 // This should be "= default but MSVC has trouble with "noexcept = default" in
 // this case.
 Task::Task(Task&& other) noexcept : PendingTask(std::move(other)) {}
-
-Task::~Task() = default;
 
 Task& Task::operator=(Task&& other) = default;
 

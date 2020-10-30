@@ -6,9 +6,9 @@
 #define BASE_TASK_THREAD_POOL_TASK_TRACKER_POSIX_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/threading/platform_thread.h"
@@ -24,7 +24,9 @@ struct Task;
 // TaskTracker can run tasks.
 class BASE_EXPORT TaskTrackerPosix : public TaskTracker {
  public:
-  TaskTrackerPosix(StringPiece name);
+  explicit TaskTrackerPosix(StringPiece name);
+  TaskTrackerPosix(const TaskTrackerPosix&) = delete;
+  TaskTrackerPosix& operator=(const TaskTrackerPosix&) = delete;
   ~TaskTrackerPosix() override;
 
   // Sets the task runner with which to setup FileDescriptorWatcher in
@@ -46,8 +48,6 @@ class BASE_EXPORT TaskTrackerPosix : public TaskTracker {
 
  private:
   scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTrackerPosix);
 };
 
 }  // namespace internal

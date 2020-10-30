@@ -26,8 +26,6 @@ TimeDelta g_heartbeat_for_testing = TimeDelta();
 ServiceThread::ServiceThread(const TaskTracker* task_tracker)
     : Thread("ThreadPoolServiceThread"), task_tracker_(task_tracker) {}
 
-ServiceThread::~ServiceThread() = default;
-
 // static
 void ServiceThread::SetHeartbeatIntervalForTesting(TimeDelta heartbeat) {
   g_heartbeat_for_testing = heartbeat;

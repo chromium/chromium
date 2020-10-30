@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/intrusive_heap.h"
@@ -23,6 +22,8 @@ namespace internal {
 class BASE_EXPORT PriorityQueue {
  public:
   PriorityQueue();
+  PriorityQueue(const PriorityQueue&) = delete;
+  PriorityQueue& operator=(const PriorityQueue&) = delete;
   ~PriorityQueue();
 
   PriorityQueue& operator=(PriorityQueue&& other);
@@ -90,8 +91,6 @@ class BASE_EXPORT PriorityQueue {
 
   // Should only be enabled by EnableFlushTaskSourcesOnDestroyForTesting().
   bool is_flush_task_sources_on_destroy_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PriorityQueue);
 };
 
 }  // namespace internal

@@ -31,18 +31,19 @@ class MockJobTaskRunner : public TaskRunner {
       : traits_(traits),
         pooled_task_runner_delegate_(pooled_task_runner_delegate) {}
 
+  MockJobTaskRunner(const MockJobTaskRunner&) = delete;
+  MockJobTaskRunner& operator=(const MockJobTaskRunner&) = delete;
+
   // TaskRunner:
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,
                        TimeDelta delay) override;
 
  private:
-  ~MockJobTaskRunner() override;
+  ~MockJobTaskRunner() override = default;
 
   const TaskTraits traits_;
   PooledTaskRunnerDelegate* const pooled_task_runner_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockJobTaskRunner);
 };
 
 bool MockJobTaskRunner::PostDelayedTask(const Location& from_here,
@@ -59,8 +60,6 @@ bool MockJobTaskRunner::PostDelayedTask(const Location& from_here,
   return pooled_task_runner_delegate_->EnqueueJobTaskSource(
       std::move(task_source));
 }
-
-MockJobTaskRunner::~MockJobTaskRunner() = default;
 
 scoped_refptr<TaskRunner> CreateJobTaskRunner(
     const TaskTraits& traits,

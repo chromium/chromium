@@ -5,6 +5,9 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/base_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
@@ -50,6 +53,8 @@ class BASE_EXPORT ThreadGroup {
 #endif  // defined(OS_WIN)
   };
 
+  ThreadGroup(const ThreadGroup&) = delete;
+  ThreadGroup& operator=(const ThreadGroup&) = delete;
   virtual ~ThreadGroup();
 
   // Registers the thread group in TLS.
@@ -123,6 +128,10 @@ class BASE_EXPORT ThreadGroup {
   // released.
   class BaseScopedCommandsExecutor {
    public:
+    BaseScopedCommandsExecutor(const BaseScopedCommandsExecutor&) = delete;
+    BaseScopedCommandsExecutor& operator=(const BaseScopedCommandsExecutor&) =
+        delete;
+
     void ScheduleReleaseTaskSource(RegisteredTaskSource task_source);
 
    protected:
@@ -131,8 +140,6 @@ class BASE_EXPORT ThreadGroup {
 
    private:
     std::vector<RegisteredTaskSource> task_sources_to_release_;
-
-    DISALLOW_COPY_AND_ASSIGN(BaseScopedCommandsExecutor);
   };
 
   // Allows a task source to be pushed to a ThreadGroup's PriorityQueue at the
@@ -140,6 +147,8 @@ class BASE_EXPORT ThreadGroup {
   class ScopedReenqueueExecutor {
    public:
     ScopedReenqueueExecutor();
+    ScopedReenqueueExecutor(const ScopedReenqueueExecutor&) = delete;
+    ScopedReenqueueExecutor& operator=(const ScopedReenqueueExecutor&) = delete;
     ~ScopedReenqueueExecutor();
 
     // A TransactionWithRegisteredTaskSource and the ThreadGroup in which it
@@ -153,8 +162,6 @@ class BASE_EXPORT ThreadGroup {
     // should be enqueued.
     Optional<TransactionWithRegisteredTaskSource> transaction_with_task_source_;
     ThreadGroup* destination_thread_group_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedReenqueueExecutor);
   };
 
   // |predecessor_thread_group| is a ThreadGroup whose lock can be acquired
@@ -252,9 +259,6 @@ class BASE_EXPORT ThreadGroup {
   // all task sources should be scheduled on |replacement_thread_group_|. Used
   // to support the UseNativeThreadPool experiment.
   ThreadGroup* replacement_thread_group_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroup);
 };
 
 }  // namespace internal

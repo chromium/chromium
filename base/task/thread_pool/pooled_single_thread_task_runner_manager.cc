@@ -69,6 +69,8 @@ size_t GetEnvironmentIndexForTraits(const TaskTraits& traits) {
 class AtomicThreadRefChecker {
  public:
   AtomicThreadRefChecker() = default;
+  AtomicThreadRefChecker(const AtomicThreadRefChecker&) = delete;
+  AtomicThreadRefChecker& operator=(const AtomicThreadRefChecker&) = delete;
   ~AtomicThreadRefChecker() = default;
 
   void Set() {
@@ -83,8 +85,6 @@ class AtomicThreadRefChecker {
  private:
   AtomicFlag is_set_;
   PlatformThreadRef thread_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicThreadRefChecker);
 };
 
 class WorkerThreadDelegate : public WorkerThread::Delegate {
@@ -95,6 +95,8 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
       : task_tracker_(std::move(task_tracker)),
         thread_name_(thread_name),
         thread_label_(thread_label) {}
+  WorkerThreadDelegate(const WorkerThreadDelegate&) = delete;
+  WorkerThreadDelegate& operator=(const WorkerThreadDelegate&) = delete;
 
   void set_worker(WorkerThread* worker) {
     DCHECK(!worker_);
@@ -235,8 +237,6 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   PriorityQueue priority_queue_ GUARDED_BY(lock_);
 
   AtomicThreadRefChecker thread_ref_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadDelegate);
 };
 
 #if defined(OS_WIN)
@@ -250,6 +250,8 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
                              thread_label,
                              std::move(task_tracker)) {}
 
+  WorkerThreadCOMDelegate(const WorkerThreadCOMDelegate&) = delete;
+  WorkerThreadCOMDelegate& operator=(const WorkerThreadCOMDelegate&) = delete;
   ~WorkerThreadCOMDelegate() override { DCHECK(!scoped_com_initializer_); }
 
   // WorkerThread::Delegate:
@@ -371,8 +373,6 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
                                nullptr,
                                TaskSourceExecutionMode::kParallel);
   std::unique_ptr<win::ScopedCOMInitializer> scoped_com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadCOMDelegate);
 };
 
 #endif  // defined(OS_WIN)
@@ -398,6 +398,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     DCHECK(outer_);
     DCHECK(worker_);
   }
+  PooledSingleThreadTaskRunner(const PooledSingleThreadTaskRunner&) = delete;
+  PooledSingleThreadTaskRunner& operator=(const PooledSingleThreadTaskRunner&) =
+      delete;
 
   // SingleThreadTaskRunner:
   bool PostDelayedTask(const Location& from_here,
@@ -473,8 +476,6 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   WorkerThread* const worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
   const scoped_refptr<Sequence> sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(PooledSingleThreadTaskRunner);
 };
 
 PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunnerManager(

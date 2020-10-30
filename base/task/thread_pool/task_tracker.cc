@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -52,6 +53,8 @@ class TaskTracingInfo : public trace_event::ConvertableToTraceFormat {
       : task_traits_(task_traits),
         execution_mode_(execution_mode),
         sequence_token_(sequence_token) {}
+  TaskTracingInfo(const TaskTracingInfo&) = delete;
+  TaskTracingInfo& operator=(const TaskTracingInfo&) = delete;
 
   // trace_event::ConvertableToTraceFormat implementation.
   void AppendAsTraceFormat(std::string* out) const override;
@@ -60,8 +63,6 @@ class TaskTracingInfo : public trace_event::ConvertableToTraceFormat {
   const TaskTraits task_traits_;
   const char* const execution_mode_;
   const SequenceToken sequence_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTracingInfo);
 };
 
 void TaskTracingInfo::AppendAsTraceFormat(std::string* out) const {
@@ -208,6 +209,8 @@ class EphemeralTaskExecutor : public TaskExecutor {
 class TaskTracker::State {
  public:
   State() = default;
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
 
   // Sets a flag indicating that shutdown has started. Returns true if there are
   // items blocking shutdown. Can only be called once.
@@ -284,8 +287,6 @@ class TaskTracker::State {
   // blocking task or the second thread will win and
   // IncrementNumItemsBlockingShutdown() will know that shutdown has started.
   subtle::Atomic32 bits_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 // TODO(jessemckenna): Write a helper function to avoid code duplication below.

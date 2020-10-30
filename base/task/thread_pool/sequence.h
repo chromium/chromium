@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/sequence_token.h"
 #include "base/task/task_traits.h"
@@ -50,6 +49,8 @@ class BASE_EXPORT Sequence : public TaskSource {
   class BASE_EXPORT Transaction : public TaskSource::Transaction {
    public:
     Transaction(Transaction&& other);
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
     ~Transaction();
 
     // Returns true if the sequence would need to be queued after receiving a
@@ -66,8 +67,6 @@ class BASE_EXPORT Sequence : public TaskSource {
     friend class Sequence;
 
     explicit Transaction(Sequence* sequence);
-
-    DISALLOW_COPY_AND_ASSIGN(Transaction);
   };
 
   // |traits| is metadata that applies to all Tasks in the Sequence.
@@ -78,6 +77,8 @@ class BASE_EXPORT Sequence : public TaskSource {
   Sequence(const TaskTraits& traits,
            TaskRunner* task_runner,
            TaskSourceExecutionMode execution_mode);
+  Sequence(const Sequence&) = delete;
+  Sequence& operator=(const Sequence&) = delete;
 
   // Begins a Transaction. This method cannot be called on a thread which has an
   // active Sequence::Transaction.
@@ -120,8 +121,6 @@ class BASE_EXPORT Sequence : public TaskSource {
 
   // Holds data stored through the SequenceLocalStorageSlot API.
   SequenceLocalStorageMap sequence_local_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(Sequence);
 };
 
 }  // namespace internal

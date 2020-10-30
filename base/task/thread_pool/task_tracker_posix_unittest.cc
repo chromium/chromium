@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
@@ -39,13 +38,14 @@ class ThreadPoolTaskTrackerPosixTest : public testing::Test {
     service_thread_.StartWithOptions(service_thread_options);
     tracker_.set_io_thread_task_runner(service_thread_.task_runner());
   }
+  ThreadPoolTaskTrackerPosixTest(const ThreadPoolTaskTrackerPosixTest&) =
+      delete;
+  ThreadPoolTaskTrackerPosixTest& operator=(
+      const ThreadPoolTaskTrackerPosixTest&) = delete;
 
  protected:
   Thread service_thread_;
   TaskTrackerPosix tracker_{"Test"};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolTaskTrackerPosixTest);
 };
 
 }  // namespace

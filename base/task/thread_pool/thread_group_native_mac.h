@@ -28,6 +28,8 @@ class BASE_EXPORT ThreadGroupNativeMac : public ThreadGroupNative {
                        TrackedRef<Delegate> delegate,
                        ThreadGroup* predecessor_thread_group = nullptr);
 
+  ThreadGroupNativeMac(const ThreadGroupNativeMac&) = delete;
+  ThreadGroupNativeMac& operator=(const ThreadGroupNativeMac&) = delete;
   ~ThreadGroupNativeMac() override;
 
  private:
@@ -42,8 +44,6 @@ class BASE_EXPORT ThreadGroupNativeMac : public ThreadGroupNative {
 
   // Dispatch group to enable synchronization.
   ScopedDispatchObject<dispatch_group_t> group_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroupNativeMac);
 };
 
 using ThreadGroupNativeImpl = ThreadGroupNativeMac;

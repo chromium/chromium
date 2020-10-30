@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/pending_task.h"
 #include "base/sequenced_task_runner.h"
@@ -22,7 +21,7 @@ namespace internal {
 // profiling inherited from PendingTask.
 // TODO(etiennep): This class is now equivalent to PendingTask, remove it.
 struct BASE_EXPORT Task : public PendingTask {
-  Task();
+  Task() = default;
 
   // |posted_from| is the site the task was posted from. |task| is the closure
   // to run. |delay| is a delay that must expire before the Task runs.
@@ -32,12 +31,12 @@ struct BASE_EXPORT Task : public PendingTask {
   // accidentally bumped.
   Task(Task&& other) noexcept;
 
-  ~Task();
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
+
+  ~Task() = default;
 
   Task& operator=(Task&& other);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Task);
 };
 
 }  // namespace internal

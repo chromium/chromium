@@ -16,7 +16,9 @@ namespace internal {
 class ThreadGroupNative::ScopedCommandsExecutor
     : public ThreadGroup::BaseScopedCommandsExecutor {
  public:
-  ScopedCommandsExecutor(ThreadGroupNative* outer) : outer_(outer) {}
+  explicit ScopedCommandsExecutor(ThreadGroupNative* outer) : outer_(outer) {}
+  ScopedCommandsExecutor(const ScopedCommandsExecutor&) = delete;
+  ScopedCommandsExecutor& operator=(const ScopedCommandsExecutor&) = delete;
   ~ScopedCommandsExecutor() {
     CheckedLock::AssertNoLockHeldOnCurrentThread();
 
@@ -33,8 +35,6 @@ class ThreadGroupNative::ScopedCommandsExecutor
  private:
   ThreadGroupNative* const outer_;
   size_t num_threadpool_work_to_submit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCommandsExecutor);
 };
 
 ThreadGroupNative::ThreadGroupNative(TrackedRef<TaskTracker> task_tracker,

@@ -6,6 +6,7 @@
 #define BASE_TASK_THREAD_POOL_TEST_UTILS_H_
 
 #include <atomic>
+#include <memory>
 
 #include "base/callback.h"
 #include "base/task/common/checked_lock.h"
@@ -33,7 +34,9 @@ namespace test {
 class MockWorkerThreadObserver : public WorkerThreadObserver {
  public:
   MockWorkerThreadObserver();
-  ~MockWorkerThreadObserver();
+  MockWorkerThreadObserver(const MockWorkerThreadObserver&) = delete;
+  MockWorkerThreadObserver& operator=(const MockWorkerThreadObserver&) = delete;
+  ~MockWorkerThreadObserver() override;
 
   void AllowCallsOnMainExit(int num_calls);
   void WaitCallsOnMainExit();
@@ -48,8 +51,6 @@ class MockWorkerThreadObserver : public WorkerThreadObserver {
   CheckedLock lock_;
   std::unique_ptr<ConditionVariable> on_main_exit_cv_ GUARDED_BY(lock_);
   int allowed_calls_on_main_exit_ GUARDED_BY(lock_) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWorkerThreadObserver);
 };
 
 class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
@@ -88,7 +89,10 @@ class MockJobTask : public base::RefCountedThreadSafe<MockJobTask> {
               size_t num_tasks_to_run);
 
   // Gives |worker_task| to a single requesting worker.
-  MockJobTask(base::OnceClosure worker_task);
+  explicit MockJobTask(base::OnceClosure worker_task);
+
+  MockJobTask(const MockJobTask&) = delete;
+  MockJobTask& operator=(const MockJobTask&) = delete;
 
   // Updates the remaining number of time |worker_task| runs to
   // |num_tasks_to_run|.
@@ -111,8 +115,6 @@ class MockJobTask : public base::RefCountedThreadSafe<MockJobTask> {
 
   base::RepeatingCallback<void(JobDelegate*)> worker_task_;
   std::atomic_size_t remaining_num_tasks_to_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockJobTask);
 };
 
 // An enumeration of possible thread pool types. Used to parametrize relevant

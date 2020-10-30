@@ -5,6 +5,8 @@
 #include "base/task/thread_pool/thread_group.h"
 
 #include <memory>
+#include <tuple>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -80,6 +82,8 @@ class ThreadPostingTasks : public SimpleThread {
                      execution_mode,
                      mock_pooled_task_runner_delegate_),
                  execution_mode) {}
+  ThreadPostingTasks(const ThreadPostingTasks&) = delete;
+  ThreadPostingTasks& operator=(const ThreadPostingTasks&) = delete;
 
   const test::TestTaskFactory* factory() const { return &factory_; }
 
@@ -92,15 +96,15 @@ class ThreadPostingTasks : public SimpleThread {
   const scoped_refptr<TaskRunner> task_runner_;
   const PostNestedTask post_nested_task_;
   test::TestTaskFactory factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPostingTasks);
 };
 
 class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
+ public:
+  ThreadGroupTestBase(const ThreadGroupTestBase&) = delete;
+  ThreadGroupTestBase& operator=(const ThreadGroupTestBase&) = delete;
+
  protected:
-  ThreadGroupTestBase()
-      : service_thread_("ThreadPoolServiceThread"),
-        tracked_ref_factory_(this) {}
+  ThreadGroupTestBase() = default;
 
   void SetUp() override {
     service_thread_.Start();
@@ -162,7 +166,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
 
   virtual test::PoolType GetPoolType() const = 0;
 
-  Thread service_thread_;
+  Thread service_thread_{"ThreadPoolServiceThread"};
   TaskTracker task_tracker_{"Test"};
   DelayedTaskManager delayed_task_manager_;
   test::MockPooledTaskRunnerDelegate mock_pooled_task_runner_delegate_ = {
@@ -176,20 +180,17 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
     return thread_group_.get();
   }
 
-  TrackedRefFactory<ThreadGroup::Delegate> tracked_ref_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroupTestBase);
+  TrackedRefFactory<ThreadGroup::Delegate> tracked_ref_factory_{this};
 };
 
 class ThreadGroupTest : public ThreadGroupTestBase,
                         public testing::WithParamInterface<test::PoolType> {
  public:
   ThreadGroupTest() = default;
+  ThreadGroupTest(const ThreadGroupTest&) = delete;
+  ThreadGroupTest& operator=(const ThreadGroupTest&) = delete;
 
   test::PoolType GetPoolType() const override { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroupTest);
 };
 
 // TODO(etiennep): Audit tests that don't need TaskSourceExecutionMode
@@ -200,6 +201,10 @@ class ThreadGroupTestAllExecutionModes
           std::tuple<test::PoolType, TaskSourceExecutionMode>> {
  public:
   ThreadGroupTestAllExecutionModes() = default;
+  ThreadGroupTestAllExecutionModes(const ThreadGroupTestAllExecutionModes&) =
+      delete;
+  ThreadGroupTestAllExecutionModes& operator=(
+      const ThreadGroupTestAllExecutionModes&) = delete;
 
   test::PoolType GetPoolType() const override {
     return std::get<0>(GetParam());
@@ -214,9 +219,6 @@ class ThreadGroupTestAllExecutionModes
     return test::CreatePooledTaskRunnerWithExecutionMode(
         execution_mode(), &mock_pooled_task_runner_delegate_, traits);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroupTestAllExecutionModes);
 };
 
 void ShouldNotRun() {

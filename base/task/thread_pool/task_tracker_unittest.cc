@@ -14,7 +14,6 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_base.h"
@@ -54,6 +53,8 @@ class CallbackThread : public SimpleThread {
  public:
   explicit CallbackThread(OnceClosure closure)
       : SimpleThread("CallbackThread"), closure_(std::move(closure)) {}
+  CallbackThread(const CallbackThread&) = delete;
+  CallbackThread& operator=(const CallbackThread&) = delete;
 
   // Returns true once the callback returns.
   bool has_returned() { return has_returned_.IsSet(); }
@@ -66,8 +67,6 @@ class CallbackThread : public SimpleThread {
 
   OnceClosure closure_;
   AtomicFlag has_returned_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackThread);
 };
 
 class ThreadPostingAndRunningTask : public SimpleThread {
@@ -107,6 +106,9 @@ class ThreadPostingAndRunningTask : public SimpleThread {
         expect_post_succeeds_(false) {
     EXPECT_TRUE(task_source_);
   }
+  ThreadPostingAndRunningTask(const ThreadPostingAndRunningTask&) = delete;
+  ThreadPostingAndRunningTask& operator=(const ThreadPostingAndRunningTask&) =
+      delete;
 
   RegisteredTaskSource TakeTaskSource() { return std::move(task_source_); }
 
@@ -142,13 +144,11 @@ class ThreadPostingAndRunningTask : public SimpleThread {
   RegisteredTaskSource task_source_;
   const Action action_;
   const bool expect_post_succeeds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPostingAndRunningTask);
 };
 
 class ScopedSetSingletonAllowed {
  public:
-  ScopedSetSingletonAllowed(bool singleton_allowed)
+  explicit ScopedSetSingletonAllowed(bool singleton_allowed)
       : previous_value_(
             ThreadRestrictions::SetSingletonAllowed(singleton_allowed)) {}
   ~ScopedSetSingletonAllowed() {
@@ -161,6 +161,11 @@ class ScopedSetSingletonAllowed {
 
 class ThreadPoolTaskTrackerTest
     : public testing::TestWithParam<TaskShutdownBehavior> {
+ public:
+  ThreadPoolTaskTrackerTest(const ThreadPoolTaskTrackerTest&) = delete;
+  ThreadPoolTaskTrackerTest& operator=(const ThreadPoolTaskTrackerTest&) =
+      delete;
+
  protected:
   ThreadPoolTaskTrackerTest() = default;
 
@@ -249,8 +254,6 @@ class ThreadPoolTaskTrackerTest
   CheckedLock lock_;
 
   size_t num_tasks_executed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolTaskTrackerTest);
 };
 
 #define WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED() \
@@ -1165,6 +1168,8 @@ namespace {
 class WaitAllowedTestThread : public SimpleThread {
  public:
   WaitAllowedTestThread() : SimpleThread("WaitAllowedTestThread") {}
+  WaitAllowedTestThread(const WaitAllowedTestThread&) = delete;
+  WaitAllowedTestThread& operator=(const WaitAllowedTestThread&) = delete;
 
  private:
   void Run() override {
@@ -1209,8 +1214,6 @@ class WaitAllowedTestThread : public SimpleThread {
         allow_wait_in_task_tracker_destructor;
     task_tracker.reset();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(WaitAllowedTestThread);
 };
 
 }  // namespace

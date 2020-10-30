@@ -10,7 +10,6 @@
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 
@@ -132,6 +131,9 @@ class TrackedRefFactory {
     DCHECK(ptr_);
   }
 
+  TrackedRefFactory(const TrackedRefFactory&) = delete;
+  TrackedRefFactory& operator=(const TrackedRefFactory&) = delete;
+
   ~TrackedRefFactory() {
     // Enter the destruction phase.
     ready_to_destroy_ = std::make_unique<WaitableEvent>();
@@ -169,8 +171,6 @@ class TrackedRefFactory {
   // TrackedRefFactory holds a TrackedRef as well to prevent
   // |live_tracked_refs_| from ever reaching zero before ~TrackedRefFactory().
   std::unique_ptr<TrackedRef<T>> self_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedRefFactory);
 };
 
 }  // namespace internal

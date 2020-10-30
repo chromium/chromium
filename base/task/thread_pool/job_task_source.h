@@ -9,10 +9,11 @@
 
 #include <atomic>
 #include <limits>
+#include <memory>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
@@ -37,6 +38,8 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
                 RepeatingCallback<void(JobDelegate*)> worker_task,
                 MaxConcurrencyCallback max_concurrency_callback,
                 PooledTaskRunnerDelegate* delegate);
+  JobTaskSource(const JobTaskSource&) = delete;
+  JobTaskSource& operator=(const JobTaskSource&) = delete;
 
   static JobHandle CreateJobHandle(
       scoped_refptr<internal::JobTaskSource> task_source) {
@@ -210,8 +213,6 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
 
   const TimeTicks ready_time_;
   PooledTaskRunnerDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobTaskSource);
 };
 
 }  // namespace internal

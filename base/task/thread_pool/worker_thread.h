@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
@@ -106,6 +105,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
                std::unique_ptr<Delegate> delegate,
                TrackedRef<TaskTracker> task_tracker,
                const CheckedLock* predecessor_lock = nullptr);
+
+  WorkerThread(const WorkerThread&) = delete;
+  WorkerThread& operator=(const WorkerThread&) = delete;
 
   // Creates a thread to back the WorkerThread. The thread will be in a wait
   // state pending a WakeUp() call. No thread will be created if Cleanup() was
@@ -233,8 +235,6 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThread);
 };
 
 }  // namespace internal

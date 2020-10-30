@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/sequence_token.h"
@@ -101,6 +100,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   class BASE_EXPORT Transaction {
    public:
     Transaction(Transaction&& other);
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
     ~Transaction();
 
     operator bool() const { return !!task_source_; }
@@ -120,8 +121,6 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
     friend class TaskSource;
 
     TaskSource* task_source_;
-
-    DISALLOW_COPY_AND_ASSIGN(Transaction);
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.
@@ -132,6 +131,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   TaskSource(const TaskTraits& traits,
              TaskRunner* task_runner,
              TaskSourceExecutionMode execution_mode);
+  TaskSource(const TaskSource&) = delete;
+  TaskSource& operator=(const TaskSource&) = delete;
 
   // Begins a Transaction. This method cannot be called on a thread which has an
   // active TaskSource::Transaction.
@@ -219,8 +220,6 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   TaskRunner* task_runner_;
 
   TaskSourceExecutionMode execution_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSource);
 };
 
 // Wrapper around TaskSource to signify the intent to queue and run it.
@@ -234,6 +233,8 @@ class BASE_EXPORT RegisteredTaskSource {
   RegisteredTaskSource();
   RegisteredTaskSource(std::nullptr_t);
   RegisteredTaskSource(RegisteredTaskSource&& other) noexcept;
+  RegisteredTaskSource(const RegisteredTaskSource&) = delete;
+  RegisteredTaskSource& operator=(const RegisteredTaskSource&) = delete;
   ~RegisteredTaskSource();
 
   RegisteredTaskSource& operator=(RegisteredTaskSource&& other);
@@ -293,8 +294,6 @@ class BASE_EXPORT RegisteredTaskSource {
 
   scoped_refptr<TaskSource> task_source_;
   TaskTracker* task_tracker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisteredTaskSource);
 };
 
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a
@@ -307,6 +306,10 @@ struct BASE_EXPORT TransactionWithRegisteredTaskSource {
 
   TransactionWithRegisteredTaskSource(
       TransactionWithRegisteredTaskSource&& other) = default;
+  TransactionWithRegisteredTaskSource(
+      const TransactionWithRegisteredTaskSource&) = delete;
+  TransactionWithRegisteredTaskSource& operator=(
+      const TransactionWithRegisteredTaskSource&) = delete;
   ~TransactionWithRegisteredTaskSource() = default;
 
   static TransactionWithRegisteredTaskSource FromTaskSource(
@@ -314,8 +317,6 @@ struct BASE_EXPORT TransactionWithRegisteredTaskSource {
 
   RegisteredTaskSource task_source;
   TaskSource::Transaction transaction;
-
-  DISALLOW_COPY_AND_ASSIGN(TransactionWithRegisteredTaskSource);
 };
 
 }  // namespace internal

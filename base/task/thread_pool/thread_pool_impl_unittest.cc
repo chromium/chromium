@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/callback.h"
 #include "base/cfi_buildflags.h"
 #include "base/debug/stack_trace.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/task_features.h"
@@ -200,6 +200,9 @@ class ThreadPostingTasks : public SimpleThread {
                                                   execution_mode),
                  execution_mode) {}
 
+  ThreadPostingTasks(const ThreadPostingTasks&) = delete;
+  ThreadPostingTasks& operator=(const ThreadPostingTasks&) = delete;
+
   void WaitForAllTasksToRun() { factory_.WaitForAllTasksToRun(); }
 
  private:
@@ -214,8 +217,6 @@ class ThreadPostingTasks : public SimpleThread {
   const TaskTraits traits_;
   test::PoolType pool_type_;
   test::TestTaskFactory factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPostingTasks);
 };
 
 // Returns a vector with a TraitsExecutionModePair for each valid combination of
@@ -265,6 +266,9 @@ class ThreadPoolImplTestBase : public testing::Test {
  public:
   ThreadPoolImplTestBase()
       : thread_pool_(std::make_unique<ThreadPoolImpl>("Test")) {}
+
+  ThreadPoolImplTestBase(const ThreadPoolImplTestBase&) = delete;
+  ThreadPoolImplTestBase& operator=(const ThreadPoolImplTestBase&) = delete;
 
   void EnableAllTasksUserBlocking() {
     should_enable_all_tasks_user_blocking_ = true;
@@ -321,19 +325,16 @@ class ThreadPoolImplTestBase : public testing::Test {
   WorkerThreadObserver* worker_thread_observer_ = nullptr;
   bool did_tear_down_ = false;
   bool should_enable_all_tasks_user_blocking_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolImplTestBase);
 };
 
 class ThreadPoolImplTest : public ThreadPoolImplTestBase,
                            public testing::WithParamInterface<test::PoolType> {
  public:
   ThreadPoolImplTest() = default;
+  ThreadPoolImplTest(const ThreadPoolImplTest&) = delete;
+  ThreadPoolImplTest& operator=(const ThreadPoolImplTest&) = delete;
 
   test::PoolType GetPoolType() const override { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolImplTest);
 };
 
 // Tests run for enough traits and execution mode combinations to cover all
@@ -345,6 +346,10 @@ class ThreadPoolImplTest_CoverAllSchedulingOptions
           std::tuple<test::PoolType, TraitsExecutionModePair>> {
  public:
   ThreadPoolImplTest_CoverAllSchedulingOptions() = default;
+  ThreadPoolImplTest_CoverAllSchedulingOptions(
+      const ThreadPoolImplTest_CoverAllSchedulingOptions&) = delete;
+  ThreadPoolImplTest_CoverAllSchedulingOptions& operator=(
+      const ThreadPoolImplTest_CoverAllSchedulingOptions&) = delete;
 
   test::PoolType GetPoolType() const override {
     return std::get<0>(GetParam());
@@ -353,9 +358,6 @@ class ThreadPoolImplTest_CoverAllSchedulingOptions
   TaskSourceExecutionMode GetExecutionMode() const {
     return std::get<1>(GetParam()).execution_mode;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolImplTest_CoverAllSchedulingOptions);
 };
 
 }  // namespace
@@ -1266,13 +1268,14 @@ namespace {
 
 class MustBeDestroyed {
  public:
-  MustBeDestroyed(bool* was_destroyed) : was_destroyed_(was_destroyed) {}
+  explicit MustBeDestroyed(bool* was_destroyed)
+      : was_destroyed_(was_destroyed) {}
+  MustBeDestroyed(const MustBeDestroyed&) = delete;
+  MustBeDestroyed& operator=(const MustBeDestroyed&) = delete;
   ~MustBeDestroyed() { *was_destroyed_ = true; }
 
  private:
   bool* const was_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(MustBeDestroyed);
 };
 
 }  // namespace

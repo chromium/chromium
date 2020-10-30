@@ -11,7 +11,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -68,6 +67,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   ThreadPoolImpl(StringPiece histogram_label,
                  std::unique_ptr<TaskTrackerImpl> task_tracker);
 
+  ThreadPoolImpl(const ThreadPoolImpl&) = delete;
+  ThreadPoolImpl& operator=(const ThreadPoolImpl&) = delete;
   ~ThreadPoolImpl() override;
 
   // ThreadPoolInstance:
@@ -200,8 +201,6 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   SEQUENCE_CHECKER(sequence_checker_);
 
   TrackedRefFactory<ThreadGroup::Delegate> tracked_ref_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolImpl);
 };
 
 }  // namespace internal

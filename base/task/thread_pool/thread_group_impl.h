@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -85,6 +84,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
              bool synchronous_thread_start_for_testing = false,
              Optional<TimeDelta> may_block_threshold = Optional<TimeDelta>());
 
+  ThreadGroupImpl(const ThreadGroupImpl&) = delete;
+  ThreadGroupImpl& operator=(const ThreadGroupImpl&) = delete;
   // Destroying a ThreadGroupImpl returned by Create() is not allowed in
   // production; it is always leaked. In tests, it can only be destroyed after
   // JoinForTesting() has returned.
@@ -355,8 +356,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // https://crbug.com/810464. Uses AtomicRefCount to make its only public
   // method thread-safe.
   TrackedRefFactory<ThreadGroupImpl> tracked_ref_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroupImpl);
 };
 
 }  // namespace internal

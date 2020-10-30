@@ -96,8 +96,10 @@ bool ContainsWorker(const std::vector<scoped_refptr<WorkerThread>>& workers,
 class ThreadGroupImpl::ScopedCommandsExecutor
     : public ThreadGroup::BaseScopedCommandsExecutor {
  public:
-  ScopedCommandsExecutor(ThreadGroupImpl* outer) : outer_(outer) {}
+  explicit ScopedCommandsExecutor(ThreadGroupImpl* outer) : outer_(outer) {}
 
+  ScopedCommandsExecutor(const ScopedCommandsExecutor&) = delete;
+  ScopedCommandsExecutor& operator=(const ScopedCommandsExecutor&) = delete;
   ~ScopedCommandsExecutor() { FlushImpl(); }
 
   void ScheduleWakeUp(scoped_refptr<WorkerThread> worker) {
@@ -132,6 +134,8 @@ class ThreadGroupImpl::ScopedCommandsExecutor
   class WorkerContainer {
    public:
     WorkerContainer() = default;
+    WorkerContainer(const WorkerContainer&) = delete;
+    WorkerContainer& operator=(const WorkerContainer&) = delete;
 
     void AddWorker(scoped_refptr<WorkerThread> worker) {
       if (!worker)
@@ -165,8 +169,6 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     // in the case where there is only one worker in the container.
     scoped_refptr<WorkerThread> first_worker_;
     std::vector<scoped_refptr<WorkerThread>> additional_workers_;
-
-    DISALLOW_COPY_AND_ASSIGN(WorkerContainer);
   };
 
   void FlushImpl() {
@@ -210,8 +212,6 @@ class ThreadGroupImpl::ScopedCommandsExecutor
   StackVector<std::pair<HistogramBase*, HistogramBase::Sample>,
               kHistogramSampleStackSize>
       scheduled_histogram_samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCommandsExecutor);
 };
 
 // static
@@ -222,8 +222,13 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
                                                   public BlockingObserver {
  public:
   // |outer| owns the worker for which this delegate is constructed.
-  WorkerThreadDelegateImpl(TrackedRef<ThreadGroupImpl> outer);
-  ~WorkerThreadDelegateImpl() override;
+  explicit WorkerThreadDelegateImpl(TrackedRef<ThreadGroupImpl> outer);
+  WorkerThreadDelegateImpl(const WorkerThreadDelegateImpl&) = delete;
+  WorkerThreadDelegateImpl& operator=(const WorkerThreadDelegateImpl&) = delete;
+
+  // OnMainExit() handles the thread-affine cleanup; WorkerThreadDelegateImpl
+  // can thereafter safely be deleted from any thread.
+  ~WorkerThreadDelegateImpl() override = default;
 
   // WorkerThread::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override;
@@ -334,8 +339,6 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   // Verifies that specific calls are always made from the worker thread.
   THREAD_CHECKER(worker_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadDelegateImpl);
 };
 
 ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
@@ -535,11 +538,6 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::WorkerThreadDelegateImpl(
   // Bound in OnMainEntry().
   DETACH_FROM_THREAD(worker_thread_checker_);
 }
-
-// OnMainExit() handles the thread-affine cleanup; WorkerThreadDelegateImpl
-// can thereafter safely be deleted from any thread.
-ThreadGroupImpl::WorkerThreadDelegateImpl::~WorkerThreadDelegateImpl() =
-    default;
 
 WorkerThread::ThreadLabel
 ThreadGroupImpl::WorkerThreadDelegateImpl::GetThreadLabel() const {

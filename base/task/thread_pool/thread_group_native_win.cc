@@ -4,6 +4,8 @@
 
 #include "base/task/thread_pool/thread_group_native_win.h"
 
+#include <utility>
+
 #include "base/optional.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/threading/scoped_blocking_call_internal.h"
@@ -15,10 +17,15 @@ namespace internal {
 class ThreadGroupNativeWin::ScopedCallbackMayRunLongObserver
     : public BlockingObserver {
  public:
-  ScopedCallbackMayRunLongObserver(PTP_CALLBACK_INSTANCE callback)
+  explicit ScopedCallbackMayRunLongObserver(PTP_CALLBACK_INSTANCE callback)
       : callback_(callback) {
     SetBlockingObserverForCurrentThread(this);
   }
+
+  ScopedCallbackMayRunLongObserver(const ScopedCallbackMayRunLongObserver&) =
+      delete;
+  ScopedCallbackMayRunLongObserver& operator=(
+      const ScopedCallbackMayRunLongObserver&) = delete;
 
   ~ScopedCallbackMayRunLongObserver() override {
     ClearBlockingObserverForCurrentThread();
@@ -36,8 +43,6 @@ class ThreadGroupNativeWin::ScopedCallbackMayRunLongObserver
 
  private:
   PTP_CALLBACK_INSTANCE callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCallbackMayRunLongObserver);
 };
 
 ThreadGroupNativeWin::ThreadGroupNativeWin(

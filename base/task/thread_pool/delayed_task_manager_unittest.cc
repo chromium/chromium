@@ -46,6 +46,12 @@ Task ConstructMockedTask(testing::StrictMock<MockTask>& mock_task,
 }
 
 class ThreadPoolDelayedTaskManagerTest : public testing::Test {
+ public:
+  ThreadPoolDelayedTaskManagerTest(const ThreadPoolDelayedTaskManagerTest&) =
+      delete;
+  ThreadPoolDelayedTaskManagerTest& operator=(
+      const ThreadPoolDelayedTaskManagerTest&) = delete;
+
  protected:
   ThreadPoolDelayedTaskManagerTest() = default;
   ~ThreadPoolDelayedTaskManagerTest() override = default;
@@ -58,9 +64,6 @@ class ThreadPoolDelayedTaskManagerTest : public testing::Test {
   Task task_{ConstructMockedTask(mock_task_,
                                  service_thread_task_runner_->NowTicks(),
                                  kLongDelay)};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolDelayedTaskManagerTest);
 };
 
 }  // namespace
