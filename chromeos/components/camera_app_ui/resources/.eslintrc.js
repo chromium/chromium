@@ -375,6 +375,7 @@ module.exports = {
     'chromeosCamera': 'readable',
     'blink': 'readable',
     'cros': 'readable',
+    'trustedTypes': 'readable',
     'webkitRequestFileSystem': 'readable',
   },
   // Generally, the rules should be compatible to both bundled and the newest

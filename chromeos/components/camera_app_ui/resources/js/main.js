@@ -39,6 +39,9 @@ import {Warning} from './views/warning.js';
 import {windowController} from './window_controller/window_controller.js';
 
 /**
+ * The app window instance which is used for communication with Tast tests. For
+ * non-test sessions or test sessions but using the legacy communication
+ * solution (chrome.runtime), it should be null.
  * @type {?AppWindow}
  */
 const appWindow = window['appWindow'];
@@ -304,7 +307,7 @@ let instance = null;
 
   const testErrorCallback = bgOps.getTestingErrorCallback();
   metrics.initMetrics();
-  if (testErrorCallback !== null) {
+  if (testErrorCallback !== null || appWindow !== null) {
     metrics.setMetricsEnabled(false);
   }
 

@@ -144,8 +144,8 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  addDummyHistoryIfNotAvailable() {
-    // no-ops
+  shouldAddFakeHistory() {
+    return false;
   }
 
   /** @override */

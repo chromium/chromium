@@ -73,6 +73,8 @@
       <structure name="IDR_CAMERA_TOAST_JS" file="js/toast.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TOOLTIP_JS" file="js/tooltip.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TYPE_JS" file="js/type.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_UNTRUSTED_GA_HELPER_JS" file="js/untrusted_ga_helper.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_UNTRUSTED_HELPER_INTERFACES_JS" file="js/untrusted_helper_interfaces.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UNTRUSTED_SCRIPT_LOADER_HTML" file="views/untrusted_script_loader.html" type="chrome_html" />
       <structure name="IDR_CAMERA_UNTRUSTED_SCRIPT_LOADER_JS" file="js/untrusted_script_loader.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UTIL_JS" file="js/util.js" type="chrome_html" />

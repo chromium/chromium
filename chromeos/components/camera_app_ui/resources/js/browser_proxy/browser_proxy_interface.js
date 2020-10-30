@@ -107,9 +107,10 @@ export class BrowserProxy {
   getTextDirection() {}
 
   /**
+   * @return {boolean}
    * @abstract
    */
-  addDummyHistoryIfNotAvailable() {}
+  shouldAddFakeHistory() {}
 
   /**
    * @return {boolean}

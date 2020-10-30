@@ -118,6 +118,8 @@ copy("chrome_camera_app_js") {
     "js/toast.js",
     "js/tooltip.js",
     "js/type.js",
+    "js/untrusted_ga_helper.js",
+    "js/untrusted_helper_interfaces.js",
     "js/untrusted_script_loader.js",
     "js/util.js",
     "js/waitable_event.js",

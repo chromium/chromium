@@ -75,6 +75,13 @@ content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
   }
   untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
 
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      std::string("connect-src http://www.google-analytics.com/ 'self';"));
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      std::string("trusted-types ga-js-static;"));
+
   return untrusted_source;
 }
 
