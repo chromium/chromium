@@ -3,10 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/content/android/payment_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+#if defined(OS_ANDROID)
+#define DISABLE_ON_ANDROID(test_name) DISABLED_##test_name
+#else
+#define DISABLE_ON_ANDROID(test_name) test_name
+#endif
 
 namespace payments {
 namespace {
@@ -113,7 +120,9 @@ IN_PROC_BROWSER_TEST_F(ExpandablePaymentHandlerBrowserTest,
 }
 
 // Make sure openWindow() can be resolved into window client.
-IN_PROC_BROWSER_TEST_F(ExpandablePaymentHandlerBrowserTest, WindowClientReady) {
+// Android: Flaky. See https://crbug.com/1075481.
+IN_PROC_BROWSER_TEST_F(ExpandablePaymentHandlerBrowserTest,
+                       DISABLE_ON_ANDROID(WindowClientReady)) {
   std::string expected = "success";
   EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));
   EXPECT_EQ("app_is_ready",
