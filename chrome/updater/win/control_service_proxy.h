@@ -39,7 +39,7 @@ class ControlServiceProxy : public ControlService {
 
   // Runs the tasks which involve outbound COM calls and inbound COM callbacks.
   // This task runner is thread-affine with the COM STA.
-  scoped_refptr<base::SingleThreadTaskRunner> com_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> STA_task_runner_;
 };
 
 }  // namespace updater
