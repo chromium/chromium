@@ -19,6 +19,10 @@ GpuFence::GpuFence(GpuFenceHandle fence_handle)
 
 GpuFence::~GpuFence() = default;
 
+GpuFence::GpuFence(GpuFence&& other) = default;
+
+GpuFence& GpuFence::operator=(GpuFence&& other) = default;
+
 const GpuFenceHandle& GpuFence::GetGpuFenceHandle() const {
   return fence_handle_;
 }

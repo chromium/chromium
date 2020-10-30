@@ -227,7 +227,8 @@ class SharedImageRepresentationOverlayAHB
     NOTREACHED();
   }
 
-  bool BeginReadAccess() override {
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
+                       std::vector<gfx::GpuFence>* release_fences) override {
     gl_image_ = ahb_backing()->BeginOverlayAccess();
     return !!gl_image_;
   }
@@ -240,7 +241,6 @@ class SharedImageRepresentationOverlayAHB
   }
 
   gl::GLImage* GetGLImage() override { return gl_image_; }
-  std::unique_ptr<gfx::GpuFence> GetReadFence() override { return nullptr; }
 
   gl::GLImage* gl_image_ = nullptr;
 };

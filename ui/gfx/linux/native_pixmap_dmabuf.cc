@@ -75,7 +75,8 @@ bool NativePixmapDmaBuf::ScheduleOverlayPlane(
     const gfx::Rect& display_bounds,
     const gfx::RectF& crop_rect,
     bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::vector<gfx::GpuFence> acquire_fences,
+    std::vector<gfx::GpuFence> release_fences) {
   return false;
 }
 

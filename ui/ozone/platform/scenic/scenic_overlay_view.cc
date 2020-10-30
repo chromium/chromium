@@ -88,10 +88,12 @@ bool ScenicOverlayView::AddImages(uint32_t buffer_count,
   return true;
 }
 
-bool ScenicOverlayView::PresentImage(uint32_t buffer_index) {
+bool ScenicOverlayView::PresentImage(uint32_t buffer_index,
+                                     std::vector<zx::event> acquire_fences,
+                                     std::vector<zx::event> release_fences) {
   image_pipe_->PresentImage(buffer_index + 1, zx_clock_get_monotonic(),
-                            std::vector<zx::event>(), std::vector<zx::event>(),
-                            [](auto) {});
+                            std::move(acquire_fences),
+                            std::move(release_fences), [](auto) {});
   return true;
 }
 

@@ -41,7 +41,9 @@ class ScenicOverlayView {
 
   // Calls ImagePipe2::PresentImage() on |image_pipe_| for the image
   // corresponding to |buffer_index| from the initialized BufferCollection.
-  bool PresentImage(uint32_t buffer_index);
+  bool PresentImage(uint32_t buffer_index,
+                    std::vector<zx::event> acquire_fences,
+                    std::vector<zx::event> release_fences);
 
   // If |enable_blend| is true, sets |image_pipe_| as non-opaque.
   void SetBlendMode(bool enable_blend);

@@ -33,6 +33,13 @@ namespace viz {
 
 namespace {
 
+// Helper function for moving a GpuFence from a vector to a unique_ptr.
+std::unique_ptr<gfx::GpuFence> TakeGpuFence(std::vector<gfx::GpuFence> fences) {
+  DCHECK(fences.empty() || fences.size() == 1u);
+  return fences.empty() ? nullptr
+                        : std::make_unique<gfx::GpuFence>(std::move(fences[0]));
+}
+
 class PresenterImageGL : public OutputPresenter::Image {
  public:
   PresenterImageGL() = default;
@@ -136,8 +143,9 @@ int PresenterImageGL::present_count() const {
 gl::GLImage* PresenterImageGL::GetGLImage(
     std::unique_ptr<gfx::GpuFence>* fence) {
   if (scoped_overlay_read_access_) {
-    if (fence)
-      *fence = scoped_overlay_read_access_->TakeFence();
+    if (fence) {
+      *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFences());
+    }
     return scoped_overlay_read_access_->gl_image();
   }
 
@@ -391,7 +399,7 @@ void OutputPresenterGL::ScheduleOverlays(
       gl_surface_->ScheduleOverlayPlane(
           overlay.plane_z_order, overlay.transform, gl_image,
           ToNearestRect(overlay.display_rect), overlay.uv_rect,
-          !overlay.is_opaque, accesses[i]->TakeFence());
+          !overlay.is_opaque, TakeGpuFence(accesses[i]->TakeAcquireFences()));
     }
 #elif defined(OS_APPLE)
     gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(

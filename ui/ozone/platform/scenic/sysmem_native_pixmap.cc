@@ -6,10 +6,20 @@
 
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/ozone/platform/scenic/scenic_surface.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 
 namespace ui {
+
+namespace {
+
+zx::event GpuFenceToZxEvent(gfx::GpuFence fence) {
+  DCHECK(!fence.GetGpuFenceHandle().is_null());
+  return fence.GetGpuFenceHandle().Clone().owned_event;
+}
+
+}  // namespace
 
 SysmemNativePixmap::SysmemNativePixmap(
     scoped_refptr<SysmemBufferCollection> collection,
@@ -71,7 +81,8 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     const gfx::Rect& display_bounds,
     const gfx::RectF& crop_rect,
     bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::vector<gfx::GpuFence> acquire_fences,
+    std::vector<gfx::GpuFence> release_fences) {
   DCHECK(collection_->surface_factory());
   ScenicSurface* surface = collection_->surface_factory()->GetSurface(widget);
   if (!surface) {
@@ -90,7 +101,17 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
   surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
                                      display_bounds, crop_rect);
   overlay_view->SetBlendMode(enable_blend);
-  overlay_view->PresentImage(handle_.buffer_index);
+
+  // Convert gfx::GpuFence to zx::event for PresentImage call.
+  std::vector<zx::event> acquire_events;
+  for (auto& fence : acquire_fences)
+    acquire_events.push_back(GpuFenceToZxEvent(std::move(fence)));
+  std::vector<zx::event> release_events;
+  for (auto& fence : release_fences)
+    release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
+  overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
+                             std::move(release_events));
+
   return true;
 }
 

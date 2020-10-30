@@ -118,7 +118,8 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
     const gfx::Rect& display_bounds,
     const gfx::RectF& crop_rect,
     bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::vector<gfx::GpuFence> acquire_fences,
+    std::vector<gfx::GpuFence> release_fences) {
   // If the widget this pixmap backs has not been assigned before, do it now.
   if (widget_ == gfx::kNullAcceleratedWidget)
     SetAcceleratedWiget(widget);
@@ -132,9 +133,14 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
       static_cast<GbmSurfacelessWayland*>(surface);
   DCHECK(surfaceless);
 
+  DCHECK(acquire_fences.empty() || acquire_fences.size() == 1u);
   surfaceless->QueueOverlayPlane(
-      OverlayPlane(this, std::move(gpu_fence), plane_z_order, plane_transform,
-                   display_bounds, crop_rect, enable_blend),
+      OverlayPlane(this,
+                   acquire_fences.empty() ? nullptr
+                                          : std::make_unique<gfx::GpuFence>(
+                                                std::move(acquire_fences[0])),
+                   plane_z_order, plane_transform, display_bounds, crop_rect,
+                   enable_blend),
       buffer_id_);
   return true;
 }

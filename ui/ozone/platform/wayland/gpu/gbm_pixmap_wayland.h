@@ -49,7 +49,8 @@ class GbmPixmapWayland : public gfx::NativePixmap {
                             const gfx::Rect& display_bounds,
                             const gfx::RectF& crop_rect,
                             bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+                            std::vector<gfx::GpuFence> acquire_fences,
+                            std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;
 
  private:

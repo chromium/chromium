@@ -134,7 +134,9 @@ SharedImageRepresentationOverlayD3D::SharedImageRepresentationOverlayD3D(
     MemoryTypeTracker* tracker)
     : SharedImageRepresentationOverlay(manager, backing, tracker) {}
 
-bool SharedImageRepresentationOverlayD3D::BeginReadAccess() {
+bool SharedImageRepresentationOverlayD3D::BeginReadAccess(
+    std::vector<gfx::GpuFence>* acquire_fences,
+    std::vector<gfx::GpuFence>* release_fences) {
   // Note: only the DX11 video decoder uses this overlay and does not need to
   // synchronize read access from different devices.
   return true;
@@ -144,11 +146,6 @@ void SharedImageRepresentationOverlayD3D::EndReadAccess() {}
 
 gl::GLImage* SharedImageRepresentationOverlayD3D::GetGLImage() {
   return static_cast<SharedImageBackingD3D*>(backing())->GetGLImage();
-}
-
-std::unique_ptr<gfx::GpuFence>
-SharedImageRepresentationOverlayD3D::GetReadFence() {
-  return nullptr;
 }
 
 }  // namespace gpu

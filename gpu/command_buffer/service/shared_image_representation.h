@@ -400,16 +400,23 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     ScopedReadAccess(util::PassKey<SharedImageRepresentationOverlay> pass_key,
                      SharedImageRepresentationOverlay* representation,
                      gl::GLImage* gl_image,
-                     std::unique_ptr<gfx::GpuFence> fence);
+                     std::vector<gfx::GpuFence> acquire_fences,
+                     std::vector<gfx::GpuFence> release_fences);
     ~ScopedReadAccess();
 
     gl::GLImage* gl_image() const { return gl_image_; }
 
-    std::unique_ptr<gfx::GpuFence> TakeFence() { return std::move(fence_); }
+    std::vector<gfx::GpuFence> TakeAcquireFences() {
+      return std::move(acquire_fences_);
+    }
+    std::vector<gfx::GpuFence> TakeReleaseFences() {
+      return std::move(release_fences_);
+    }
 
    private:
-    gl::GLImage* gl_image_;
-    std::unique_ptr<gfx::GpuFence> fence_;
+    gl::GLImage* const gl_image_;
+    std::vector<gfx::GpuFence> acquire_fences_;
+    std::vector<gfx::GpuFence> release_fences_;
   };
 
 #if defined(OS_ANDROID)
@@ -422,7 +429,16 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
  protected:
   // TODO(weiliangc): Currently this only handles Android pre-SurfaceControl
   // case. Add appropriate fence later.
-  virtual bool BeginReadAccess() = 0;
+
+  // Notifies the backing that an access will start. Returns false if there is a
+  // conflict. Otherwise, returns true and:
+  // - Adds gpu fences to |acquire_fences| that should be waited on before the
+  // SharedImage is ready to be displayed. These fences are fired when the gpu
+  // has finished writing.
+  // - Adds gpu fences to |release_fences| that are signalled by the display
+  // after pixmap has been displayed and is ready for reuse.
+  virtual bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
+                               std::vector<gfx::GpuFence>* release_fences) = 0;
   virtual void EndReadAccess() = 0;
 
   // TODO(weiliangc): Add API to backing AHardwareBuffer.
@@ -430,9 +446,6 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   // TODO(penghuang): Refactor it to not depend on GL.
   // Get the backing as GLImage for GLSurface::ScheduleOverlayPlane.
   virtual gl::GLImage* GetGLImage() = 0;
-  // Optionally returns a fence to synchronize writes on the SharedImage with
-  // overlay presentation.
-  virtual std::unique_ptr<gfx::GpuFence> GetReadFence() = 0;
 };
 
 // An interface that allows a SharedImageBacking to hold a reference to VA-API

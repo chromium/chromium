@@ -13,6 +13,10 @@
 #include "base/posix/eintr_wrapper.h"
 #endif
 
+#if defined(OS_FUCHSIA)
+#include "base/fuchsia/fuchsia_logging.h"
+#endif
+
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/process/process_handle.h"
@@ -31,6 +35,8 @@ GpuFenceHandle::~GpuFenceHandle() = default;
 bool GpuFenceHandle::is_null() const {
 #if defined(OS_POSIX)
   return !owned_fd.is_valid();
+#elif defined(OS_FUCHSIA)
+  return !owned_event.is_valid();
 #elif defined(OS_WIN)
   return !owned_handle.IsValid();
 #else
@@ -45,6 +51,13 @@ GpuFenceHandle GpuFenceHandle::Clone() const {
   if (duped_handle < 0)
     return GpuFenceHandle();
   handle.owned_fd = base::ScopedFD(duped_handle);
+#elif defined(OS_FUCHSIA)
+  zx_status_t status =
+      owned_event.duplicate(ZX_RIGHT_SAME_RIGHTS, &handle.owned_event);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
+    return GpuFenceHandle();
+  }
 #elif defined(OS_WIN)
   const base::ProcessHandle process = ::GetCurrentProcess();
   HANDLE duplicated_handle = INVALID_HANDLE_VALUE;

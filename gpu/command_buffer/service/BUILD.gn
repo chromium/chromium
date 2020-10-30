@@ -353,6 +353,8 @@ target(link_target_type, "gles2_sources") {
         "external_vk_image_factory.h",
         "external_vk_image_gl_representation.cc",
         "external_vk_image_gl_representation.h",
+        "external_vk_image_overlay_representation.cc",
+        "external_vk_image_overlay_representation.h",
         "external_vk_image_skia_representation.cc",
         "external_vk_image_skia_representation.h",
       ]

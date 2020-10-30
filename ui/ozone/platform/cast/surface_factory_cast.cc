@@ -62,13 +62,15 @@ class CastPixmap : public gfx::NativePixmap {
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
 
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override {
+  bool ScheduleOverlayPlane(
+      gfx::AcceleratedWidget widget,
+      int plane_z_order,
+      gfx::OverlayTransform plane_transform,
+      const gfx::Rect& display_bounds,
+      const gfx::RectF& crop_rect,
+      bool enable_blend,
+      std::vector<gfx::GpuFence> acquire_fences,
+      std::vector<gfx::GpuFence> release_fences) override {
     return false;
   }
   gfx::NativePixmapHandle ExportHandle() override {

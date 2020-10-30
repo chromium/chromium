@@ -68,21 +68,27 @@ uint32_t GbmPixmap::GetUniqueId() const {
   return buffer_->GetHandle();
 }
 
-bool GbmPixmap::ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                                     int plane_z_order,
-                                     gfx::OverlayTransform plane_transform,
-                                     const gfx::Rect& display_bounds,
-                                     const gfx::RectF& crop_rect,
-                                     bool enable_blend,
-                                     std::unique_ptr<gfx::GpuFence> gpu_fence) {
+bool GbmPixmap::ScheduleOverlayPlane(
+    gfx::AcceleratedWidget widget,
+    int plane_z_order,
+    gfx::OverlayTransform plane_transform,
+    const gfx::Rect& display_bounds,
+    const gfx::RectF& crop_rect,
+    bool enable_blend,
+    std::vector<gfx::GpuFence> acquire_fences,
+    std::vector<gfx::GpuFence> release_fences) {
   DCHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT);
   // |framebuffer_id| might be 0 if AddFramebuffer2 failed, in that case we
   // already logged the error in GbmBuffer ctor. We avoid logging the error
   // here since this method might be called every pageflip.
   if (framebuffer_) {
+    DCHECK(acquire_fences.empty() || acquire_fences.size() == 1u);
     surface_manager_->GetSurface(widget)->QueueOverlayPlane(DrmOverlayPlane(
         framebuffer_, plane_z_order, plane_transform, display_bounds, crop_rect,
-        enable_blend, std::move(gpu_fence)));
+        enable_blend,
+        acquire_fences.empty()
+            ? nullptr
+            : std::make_unique<gfx::GpuFence>(std::move(acquire_fences[0]))));
   }
 
   return true;

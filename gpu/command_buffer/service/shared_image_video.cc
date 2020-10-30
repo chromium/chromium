@@ -414,7 +414,8 @@ class SharedImageRepresentationOverlayVideo
         stream_image_(backing->stream_texture_sii_) {}
 
  protected:
-  bool BeginReadAccess() override {
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
+                       std::vector<gfx::GpuFence>* release_fences) override {
     // A |CodecImage| is already in a SurfaceView, render content to the
     // overlay.
     if (!stream_image_->HasTextureOwner()) {
@@ -432,8 +433,6 @@ class SharedImageRepresentationOverlayVideo
         << "The backing is already in a SurfaceView!";
     return stream_image_.get();
   }
-
-  std::unique_ptr<gfx::GpuFence> GetReadFence() override { return nullptr; }
 
   void NotifyOverlayPromotion(bool promotion,
                               const gfx::Rect& bounds) override {

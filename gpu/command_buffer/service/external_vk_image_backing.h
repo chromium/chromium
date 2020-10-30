@@ -161,6 +161,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
 
  private:
   // Install a shared memory GMB to the backing.

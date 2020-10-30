@@ -77,11 +77,11 @@ class SharedImageRepresentationOverlayD3D
   ~SharedImageRepresentationOverlayD3D() override = default;
 
  private:
-  bool BeginReadAccess() override;
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
+                       std::vector<gfx::GpuFence>* release_fences) override;
   void EndReadAccess() override;
 
   gl::GLImage* GetGLImage() override;
-  std::unique_ptr<gfx::GpuFence> GetReadFence() override;
 };
 
 }  // namespace gpu

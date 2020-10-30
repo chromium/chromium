@@ -229,10 +229,12 @@ SharedImageRepresentationOverlay::ScopedReadAccess::ScopedReadAccess(
     util::PassKey<SharedImageRepresentationOverlay> pass_key,
     SharedImageRepresentationOverlay* representation,
     gl::GLImage* gl_image,
-    std::unique_ptr<gfx::GpuFence> fence)
+    std::vector<gfx::GpuFence> acquire_fences,
+    std::vector<gfx::GpuFence> release_fences)
     : ScopedAccessBase(representation),
       gl_image_(gl_image),
-      fence_(std::move(fence)) {}
+      acquire_fences_(std::move(acquire_fences)),
+      release_fences_(std::move(release_fences)) {}
 
 SharedImageRepresentationOverlay::ScopedReadAccess::~ScopedReadAccess() {
   representation()->EndReadAccess();
@@ -245,14 +247,17 @@ SharedImageRepresentationOverlay::BeginScopedReadAccess(bool needs_gl_image) {
     return nullptr;
   }
 
-  if (!BeginReadAccess())
+  std::vector<gfx::GpuFence> acquire_fences;
+  std::vector<gfx::GpuFence> release_fences;
+  if (!BeginReadAccess(&acquire_fences, &release_fences))
     return nullptr;
 
   backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedReadAccess>(
       util::PassKey<SharedImageRepresentationOverlay>(), this,
-      needs_gl_image ? GetGLImage() : nullptr, GetReadFence());
+      needs_gl_image ? GetGLImage() : nullptr, std::move(acquire_fences),
+      std::move(release_fences));
 }
 
 SharedImageRepresentationDawn::ScopedAccess::ScopedAccess(

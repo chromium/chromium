@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 #include "components/exo/buffer.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/shell_surface_util.h"
@@ -597,8 +598,10 @@ void Surface::SetEmbeddedSurfaceSize(const gfx::Size& size) {
 }
 
 void Surface::SetAcquireFence(std::unique_ptr<gfx::GpuFence> gpu_fence) {
+#if defined(OS_POSIX)
   TRACE_EVENT1("exo", "Surface::SetAcquireFence", "fence_fd",
                gpu_fence ? gpu_fence->GetGpuFenceHandle().owned_fd.get() : -1);
+#endif  // defined(OS_POSIX)
 
   pending_state_.acquire_fence = std::move(gpu_fence);
 }

@@ -118,10 +118,12 @@ class TestSharedImageRepresentationOverlay
                                        MemoryTypeTracker* tracker)
       : SharedImageRepresentationOverlay(manager, backing, tracker) {}
 
-  bool BeginReadAccess() override { return true; }
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
+                       std::vector<gfx::GpuFence>* release_fences) override {
+    return true;
+  }
   void EndReadAccess() override {}
   gl::GLImage* GetGLImage() override { return nullptr; }
-  std::unique_ptr<gfx::GpuFence> GetReadFence() override { return nullptr; }
 
 #if defined(OS_ANDROID)
   void NotifyOverlayPromotion(bool promotion,

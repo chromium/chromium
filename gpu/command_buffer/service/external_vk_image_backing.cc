@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/service/external_vk_image_gl_representation.h"
+#include "gpu/command_buffer/service/external_vk_image_overlay_representation.h"
 #include "gpu/command_buffer/service/external_vk_image_skia_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -776,6 +777,13 @@ ExternalVkImageBacking::ProduceSkia(
   DCHECK(context_state->GrContextIsVulkan());
   return std::make_unique<ExternalVkImageSkiaRepresentation>(manager, this,
                                                              tracker);
+}
+
+std::unique_ptr<SharedImageRepresentationOverlay>
+ExternalVkImageBacking::ProduceOverlay(SharedImageManager* manager,
+                                       MemoryTypeTracker* tracker) {
+  return std::make_unique<ExternalVkImageOverlayRepresentation>(manager, this,
+                                                                tracker);
 }
 
 void ExternalVkImageBacking::InstallSharedMemory(

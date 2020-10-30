@@ -131,10 +131,10 @@ class SharedImageRepresentationOverlayImpl
   ~SharedImageRepresentationOverlayImpl() override;
 
  private:
-  bool BeginReadAccess() override;
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
+                       std::vector<gfx::GpuFence>* release_fences) override;
   void EndReadAccess() override;
   gl::GLImage* GetGLImage() override;
-  std::unique_ptr<gfx::GpuFence> GetReadFence() override;
 
   scoped_refptr<gl::GLImage> gl_image_;
 };
