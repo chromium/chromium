@@ -57,6 +57,18 @@ def _generate_package_cycle_stats(
     }
 
 
+def _generate_chrome_java_size(
+        class_graph: class_dependency.JavaClassDependencyGraph
+) -> Dict[str, int]:
+    count = 0
+
+    class_node: class_dependency.JavaClass
+    for class_node in class_graph.nodes:
+        if '//chrome/android:chrome_java' in class_node.build_targets:
+            count += 1
+    return {'chrome_java_class_count': count}
+
+
 def main():
     arg_parser = argparse.ArgumentParser(
         description='Given a JSON dependency graph, output a JSON with a '
@@ -83,6 +95,7 @@ def main():
     stats.update(_generate_inbound_stats(class_graph,
                                          CLASSES_TO_COUNT_INBOUND))
     stats.update(_generate_package_cycle_stats(package_graph))
+    stats.update(_generate_chrome_java_size(class_graph))
 
     if arguments.output:
         with open(arguments.output, 'w') as f:
