@@ -468,10 +468,10 @@ interface mixin WebGLRenderingContextBase {
     void activeTexture(GLenum texture);
     void attachShader(WebGLProgram program, WebGLShader shader);
     void bindAttribLocation(WebGLProgram program, GLuint index, DOMString name);
-    [NoAllocDirectCall] void bindBuffer(GLenum target, WebGLBuffer? buffer);
+    void bindBuffer(GLenum target, WebGLBuffer? buffer);
     void bindFramebuffer(GLenum target, WebGLFramebuffer? framebuffer);
     void bindRenderbuffer(GLenum target, WebGLRenderbuffer? renderbuffer);
-    [NoAllocDirectCall] void bindTexture(GLenum target, WebGLTexture? texture);
+    void bindTexture(GLenum target, WebGLTexture? texture);
     void blendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
     void blendEquation(GLenum mode);
     void blendEquationSeparate(GLenum modeRGB, GLenum modeAlpha);

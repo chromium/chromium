@@ -167,16 +167,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void activeTexture(GLenum texture);
   void attachShader(WebGLProgram*, WebGLShader*);
   void bindAttribLocation(WebGLProgram*, GLuint index, const String& name);
-  void bindBuffer(GLenum target, WebGLBuffer*);
-  void bindBuffer(GLenum target,
-                  WebGLBuffer*,
-                  v8::FastApiCallbackOptions& options);
+  void bindBuffer(GLenum target, WebGLBuffer* buffer);
   virtual void bindFramebuffer(GLenum target, WebGLFramebuffer*);
   void bindRenderbuffer(GLenum target, WebGLRenderbuffer*);
   void bindTexture(GLenum target, WebGLTexture*);
-  void bindTexture(GLenum target,
-                   WebGLTexture*,
-                   v8::FastApiCallbackOptions& options);
   void blendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
   void blendEquation(GLenum mode);
   void blendEquationSeparate(GLenum mode_rgb, GLenum mode_alpha);
@@ -262,17 +256,40 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void detachShader(WebGLProgram*, WebGLShader*);
   void disable(GLenum cap);
   void disableVertexAttribArray(GLuint index);
-  void drawArrays(GLenum mode, GLint first, GLsizei count);
+
+  void drawArraysImpl(GLenum mode, GLint first, GLsizei count);
+  void drawArrays(GLenum mode, GLint first, GLsizei count) {
+    if (fast_call_.FlushDeferredEvents(this)) {
+      return;
+    }
+    drawArraysImpl(mode, first, count);
+  }
   void drawArrays(GLenum mode,
                   GLint first,
                   GLsizei count,
-                  v8::FastApiCallbackOptions& options);
-  void drawElements(GLenum mode, GLsizei count, GLenum type, int64_t offset);
+                  v8::FastApiCallbackOptions& options) {
+    auto scoped_call = fast_call_.EnterScoped(&options.fallback);
+    drawArraysImpl(mode, first, count);
+  }
+
+  void drawElementsImpl(GLenum mode,
+                        GLsizei count,
+                        GLenum type,
+                        int64_t offset);
+  void drawElements(GLenum mode, GLsizei count, GLenum type, int64_t offset) {
+    if (fast_call_.FlushDeferredEvents(this)) {
+      return;
+    }
+    drawElementsImpl(mode, count, type, offset);
+  }
   void drawElements(GLenum mode,
                     GLsizei count,
                     GLenum type,
                     int64_t offset,
-                    v8::FastApiCallbackOptions& options);
+                    v8::FastApiCallbackOptions& options) {
+    auto scoped_call = fast_call_.EnterScoped(&options.fallback);
+    drawElementsImpl(mode, count, type, offset);
+  }
 
   void DrawArraysInstancedANGLE(GLenum mode,
                                 GLint first,
@@ -1810,9 +1827,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void RecordShaderPrecisionFormatForStudy(GLenum shader_type,
                                            GLenum precision_type,
                                            WebGLShaderPrecisionFormat* format);
-
-  void bindBufferImpl(GLenum target, WebGLBuffer*);
-  void bindTextureImpl(GLenum target, WebGLTexture*);
 
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
