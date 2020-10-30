@@ -90,6 +90,32 @@ static GridTrackSizingDirection GridDirectionForAxis(GridAxis axis) {
   return axis == kGridRowAxis ? kForColumns : kForRows;
 }
 
+template <typename F>
+static void IterateGridItemsInTrackIndices(const Grid& grid,
+                                           GridTrackSizingDirection direction,
+                                           Vector<size_t>& track_indices,
+                                           F callback) {
+#if DCHECK_IS_ON()
+  HashSet<LayoutBox*> items_set;
+#endif
+  for (size_t i = 0; i < track_indices.size(); ++i) {
+    auto iterator = grid.CreateIterator(direction, track_indices[i]);
+    while (LayoutBox* grid_item = iterator->NextGridItem()) {
+      const GridSpan& span = grid.GridItemSpan(*grid_item, direction);
+      if (i > 0) {
+        // Skip items already processed in an earlier track.
+        DCHECK_LT(track_indices[i - 1], track_indices[i]);
+        if (span.StartLine() <= track_indices[i - 1])
+          continue;
+      }
+#if DCHECK_IS_ON()
+      DCHECK(items_set.insert(grid_item).is_new_entry);
+#endif
+      callback(grid_item, span);
+    }
+  }
+}
+
 class IndefiniteSizeStrategy final : public GridTrackSizingAlgorithmStrategy {
  public:
   IndefiniteSizeStrategy(GridTrackSizingAlgorithm& algorithm)
@@ -694,27 +720,19 @@ double IndefiniteSizeStrategy::FindUsedFlexFraction(
   if (!grid.HasGridItems())
     return flex_fraction;
 
-  HashSet<LayoutBox*> items_set;
-  for (const auto& track_index : flexible_sized_tracks_index) {
-    auto iterator = grid.CreateIterator(direction, track_index);
-    while (LayoutBox* grid_item = iterator->NextGridItem()) {
-      // Do not include already processed items.
-      if (!items_set.insert(grid_item).is_new_entry)
-        continue;
-
-      const GridSpan& span = grid.GridItemSpan(*grid_item, direction);
-
-      // Removing gutters from the max-content contribution of the item,
-      // so they are not taken into account in FindFrUnitSize().
-      LayoutUnit left_over_space =
-          MaxContentForChild(*grid_item) -
-          GetLayoutGrid()->GuttersSize(algorithm_.GetGrid(), direction,
-                                       span.StartLine(), span.IntegerSpan(),
-                                       AvailableSpace());
-      flex_fraction =
-          std::max(flex_fraction, FindFrUnitSize(span, left_over_space));
-    }
-  }
+  IterateGridItemsInTrackIndices(
+      grid, direction, flexible_sized_tracks_index,
+      [&](LayoutBox* grid_item, const GridSpan& span) {
+        // Removing gutters from the max-content contribution of the item,
+        // so they are not taken into account in FindFrUnitSize().
+        LayoutUnit left_over_space =
+            MaxContentForChild(*grid_item) -
+            GetLayoutGrid()->GuttersSize(algorithm_.GetGrid(), direction,
+                                         span.StartLine(), span.IntegerSpan(),
+                                         AvailableSpace());
+        flex_fraction =
+            std::max(flex_fraction, FindFrUnitSize(span, left_over_space));
+      });
 
   return flex_fraction;
 }
@@ -1449,22 +1467,17 @@ void GridTrackSizingAlgorithm::ResolveIntrinsicTrackSizes() {
   Vector<GridTrack>& all_tracks = Tracks(direction_);
   Vector<GridItemWithSpan> items_sorted_by_increasing_span;
   if (grid_.HasGridItems()) {
-    HashSet<LayoutBox*> items_set;
-    for (const auto& track_index : content_sized_tracks_index_) {
-      auto iterator = grid_.CreateIterator(direction_, track_index);
-      GridTrack& track = all_tracks[track_index];
-      while (auto* grid_item = iterator->NextGridItem()) {
-        if (items_set.insert(grid_item).is_new_entry) {
-          const GridSpan& span = grid_.GridItemSpan(*grid_item, direction_);
+    IterateGridItemsInTrackIndices(
+        grid_, direction_, content_sized_tracks_index_,
+        [&](LayoutBox* grid_item, const GridSpan& span) {
           if (span.IntegerSpan() == 1) {
-            SizeTrackToFitNonSpanningItem(span, *grid_item, track);
+            SizeTrackToFitNonSpanningItem(span, *grid_item,
+                                          all_tracks[span.StartLine()]);
           } else if (!SpanningItemCrossesFlexibleSizedTracks(span)) {
             items_sorted_by_increasing_span.push_back(
                 GridItemWithSpan(*grid_item, span));
           }
-        }
-      }
-    }
+        });
     std::sort(items_sorted_by_increasing_span.begin(),
               items_sorted_by_increasing_span.end());
   }

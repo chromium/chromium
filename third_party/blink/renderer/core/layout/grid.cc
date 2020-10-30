@@ -397,16 +397,26 @@ LayoutBox* ListGridIterator::NextGridItem() {
     return cell_node_->Items()[child_index_++];
   }
 
-  if (child_index_ < cell_node_->Items().size())
-    return cell_node_->Items()[child_index_++];
+  GridTrackSizingDirection other_direction =
+      is_row_axis ? kForRows : kForColumns;
+  while (true) {
+    LayoutBox* candidate;
+    if (child_index_ < cell_node_->Items().size()) {
+      candidate = cell_node_->Items()[child_index_++];
+    } else {
+      child_index_ = 0;
+      cell_node_ = cell_node_->NextInDirection(direction_);
+      if (!cell_node_)
+        return nullptr;
 
-  child_index_ = 0;
-  cell_node_ = cell_node_->NextInDirection(direction_);
-  if (!cell_node_)
-    return nullptr;
-
-  DCHECK(!cell_node_->Items().IsEmpty());
-  return cell_node_->Items()[child_index_++];
+      DCHECK(!cell_node_->Items().IsEmpty());
+      candidate = cell_node_->Items()[child_index_++];
+    }
+    // Skip items already processed in an earlier cell of the track.
+    const GridSpan& span = grid_.GridItemSpan(*candidate, other_direction);
+    if (span.StartLine() == cell_node_->Index(other_direction))
+      return candidate;
+  }
 }
 
 std::unique_ptr<GridArea> ListGridIterator::NextEmptyGridArea(
