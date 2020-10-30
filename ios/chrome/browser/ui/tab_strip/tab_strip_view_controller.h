@@ -7,10 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_strip/tab_strip_consumer.h"
+
+@class TabStripMediator;
+
 // ViewController for the TabStrip. This ViewController is contained by
 // BrowserViewController. This TabStripViewController is responsible for
 // responding to the different updates in the tabstrip view.
-@interface TabStripViewController : UICollectionViewController
+@interface TabStripViewController
+    : UICollectionViewController <TabStripConsumer>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

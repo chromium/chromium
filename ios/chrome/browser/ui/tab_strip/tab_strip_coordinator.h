@@ -23,7 +23,7 @@ class Browser;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // The TabStrip view controller owned by this coordinator.
-@property(nonatomic, strong) UIViewController* viewController;
+@property(nonatomic, strong, readonly) UIViewController* viewController;
 
 // The TabStrip view owned by the viewcontroller of this coordinator.
 @property(nonatomic, strong, readonly) UIView<TabStripContaining>* view;

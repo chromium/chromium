@@ -7,13 +7,24 @@
 #include "base/check_op.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_strip/tab_strip_view_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @protocol TabStripContaining;
+
+@interface TabStripCoordinator ()
+
+// Mediator for updating the TabStrip when the WebStateList changes.
+@property(nonatomic, strong) TabStripMediator* mediator;
+
+@property TabStripViewController* tabStripViewController;
+
+@end
 
 @implementation TabStripCoordinator
 
@@ -25,23 +36,32 @@
 }
 
 - (void)start {
-  if (self.viewController)
+  if (self.tabStripViewController)
     return;
 
-  self.viewController = [[TabStripViewController alloc] init];
+  self.tabStripViewController = [[TabStripViewController alloc] init];
   if (@available(iOS 13, *)) {
-    self.viewController.overrideUserInterfaceStyle =
+    self.tabStripViewController.overrideUserInterfaceStyle =
         self.browser->GetBrowserState()->IsOffTheRecord()
             ? UIUserInterfaceStyleDark
             : UIUserInterfaceStyleUnspecified;
   }
+
+  self.mediator =
+      [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];
+  self.mediator.webStateList = self.browser->GetWebStateList();
 }
 
 - (void)stop {
-  self.viewController = nil;
+  self.mediator = nil;
+  self.tabStripViewController = nil;
 }
 
 #pragma mark - Properties
+
+- (UIViewController*)viewController {
+  return self.tabStripViewController;
+}
 
 - (void)setLongPressDelegate:(id<PopupMenuLongPressDelegate>)longPressDelegate {
   _longPressDelegate = longPressDelegate;
@@ -54,7 +74,7 @@
 #pragma mark - Public
 
 - (void)hideTabStrip:(BOOL)hidden {
-  self.viewController.view.hidden = hidden;
+  self.tabStripViewController.view.hidden = hidden;
 }
 
 @end

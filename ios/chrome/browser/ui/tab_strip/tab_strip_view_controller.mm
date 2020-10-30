@@ -4,18 +4,26 @@
 
 #import "ios/chrome/browser/ui/tab_strip/tab_strip_view_controller.h"
 
+#import "base/allocator/partition_allocator/partition_alloc.h"
 #import "ios/chrome/browser/ui/tab_strip/tab_strip_cell.h"
+#import "ios/chrome/browser/ui/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_strip/tab_strip_view_layout.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation TabStripViewController
-
 namespace {
 static NSString* const kReuseIdentifier = @"TabView";
 }  // namespace
+
+@interface TabStripViewController ()
+// Returns the number of tabs, the value is taken from the count() of
+// the WebStateList.
+@property(nonatomic, assign) NSUInteger tabsCount;
+@end
+
+@implementation TabStripViewController
 
 - (instancetype)init {
   TabStripViewLayout* layout = [[TabStripViewLayout alloc] init];
@@ -35,6 +43,11 @@ static NSString* const kReuseIdentifier = @"TabView";
 - (NSInteger)numberOfSectionsInCollectionView:
     (UICollectionView*)collectionView {
   return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView*)collectionView
+     numberOfItemsInSection:(NSInteger)section {
+  return _tabsCount;
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
