@@ -28,8 +28,10 @@
 #include "base/test/bind_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_media_view_util.h"
@@ -1882,6 +1884,10 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 }
 
 void FileManagerBrowserTestBase::TearDownOnMainThread() {
+  if (files_app_web_contents_) {
+    files_app_web_contents_->Close();
+  }
+
   file_tasks_observer_.reset();
   select_factory_ = nullptr;
   ui::SelectFileDialog::SetFactory(nullptr);
@@ -2007,6 +2013,26 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     platform_util::OpenItem(profile(), folder_path, platform_util::OPEN_FOLDER,
                             platform_util::OpenOperationCallback());
 
+    return;
+  }
+
+  if (name == "launchFileManagerSwa") {
+    apps::AppLaunchParams params(
+        files_app_swa_id_, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        apps::mojom::AppLaunchSource::kSourceTest);
+
+    content::WebContents* web_contents =
+        apps::AppServiceProxyFactory::GetForProfile(profile())
+            ->BrowserAppLauncher()
+            ->LaunchAppWithParams(std::move(params));
+    CHECK(web_contents);
+
+    content::WaitForLoadStop(web_contents);
+    LOG(INFO) << name << " url " << web_contents->GetLastCommittedURL();
+    files_app_web_contents_ = web_contents;
+
+    *output = files_app_swa_id_;
     return;
   }
 

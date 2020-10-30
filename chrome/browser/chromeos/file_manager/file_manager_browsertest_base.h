@@ -28,6 +28,10 @@ namespace arc {
 class FakeFileSystemInstance;
 }  // namespace arc
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace file_manager {
 
 enum GuestMode { NOT_IN_GUEST_MODE, IN_GUEST_MODE, IN_INCOGNITO };
@@ -179,6 +183,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   bool IsSmbEnabled() const;
 
   web_app::AppId files_app_swa_id_;
+  content::WebContents* files_app_web_contents_ = nullptr;
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   crostini::FakeCrostiniFeatures crostini_features_;
