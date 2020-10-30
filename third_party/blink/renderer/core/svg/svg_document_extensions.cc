@@ -157,11 +157,6 @@ SVGSVGElement* SVGDocumentExtensions::rootElement(const Document& document) {
   return DynamicTo<SVGSVGElement>(document.documentElement());
 }
 
-SVGSVGElement* SVGDocumentExtensions::rootElement() const {
-  DCHECK(document_);
-  return rootElement(*document_);
-}
-
 void SVGDocumentExtensions::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(time_containers_);

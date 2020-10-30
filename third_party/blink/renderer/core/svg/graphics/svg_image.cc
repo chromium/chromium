@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
-#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -224,8 +223,8 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
 
   CheckLoaded();
 
-  SVGSVGElement* root_element =
-      frame->GetDocument()->AccessSVGExtensions().rootElement();
+  auto* root_element =
+      DynamicTo<SVGSVGElement>(frame->GetDocument()->documentElement());
   if (!root_element)
     return true;
 
@@ -252,7 +251,7 @@ static SVGSVGElement* SvgRootElement(Page* page) {
   if (!page)
     return nullptr;
   auto* frame = To<LocalFrame>(page->MainFrame());
-  return frame->GetDocument()->AccessSVGExtensions().rootElement();
+  return DynamicTo<SVGSVGElement>(frame->GetDocument()->documentElement());
 }
 
 LayoutSize SVGImage::ContainerSize() const {
