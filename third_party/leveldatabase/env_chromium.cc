@@ -1038,8 +1038,12 @@ class Thread : public base::PlatformThread::Delegate {
 };
 
 void ChromiumEnv::Schedule(ScheduleFunc* function, void* arg) {
+  // The BLOCK_SHUTDOWN is required to avoid shutdown hangs. The scheduled
+  // tasks may be blocking foreground threads waiting for their completions.
+  // see: https://crbug.com/1086185.
   base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::WithBaseSyncPrimitives()},
+                             {base::MayBlock(), base::WithBaseSyncPrimitives(),
+                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
                              base::BindOnce(function, arg));
 }
 
