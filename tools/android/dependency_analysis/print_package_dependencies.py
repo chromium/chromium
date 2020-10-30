@@ -81,7 +81,7 @@ def main():
         'browser.customtabs and browser.customtabs.content.')
     arguments = arg_parser.parse_args()
 
-    _, package_graph = serialization.load_class_and_package_graphs_from_file(
+    _, package_graph, _ = serialization.load_class_and_package_graphs_from_file(
         arguments.file)
     package_graph_keys = [node.name for node in package_graph.nodes]
     valid_keys = print_dependencies_helper.get_valid_package_keys_matching(

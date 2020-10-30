@@ -162,7 +162,7 @@ def main():
         help='Path to the file to write the list of cycles to.')
     args = arg_parser.parse_args()
 
-    _, package_graph = serialization.load_class_and_package_graphs_from_file(
+    _, package_graph, _ = serialization.load_class_and_package_graphs_from_file(
         args.file)
 
     all_cycles = find_cycles(package_graph, args.cycle_length)

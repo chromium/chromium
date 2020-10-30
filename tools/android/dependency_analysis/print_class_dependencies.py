@@ -293,7 +293,7 @@ def main():
                            ignore_same_package=arguments.ignore_same_package,
                            fully_qualified=arguments.fully_qualified)
 
-    class_graph, package_graph = \
+    class_graph, package_graph, _ = \
         serialization.load_class_and_package_graphs_from_file(arguments.file)
 
     valid_class_names = []

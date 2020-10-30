@@ -18,6 +18,10 @@ import serialization
 CLASSES_TO_COUNT_INBOUND = ['ChromeActivity', 'ChromeTabbedActivity']
 
 
+def _copy_metadata(metadata: Dict) -> Dict[str, str]:
+    return {f'meta_{key}': value for key, value in metadata.items()}
+
+
 def _generate_graph_sizes(
         class_graph: class_dependency.JavaClassDependencyGraph,
         package_graph: package_dependency.JavaPackageDependencyGraph
@@ -87,10 +91,11 @@ def main():
         'stdout.')
     arguments = arg_parser.parse_args()
 
-    class_graph, package_graph = \
+    class_graph, package_graph, graph_metadata = \
         serialization.load_class_and_package_graphs_from_file(arguments.file)
 
     stats = {}
+    stats.update(_copy_metadata(graph_metadata))
     stats.update(_generate_graph_sizes(class_graph, package_graph))
     stats.update(_generate_inbound_stats(class_graph,
                                          CLASSES_TO_COUNT_INBOUND))
