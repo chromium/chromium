@@ -320,9 +320,7 @@ public class ChromePaymentRequestService
         mPaymentRequestService.getPaymentRequestLifecycleObserver().onPaymentRequestParamsInitiated(
                 /*params=*/this);
 
-        PaymentAppService service = PaymentAppService.getInstance();
-        addUniqueFactoriesToPaymentAppService(service);
-        service.create(/*delegate=*/this);
+        PaymentAppService.getInstance().create(/*delegate=*/this);
 
         // Log the various types of payment methods that were requested by the merchant.
         boolean requestedMethodGoogle = false;
@@ -356,26 +354,6 @@ public class ChromePaymentRequestService
                 /*requestedBasicCard=*/mPaymentUiService.merchantSupportsAutofillCards(),
                 requestedMethodGoogle, requestedMethodOther);
         return true;
-    }
-
-    private void addUniqueFactoriesToPaymentAppService(PaymentAppService service) {
-        String androidFactoryId = AndroidPaymentAppFactory.class.getName();
-        if (!service.containsFactory(androidFactoryId)) {
-            service.addUniqueFactory(new AndroidPaymentAppFactory(), androidFactoryId);
-        }
-        String swFactoryId = PaymentAppServiceBridge.class.getName();
-        if (!service.containsFactory(swFactoryId)) {
-            service.addUniqueFactory(new PaymentAppServiceBridge(), swFactoryId);
-        }
-
-        String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
-        if (!service.containsFactory(autofillFactoryId)) {
-            service.addUniqueFactory(new AutofillPaymentAppFactory(), autofillFactoryId);
-        }
-        if (AutofillPaymentAppFactory.canMakePayments(mSpec.getMethodData())) {
-            mPaymentUiService.setAutofillPaymentAppCreator(
-                    AutofillPaymentAppFactory.createAppCreator(/*delegate=*/this));
-        }
     }
 
     @Nullable
@@ -1481,6 +1459,12 @@ public class ChromePaymentRequestService
         // canMakePayment doesn't need to wait for all apps to be queried because it only needs to
         // test the existence of a payment handler.
         respondCanMakePaymentQuery();
+    }
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
+    public void onAutofillPaymentAppCreatorAvailable(AutofillPaymentAppCreator creator) {
+        mPaymentUiService.setAutofillPaymentAppCreator(creator);
     }
 
     // PaymentAppFactoryDelegate implementation.
