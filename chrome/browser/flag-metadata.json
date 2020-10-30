@@ -3773,7 +3773,7 @@
   {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 92
   },
   {
     "name": "pluginvm-show-camera-permissions",
