@@ -108,9 +108,23 @@ class CORE_EXPORT CSSSelector {
   static constexpr unsigned kClassLikeSpecificity = 0x000100;
   static constexpr unsigned kTagSpecificity = 0x000001;
 
+  // TODO(crbug.com/1143404): Fix :host pseudos and remove this enum.
+  enum class SpecificityMode {
+    // Normal mode currently treats :host() and :host-context() as zero.
+    // (The actual specificity is determined dynamically during selector
+    // matching).
+    kNormal,
+    // This mode calculates the specificity for :host() and :host-context()
+    // like it's calculated for :is(), i.e. the specificity is that of the
+    // most specific argument.
+    //
+    // This mode is intended for use-counting purposes only.
+    kIncludeHostPseudos
+  };
+
   // http://www.w3.org/TR/css3-selectors/#specificity
   // We use 256 as the base of the specificity number system.
-  unsigned Specificity() const;
+  unsigned Specificity(SpecificityMode = SpecificityMode::kNormal) const;
 
   /* how the attribute value has to match.... Default is Exact */
   enum MatchType {
@@ -423,7 +437,8 @@ class CORE_EXPORT CSSSelector {
               pseudo_type);  // using a bitfield.
   }
 
-  unsigned SpecificityForOneSelector() const;
+  unsigned SpecificityForOneSelector(
+      SpecificityMode = SpecificityMode::kNormal) const;
   unsigned SpecificityForPage() const;
   const CSSSelector* SerializeCompound(StringBuilder&) const;
 

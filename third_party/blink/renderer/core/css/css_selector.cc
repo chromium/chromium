@@ -52,7 +52,8 @@ namespace blink {
 
 namespace {
 
-unsigned MaximumSpecificity(const CSSSelectorList* list) {
+unsigned MaximumSpecificity(const CSSSelectorList* list,
+                            CSSSelector::SpecificityMode mode) {
   if (!list)
     return 0;
 
@@ -60,7 +61,7 @@ unsigned MaximumSpecificity(const CSSSelectorList* list) {
   const CSSSelector* selector;
   for (selector = list->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    unsigned specificity = selector->Specificity();
+    unsigned specificity = selector->Specificity(mode);
     if (result < specificity)
       result = specificity;
   }
@@ -89,7 +90,7 @@ void CSSSelector::CreateRareData() {
   has_rare_data_ = true;
 }
 
-unsigned CSSSelector::Specificity() const {
+unsigned CSSSelector::Specificity(SpecificityMode mode) const {
   // make sure the result doesn't overflow
   static const unsigned kMaxValueMask = 0xffffff;
   static const unsigned kIdMask = 0xff0000;
@@ -104,7 +105,7 @@ unsigned CSSSelector::Specificity() const {
 
   for (const CSSSelector* selector = this; selector;
        selector = selector->TagHistory()) {
-    temp = total + selector->SpecificityForOneSelector();
+    temp = total + selector->SpecificityForOneSelector(mode);
     // Clamp each component to its max in the case of overflow.
     if ((temp & kIdMask) < (total & kIdMask))
       total |= kIdMask;
@@ -118,7 +119,8 @@ unsigned CSSSelector::Specificity() const {
   return total;
 }
 
-inline unsigned CSSSelector::SpecificityForOneSelector() const {
+inline unsigned CSSSelector::SpecificityForOneSelector(
+    SpecificityMode mode) const {
   // FIXME: Pseudo-elements and pseudo-classes do not have the same specificity.
   // This function isn't quite correct.
   // http://www.w3.org/TR/selectors/#specificity
@@ -131,14 +133,20 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           return 0;
         case kPseudoHost:
         case kPseudoHostContext:
-          // We dynamically compute the specificity of :host and :host-context
-          // during matching.
-          return 0;
+          if (mode == SpecificityMode::kNormal) {
+            // We dynamically compute the specificity of :host and :host-context
+            // during matching.
+            return 0;
+          } else {
+            DCHECK_EQ(SpecificityMode::kIncludeHostPseudos, mode);
+            return kClassLikeSpecificity +
+                   MaximumSpecificity(SelectorList(), mode);
+          }
         case kPseudoNot:
           DCHECK(SelectorList());
           return SelectorList()->First()->Specificity();
         case kPseudoIs:
-          return MaximumSpecificity(SelectorList());
+          return MaximumSpecificity(SelectorList(), mode);
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
         case kPseudoAny:

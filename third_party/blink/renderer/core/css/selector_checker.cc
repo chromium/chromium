@@ -1329,6 +1329,14 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
     result.specificity += max_specificity;
     if (is_v1_shadow)
       result.specificity += CSSSelector::kClassLikeSpecificity;
+
+    if (result.specificity !=
+        selector.Specificity(
+            CSSSelector::SpecificityMode::kIncludeHostPseudos)) {
+      UseCounter::Count(context.element->GetDocument(),
+                        WebFeature::kCSSPseudoHostDynamicSpecificity);
+    }
+
     return true;
   }
 

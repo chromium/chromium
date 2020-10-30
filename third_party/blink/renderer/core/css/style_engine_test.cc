@@ -3537,4 +3537,176 @@ TEST_F(StyleEngineSimTest, OwnerColorSchemeBaseBackground) {
   EXPECT_EQ(Color::kWhite, light_document->View()->BaseBackgroundColor());
 }
 
+TEST_F(StyleEngineTest, CSSPseudoHostCompoundListUseCount) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+
+  // Do not count for argument-less :host.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :host { color: red; }
+      :is(:host) { color: red; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+  ClearUseCounter(WebFeature::kCSSPseudoHostCompoundList);
+  ClearUseCounter(WebFeature::kCSSPseudoHostContextCompoundList);
+
+  // Do not count when there's only one argument.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :host(.a) { color: red; }
+      :host(div#a) { color: red; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+  ClearUseCounter(WebFeature::kCSSPseudoHostCompoundList);
+  ClearUseCounter(WebFeature::kCSSPseudoHostContextCompoundList);
+
+  // Count when there's more than one argument.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :host(.a, .b) { color: red; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+}
+
+TEST_F(StyleEngineTest, CSSPseudoHostContextCompoundListUseCount) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+
+  // Do not count when there's only one argument.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :host-context(.a) { color: red; }
+      :host-context(div#a) { color: red; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+  ClearUseCounter(WebFeature::kCSSPseudoHostCompoundList);
+  ClearUseCounter(WebFeature::kCSSPseudoHostContextCompoundList);
+
+  // Count when there's more than one argument.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :host-context(.a, .b) { color: red; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostCompoundList));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoHostContextCompoundList));
+}
+
+TEST_F(StyleEngineTest, CSSPseudoHostDynamicSpecificity) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+
+  GetDocument().body()->setInnerHTML(
+      "<div class=parent><div id=host></host></div>");
+  Element* host = GetDocument().getElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+
+  // Do not count for argument-less :host
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+
+  // Do not count for cases where there's only one matching argument.
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host(#host) { color: red; }
+      :host-context(#host) { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+
+  // Do not count for cases that don't match.
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host(#nomatch) { color: red; }
+      :host(span) { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+
+  // Do not count when the dynamic specificity is equal to the static
+  // specificity.
+  //
+  // In this case the dynamic specificity is: max(#host, div:#host)+class,
+  // which is the same as the static specificity.
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host(#host, div#host) { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+
+  // Do not count when the dynamic specificity is equal to the static
+  // specificity.
+  //
+  // In this case only #host matches, but since #host has higher specificty
+  // than .a, the dynamic max still turns out the same as the static
+  // specificity.
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host(#host, .a) { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+
+  // Do not count when the dynamic specificity is not equal to the static
+  // specificity.
+  //
+  // In this case the dynamic specificity takes the max of all matching
+  // selectors (which is just div), whereas the static specificity takes
+  // the max of all the selectors (div, #nomatch).
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host(div, #nomatch) { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+
+  // (The same test as the previous one, except for :host-context()).
+  root.setInnerHTML(R"HTML(
+    <style>
+      :host-context(.parent, #nomatch) { color: red; }
+    </style>
+    <div id=element></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoHostDynamicSpecificity));
+  ClearUseCounter(WebFeature::kCSSPseudoHostDynamicSpecificity);
+}
+
 }  // namespace blink

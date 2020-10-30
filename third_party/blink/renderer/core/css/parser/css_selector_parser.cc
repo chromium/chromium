@@ -727,6 +727,14 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       *selector_list = ConsumeCompoundSelectorList(block);
       if (!selector_list->IsValid() || !block.AtEnd())
         return nullptr;
+
+      if (!selector_list->HasOneSelector()) {
+        if (selector->GetPseudoType() == CSSSelector::kPseudoHost)
+          context_->Count(WebFeature::kCSSPseudoHostCompoundList);
+        if (selector->GetPseudoType() == CSSSelector::kPseudoHostContext)
+          context_->Count(WebFeature::kCSSPseudoHostContextCompoundList);
+      }
+
       selector->SetSelectorList(std::move(selector_list));
       return selector;
     }
