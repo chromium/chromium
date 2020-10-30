@@ -139,6 +139,11 @@ class MockTtsControllerDelegate : public TtsControllerDelegate {
 };
 #endif
 
+class MockVoicesChangedDelegate : public VoicesChangedDelegate {
+ public:
+  void OnVoicesChanged() override {}
+};
+
 class TestTtsControllerImpl : public TtsControllerImpl {
  public:
   TestTtsControllerImpl() = default;
@@ -170,6 +175,12 @@ class TtsControllerTest : public testing::Test {
 #if defined(OS_CHROMEOS)
     controller()->SetTtsControllerDelegateForTesting(&delegate_);
 #endif
+    controller()->AddVoicesChangedDelegate(&voices_changed_);
+  }
+
+  void TearDown() override {
+    if (controller())
+      controller()->RemoveVoicesChangedDelegate(&voices_changed_);
   }
 
   MockTtsPlatformImpl* platform_impl() { return platform_impl_.get(); }
@@ -216,6 +227,7 @@ class TtsControllerTest : public testing::Test {
 #if defined(OS_CHROMEOS)
   MockTtsControllerDelegate delegate_;
 #endif
+  MockVoicesChangedDelegate voices_changed_;
 };
 
 TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
