@@ -3712,7 +3712,7 @@
   },
   {
     "name": "password-change-support",
-    "owners": [ "selakovic" ],
+    "owners": [ "selakovic@google.com" ],
     "expiry_milestone": 87
   },
   {
