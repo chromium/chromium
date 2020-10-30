@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment_traversal.h"
@@ -61,7 +62,7 @@ void NGInlineCursor::SetRoot(const NGPaintFragment& root_paint_fragment) {
 bool NGInlineCursor::TrySetRootFragmentItems() {
   DCHECK(root_block_flow_);
   DCHECK(!fragment_items_ || fragment_items_->Equals(items_));
-  for (; fragment_index_ <= max_fragment_index_; ++fragment_index_) {
+  for (; fragment_index_ <= max_fragment_index_; AdvanceFragmentIndex()) {
     const NGPhysicalBoxFragment* fragment =
         root_block_flow_->GetPhysicalFragment(fragment_index_);
     DCHECK(fragment);
@@ -80,7 +81,7 @@ void NGInlineCursor::SetRoot(const LayoutBlockFlow& block_flow) {
   if (const wtf_size_t fragment_count = block_flow.PhysicalFragmentCount()) {
     root_block_flow_ = &block_flow;
     max_fragment_index_ = fragment_count - 1;
-    fragment_index_ = 0;
+    ResetFragmentIndex();
     if (TrySetRootFragmentItems())
       return;
   }
@@ -651,6 +652,43 @@ PhysicalRect NGInlineCursor::CurrentLocalRect(unsigned start_offset,
   }
   NOTREACHED();
   return PhysicalRect();
+}
+
+PhysicalRect NGInlineCursor::CurrentRectInBlockFlow() const {
+  PhysicalRect rect = Current().RectInContainerBlock();
+  // We'll now convert the offset from being relative to the containing fragment
+  // to being relative to the containing LayoutBlockFlow. For writing modes that
+  // don't flip the block direction, this is easy: just add the block-size
+  // consumed in previous fragments.
+  auto writing_direction = BoxFragment().Style().GetWritingDirection();
+  switch (writing_direction.GetWritingMode()) {
+    default:
+      rect.offset.top += previously_consumed_block_size_;
+      break;
+    case WritingMode::kVerticalLr:
+      rect.offset.left += previously_consumed_block_size_;
+      break;
+    case WritingMode::kVerticalRl: {
+      // For vertical-rl writing-mode it's a bit more complicated. We need to
+      // convert to logical coordinates in the containing box fragment, in order
+      // to add the consumed block-size to make it relative to the
+      // LayoutBlockFlow ("flow thread coordinate space"), and then we convert
+      // back to physical coordinates.
+      const LayoutBlock* containing_block =
+          Current().GetLayoutObject()->ContainingBlock();
+      DCHECK_EQ(containing_block->StyleRef().GetWritingDirection(),
+                BoxFragment().Style().GetWritingDirection());
+      LogicalOffset logical_offset = rect.offset.ConvertToLogical(
+          writing_direction, BoxFragment().Size(), rect.size);
+      LogicalOffset logical_offset_in_flow_thread(
+          logical_offset.inline_offset,
+          logical_offset.block_offset + previously_consumed_block_size_);
+      rect.offset = logical_offset_in_flow_thread.ConvertToPhysical(
+          writing_direction, PhysicalSize(containing_block->Size()), rect.size);
+      break;
+    }
+  };
+  return rect;
 }
 
 LayoutUnit NGInlineCursor::InlinePositionForOffset(unsigned offset) const {
@@ -1488,7 +1526,7 @@ void NGInlineCursor::MoveToFirstIncludingFragmentainer() {
     return;
   }
 
-  fragment_index_ = 0;
+  ResetFragmentIndex();
   if (!TrySetRootFragmentItems())
     MakeNull();
 }
@@ -1496,7 +1534,7 @@ void NGInlineCursor::MoveToFirstIncludingFragmentainer() {
 void NGInlineCursor::MoveToNextFragmentainer() {
   DCHECK(CanMoveAcrossFragmentainer());
   if (fragment_index_ < max_fragment_index_) {
-    ++fragment_index_;
+    AdvanceFragmentIndex();
     if (TrySetRootFragmentItems())
       return;
   }
@@ -1811,6 +1849,20 @@ void NGInlineCursor::MoveToNextCulledInlineDescendantIfNeeded() {
     if (Current())
       return;
   }
+}
+
+void NGInlineCursor::ResetFragmentIndex() {
+  fragment_index_ = 0;
+  previously_consumed_block_size_ = LayoutUnit();
+}
+
+void NGInlineCursor::AdvanceFragmentIndex() {
+  fragment_index_++;
+  if (!root_box_fragment_)
+    return;
+  if (const auto* break_token =
+          To<NGBlockBreakToken>(root_box_fragment_->BreakToken()))
+    previously_consumed_block_size_ = break_token->ConsumedBlockSize();
 }
 
 void NGInlineCursor::MoveToIncludingCulledInline(

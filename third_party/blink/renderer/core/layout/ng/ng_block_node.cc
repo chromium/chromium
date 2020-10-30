@@ -1328,8 +1328,10 @@ void NGBlockNode::PlaceChildrenInFlowThread(
           border_scrollbar_padding.inline_start,
           converter.ToLogical(child.offset, child_fragment.Size())
               .block_offset);
-      PhysicalOffset physical_offset =
-          converter.ToPhysical(logical_offset, child_fragment.Size());
+      LogicalSize column_set_logical_size(column_row_inline_size,
+                                          logical_size.block_size);
+      PhysicalOffset physical_offset = converter.ToPhysical(
+          logical_offset, converter.ToPhysical(column_set_logical_size));
       // We have calculated the physical offset relative to the border edge of
       // this multicol container fragment. We'll now convert it to a legacy
       // engine LayoutPoint, which will also take care of converting it into the

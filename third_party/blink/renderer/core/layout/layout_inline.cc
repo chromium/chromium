@@ -844,10 +844,10 @@ void LayoutInline::CollectLineBoxRects(
     const PhysicalRectCollector& yield) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    const auto* box_fragment = ContainingBlockFlowFragmentOf(*this);
-    if (!box_fragment)
-      return;
     if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+      const auto* box_fragment = ContainingBlockFlowFragmentOf(*this);
+      if (!box_fragment)
+        return;
       for (const auto& fragment :
            NGInlineFragmentTraversal::SelfFragmentsOf(*box_fragment, this))
         yield(fragment.RectInContainerBox());
@@ -856,7 +856,7 @@ void LayoutInline::CollectLineBoxRects(
     NGInlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
-      yield(cursor.Current().RectInContainerBlock());
+      yield(cursor.CurrentRectInBlockFlow());
     return;
   }
   if (!AlwaysCreateLineBoxes()) {
@@ -1008,7 +1008,7 @@ base::Optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     cursor.MoveToIncludingCulledInline(*this);
     if (!cursor)
       return base::nullopt;
-    return cursor.Current().OffsetInContainerBlock();
+    return cursor.CurrentOffsetInBlockFlow();
   }
   if (const InlineBox* first_box = FirstLineBoxIncludingCulling()) {
     LayoutPoint location = first_box->Location();
