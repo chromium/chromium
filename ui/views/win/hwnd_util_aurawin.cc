@@ -5,6 +5,7 @@
 #include "ui/views/win/hwnd_util.h"
 
 #include "base/i18n/rtl.h"
+#include "base/trace_event/base_tracing.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/widget/widget.h"
@@ -46,6 +47,8 @@ gfx::Rect GetWindowBoundsForClientBounds(View* view,
 }
 
 void ShowSystemMenuAtScreenPixelLocation(HWND window, const gfx::Point& point) {
+  TRACE_EVENT0("ui", "ShowSystemMenuAtScreenPixelLocation");
+
   UINT flags = TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD;
   if (base::i18n::IsRTL())
     flags |= TPM_RIGHTALIGN;
