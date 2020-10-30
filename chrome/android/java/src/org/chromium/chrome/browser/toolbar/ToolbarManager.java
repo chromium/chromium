@@ -40,11 +40,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.Invalidator;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -57,6 +54,8 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.intent.IntentMetadata;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
@@ -172,11 +171,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private TabObserver mTabObserver;
     private BookmarkBridge.BookmarkModelObserver mBookmarksObserver;
     private FindToolbarObserver mFindToolbarObserver;
-    private OverviewModeObserver mOverviewModeObserver;
+
     private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
-    private OverviewModeBehavior mOverviewModeBehavior;
-    private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private LayoutStateProvider mLayoutStateProvider;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+    private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private CallbackController mCallbackController = new CallbackController();
 
     private SceneChangeObserver mSceneChangeObserver;
@@ -256,8 +256,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
      * TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
-     * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
-     *                                     profile.
+     * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
@@ -284,7 +283,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             FindToolbarManager findToolbarManager, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean shouldShowUpdateBadge,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
@@ -327,9 +326,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mBookmarkBridgeSupplierObserver = this::setBookmarkBridge;
         mBookmarkBridgeSupplier.addObserver(mBookmarkBridgeSupplierObserver);
 
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        mLayoutStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setLayoutStateProvider));
 
         mComponentCallbacks = new ComponentCallbacks() {
             @Override
@@ -649,23 +648,30 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
         };
 
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                mToolbar.setTabSwitcherMode(true, showToolbar, false);
-                updateButtonStatus();
+            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mToolbar.setTabSwitcherMode(true, showToolbar, false);
+                    updateButtonStatus();
+                }
             }
 
             @Override
-            public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
-                mToolbar.setTabSwitcherMode(false, showToolbar, delayAnimation);
-                updateButtonStatus();
+            public void onStartedHiding(
+                    @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mToolbar.setTabSwitcherMode(false, showToolbar, delayAnimation);
+                    updateButtonStatus();
+                }
             }
 
             @Override
-            public void onOverviewModeFinishedHiding() {
-                mToolbar.onTabSwitcherTransitionFinished();
-                updateButtonStatus();
+            public void onFinishedHiding(@LayoutType int layoutType) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mToolbar.onTabSwitcherTransitionFinished();
+                    updateButtonStatus();
+                }
             }
         };
 
@@ -724,7 +730,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile),
-                buttonDataProviders, mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
+                buttonDataProviders, mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
                 mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier, (client) -> {
@@ -792,7 +798,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mToolbarTabController::openHomepage,
                 (reason)
                         -> setUrlBarFocus(true, reason),
-                mOverviewModeBehaviorSupplier, mScrimCoordinator, mOmniboxFocusStateSupplier);
+                mScrimCoordinator, mOmniboxFocusStateSupplier);
     }
 
     /**
@@ -907,7 +913,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
                     toggleTabStackButton, mActivityTabProvider, userEducationHelper,
                     mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
-                    mPromoShownOneshotSupplier, mOverviewModeBehaviorSupplier,
+                    mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
                     mToolbar::setNewTabButtonHighlight);
         }
 
@@ -984,13 +990,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
             mTemplateUrlObserver = null;
         }
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeBehavior = null;
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateProvider = null;
         }
 
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier = null;
+        if (mLayoutStateProviderSupplier != null) {
+            mLayoutStateProviderSupplier = null;
         }
 
         if (mLayoutManager != null) {
@@ -1400,11 +1406,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         bookmarkBridge.addObserver(mBookmarksObserver);
     }
 
-    private void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mOverviewModeBehavior = overviewModeBehavior;
-        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
-        mAppThemeColorProvider.setOverviewModeBehavior(mOverviewModeBehavior);
-        mLocationBarModel.setOverviewModeBehavior(mOverviewModeBehavior);
+    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        assert mLayoutStateProvider == null : "the mLayoutStateProvider should set at most once.";
+
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
+        mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);
+        mLocationBarModel.setLayoutStateProvider(mLayoutStateProvider);
     }
 
     private void updateCurrentTabDisplayStatus() {

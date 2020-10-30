@@ -31,11 +31,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -94,8 +94,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private AutocompleteResult mAutocompleteResult;
 
     private LocationBarDataProvider mDataProvider;
-    private OverviewModeBehavior mOverviewModeBehavior;
-    private OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
+    private LayoutStateProvider mLayoutStateProvider;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
@@ -162,10 +162,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(mAutocomplete);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
 
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                if (!mNativeInitialized) return;
+            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+                if (!mNativeInitialized || layoutType != LayoutType.TAB_SWITCHER) return;
 
                 if (mDataProvider.shouldShowLocationBarInOverviewMode()) {
                     AutocompleteControllerJni.get().prefetchZeroSuggestResults();
@@ -196,9 +196,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (mTabObserver != null) {
             mTabObserver.destroy();
         }
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeBehavior = null;
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateProvider = null;
         }
     }
 
@@ -267,14 +267,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     }
 
     /**
-     * @param overviewModeBehavior A means of accessing the current OverviewModeState and a way to
+     * @param layoutStateProvider A means of accessing the current Layout state and a way to
      *         listen to state changes.
      */
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        assert mOverviewModeBehavior == null;
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        assert mLayoutStateProvider == null;
 
-        mOverviewModeBehavior = overviewModeBehavior;
-        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     /** Set the WindowAndroid instance associated with the containing Activity. */

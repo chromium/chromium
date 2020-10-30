@@ -39,8 +39,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
-                bookmarkBridgeSupplier, new OneshotSupplierImpl<>(),
-                contextualSearchManagerSupplier, tabModelSelectorSupplier,
+                bookmarkBridgeSupplier, contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>());
         mToolbarCoordinator = customTabToolbarCoordinator;

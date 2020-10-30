@@ -13,7 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -289,9 +289,9 @@ public final class LocationBarCoordinator
         return (LocationBarCoordinatorTablet) mSubCoordinator;
     }
 
-    /** Sets the {@link OverviewModeBehavior}. */
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mLocationBarLayout.setOverviewModeBehavior(overviewModeBehavior);
+    /** Sets the {@link LayoutStateProvider}. */
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        mLocationBarLayout.setLayoutStateProvider(layoutStateProvider);
     }
 
     /**

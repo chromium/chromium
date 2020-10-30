@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -41,10 +41,10 @@ public interface AutocompleteCoordinator extends UrlFocusChangeListener, UrlText
     void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider);
 
     /**
-     * @param overviewModeBehavior A means of accessing the current OverviewModeState and a way to
+     * @param layoutStateProvider A means of accessing the current Layout state and a way to
      *         listen to state changes.
      */
-    void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior);
+    void setLayoutStateProvider(LayoutStateProvider layoutStateProvider);
 
     /**
      * Updates the profile used for generating autocomplete suggestions.

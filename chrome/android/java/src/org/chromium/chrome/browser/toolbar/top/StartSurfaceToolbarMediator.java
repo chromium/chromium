@@ -31,9 +31,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -60,8 +59,8 @@ class StartSurfaceToolbarMediator {
     private TabModelSelector mTabModelSelector;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private TabModelSelectorObserver mTabModelSelectorObserver;
-    private OverviewModeBehavior mOverviewModeBehavior;
-    private OverviewModeObserver mOverviewModeObserver;
+    private LayoutStateProvider mLayoutStateProvider;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private MenuButtonCoordinator mMenuButtonCoordinator;
     @StartSurfaceState
     private int mOverviewModeState;
@@ -112,8 +111,8 @@ class StartSurfaceToolbarMediator {
         if (mTabModelSelectorObserver != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         }
-        if (mOverviewModeObserver != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+        if (mLayoutStateObserver != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -211,38 +210,44 @@ class StartSurfaceToolbarMediator {
         updateNewTabButtonVisibility();
     }
 
-    void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        assert overviewModeBehavior != null;
-        assert mOverviewModeBehavior
-                == null
-            : "TODO(https://crbug.com/1084528): the overview mode manager should set at most once.";
+    void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        assert layoutStateProvider != null;
+        assert mLayoutStateProvider == null : "the mLayoutStateProvider should set at most once.";
 
-        mOverviewModeBehavior = overviewModeBehavior;
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                updateIncognitoSwitchVisibility();
-                if (mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
-                        || mShowNewTabAndIdentityDiscAtStart) {
-                    mPropertyModel.set(NEW_TAB_BUTTON_AT_START, true);
-                }
-                if (mShowNewTabAndIdentityDiscAtStart) {
-                    mPropertyModel.set(IDENTITY_DISC_AT_START, true);
+            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    updateIncognitoSwitchVisibility();
+                    if (mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                            || mOverviewModeState
+                                    == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
+                            || mShowNewTabAndIdentityDiscAtStart) {
+                        mPropertyModel.set(NEW_TAB_BUTTON_AT_START, true);
+                    }
+                    if (mShowNewTabAndIdentityDiscAtStart) {
+                        mPropertyModel.set(IDENTITY_DISC_AT_START, true);
+                    }
                 }
             }
             @Override
-            public void onOverviewModeFinishedShowing() {
-                mPropertyModel.set(BUTTONS_CLICKABLE, true);
-                mMenuButtonCoordinator.setClickable(true);
+            public void onFinishedShowing(@LayoutType int layoutType) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mPropertyModel.set(BUTTONS_CLICKABLE, true);
+                    mMenuButtonCoordinator.setClickable(true);
+                }
             }
             @Override
-            public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
-                mPropertyModel.set(BUTTONS_CLICKABLE, false);
-                mMenuButtonCoordinator.setClickable(false);
+            public void onStartedHiding(
+                    @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+                if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mPropertyModel.set(BUTTONS_CLICKABLE, false);
+                    mMenuButtonCoordinator.setClickable(false);
+                }
             }
         };
-        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     /**

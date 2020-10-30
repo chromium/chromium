@@ -14,10 +14,10 @@ import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.FeatureParamUtils;
 import org.chromium.chrome.browser.intent.IntentMetadata;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -45,9 +45,10 @@ public class ToggleTabStackButtonCoordinator {
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final Callback<Boolean> mSetNewTabButtonHighlightCallback;
 
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+
     private ActivityTabProvider.ActivityTabTabObserver mPageLoadObserver;
-    private OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
     private boolean mIphBeingShown;
 
     /**
@@ -59,7 +60,7 @@ public class ToggleTabStackButtonCoordinator {
      * @param isIncognitoSupplier Supplier for whether the current tab is incognito.
      * @param intentMetadataOneshotSupplier Potentially delayed information about launching intent.
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
-     * @param overviewModeBehaviorSupplier Allows observing overview mode state.
+     * @param layoutStateProviderSupplier Allows observing layout state.
      * @param setNewTabButtonHighlightCallback Delegate to highlight the new tab button.
      *
      */
@@ -68,7 +69,7 @@ public class ToggleTabStackButtonCoordinator {
             UserEducationHelper userEducationHelper, BooleanSupplier isIncognitoSupplier,
             OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             Callback<Boolean> setNewTabButtonHighlightCallback) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
@@ -78,8 +79,8 @@ public class ToggleTabStackButtonCoordinator {
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mSetNewTabButtonHighlightCallback = setNewTabButtonHighlightCallback;
 
-        overviewModeBehaviorSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
+        layoutStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setLayoutStateProvider));
         mPageLoadObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
             public void onPageLoadFinished(Tab tab, String url) {
@@ -97,36 +98,39 @@ public class ToggleTabStackButtonCoordinator {
             mPageLoadObserver = null;
         }
 
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeBehavior = null;
-            mOverviewModeObserver = null;
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateProvider = null;
+            mLayoutStateObserver = null;
         }
     }
 
-    private void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        assert overviewModeBehavior != null;
-        mOverviewModeBehavior = overviewModeBehavior;
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        assert layoutStateProvider != null;
+        assert mLayoutStateProvider == null : "the mLayoutStateProvider should set at most once.";
+
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             private boolean mHighlightedNewTabPageButton;
 
             @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                if (mIphBeingShown) {
+            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+                if (layoutType == LayoutType.TAB_SWITCHER && mIphBeingShown) {
                     mSetNewTabButtonHighlightCallback.onResult(true);
                     mHighlightedNewTabPageButton = true;
                 }
             }
 
             @Override
-            public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
-                if (mHighlightedNewTabPageButton) {
+            public void onStartedHiding(
+                    @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+                if (layoutType == LayoutType.TAB_SWITCHER && mHighlightedNewTabPageButton) {
                     mSetNewTabButtonHighlightCallback.onResult(false);
                     mHighlightedNewTabPageButton = false;
                 }
             }
         };
-        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     // TODO(https://crbug.com/1133355): Reduce visibility once ActivityTabTabObserver is mockable.

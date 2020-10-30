@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
@@ -131,9 +130,6 @@ public class RootUiCoordinator
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
-    // TODO(crbug.com/1108496): Remove after ToolbarManager migrates to LayoutStateProvider.
-    private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
-
     /** A means of providing the theme color to different features. */
     private TabThemeColorProvider mTabThemeColorProvider;
     @Nullable
@@ -187,8 +183,6 @@ public class RootUiCoordinator
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
-     * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
-     *                                     profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
@@ -200,7 +194,6 @@ public class RootUiCoordinator
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
@@ -235,9 +228,6 @@ public class RootUiCoordinator
         mLayoutStateProviderOneShotSupplier = layoutStateProviderOneshotSupplier;
         mLayoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
-
-        // TODO(crbug.com/1108496): Remove after ToolbarManager migrates to LayoutStateProvider.
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
 
         mStartSurfaceSupplier = startSurfaceSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
@@ -279,11 +269,6 @@ public class RootUiCoordinator
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
             mLayoutStateProvider = null;
-        }
-
-        // TODO(crbug.com/1108496): Remove after ToolbarManager migrates to LayoutStateProvider.
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier = null;
         }
 
         if (mToolbarManager != null) {
@@ -588,11 +573,12 @@ public class RootUiCoordinator
                     mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
                     mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
                     mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
-                    mOverviewModeBehaviorSupplier, mAppMenuSupplier, shouldShowMenuUpdateBadge(),
-                    mTabModelSelectorSupplier, mStartSurfaceSupplier, mOmniboxFocusStateSupplier,
-                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                    mActivity.getWindowAndroid(), mActivity::isInOverviewMode,
-                    mActivity.isCustomTab(), mActivity.getModalDialogManagerSupplier(),
+                    mLayoutStateProviderOneShotSupplier, mAppMenuSupplier,
+                    shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier, mStartSurfaceSupplier,
+                    mOmniboxFocusStateSupplier, mIntentMetadataOneshotSupplier,
+                    mPromoShownOneshotSupplier, mActivity.getWindowAndroid(),
+                    mActivity::isInOverviewMode, mActivity.isCustomTab(),
+                    mActivity.getModalDialogManagerSupplier(),
                     mActivity.getNightModeStateProvider(), mActivity.getStatusBarColorController(),
                     /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher());
             if (!mActivity.supportsAppMenu()) {

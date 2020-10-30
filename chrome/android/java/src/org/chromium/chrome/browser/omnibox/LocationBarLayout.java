@@ -43,9 +43,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
@@ -888,8 +888,8 @@ public class LocationBarLayout
         mUrlCoordinator.setAllowFocus(focusable);
     }
 
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mAutocompleteCoordinator.setOverviewModeBehavior(overviewModeBehavior);
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        mAutocompleteCoordinator.setLayoutStateProvider(layoutStateProvider);
     }
 
     @CallSuper

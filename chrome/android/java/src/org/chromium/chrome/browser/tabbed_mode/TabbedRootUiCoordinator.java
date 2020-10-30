@@ -115,9 +115,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
-                profileSupplier, bookmarkBridgeSupplier, overviewModeBehaviorSupplier,
-                contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
-                intentMetadataOneshotSupplier, layoutStateProviderOneshotSupplier);
+                profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
+                tabModelSelectorSupplier, startSurfaceSupplier, intentMetadataOneshotSupplier,
+                layoutStateProviderOneshotSupplier);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls = () -> {
             // These null checks prevent any exceptions that may be caused by callbacks after

@@ -20,7 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -220,8 +220,8 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
     }
 
     @Override
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mMediator.setOverviewModeBehavior(overviewModeBehavior);
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        mMediator.setLayoutStateProvider(layoutStateProvider);
     }
 
     @Override

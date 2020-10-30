@@ -48,9 +48,9 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -1558,8 +1558,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mLocationBar.setOverviewModeBehavior(overviewModeBehavior);
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        mLocationBar.setLayoutStateProvider(layoutStateProvider);
     }
 
     @Override

@@ -30,9 +30,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intent.IntentMetadata;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -68,7 +69,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock
     private ActivityTabProvider mActivityTabProvider;
     @Mock
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
     @Mock
     private ToggleTabStackButton mToggleTabStackButton;
     @Mock
@@ -87,31 +88,33 @@ public class ToggleTabStackButtonCoordinatorTest {
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
-    private Set<OverviewModeBehavior.OverviewModeObserver> mOverviewModeObserverSet;
+    private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
 
-    private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorOneshotSupplier;
+    private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(mContext.getResources()).thenReturn(mResources);
-        doAnswer(invocation -> mOverviewOpen).when(mOverviewModeBehavior).overviewVisible();
+        doAnswer(invocation -> mOverviewOpen)
+                .when(mLayoutStateProvider)
+                .isLayoutVisible(LayoutType.TAB_SWITCHER);
         doAnswer(invocation -> {
-            mOverviewModeObserverSet.add(invocation.getArgument(0));
+            mLayoutStateObserverSet.add(invocation.getArgument(0));
             return null;
         })
-                .when(mOverviewModeBehavior)
-                .addOverviewModeObserver(any());
+                .when(mLayoutStateProvider)
+                .addObserver(any(LayoutStateProvider.LayoutStateObserver.class));
         doAnswer(invocation -> {
-            mOverviewModeObserverSet.remove(invocation.getArgument(0));
+            mLayoutStateObserverSet.remove(invocation.getArgument(0));
             return null;
         })
-                .when(mOverviewModeBehavior)
-                .removeOverviewModeObserver(any());
+                .when(mLayoutStateProvider)
+                .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
 
-        mOverviewModeObserverSet = new HashSet<>();
-        mOverviewModeBehaviorOneshotSupplier = new OneshotSupplierImpl<>();
+        mLayoutStateObserverSet = new HashSet<>();
+        mLayoutSateProviderOneshotSupplier = new OneshotSupplierImpl<>();
 
         // Defaults most test cases expect, can be overridden by each test though.
         when(mToggleTabStackButton.isShown()).thenReturn(true);
@@ -126,26 +129,27 @@ public class ToggleTabStackButtonCoordinatorTest {
                 ()
                         -> mIsIncognito,
                 mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                mOverviewModeBehaviorOneshotSupplier, mSetNewTabButtonHighlightCallback);
+                mLayoutSateProviderOneshotSupplier, mSetNewTabButtonHighlightCallback);
     }
 
     private void showOverviewMode() {
         mOverviewOpen = true;
-        for (OverviewModeBehavior.OverviewModeObserver observer : mOverviewModeObserverSet) {
-            observer.onOverviewModeStartedShowing(/*showToolbar*/ false);
+        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+            observer.onStartedShowing(LayoutType.TAB_SWITCHER, /*showToolbar*/ false);
         }
-        for (OverviewModeBehavior.OverviewModeObserver observer : mOverviewModeObserverSet) {
-            observer.onOverviewModeFinishedShowing();
+        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+            observer.onFinishedShowing(LayoutType.TAB_SWITCHER);
         }
     }
 
     private void hideOverviewMode() {
         mOverviewOpen = false;
-        for (OverviewModeBehavior.OverviewModeObserver observer : mOverviewModeObserverSet) {
-            observer.onOverviewModeStartedHiding(/*showToolbar*/ false, /*delayAnimation*/ false);
+        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+            observer.onStartedHiding(
+                    LayoutType.TAB_SWITCHER, /*showToolbar*/ false, /*delayAnimation*/ false);
         }
-        for (OverviewModeBehavior.OverviewModeObserver observer : mOverviewModeObserverSet) {
-            observer.onOverviewModeFinishedHiding();
+        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+            observer.onFinishedHiding(LayoutType.TAB_SWITCHER);
         }
     }
 
@@ -182,13 +186,13 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     @Test
     public void testOverviewBehaviorAvailableDuringConstruction() {
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        Assert.assertEquals("Should have 1 overview observer", 1, mOverviewModeObserverSet.size());
+        Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
 
         toggleTabStackButtonCoordinator.destroy();
-        Assert.assertTrue("Should have no overview observers", mOverviewModeObserverSet.isEmpty());
+        Assert.assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
     }
 
     @Test
@@ -197,15 +201,15 @@ public class ToggleTabStackButtonCoordinatorTest {
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         toggleTabStackButtonCoordinator.destroy();
 
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
-        Assert.assertTrue("Should have no overview observers", mOverviewModeObserverSet.isEmpty());
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
+        Assert.assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
     }
 
     @Test
     public void testDestroyDuringIph() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -213,17 +217,17 @@ public class ToggleTabStackButtonCoordinatorTest {
         IPHCommand iphCommand = verifyIphShown();
 
         iphCommand.onShowCallback.run();
-        Assert.assertEquals("Should have 1 overview observer", 1, mOverviewModeObserverSet.size());
+        Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
 
         toggleTabStackButtonCoordinator.destroy();
-        Assert.assertTrue("Should have no overview observers", mOverviewModeObserverSet.isEmpty());
+        Assert.assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
     }
 
     @Test
     public void testIphAndOverviewHighlight() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -252,7 +256,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testDismissIphBeforeOverview() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -280,7 +284,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testOverviewModeEventsWithoutIph() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -297,7 +301,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphWithNoPageLoad() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -308,7 +312,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphWithNoViewButton() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ null);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -347,7 +351,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphIncognito() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -364,7 +368,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphIsShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
@@ -381,7 +385,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphMainIntentFalse() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(
                 new IntentMetadata(/*isMainIntent*/ false, /*isIntentWithEffect*/ false));
         mPromoShownOneshotSupplier.set(false);
@@ -406,7 +410,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphIntentWithEffectTrue() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(
                 new IntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ true));
         mPromoShownOneshotSupplier.set(false);
@@ -431,7 +435,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphShowedPromo() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(true);
 
@@ -443,7 +447,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphDelayedIntentMetadata() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -458,7 +462,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphDelayedPromoShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mOverviewModeBehaviorOneshotSupplier.set(mOverviewModeBehavior);
+        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();

@@ -1121,7 +1121,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     // LayoutStateProvider implementation.
     @Override
     public boolean isLayoutVisible(int layoutType) {
-        return getActiveLayout().getLayoutType() == layoutType;
+        return getActiveLayout() != null && getActiveLayout().getLayoutType() == layoutType;
     }
 
     @Override
