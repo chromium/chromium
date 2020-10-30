@@ -21,14 +21,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-namespace {
-
-// Size of the ClipboardHistoryBitmapItemView shown in ClipboardHistory.
-constexpr gfx::SizeF kClipboardHistoryBitmapItemViewSize =
-    gfx::SizeF(222.0, 66.0);
-
-}  // namespace
-
 ClipboardImageModelRequest::Params::Params(const base::UnguessableToken& id,
                                            const std::string& html_markup,
                                            ImageModelCallback callback)
@@ -156,25 +148,15 @@ void ClipboardImageModelRequest::PostCopySurfaceTask() {
 void ClipboardImageModelRequest::CopySurface() {
   content::RenderWidgetHostView* source_view =
       web_contents()->GetRenderViewHost()->GetWidget()->GetView();
-  gfx::Size source_size = source_view->GetViewBounds().size();
-  if (source_size.IsEmpty()) {
+  if (source_view->GetViewBounds().size().IsEmpty()) {
     Stop();
     return;
   }
-  // Scale down |source_size| until every edge fits into the 222x66 image that
-  // will be shown in ClipboardHistoryBitmapItemView.
-  const float height_ratio =
-      kClipboardHistoryBitmapItemViewSize.height() / source_size.height();
-  const float width_ratio =
-      kClipboardHistoryBitmapItemViewSize.width() / source_size.width();
-  const float scale = height_ratio < width_ratio ? height_ratio : width_ratio;
 
-  gfx::Size scaled_source_size =
-      gfx::ScaleToRoundedSize(source_size, scale, scale);
   // There is no guarantee CopyFromSurface will call OnCopyComplete. If this
   // takes too long, this will be cleaned up by |timeout_timer_|.
   source_view->CopyFromSurface(
-      gfx::Rect(), scaled_source_size,
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
       base::BindOnce(&ClipboardImageModelRequest::OnCopyComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

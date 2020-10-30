@@ -280,15 +280,37 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     const float height_ratio =
         image_size.height() / float(contents_bounds.height());
 
-    if (width_ratio <= 1.f || height_ratio <= 1.f) {
-      image_view_->SetImage(image_view_->original_image(), image_size);
-      return;
+    // Calculate `scaling_up_ratio` depending on the image type. A bitmap image
+    // should fill the contents bounds while an image rendered from HTML
+    // should meet at least one edge of the contents bounds.
+    float scaling_up_ratio = 0.f;
+    switch (*data_format_) {
+      case ui::ClipboardInternalFormat::kBitmap: {
+        if (width_ratio >= 1.f && height_ratio >= 1.f)
+          scaling_up_ratio = 1.f;
+        else
+          scaling_up_ratio = std::fmin(width_ratio, height_ratio);
+        break;
+      }
+      case ui::ClipboardInternalFormat::kHtml: {
+        if (width_ratio >= 1.f || height_ratio >= 1.f)
+          scaling_up_ratio = 1.f;
+        else
+          scaling_up_ratio =
+              std::fmin(std::fmax(width_ratio, height_ratio), 1.f);
+        break;
+      }
+      default:
+        NOTREACHED();
+        break;
     }
 
-    const float resize_ratio = std::fmin(width_ratio, height_ratio);
+    DCHECK_LE(scaling_up_ratio, 1.f);
+    DCHECK_GT(scaling_up_ratio, 0.f);
+
     image_view_->SetImage(image_view_->original_image(),
-                          gfx::Size(image_size.width() / resize_ratio,
-                                    image_size.height() / resize_ratio));
+                          gfx::Size(image_size.width() / scaling_up_ratio,
+                                    image_size.height() / scaling_up_ratio));
   }
 
   ClipboardHistoryBitmapItemView* const container_;
