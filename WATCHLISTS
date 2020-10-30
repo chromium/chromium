@@ -875,9 +875,6 @@
     'cr_elements': {
       'filepath': 'ui/webui/resources/cr_element',
     },
-    'cros_benchmarks': {
-      'filepath': 'tools/perf/contrib/cros_benchmarks',
-    },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
                   '|chrome/browser/chromeos/policy/status_collector/'\
@@ -2457,9 +2454,6 @@
            'ukai+cc@chromium.org',
            'yyanagisawa+cc@chromium.org'],
     'cr_elements': ['michaelpg+watch-elements@chromium.org'],
-    'cros_benchmarks': ['cros-perf-detectives@google.com',
-                        'cywang@chromium.org',
-                        'vovoy@chromium.org'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
