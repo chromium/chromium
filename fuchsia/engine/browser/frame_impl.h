@@ -79,10 +79,6 @@ class FrameImpl : public fuchsia::web::Frame,
     return web_contents_.get();
   }
   bool has_view_for_test() const { return window_tree_host_ != nullptr; }
-  void set_javascript_console_message_hook_for_test(
-      base::RepeatingCallback<void(base::StringPiece)> hook) {
-    console_log_message_hook_ = std::move(hook);
-  }
   AccessibilityBridge* accessibility_bridge_for_test() const {
     return accessibility_bridge_.get();
   }
@@ -259,7 +255,6 @@ class FrameImpl : public fuchsia::web::Frame,
   EventFilter event_filter_;
   NavigationControllerImpl navigation_controller_;
   logging::LogSeverity log_level_;
-  base::RepeatingCallback<void(base::StringPiece)> console_log_message_hook_;
   UrlRequestRewriteRulesManager url_request_rewrite_rules_manager_;
   FramePermissionController permission_controller_;
 

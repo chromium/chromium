@@ -974,9 +974,6 @@ bool FrameImpl::DidAddMessageToConsole(
       return false;
   }
 
-  if (console_log_message_hook_)
-    console_log_message_hook_.Run(formatted_message);
-
   return true;
 }
 
