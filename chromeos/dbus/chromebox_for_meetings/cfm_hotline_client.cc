@@ -132,7 +132,7 @@ CfmHotlineClient::~CfmHotlineClient() {
 // static
 void CfmHotlineClient::Initialize(dbus::Bus* bus) {
   DCHECK(bus);
-  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kCfmMojoServices)) {
+  if (chromeos::cfm::features::IsCfmMojoEnabled()) {
     (new CfmHotlineClientImpl())->Init(bus);
   }
 }

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
 #define CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
@@ -14,6 +16,15 @@ namespace features {
 
 COMPONENT_EXPORT(CFM_FEATURES)
 extern const base::Feature kCfmMojoServices;
+
+COMPONENT_EXPORT(CFM_FEATURES)
+extern const base::FeatureParam<bool> kCfmTelemetryParam;
+
+// Whether cross platform mojo connections is enabled.
+bool IsCfmMojoEnabled();
+
+// Whether Telemetry through Encrypted Reporting Pipeline is enabled.
+bool IsCfmTelemetryEnabled();
 
 }  // namespace features
 }  // namespace cfm

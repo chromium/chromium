@@ -12,9 +12,7 @@ namespace chromeos {
 namespace cfm {
 
 void InitializeCfmServices() {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::cfm::features::kCfmMojoServices) ||
-      !CfmHotlineClient::Get()) {
+  if (!features::IsCfmMojoEnabled() || !CfmHotlineClient::Get()) {
     return;
   }
 

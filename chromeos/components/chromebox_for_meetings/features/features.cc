@@ -13,6 +13,20 @@ namespace features {
 const base::Feature kCfmMojoServices{"CfmMojoServices",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the ability to enqueue cloud telemetry information using
+// Chrome Encrypted Reporting Pipeline API.
+const base::FeatureParam<bool> kCfmTelemetryParam{&kCfmMojoServices,
+                                                  "ERPTelemetryService", false};
+
+bool IsCfmMojoEnabled() {
+  return base::FeatureList::IsEnabled(
+      chromeos::cfm::features::kCfmMojoServices);
+}
+
+bool IsCfmTelemetryEnabled() {
+  return kCfmTelemetryParam.Get();
+}
+
 }  // namespace features
 }  // namespace cfm
 }  // namespace chromeos
