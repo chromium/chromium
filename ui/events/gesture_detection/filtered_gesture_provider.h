@@ -18,7 +18,7 @@ namespace ui {
 
 // Provides filtered gesture detection and dispatch given a sequence of touch
 // events and touch event acks.
-class GESTURE_DETECTION_EXPORT FilteredGestureProvider
+class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
     : public ui::TouchDispositionGestureFilterClient,
       public ui::GestureProviderClient {
  public:
