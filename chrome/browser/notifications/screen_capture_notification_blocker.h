@@ -39,7 +39,9 @@ class ScreenCaptureNotificationBlocker
   // NotificationBlocker:
   bool ShouldBlockNotification(
       const message_center::Notification& notification) override;
-  void OnBlockedNotification(
+  void OnBlockedNotification(const message_center::Notification& notification,
+                             bool replaced) override;
+  void OnClosedNotification(
       const message_center::Notification& notification) override;
 
   // MutedNotificationHandler::Delegate:
@@ -53,6 +55,8 @@ class ScreenCaptureNotificationBlocker
   FRIEND_TEST_ALL_PREFIXES(ScreenCaptureNotificationBlockerTest,
                            ObservesMediaStreamCaptureIndicator);
 
+  void ReportSessionMetrics();
+  void ReportMuteNotificationAction(MutedNotificationHandler::Action action);
   void DisplayMuteNotification();
   void CloseMuteNotification();
 
@@ -65,9 +69,14 @@ class ScreenCaptureNotificationBlocker
 
   NotifyState state_ = NotifyState::kNotifyMuted;
 
-  // Counter for the number of notifications that have been muted during the
-  // current screen capturing session.
+  // Number of notifications muted during the current screen capture session.
   int muted_notification_count_ = 0;
+  // Number of notifications replaced during the current screen capture session.
+  int replaced_notification_count_ = 0;
+  // Number of notifications closed during the current screen capture session.
+  int closed_notification_count_ = 0;
+  // Flag if metrics have been reported for the current screen capture session.
+  bool reported_session_metrics_ = false;
 
   // The |notification_display_service_| owns a NotificationDisplayQueue which
   // owns |this| so a raw pointer is safe here.

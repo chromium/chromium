@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,7 +18,27 @@
 #include "url/origin.h"
 
 namespace {
+
 const char kMuteNotificationId[] = "notifications_muted";
+
+// Suffix for a mute notification action. Should match suffix
+// NotificationMuteAction in histogram_suffixes_list.xml.
+std::string MutedActionSuffix(MutedNotificationHandler::Action action) {
+  switch (action) {
+    case MutedNotificationHandler::Action::kUserClose:
+      return "Close";
+    case MutedNotificationHandler::Action::kBodyClick:
+      return "Body";
+    case MutedNotificationHandler::Action::kShowClick:
+      return "Show";
+  }
+}
+
+void RecordScreenCaptureCount(const std::string& suffix, int count) {
+  base::UmaHistogramCounts100(
+      base::StrCat({"Notifications.Blocker.ScreenCapture.", suffix}), count);
+}
+
 }  // namespace
 
 ScreenCaptureNotificationBlocker::ScreenCaptureNotificationBlocker(
@@ -50,16 +72,27 @@ bool ScreenCaptureNotificationBlocker::ShouldBlockNotification(
 }
 
 void ScreenCaptureNotificationBlocker::OnBlockedNotification(
-    const message_center::Notification& notification) {
-  ++muted_notification_count_;
+    const message_center::Notification& notification,
+    bool replaced) {
+  if (replaced)
+    ++replaced_notification_count_;
+  else
+    ++muted_notification_count_;
+
   if (state_ == NotifyState::kNotifyMuted)
     DisplayMuteNotification();
+}
+
+void ScreenCaptureNotificationBlocker::OnClosedNotification(
+    const message_center::Notification& notification) {
+  ++closed_notification_count_;
 }
 
 void ScreenCaptureNotificationBlocker::OnAction(
     MutedNotificationHandler::Action action) {
   DCHECK(state_ == NotifyState::kNotifyMuted);
   CloseMuteNotification();
+  ReportMuteNotificationAction(action);
 
   switch (action) {
     case MutedNotificationHandler::Action::kUserClose:
@@ -69,6 +102,7 @@ void ScreenCaptureNotificationBlocker::OnAction(
     case MutedNotificationHandler::Action::kShowClick:
       state_ = NotifyState::kShowAll;
       NotifyBlockingStateChanged();
+      ReportSessionMetrics();
       break;
   }
 }
@@ -82,7 +116,11 @@ void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(
     capturing_web_contents_.erase(web_contents);
 
   if (capturing_web_contents_.empty()) {
+    ReportSessionMetrics();
     muted_notification_count_ = 0;
+    replaced_notification_count_ = 0;
+    closed_notification_count_ = 0;
+    reported_session_metrics_ = false;
     state_ = NotifyState::kNotifyMuted;
     CloseMuteNotification();
   }
@@ -90,16 +128,37 @@ void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(
   NotifyBlockingStateChanged();
 }
 
+void ScreenCaptureNotificationBlocker::ReportSessionMetrics() {
+  if (reported_session_metrics_)
+    return;
+
+  RecordScreenCaptureCount("MutedCount", muted_notification_count_);
+  RecordScreenCaptureCount("ReplacedCount", replaced_notification_count_);
+  RecordScreenCaptureCount("ClosedCount", closed_notification_count_);
+
+  reported_session_metrics_ = true;
+}
+
+void ScreenCaptureNotificationBlocker::ReportMuteNotificationAction(
+    MutedNotificationHandler::Action action) {
+  RecordScreenCaptureCount(
+      base::StrCat({"Action.", MutedActionSuffix(action)}),
+      muted_notification_count_ + replaced_notification_count_);
+}
+
 void ScreenCaptureNotificationBlocker::DisplayMuteNotification() {
+  int total_notification_count =
+      muted_notification_count_ + replaced_notification_count_;
+
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.renotify = true;
   rich_notification_data.buttons.emplace_back(l10n_util::GetPluralStringFUTF16(
-      IDS_NOTIFICATION_MUTED_ACTION_SHOW, muted_notification_count_));
+      IDS_NOTIFICATION_MUTED_ACTION_SHOW, total_notification_count));
 
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kMuteNotificationId,
       l10n_util::GetPluralStringFUTF16(IDS_NOTIFICATION_MUTED_TITLE,
-                                       muted_notification_count_),
+                                       total_notification_count),
       l10n_util::GetStringUTF16(IDS_NOTIFICATION_MUTED_MESSAGE),
       /*icon=*/gfx::Image(),
       /*display_source=*/base::string16(),

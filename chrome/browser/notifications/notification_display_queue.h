@@ -66,6 +66,12 @@ class NotificationDisplayQueue : public NotificationBlocker::Observer {
   void AddNotificationBlocker(std::unique_ptr<NotificationBlocker> blocker);
 
  private:
+  // Removes a queued notification by its |notification_id| and returns if there
+  // was a queued notification with that id. If |notify| is true this will
+  // notify all relevant blockers about the removal.
+  bool DoRemoveQueuedNotification(const std::string& notification_id,
+                                  bool notify);
+
   // Called when the state of a notification blocker changes. Will display and
   // free all queued notifications if no blocker is active anymore.
   void MaybeDisplayQueuedNotifications();

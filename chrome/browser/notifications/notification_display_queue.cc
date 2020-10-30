@@ -40,26 +40,20 @@ void NotificationDisplayQueue::EnqueueNotification(
     NotificationHandler::Type notification_type,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
-  RemoveQueuedNotification(notification.id());
+  bool replaced =
+      DoRemoveQueuedNotification(notification.id(), /*notify=*/false);
   queued_notifications_.emplace_back(notification_type, notification,
                                      std::move(metadata));
   // Notify blockers that a new notification has been blocked.
   for (auto& blocker : blockers_) {
     if (blocker->ShouldBlockNotification(notification))
-      blocker->OnBlockedNotification(notification);
+      blocker->OnBlockedNotification(notification, replaced);
   }
 }
 
 void NotificationDisplayQueue::RemoveQueuedNotification(
     const std::string& notification_id) {
-  auto it =
-      std::find_if(queued_notifications_.begin(), queued_notifications_.end(),
-                   [&notification_id](const QueuedNotification& queued) {
-                     return queued.notification.id() == notification_id;
-                   });
-
-  if (it != queued_notifications_.end())
-    queued_notifications_.erase(it);
+  DoRemoveQueuedNotification(notification_id, /*notify=*/true);
 }
 
 std::set<std::string> NotificationDisplayQueue::GetQueuedNotificationIds()
@@ -90,6 +84,29 @@ void NotificationDisplayQueue::AddNotificationBlocker(
     std::unique_ptr<NotificationBlocker> blocker) {
   notification_blocker_observer_.Add(blocker.get());
   blockers_.push_back(std::move(blocker));
+}
+
+bool NotificationDisplayQueue::DoRemoveQueuedNotification(
+    const std::string& notification_id,
+    bool notify) {
+  auto it =
+      std::find_if(queued_notifications_.begin(), queued_notifications_.end(),
+                   [&notification_id](const QueuedNotification& queued) {
+                     return queued.notification.id() == notification_id;
+                   });
+
+  if (it == queued_notifications_.end())
+    return false;
+
+  if (notify) {
+    for (auto& blocker : blockers_) {
+      if (blocker->ShouldBlockNotification(it->notification))
+        blocker->OnClosedNotification(it->notification);
+    }
+  }
+
+  queued_notifications_.erase(it);
+  return true;
 }
 
 void NotificationDisplayQueue::MaybeDisplayQueuedNotifications() {

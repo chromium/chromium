@@ -40,6 +40,10 @@ class FakeNotificationBlocker : public NotificationBlocker {
   }
   MOCK_METHOD(void,
               OnBlockedNotification,
+              (const message_center::Notification&, bool),
+              (override));
+  MOCK_METHOD(void,
+              OnClosedNotification,
               (const message_center::Notification&),
               (override));
 
@@ -329,4 +333,32 @@ TEST_F(NotificationDisplayQueueTest, MultipleBlockersNotifyBlocked) {
 
   queue().EnqueueNotification(NotificationHandler::Type::TRANSIENT,
                               CreateNotification("id2"), /*metadata=*/nullptr);
+}
+
+TEST_F(NotificationDisplayQueueTest, NotifiesReplacedNotification) {
+  message_center::Notification notification = CreateNotification("id");
+  notification_blocker().SetShouldBlockNotifications(true);
+
+  EXPECT_CALL(notification_blocker(),
+              OnBlockedNotification(testing::_, /*replaced=*/false));
+  queue().EnqueueNotification(NotificationHandler::Type::TRANSIENT,
+                              notification, /*metadata=*/nullptr);
+
+  EXPECT_CALL(notification_blocker(),
+              OnBlockedNotification(testing::_, /*replaced=*/true));
+  EXPECT_CALL(notification_blocker(), OnClosedNotification).Times(0);
+  queue().EnqueueNotification(NotificationHandler::Type::TRANSIENT,
+                              notification, /*metadata=*/nullptr);
+}
+
+TEST_F(NotificationDisplayQueueTest, NotifiesClosedNotification) {
+  message_center::Notification notification = CreateNotification("id");
+  notification_blocker().SetShouldBlockNotifications(true);
+
+  EXPECT_CALL(notification_blocker(), OnBlockedNotification);
+  queue().EnqueueNotification(NotificationHandler::Type::TRANSIENT,
+                              notification, /*metadata=*/nullptr);
+
+  EXPECT_CALL(notification_blocker(), OnClosedNotification);
+  queue().RemoveQueuedNotification(notification.id());
 }

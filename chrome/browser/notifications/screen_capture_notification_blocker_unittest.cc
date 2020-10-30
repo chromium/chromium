@@ -6,6 +6,7 @@
 
 #include "base/optional.h"
 #include "base/scoped_observer.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -27,13 +28,18 @@
 
 namespace {
 
-message_center::Notification CreateNotification(const GURL& origin) {
+message_center::Notification CreateNotification(const GURL& origin,
+                                                const std::string& id) {
   return message_center::Notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, /*id=*/"id",
+      message_center::NOTIFICATION_TYPE_SIMPLE, id,
       /*title=*/base::string16(),
       /*message=*/base::string16(), /*icon=*/gfx::Image(),
       /*display_source=*/base::string16(), origin, message_center::NotifierId(),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
+}
+
+message_center::Notification CreateNotification(const GURL& origin) {
+  return CreateNotification(origin, /*id=*/"id");
 }
 
 }  // namespace
@@ -85,6 +91,15 @@ class ScreenCaptureNotificationBlockerTest : public testing::Test {
         web_contents_factory_.CreateWebContents(&profile_);
     content::NavigationSimulator::NavigateAndCommitFromBrowser(contents, url);
     return contents;
+  }
+
+  void SimulateClose(bool by_user) {
+    base::Optional<message_center::Notification> notification =
+        GetMutedNotification();
+    ASSERT_TRUE(notification);
+    notification_service_->RemoveNotification(
+        NotificationHandler::Type::NOTIFICATIONS_MUTED, notification->id(),
+        by_user, /*silent=*/false);
   }
 
   void SimulateClick(const base::Optional<int>& action_index) {
@@ -202,7 +217,7 @@ TEST_F(ScreenCaptureNotificationBlockerTest, ShowsMutedNotification) {
   blocker().OnIsCapturingDisplayChanged(
       CreateWebContents(GURL("https://example1.com")), true);
   blocker().OnBlockedNotification(
-      CreateNotification(GURL("https://example2.com")));
+      CreateNotification(GURL("https://example2.com")), /*replaced*/ false);
 
   base::Optional<message_center::Notification> notification =
       GetMutedNotification();
@@ -228,7 +243,7 @@ TEST_F(ScreenCaptureNotificationBlockerTest, UpdatesMutedNotification) {
 
   for (int i = 0; i < kCount; ++i) {
     blocker().OnBlockedNotification(
-        CreateNotification(GURL("https://example2.com")));
+        CreateNotification(GURL("https://example2.com")), /*replaced*/ false);
   }
 
   base::Optional<message_center::Notification> notification =
@@ -255,7 +270,7 @@ TEST_F(ScreenCaptureNotificationBlockerTest, ClosesMutedNotification) {
 
   // Expect a notification once we block one.
   blocker().OnBlockedNotification(
-      CreateNotification(GURL("https://example2.com")));
+      CreateNotification(GURL("https://example2.com")), /*replaced*/ false);
   EXPECT_TRUE(GetMutedNotification());
 
   // Expect notification to be closed when capturing stops.
@@ -268,7 +283,7 @@ TEST_F(ScreenCaptureNotificationBlockerTest,
   blocker().OnIsCapturingDisplayChanged(
       CreateWebContents(GURL("https://example1.com")), true);
   blocker().OnBlockedNotification(
-      CreateNotification(GURL("https://example2.com")));
+      CreateNotification(GURL("https://example2.com")), /*replaced*/ false);
 
   // Expect notification to be closed after clicking on its body.
   SimulateClick(/*action_index=*/base::nullopt);
@@ -279,13 +294,13 @@ TEST_F(ScreenCaptureNotificationBlockerTest, ShowsMutedNotificationAfterClose) {
   blocker().OnIsCapturingDisplayChanged(
       CreateWebContents(GURL("https://example1.com")), true);
   blocker().OnBlockedNotification(
-      CreateNotification(GURL("https://example2.com")));
+      CreateNotification(GURL("https://example2.com")), /*replaced*/ false);
 
   // Blocking another notification after closing the muted one should show a new
   // one with an updated message.
   SimulateClick(/*action_index=*/base::nullopt);
   blocker().OnBlockedNotification(
-      CreateNotification(GURL("https://example2.com")));
+      CreateNotification(GURL("https://example2.com")), /*replaced*/ false);
 
   base::Optional<message_center::Notification> notification =
       GetMutedNotification();
@@ -308,7 +323,7 @@ TEST_F(ScreenCaptureNotificationBlockerTest, ShowAction) {
 
   message_center::Notification notification =
       CreateNotification(GURL("https://example2.com"));
-  blocker().OnBlockedNotification(notification);
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
   EXPECT_TRUE(blocker().ShouldBlockNotification(notification));
 
   // Showing should close the "Notifications muted" notification and allow
@@ -319,4 +334,101 @@ TEST_F(ScreenCaptureNotificationBlockerTest, ShowAction) {
 
   EXPECT_FALSE(GetMutedNotification());
   EXPECT_FALSE(blocker().ShouldBlockNotification(notification));
+}
+
+TEST_F(ScreenCaptureNotificationBlockerTest, CloseHistogram) {
+  base::HistogramTester histogram_tester;
+  const char kHistogram[] = "Notifications.Blocker.ScreenCapture.Action.Close";
+
+  blocker().OnIsCapturingDisplayChanged(
+      CreateWebContents(GURL("https://example1.com")), true);
+  message_center::Notification notification =
+      CreateNotification(GURL("https://example2.com"));
+
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
+  SimulateClose(/*by_user=*/true);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/1, /*count=*/1);
+  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/1);
+
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
+  SimulateClose(/*by_user=*/true);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/2, /*count=*/1);
+  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/2);
+
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
+  SimulateClose(/*by_user=*/false);
+  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/2);
+}
+
+TEST_F(ScreenCaptureNotificationBlockerTest, BodyClickHistogram) {
+  base::HistogramTester histogram_tester;
+  const char kHistogram[] = "Notifications.Blocker.ScreenCapture.Action.Body";
+
+  blocker().OnIsCapturingDisplayChanged(
+      CreateWebContents(GURL("https://example1.com")), true);
+  message_center::Notification notification =
+      CreateNotification(GURL("https://example2.com"));
+
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
+  SimulateClick(/*action_index=*/base::nullopt);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/1, /*count=*/1);
+  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/1);
+
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
+  SimulateClick(/*action_index=*/base::nullopt);
+  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/2, /*count=*/1);
+  histogram_tester.ExpectTotalCount(kHistogram, /*count=*/2);
+}
+
+TEST_F(ScreenCaptureNotificationBlockerTest, ShowClickHistogram) {
+  base::HistogramTester histogram_tester;
+
+  blocker().OnIsCapturingDisplayChanged(
+      CreateWebContents(GURL("https://example1.com")), true);
+  message_center::Notification notification =
+      CreateNotification(GURL("https://example2.com"));
+
+  blocker().OnBlockedNotification(notification, /*replaced*/ false);
+  SimulateClick(kShowActionIndex);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Blocker.ScreenCapture.Action.Show", /*sample=*/1,
+      /*count=*/1);
+}
+
+TEST_F(ScreenCaptureNotificationBlockerTest, SessionEndHistograms) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* contents =
+      CreateWebContents(GURL("https://example1.com"));
+  blocker().OnIsCapturingDisplayChanged(contents, true);
+
+  message_center::Notification notification1 =
+      CreateNotification(GURL("https://example2.com"), "id1");
+  message_center::Notification notification2 =
+      CreateNotification(GURL("https://example2.com"), "id2");
+  message_center::Notification notification3 =
+      CreateNotification(GURL("https://example2.com"), "id3");
+
+  // Mute 3 unique notifications.
+  blocker().OnBlockedNotification(notification1, /*replaced*/ false);
+  blocker().OnBlockedNotification(notification2, /*replaced*/ false);
+  blocker().OnBlockedNotification(notification3, /*replaced*/ false);
+
+  // Replace 2 of the muted notifications.
+  blocker().OnBlockedNotification(notification1, /*replaced*/ true);
+  blocker().OnBlockedNotification(notification2, /*replaced*/ true);
+
+  // Close 1 of the muted notifications.
+  blocker().OnClosedNotification(notification1);
+
+  blocker().OnIsCapturingDisplayChanged(contents, false);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Blocker.ScreenCapture.MutedCount", /*sample=*/3,
+      /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Blocker.ScreenCapture.ReplacedCount", /*sample=*/2,
+      /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Blocker.ScreenCapture.ClosedCount", /*sample=*/1,
+      /*count=*/1);
 }

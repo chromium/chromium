@@ -36,7 +36,13 @@ class NotificationBlocker {
       const message_center::Notification& notification) = 0;
 
   // Called when |notification| got blocked because this blocker is active.
+  // |replaced| is true if the |notification| replaces a previously blocked one.
   virtual void OnBlockedNotification(
+      const message_center::Notification& notification,
+      bool replaced) {}
+
+  // Called when a previously blocked |notification| got closed.
+  virtual void OnClosedNotification(
       const message_center::Notification& notification) {}
 
   // Observer methods.

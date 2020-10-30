@@ -85,6 +85,58 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Blocker.ScreenCapture.Action.{Action}"
+    units="notifications" expires_after="M91">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the number of times the 'Notifications muted' notification got shown
+    before the user took an action. Clicking on 'Show' can only be recorded once
+    per session while 'Body' and 'Close' may be recorded multiple times. Logged
+    each time the user interacts with the notification. {Action}
+  </summary>
+  <token key="Action">
+    <variant name="Body"/>
+    <variant name="Close"/>
+    <variant name="Show"/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
+    units="notifications" expires_after="M91">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of muted notifications that got closed programmatically (e.g. by
+    the developer via JS) during a screen capture session before they were shown
+    to the user. Logged once after each screen capture session ends.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Blocker.ScreenCapture.MutedCount"
+    units="notifications" expires_after="M91">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of notifications that got muted during a screen capture session
+    instead of being shown to the user. This number might be higher than the
+    actual number of queued notifications at the end of a session as some
+    notifications might have been closed programmatically before that. Logged
+    once after each screen capture session ends.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Blocker.ScreenCapture.ReplacedCount"
+    units="notifications" expires_after="M91">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of muted notifications that got replaced during a screen capture
+    session. The user will only see the final state of the notification without
+    the previous versions. Logged once after each screen capture session ends.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Chime.Android.Events" enum="ChimeEvent"
     expires_after="never">
   <owner>hesen@chromium.org</owner>
