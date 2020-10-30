@@ -153,6 +153,7 @@ bool UseMinimalUsageFlags(SharedContextState* context_state) {
 
 void WaitSemaphoresOnGrContext(GrDirectContext* gr_context,
                                std::vector<ExternalSemaphore>* semaphores) {
+  DCHECK(!gr_context->abandoned());
   std::vector<GrBackendSemaphore> backend_senampres;
   backend_senampres.reserve(semaphores->size());
   for (auto& semaphore : *semaphores) {
@@ -377,8 +378,10 @@ ExternalVkImageBacking::~ExternalVkImageBacking() {
   if (write_semaphore_)
     semaphores.emplace_back(std::move(write_semaphore_));
 
-  WaitSemaphoresOnGrContext(context_state()->gr_context(), &semaphores);
-  ReturnPendingSemaphoresWithFenceHelper(std::move(semaphores));
+  if (!semaphores.empty() && !context_state()->gr_context()->abandoned()) {
+    WaitSemaphoresOnGrContext(context_state()->gr_context(), &semaphores);
+    ReturnPendingSemaphoresWithFenceHelper(std::move(semaphores));
+  }
 
   fence_helper()->EnqueueVulkanObjectCleanupForSubmittedWork(std::move(image_));
   backend_texture_ = GrBackendTexture();
