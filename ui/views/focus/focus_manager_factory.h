@@ -14,8 +14,8 @@ namespace views {
 class FocusManager;
 class Widget;
 
-// A factory to create FocusManager. This is used in unit tests
-// to inject a custom factory.
+// A factory to create FocusManager. This can be used to inject a custom
+// factory.
 class VIEWS_EXPORT FocusManagerFactory {
  public:
   // Create a FocusManager for the given |widget| using the installed Factory.

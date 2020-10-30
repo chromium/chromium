@@ -22,12 +22,6 @@
 // - The native focus, which is the focus that a gfx::NativeView has.
 // - The view focus, which is the focus that a views::View has.
 //
-// When registering a view with the FocusManager, the caller can provide a view
-// whose focus will be kept in sync with the view the FocusManager is managing.
-//
-// (Focus registration is already done for you if you subclass the NativeControl
-// class or if you use the NativeViewHost class.)
-//
 // When a top window (derived from views::Widget) that is not a child window is
 // created, it creates and owns a FocusManager to manage the focus for itself
 // and all its child windows.
@@ -43,8 +37,8 @@
 // order.
 //
 // If you are embedding a native view containing a nested RootView (for example
-// by adding a NativeControl that contains a NativeWidgetWin as its native
-// component), then you need to:
+// by adding a view that contains a native widget as its native component),
+// then you need to:
 //
 // - Override the View::GetFocusTraversable method in your outer component.
 //   It should return the RootView of the inner component. This is used when
