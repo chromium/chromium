@@ -537,6 +537,10 @@ const base::Feature kReleaseNotesNotification{"ReleaseNotesNotification",
 const base::Feature kReleaseNotesNotificationAllChannels{
     "ReleaseNotesNotificationAllChannels", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables Release Notes suggestion chip on Chrome OS.
+const base::Feature kReleaseNotesSuggestionChip{
+    "ReleaseNotesSuggestionChip", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables or disables an experimental scanning UI on Chrome OS.
 const base::Feature kScanningUI{"ScanningUI",
                                 base::FEATURE_DISABLED_BY_DEFAULT};

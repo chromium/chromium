@@ -44,7 +44,8 @@ class ReleaseNotesStorageTest : public testing::Test,
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kReleaseNotesNotification,
                               chromeos::features::
-                                  kReleaseNotesNotificationAllChannels},
+                                  kReleaseNotesNotificationAllChannels,
+                              chromeos::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
     std::unique_ptr<Profile> profile = CreateProfile(email);
     profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
@@ -150,8 +151,7 @@ TEST_F(ReleaseNotesStorageTest, DoesNotShowReleaseNotesSuggestionChip) {
 // Tests that when kReleaseNotesSuggestionChipTimesLeftToShow is greater than 0,
 // ReleaseNotesStorage::ShouldShowSuggestionChip returns true, and when
 // decreased the method returns false again.
-// TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
-TEST_F(ReleaseNotesStorageTest, DISABLED_ShowReleaseNotesSuggestionChip) {
+TEST_F(ReleaseNotesStorageTest, ShowReleaseNotesSuggestionChip) {
   std::unique_ptr<Profile> profile =
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
@@ -169,9 +169,7 @@ TEST_F(ReleaseNotesStorageTest, DISABLED_ShowReleaseNotesSuggestionChip) {
 
 // Tests that when we mark a notification as shown, we also show the suggestion
 // chip.
-// TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
-TEST_F(ReleaseNotesStorageTest,
-       DISABLED_ShowSuggestionChipWhenNotificationShown) {
+TEST_F(ReleaseNotesStorageTest, ShowSuggestionChipWhenNotificationShown) {
   std::unique_ptr<Profile> profile =
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
@@ -179,7 +177,7 @@ TEST_F(ReleaseNotesStorageTest,
 
   release_notes_storage->MarkNotificationShown();
 
-  EXPECT_EQ(6, profile.get()->GetPrefs()->GetInteger(
+  EXPECT_EQ(3, profile.get()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
   EXPECT_EQ(true, release_notes_storage->ShouldShowSuggestionChip());
 }

@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,6 +23,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -128,46 +130,56 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
 
 // Test that Help App shows up as Release notes if pref shows we have some times
 // left to show it.
-// TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
-                       DISABLED_AppListSearchHasReleaseNotesSuggestionChip) {
+                       AppListSearchHasReleaseNotesSuggestionChip) {
   web_app::WebAppProvider::Get(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  SearchAndWaitForProviders("",
-                            {ResultType::kInstalledApp, ResultType::kLauncher});
+  SearchAndWaitForProviders("", {ResultType::kHelpApp});
 
-  // Note: SearchAndWaitForProviders decreases the count multiple times.
-  // TODO(b/169711884): Decrease times left only when the chip becomes visible.
-  const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
-  EXPECT_EQ(times_left_to_show, 1);
-  auto* result = FindResult(chromeos::default_web_apps::kHelpAppId);
+  auto* result = FindResult("help-app://updates");
   ASSERT_TRUE(result);
   // Has Release notes title.
   EXPECT_EQ(base::UTF16ToASCII(result->title()),
             "See what's new on your Chrome device");
   // Displayed in first position.
   EXPECT_EQ(result->position_priority(), 1.0f);
-  // Has override url defined for updates tab.
-  EXPECT_EQ(result->query_url(), GURL("chrome://help-app/updates"));
   EXPECT_EQ(result->display_type(), DisplayType::kChip);
 }
 
-// Test that Help App shows up normally if pref shows we should no longer show
-// as suggestion chip.
-IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, AppListSearchHasHelpApp) {
+// Test that the number of times the suggestion chip should show decreases when
+// the chip is shown.
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
+                       ReleaseNotesDecreasesTimesShownOnAppListOpen) {
   web_app::WebAppProvider::Get(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  SearchAndWaitForProviders("",
-                            {ResultType::kInstalledApp, ResultType::kLauncher});
+  // ShowAppList actually opens the app list and triggers |AppListShown| which
+  // is where we decrease |kReleaseNotesSuggestionChipTimesLeftToShow|.
+  GetClient()->ShowAppList();
+  SearchAndWaitForProviders("", {ResultType::kHelpApp});
+
+  const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
+  EXPECT_EQ(times_left_to_show, 2);
+}
+
+// Test that Help App shows up normally even when suggestion chip should show.
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, AppListSearchHasApp) {
+  web_app::WebAppProvider::Get(GetProfile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
+
+  SearchAndWaitForProviders("", {ResultType::kInstalledApp,
+                                 ResultType::kLauncher, ResultType::kHelpApp});
 
   auto* result = FindResult(chromeos::default_web_apps::kHelpAppId);
   ASSERT_TRUE(result);

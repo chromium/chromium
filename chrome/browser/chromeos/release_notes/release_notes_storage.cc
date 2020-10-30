@@ -24,7 +24,7 @@
 
 namespace {
 
-constexpr int kTimesToShowSuggestionChip = 6;
+constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {
   return version_info::GetVersion().components()[0];
@@ -91,8 +91,14 @@ void ReleaseNotesStorage::MarkNotificationShown() {
 }
 
 bool ReleaseNotesStorage::ShouldShowSuggestionChip() {
-  // TODO(b/169711884): Re-enable this when we have a working version.
-  return false;
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kReleaseNotesSuggestionChip)) {
+    return false;
+  }
+
+  const int times_left_to_show = profile_->GetPrefs()->GetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
+  return times_left_to_show > 0;
 }
 
 void ReleaseNotesStorage::DecreaseTimesLeftToShowSuggestionChip() {

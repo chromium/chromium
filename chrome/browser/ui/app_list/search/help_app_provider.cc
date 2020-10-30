@@ -79,8 +79,7 @@ void HelpAppProvider::Start(const base::string16& query) {
   }
 
   SearchProvider::Results search_results;
-  if (chromeos::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip() &&
-      !icon_.isNull()) {
+  if (chromeos::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
     search_results.emplace_back(
         std::make_unique<HelpAppResult>(1.0f, profile_, icon_));
   }
