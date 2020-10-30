@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -44,6 +45,9 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   // This method is called when Cryptohome D-Bus method call completes.
   void OnCryptohomeBoolProperty(const std::string& destination_id,
                                 base::Optional<bool> result);
+
+  // This method is called when Cryptohome D-Bus TpmStatus call complete.
+  void OnCryptohomeTpmStatus(base::Optional<cryptohome::BaseReply> reply);
 
   // Sets textcontent of the element whose id is |destination_id| to |value|.
   void SetCryptohomeProperty(const std::string& destination_id,
