@@ -2355,24 +2355,14 @@ config("symbols") {
       swiftflags = [ "-g" ]
     }
 
-    if (use_debug_fission && !is_nacl &&
-        (!is_android || target_os == "android")) {
-      # NOTE: Some Chrome OS builds globally set |use_debug_fission| to true,
-      # but they also build some targets whose toolchains aren't
-      # compatible with it. In particular don't turn it on for Android
-      # toolchain if not building for Android OS.
-      #
-      # TODO(https://crbug.com/837032): See if we can clean this up by e.g. not
-      # setting use_debug_fission globally.
+    if (use_debug_fission) {
       cflags += [ "-gsplit-dwarf" ]
     }
     asmflags = cflags
     ldflags = []
 
-    if (use_debug_fission && is_android && target_os == "android") {
-      # NOTE: This flag is for use by the link wrapper scripts. They are also
-      # expected to remove it before sending the rest of ldflags to the actual
-      # linker. Only expect Android Chrome build on Android OS to need this.
+    # TODO(agrieve): Not sure why this is Android-specific.
+    if (use_debug_fission && use_thin_lto && is_android) {
       ldflags += [ "-gsplit-dwarf" ]
     }
 

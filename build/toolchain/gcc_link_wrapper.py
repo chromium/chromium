@@ -81,6 +81,7 @@ def main():
   if dwp_proc:
     dwp_result = dwp_proc.wait()
     if dwp_result != 0:
+      sys.stderr.write('dwp failed with error code {}\n'.format(dwp_result))
       return dwp_result
 
   return result

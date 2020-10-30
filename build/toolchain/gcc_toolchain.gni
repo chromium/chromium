@@ -252,9 +252,9 @@ template("gcc_toolchain") {
       nm = "nm"
     }
     if (defined(invoker.dwp)) {
-      dwp = invoker.dwp
+      dwp_switch = " --dwp=\"${invoker.dwp}\""
     } else {
-      dwp = "dwp"
+      dwp_switch = ""
     }
 
     if (defined(invoker.shlib_extension)) {
@@ -417,11 +417,6 @@ template("gcc_toolchain") {
       # The host might not have a POSIX shell and utilities (e.g. Windows).
       solink_wrapper =
           rebase_path("//build/toolchain/gcc_solink_wrapper.py", root_build_dir)
-      dwp_switch = ""
-      if (is_android && target_os == "android" && use_debug_fission &&
-          symbol_level == 2) {
-        dwp_switch = " --dwp=\"${dwp}\""
-      }
       command = "$python_path \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
@@ -463,8 +458,7 @@ template("gcc_toolchain") {
       # Clank build will generate DWP files when Fission is used.
       # Other builds generate DWP files outside of the gn link targets, if at
       # all.
-      if (is_android && target_os == "android" && use_debug_fission &&
-          symbol_level == 2) {
+      if (defined(invoker.dwp)) {
         outputs += [ unstripped_sofile + ".dwp" ]
         if (defined(invoker.use_unstripped_as_runtime_outputs) &&
             invoker.use_unstripped_as_runtime_outputs) {
@@ -564,14 +558,6 @@ template("gcc_toolchain") {
         strip_switch = " --strip=\"${invoker.strip}\" --unstripped-file=\"$unstripped_outfile\""
       }
 
-      dwp_switch = ""
-      if (is_android && target_os == "android" && use_debug_fission &&
-          symbol_level == 2) {
-        dwp_switch = " --dwp=\"${dwp}\""
-      } else {
-        not_needed([ "dwp" ])
-      }
-
       link_wrapper =
           rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
       command = "$python_path \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch$dwp_switch -- $link_command"
@@ -590,8 +576,7 @@ template("gcc_toolchain") {
       # Clank build will generate DWP files when Fission is used.
       # Other builds generate DWP files outside of the gn link targets, if at
       # all.
-      if (is_android && target_os == "android" && use_debug_fission &&
-          symbol_level == 2) {
+      if (defined(invoker.dwp)) {
         outputs += [ unstripped_outfile + ".dwp" ]
         if (defined(invoker.use_unstripped_as_runtime_outputs) &&
             invoker.use_unstripped_as_runtime_outputs) {

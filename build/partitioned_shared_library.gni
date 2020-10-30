@@ -100,12 +100,9 @@ template("partitioned_shared_library") {
         ]
       }
 
-      # Restrict to Android OS because ChromeOS uses the Android toolchain with
-      # use_debug_fission set globally, which isn't reliable across all
-      # possible build configs with Android.
-      if (is_android && target_os == "android" && use_debug_fission) {
-        dwp = rebase_path("${android_tool_prefix}dwp", root_build_dir)
-        args += [ "--dwp=${dwp}" ]
+      if (use_debug_fission) {
+        _dwp = rebase_path("${android_tool_prefix}dwp", root_build_dir)
+        args += [ "--dwp=${_dwp}" ]
         outputs += [ invoker.unstripped_output + ".dwp" ]
       }
       args += [ rebase_path(sources[0], root_build_dir) ]
