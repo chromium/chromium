@@ -770,14 +770,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BackToAboutBlank) {
   }
 }
 
-#if defined(OS_ANDROID)
-// Test is flaky on Android, see crbug.com/1075663
-#define MAYBE_BlockForVariousTargets DISABLED_BlockForVariousTargets
-#else
-#define MAYBE_BlockForVariousTargets BlockForVariousTargets
-#endif
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
-                       MAYBE_BlockForVariousTargets) {
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BlockForVariousTargets) {
   // This webpage loads a cross-site HTML page in different targets such as
   // <img>,<link>,<embed>, etc. Since the requested document is blocked, and one
   // character string (' ') is returned instead, this tests that the renderer
