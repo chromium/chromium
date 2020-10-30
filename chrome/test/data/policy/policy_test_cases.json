@@ -1624,16 +1624,6 @@
     ]
   },
 
-  "BlockUnsupportedFiletypes": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "BlockUnsupportedFiletypes": 0 },
-        "prefs": { "safebrowsing.block_unsupported_filetypes": { "local_state": true } }
-      }
-    ]
-  },
-
   "BlockExternalExtensions": {
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_test": [
@@ -7663,82 +7653,6 @@
           "LockScreenMediaPlaybackEnabled": true
         },
         "prefs": { "ash.lock_screen_media_controls_enabled": {} }
-      }
-    ]
-  },
-
-  "BlockLargeFileTransfer": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "BlockLargeFileTransfer": 0
-        },
-        "prefs": { "safebrowsing.block_large_file_transfers": { "local_state": true } }
-      }
-    ]
-  },
-
-  "DelayDeliveryUntilVerdict": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "DelayDeliveryUntilVerdict": 0
-        },
-        "prefs": { "safebrowsing.delay_delivery_until_verdict": { "local_state": true } }
-      }
-    ]
-  },
-
-  "AllowPasswordProtectedFiles": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "AllowPasswordProtectedFiles": 0
-        },
-        "prefs": { "safebrowsing.allow_password_protected_files": { "local_state": true } }
-      }
-    ]
-  },
-
-  "URLsToCheckComplianceOfDownloadedContent": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "URLsToCheckComplianceOfDownloadedContent": ["[*.]google.com"] },
-        "prefs": { "safebrowsing.urls_to_check_compliance_of_downloaded_content": { "local_state": true } }
-      }
-    ]
-  },
-
-  "URLsToCheckForMalwareOfUploadedContent": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "URLsToCheckForMalwareOfUploadedContent": ["[*.]google.com"] },
-        "prefs": { "safebrowsing.urls_to_check_for_malware_of_uploaded_content": { "local_state": true } }
-      }
-    ]
-  },
-
-  "URLsToNotCheckForMalwareOfDownloadedContent": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "URLsToNotCheckForMalwareOfDownloadedContent": ["[*.]google.com"] },
-        "prefs": { "safebrowsing.urls_to_not_check_for_malware_of_downloaded_content": { "local_state": true } }
-      }
-    ]
-  },
-
-  "URLsToNotCheckComplianceOfUploadedContent": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "URLsToNotCheckComplianceOfUploadedContent": ["[*.]google.com"] },
-        "prefs": { "policy.urls_to_not_check_compliance_of_uploaded_content": { "local_state": true } }
       }
     ]
   },

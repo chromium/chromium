@@ -92,21 +92,8 @@ extern const char kPasswordProtectionWarningTrigger[];
 // microseconds);
 extern const char kAdvancedProtectionLastRefreshInUs[];
 
-// Integer that specifies if large files are blocked form either uploads or
-// downloads or both.
-extern const char kBlockLargeFileTransfer[];
-
-// Integer that specifies if delivery to the user of potentially unsafe data
-// is delayed until a verdict about the data is known.
-extern const char kDelayDeliveryUntilVerdict[];
-
-// Integer that specifies if password protected files can be either uploaded
-// or downloaded or both.
-extern const char kAllowPasswordProtectedFiles[];
-
-// Integer that indicates if Chrome blocks data that cannot be checked for
-// content compliance due to unsupported filetypes.
-extern const char kBlockUnsupportedFiletypes[];
+// TODO(crbug.com/1109242): Remove the following kURLsTo* constants once they
+// are no longer needed by testing code.
 
 // List of url patterns where Chrome should check compliance of downloaded
 // files.

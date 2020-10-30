@@ -96,14 +96,6 @@ const char kPasswordProtectionWarningTrigger[] =
     "safebrowsing.password_protection_warning_trigger";
 const char kAdvancedProtectionLastRefreshInUs[] =
     "safebrowsing.advanced_protection_last_refresh";
-const char kBlockLargeFileTransfer[] =
-    "safebrowsing.block_large_file_transfers";
-const char kDelayDeliveryUntilVerdict[] =
-    "safebrowsing.delay_delivery_until_verdict";
-const char kAllowPasswordProtectedFiles[] =
-    "safebrowsing.allow_password_protected_files";
-const char kBlockUnsupportedFiletypes[] =
-    "safebrowsing.block_unsupported_filetypes";
 const char kURLsToCheckComplianceOfDownloadedContent[] =
     "safebrowsing.urls_to_check_compliance_of_downloaded_content";
 const char kURLsToCheckForMalwareOfUploadedContent[] =
@@ -232,18 +224,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingTriggerEventTimestamps);
-  registry->RegisterIntegerPref(prefs::kBlockLargeFileTransfer, 0);
-  registry->RegisterIntegerPref(prefs::kDelayDeliveryUntilVerdict, DELAY_NONE);
-  registry->RegisterIntegerPref(
-      prefs::kAllowPasswordProtectedFiles,
-      AllowPasswordProtectedFilesValues::ALLOW_UPLOADS_AND_DOWNLOADS);
-  registry->RegisterIntegerPref(prefs::kBlockUnsupportedFiletypes,
-                                BLOCK_UNSUPPORTED_FILETYPES_NONE);
-  registry->RegisterListPref(prefs::kURLsToCheckComplianceOfDownloadedContent);
-  registry->RegisterListPref(prefs::kURLsToNotCheckComplianceOfUploadedContent);
-  registry->RegisterListPref(prefs::kURLsToCheckForMalwareOfUploadedContent);
-  registry->RegisterListPref(
-      prefs::kURLsToNotCheckForMalwareOfDownloadedContent);
 }
 
 void SetExtendedReportingPrefAndMetric(

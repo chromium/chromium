@@ -22187,11 +22187,6 @@ Called by update_document_policy_enum.py.-->
   <int value="581" label="LockScreenMediaPlaybackEnabled"/>
   <int value="582" label="DnsOverHttpsMode"/>
   <int value="584" label="PolicyAtomicGroupsEnabled"/>
-  <int value="586" label="BlockLargeFileTransfer"/>
-  <int value="587" label="DelayDeliveryUntilVerdict"/>
-  <int value="588" label="AllowPasswordProtectedFiles"/>
-  <int value="590" label="URLsToCheckComplianceOfDownloadedContent"/>
-  <int value="591" label="URLsToNotCheckComplianceOfUploadedContent"/>
   <int value="592" label="DictationEnabled"/>
   <int value="593" label="KeyboardFocusHighlightEnabled"/>
   <int value="594" label="CursorHighlightEnabled"/>
@@ -22200,7 +22195,6 @@ Called by update_document_policy_enum.py.-->
   <int value="597" label="AutoclickEnabled"/>
   <int value="598" label="RendererCodeIntegrityEnabled"/>
   <int value="599" label="DeviceLoginScreenLargeCursorEnabled"/>
-  <int value="600" label="URLsToCheckForMalwareOfUploadedContent"/>
   <int value="601" label="HSTSPolicyBypassList"/>
   <int value="602" label="ReportDeviceOsUpdateStatus"/>
   <int value="603" label="DeviceLoginScreenWebUsbAllowDevicesForUrls"/>
@@ -22268,8 +22262,6 @@ Called by update_document_policy_enum.py.-->
   <int value="665" label="ReportDeviceCrashReportInfo"/>
   <int value="666" label="ScreenCaptureAllowed"/>
   <int value="667" label="AdvancedProtectionDeepScanningEnabled"/>
-  <int value="668" label="BlockUnsupportedFiletypes"/>
-  <int value="669" label="URLsToNotCheckForMalwareOfDownloadedContent"/>
   <int value="670" label="DeviceMinimumVersion"/>
   <int value="671" label="ReportDeviceTimezoneInfo"/>
   <int value="672" label="SystemProxySettings"/>
