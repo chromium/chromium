@@ -24,6 +24,17 @@ static jlong JNI_HistoryDeletionBridge_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(new HistoryDeletionBridge(jobj));
 }
 
+// static
+history::DeletionInfo HistoryDeletionBridge::SanitizeDeletionInfo(
+    const history::DeletionInfo& deletion_info) {
+  std::vector<history::URLRow> sanitized_rows;
+  for (auto row : deletion_info.deleted_rows()) {
+    if (!row.url().is_empty() && row.url().is_valid())
+      sanitized_rows.push_back(row);
+  }
+  return history::DeletionInfo::ForUrls(sanitized_rows, {});
+}
+
 HistoryDeletionBridge::HistoryDeletionBridge(const JavaRef<jobject>& jobj)
     : jobj_(ScopedJavaGlobalRef<jobject>(jobj)),
       profile_(ProfileManager::GetLastUsedProfile()->GetOriginalProfile()) {
@@ -47,6 +58,7 @@ void HistoryDeletionBridge::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = base::android::AttachCurrentThread();
+  history::DeletionInfo sanitized_info = SanitizeDeletionInfo(deletion_info);
   Java_HistoryDeletionBridge_onURLsDeleted(
-      env, jobj_, CreateHistoryDeletionInfo(env, &deletion_info));
+      env, jobj_, CreateHistoryDeletionInfo(env, &sanitized_info));
 }
