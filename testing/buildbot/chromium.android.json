@@ -29632,7 +29632,8 @@
           "BrowserMinidumpTest",
           "--browser=android-chromium",
           "-v",
-          "--passthrough"
+          "--passthrough",
+          "--retry-limit=2"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
@@ -37922,7 +37923,8 @@
           "BrowserMinidumpTest",
           "--browser=android-chromium",
           "-v",
-          "--passthrough"
+          "--passthrough",
+          "--retry-limit=2"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -37949,7 +37951,8 @@
           "BrowserMinidumpTest",
           "--browser=android-chromium-monochrome",
           "-v",
-          "--passthrough"
+          "--passthrough",
+          "--retry-limit=2"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
