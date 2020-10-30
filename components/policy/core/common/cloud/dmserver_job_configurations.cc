@@ -257,7 +257,7 @@ void DMServerJobConfiguration::OnURLLoadComplete(
   std::move(callback_).Run(job, code, net_error, response);
 }
 
-GURL DMServerJobConfiguration::GetURL(int last_error) {
+GURL DMServerJobConfiguration::GetURL(int last_error) const {
   // DM server requests always expect a dm_protocol::kParamRetry URL parameter
   // to indicate if this request is a retry.  Furthermore, if so then the
   // dm_protocol::kParamLastError URL parameter is also expected with the value

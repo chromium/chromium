@@ -75,6 +75,8 @@ source_set("internal") {
     "cloud/policy_value_validator.h",
     "cloud/realtime_reporting_job_configuration.cc",
     "cloud/realtime_reporting_job_configuration.h",
+    "cloud/reporting_job_configuration_base.cc",
+    "cloud/reporting_job_configuration_base.h",
     "cloud/resource_cache.cc",
     "cloud/resource_cache.h",
     "cloud/signing_service.h",

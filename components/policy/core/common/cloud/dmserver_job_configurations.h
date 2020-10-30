@@ -78,7 +78,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
                          const std::string& response_body) override;
 
   // JobConfigurationBase overrides.
-  GURL GetURL(int last_error) override;
+  GURL GetURL(int last_error) const override;
 
   std::string server_url_;
   enterprise_management::DeviceManagementRequest request_;

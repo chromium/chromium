@@ -375,7 +375,6 @@ class POLICY_EXPORT JobConfigurationBase
                        scoped_refptr<network::SharedURLLoaderFactory> factory);
   ~JobConfigurationBase() override;
 
- protected:
   // Adds the query parameter to the network request's URL.  If the parameter
   // already exists its value is replaced.
   void AddParameter(const std::string& name, const std::string& value);
@@ -395,7 +394,7 @@ class POLICY_EXPORT JobConfigurationBase
       const std::string& response_body) override;
 
   // Derived classes should return the base URL for the request.
-  virtual GURL GetURL(int last_error) = 0;
+  virtual GURL GetURL(int last_error) const = 0;
 
  private:
   JobType type_;

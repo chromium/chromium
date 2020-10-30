@@ -28,6 +28,7 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/cloud/mock_signing_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+#include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -1528,28 +1529,35 @@ TEST_F(CloudPolicyClientTest, UploadRealtimeReport) {
   ASSERT_TRUE(payload);
 
   EXPECT_EQ(kDMToken, *payload->FindStringPath(
-                          RealtimeReportingJobConfiguration::kDmTokenKey));
+                          ReportingJobConfigurationBase::
+                              DeviceDictionaryBuilder::GetDMTokenPath()));
   EXPECT_EQ(client_id_, *payload->FindStringPath(
-                            RealtimeReportingJobConfiguration::kClientIdKey));
+                            ReportingJobConfigurationBase::
+                                DeviceDictionaryBuilder::GetClientIdPath()));
   EXPECT_EQ(policy::GetOSUsername(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kMachineUserKey));
+                ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+                    GetMachineUserPath()));
   EXPECT_EQ(version_info::GetVersionNumber(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kChromeVersionKey));
+                ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+                    GetChromeVersionPath()));
   EXPECT_EQ(policy::GetOSPlatform(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kOsPlatformKey));
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetOSPlatformPath()));
   EXPECT_EQ(policy::GetOSVersion(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kOsVersionKey));
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetOSVersionPath()));
   EXPECT_FALSE(policy::GetDeviceName().empty());
-  EXPECT_EQ(policy::GetDeviceName(),
-            *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kDeviceNameKey));
+  EXPECT_EQ(
+      policy::GetDeviceName(),
+      *payload->FindStringPath(ReportingJobConfigurationBase::
+                                   DeviceDictionaryBuilder::GetNamePath()));
 
   base::Value* events =
-      payload->FindPath(RealtimeReportingJobConfiguration::kEventsKey);
+      payload->FindPath(RealtimeReportingJobConfiguration::kEventListKey);
   EXPECT_EQ(base::Value::Type::LIST, events->type());
   EXPECT_EQ(1u, events->GetList().size());
 }
@@ -1558,7 +1566,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   auto config = std::make_unique<RealtimeReportingJobConfiguration>(
       client_.get(), DMAuth::FromDMToken(kDMToken),
       service_.configuration()->GetRealtimeReportingServerUrl(), false,
-      RealtimeReportingJobConfiguration::Callback());
+      RealtimeReportingJobConfiguration::UploadCompleteCallback());
 
   // Add one report to the config.
   {
@@ -1623,10 +1631,11 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   ASSERT_EQ("C:\\User Data\\Profile 1",
             *payload->FindStringPath("profile.profilePath"));
   ASSERT_EQ("1.0.0.0", *payload->FindStringPath("browser.version"));
-  ASSERT_EQ(2u,
-            payload->FindListPath(RealtimeReportingJobConfiguration::kEventsKey)
-                ->GetList()
-                .size());
+  ASSERT_EQ(
+      2u,
+      payload->FindListPath(RealtimeReportingJobConfiguration::kEventListKey)
+          ->GetList()
+          .size());
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {

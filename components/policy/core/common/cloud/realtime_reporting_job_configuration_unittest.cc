@@ -175,29 +175,35 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
       base::JSONReader::Read(configuration_.GetPayload());
   EXPECT_TRUE(payload.has_value());
   EXPECT_EQ(kDummyToken, *payload->FindStringPath(
-                             RealtimeReportingJobConfiguration::kDmTokenKey));
-  EXPECT_EQ(client_.client_id(),
-            *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kClientIdKey));
+                             ReportingJobConfigurationBase::
+                                 DeviceDictionaryBuilder::GetDMTokenPath()));
+  EXPECT_EQ(
+      client_.client_id(),
+      *payload->FindStringPath(ReportingJobConfigurationBase::
+                                   DeviceDictionaryBuilder::GetClientIdPath()));
   EXPECT_EQ(GetOSUsername(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kMachineUserKey));
+                ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+                    GetMachineUserPath()));
   EXPECT_EQ(version_info::GetVersionNumber(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kChromeVersionKey));
+                ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+                    GetChromeVersionPath()));
   EXPECT_EQ(GetOSPlatform(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kOsPlatformKey));
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetOSPlatformPath()));
   EXPECT_EQ(GetOSVersion(),
             *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kOsVersionKey));
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetOSVersionPath()));
   EXPECT_FALSE(GetDeviceName().empty());
-  EXPECT_EQ(GetDeviceName(),
-            *payload->FindStringPath(
-                RealtimeReportingJobConfiguration::kDeviceNameKey));
+  EXPECT_EQ(GetDeviceName(), *payload->FindStringPath(
+                                 ReportingJobConfigurationBase::
+                                     DeviceDictionaryBuilder::GetNamePath()));
 
   base::Value* events =
-      payload->FindListKey(RealtimeReportingJobConfiguration::kEventsKey);
+      payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
   EXPECT_EQ(ids.size(), events->GetList().size());
   int i = -1;
   for (const auto& event : events->GetList()) {
@@ -314,7 +320,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
   base::Optional<base::Value> payload =
       base::JSONReader::Read(configuration_.GetPayload());
   base::Value* events =
-      payload->FindListKey(RealtimeReportingJobConfiguration::kEventsKey);
+      payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
   EXPECT_EQ(1u, events->GetList().size());
   auto& event = events->GetList()[0];
   EXPECT_EQ(ids[1], *event.FindStringKey(kEventId));
