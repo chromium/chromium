@@ -15,6 +15,10 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace display {
 class Display;
 class DisplayObserver;
@@ -81,6 +85,12 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
 
   // Suspends the platform-specific screensaver, if applicable.
   virtual void SetScreenSaverSuspended(bool suspend);
+
+  // Returns whether the screensaver is currently running.
+  virtual bool IsScreenSaverActive() const;
+
+  // Calculates idle time.
+  virtual base::TimeDelta CalculateIdleTime() const;
 
   // Adds/Removes display observers.
   virtual void AddObserver(display::DisplayObserver* observer) = 0;

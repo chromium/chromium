@@ -48,6 +48,8 @@ class X11ScreenOzone : public PlatformScreen,
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect_in_pixels) const override;
   void SetScreenSaverSuspended(bool suspend) override;
+  bool IsScreenSaverActive() const override;
+  base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;

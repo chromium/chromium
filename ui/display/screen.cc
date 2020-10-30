@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -65,6 +66,16 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
 
 void Screen::SetScreenSaverSuspended(bool suspend) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool Screen::IsScreenSaverActive() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+base::TimeDelta Screen::CalculateIdleTime() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return base::TimeDelta::FromSeconds(0);
 }
 
 gfx::Rect Screen::ScreenToDIPRectInWindow(gfx::NativeWindow window,

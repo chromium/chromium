@@ -55,12 +55,13 @@ component("idle") {
   }
 
   if (use_x11 && !is_chromeos) {
-    deps += [ "//ui/gfx/x" ]
-    sources += [
-      "idle_query_x11.cc",
-      "idle_query_x11.h",
-      "screensaver_window_finder_x11.cc",
-      "screensaver_window_finder_x11.h",
+    deps += [ "//ui/base/x" ]
+  }
+
+  if (use_ozone) {
+    deps += [
+      "//ui/base:features",
+      "//ui/display",
     ]
   }
 

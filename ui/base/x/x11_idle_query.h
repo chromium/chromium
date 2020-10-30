@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IDLE_IDLE_QUERY_X11_H_
-#define UI_BASE_IDLE_IDLE_QUERY_X11_H_
+#ifndef UI_BASE_X_X11_IDLE_QUERY_H_
+#define UI_BASE_X_X11_IDLE_QUERY_H_
 
-#include <memory>
-
+#include "base/component_export.h"
 #include "base/macros.h"
 
 namespace x11 {
@@ -15,7 +14,7 @@ class Connection;
 
 namespace ui {
 
-class IdleQueryX11 {
+class COMPONENT_EXPORT(UI_BASE_X) IdleQueryX11 {
  public:
   IdleQueryX11();
   ~IdleQueryX11();
@@ -30,4 +29,4 @@ class IdleQueryX11 {
 
 }  // namespace ui
 
-#endif  // UI_BASE_IDLE_IDLE_QUERY_X11_H_
+#endif  // UI_BASE_X_X11_IDLE_QUERY_H_

@@ -15,10 +15,14 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace gfx {
 class Point;
 class Rect;
-}
+}  // namespace gfx
 
 namespace display {
 class DisplayObserver;
@@ -100,6 +104,12 @@ class DISPLAY_EXPORT Screen {
 
   // Suspends the platform-specific screensaver, if applicable.
   virtual void SetScreenSaverSuspended(bool suspend);
+
+  // Returns whether the screensaver is currently running.
+  virtual bool IsScreenSaverActive() const;
+
+  // Calculates idle time.
+  virtual base::TimeDelta CalculateIdleTime() const;
 
   // Adds/Removes display observers.
   virtual void AddObserver(DisplayObserver* observer) = 0;

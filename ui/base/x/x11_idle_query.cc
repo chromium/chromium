@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/idle/idle_query_x11.h"
+#include "ui/base/x/x11_idle_query.h"
 
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/screensaver.h"

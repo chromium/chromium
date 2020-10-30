@@ -5,6 +5,7 @@
 #include "ui/ozone/public/platform_screen.h"
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 
 namespace ui {
 
@@ -25,6 +26,16 @@ std::string PlatformScreen::GetCurrentWorkspace() {
 
 void PlatformScreen::SetScreenSaverSuspended(bool suspend) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool PlatformScreen::IsScreenSaverActive() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+base::TimeDelta PlatformScreen::CalculateIdleTime() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return base::TimeDelta::FromSeconds(0);
 }
 
 base::Value PlatformScreen::GetGpuExtraInfoAsListValue(

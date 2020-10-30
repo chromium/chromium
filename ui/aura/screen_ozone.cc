@@ -89,6 +89,14 @@ void ScreenOzone::SetScreenSaverSuspended(bool suspend) {
   platform_screen_->SetScreenSaverSuspended(suspend);
 }
 
+bool ScreenOzone::IsScreenSaverActive() const {
+  return platform_screen_->IsScreenSaverActive();
+}
+
+base::TimeDelta ScreenOzone::CalculateIdleTime() const {
+  return platform_screen_->CalculateIdleTime();
+}
+
 void ScreenOzone::AddObserver(display::DisplayObserver* observer) {
   platform_screen_->AddObserver(observer);
 }

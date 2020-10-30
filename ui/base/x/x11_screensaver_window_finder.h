@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IDLE_SCREENSAVER_WINDOW_FINDER_X11_H_
-#define UI_BASE_IDLE_SCREENSAVER_WINDOW_FINDER_X11_H_
+#ifndef UI_BASE_X_X11_SCREENSAVER_WINDOW_FINDER_H_
+#define UI_BASE_X_X11_SCREENSAVER_WINDOW_FINDER_H_
 
-#include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/x/x11_util.h"
 
 namespace ui {
 
-class ScreensaverWindowFinder : public ui::EnumerateWindowsDelegate {
+class COMPONENT_EXPORT(UI_BASE_X) ScreensaverWindowFinder
+    : public ui::EnumerateWindowsDelegate {
  public:
   static bool ScreensaverWindowExists();
 
@@ -30,4 +31,4 @@ class ScreensaverWindowFinder : public ui::EnumerateWindowsDelegate {
 
 }  // namespace ui
 
-#endif  // UI_BASE_IDLE_SCREENSAVER_WINDOW_FINDER_X11_H_
+#endif  // UI_BASE_X_X11_SCREENSAVER_WINDOW_FINDER_H_

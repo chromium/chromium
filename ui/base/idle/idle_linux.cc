@@ -7,36 +7,56 @@
 #include "ui/base/idle/idle_internal.h"
 
 #if defined(USE_X11)
-#include "ui/base/idle/idle_query_x11.h"
-#include "ui/base/idle/screensaver_window_finder_x11.h"
+#include "ui/base/x/x11_idle_query.h"
+#include "ui/base/x/x11_screensaver_window_finder.h"
+#endif
+
+#if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
 #endif
 
 namespace ui {
 
 int CalculateIdleTime() {
-// TODO(https://crbug.com/1098201): calculate idle time for Ozone/Linux.
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    IdleQueryX11 idle_query;
-    return idle_query.IdleTime();
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    auto* const screen = display::Screen::GetScreen();
+    // The screen can be nullptr in tests.
+    if (!screen)
+      return 0;
+    return screen->CalculateIdleTime().InSeconds();
   }
 #endif
+#if defined(USE_X11)
+  IdleQueryX11 idle_query;
+  return idle_query.IdleTime();
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
   return 0;
+#endif
 }
 
 bool CheckIdleStateIsLocked() {
   if (IdleStateForTesting().has_value())
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
 
-// TODO(https://crbug.com/1098202): fix screensaver.
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // Usually the screensaver is used to lock the screen.
-    return ScreensaverWindowFinder::ScreensaverWindowExists();
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    auto* const screen = display::Screen::GetScreen();
+    // The screen can be nullptr in tests.
+    if (!screen)
+      return false;
+    return screen->IsScreenSaverActive();
   }
 #endif
+#if defined(USE_X11)
+  // Usually the screensaver is used to lock the screen.
+  return ScreensaverWindowFinder::ScreensaverWindowExists();
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
+#endif
 }
 
 }  // namespace ui

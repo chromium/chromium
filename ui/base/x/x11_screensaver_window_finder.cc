@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/idle/screensaver_window_finder_x11.h"
+#include "ui/base/x/x11_screensaver_window_finder.h"
 
 #include "base/command_line.h"
 #include "ui/base/x/x11_util.h"
@@ -16,6 +16,7 @@ namespace ui {
 
 ScreensaverWindowFinder::ScreensaverWindowFinder() : exists_(false) {}
 
+// static
 bool ScreensaverWindowFinder::ScreensaverWindowExists() {
   // Avoid calling into potentially missing X11 APIs in headless mode.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))

@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 
+#include "ui/base/x/x11_idle_query.h"
+#include "ui/base/x/x11_screensaver_window_finder.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/util/display_util.h"
@@ -122,6 +124,16 @@ display::Display X11ScreenOzone::GetDisplayMatching(
 
 void X11ScreenOzone::SetScreenSaverSuspended(bool suspend) {
   SuspendX11ScreenSaver(suspend);
+}
+
+bool X11ScreenOzone::IsScreenSaverActive() const {
+  // Usually the screensaver is used to lock the screen.
+  return ScreensaverWindowFinder::ScreensaverWindowExists();
+}
+
+base::TimeDelta X11ScreenOzone::CalculateIdleTime() const {
+  IdleQueryX11 idle_query;
+  return base::TimeDelta::FromSeconds(idle_query.IdleTime());
 }
 
 void X11ScreenOzone::AddObserver(display::DisplayObserver* observer) {
