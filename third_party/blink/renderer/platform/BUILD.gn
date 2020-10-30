@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
 import("//build/compiled_action.gni")
 import("//build/config/compiler/compiler.gni")
@@ -187,8 +188,9 @@ group("blink_platform_public_deps") {
 declare_args() {
   runtime_call_stats_count_everything = false
 
-  # Enable TRACE_EVENT instrumentation for Blink bindings. Disabled by default as it increases binary size.
-  enable_blink_bindings_tracing = false
+  # Enable TRACE_EVENT instrumentation for Blink bindings.
+  # Disabled by default as it increases binary size.
+  enable_blink_bindings_tracing = extended_tracing_enabled
 }
 
 buildflag_header("bindings_buildflags") {
