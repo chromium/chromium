@@ -970,6 +970,11 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         mMediaStreamManager.destroy();
         mMediaStreamManager = null;
 
+        if (mMediaSessionHelper != null) {
+            mMediaSessionHelper.destroy();
+            mMediaSessionHelper = null;
+        }
+
         // Destroying FaviconCallbackProxy removes from mFaviconCallbackProxies. Copy to avoid
         // problems.
         Set<FaviconCallbackProxy> faviconCallbackProxies = mFaviconCallbackProxies;
