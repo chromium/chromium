@@ -191,6 +191,25 @@ std::unique_ptr<v8_inspector::StringBuffer> ThreadDebugger::valueSubtype(
   return nullptr;
 }
 
+std::unique_ptr<v8_inspector::StringBuffer>
+ThreadDebugger::descriptionForValueSubtype(v8::Local<v8::Context> context,
+                                           v8::Local<v8::Value> value) {
+  if (V8TrustedHTML::HasInstance(value, isolate_)) {
+    TrustedHTML* trustedHTML =
+        V8TrustedHTML::ToImplWithTypeCheck(isolate_, value);
+    return ToV8InspectorStringBuffer(trustedHTML->toString());
+  } else if (V8TrustedScript::HasInstance(value, isolate_)) {
+    TrustedScript* trustedScript =
+        V8TrustedScript::ToImplWithTypeCheck(isolate_, value);
+    return ToV8InspectorStringBuffer(trustedScript->toString());
+  } else if (V8TrustedScriptURL::HasInstance(value, isolate_)) {
+    TrustedScriptURL* trustedScriptURL =
+        V8TrustedScriptURL::ToImplWithTypeCheck(isolate_, value);
+    return ToV8InspectorStringBuffer(trustedScriptURL->toString());
+  }
+  return nullptr;
+}
+
 bool ThreadDebugger::formatAccessorsAsProperties(v8::Local<v8::Value> value) {
   return V8DOMWrapper::IsWrapper(isolate_, value);
 }

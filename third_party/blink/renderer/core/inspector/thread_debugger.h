@@ -85,6 +85,9 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
   void beginUserGesture() override;
   std::unique_ptr<v8_inspector::StringBuffer> valueSubtype(
       v8::Local<v8::Value>) override;
+  std::unique_ptr<v8_inspector::StringBuffer> descriptionForValueSubtype(
+      v8::Local<v8::Context>,
+      v8::Local<v8::Value>) override;
   bool formatAccessorsAsProperties(v8::Local<v8::Value>) override;
   double currentTimeMS() override;
   bool isInspectableHeapObject(v8::Local<v8::Object>) override;

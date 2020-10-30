@@ -1,0 +1,9 @@
+Test description generation for Trusted Types.
+{
+    className : TrustedHTML
+    description : <foo>
+    objectId : <string>
+    subtype : trustedtype
+    type : object
+}
+
