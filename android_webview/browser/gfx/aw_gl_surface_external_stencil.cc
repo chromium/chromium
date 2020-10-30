@@ -82,12 +82,6 @@ class AwGLSurfaceExternalStencil::BlitContext {
       glDisableVertexAttribArray(i);
     }
 
-    // Note that function is not ANGLE only.
-    if (gl::g_current_gl_driver->fn.glVertexAttribDivisorANGLEFn) {
-      glVertexAttribDivisorANGLE(0, 0);
-      glVertexAttribDivisorANGLE(1, 0);
-    }
-
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
@@ -226,8 +220,6 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, framebuffer_->texture_id());
-    if (gl::g_current_gl_driver->fn.glBindSamplerFn)
-      glBindSampler(0, 0);
 
     // We need to restore viewport as it might have changed by renderer
     glViewport(0, 0, viewport_.width(), viewport_.height());
@@ -237,15 +229,6 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
 
     // Restore color mask in case.
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
-    glFrontFace(GL_CCW);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    if (gl::g_current_gl_driver->fn.glWindowRectanglesEXTFn)
-      glWindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
