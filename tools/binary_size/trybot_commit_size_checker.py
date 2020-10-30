@@ -114,8 +114,8 @@ def _CreateMethodCountDelta(symbols):
                            _MAX_DEX_METHOD_COUNT_INCREASE, net_method_added)
 
 
-def _CreateResourceSizesDelta(apk_name, before_dir, after_dir):
-  sizes_diff = diagnose_bloat.ResourceSizesDiff(apk_name)
+def _CreateResourceSizesDelta(before_dir, after_dir):
+  sizes_diff = diagnose_bloat.ResourceSizesDiff()
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
   return sizes_diff.Summary(), _SizeDelta(
@@ -315,8 +315,8 @@ def main():
 
   # Normalized APK Size is the main metric we use to monitor binary size.
   logging.info('Creating sizes diff')
-  resource_sizes_lines, resource_sizes_delta = (
-      _CreateResourceSizesDelta(args.apk_name, args.before_dir, args.after_dir))
+  resource_sizes_lines, resource_sizes_delta = (_CreateResourceSizesDelta(
+      args.before_dir, args.after_dir))
   size_deltas.add(resource_sizes_delta)
   metrics.add((resource_sizes_delta, _RESOURCE_SIZES_LOG))
 

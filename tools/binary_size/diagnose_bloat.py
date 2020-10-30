@@ -127,8 +127,7 @@ class ResourceSizesDiff(BaseDiff):
   _AGGREGATE_SECTIONS = (
       'InstallBreakdown', 'Breakdown', 'MainLibInfo', 'Uncompressed')
 
-  def __init__(self, apk_name, filename='results-chart.json'):
-    self._apk_name = apk_name
+  def __init__(self, filename='results-chart.json'):
     self._diff = None  # Set by |ProduceDiff()|
     self._filename = filename
     super(ResourceSizesDiff, self).__init__('Resource Sizes Diff')
@@ -898,9 +897,7 @@ def main():
     supersize_path, tool_prefix = paths
     diffs = [NativeDiff(build.size_name, supersize_path)]
     if build.IsAndroid():
-      diffs +=  [
-          ResourceSizesDiff(build.apk_name)
-      ]
+      diffs += [ResourceSizesDiff()]
     diff_mngr = _DiffArchiveManager(revs, args.archive_directory, diffs, build,
                                     subrepo, args.unstripped)
     consecutive_failures = 0
