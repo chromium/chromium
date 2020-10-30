@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "components/exo/data_source.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -221,6 +222,9 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
   event_blocker_ =
       std::make_unique<aura::ScopedWindowEventTargetingBlocker>(toplevel);
 
+  // Disable visibility change animations on the dragged window.
+  toplevel->SetProperty(aura::client::kAnimationsDisabledKey, true);
+
   DVLOG(1) << "Starting drag. pointer_loc=" << pointer_location.ToString();
   auto* toplevel_handler = ash::Shell::Get()->toplevel_window_event_handler();
   auto move_source = drag_event_source_ == ui::mojom::DragEventSource::kTouch
@@ -266,6 +270,10 @@ gfx::Point ExtendedDragSource::CalculateOrigin(aura::Window* target) const {
 }
 
 void ExtendedDragSource::Cleanup() {
+  if (dragged_window_holder_ && dragged_window_holder_->toplevel_window()) {
+    dragged_window_holder_->toplevel_window()->ClearProperty(
+        aura::client::kAnimationsDisabledKey);
+  }
   event_blocker_.reset();
   dragged_window_holder_.reset();
   UnlockCursor();
