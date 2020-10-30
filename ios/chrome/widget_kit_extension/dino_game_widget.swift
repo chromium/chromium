@@ -1,0 +1,50 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Foundation
+import SwiftUI
+import WidgetKit
+
+struct DinoGameWidget: Widget {
+  let kind: String = "DinoGame_Widget"
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      DinoGameWidgetEntryView(entry: entry)
+    }
+    .configurationDisplayName(
+      Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME")
+    )
+    .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION"))
+    .supportedFamilies([.systemSmall])
+  }
+}
+
+struct DinoGameWidgetEntryView: View {
+  let background = "widget_dino_background"
+  let backgroundPlaceholder = "widget_dino_background_placeholder"
+  var entry: Provider.Entry
+  @Environment(\.redactionReasons) var redactionReasons
+  var body: some View {
+    ZStack {
+      Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
+        .resizable()
+        .unredacted()
+      VStack(alignment: .leading, spacing: 0) {
+        Spacer()
+          .frame(minWidth: 0, maxWidth: .infinity)
+        HStack {
+          Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
+            .foregroundColor(Color("widget_text_color"))
+            .fontWeight(.semibold)
+            .font(.subheadline)
+            .lineLimit(1)
+          Spacer()
+        }
+        .padding([.leading, .bottom], 16)
+      }
+    }
+    .widgetURL(WidgetConstants.DinoGameWidget.url)
+    .accessibility(label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL"))
+  }
+}

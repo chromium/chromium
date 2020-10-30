@@ -35,7 +35,13 @@ compile_entitlements("entitlements") {
 }
 
 ios_appex_bundle("widget_kit_extension") {
-  sources = []
+  sources = [
+    "dino_game_widget.swift",
+    "main.swift",
+    "quick_actions_widget.swift",
+    "search_widget.swift",
+    "widget_constants.swift",
+  ]
 
   deps = [
     ":system_strings",
