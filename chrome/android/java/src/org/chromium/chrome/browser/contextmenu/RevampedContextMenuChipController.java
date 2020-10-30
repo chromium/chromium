@@ -119,8 +119,10 @@ class RevampedContextMenuChipController implements View.OnClickListener {
                                       .build();
         }
 
-        if (lensQueryResult != null && lensQueryResult.getIsShoppyIntent()
-                || LensUtils.isLensShoppingIntentType(lensQueryResult.getLensIntentType())) {
+        if (lensQueryResult != null
+                && (lensQueryResult.getIsShoppyIntent()
+                        || LensUtils.isLensShoppingIntentType(
+                                lensQueryResult.getLensIntentType()))) {
             showChip(mAnchorView);
         };
     }
