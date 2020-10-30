@@ -158,6 +158,13 @@ class ShellContentBrowserClient : public ContentBrowserClient {
     override_web_preferences_callback_ = std::move(callback);
   }
 
+  // Sets a global that enables certificate transparency. Uses a global because
+  // test fixtures don't otherwise have a chance to set this between when the
+  // ShellContentBrowserClient is created and when the StoragePartition creates
+  // the NetworkContext.
+  static void set_enable_expect_ct_for_testing(
+      bool enable_expect_ct_for_testing);
+
  protected:
   // Call this if CreateBrowserMainParts() is overridden in a subclass.
   void set_browser_main_parts(ShellBrowserMainParts* parts) {

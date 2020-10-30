@@ -1301,8 +1301,13 @@ interface NetworkContext {
 
   // Checks the given certificate against the CertVerifier and CTVerifier. This
   // implementation is currently specific for use by Signed Exchange.
+  //
+  // |network_isolation_key| must be the NetworkIsolationKey associated with the
+  // underlying resource load, and is used foy any reports generated as a result
+  // of verifying the cert.
   VerifyCertForSignedExchange(X509Certificate certificate,
                               url.mojom.Url url,
+                              NetworkIsolationKey network_isolation_key,
                               string ocsp_response,
                               string sct_list) => (int32 error_code,
                                                    CertVerifyResult cv_result);

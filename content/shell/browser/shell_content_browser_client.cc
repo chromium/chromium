@@ -82,7 +82,9 @@ namespace content {
 
 namespace {
 
-ShellContentBrowserClient* g_browser_client;
+ShellContentBrowserClient* g_browser_client = nullptr;
+
+bool g_enable_expect_ct_for_testing = false;
 
 #if defined(OS_ANDROID)
 int GetCrashSignalFD(const base::CommandLine& command_line) {
@@ -461,6 +463,11 @@ ShellBrowserContext*
   return shell_browser_main_parts_->off_the_record_browser_context();
 }
 
+void ShellContentBrowserClient::set_enable_expect_ct_for_testing(
+    bool enable_expect_ct_for_testing) {
+  g_enable_expect_ct_for_testing = enable_expect_ct_for_testing;
+}
+
 void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
     BrowserContext* context,
     network::mojom::NetworkContextParams* context_params,
@@ -474,6 +481,12 @@ void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
           "cors_exempt_header_list");
   if (!exempt_header.empty())
     context_params->cors_exempt_header_list.push_back(exempt_header);
+
+  if (g_enable_expect_ct_for_testing) {
+    context_params->enforce_chrome_ct_policy = true;
+    context_params->ct_log_update_time = base::Time::Now();
+    context_params->enable_expect_ct_reporting = true;
+  }
 }
 
 void ShellContentBrowserClient::GetHyphenationDictionary(

@@ -1377,15 +1377,21 @@ void NetworkContext::CreateHostResolver(
 void NetworkContext::VerifyCertForSignedExchange(
     const scoped_refptr<net::X509Certificate>& certificate,
     const GURL& url,
+    const net::NetworkIsolationKey& network_isolation_key,
     const std::string& ocsp_result,
     const std::string& sct_list,
     VerifyCertForSignedExchangeCallback callback) {
+  // TODO(https://crbug.com/1087091): DCHECK that |network_isolation_key| is
+  // populated when |require_network_isolation_key| is true, once all consumers
+  // are passing in a NetworkIsolationKey.
+
   int cert_verify_id = ++next_cert_verify_id_;
   auto pending_cert_verify = std::make_unique<PendingCertVerify>();
   pending_cert_verify->callback = std::move(callback);
   pending_cert_verify->result = std::make_unique<net::CertVerifyResult>();
   pending_cert_verify->certificate = certificate;
   pending_cert_verify->url = url;
+  pending_cert_verify->network_isolation_key = network_isolation_key;
   pending_cert_verify->ocsp_result = ocsp_result;
   pending_cert_verify->sct_list = sct_list;
   net::CertVerifier* cert_verifier =
@@ -1396,7 +1402,7 @@ void NetworkContext::VerifyCertForSignedExchange(
                                        0 /* cert_verify_flags */, ocsp_result,
                                        sct_list),
       pending_cert_verify->result.get(),
-      base::BindOnce(&NetworkContext::OnCertVerifyForSignedExchangeComplete,
+      base::BindOnce(&NetworkContext::OnVerifyCertForSignedExchangeComplete,
                      base::Unretained(this), cert_verify_id),
       &pending_cert_verify->request,
       net::NetLogWithSource::Make(url_request_context_->net_log(),
@@ -1404,7 +1410,7 @@ void NetworkContext::VerifyCertForSignedExchange(
   cert_verifier_requests_[cert_verify_id] = std::move(pending_cert_verify);
 
   if (result != net::ERR_IO_PENDING)
-    OnCertVerifyForSignedExchangeComplete(cert_verify_id, result);
+    OnVerifyCertForSignedExchangeComplete(cert_verify_id, result);
 }
 
 void NetworkContext::ParseHeaders(
@@ -2361,7 +2367,7 @@ void NetworkContext::CanUploadDomainReliability(
                      std::move(callback)));
 }
 
-void NetworkContext::OnCertVerifyForSignedExchangeComplete(int cert_verify_id,
+void NetworkContext::OnVerifyCertForSignedExchangeComplete(int cert_verify_id,
                                                            int result) {
   auto iter = cert_verifier_requests_.find(cert_verify_id);
   DCHECK(iter != cert_verifier_requests_.end());
@@ -2405,9 +2411,6 @@ void NetworkContext::OnCertVerifyForSignedExchangeComplete(int cert_verify_id,
       pending_cert_verify->result->cert_status &= ~net::CERT_STATUS_IS_EV;
     }
 
-    // TODO(https://crbug.com/1087091): Update
-    // NetworkContext::VerifyCertForSignedExchange() to take a
-    // NetworkIsolationKey, and pass it in here.
     net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
         url_request_context_->transport_security_state()->CheckCTRequirements(
             net::HostPortPair::FromURL(pending_cert_verify->url),
@@ -2417,7 +2420,7 @@ void NetworkContext::OnCertVerifyForSignedExchangeComplete(int cert_verify_id,
             pending_cert_verify->result->scts,
             net::TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
             pending_cert_verify->result->policy_compliance,
-            net::NetworkIsolationKey::Todo());
+            pending_cert_verify->network_isolation_key);
 
     if (url_request_context_->sct_auditing_delegate() &&
         url_request_context_->sct_auditing_delegate()->IsSCTAuditingEnabled() &&

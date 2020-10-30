@@ -85,6 +85,10 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     bool* skip_other_interceptors,
     bool* will_return_unsafe_redirect) {
   DCHECK(!signed_exchange_loader_);
+
+  // Navigation ResourceRequests always have non-empty |trusted_params|.
+  DCHECK(request.trusted_params);
+
   if (!signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(
           request.url, **response_head)) {
     return false;
@@ -109,6 +113,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
       std::move(client), url_loader->Unbind(), url_loader_options_,
       true /* should_redirect_to_fallback */, std::move(devtools_proxy),
       std::move(reporter), url_loader_factory_, url_loader_throttles_getter_,
+      request.trusted_params->isolation_info.network_isolation_key(),
       frame_tree_node_id_, metric_recorder_, accept_langs_,
       false /* keep_entry_for_prefetch_cache */);
 

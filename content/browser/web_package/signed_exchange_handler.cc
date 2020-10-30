@@ -85,6 +85,7 @@ using VerifyCallback =
 
 void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                 const GURL& url,
+                const net::NetworkIsolationKey& network_isolation_key,
                 const std::string& ocsp_result,
                 const std::string& sct_list,
                 int frame_tree_node_id,
@@ -106,7 +107,8 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
   }
 
   network_context->VerifyCertForSignedExchange(
-      certificate, url, ocsp_result, sct_list, std::move(wrapped_callback));
+      certificate, url, network_isolation_key, ocsp_result, sct_list,
+      std::move(wrapped_callback));
 }
 
 std::string OCSPErrorToString(const net::OCSPVerifyResult& ocsp_result) {
@@ -169,6 +171,7 @@ SignedExchangeHandler::SignedExchangeHandler(
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
+    const net::NetworkIsolationKey& network_isolation_key,
     int load_flags,
     std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
     std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy,
@@ -179,6 +182,7 @@ SignedExchangeHandler::SignedExchangeHandler(
       headers_callback_(std::move(headers_callback)),
       source_(std::move(body)),
       cert_fetcher_factory_(std::move(cert_fetcher_factory)),
+      network_isolation_key_(network_isolation_key),
       load_flags_(load_flags),
       request_matcher_(std::move(request_matcher)),
       devtools_proxy_(std::move(devtools_proxy)),
@@ -521,8 +525,8 @@ void SignedExchangeHandler::OnCertReceived(
   //   property, or
   const std::string& stapled_ocsp_response = unverified_cert_chain_->ocsp();
 
-  VerifyCert(certificate, url, stapled_ocsp_response, sct_list_from_cert_cbor,
-             frame_tree_node_id_,
+  VerifyCert(certificate, url, network_isolation_key_, stapled_ocsp_response,
+             sct_list_from_cert_cbor, frame_tree_node_id_,
              base::BindOnce(&SignedExchangeHandler::OnVerifyCert,
                             weak_factory_.GetWeakPtr()));
 }

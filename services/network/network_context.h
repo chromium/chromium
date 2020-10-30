@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/dns/host_resolver.h"
@@ -335,6 +336,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
       const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertForSignedExchangeCallback callback) override;
@@ -546,7 +548,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CanUploadDomainReliability(const GURL& origin,
                                   base::OnceCallback<void(bool)> callback);
 
-  void OnCertVerifyForSignedExchangeComplete(int cert_verify_id, int result);
+  void OnVerifyCertForSignedExchangeComplete(int cert_verify_id, int result);
 
 #if BUILDFLAG(IS_ASH)
   void TrustAnchorUsed();
@@ -701,6 +703,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   struct PendingCertVerify {
     PendingCertVerify();
     ~PendingCertVerify();
+
     // CertVerifyResult must be freed after the Request has been destructed.
     // So |result| must be written before |request|.
     std::unique_ptr<net::CertVerifyResult> result;
@@ -708,6 +711,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     VerifyCertForSignedExchangeCallback callback;
     scoped_refptr<net::X509Certificate> certificate;
     GURL url;
+    net::NetworkIsolationKey network_isolation_key;
     std::string ocsp_result;
     std::string sct_list;
   };
