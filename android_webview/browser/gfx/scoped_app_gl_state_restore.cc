@@ -8,10 +8,27 @@
 
 #include "base/lazy_instance.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
+
+// We can't include khronos headers because of conflict with gl_bindings.h, but
+// we need this constant for restoring state.
+#ifndef GL_ARM_shader_framebuffer_fetch
+#define GL_ARM_shader_framebuffer_fetch 1
+#define GL_FETCH_PER_SAMPLE_ARM 0x8F65
+#define GL_FRAGMENT_SHADER_FRAMEBUFFER_FETCH_MRT_ARM 0x8F66
+#endif /* GL_ARM_shader_framebuffer_fetch */
+
+#ifndef GL_NV_conservative_raster
+#define GL_NV_conservative_raster 1
+#define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
+#define GL_SUBPIXEL_PRECISION_BIAS_X_BITS_NV 0x9347
+#define GL_SUBPIXEL_PRECISION_BIAS_Y_BITS_NV 0x9348
+#define GL_MAX_SUBPIXEL_PRECISION_BIAS_BITS_NV 0x9349
+#endif /* GL_NV_conservative_raster */
 
 namespace android_webview {
 
@@ -67,6 +84,10 @@ bool g_globals_initialized = false;
 GLint g_gl_max_texture_units = 0;
 GLint g_gl_max_vertex_attribs = 0;
 bool g_supports_oes_vertex_array_object = false;
+bool g_supports_arm_shader_framebuffer_fetch = false;
+bool g_supports_nv_concervative_raster = false;
+bool g_supports_disable_multisample = false;
+bool g_use_skia_renderer = false;
 ScopedAppGLStateRestore* g_current_instance = nullptr;
 
 }  // namespace
@@ -132,6 +153,9 @@ class ScopedAppGLStateRestoreImpl {
   GLboolean enable_polygon_offset_fill_;
   GLboolean enable_sample_alpha_to_coverage_;
   GLboolean enable_sample_coverage_;
+  GLboolean multisample_enabled_;
+  // ARM_shader_framebuffer_fetch
+  GLboolean fetch_per_sample_arm_enabled_;
 
   // Not saved/restored in MODE_DRAW.
   GLboolean blend_enabled_;
@@ -195,6 +219,29 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
 
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &framebuffer_binding_ext_);
 
+  if (!g_globals_initialized) {
+    g_globals_initialized = true;
+
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &g_gl_max_vertex_attribs);
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &g_gl_max_texture_units);
+
+    std::string extensions;
+    const char* extensions_c_str =
+        reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+    if (extensions_c_str)
+      extensions = extensions_c_str;
+    g_supports_oes_vertex_array_object =
+        extensions.find("GL_OES_vertex_array_object") != std::string::npos;
+    g_supports_arm_shader_framebuffer_fetch =
+        extensions.find("GL_ARM_shader_framebuffer_fetch") != std::string::npos;
+    g_supports_nv_concervative_raster =
+        extensions.find("GL_NV_conservative_raster") != std::string::npos;
+    g_supports_disable_multisample =
+        extensions.find("GL_EXT_multisample_compatibility") !=
+        std::string::npos;
+    g_use_skia_renderer = features::IsUsingSkiaRenderer();
+  }
+
   if (save_restore_) {
     SaveHWUIState();
   }
@@ -211,21 +258,6 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
 }
 
 void ScopedAppGLStateRestoreImpl::SaveHWUIState() {
-  if (!g_globals_initialized) {
-    g_globals_initialized = true;
-
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &g_gl_max_vertex_attribs);
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &g_gl_max_texture_units);
-
-    std::string extensions;
-    const char* extensions_c_str =
-        reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-    if (extensions_c_str)
-      extensions = extensions_c_str;
-    g_supports_oes_vertex_array_object =
-        extensions.find("GL_OES_vertex_array_object") != std::string::npos;
-  }
-
   glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &vertex_array_buffer_binding_);
   glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &index_array_buffer_binding_);
 
@@ -312,6 +344,14 @@ void ScopedAppGLStateRestoreImpl::SaveHWUIState() {
     glGetVertexAttribfv(
         i, GL_CURRENT_VERTEX_ATTRIB, vertex_attrib_[i].current_vertex_attrib);
   }
+
+  if (g_use_skia_renderer) {
+    if (g_supports_arm_shader_framebuffer_fetch)
+      glGetBooleanv(GL_FETCH_PER_SAMPLE_ARM, &fetch_per_sample_arm_enabled_);
+
+    if (g_supports_disable_multisample)
+      glGetBooleanv(GL_MULTISAMPLE, &multisample_enabled_);
+  }
 }
 
 ScopedAppGLStateRestoreImpl::~ScopedAppGLStateRestoreImpl() {
@@ -321,6 +361,11 @@ ScopedAppGLStateRestoreImpl::~ScopedAppGLStateRestoreImpl() {
     DCHECK(ClearGLErrors(false, NULL));
     RestoreHWUIState();
   }
+
+  // We do restore it even with Skia on the other side because it's new
+  // extension that skia on Android P and Q didn't use.
+  if (g_use_skia_renderer && g_supports_nv_concervative_raster)
+    glDisable(GL_CONSERVATIVE_RASTERIZATION_NV);
 
   // Do not leak GLError out of chromium.
   ClearGLErrors(true, "Chromium GLError");
@@ -345,6 +390,15 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState() {
 
     glVertexAttrib4fv(i, vertex_attrib_[i].current_vertex_attrib);
 
+    // We don't query this values as this code intends to run on older (O and
+    // below) Android versions and HWUI there doesn't use the state, while
+    // SkiaRenderer does, so we just reset it to default value.
+    // Note despite the name function is no ANGLE specific.
+    if (g_use_skia_renderer &&
+        gl::g_current_gl_driver->fn.glVertexAttribDivisorANGLEFn) {
+      glVertexAttribDivisorANGLE(i, 0);
+    }
+
     if (vertex_attrib_[i].enabled) {
       glEnableVertexAttribArray(i);
     } else {
@@ -363,6 +417,10 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState() {
     glBindTexture(GL_TEXTURE_2D, bindings.texture_2d);
     glBindTexture(GL_TEXTURE_CUBE_MAP, bindings.texture_cube_map);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, bindings.texture_external_oes);
+
+    // reset glSamplers if supported.
+    if (g_use_skia_renderer && gl::g_current_gl_driver->fn.glBindSamplerFn)
+      glBindSampler(ii, 0);
   }
   glActiveTexture(active_texture_);
 
@@ -434,6 +492,23 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState() {
   glStencilOpSeparate(GL_BACK, stencil_state_.stencil_back_fail_op,
                       stencil_state_.stencil_back_z_fail_op,
                       stencil_state_.stencil_back_z_pass_op);
+
+  if (g_use_skia_renderer) {
+    // This code is triggered only for older Android version when it didn't use
+    // Skia for compositing. We restore state to default value instead of
+    // querying the value because older HWUI didn't use it.
+    if (gl::g_current_gl_driver->fn.glWindowRectanglesEXTFn)
+      glWindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr);
+
+    if (gl::g_current_gl_driver->fn.glCoverageModulationNVFn)
+      glCoverageModulationNV(GL_NONE);
+
+    if (g_supports_arm_shader_framebuffer_fetch)
+      GLEnableDisable(GL_FETCH_PER_SAMPLE_ARM, fetch_per_sample_arm_enabled_);
+
+    if (g_supports_disable_multisample)
+      GLEnableDisable(GL_MULTISAMPLE, multisample_enabled_);
+  }
 }
 
 }  // namespace internal
