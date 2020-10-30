@@ -24,6 +24,7 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -128,6 +129,7 @@ public class IncognitoHistoryLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToRegular.class)
+    @DisabledTest(message = "Flaky - https://crbug.com/1140751")
     public void testBrowsingHistoryDoNotLeakFromIncognitoToRegular(
             String incognitoActivityType, String regularActivityType) throws TimeoutException {
         ActivityType incognitoActivity = ActivityType.valueOf(incognitoActivityType);
