@@ -280,7 +280,7 @@ void AmbientBackgroundImageView::UpdateGlanceableInfoPosition() {
 
 bool AmbientBackgroundImageView::UpdateRelatedImageViewVisibility() {
   const bool did_show_pair = related_image_view_->GetVisible();
-  const bool show_pair = IsLandscapeOrientation() && HasPairedPortraitImages();
+  const bool show_pair = IsLandscapeOrientation() && HasPairedImages();
   related_image_view_->SetVisible(show_pair);
   return did_show_pair != show_pair;
 }
@@ -307,10 +307,8 @@ bool AmbientBackgroundImageView::IsLandscapeOrientation() const {
   return width() > height();
 }
 
-bool AmbientBackgroundImageView::HasPairedPortraitImages() const {
-  const auto& primary_image = image_unscaled_;
-  return !primary_image.isNull() && !related_image_unscaled_.isNull() &&
-         primary_image.height() > primary_image.width();
+bool AmbientBackgroundImageView::HasPairedImages() const {
+  return !image_unscaled_.isNull() && !related_image_unscaled_.isNull();
 }
 
 BEGIN_METADATA(AmbientBackgroundImageView, views::View)

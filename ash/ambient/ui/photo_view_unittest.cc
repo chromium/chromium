@@ -114,7 +114,8 @@ TEST_F(AmbientPhotoViewTest,
             gfx::Rect(/*x=*/0, /*y=*/-100, /*width=*/400, /*height=*/800));
 }
 
-// Test that landscape images will not be tiled when screen is landscape.
+// Test that landscape images can be tiled when screen is landscape as long as
+// they are related.
 TEST_F(AmbientPhotoViewTest,
        ShouldNotTileTwoLandscapeImagesForLandscapeScreen) {
   SetPhotoViewImageSize(/*width=*/20, /*height=*/10);
@@ -127,12 +128,13 @@ TEST_F(AmbientPhotoViewTest,
 
   auto* image_view = GetAmbientBackgroundImageView();
 
-  // Only show one landscape image.
+  // Show two landscape image.
   // Image should be full height. Image width should extend equally to the left
   // and right of the visible part of the screen.
   ASSERT_EQ(image_view->GetImageBoundsForTesting(),
-            gfx::Rect(/*x=*/-196, /*y=*/0, /*width=*/1200, /*height=*/600));
-  ASSERT_EQ(image_view->GetRelatedImageBoundsForTesting(), gfx::Rect());
+            gfx::Rect(/*x=*/0, /*y=*/200, /*width=*/400, /*height=*/200));
+  ASSERT_EQ(image_view->GetRelatedImageBoundsForTesting(),
+            gfx::Rect(/*x=*/0, /*y=*/200, /*width=*/400, /*height=*/200));
 }
 
 // Test that only have one available image will not be tiled when screen is
@@ -164,9 +166,9 @@ TEST_F(AmbientPhotoViewTest,
 }
 
 // Test that image is scaled to fill screen height when the image is landscape
-// and the screen is landscape. The image will be zoomed in and the left and
-// right will be cut off, as the width of the image is greater than the width of
-// the screen.
+// and no related image when the screen is landscape.
+// The image will be zoomed in and the left and right will be cut off, as the
+// width of the image is greater than the width of the screen.
 TEST_F(AmbientPhotoViewTest, ShouldResizeLandscapeImageForLandscapeScreen) {
   SetPhotoViewImageSize(/*width=*/30, /*height=*/20);
 
@@ -178,10 +180,16 @@ TEST_F(AmbientPhotoViewTest, ShouldResizeLandscapeImageForLandscapeScreen) {
 
   auto* image_view = GetAmbientBackgroundImageView();
 
+  // Remove the related image.
+  image_view->ResetRelatedImageForTesting();
+
+  // Trigger layout.
+  UpdateDisplay("808x600");
+
   // Image should be full height. Image width should extend equally to the left
   // and right of the visible part of the screen.
   ASSERT_EQ(image_view->GetImageBoundsForTesting(),
-            gfx::Rect(/*x=*/-50, /*y=*/0, /*width=*/900, /*height=*/600));
+            gfx::Rect(/*x=*/-46, /*y=*/0, /*width=*/900, /*height=*/600));
   ASSERT_EQ(image_view->GetRelatedImageBoundsForTesting(), gfx::Rect());
 }
 
