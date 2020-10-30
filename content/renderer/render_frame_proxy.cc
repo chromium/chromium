@@ -742,7 +742,9 @@ RenderFrameProxy::GetRemoteAssociatedInterfaces() {
         routing_id_, remote_interfaces.InitWithNewEndpointAndPassReceiver());
     remote_associated_interfaces_ =
         std::make_unique<blink::AssociatedInterfaceProvider>(
-            std::move(remote_interfaces));
+            std::move(remote_interfaces),
+            agent_scheduling_group_.agent_group_scheduler()
+                .DefaultTaskRunner());
   }
   return remote_associated_interfaces_.get();
 }
