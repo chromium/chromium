@@ -14,7 +14,7 @@ const base::Feature kExtensionsCheckup{"ExtensionsCheckup",
 
 // Controls whether we disable extensions for malware.
 const base::Feature kDisableMalwareExtensionsRemotely{
-    "DisableMalwareExtensionsRemotely", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DisableMalwareExtensionsRemotely", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Parameters for ExtensionsCheckup feature.
 const char kExtensionsCheckupEntryPointParameter[] = "entry_point";
