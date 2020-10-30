@@ -76,7 +76,7 @@ struct __attribute__((packed)) WavHeader {
   }
 };
 
-WavHeader::WavHeader() = default;
+inline WavHeader::WavHeader() = default;
 
 }  // namespace media
 }  // namespace chromecast
