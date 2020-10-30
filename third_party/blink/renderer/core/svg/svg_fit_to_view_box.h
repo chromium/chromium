@@ -43,9 +43,6 @@ class SVGFitToViewBox : public GarbageCollectedMixin {
 
   static bool IsKnownAttribute(const QualifiedName&);
 
-  bool HasValidViewBox() const;
-  bool HasEmptyViewBox() const;
-
   // JS API
   SVGAnimatedRect* viewBox() const { return view_box_.Get(); }
   SVGAnimatedPreserveAspectRatio* preserveAspectRatio() const {

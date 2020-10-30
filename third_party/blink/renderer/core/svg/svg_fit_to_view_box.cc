@@ -64,15 +64,6 @@ SVGFitToViewBox::SVGFitToViewBox(SVGElement* element)
   element->AddToPropertyMap(preserve_aspect_ratio_);
 }
 
-bool SVGFitToViewBox::HasValidViewBox() const {
-  return view_box_->CurrentValue()->IsValid();
-}
-
-bool SVGFitToViewBox::HasEmptyViewBox() const {
-  return view_box_->CurrentValue()->IsValid() &&
-         view_box_->CurrentValue()->Value().IsEmpty();
-}
-
 void SVGFitToViewBox::Trace(Visitor* visitor) const {
   visitor->Trace(view_box_);
   visitor->Trace(preserve_aspect_ratio_);

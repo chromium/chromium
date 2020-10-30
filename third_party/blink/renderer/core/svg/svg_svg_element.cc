@@ -576,6 +576,15 @@ bool SVGSVGElement::SelfHasRelativeLengths() const {
          height_->CurrentValue()->IsRelative();
 }
 
+bool SVGSVGElement::HasValidViewBox() const {
+  return viewBox()->CurrentValue()->IsValid();
+}
+
+bool SVGSVGElement::HasEmptyViewBox() const {
+  const SVGRect* view_box = viewBox()->CurrentValue();
+  return view_box->IsValid() && view_box->Value().IsEmpty();
+}
+
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
   return GetLayoutObject() && GetLayoutObject()->IsSVGRoot() &&
          ToLayoutSVGRoot(GetLayoutObject())->IsEmbeddedThroughSVGImage();

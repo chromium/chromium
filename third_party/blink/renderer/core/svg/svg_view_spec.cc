@@ -49,7 +49,7 @@ SVGViewSpec* SVGViewSpec::CreateFromFragment(const String& fragment) {
 
 SVGViewSpec* SVGViewSpec::CreateForViewElement(const SVGViewElement& view) {
   SVGViewSpec* view_spec = MakeGarbageCollected<SVGViewSpec>();
-  if (view.HasValidViewBox())
+  if (view.viewBox()->CurrentValue()->IsValid())
     view_spec->view_box_ = view.viewBox()->CurrentValue()->Clone();
   if (view.preserveAspectRatio()->IsSpecified()) {
     view_spec->preserve_aspect_ratio_ =
