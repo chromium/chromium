@@ -972,12 +972,8 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
   const std::pair<LayoutUnit, LayoutUnit> fallback(
       layout_replaced.LogicalTop(), layout_replaced.LogicalBottom());
 
-  // TODO(crbug.com/1061423): Shouldn't assume that there's only one
-  // fragment.
-  const NGPhysicalBoxFragment* fragment =
-      layout_replaced.IsInline() ? layout_replaced.ContainingBlockFlowFragment()
-                                 : nullptr;
-  if (fragment) {
+  if (layout_replaced.IsInline() &&
+      layout_replaced.IsInLayoutNGInlineFormattingContext()) {
     // Step 1: Find the line box containing |layout_replaced|.
     NGInlineCursor line_box;
     line_box.MoveTo(layout_replaced);
@@ -992,15 +988,11 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     // if we still want to distinguish line and selection heights in NG.
     const ComputedStyle& line_style = line_box.Current().Style();
     const auto writing_direction = line_style.GetWritingDirection();
-    const PhysicalOffset line_box_offset =
-        line_box.Current().OffsetInContainerBlock();
-    const PhysicalSize line_box_size = line_box.Current().Size();
-    const LogicalOffset logical_offset = line_box_offset.ConvertToLogical(
-        writing_direction, fragment->Size(), line_box.Current().Size());
-    const LogicalSize logical_size =
-        line_box_size.ConvertToLogical(writing_direction.GetWritingMode());
-    return {logical_offset.block_offset,
-            logical_offset.block_offset + logical_size.block_size};
+    const WritingModeConverter converter(writing_direction,
+                                         line_box.BoxFragment().Size());
+    const LogicalRect logical_rect =
+        converter.ToLogical(line_box.Current().RectInContainerBlock());
+    return {logical_rect.offset.block_offset, logical_rect.BlockEndOffset()};
   }
 
   InlineBox* box = layout_replaced.InlineBoxWrapper();
