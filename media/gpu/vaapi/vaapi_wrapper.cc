@@ -43,6 +43,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/macros.h"
 
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
@@ -548,7 +549,7 @@ bool VADisplayState::InitializeVaDriver_Locked() {
   int major_version, minor_version;
   VAStatus va_res = vaInitialize(va_display_, &major_version, &minor_version);
   if (va_res != VA_STATUS_SUCCESS) {
-    LOG(ERROR) << "vaInitialize failed: " << vaErrorStr(va_res);
+    VLOGF(1) << "vaInitialize failed: " << vaErrorStr(va_res);
     return false;
   }
   const std::string va_vendor_string = vaQueryVendorString(va_display_);
@@ -568,9 +569,9 @@ bool VADisplayState::InitializeVaDriver_Locked() {
   // guaranteed to be backward (and not forward) compatible.
   if (VA_MAJOR_VERSION > major_version ||
       (VA_MAJOR_VERSION == major_version && VA_MINOR_VERSION > minor_version)) {
-    LOG(ERROR) << "The system version " << major_version << "." << minor_version
-               << " should be greater than or equal to "
-               << VA_MAJOR_VERSION << "." << VA_MINOR_VERSION;
+    VLOGF(1) << "The system version " << major_version << "." << minor_version
+             << " should be greater than or equal to " << VA_MAJOR_VERSION
+             << "." << VA_MINOR_VERSION;
     return false;
   }
   return true;
