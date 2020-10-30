@@ -1954,6 +1954,9 @@ Follow the steps below:
       <message name="IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION" desc="Text label to the Send Tab To Self action in the extension menu that sends the current tab to the user's other devices. [iOS only]">
         Send To Your Devices
       </message>
+      <message name="IDS_IOS_SHARE_PAGE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow for the current page. [iOS only]">
+        Share Page...
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE" desc="The message text for the infobar when a user receives a shared tab from another device.">
         Tab received.
       </message>
@@ -2531,6 +2534,12 @@ New Search
       </message>
       <message name="IDS_IOS_LANGUAGE_SETTINGS_OFFER_TO_TRANSLATE_TITLE" desc="Label shown next to a language for which translation is offered. [Length: 25em] [iOS only]">
         Offer to Translate
+      </message>
+      <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
+        A link to the highlighted text can not be created.
+      </message>
+      <message name="IDS_IOS_LINK_TO_TEXT_ERROR_TITLE" desc="Title of the alert dialog shown when link-to-text link generation failed. [iOS only]">
+        Unable to Link to Text
       </message>
       <message name="IDS_IOS_TRANSLATE_SETTING" desc="Title for the view and option in Settings for Translate. [Length: 25em] [iOS only]">
         Google Translate
