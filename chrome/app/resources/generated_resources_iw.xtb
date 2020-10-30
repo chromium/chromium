@@ -619,7 +619,7 @@
 <translation id="1692210323591458290">סגול כהה</translation>
 <translation id="1697150536837697295">אומנות</translation>
 <translation id="1697686431566694143">אישור לערוך את הקובץ</translation>
-<translation id="1698122934742150150">הפעלה נוכחית בלבד במצב גלישה בסתר</translation>
+<translation id="1698122934742150150">הפעלה נוכחית בלבד במצב אנונימי</translation>
 <translation id="1700079447639026019">‏אתרים שאף פעם לא יכולים להשתמש בקובצי cookie</translation>
 <translation id="1701062906490865540">הסרת משתמש זה</translation>
 <translation id="1703331064825191675">אין יותר צורך לדאוג לגבי הסיסמאות שלך</translation>
@@ -2485,7 +2485,7 @@
 <translation id="3871350334636688135">כעבור 24 שעות, מנהל המערכת יבצע עדכון חד-פעמי שימחק את הנתונים המקומיים כשהמכשיר יופעל מחדש. חשוב לשמור באחסון בענן תוך 24 שעות את הנתונים המקומיים הנחוצים לך.</translation>
 <translation id="3872220884670338524">עוד פעולות, חשבון שמור של <ph name="USERNAME" /> ב-<ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">אם לא מפנים שטח אחסון, המכשיר יפסיק להגיב.</translation>
-<translation id="3873315167136380065">כדי להפעיל את האפשרות הזאת, צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /> כדי להסיר את ביטוי הסיסמה של הסנכרון</translation>
+<translation id="3873315167136380065">להפעלת האפשרות הזאת, צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /> כדי להסיר את ביטוי הסיסמה של הסנכרון</translation>
 <translation id="3873423927483480833">הצגת קודי אימות</translation>
 <translation id="3873915545594852654">‏התרחשה בעיה הקשורה ל-ARC++‎.</translation>
 <translation id="3874164307099183178">‏הפעלת Google Assistant</translation>
@@ -4927,7 +4927,7 @@
 <translation id="6845038076637626672">פתח בגודל מרבי</translation>
 <translation id="6845325883481699275">‏עזרה בשיפור האבטחה של Chrome</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" רוצה להדפיס את <ph name="FILE_NAME" /> באמצעות <ph name="PRINTER_NAME" />.</translation>
-<translation id="6847125920277401289">יש לפנות שטח אחסון כדי להמשיך</translation>
+<translation id="6847125920277401289">יש לפנות מקום אחסון כדי להמשיך</translation>
 <translation id="6848388270925200958">נכון לעכשיו, יש לך כרטיסים שאפשר להשתמש בהם רק במכשיר הזה.</translation>
 <translation id="6850286078059909152">צבע טקסט</translation>
 <translation id="6851181413209322061">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. נתונים אלה לא ישמשו כדי לזהות את הילד או הילדה שלך, והם יעזרו לנו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android. ההגדרה הזו נאכפת על-ידי הבעלים. אם ההגדרה 'פעילות באתרי אינטרנט ובאפליקציות נוספים' הופעלה עבור הילד או הילדה שלך, ייתכן שהנתונים יישמרו בחשבון Google שלהם.</translation>
@@ -5097,7 +5097,7 @@
 <translation id="7044606776288350625">נתוני סנכרון</translation>
 <translation id="7047059339731138197">בחירת רקע</translation>
 <translation id="7049293980323620022">להשאיר את הקובץ?</translation>
-<translation id="7051943809462976355">מחפש עכבר...</translation>
+<translation id="7051943809462976355">המערכת מחפשת עכבר...</translation>
 <translation id="7052237160939977163">שלח נתוני מעקב אחר ביצועים</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
@@ -5326,7 +5326,7 @@
 <translation id="7339763383339757376">‏PKCS #7, אישור יחיד</translation>
 <translation id="7339785458027436441">בדיקת איות בעת ההקלדה</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> הוא במסך מלא כעת.</translation>
+<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> במסך מלא כעת.</translation>
 <translation id="7340650977506865820">האתר משתף את המסך שלך</translation>
 <translation id="7341834142292923918">רוצה גישה לאתר הזה</translation>
 <translation id="7345706641791090287">עליך לאשר את הסיסמה שלך</translation>
@@ -5533,7 +5533,7 @@
 <translation id="7582582252461552277">העדפת הרשת הזו</translation>
 <translation id="7583948862126372804">מספר</translation>
 <translation id="7586498138629385861">‏Chrome ימשיך לפעול כל עוד יש אפליקציות Chrome פתוחות.</translation>
-<translation id="7589461650300748890">היי! תיזהר.</translation>
+<translation id="7589461650300748890">היי! זהירות.</translation>
 <translation id="7593653750169415785">האפשרות חסומה באופן אוטומטי כי בחרת בעבר שלא לתת הרשאה להצגת הודעות כמה פעמים</translation>
 <translation id="7595453277607160340">‏כדי להשתמש באפליקציות של Android ולוודא שה-<ph name="DEVICE_TYPE" /> ימשיך לפעול כראוי, צריך להיכנס שוב ולעדכן.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (קוד שגיאה <ph name="ERROR_CODE" />).</translation>
