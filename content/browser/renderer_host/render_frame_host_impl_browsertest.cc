@@ -3804,8 +3804,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* current_rfh =
       root->render_manager()->current_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    EXPECT_EQ(navigation_request->associated_site_instance_type(),
+              NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  } else {
+    EXPECT_EQ(navigation_request->associated_site_instance_type(),
+              NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+  }
 
   // 4) Check the LifecycleState of B's RFH.
   EXPECT_EQ(LifecycleState::kActive, current_rfh->lifecycle_state());

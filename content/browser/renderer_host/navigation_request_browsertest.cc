@@ -1445,9 +1445,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       navigation_b.GetNavigationHandle()->GetStartingSiteInstance();
   EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetSiteInstance(),
             starting_site_instance);
-  // Because of the sad tab, this is actually the b.com SiteInstance, which
-  // commits immediately after starting the navigation and has a process.
-  EXPECT_EQ(GURL("http://b.com"), starting_site_instance->GetSiteURL());
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    EXPECT_EQ(GURL("http://a.com"), starting_site_instance->GetSiteURL());
+  } else {
+    // Because of the sad tab, this is actually the b.com SiteInstance, which
+    // commits immediately after starting the navigation and has a process.
+    EXPECT_EQ(GURL("http://b.com"), starting_site_instance->GetSiteURL());
+  }
   EXPECT_TRUE(starting_site_instance->HasProcess());
 
   // In https://crbug.com/949977, we used the a.com SiteInstance here and didn't

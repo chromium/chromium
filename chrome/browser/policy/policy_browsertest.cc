@@ -153,6 +153,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/navigation_policy.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -694,6 +695,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   // Crash and reload the tab to get a new renderer.
   content::CrashTab(contents);
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
+  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+    EXPECT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_FALSE(IsWebGLEnabled(contents));
   // Enable with a policy.
   policies.Set(key::kDisable3DAPIs, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -701,6 +704,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   UpdateProviderPolicy(policies);
   content::CrashTab(contents);
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
+  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+    EXPECT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_TRUE(IsWebGLEnabled(contents));
 }
 
