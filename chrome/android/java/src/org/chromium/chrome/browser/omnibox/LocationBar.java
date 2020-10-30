@@ -21,9 +21,6 @@ public interface LocationBar extends Destroyable {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
 
-    /** Handles native dependent initialization for this class. */
-    void onNativeLibraryReady();
-
     /** Triggered when the current tab has changed to a {@link NewTabPage}. */
     default void onTabLoadingNTP(NewTabPage ntp) {}
 

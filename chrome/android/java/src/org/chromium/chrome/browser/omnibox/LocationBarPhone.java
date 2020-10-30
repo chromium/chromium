@@ -45,7 +45,8 @@ class LocationBarPhone extends LocationBarLayout {
         mUrlBar = findViewById(R.id.url_bar);
         mStatusView = findViewById(R.id.location_bar_status);
         // Assign the first visible view here only if it hasn't been set by the DSE icon experiment.
-        // See onNativeLibrary ready for when this variable is set for the DSE icon case.
+        // See onFinishNativeInitialization ready for when this variable is set for the DSE icon
+        // case.
         mFirstVisibleFocusedView =
                 mFirstVisibleFocusedView == null ? mUrlBar : mFirstVisibleFocusedView;
 

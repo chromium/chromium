@@ -150,15 +150,6 @@ public class ToolbarTablet extends ToolbarLayout
         mLocationBar = locationBarCoordinator;
     }
 
-    @Override
-    void destroy() {
-        if (mLocationBar != null) {
-            mLocationBar.destroy();
-            mLocationBar = null;
-        }
-        super.destroy();
-    }
-
     /**
      * Sets up key listeners after native initialization is complete, so that we can invoke
      * native functions.
@@ -166,7 +157,6 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-        mLocationBar.onNativeLibraryReady();
         mHomeButton.setOnClickListener(this);
         mHomeButton.setOnKeyListener(new KeyboardNavigationListener() {
             @Override

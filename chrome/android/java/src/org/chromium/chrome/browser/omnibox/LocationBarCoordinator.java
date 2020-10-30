@@ -14,7 +14,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -39,13 +41,14 @@ import java.util.List;
  * <p>The coordinator creates and owns elements within this component.
  */
 public final class LocationBarCoordinator
-        implements LocationBar, FakeboxDelegate, UrlBar.UrlBarDelegate {
+        implements LocationBar, FakeboxDelegate, UrlBar.UrlBarDelegate, NativeInitObserver {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator extends Destroyable {}
 
     private LocationBarLayout mLocationBarLayout;
     @Nullable
     private SubCoordinator mSubCoordinator;
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -68,6 +71,7 @@ public final class LocationBarCoordinator
      * @param shareDelegateSupplier A supplier for {@link ShareDelegate} object.
      * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
      *         incognito state.
+     * @param activityLifecycleDispatcher Allows observation of the activity state.
      * @throws IllegalArgumentException if the view is neither {@link LocationBarPhone} nor {@link
      *         LocationBarTablet}.
      */
@@ -78,7 +82,8 @@ public final class LocationBarCoordinator
             WindowAndroid windowAndroid, ActivityTabProvider activityTabProvider,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
 
         if (locationBarLayout instanceof LocationBarPhone) {
@@ -97,10 +102,18 @@ public final class LocationBarCoordinator
         mLocationBarLayout.setDefaultTextEditActionModeCallback(actionModeCallback);
         mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
                 modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider);
+
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
     }
 
     @Override
     public void destroy() {
+        if (mActivityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher.unregister(this);
+            mActivityLifecycleDispatcher = null;
+        }
+
         if (mSubCoordinator != null) {
             mSubCoordinator.destroy();
             mSubCoordinator = null;
@@ -112,13 +125,13 @@ public final class LocationBarCoordinator
     }
 
     @Override
-    public void onDeferredStartup() {
-        mLocationBarLayout.onDeferredStartup();
+    public void onFinishNativeInitialization() {
+        mLocationBarLayout.onFinishNativeInitialization();
     }
 
     @Override
-    public void onNativeLibraryReady() {
-        mLocationBarLayout.onNativeLibraryReady();
+    public void onDeferredStartup() {
+        mLocationBarLayout.onDeferredStartup();
     }
 
     @Override

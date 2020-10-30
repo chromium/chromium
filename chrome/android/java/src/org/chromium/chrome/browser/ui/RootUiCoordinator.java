@@ -594,7 +594,7 @@ public class RootUiCoordinator
                     mActivity.getWindowAndroid(), mActivity::isInOverviewMode,
                     mActivity.isCustomTab(), mActivity.getModalDialogManagerSupplier(),
                     mActivity.getNightModeStateProvider(), mActivity.getStatusBarColorController(),
-                    /* appMenuDelegate= */ mActivity);
+                    /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher());
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

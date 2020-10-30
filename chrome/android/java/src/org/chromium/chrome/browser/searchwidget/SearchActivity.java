@@ -252,7 +252,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mTab.loadUrl(new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
         mSearchBoxDataProvider.onNativeLibraryReady(mTab);
-        mSearchBox.onNativeLibraryReady();
+        mSearchBox.onFinishNativeInitialization();
         mProfileSupplier.set(Profile.fromWebContents(webContents));
 
         // Force the user to choose a search engine if they have to.

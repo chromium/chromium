@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.intent.IntentMetadata;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
@@ -270,6 +271,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param nightModeStateProvider Provides the state of night mode.
      * @param statusBarColorController The {@link StatusBarColorController} for the app.
      * @param appMenuDelegate Allows interacting with the app menu.
+     * @param activityLifecycleDispatcher Allows monitoring the activity lifecycle,
      */
     public ToolbarManager(AppCompatActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -293,7 +295,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             Supplier<Boolean> isInOverviewModeSupplier, boolean isCustomTab,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             NightModeStateProvider nightModeStateProvider,
-            StatusBarColorController statusBarColorController, AppMenuDelegate appMenuDelegate) {
+            StatusBarColorController statusBarColorController, AppMenuDelegate appMenuDelegate,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -403,8 +406,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
                     mActivity.findViewById(R.id.location_bar), profileSupplier, mLocationBarModel,
                     mActionModeController.getActionModeCallback(),
-                    new WindowDelegate(mActivity.getWindow()), mWindowAndroid, mActivityTabProvider,
-                    modalDialogManagerSupplier, mShareDelegateSupplier, mIncognitoStateProvider);
+                    new WindowDelegate(mActivity.getWindow()), windowAndroid, mActivityTabProvider,
+                    modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
+                    activityLifecycleDispatcher);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;
         }

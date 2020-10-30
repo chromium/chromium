@@ -72,8 +72,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    public void onNativeLibraryReady() {
-        super.onNativeLibraryReady();
+    public void onFinishNativeInitialization() {
+        super.onFinishNativeInitialization();
         mNativeLibraryReady = true;
 
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();

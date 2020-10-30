@@ -631,7 +631,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mLocationBarDataProvider = locationBarDataProvider;
         }
 
-        @Override
         public void onNativeLibraryReady() {
             mSecurityButton.setOnClickListener(v -> {
                 Tab currentTab = mLocationBarDataProvider.getTab();

@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
@@ -98,10 +97,10 @@ import java.util.List;
  * This class represents the location bar where the user types in URLs and
  * search terms.
  */
-public class LocationBarLayout extends FrameLayout
-        implements OnClickListener, AutocompleteDelegate, FakeboxDelegate,
-                   VoiceRecognitionHandler.Delegate, AssistantVoiceSearchService.Observer,
-                   Destroyable, UrlBarDelegate {
+public class LocationBarLayout
+        extends FrameLayout implements OnClickListener, AutocompleteDelegate, FakeboxDelegate,
+                                       VoiceRecognitionHandler.Delegate,
+                                       AssistantVoiceSearchService.Observer, UrlBarDelegate {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
     private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
 
@@ -245,8 +244,10 @@ public class LocationBarLayout extends FrameLayout
         mVoiceRecognitionHandler = new VoiceRecognitionHandler(this);
     }
 
-    @Override
-    public void destroy() {
+    /**
+     * Called when activity is being destroyed.
+     */
+    void destroy() {
         mUrlFocusChangeListeners.clear();
 
         if (mAutocompleteCoordinator != null) {
@@ -356,10 +357,7 @@ public class LocationBarLayout extends FrameLayout
         mAutocompleteCoordinator.prefetchZeroSuggestResults();
     }
 
-    /**
-     * Handles native dependent initialization for this class.
-     */
-    public void onNativeLibraryReady() {
+    public void onFinishNativeInitialization() {
         TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mNativeInitialized = true;
 

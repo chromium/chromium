@@ -366,10 +366,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     void destroy() {
-        if (mLocationBar != null) {
-            mLocationBar.destroy();
-            mLocationBar = null;
-        }
         cancelAnimations();
         super.destroy();
     }
@@ -450,8 +446,6 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-
-        getLocationBar().onNativeLibraryReady();
 
         enableTabSwitchingResources();
 
