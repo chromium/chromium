@@ -4,11 +4,20 @@
 
 <template>
   <div id="page-container">
+    <v-dialog />
     <div id="title-and-graph-container">
       <div
-          id="title"
-          class="md-headline">
-        Clank Dependency Viewer - Package Graph
+          id="title-and-metadata">
+        <div
+            id="title"
+            class="md-headline">
+          Clank Dependency Viewer - Package Graph
+        </div>
+        <div
+            id="graph-metadata-info">
+          <GraphMetadataInfo
+              :graph-metadata="graphMetadata"/>
+        </div>
       </div>
       <GraphVisualization
           :graph-update-triggers="[
@@ -93,6 +102,7 @@ import GraphDisplayPanel from './graph_display_panel.vue';
 import GraphDisplaySettings from './graph_display_settings.vue';
 import GraphFilterInput from './graph_filter_input.vue';
 import GraphFilterItems from './graph_filter_items.vue';
+import GraphMetadataInfo from './graph_metadata_info.vue';
 import GraphSelectedNodeDetails from './graph_selected_node_details.vue';
 import GraphVisualization from './graph_visualization.vue';
 import NumericInput from './numeric_input.vue';
@@ -105,6 +115,7 @@ const PackageGraphPage = {
     GraphDisplaySettings,
     GraphFilterInput,
     GraphFilterItems,
+    GraphMetadataInfo,
     GraphSelectedNodeDetails,
     GraphVisualization,
     NumericInput,
@@ -112,6 +123,7 @@ const PackageGraphPage = {
   },
   props: {
     graphJson: Object,
+    graphMetadata: Object,
   },
 
   /**
@@ -249,7 +261,15 @@ export default PackageGraphPage;
 </style>
 
 <style scoped>
-#title {
+
+#title-and-metadata {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#title, #graph-metadata-info {
   padding: 10px;
 }
 

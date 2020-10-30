@@ -22,6 +22,8 @@ import {
 
 import 'vue-material/dist/vue-material.min.css';
 
+import VModal from 'vue-js-modal';
+
 document.addEventListener('DOMContentLoaded', () => {
   loadGraph().then(data => {
     Vue.use(MdButton);
@@ -34,6 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     Vue.use(MdRadio);
     Vue.use(MdSubheader);
 
+    Vue.use(VModal, {dialog: true});
+
     new Vue({
       el: '#class-graph-page',
       render: createElement => createElement(
@@ -41,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             props: {
               graphJson: data.class_graph,
+              graphMetadata: data.build_metadata,
             },
           },
       ),
