@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -111,7 +112,14 @@ public class LoadProgressMediator {
     }
 
     private void onNewTabObserved(Tab tab) {
-        if (tab == null) return;
+        if (tab == null) {
+            // If start surface is enabled and new tab is null, then new tab is home page or tab
+            // switcher. Finish progress bar loading.
+            if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+                finishLoadProgress(false);
+            }
+            return;
+        }
 
         if (tab.isLoading()) {
             if (NativePageFactory.isNativePageUrl(tab.getUrlString(), tab.isIncognito())) {
