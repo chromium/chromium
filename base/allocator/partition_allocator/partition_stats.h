@@ -5,9 +5,35 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_STATS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_STATS_H_
 
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include <cstddef>
+#include <cstdint>
+
+#include "base/base_export.h"
 
 namespace base {
+
+// Most of these are not populated if PA_ENABLE_THREAD_CACHE_STATISTICS is not
+// defined.
+struct ThreadCacheStats {
+  uint64_t alloc_count;   // Total allocation requests.
+  uint64_t alloc_hits;    // Thread cache hits.
+  uint64_t alloc_misses;  // Thread cache misses.
+
+  // Allocation failure details:
+  uint64_t alloc_miss_empty;
+  uint64_t alloc_miss_too_large;
+
+  // Cache fill details:
+  uint64_t cache_fill_count;
+  uint64_t cache_fill_hits;
+  uint64_t cache_fill_misses;
+  uint64_t cache_fill_bucket_full;
+  uint64_t cache_fill_too_large;
+
+  // Memory cost:
+  uint64_t bucket_total_memory;
+  uint64_t metadata_overhead;
+};
 
 // Struct used to retrieve total memory usage of a partition. Used by
 // PartitionStatsDumper implementation.
@@ -20,8 +46,8 @@ struct PartitionMemoryStats {
   size_t total_discardable_bytes;    // Total bytes that could be discarded.
 
   bool has_thread_cache;
-  internal::ThreadCacheStats current_thread_cache_stats;
-  internal::ThreadCacheStats all_thread_caches_stats;
+  ThreadCacheStats current_thread_cache_stats;
+  ThreadCacheStats all_thread_caches_stats;
 };
 
 // Struct used to retrieve memory statistics about a partition bucket. Used by

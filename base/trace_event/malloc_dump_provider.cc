@@ -215,9 +215,8 @@ void MallocDumpProvider::DisableMetrics() {
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-void ReportPartitionAllocThreadCacheStats(
-    MemoryAllocatorDump* dump,
-    const internal::ThreadCacheStats& stats) {
+void ReportPartitionAllocThreadCacheStats(MemoryAllocatorDump* dump,
+                                          const ThreadCacheStats& stats) {
   dump->AddScalar("alloc_count", "scalar", stats.alloc_count);
   dump->AddScalar("alloc_hits", "scalar", stats.alloc_hits);
   dump->AddScalar("alloc_misses", "scalar", stats.alloc_misses);

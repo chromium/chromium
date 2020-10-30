@@ -6,13 +6,13 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_THREAD_CACHE_H_
 
 #include <atomic>
-#include <cstdint>
 #include <memory>
 
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
@@ -32,29 +32,6 @@ namespace internal {
 class ThreadCache;
 
 extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
-
-// Most of these are not populated if PA_ENABLE_THREAD_CACHE_STATISTICS is not
-// defined.
-struct ThreadCacheStats {
-  uint64_t alloc_count;   // Total allocation requests.
-  uint64_t alloc_hits;    // Thread cache hits.
-  uint64_t alloc_misses;  // Thread cache misses.
-
-  // Allocation failure details:
-  uint64_t alloc_miss_empty;
-  uint64_t alloc_miss_too_large;
-
-  // Cache fill details:
-  uint64_t cache_fill_count;
-  uint64_t cache_fill_hits;
-  uint64_t cache_fill_misses;
-  uint64_t cache_fill_bucket_full;
-  uint64_t cache_fill_too_large;
-
-  // Memory cost:
-  uint64_t bucket_total_memory;
-  uint64_t metadata_overhead;
-};
 
 // Global registry of all ThreadCache instances.
 //
