@@ -3791,11 +3791,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "policy-atomic-group-enabled",
-    "owners": [ "ydago" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
     "expiry_milestone": 86
