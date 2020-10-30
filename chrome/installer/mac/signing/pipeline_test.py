@@ -20,15 +20,15 @@ _get_work_dir.count = 0
 
 
 def _component_property_path(paths, dist_config):
-    return '/$W/App Product.plist'
+    return '/$W_1/App Product.plist'
 
 
-def _productbuild_distribution_path(p, d, c):
-    return '/$W/App Product.dist'
+def _productbuild_distribution_path(ap, pp, d, c):
+    return '/$W_1/App Product.dist'
 
 
 def _create_pkgbuild_scripts(p, d):
-    return '/$W/scripts'
+    return '/$W_1/scripts'
 
 
 def _read_plist(p):
@@ -361,7 +361,7 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
 
         self.assertEqual(
             '/$W/App Product.dist',
-            pipeline._productbuild_distribution_path(paths, dist_config,
+            pipeline._productbuild_distribution_path(paths, paths, dist_config,
                                                      component_pkg_path))
 
         manager.assert_has_calls([
@@ -439,15 +439,15 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         pkgbuild_args = run_commands[0][1][0]
         productbuild_args = run_commands[1][1][0]
 
-        self.assertEqual('/$W/payload',
+        self.assertEqual('/$W_1/payload',
                          _get_adjacent_item(pkgbuild_args, '--root'))
-        self.assertEqual('/$W/App Product.plist',
+        self.assertEqual('/$W_1/App Product.plist',
                          _get_adjacent_item(pkgbuild_args, '--component-plist'))
         self.assertEqual('test.signing.bundle_id',
                          _get_adjacent_item(pkgbuild_args, '--identifier'))
         self.assertEqual('99.0.9999.99',
                          _get_adjacent_item(pkgbuild_args, '--version'))
-        self.assertEqual('/$W/scripts',
+        self.assertEqual('/$W_1/scripts',
                          _get_adjacent_item(pkgbuild_args, '--scripts'))
 
         self.assertEqual('test.signing.bundle_id',
@@ -455,10 +455,10 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         self.assertEqual('99.0.9999.99',
                          _get_adjacent_item(productbuild_args, '--version'))
         self.assertEqual(
-            '/$W/App Product.dist',
+            '/$W_1/App Product.dist',
             _get_adjacent_item(productbuild_args, '--distribution'))
         self.assertEqual(
-            '/$W', _get_adjacent_item(productbuild_args, '--package-path'))
+            '/$W_1', _get_adjacent_item(productbuild_args, '--package-path'))
         self.assertEqual('[INSTALLER-IDENTITY]',
                          _get_adjacent_item(productbuild_args, '--sign'))
 
@@ -531,15 +531,15 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         pkgbuild_args = run_commands[0][1][0]
         productbuild_args = run_commands[1][1][0]
 
-        self.assertEqual('/$W/payload',
+        self.assertEqual('/$W_1/payload',
                          _get_adjacent_item(pkgbuild_args, '--root'))
-        self.assertEqual('/$W/App Product.plist',
+        self.assertEqual('/$W_1/App Product.plist',
                          _get_adjacent_item(pkgbuild_args, '--component-plist'))
         self.assertEqual('test.signing.bundle_id',
                          _get_adjacent_item(pkgbuild_args, '--identifier'))
         self.assertEqual('99.0.9999.99',
                          _get_adjacent_item(pkgbuild_args, '--version'))
-        self.assertEqual('/$W/scripts',
+        self.assertEqual('/$W_1/scripts',
                          _get_adjacent_item(pkgbuild_args, '--scripts'))
 
         self.assertEqual('test.signing.bundle_id',
@@ -547,10 +547,10 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         self.assertEqual('99.0.9999.99',
                          _get_adjacent_item(productbuild_args, '--version'))
         self.assertEqual(
-            '/$W/App Product.dist',
+            '/$W_1/App Product.dist',
             _get_adjacent_item(productbuild_args, '--distribution'))
         self.assertEqual(
-            '/$W', _get_adjacent_item(productbuild_args, '--package-path'))
+            '/$W_1', _get_adjacent_item(productbuild_args, '--package-path'))
         self.assertEqual('[INSTALLER-IDENTITY]',
                          _get_adjacent_item(productbuild_args, '--sign'))
 
@@ -795,21 +795,20 @@ class TestSignAll(unittest.TestCase):
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
 
             # Prepare the app for notarization.
             mock.call.run_command([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/AppProduct-99.0.9999.99'),
+                                  cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
             mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
-                self.paths.replace_work('/$W_1/AppProduct-99.0.9999.99'),
-                mock.ANY),
+                self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
             # Make the DMG.
             mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
@@ -854,21 +853,20 @@ class TestSignAll(unittest.TestCase):
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
 
             # Prepare the app for notarization.
             mock.call.run_command([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/AppProduct-99.0.9999.99'),
+                                  cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
             mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
-                self.paths.replace_work('/$W_1/AppProduct-99.0.9999.99'),
-                mock.ANY),
+                self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
             # Make the DMG.
             mock.call._package_and_sign_pkg(mock.ANY, mock.ANY),
@@ -916,21 +914,20 @@ class TestSignAll(unittest.TestCase):
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
 
             # Prepare the app for notarization.
             mock.call.run_command([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/AppProduct-99.0.9999.99'),
+                                  cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
             mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
-                self.paths.replace_work('/$W_1/AppProduct-99.0.9999.99'),
-                mock.ANY),
+                self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
             # Make the DMG, and submit for notarization.
             mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
@@ -967,21 +964,20 @@ class TestSignAll(unittest.TestCase):
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
 
             # Prepare the app for notarization.
             mock.call.run_command([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/AppProduct-99.0.9999.99'),
+                                  cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
             mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
-                self.paths.replace_work('/$W_1/AppProduct-99.0.9999.99'),
-                mock.ANY),
+                self.paths.replace_work('/$W_1/stable'), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
 
             # Package the installer tools.
@@ -1003,8 +999,8 @@ class TestSignAll(unittest.TestCase):
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
 
             # Make the DMG.
@@ -1027,8 +1023,7 @@ class TestSignAll(unittest.TestCase):
         manager.assert_has_calls([
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
-                                                 '/$O/AppProduct-99.0.9999.99',
-                                                 mock.ANY),
+                                                 '/$O/stable', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
             mock.call.shutil.rmtree('/$W_1'),
 
@@ -1071,42 +1066,32 @@ class TestSignAll(unittest.TestCase):
         pipeline.sign_all(self.paths, config, do_notarization=False)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
-        self.assertEqual(4, kwargs['_customize_and_sign_chrome'].call_count)
+        self.assertEqual(3, kwargs['_customize_and_sign_chrome'].call_count)
 
         manager.assert_has_calls([
             # Customizations.
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99-ForCows-MOO',
-                mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable-MOO', mock.ANY),
             mock.call.shutil.rmtree('/$W_3'),
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY, '/$W_1/AppProduct-99.0.9999.99-ForDogs-ARF',
-                mock.ANY),
             mock.call.shutil.rmtree('/$W_4'),
-            mock.call._customize_and_sign_chrome(
-                mock.ANY, mock.ANY,
-                '/$W_1/AppProduct-99.0.9999.99-ForDogcows-MOOF', mock.ANY),
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable-MOOF', mock.ANY),
             mock.call.shutil.rmtree('/$W_5'),
 
             # Packaging and signing.
             mock.call._package_and_sign_dmg(
-                self.paths.replace_work('/$W_1/AppProduct-99.0.9999.99'),
-                mock.ANY),
+                self.paths.replace_work('/$W_1/stable'), mock.ANY),
             mock.call._package_and_sign_dmg(
-                self.paths.replace_work(
-                    '/$W_1/AppProduct-99.0.9999.99-ForCows-MOO'), mock.ANY),
+                self.paths.replace_work('/$W_1/stable-MOO'), mock.ANY),
             mock.call._package_and_sign_pkg(
-                self.paths.replace_work(
-                    '/$W_1/AppProduct-99.0.9999.99-ForDogs-ARF'), mock.ANY),
+                self.paths.replace_work('/$W_1/stable'), mock.ANY),
             mock.call._package_and_sign_dmg(
-                self.paths.replace_work(
-                    '/$W_1/AppProduct-99.0.9999.99-ForDogcows-MOOF'), mock.ANY),
+                self.paths.replace_work('/$W_1/stable-MOOF'), mock.ANY),
             mock.call._package_and_sign_pkg(
-                self.paths.replace_work(
-                    '/$W_1/AppProduct-99.0.9999.99-ForDogcows-MOOF'), mock.ANY),
+                self.paths.replace_work('/$W_1/stable-MOOF'), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
 
             # Finally the installer tools.
