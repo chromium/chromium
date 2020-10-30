@@ -8,6 +8,7 @@
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
+#include "components/exo/extended_drag_source.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/exo/wm_helper.h"
@@ -44,7 +45,8 @@ class ScopedDataSource;
 class DragDropOperation : public DataSourceObserver,
                           public SurfaceTreeHost,
                           public SurfaceObserver,
-                          public aura::client::DragDropClientObserver {
+                          public aura::client::DragDropClientObserver,
+                          public ExtendedDragSource::Observer {
  public:
   // Create an operation for a drag-drop originating from a wayland app.
   static base::WeakPtr<DragDropOperation> Create(
@@ -73,6 +75,9 @@ class DragDropOperation : public DataSourceObserver,
   void OnDragActionsChanged(int actions) override;
 #endif
 
+  // ExtendedDragSource::Observer:
+  void OnExtendedDragSourceDestroying(ExtendedDragSource* source) override;
+
  private:
   // A private constructor and destructor are used to prevent anyone else from
   // attempting to manage the lifetime of a DragDropOperation.
@@ -94,6 +99,8 @@ class DragDropOperation : public DataSourceObserver,
   // This operation triggers a nested RunLoop, and should not be called
   // directly. Use ScheduleStartDragDropOperation instead.
   void StartDragDropOperation();
+
+  void ResetSource();
 
   std::unique_ptr<ScopedDataSource> source_;
   std::unique_ptr<ScopedSurface> icon_;

@@ -8,6 +8,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
+#include "components/exo/extended_drag_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -115,6 +116,13 @@ DragDropOperation::DragDropOperation(DataSource* source,
     drag_drop_controller_->DragCancel();
 
   drag_drop_controller_->AddObserver(this);
+
+  if (auto* ext_drag_source = source_->get()->extended_drag_source()) {
+#if defined(OS_CHROMEOS)
+    drag_drop_controller_->set_toplevel_window_drag_delegate(ext_drag_source);
+#endif
+    ext_drag_source->AddObserver(this);
+  }
 
   if (icon)
     icon_ = std::make_unique<ScopedSurface>(icon, this);
@@ -272,11 +280,18 @@ void DragDropOperation::StartDragDropOperation() {
     source_->get()->DndFinished();
 
     // Reset |source_| so it the destructor doesn't try to cancel it.
-    source_.reset();
+    ResetSource();
   }
 
   // On failure the destructor will handle canceling the data source.
   delete this;
+}
+
+void DragDropOperation::ResetSource() {
+  DCHECK(source_);
+  if (source_->get()->extended_drag_source())
+    source_->get()->extended_drag_source()->RemoveObserver(this);
+  source_.reset();
 }
 
 void DragDropOperation::OnDragStarted() {
@@ -305,6 +320,17 @@ void DragDropOperation::OnDragActionsChanged(int actions) {
 }
 #endif
 
+void DragDropOperation::OnExtendedDragSourceDestroying(
+    ExtendedDragSource* source) {
+#if defined(OS_CHROMEOS)
+  drag_drop_controller_->set_toplevel_window_drag_delegate(nullptr);
+#endif
+  if (source_) {
+    DCHECK(source_->get()->extended_drag_source());
+    source_->get()->extended_drag_source()->RemoveObserver(this);
+  }
+}
+
 void DragDropOperation::OnSurfaceDestroying(Surface* surface) {
   if (surface == origin_->get() || surface == icon_->get()) {
     delete this;
@@ -315,7 +341,7 @@ void DragDropOperation::OnSurfaceDestroying(Surface* surface) {
 
 void DragDropOperation::OnDataSourceDestroying(DataSource* source) {
   if (source == source_->get()) {
-    source_.reset();
+    ResetSource();
     delete this;
   } else {
     NOTREACHED();

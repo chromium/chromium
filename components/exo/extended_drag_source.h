@@ -5,20 +5,38 @@
 #ifndef COMPONENTS_EXO_EXTENDED_DRAG_SOURCE_H_
 #define COMPONENTS_EXO_EXTENDED_DRAG_SOURCE_H_
 
+#include <memory>
 #include <string>
 
+#include "ash/drag_drop/toplevel_window_drag_delegate.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "components/exo/data_source_observer.h"
-#include "ui/gfx/geometry/vector2d.h"
+#include "ui/aura/scoped_window_event_targeting_blocker.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+
+namespace aura {
+class Window;
+}
+
+namespace gfx {
+class Vector2d;
+}
+
+namespace ui {
+class LocatedEvent;
+}
 
 namespace exo {
 
 class DataSource;
-class Seat;
 class Surface;
 
-class ExtendedDragSource : public DataSourceObserver {
+class ExtendedDragSource : public DataSourceObserver,
+                           public ash::ToplevelWindowDragDelegate {
  public:
   class Delegate {
    public:
@@ -36,13 +54,12 @@ class ExtendedDragSource : public DataSourceObserver {
   class Observer {
    public:
     virtual void OnExtendedDragSourceDestroying(ExtendedDragSource* source) = 0;
-    virtual void OnDraggedSurfaceChanged(ExtendedDragSource* source) = 0;
 
    protected:
     virtual ~Observer() = default;
   };
 
-  ExtendedDragSource(DataSource* source, Seat* seat, Delegate* delegate);
+  ExtendedDragSource(DataSource* source, Delegate* delegate);
   ExtendedDragSource(const ExtendedDragSource&) = delete;
   ExtendedDragSource& operator=(const ExtendedDragSource&) = delete;
   ~ExtendedDragSource() override;
@@ -50,28 +67,46 @@ class ExtendedDragSource : public DataSourceObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  bool should_allow_drop_anywhere() const {
-    return delegate_->ShouldAllowDropAnywhere();
-  }
-  bool should_lock_cursor() const { return delegate_->ShouldLockCursor(); }
-
-  const gfx::Vector2d& drag_offset() const { return drag_offset_; }
-
   void Drag(Surface* surface, const gfx::Vector2d& offset);
 
- private:
+  bool IsActive() const;
+
+  // ash::ToplevelWindowDragDelegate:
+  void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
+                                   ui::mojom::DragEventSource source) override;
+  int OnToplevelWindowDragDropped() override;
+  void OnToplevelWindowDragCancelled() override;
+  void OnToplevelWindowDragEvent(ui::LocatedEvent* event) override;
+
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
+
+  aura::Window* GetDraggedWindowForTesting();
+  base::Optional<gfx::Vector2d> GetDragOffsetForTesting() const;
+
+ private:
+  class DraggedWindowHolder;
+
+  void StartDrag(aura::Window* toplevel,
+                 const gfx::PointF& pointer_location_in_screen);
+  void OnDraggedWindowVisibilityChanging(bool visible);
+  gfx::Point CalculateOrigin(aura::Window* target) const;
+  void Cleanup();
 
   // Created and destroyed at wayland/zcr_extended_drag.cc and its lifetime is
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
   Delegate* const delegate_;
 
-  Seat* const seat_;
   DataSource* source_ = nullptr;
-  Surface* dragged_surface_ = nullptr;
-  gfx::Vector2d drag_offset_;
+  gfx::PointF pointer_location_;
+  ui::mojom::DragEventSource drag_event_source_;
+
+  std::unique_ptr<DraggedWindowHolder> dragged_window_holder_;
+  std::unique_ptr<aura::ScopedWindowEventTargetingBlocker> event_blocker_;
+
   base::ObserverList<Observer>::Unchecked observers_;
+
+  base::WeakPtrFactory<ExtendedDragSource> weak_factory_{this};
 };
 
 }  // namespace exo
