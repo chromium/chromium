@@ -205,6 +205,8 @@ For more information on when to use `const char *` vs `const char[]`, see
 
 ## Code Locations
 
-- [Link to recipe](https://cs.chromium.org/chromium/build/scripts/slave/recipes/binary_size_trybot.py)
+- [Trybot recipe](https://source.chromium.org/chromium/chromium/tools/build/+/master:recipes/recipes/binary_size_trybot.py),
+[CI recipe](https://source.chromium.org/chromium/chromium/tools/build/+/master:recipes/recipes/binary_size_generator_tot.py),
+[recipe module](https://source.chromium.org/chromium/chromium/tools/build/+/master:recipes/recipe_modules/binary_size/api.py)
 - [Link to src-side checks](/tools/binary_size/trybot_commit_size_checker.py)
 - [Link to Gerrit Plugin](https://chromium.googlesource.com/infra/gerrit-plugins/chromium-binary-size/)
