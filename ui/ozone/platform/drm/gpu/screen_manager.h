@@ -137,6 +137,10 @@ class ScreenManager {
                                          const CommitRequest& commit_request,
                                          bool did_succeed);
 
+  void HandleMirrorIfExists(
+      const ControllerConfigParams& config,
+      const HardwareDisplayControllers::iterator& controller);
+
   // Returns an iterator into |controllers_| for the controller located at
   // |origin|.
   HardwareDisplayControllers::iterator FindActiveDisplayControllerByLocation(
@@ -147,15 +151,6 @@ class ScreenManager {
   HardwareDisplayControllers::iterator FindActiveDisplayControllerByLocation(
       const scoped_refptr<DrmDevice>& drm,
       const gfx::Rect& bounds);
-
-  // Tries to set the |original| controller to mirror those in |mirror|.
-  // |original| is an iterator to the HDC where the controller is currently
-  // present.
-  void HandleMirrorMode(CommitRequest* commit_request,
-                        HardwareDisplayControllers::iterator original,
-                        HardwareDisplayControllers::iterator mirror,
-                        const drmModeModeInfo& mode,
-                        const DrmOverlayPlane& primary);
 
   DrmOverlayPlane GetModesetBuffer(HardwareDisplayController* controller,
                                    const gfx::Rect& bounds,

@@ -297,8 +297,6 @@ base::flat_map<int64_t, bool> ScreenManager::Modeset(
   return statuses;
 }
 
-// TODO(markyacoub): As Mirroring is partially handled in
-// UpdateControllerStateAfterModeset(), this function can be greatly simplified.
 void ScreenManager::SetDisplayControllerForEnableAndGetProps(
     CommitRequest* commit_request,
     const scoped_refptr<DrmDevice>& drm,
@@ -307,8 +305,6 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
     const gfx::Point& origin,
     const drmModeModeInfo& mode,
     const DrmOverlayPlane& primary) {
-  gfx::Rect modeset_bounds(origin.x(), origin.y(), mode.hdisplay,
-                           mode.vdisplay);
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
   DCHECK(controllers_.end() != it)
       << "Display controller (crtc=" << crtc << ") doesn't exist.";
@@ -320,18 +316,16 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
   if (SameMode(mode, crtc_controller->mode()) &&
       origin == controller->origin()) {
     if (controller->IsDisabled()) {
-      HardwareDisplayControllers::iterator mirror =
-          FindActiveDisplayControllerByLocation(drm, modeset_bounds);
-      // If there is an active controller at the same location then start mirror
-      // mode.
-      if (mirror != controllers_.end()) {
-        HandleMirrorMode(commit_request, it, mirror, mode, primary);
-        return;
-      }
+      // Even if there is a mirrored display, Modeset the CRTC with its mode in
+      // the original controller so that only this CRTC is affected by the mode.
+      // Otherwise it could apply a mode with the same resolution and refresh
+      // rate but with different timings to the other CRTC.
+      GetModesetControllerProps(commit_request, controller,
+                                controller->origin(), mode, primary);
+    } else {
+      // Just get props to re-enable the controller re-using the current state.
+      GetEnableControllerProps(commit_request, controller, primary);
     }
-
-    // Just get props to re-enable the controller re-using the current state.
-    GetEnableControllerProps(commit_request, controller, primary);
     return;
   }
 
@@ -344,14 +338,6 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
         controller->RemoveCrtc(drm, crtc), controller->origin()));
     it = controllers_.end() - 1;
     controller = it->get();
-  }
-
-  HardwareDisplayControllers::iterator mirror =
-      FindActiveDisplayControllerByLocation(drm, modeset_bounds);
-  // Handle mirror mode.
-  if (mirror != controllers_.end() && it != mirror) {
-    HandleMirrorMode(commit_request, it, mirror, mode, primary);
-    return;
   }
 
   GetModesetControllerProps(commit_request, controller, origin, mode, primary);
@@ -392,16 +378,24 @@ void ScreenManager::UpdateControllerStateAfterModeset(
                                               crtc_request.overlays()));
 
       // If the CRTC is mirrored, move it to the mirror controller.
-      if (did_succeed && was_enabled) {
-        gfx::Rect modeset_bounds(config.origin, ModeSize(*config.mode));
-        HardwareDisplayControllers::iterator mirror =
-            FindActiveDisplayControllerByLocation(config.drm, modeset_bounds);
-        if (mirror != controllers_.end() && it != mirror) {
-          (*mirror)->AddCrtc((*it)->RemoveCrtc(config.drm, config.crtc));
-          controllers_.erase(it);
-        }
-      }
+      if (did_succeed && was_enabled)
+        HandleMirrorIfExists(config, it);
     }
+  }
+}
+
+void ScreenManager::HandleMirrorIfExists(
+    const ControllerConfigParams& config,
+    const HardwareDisplayControllers::iterator& controller) {
+  gfx::Rect modeset_bounds(config.origin, ModeSize(*config.mode));
+  HardwareDisplayControllers::iterator mirror =
+      FindActiveDisplayControllerByLocation(config.drm, modeset_bounds);
+  // TODO(dnicoara): This is hacky, instead the DrmDisplay and
+  // CrtcController should be merged and picking the mode should be done
+  // properly within HardwareDisplayController.
+  if (mirror != controllers_.end() && controller != mirror) {
+    (*mirror)->AddCrtc((*controller)->RemoveCrtc(config.drm, config.crtc));
+    controllers_.erase(controller);
   }
 }
 
@@ -474,22 +468,6 @@ ScreenManager::FindActiveDisplayControllerByLocation(
   }
 
   return controllers_.end();
-}
-
-void ScreenManager::HandleMirrorMode(
-    CommitRequest* commit_request,
-    HardwareDisplayControllers::iterator original,
-    HardwareDisplayControllers::iterator mirror,
-    const drmModeModeInfo& mode,
-    const DrmOverlayPlane& primary) {
-  // Modeset the CRTC with its mode in the original controller so that only this
-  // CRTC is affected by the mode. Otherwise it could apply a mode with the same
-  // resolution and refresh rate but with different timings to the other CRTC.
-  // TODO(dnicoara): This is hacky, instead the DrmDisplay and CrtcController
-  // should be merged and picking the mode should be done properly within
-  // HardwareDisplayController.
-  GetModesetControllerProps(commit_request, original->get(),
-                            (*mirror)->origin(), mode, primary);
 }
 
 void ScreenManager::UpdateControllerToWindowMapping() {
