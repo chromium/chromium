@@ -77,6 +77,8 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());
 
   EXPECT_TRUE(service->IsLocalSyncEnabled());
+  EXPECT_FALSE(service->IsSyncFeatureEnabled());
+  EXPECT_FALSE(service->IsSyncFeatureActive());
 
   // Verify that the expected set of data types successfully started up.
   // If this test fails after adding a new data type, carefully consider whether

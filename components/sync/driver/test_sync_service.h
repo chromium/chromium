@@ -50,7 +50,6 @@ class TestSyncService : public SyncService {
   void SetTrustedVaultKeyRequired(bool required);
   void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetIsUsingSecondaryPassphrase(bool enabled);
-  void SetCanUploadDemographicsToGoogle(bool value);
 
   void FireStateChanged();
   void FireSyncCycleCompleted();
@@ -110,7 +109,6 @@ class TestSyncService : public SyncService {
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,
       base::OnceClosure callback) override;
-  bool CanUploadDemographicsToGoogle() override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -138,8 +136,6 @@ class TestSyncService : public SyncService {
   base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
-
-  bool can_upload_demographics_to_google_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };

@@ -136,7 +136,6 @@ class ProfileSyncService : public SyncService,
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,
       base::OnceClosure callback) override;
-  bool CanUploadDemographicsToGoogle() override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
   bool HasObserver(const SyncServiceObserver* observer) const override;

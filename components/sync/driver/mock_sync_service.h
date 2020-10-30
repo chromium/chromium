@@ -79,7 +79,6 @@ class MockSyncService : public SyncService {
                const std::vector<uint8_t>& public_key,
                base::OnceClosure callback),
               (override));
-  MOCK_METHOD(bool, CanUploadDemographicsToGoogle, (), (override));
   MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));
   MOCK_METHOD(void,
               RemoveObserver,

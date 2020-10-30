@@ -132,10 +132,6 @@ void TestSyncService::SetIsUsingSecondaryPassphrase(bool enabled) {
   user_settings_.SetIsUsingSecondaryPassphrase(enabled);
 }
 
-void TestSyncService::SetCanUploadDemographicsToGoogle(bool value) {
-  can_upload_demographics_to_google_ = value;
-}
-
 void TestSyncService::FireStateChanged() {
   for (auto& observer : observers_)
     observer.OnStateChanged(this);
@@ -301,10 +297,6 @@ void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::string& gaia_id,
     const std::vector<uint8_t>& public_key,
     base::OnceClosure callback) {}
-
-bool TestSyncService::CanUploadDemographicsToGoogle() {
-  return can_upload_demographics_to_google_;
-}
 
 void TestSyncService::Shutdown() {}
 

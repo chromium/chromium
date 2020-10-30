@@ -74,7 +74,6 @@ class FakeSyncService : public SyncService {
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,
       base::OnceClosure callback) override;
-  bool CanUploadDemographicsToGoogle() override;
 
   // KeyedService implementation.
   void Shutdown() override;

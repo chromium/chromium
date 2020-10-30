@@ -164,10 +164,6 @@ void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     base::OnceClosure callback) {}
 
-bool FakeSyncService::CanUploadDemographicsToGoogle() {
-  return false;
-}
-
 void FakeSyncService::Shutdown() {}
 
 }  // namespace syncer

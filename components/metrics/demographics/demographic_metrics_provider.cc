@@ -7,11 +7,34 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
-#include "components/sync/base/sync_prefs.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 
 namespace metrics {
+
+namespace {
+
+bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
+  DCHECK(sync_service);
+
+  // Require that the user has opted into sync the feature, without just relying
+  // on PRIORITY_PREFERENCES start sync-ing.
+  if (!sync_service->IsSyncFeatureEnabled()) {
+    return false;
+  }
+
+  switch (GetUploadToGoogleState(sync_service, syncer::PRIORITY_PREFERENCES)) {
+    case syncer::UploadState::NOT_ACTIVE:
+      return false;
+    case syncer::UploadState::INITIALIZING:
+      // Note that INITIALIZING is considered good enough, because sync is known
+      // to be enabled, and transient errors don't really matter here.
+    case syncer::UploadState::ACTIVE:
+      return true;
+  }
+}
+
+}  // namespace
 
 // static
 const base::Feature DemographicMetricsProvider::kDemographicMetricsReporting = {
@@ -50,7 +73,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
     return base::nullopt;
   }
 
-  if (!sync_service->CanUploadDemographicsToGoogle()) {
+  if (!CanUploadDemographicsToGoogle(sync_service)) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kSyncNotEnabled);
     return base::nullopt;

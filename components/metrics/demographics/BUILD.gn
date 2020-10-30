@@ -39,6 +39,7 @@ source_set("unit_tests") {
     "//components/sync/driver",
     "//components/sync/driver:test_support",
     "//components/sync_preferences:test_support",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/metrics_proto",

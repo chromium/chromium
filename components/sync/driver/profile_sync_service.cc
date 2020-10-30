@@ -1763,13 +1763,6 @@ void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
       gaia_id, public_key, std::move(callback));
 }
 
-bool ProfileSyncService::CanUploadDemographicsToGoogle() {
-  // Do not provide the synced user’s birth year and gender when sync is
-  // disabled or paused because the user’s birth year and gender should only be
-  // provided when the sync prefs are synced with the sync server.
-  return IsSyncFeatureEnabled() && !auth_manager_->IsSyncPaused();
-}
-
 base::WeakPtr<JsController> ProfileSyncService::GetJsController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_js_controller_.AsWeakPtr();

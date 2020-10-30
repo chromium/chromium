@@ -15,6 +15,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -29,8 +30,10 @@ constexpr UserDemographicsProto::Gender kTestGender =
 
 enum TestSyncServiceState {
   NULL_SYNC_SERVICE,
-  SYNC_SERVICE_NOT_ENABLED,
-  SYNC_SERVICE_ENABLED
+  SYNC_FEATURE_NOT_ENABLED,
+  SYNC_FEATURE_ENABLED,
+  SYNC_FEATURE_ENABLED_BUT_PAUSED,
+  SYNC_FEATURE_TEMPORARILY_DISABLED,
 };
 
 // Profile client for testing that gets fake Profile information and services.
@@ -46,13 +49,48 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
     switch (sync_service_state) {
       case NULL_SYNC_SERVICE:
         break;
-      case SYNC_SERVICE_NOT_ENABLED:
+
+      case SYNC_FEATURE_NOT_ENABLED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        sync_service_->SetCanUploadDemographicsToGoogle(false);
+        // Mimic sync-the-feature being disabled.
+        sync_service_->SetFirstSetupComplete(false);
         break;
-      case SYNC_SERVICE_ENABLED:
+
+      case SYNC_FEATURE_ENABLED:
+        // TestSyncService by default behaves as everything enabled/active.
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        sync_service_->SetCanUploadDemographicsToGoogle(true);
+
+        CHECK(sync_service_->GetUserSettings()->IsSyncRequested());
+        CHECK(sync_service_->GetDisableReasons().Empty());
+        CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
+                 sync_service_->GetTransportState());
+        break;
+
+      case SYNC_FEATURE_ENABLED_BUT_PAUSED:
+        sync_service_ = std::make_unique<syncer::TestSyncService>();
+        // Mimic the user signing out from content are (sync paused).
+        sync_service_->SetAuthError(
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_CLIENT));
+        sync_service_->SetTransportState(
+            syncer::SyncService::TransportState::PAUSED);
+
+        CHECK(sync_service_->GetUserSettings()->IsSyncRequested());
+        CHECK(sync_service_->GetDisableReasons().Empty());
+        CHECK_EQ(syncer::SyncService::TransportState::PAUSED,
+                 sync_service_->GetTransportState());
+        break;
+
+      case SYNC_FEATURE_TEMPORARILY_DISABLED:
+        sync_service_ = std::make_unique<syncer::TestSyncService>();
+        // Temporarily disable sync without turning it off.
+        sync_service_->GetUserSettings()->SetSyncRequested(false);
+
+        CHECK(!sync_service_->GetUserSettings()->IsSyncRequested());
+        CHECK(syncer::SyncService::DisableReasonSet(
+                  syncer::SyncService::DISABLE_REASON_USER_CHOICE) ==
+              sync_service_->GetDisableReasons());
         break;
     }
   }
@@ -92,7 +130,7 @@ TEST(DemographicMetricsProviderTest,
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
-                                                    SYNC_SERVICE_ENABLED);
+                                                    SYNC_FEATURE_ENABLED);
   client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
 
   // Set birth year noise offset to not have it randomized.
@@ -139,11 +177,55 @@ TEST(DemographicMetricsProviderTest,
 }
 
 TEST(DemographicMetricsProviderTest,
+     ProvideSyncedUserNoisedBirthYearAndGender_SyncEnabledButPaused) {
+  base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(
+      /*number_of_profiles=*/1, SYNC_FEATURE_ENABLED_BUT_PAUSED);
+
+  // Run demographics provider.
+  DemographicMetricsProvider provider(
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
+
+  // Expect the proto fields to be not set and left to default.
+  EXPECT_FALSE(uma_proto.user_demographics().has_birth_year());
+  EXPECT_FALSE(uma_proto.user_demographics().has_gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSyncNotEnabled, 1);
+}
+
+TEST(DemographicMetricsProviderTest,
+     ProvideSyncedUserNoisedBirthYearAndGender_SyncTemporarilyDisabled) {
+  base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(
+      /*number_of_profiles=*/1, SYNC_FEATURE_TEMPORARILY_DISABLED);
+
+  // Run demographics provider.
+  DemographicMetricsProvider provider(
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
+
+  // Expect the proto fields to be not set and left to default.
+  EXPECT_FALSE(uma_proto.user_demographics().has_birth_year());
+  EXPECT_FALSE(uma_proto.user_demographics().has_gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSyncNotEnabled, 1);
+}
+
+TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_SyncNotEnabled) {
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
-                                                    SYNC_SERVICE_NOT_ENABLED);
+                                                    SYNC_FEATURE_NOT_ENABLED);
 
   // Run demographics provider.
   DemographicMetricsProvider provider(
@@ -170,7 +252,7 @@ TEST(DemographicMetricsProviderTest,
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
-                                                    SYNC_SERVICE_ENABLED);
+                                                    SYNC_FEATURE_ENABLED);
   client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
 
   // Run demographics provider.
@@ -192,7 +274,7 @@ TEST(DemographicMetricsProviderTest,
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/2,
-                                                    SYNC_SERVICE_ENABLED);
+                                                    SYNC_FEATURE_ENABLED);
   client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
 
   // Run demographics provider with not exactly one Profile on disk.
@@ -215,7 +297,7 @@ TEST(DemographicMetricsProviderTest,
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
-                                                    SYNC_SERVICE_ENABLED);
+                                                    SYNC_FEATURE_ENABLED);
   // Set some ineligible values to prefs.
   client->SetDemographicsInPrefs(/*birth_year=*/-17,
                                  UserDemographicsProto::GENDER_UNKNOWN);
@@ -242,7 +324,7 @@ TEST(DemographicMetricsProviderTest,
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
-                                                    SYNC_SERVICE_ENABLED);
+                                                    SYNC_FEATURE_ENABLED);
   client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
 
   // Set birth year noise offset to not have it randomized.
