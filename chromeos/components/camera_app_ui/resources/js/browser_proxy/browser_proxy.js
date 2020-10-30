@@ -235,6 +235,11 @@ class ChromeAppBrowserProxy {
   getUntrustedOrigin() {
     return UntrustedOrigin.CHROME_EXTENSION;
   }
+
+  /** @override */
+  setBeforeUnloadListenerEnabled(enabled) {
+    // Do nothing since beforeunload event is unavailable for platform apps.
+  }
 }
 
 export const browserProxy = new ChromeAppBrowserProxy();

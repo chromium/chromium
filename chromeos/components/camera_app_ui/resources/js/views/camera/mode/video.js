@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
+import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
 import {assert} from '../../../chrome_util.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {
@@ -306,6 +307,7 @@ export class Video extends ModeBase {
         (this.mediaRecorder_.state === 'recording' ||
          this.mediaRecorder_.state === 'paused')) {
       this.mediaRecorder_.stop();
+      browserProxy.setBeforeUnloadListenerEnabled(false);
     }
   }
 
@@ -350,6 +352,9 @@ export class Video extends ModeBase {
       this.mediaRecorder_.addEventListener('dataavailable', ondataavailable);
       this.mediaRecorder_.addEventListener('stop', onstop);
       this.mediaRecorder_.addEventListener('start', onstart);
+
+      browserProxy.setBeforeUnloadListenerEnabled(true);
+
       this.mediaRecorder_.start(100);
       state.set(state.State.RECORDING_PAUSED, false);
       state.set(state.State.RECORDING_UI_PAUSED, false);

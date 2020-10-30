@@ -21,6 +21,16 @@ import {UntrustedOrigin} from '../type.js';
 import {BrowserProxy} from './browser_proxy_interface.js';
 
 /**
+ * The 'beforeunload' listener which will show confirm dialog when trying to
+ * close window.
+ * @param {!Event} event The 'beforeunload' event.
+ */
+function beforeUnloadListener(event) {
+  event.preventDefault();
+  event.returnValue = '';
+}
+
+/**
  * The WebUI implementation of the CCA's interaction with the browser.
  * @implements {BrowserProxy}
  */
@@ -172,6 +182,15 @@ class WebUIBrowserProxy {
   /** @override */
   getUntrustedOrigin() {
     return UntrustedOrigin.CHROME_UNTRUSTED;
+  }
+
+  /** @override */
+  setBeforeUnloadListenerEnabled(enabled) {
+    if (enabled) {
+      window.addEventListener('beforeunload', beforeUnloadListener);
+    } else {
+      window.removeEventListener('beforeunload', beforeUnloadListener);
+    }
   }
 }
 

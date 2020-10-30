@@ -141,4 +141,10 @@ export class BrowserProxy {
    * @abstract
    */
   getUntrustedOrigin() {}
+
+  /**
+   * @param {boolean} enabled
+   * @abstract
+   */
+  setBeforeUnloadListenerEnabled(enabled) {}
 }
