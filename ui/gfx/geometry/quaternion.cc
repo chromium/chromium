@@ -57,24 +57,51 @@ Quaternion::Quaternion(const Vector3dF& from, const Vector3dF& to) {
   *this = this->Normalized();
 }
 
-// Taken from http://www.w3.org/TR/css3-transforms/.
-Quaternion Quaternion::Slerp(const Quaternion& q, double t) const {
-  double dot = x_ * q.x_ + y_ * q.y_ + z_ * q.z_ + w_ * q.w_;
+Quaternion Quaternion::FromAxisAngle(double x,
+                                     double y,
+                                     double z,
+                                     double angle) {
+  double length = std::sqrt(x * x + y * y + z * z);
+  if (std::abs(length) < kEpsilon)
+    return Quaternion(0, 0, 0, 1);
 
-  dot = base::ClampToRange(dot, -1.0, 1.0);
+  double scale = std::sin(0.5 * angle) / length;
+  return Quaternion(scale * x, scale * y, scale * z, std::cos(0.5 * angle));
+}
 
-  // Quaternions are facing the same direction.
-  if (std::abs(dot - 1.0) < kEpsilon || std::abs(dot + 1.0) < kEpsilon)
+// Adapted from https://www.euclideanspace.com/maths/algebra/realNormedAlgebra/
+// quaternions/slerp/index.htm
+Quaternion Quaternion::Slerp(const Quaternion& to, double t) const {
+  Quaternion from = *this;
+
+  double cos_half_angle =
+      from.x_ * to.x_ + from.y_ * to.y_ + from.z_ * to.z_ + from.w_ * to.w_;
+  if (cos_half_angle < 0) {
+    // Since the half angle is > 90 degrees, the full rotation angle would
+    // exceed 180 degrees. The quaternions (x, y, z, w) and (-x, -y, -z, -w)
+    // represent the same rotation. Flipping the orientation of either
+    // quaternion ensures that the half angle is less than 90 and that we are
+    // taking the shortest path.
+    from = from.flip();
+    cos_half_angle = -cos_half_angle;
+  }
+
+  // Ensure that acos is well behaved at the boundary.
+  if (cos_half_angle > 1)
+    cos_half_angle = 1;
+
+  double sin_half_angle = std::sqrt(1.0 - cos_half_angle * cos_half_angle);
+  if (sin_half_angle < kEpsilon) {
+    // Quaternions share common axis and angle.
     return *this;
+  }
 
-  double denom = std::sqrt(1.0 - dot * dot);
-  double theta = std::acos(dot);
-  double w = std::sin(t * theta) * (1.0 / denom);
+  double half_angle = std::acos(cos_half_angle);
 
-  double s1 = std::cos(t * theta) - dot * w;
-  double s2 = w;
+  double scaleA = std::sin((1 - t) * half_angle) / sin_half_angle;
+  double scaleB = std::sin(t * half_angle) / sin_half_angle;
 
-  return (s1 * *this) + (s2 * q);
+  return (scaleA * from) + (scaleB * to);
 }
 
 Quaternion Quaternion::Lerp(const Quaternion& q, double t) const {

@@ -16,6 +16,14 @@ namespace {
 
 const double kEpsilon = 1e-7;
 
+#define EXPECT_QUATERNION(expected, actual)          \
+  do {                                               \
+    EXPECT_NEAR(expected.x(), actual.x(), kEpsilon); \
+    EXPECT_NEAR(expected.y(), actual.y(), kEpsilon); \
+    EXPECT_NEAR(expected.z(), actual.z(), kEpsilon); \
+    EXPECT_NEAR(expected.w(), actual.w(), kEpsilon); \
+  } while (false)
+
 void CompareQuaternions(const Quaternion& a, const Quaternion& b) {
   EXPECT_FLOAT_EQ(a.x(), b.x());
   EXPECT_FLOAT_EQ(a.y(), b.y());
@@ -140,10 +148,7 @@ TEST(QuatTest, Slerp) {
     double radians = (1.0 - t) * start_radians + t * stop_radians;
     Quaternion expected(axis, radians);
     Quaternion interpolated = start.Slerp(stop, t);
-    EXPECT_NEAR(expected.x(), interpolated.x(), kEpsilon);
-    EXPECT_NEAR(expected.y(), interpolated.y(), kEpsilon);
-    EXPECT_NEAR(expected.z(), interpolated.z(), kEpsilon);
-    EXPECT_NEAR(expected.w(), interpolated.w(), kEpsilon);
+    EXPECT_QUATERNION(expected, interpolated);
   }
 }
 
@@ -159,10 +164,53 @@ TEST(QuatTest, SlerpOppositeAngles) {
   Quaternion expected(axis, 0);
 
   Quaternion interpolated = start.Slerp(stop, 0.5f);
-  EXPECT_NEAR(expected.x(), interpolated.x(), kEpsilon);
-  EXPECT_NEAR(expected.y(), interpolated.y(), kEpsilon);
-  EXPECT_NEAR(expected.z(), interpolated.z(), kEpsilon);
-  EXPECT_NEAR(expected.w(), interpolated.w(), kEpsilon);
+  EXPECT_QUATERNION(expected, interpolated);
+}
+
+TEST(QuatTest, SlerpRotateXRotateY) {
+  Quaternion start(Vector3dF(1, 0, 0), base::kPiDouble / 2);
+  Quaternion stop(Vector3dF(0, 1, 0), base::kPiDouble / 2);
+  Quaternion interpolated = start.Slerp(stop, 0.5f);
+
+  double expected_angle = std::acos(1.0 / 3.0);
+  double xy = std::sin(0.5 * expected_angle) / std::sqrt(2);
+  Quaternion expected(xy, xy, 0, std::cos(0.5 * expected_angle));
+  EXPECT_QUATERNION(expected, interpolated);
+}
+
+TEST(QuatTest, Slerp360) {
+  Quaternion start(0, 0, 0, -1);  // 360 degree rotation.
+  Quaternion stop(Vector3dF(0, 0, 1), base::kPiDouble / 2);
+  Quaternion interpolated = start.Slerp(stop, 0.5f);
+  double expected_half_angle = base::kPiDouble / 8;
+  Quaternion expected(0, 0, std::sin(expected_half_angle),
+                      std::cos(expected_half_angle));
+  EXPECT_QUATERNION(expected, interpolated);
+}
+
+TEST(QuatTest, SlerpEquivalentQuaternions) {
+  Quaternion start(Vector3dF(1, 0, 0), base::kPiDouble / 3);
+  Quaternion stop = start.flip();
+  Quaternion interpolated = start.Slerp(stop, 0.5f);
+  EXPECT_QUATERNION(start, interpolated);
+}
+
+TEST(QuatTest, SlerpQuaternionWithInverse) {
+  Quaternion start(Vector3dF(1, 0, 0), base::kPiDouble / 3);
+  Quaternion stop = start.inverse();
+  Quaternion interpolated = start.Slerp(stop, 0.5f);
+  Quaternion expected(0, 0, 0, 1);
+  EXPECT_QUATERNION(expected, interpolated);
+}
+
+TEST(QuatTest, SlerpObtuseAngle) {
+  Quaternion start(Vector3dF(1, 1, 0), base::kPiDouble / 2);
+  Quaternion stop(Vector3dF(0, 1, -1), 3 * base::kPiDouble / 2);
+  Quaternion interpolated = start.Slerp(stop, 0.5f);
+  double expected_half_angle = -std::atan(0.5);
+  double xz = std::sin(expected_half_angle) / std::sqrt(2);
+  Quaternion expected(xz, 0, xz, -std::cos(expected_half_angle));
+  EXPECT_QUATERNION(expected, interpolated);
 }
 
 }  // namespace gfx

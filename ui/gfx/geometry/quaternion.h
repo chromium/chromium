@@ -23,6 +23,8 @@ class GEOMETRY_EXPORT Quaternion {
   // Constructs a quaternion representing a rotation between |from| and |to|.
   Quaternion(const Vector3dF& from, const Vector3dF& to);
 
+  static Quaternion FromAxisAngle(double x, double y, double z, double angle);
+
   constexpr double x() const { return x_; }
   void set_x(double x) { x_ = x; }
 
@@ -47,6 +49,8 @@ class GEOMETRY_EXPORT Quaternion {
   }
 
   Quaternion inverse() const { return {-x_, -y_, -z_, w_}; }
+
+  Quaternion flip() const { return {-x_, -y_, -z_, -w_}; }
 
   // Blends with the given quaternion, |q|, via spherical linear interpolation.
   // Values of |t| in the range [0, 1] will interpolate between |this| and |q|,

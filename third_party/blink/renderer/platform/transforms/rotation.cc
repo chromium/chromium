@@ -23,34 +23,40 @@
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/quaternion.h"
 
 namespace blink {
 
+using gfx::Quaternion;
+
 namespace {
 
+const double kEpsilon = 1e-5;
 const double kAngleEpsilon = 1e-4;
 
-Rotation ExtractFromMatrix(const TransformationMatrix& matrix,
-                           const Rotation& fallback_value) {
-  TransformationMatrix::DecomposedType decomp;
-  if (!matrix.Decompose(decomp))
-    return fallback_value;
-  double x = -decomp.quaternion_x;
-  double y = -decomp.quaternion_y;
-  double z = -decomp.quaternion_z;
-  double length = std::sqrt(x * x + y * y + z * z);
-  double angle = 0;
-  if (length > 0.00001) {
-    x /= length;
-    y /= length;
-    z /= length;
-    angle = rad2deg(std::acos(decomp.quaternion_w) * 2);
+Quaternion ComputeQuaternion(const Rotation& rotation) {
+  return Quaternion::FromAxisAngle(rotation.axis.X(), rotation.axis.Y(),
+                                   rotation.axis.Z(), deg2rad(rotation.angle));
+}
+
+FloatPoint3D NormalizeAxis(FloatPoint3D axis) {
+  FloatPoint3D normalized(axis);
+  double length = normalized.length();
+  if (length > kEpsilon) {
+    normalized.Normalize();
   } else {
-    x = 0;
-    y = 0;
-    z = 1;
+    // Rotation angle is zero so the axis is arbitrary.
+    normalized.Set(0, 0, 1);
   }
-  return Rotation(FloatPoint3D(x, y, z), angle);
+  return normalized;
+}
+
+Rotation ComputeRotation(Quaternion q) {
+  double cos_half_angle = q.w();
+  double interpolated_angle = rad2deg(2 * std::acos(cos_half_angle));
+  FloatPoint3D interpolated_axis =
+      NormalizeAxis(FloatPoint3D(q.x(), q.y(), q.z()));
+  return Rotation(interpolated_axis, interpolated_angle);
 }
 
 }  // namespace
@@ -71,13 +77,13 @@ bool Rotation::GetCommonAxis(const Rotation& a,
     return true;
 
   if (is_zero_a) {
-    result_axis = b.axis;
+    result_axis = NormalizeAxis(b.axis);
     result_angle_b = b.angle;
     return true;
   }
 
   if (is_zero_b) {
-    result_axis = a.axis;
+    result_axis = NormalizeAxis(a.axis);
     result_angle_a = a.angle;
     return true;
   }
@@ -92,7 +98,7 @@ bool Rotation::GetCommonAxis(const Rotation& a,
   if (error > kAngleEpsilon)
     return false;
 
-  result_axis = a.axis;
+  result_axis = NormalizeAxis(a.axis);
   result_angle_a = a.angle;
   result_angle_b = b.angle;
   return true;
@@ -107,12 +113,11 @@ Rotation Rotation::Slerp(const Rotation& from,
   if (GetCommonAxis(from, to, axis, from_angle, to_angle))
     return Rotation(axis, blink::Blend(from_angle, to_angle, progress));
 
-  TransformationMatrix from_matrix;
-  TransformationMatrix to_matrix;
-  from_matrix.Rotate3d(from);
-  to_matrix.Rotate3d(to);
-  to_matrix.Blend(from_matrix, progress);
-  return ExtractFromMatrix(to_matrix, progress < 0.5 ? from : to);
+  Quaternion qa = ComputeQuaternion(from);
+  Quaternion qb = ComputeQuaternion(to);
+  Quaternion qc = qa.Slerp(qb, progress);
+
+  return ComputeRotation(qc);
 }
 
 Rotation Rotation::Add(const Rotation& a, const Rotation& b) {
@@ -122,10 +127,15 @@ Rotation Rotation::Add(const Rotation& a, const Rotation& b) {
   if (GetCommonAxis(a, b, axis, angle_a, angle_b))
     return Rotation(axis, angle_a + angle_b);
 
-  TransformationMatrix matrix;
-  matrix.Rotate3d(a);
-  matrix.Rotate3d(b);
-  return ExtractFromMatrix(matrix, b);
+  Quaternion qa = ComputeQuaternion(a);
+  Quaternion qb = ComputeQuaternion(b);
+  Quaternion qc = qa * qb;
+  if (qc.w() < 0) {
+    // Choose the equivalent rotation with the smaller angle.
+    qc = qc.flip();
+  }
+
+  return ComputeRotation(qc);
 }
 
 }  // namespace blink

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 256 tests; 246 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 256 tests; 247 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testAddition function
 PASS isolation: "isolate" onto "auto"
@@ -223,7 +223,7 @@ PASS transform-style: "flat" onto "preserve-3d"
 PASS rotate (type: rotateList) has testAddition function
 PASS rotate without rotation axes
 PASS rotate with underlying transform
-FAIL rotate with different rotation axes assert_approx_equals: expected 0.57735 0.57735 0.57735 135deg but got 1 1 1 135deg: The value should be 0.57735 0.57735 0.57735 135deg at 500ms but got 1 1 1 135deg expected 0.57735 +/- 0.0001 but got 1
+PASS rotate with different rotation axes
 PASS translate (type: translateList) has testAddition function
 PASS translate
 PASS translate with underlying transform

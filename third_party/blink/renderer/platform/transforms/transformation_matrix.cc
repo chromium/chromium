@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/transform.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -53,6 +54,8 @@
 #endif
 
 namespace blink {
+
+using gfx::Quaternion;
 
 //
 // Supporting Math Functions
@@ -565,6 +568,8 @@ static void V3Cross(const Vector3 a, const Vector3 b, Vector3 result) {
 // consolidated.
 static bool Decompose(const TransformationMatrix::Matrix4& mat,
                       TransformationMatrix::DecomposedType& result) {
+  // https://www.w3.org/TR/css-transforms-2/#decomposing-a-3d-matrix.
+
   TransformationMatrix::Matrix4 local_matrix;
   memcpy(&local_matrix, &mat, sizeof(TransformationMatrix::Matrix4));
 
@@ -636,101 +641,133 @@ static bool Decompose(const TransformationMatrix::Matrix4& mat,
   local_matrix[3][2] = 0;
 
   // Vector4 type and functions need to be added to the common set.
-  Vector3 row[3], pdum3;
+  // Note: Deviating from the spec in terms of variable naming. The matrix is
+  // stored on column major order and not row major. Using the variable 'row'
+  // instead of 'column' in the spec pseudocode has been the source of
+  // confusion, specifically in sorting out rotations.
+  Vector3 column[3], pdum3;
 
   // Now get scale and shear.
   for (i = 0; i < 3; i++) {
-    row[i][0] = local_matrix[i][0];
-    row[i][1] = local_matrix[i][1];
-    row[i][2] = local_matrix[i][2];
+    column[i][0] = local_matrix[i][0];
+    column[i][1] = local_matrix[i][1];
+    column[i][2] = local_matrix[i][2];
   }
 
-  // Compute X scale factor and normalize first row.
-  result.scale_x = V3Length(row[0]);
-  V3Scale(row[0], 1.0);
+  // Compute X scale factor and normalize the first column.
+  result.scale_x = V3Length(column[0]);
+  V3Scale(column[0], 1.0);
 
   // Compute XY shear factor and make 2nd row orthogonal to 1st.
-  result.skew_xy = V3Dot(row[0], row[1]);
-  V3Combine(row[1], row[0], row[1], 1.0, -result.skew_xy);
+  result.skew_xy = V3Dot(column[0], column[1]);
+  V3Combine(column[1], column[0], column[1], 1.0, -result.skew_xy);
 
-  // Now, compute Y scale and normalize 2nd row.
-  result.scale_y = V3Length(row[1]);
-  V3Scale(row[1], 1.0);
+  // Now, compute Y scale and normalize 2nd column.
+  result.scale_y = V3Length(column[1]);
+  V3Scale(column[1], 1.0);
   result.skew_xy /= result.scale_y;
 
-  // Compute XZ and YZ shears, orthogonalize 3rd row.
-  result.skew_xz = V3Dot(row[0], row[2]);
-  V3Combine(row[2], row[0], row[2], 1.0, -result.skew_xz);
-  result.skew_yz = V3Dot(row[1], row[2]);
-  V3Combine(row[2], row[1], row[2], 1.0, -result.skew_yz);
+  // Compute XZ and YZ shears, and orthogonalize the 3rd column.
+  result.skew_xz = V3Dot(column[0], column[2]);
+  V3Combine(column[2], column[0], column[2], 1.0, -result.skew_xz);
+  result.skew_yz = V3Dot(column[1], column[2]);
+  V3Combine(column[2], column[1], column[2], 1.0, -result.skew_yz);
 
-  // Next, get Z scale and normalize 3rd row.
-  result.scale_z = V3Length(row[2]);
-  V3Scale(row[2], 1.0);
+  // Next, get Z scale and normalize the 3rd column.
+  result.scale_z = V3Length(column[2]);
+  V3Scale(column[2], 1.0);
   result.skew_xz /= result.scale_z;
   result.skew_yz /= result.scale_z;
 
-  // At this point, the matrix (in rows[]) is orthonormal.
+  // At this point, the matrix (in column[]) is orthonormal.
   // Check for a coordinate system flip.  If the determinant
   // is -1, then negate the matrix and the scaling factors.
-  V3Cross(row[1], row[2], pdum3);
-  if (V3Dot(row[0], pdum3) < 0) {
+  V3Cross(column[1], column[2], pdum3);
+  if (V3Dot(column[0], pdum3) < 0) {
+    // Note that flipping only one of the 3 scaling factors would also flip
+    // the sign of the determinant. By flipping all 3, we turn a 2D matrix
+    // interpolation into a 3D interpolation.
     result.scale_x *= -1;
     result.scale_y *= -1;
     result.scale_z *= -1;
 
     for (i = 0; i < 3; i++) {
-      row[i][0] *= -1;
-      row[i][1] *= -1;
-      row[i][2] *= -1;
+      column[i][0] *= -1;
+      column[i][1] *= -1;
+      column[i][2] *= -1;
     }
   }
 
-  // Now, get the rotations out, as described in the gem.
+  // Lastly, compute the quaternions.
+  // See https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion.
+  // Note: deviating from spec (http://www.w3.org/TR/css3-transforms/)
+  // which has a degenerate case when the trace (t) of the orthonormal matrix
+  // (Q) approaches -1. In the Wikipedia article, Q_ij is indexing on row then
+  // column. Thus, Q_ij = column[j][i].
 
-  // FIXME - Add the ability to return either quaternions (which are
-  // easier to recompose with) or Euler angles (rx, ry, rz), which
-  // are easier for authors to deal with. The latter will only be useful
-  // when we fix https://bugs.webkit.org/show_bug.cgi?id=23799, so I
-  // will leave the Euler angle code here for now.
+  // The following are equivalent represnetations of the rotation matrix:
+  //
+  // Axis-angle form:
+  //
+  //      [ c+(1-c)x^2  (1-c)xy-sz  (1-c)xz+sy ]    c = cos theta
+  // R =  [ (1-c)xy+sz  c+(1-c)y^2  (1-c)yz-sx ]    s = sin theta
+  //      [ (1-c)xz-sy  (1-c)yz+sx  c+(1-c)z^2 ]    [x,y,z] = axis or rotation
+  //
+  // The sum of the diagonal elements (trace) is a simple function of the cosine
+  // of the angle. The w component of the quaternion is cos(theta/2), and we
+  // make use of the double angle formula to directly compute w from the
+  // trace. Differences between pairs of skew symmetric elements in this matrix
+  // isolate the remaining components. Since w can be zero (also numerically
+  // unstable if near zero), we cannot rely solely on this approach to compute
+  // the quaternion components.
+  //
+  // Quaternion form:
+  //
+  //       [ 1-2(y^2+z^2)    2(xy-zw)      2(xz+yw)   ]
+  //  r =  [   2(xy+zw)    1-2(x^2+z^2)    2(yz-xw)   ]    q = (x,y,y,w)
+  //       [   2(xz-yw)      2(yz+xw)    1-2(x^2+y^2) ]
+  //
+  // Different linear combinations of the diagonal elements isolates x, y or z.
+  // Sums or differences between skew symmetric elements isolate the remainder.
 
-  // ret.rotateY = asin(-row[0][2]);
-  // if (cos(ret.rotateY) != 0) {
-  //     ret.rotateX = atan2(row[1][2], row[2][2]);
-  //     ret.rotateZ = atan2(row[0][1], row[0][0]);
-  // } else {
-  //     ret.rotateX = atan2(-row[2][0], row[1][1]);
-  //     ret.rotateZ = 0;
-  // }
+  double r, s, t, x, y, z, w;
 
-  double s, t, x, y, z, w;
+  t = column[0][0] + column[1][1] + column[2][2];  // trace of Q
 
-  t = row[0][0] + row[1][1] + row[2][2] + 1.0;
-
-  if (t > 1e-4) {
-    s = 0.5 / std::sqrt(t);
-    w = 0.25 / s;
-    x = (row[2][1] - row[1][2]) * s;
-    y = (row[0][2] - row[2][0]) * s;
-    z = (row[1][0] - row[0][1]) * s;
-  } else if (row[0][0] > row[1][1] && row[0][0] > row[2][2]) {
-    s = std::sqrt(1.0 + row[0][0] - row[1][1] - row[2][2]) * 2.0;  // S=4*qx
-    x = 0.25 * s;
-    y = (row[0][1] + row[1][0]) / s;
-    z = (row[0][2] + row[2][0]) / s;
-    w = (row[2][1] - row[1][2]) / s;
-  } else if (row[1][1] > row[2][2]) {
-    s = std::sqrt(1.0 + row[1][1] - row[0][0] - row[2][2]) * 2.0;  // S=4*qy
-    x = (row[0][1] + row[1][0]) / s;
-    y = 0.25 * s;
-    z = (row[1][2] + row[2][1]) / s;
-    w = (row[0][2] - row[2][0]) / s;
+  // https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
+  if (1 + t > 0.001) {
+    // Numerically stable as long as 1+t is not close to zero. Otherwise use the
+    // diagonal element with the greatest value to compute the quaternions.
+    r = std::sqrt(1.0 + t);
+    s = 0.5 / r;
+    w = 0.5 * r;
+    x = (column[1][2] - column[2][1]) * s;
+    y = (column[2][0] - column[0][2]) * s;
+    z = (column[0][1] - column[1][0]) * s;
+  } else if (column[0][0] > column[1][1] && column[0][0] > column[2][2]) {
+    // Q_xx is largest.
+    r = std::sqrt(1.0 + column[0][0] - column[1][1] - column[2][2]);
+    s = 0.5 / r;
+    x = 0.5 * r;
+    y = (column[1][0] - column[0][1]) * s;
+    z = (column[2][0] + column[0][2]) * s;
+    w = (column[1][2] - column[2][1]) * s;
+  } else if (column[1][1] > column[2][2]) {
+    // Q_yy is largest.
+    r = std::sqrt(1.0 - column[0][0] + column[1][1] - column[2][2]);
+    s = 0.5 / r;
+    x = (column[1][0] + column[0][1]) * s;
+    y = 0.5 * r;
+    z = (column[2][1] + column[1][2]) * s;
+    w = (column[2][0] - column[0][2]) * s;
   } else {
-    s = std::sqrt(1.0 + row[2][2] - row[0][0] - row[1][1]) * 2.0;  // S=4*qz
-    x = (row[0][2] + row[2][0]) / s;
-    y = (row[1][2] + row[2][1]) / s;
-    z = 0.25 * s;
-    w = (row[1][0] - row[0][1]) / s;
+    // Q_zz is largest.
+    r = std::sqrt(1.0 - column[0][0] - column[1][1] + column[2][2]);
+    s = 0.5 / r;
+    x = (column[2][0] + column[0][2]) * s;
+    y = (column[2][1] + column[1][2]) * s;
+    z = 0.5 * r;
+    w = (column[0][1] - column[1][0]) * s;
   }
 
   result.quaternion_x = x;
@@ -741,49 +778,21 @@ static bool Decompose(const TransformationMatrix::Matrix4& mat,
   return true;
 }
 
-// Perform a spherical linear interpolation between the two
-// passed quaternions with 0 <= t <= 1
-static void Slerp(double qa[4], const double qb[4], double t) {
-  double ax, ay, az, aw;
-  double bx, by, bz, bw;
-  double cx, cy, cz, cw;
-  double product;
+Quaternion ToQuaterion(const TransformationMatrix::DecomposedType& decomp) {
+  return Quaternion(decomp.quaternion_x, decomp.quaternion_y,
+                    decomp.quaternion_z, decomp.quaternion_w);
+}
 
-  ax = qa[0];
-  ay = qa[1];
-  az = qa[2];
-  aw = qa[3];
-  bx = qb[0];
-  by = qb[1];
-  bz = qb[2];
-  bw = qb[3];
-
-  product = ax * bx + ay * by + az * bz + aw * bw;
-
-  product = clampTo(product, -1.0, 1.0);
-
-  const double kEpsilon = 1e-5;
-  if (std::abs(product - 1.0) < kEpsilon) {
-    // Result is qa, so just return
-    return;
-  }
-
-  double denom = std::sqrt(1.0 - product * product);
-  double theta = std::acos(product);
-  double w = std::sin(t * theta) * (1.0 / denom);
-
-  double scale1 = std::cos(t * theta) - product * w;
-  double scale2 = w;
-
-  cx = ax * scale1 + bx * scale2;
-  cy = ay * scale1 + by * scale2;
-  cz = az * scale1 + bz * scale2;
-  cw = aw * scale1 + bw * scale2;
-
-  qa[0] = cx;
-  qa[1] = cy;
-  qa[2] = cz;
-  qa[3] = cw;
+void Slerp(TransformationMatrix::DecomposedType& from_decomp,
+           const TransformationMatrix::DecomposedType& to_decomp,
+           double progress) {
+  Quaternion qa = ToQuaterion(from_decomp);
+  Quaternion qb = ToQuaterion(to_decomp);
+  Quaternion qc = qa.Slerp(qb, progress);
+  from_decomp.quaternion_x = qc.x();
+  from_decomp.quaternion_y = qc.y();
+  from_decomp.quaternion_z = qc.z();
+  from_decomp.quaternion_w = qc.w();
 }
 
 // End of Supporting Math Functions
@@ -1753,7 +1762,7 @@ void TransformationMatrix::Blend(const TransformationMatrix& from,
   BlendFloat(from_decomp.perspective_z, to_decomp.perspective_z, progress);
   BlendFloat(from_decomp.perspective_w, to_decomp.perspective_w, progress);
 
-  Slerp(&from_decomp.quaternion_x, &to_decomp.quaternion_x, progress);
+  Slerp(from_decomp, to_decomp, progress);
 
   // recompose
   Recompose(from_decomp);
@@ -1924,11 +1933,19 @@ void TransformationMatrix::Recompose(const DecomposedType& decomp) {
   double zz = decomp.quaternion_z * decomp.quaternion_z;
   double zw = decomp.quaternion_z * decomp.quaternion_w;
 
-  // Construct a composite rotation matrix from the quaternion values
-  TransformationMatrix rotation_matrix(
-      1 - 2 * (yy + zz), 2 * (xy - zw), 2 * (xz + yw), 0, 2 * (xy + zw),
-      1 - 2 * (xx + zz), 2 * (yz - xw), 0, 2 * (xz - yw), 2 * (yz + xw),
-      1 - 2 * (xx + yy), 0, 0, 0, 0, 1);
+  // Construct a composite rotation matrix from the quaternion values.
+  // Arguments are in column order.
+  // https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
+  TransformationMatrix rotation_matrix(1 - 2 * (yy + zz),     // Q_xx
+                                       2 * (xy + zw),         // Q_yx
+                                       2 * (xz - yw), 0,      // Q_zx
+                                       2 * (xy - zw),         // Q_xy
+                                       1 - 2 * (xx + zz),     // Q_yy
+                                       2 * (yz + xw), 0,      // Q_zy
+                                       2 * (xz + yw),         // Q_xz
+                                       2 * (yz - xw),         // Q_yz
+                                       1 - 2 * (xx + yy), 0,  // Q_zz
+                                       0, 0, 0, 1);
 
   Multiply(rotation_matrix);
 
