@@ -515,7 +515,10 @@ textarea {
 ::-webkit-input-placeholder {
     -webkit-text-security: none;
     color: #757575;
+    direction: inherit !important;
     pointer-events: none !important;
+    text-orientation: inherit !important;
+    writing-mode: inherit !important;
 }
 
 input::-webkit-input-placeholder {
