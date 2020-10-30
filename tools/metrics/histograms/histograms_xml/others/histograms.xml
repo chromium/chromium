@@ -14389,14 +14389,14 @@ should be kept until we remove incident reporting. -->
     (e.g. #:=:text=SELECTOR). Indicates source type that navigation originated
     from. It only know about search engines that come from the pre-populated
     list installed with Chrome. If the user uses a search engine not on the
-    list, it won't count as a search engine. This is even true if the user have
-    a custom search engine. These custom search engines can be created by hand
-    or auto-generated. In either case, it's not going to count as a search
-    engine. Also, it only checks to see if the *referrer* is from a domain
-    associated with search engine. If someone posts a link somewhere on a web
-    site that happens to have a search engine known to Google and that links
-    includes the fragment tokens, then if a user clicks that link, it'll look
-    like it came from a search engine even thought they did not.
+    list, it will be recorded as Unknown. This is even true if the user have a
+    custom search engine. These custom search engines can be created by hand or
+    auto-generated. In either case, it's not going to count as a search engine.
+    Also, it only checks to see if the *referrer* is from a domain associated
+    with search engine. If someone posts a link somewhere on a web site that
+    happens to have a search engine known to Google and that links includes the
+    fragment tokens, then if a user clicks that link, it'll look like it came
+    from a search engine even thought they did not.
   </summary>
 </histogram>
 
