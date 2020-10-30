@@ -88,17 +88,20 @@ def DetermineResultsFromMultipleRuns(measurements, repeat_strategy):
 
 
 def ProcessJsonData(jsons,
-                    measurement_names=_MEASUREMENTS,
+                    measurement_names=None,
                     per_bot=False,
                     repeat_strategy=RepeatStrategy.COUNT_MINIMUM,
-                    bot_allowlist=[],
-                    bot_blocklist=[]):
+                    bot_allowlist=None,
+                    bot_blocklist=None):
+  measurement_names = measurement_names or _MEASUREMENTS
+  bot_allowlist = bot_allowlist or []
+  bot_blocklist = bot_blocklist or []
   min_build = None
   max_build = None
   results = {}
   bots = []
-  for json in jsons:
-    builds = json.get('builds', [])
+  for j in jsons:
+    builds = j.get('builds', [])
     for build in builds:
       build_number = build.get('number', -1)
       if build_number > 0:
@@ -192,8 +195,8 @@ def MarkExperiment(description):
 
 def GetBotBuilds(jsons, bot_name):
   build_numbers = []
-  for json in jsons:
-    builds = json.get('builds', [])
+  for j in jsons:
+    builds = j.get('builds', [])
     for build in builds:
       build_number = build.get('number', -1)
       if build_number > 0:
@@ -215,8 +218,8 @@ def GetOutliers(data, variation_threshold):
 
 
 def FindBuild(jsons, selected_bots, test_name, result):
-  for json in jsons:
-    builds = json.get('builds', [])
+  for j in jsons:
+    builds = j.get('builds', [])
     for build in builds:
       build_number = build.get('number', -1)
       if build_number < 0:
@@ -299,8 +302,9 @@ def RunExperiment_BadBots(jsons,
 
 
 def RunExperiment_GoodBots(jsons,
-                           bad_bots=[],
+                           bad_bots=None,
                            repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
+  bad_bots = bad_bots or []
   MIN_RUNS_PER_BOT = 8
   STDEV_GOOD_BOT_THRESHOLD = 0.2
   GOOD_BOT_RANGE_PERC = 0.08

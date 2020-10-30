@@ -4,8 +4,8 @@
 
 import logging
 
-import base_parameter_optimizer as base_optimizer
-import parameter_set
+import gold_inexact_matching.base_parameter_optimizer as base_optimizer
+from gold_inexact_matching import parameter_set
 
 
 class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
@@ -50,8 +50,7 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
     while (abs(known_good - known_bad)) > 1:
       midpoint = (known_good + known_bad) / 2
       parameters = self._CreateParameterSet(midpoint)
-      success, num_pixels, max_diff = self._RunComparisonForParameters(
-          parameters)
+      success, _, _ = self._RunComparisonForParameters(parameters)
       if success:
         logging.info('Found good parameters %s', parameters)
         known_good = midpoint

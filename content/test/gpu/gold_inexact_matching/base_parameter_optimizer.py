@@ -15,7 +15,7 @@ import subprocess
 import sys
 import tempfile
 
-import parameter_set
+from gold_inexact_matching import parameter_set
 
 CHROMIUM_SRC_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))

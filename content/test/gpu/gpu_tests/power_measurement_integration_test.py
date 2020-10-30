@@ -396,7 +396,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @staticmethod
   def _AppendResults(results_sum, results):
-    assert type(results_sum) is dict and type(results) is dict
+    assert isinstance(results_sum, dict) and isinstance(results, dict)
     assert results
     first_append = not results_sum
     for key, value in results.items():
@@ -404,7 +404,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         results_sum[key] = [value]
       else:
         assert key in results_sum
-        assert type(results_sum[key]) is list
+        assert isinstance(results_sum[key], list)
         results_sum[key].append(value)
     return results_sum
 

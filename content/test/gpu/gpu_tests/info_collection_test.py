@@ -138,11 +138,11 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
   @staticmethod
   def _ValueToStr(value):
-    if type(value) is str:
+    if isinstance(value, str):
       return value
-    if type(value) is unicode:
+    if isinstance(value, unicode):
       return str(value)
-    if type(value) is bool:
+    if isinstance(value, bool):
       return 'supported' if value else 'unsupported'
     assert False
 

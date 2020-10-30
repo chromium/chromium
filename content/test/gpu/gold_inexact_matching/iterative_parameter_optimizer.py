@@ -2,9 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import base_parameter_optimizer as base_optimizer
+import gold_inexact_matching.base_parameter_optimizer as base_optimizer
 
 
+# This is an abstract class itself, so it's fine that it doesn't implement
+# all of BaseParameterOptimizer's abstract methods.
+# pylint: disable=abstract-method
 class IterativeParameterOptimizer(base_optimizer.BaseParameterOptimizer):
   """Abstract ParameterOptimizer class for running an iterative algorithm."""
 
@@ -49,3 +52,4 @@ class IterativeParameterOptimizer(base_optimizer.BaseParameterOptimizer):
 
     assert self._args.max_diff_step >= self.MIN_MAX_DIFF_STEP
     assert self._args.delta_threshold_step >= self.MIN_DELTA_THRESHOLD_STEP
+#pylint: enable=abstract-method

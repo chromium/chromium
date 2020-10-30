@@ -171,17 +171,16 @@ def GetTestSuiteFromVariant(variant):
   """
   suite_name = variant.get('test_suite', 'default_suite')
   gpu = variant.get('gpu')
-  os = variant.get('os')
+  os_dimension = variant.get('os')
   gpu = ConvertGpuToVendorName(gpu)
-  return '%s on %s on %s' % (suite_name, gpu, os)
+  return '%s on %s on %s' % (suite_name, gpu, os_dimension)
 
 
-def GetUnexpectedPasses(builds, args):
+def GetUnexpectedPasses(builds):
   """Gets the unexpected test passes from the given builds.
 
   Args:
     builds: The output of GetBuildbucketIds().
-    args: The parsed arguments from an argparse.ArgumentParser.
 
   Returns:
     A dict in the following form:
@@ -284,7 +283,7 @@ def ParseArgs():
 def main():
   args = ParseArgs()
   builds = GetBuildbucketIds(args)
-  unexpected_passes = GetUnexpectedPasses(builds, args)
+  unexpected_passes = GetUnexpectedPasses(builds)
   PrintUnexpectedPasses(unexpected_passes, args)
 
 

@@ -10,10 +10,8 @@ conformance_relcomps = ('third_party', 'webgl', 'src', 'sdk', 'tests')
 
 extensions_relcomps = ('content', 'test', 'data', 'gpu')
 
-# pylint: disable=star-args
 conformance_relpath = os.path.join(*conformance_relcomps)
 extensions_relpath = os.path.join(*extensions_relcomps)
-# pylint: enable=star-args
 conformance_path = os.path.join(path_util.GetChromiumSrcDir(),
                                 conformance_relpath)
 

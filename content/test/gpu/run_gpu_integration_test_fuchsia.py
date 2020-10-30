@@ -73,8 +73,8 @@ def main():
           lambda package_name: os.path.join(
               web_engine_dir, package_name, 'ids.txt'),
           package_names)
-      symbolizer = RunSymbolizer(listener.stdout, open(args.system_log_file,
-                                                       'w'), build_ids_paths)
+      RunSymbolizer(listener.stdout, open(args.system_log_file, 'w'),
+                    build_ids_paths)
 
       # Keep the Amber repository live while the test runs.
       with target.GetAmberRepo():

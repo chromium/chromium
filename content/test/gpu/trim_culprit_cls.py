@@ -38,12 +38,14 @@ import json
 import re
 import subprocess
 
+# pylint: disable=line-too-long
 # Schemas:
 # - go/buildbucket-bq and go/buildbucket-proto/build.proto
 # - go/luci/cq/bq and
 #   https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto
 #
 # Original author: maruel@
+# pylint: enable=line-too-long
 QUERY_TEMPLATE = """\
 WITH cq_builds AS (
   SELECT

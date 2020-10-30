@@ -4,8 +4,9 @@
 
 import logging
 
-import iterative_parameter_optimizer as iterative_optimizer
-import parameter_set
+import gold_inexact_matching.iterative_parameter_optimizer\
+    as iterative_optimizer
+from gold_inexact_matching import parameter_set
 
 
 class BruteForceParameterOptimizer(

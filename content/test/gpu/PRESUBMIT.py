@@ -9,7 +9,9 @@ for more details about the presubmit API built into depot_tools.
 """
 
 def CommonChecks(input_api, output_api):
-  commands = [
+  results = []
+
+  gpu_tests = [
       input_api.Command(
           name='run_content_test_gpu_unittests',
           cmd=[input_api.python_executable, 'run_unittests.py', 'gpu_tests'],
@@ -24,7 +26,13 @@ def CommonChecks(input_api, output_api):
                         kwargs={},
                         message=output_api.PresubmitError)
   ]
-  return input_api.RunTests(commands)
+  results.extend(input_api.RunTests(gpu_tests))
+
+  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  results.extend(input_api.RunTests(pylint_checks))
+
+  return results
+
 
 def CheckChangeOnUpload(input_api, output_api):
   return CommonChecks(input_api, output_api)

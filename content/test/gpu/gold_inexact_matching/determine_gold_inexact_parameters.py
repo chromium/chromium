@@ -7,34 +7,36 @@ import argparse
 import logging
 import sys
 
-import base_parameter_optimizer as base_optimizer
-import binary_search_parameter_optimizer as binary_optimizer
-import brute_force_parameter_optimizer as brute_optimizer
-import local_minima_parameter_optimizer as local_optimizer
-import optimizer_set
-"""Script to find suitable values for Skia Gold inexact matching.
+import gold_inexact_matching.base_parameter_optimizer as base_optimizer
+import gold_inexact_matching.binary_search_parameter_optimizer\
+    as binary_optimizer
+import gold_inexact_matching.brute_force_parameter_optimizer as brute_optimizer
+import gold_inexact_matching.local_minima_parameter_optimizer\
+    as local_optimizer
+from gold_inexact_matching import optimizer_set
 
-Inexact matching in Skia Gold has three tunable parameters:
-  1. The max number of differing pixels.
-  2. The max delta for any single pixel.
-  3. The threshold for a Sobel filter.
-
-Ideally, we use the following hierarchy of comparison approaches:
-  1. Exact matching.
-  2. Exact matching after a Sobel filter is applied.
-  3. Fuzzy matching after a Sobel filter is applied.
-
-However, there may be cases where only using a Sobel filter requires masking a
-very large amount of the image compared to Sobel + very conservative fuzzy
-matching.
-
-Even if such cases are not hit, the process of determining good values for the
-parameters is quite tedious since it requires downloading images from Gold and
-manually running multiple calls to `goldctl match`.
-
-This script attempts to remedy both issues by handling all of the trial and
-error and suggesting potential parameter values for the user to choose from.
-"""
+# Script to find suitable values for Skia Gold inexact matching.
+#
+# Inexact matching in Skia Gold has three tunable parameters:
+#   1. The max number of differing pixels.
+#   2. The max delta for any single pixel.
+#   3. The threshold for a Sobel filter.
+#
+# Ideally, we use the following hierarchy of comparison approaches:
+#   1. Exact matching.
+#   2. Exact matching after a Sobel filter is applied.
+#   3. Fuzzy matching after a Sobel filter is applied.
+#
+# However, there may be cases where only using a Sobel filter requires masking a
+# very large amount of the image compared to Sobel + very conservative fuzzy
+# matching.
+#
+# Even if such cases are not hit, the process of determining good values for the
+# parameters is quite tedious since it requires downloading images from Gold and
+# manually running multiple calls to `goldctl match`.
+#
+# This script attempts to remedy both issues by handling all of the trial and
+# error and suggesting potential parameter values for the user to choose from.
 
 
 def CreateArgumentParser():
