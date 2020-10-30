@@ -7625,6 +7625,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="User did change scale"/>
 </enum>
 
+<enum name="BooleanDirection">
+  <int value="0" label="Predicted direction was the same as real trajectory"/>
+  <int value="1"
+      label="Predicted direction was not the same as real trajectory"/>
+</enum>
+
 <enum name="BooleanDispatched">
   <int value="0" label="Not dispatched"/>
   <int value="1" label="Dispatched"/>

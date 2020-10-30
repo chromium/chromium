@@ -4,8 +4,6 @@
 
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 
-#include <vector>
-
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/delegated_ink_metadata.h"
@@ -60,46 +58,60 @@ gfx::Rect DelegatedInkPointRendererSkia::GetDamageRect() {
   return gfx::ToEnclosingRect(damage_rect_f);
 }
 
+base::TimeDelta GetImprovement(
+    const std::vector<DelegatedInkPoint>* points_to_draw,
+    const DelegatedInkMetadata* metadata) {
+  if (points_to_draw->size() == 0)
+    return base::TimeDelta::FromMilliseconds(0);
+
+  return points_to_draw->back().timestamp() - metadata->timestamp();
+}
+
+std::vector<SkPoint> DelegatedInkPointRendererSkia::GetPointsToDraw() {
+  std::vector<DelegatedInkPoint> ink_points_to_draw = FilterPoints();
+  UMA_HISTOGRAM_TIMES(
+      "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction",
+      GetImprovement(&ink_points_to_draw, metadata_.get()));
+
+  PredictPoints(&ink_points_to_draw);
+  UMA_HISTOGRAM_TIMES(
+      "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithPrediction",
+      GetImprovement(&ink_points_to_draw, metadata_.get()));
+
+  std::vector<SkPoint> sk_points;
+  for (DelegatedInkPoint ink_point : ink_points_to_draw)
+    sk_points.push_back(gfx::PointFToSkPoint(ink_point.point()));
+
+  return sk_points;
+}
+
 void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   // Always rewind the path first so that a path isn't drawn twice.
   path_.rewind();
 
   // Setting the damage rect to empty ensures that the damage rect is cleared
-  // when trails are not being drawn so that extra drawing doesn't occur.
+  // when trails are not being drawn so that extra drawing doesn't occur. If
+  // there isn't metadata, that also indicates that the previous trail has
+  // finished so the predictor should be reset as well.
   if (!metadata_) {
     SetDamageRect(gfx::RectF());
+    ResetPrediction();
     return;
   }
 
-  // First, filter the delegated ink points so that only ones that have a
-  // timestamp that is equal to or later than the metadata still exist.
-  std::vector<DelegatedInkPoint> points_to_draw = FilterPoints();
+  std::vector<SkPoint> sk_points = GetPointsToDraw();
 
-  TRACE_EVENT_INSTANT1("viz", "Filtered points for delegated ink trail",
-                       TRACE_EVENT_SCOPE_THREAD, "points",
-                       points_to_draw.size());
-
-  // TODO(1052145): Predict points.
-
-  base::TimeDelta improvement =
-      static_cast<int>(points_to_draw.size()) > 0
-          ? points_to_draw.back().timestamp() - metadata_->timestamp()
-          : base::TimeDelta::FromMilliseconds(0);
-  UMA_HISTOGRAM_TIMES(
-      "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction",
-      improvement);
+  TRACE_EVENT_INSTANT1("viz",
+                       "Filtered and predicted points for delegated ink trail",
+                       TRACE_EVENT_SCOPE_THREAD, "points", sk_points.size());
 
   // If there is only one point total after filtering and predicting, then it
   // will match the metadata point and therefore doesn't need to be drawn in
   // this way, as it will be rendered normally.
-  if (points_to_draw.size() <= 1) {
+  if (sk_points.size() <= 1) {
     SetDamageRect(gfx::RectF());
     return;
   }
-
-  std::vector<SkPoint> sk_points;
-  for (auto ink_point : points_to_draw)
-    sk_points.emplace_back(gfx::PointFToSkPoint(ink_point.point()));
 
   path_.moveTo(sk_points[0]);
   switch (sk_points.size()) {

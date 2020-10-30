@@ -4570,27 +4570,37 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     return metadata;
   }
 
-  // |expected_bucket| containing base::TimeDelta::Min() is interpreted to mean
-  // that expected total count of the histogram should be 0.
-  void FinalizePathAndCheckHistograms(base::TimeDelta expected_bucket) {
+  void HistogramCheck(const base::HistogramTester& histograms,
+                      base::TimeDelta expected_bucket,
+                      const char* histogram_name) {
+    if (expected_bucket == base::TimeDelta::Min()) {
+      histograms.ExpectTotalCount(histogram_name, 0);
+    } else {
+      histograms.ExpectTotalCount(histogram_name, 1);
+      histograms.ExpectTimeBucketCount(histogram_name, expected_bucket, 1);
+    }
+  }
+
+  // Either bucket containing base::TimeDelta::Min() is interpreted to mean that
+  // expected total count of the histogram should be 0.
+  void FinalizePathAndCheckHistograms(
+      base::TimeDelta expected_bucket_without_prediction,
+      base::TimeDelta expected_bucket_with_prediction) {
     base::HistogramTester histograms;
     ink_renderer()->FinalizePathForDraw();
+    HistogramCheck(
+        histograms, expected_bucket_without_prediction,
+        "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction");
+    HistogramCheck(
+        histograms, expected_bucket_with_prediction,
+        "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithPrediction");
 
-    if (expected_bucket == base::TimeDelta::Min()) {
-      histograms.ExpectTotalCount(
-          "Renderer.DelegatedInkTrail.LatencyImprovement.Skia."
-          "WithoutPrediction",
-          0);
-    } else {
-      histograms.ExpectTotalCount(
-          "Renderer.DelegatedInkTrail.LatencyImprovement.Skia."
-          "WithoutPrediction",
-          1);
-
-      histograms.ExpectTimeBucketCount(
-          "Renderer.DelegatedInkTrail.LatencyImprovement.Skia."
-          "WithoutPrediction",
-          expected_bucket, 1);
+    // Either both histograms should be populated, or neither. But never just
+    // one of them.
+    if (expected_bucket_without_prediction == base::TimeDelta::Min() ||
+        expected_bucket_with_prediction == base::TimeDelta::Min()) {
+      EXPECT_EQ(expected_bucket_without_prediction,
+                expected_bucket_with_prediction);
     }
   }
 
@@ -4642,7 +4652,8 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
 
   // No metadata has been provided yet, so filtering shouldn't occur and all
   // points should still exist after a FinalizePath() call.
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
+                                 base::TimeDelta::Min());
 
   EXPECT_EQ(kInitialDelegatedPoints, static_cast<int>(stored_points().size()));
 
@@ -4654,9 +4665,13 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
       kInkPointForMetadata, kDiameter, SK_ColorBLACK, gfx::RectF());
 
   // The histogram should count one in the bucket that is the difference between
-  // the latest point stored and the metadata.
-  FinalizePathAndCheckHistograms(ink_point(ink_points_size() - 1).timestamp() -
-                                 metadata.timestamp());
+  // the latest point stored and the metadata. No prediction should occur with
+  // 3 provided, points, so the *WithPrediction histogram should count 1 in the
+  // same bucket as the *WithoutPrediction histogram.
+  base::TimeDelta bucket_without_prediction =
+      ink_point(ink_points_size() - 1).timestamp() - metadata.timestamp();
+  FinalizePathAndCheckHistograms(bucket_without_prediction,
+                                 bucket_without_prediction);
 
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             static_cast<int>(stored_points().size()));
@@ -4689,10 +4704,11 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
 
   // Now send metadata with a timestamp before all of the points that are
   // currently stored to confirm that no points are filtered out and the number
-  // stored remains the same while the histogram records 0 improvement.
+  // stored remains the same while both histograms records 0 improvement.
   const uint64_t kExpectedPoints = stored_points().size();
   SendMetadata(metadata);
-  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0));
+  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0),
+                                 base::TimeDelta::FromMilliseconds(0));
   EXPECT_EQ(kExpectedPoints, stored_points().size());
 }
 
@@ -4700,9 +4716,10 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
 TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   SetUpRenderers();
 
-  // Confirm that nothing is counted in histogram when there is no metadata or
-  // points to draw.
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
+  // Confirm that nothing is counted in the histograms when there is no metadata
+  // or points to draw.
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
+                                 base::TimeDelta::Min());
 
   // Insert 4 arbitrary points into the ink renderer to later draw.
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -4720,21 +4737,38 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
   MakeAndSendMetadataFromStoredInkPoint(/*index*/ 0, kDiameter, SK_ColorBLACK,
                                         gfx::RectF());
 
-  // 24 ms bucket should have one counted because that's the difference between
-  // the latest point and the metadata.
-  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(24));
+  // *WithoutPrediction histogram should have one counted in the 24 ms bucket
+  // because that's the difference between the latest point and the metadata.
+  // *WithPrediction should be able to predict here, so it should contain 1 in
+  // the bucket that is |kNumberOfMillisecondsIntoFutureToPredictPerPoint| *
+  // |kNumberOfPointsToPredict| into the future from 24 ms bucket.
+  base::TimeDelta bucket_without_prediction =
+      base::TimeDelta::FromMilliseconds(24);
+  FinalizePathAndCheckHistograms(
+      bucket_without_prediction,
+      bucket_without_prediction +
+          base::TimeDelta::FromMilliseconds(
+              kNumberOfMillisecondsIntoFutureToPredictPerPoint *
+              kNumberOfPointsToPredict));
 
   // Now provide metadata that matches the final ink point provided, so that
-  // everything earlier is filtered out. Then the histogram will count 1 in the
-  // 0 ms bucket.
+  // everything earlier is filtered out. Then the *WithoutPrediction histogram
+  // will count 1 in the 0 ms bucket and the *WithPrediction histogram will
+  // still be able to predict points, so it should have counted one.
   MakeAndSendMetadataFromStoredInkPoint(/*index*/ 3, kDiameter, SK_ColorBLACK,
                                         gfx::RectF());
-  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0));
+  bucket_without_prediction = base::TimeDelta::FromMilliseconds(0);
+  FinalizePathAndCheckHistograms(
+      bucket_without_prediction,
+      base::TimeDelta::FromMilliseconds(
+          kNumberOfMillisecondsIntoFutureToPredictPerPoint *
+          kNumberOfPointsToPredict));
 
   // DrawDelegatedInkTrail should clear the metadata, so finalizing the path
-  // shouldn't record anything in the histogram.
+  // shouldn't record anything in the histograms.
   DrawDelegatedInkTrail();
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
+                                 base::TimeDelta::Min());
 
   // Send a few more points but no metadata to confirm that nothing is counted.
   timestamp = base::TimeTicks::Now();
@@ -4743,7 +4777,8 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
       gfx::PointF(96, 70), timestamp + base::TimeDelta::FromMilliseconds(2));
   CreateAndStoreDelegatedInkPoint(
       gfx::PointF(112, 94), timestamp + base::TimeDelta::FromMilliseconds(10));
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
+                                 base::TimeDelta::Min());
 }
 
 }  // namespace viz

@@ -19,9 +19,26 @@ void PredictionMetricsHandler::AddRealEvent(const gfx::PointF& pos,
                                             const base::TimeTicks& time_stamp,
                                             const base::TimeTicks& frame_time,
                                             bool scrolling) {
-  // Be sure real events are ordered over time
-  DCHECK(events_queue_.empty() ||
-         time_stamp >= events_queue_.back().time_stamp);
+  // Real events should arrive in order over time, and if they aren't then just
+  // bail. Early out instead of DCHECKing in order to handle delegated ink
+  // trails. Delegated ink trails may submit points out of order in a situation
+  // such as three points with timestamps = 1, 2, and 3 making up the trail on
+  // one frame, and then on the next frame only the points with timestamp 2 and
+  // 3 make up the trail. In this case, 2 would be added as a real point again,
+  // but it has a timestamp earlier than 3, so a DCHECK would fail. Early out
+  // here will not impact correctness since 2 already exists in |events_queue_|.
+  if (!events_queue_.empty() && time_stamp <= events_queue_.back().time_stamp) {
+    // Confirm that the above assertion is true, and that timestamp 2 (from
+    // the above example) exists in |events_queue_|.
+    bool event_exists = false;
+    for (uint64_t i = 0; i < events_queue_.size() && !event_exists; ++i) {
+      if (events_queue_[i].time_stamp == time_stamp)
+        event_exists = true;
+    }
+    DCHECK(event_exists);
+    return;
+  }
+
   EventData e;
   if (scrolling)
     e.pos = gfx::PointF(0, pos.y());

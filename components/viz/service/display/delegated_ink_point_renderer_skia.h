@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_RENDERER_SKIA_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_RENDERER_SKIA_H_
 
+#include <vector>
+
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -70,6 +72,11 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererSkia
 
  private:
   void SetDamageRect(gfx::RectF);
+
+  // First filters the points that are stored to only keep points with a
+  // timestamp equal to or later than |metadata_|'s, then predict points if
+  // possible. Then converts those points into SkPoints and returns them.
+  std::vector<SkPoint> GetPointsToDraw();
 
   int GetPathPointCountForTest() const override;
 

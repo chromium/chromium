@@ -5232,10 +5232,11 @@ TEST_P(DelegatedInkTest, DrawOneTrailAndErase) {
                         gfx::RectF(0, 0, 175, 172));
 
   // Then provide some points for the trail to draw. Numbers chosen arbitrarily
-  // after the first point, which must match the metadata.
+  // after the first point, which must match the metadata. This will predict no
+  // points, so a trail made of 3 points will be drawn.
   CreateAndSendPointFromMetadata();
-  CreateAndSendPointFromLastPoint(gfx::PointF(50, 30));
   CreateAndSendPointFromLastPoint(gfx::PointF(75, 62));
+  CreateAndSendPointFromLastPoint(gfx::PointF(124, 45));
 
   // Confirm that the trail was drawn.
   EXPECT_TRUE(
@@ -5248,26 +5249,30 @@ TEST_P(DelegatedInkTest, DrawOneTrailAndErase) {
 
 // Confirm that drawing a second trail completely removes the first trail.
 TEST_P(DelegatedInkTest, DrawTwoTrailsAndErase) {
+  // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
+  if (renderer_type() == RendererType::kSkiaDawn)
+    return;
+
   // First provide the metadata required to draw the trail, numbers arbitrary.
   CreateAndSendMetadata(gfx::PointF(140, 48), 8.2f, SK_ColorMAGENTA,
                         gfx::RectF(0, 0, 200, 200));
 
   // Then provide some points for the trail to draw. Numbers chosen arbitrarily
-  // after the first point, which must match the metadata.
+  // after the first point, which must match the metadata. No points will be
+  // predicted, so a trail made of 2 points will be drawn.
   CreateAndSendPointFromMetadata();
   CreateAndSendPointFromLastPoint(gfx::PointF(115, 85));
-  CreateAndSendPointFromLastPoint(gfx::PointF(92, 60));
-  CreateAndSendPointFromLastPoint(gfx::PointF(45.54f, 93.4f));
-  CreateAndSendPointFromLastPoint(gfx::PointF(13.f, 116.245f));
 
   // Confirm that the trail was drawn correctly.
   EXPECT_TRUE(DrawAndTestTrail(
       FILE_PATH_LITERAL("delegated_ink_two_trails_first.png")));
 
   // Now provide new metadata and points to draw a new trail. Just use the last
-  // point draw above as the starting point for the new trail.
+  // point draw above as the starting point for the new trail. One point will
+  // be predicted, so a trail consisting of 4 points will be drawn.
   CreateAndSendMetadataFromLastPoint();
   CreateAndSendPointFromLastPoint(gfx::PointF(134, 100));
+  CreateAndSendPointFromLastPoint(gfx::PointF(150, 81.44f));
 
   // Confirm the first trail is gone and only the second remains.
   EXPECT_TRUE(DrawAndTestTrail(
@@ -5288,7 +5293,8 @@ TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
                         kPresentationArea);
 
   // Send points such that some extend beyond the presentation area to confirm
-  // that the trail is clipped correctly.
+  // that the trail is clipped correctly. One point will be predicted, so the
+  // trail will be made of 9 points.
   CreateAndSendPointFromMetadata();
   CreateAndSendPointFromLastPoint(gfx::PointF(80.7f, 149.6f));
   CreateAndSendPointFromLastPoint(gfx::PointF(128.999f, 110.01f));

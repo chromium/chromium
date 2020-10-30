@@ -219,6 +219,7 @@ viz_component("service") {
     "//gpu/command_buffer/client:gles2_interface",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/public/mojom",
+    "//ui/base/prediction",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/latency",

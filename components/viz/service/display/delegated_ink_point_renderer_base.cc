@@ -6,10 +6,17 @@
 
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/delegated_ink_metadata.h"
+#include "ui/base/prediction/kalman_predictor.h"
 
 namespace viz {
 
-DelegatedInkPointRendererBase::DelegatedInkPointRendererBase() = default;
+DelegatedInkPointRendererBase::DelegatedInkPointRendererBase()
+    : metrics_handler_("Renderer.DelegatedInkTrail.Prediction") {
+  unsigned int predictor_options =
+      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
+      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  predictor_ = std::make_unique<ui::KalmanPredictor>(predictor_options);
+}
 DelegatedInkPointRendererBase::~DelegatedInkPointRendererBase() = default;
 
 void DelegatedInkPointRendererBase::InitMessagePipeline(
@@ -87,6 +94,8 @@ std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
     } else {
       if (it->first == metadata_->timestamp() || points_to_draw.size() > 0) {
         points_to_draw.emplace_back(it->second, it->first);
+        metrics_handler_.AddRealEvent(it->second, it->first,
+                                      metadata_->frame_time());
         it++;
       } else {
         // If we find a point that is later than |metadata_|'s timestamp before
@@ -101,11 +110,59 @@ std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
   return points_to_draw;
 }
 
+void DelegatedInkPointRendererBase::PredictPoints(
+    std::vector<DelegatedInkPoint>* ink_points_to_draw) {
+  DCHECK(metadata_);
+  int points_predicted = 0;
+
+  // |ink_points_to_draw| needs to have at least one point in it already as a
+  // reference to know what timestamp to start predicting points at. This single
+  // point may just match |metadata_|.
+  if (predictor_->HasPrediction() && ink_points_to_draw->size() > 0) {
+    for (int i = 0; i < kNumberOfPointsToPredict; ++i) {
+      base::TimeTicks timestamp =
+          ink_points_to_draw->back().timestamp() +
+          base::TimeDelta::FromMilliseconds(
+              kNumberOfMillisecondsIntoFutureToPredictPerPoint);
+      std::unique_ptr<ui::InputPredictor::InputData> predicted_point =
+          predictor_->GeneratePrediction(timestamp);
+      if (predicted_point) {
+        ink_points_to_draw->emplace_back(predicted_point->pos,
+                                         predicted_point->time_stamp);
+        metrics_handler_.AddPredictedEvent(predicted_point->pos,
+                                           predicted_point->time_stamp,
+                                           metadata_->frame_time());
+        points_predicted++;
+      } else {
+        // HasPrediction() can return true while GeneratePrediction() fails to
+        // produce a prediction if the predicted point would go in to the
+        // opposite direction of most recently stored points. If this happens,
+        // don't continue trying to generate more predicted points.
+        break;
+      }
+    }
+  }
+
+  TRACE_EVENT_INSTANT1("viz", "DelegatedInkPointRendererBase::PredictPoints",
+                       TRACE_EVENT_SCOPE_THREAD, "predicted points",
+                       points_predicted);
+
+  metrics_handler_.EvaluatePrediction();
+}
+
+void DelegatedInkPointRendererBase::ResetPrediction() {
+  predictor_->Reset();
+  metrics_handler_.Reset();
+}
+
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
     const DelegatedInkPoint& point) {
   TRACE_EVENT_INSTANT1("viz",
                        "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
                        TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
+
+  predictor_->Update(
+      ui::InputPredictor::InputData(point.point(), point.timestamp()));
 
   // Fail-safe to prevent storing excessive points if they are being sent but
   // never filtered and used, like if the renderer has stalled during a long

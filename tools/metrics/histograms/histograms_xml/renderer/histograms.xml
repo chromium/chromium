@@ -35,8 +35,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="2021-01-01">
-  <owner>dlibby@chromium.org</owner>
+    units="ms" expires_after="2021-04-01">
+  <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
     The latency improvement provided by the delegated ink trail API, both with
@@ -51,6 +51,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
   <token key="Prediction">
     <variant name="WithoutPrediction"/>
+    <variant name="WithPrediction"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
+    enum="BooleanDirection" expires_after="2021-04-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    Boolean that indicates whether the prediction is in the same direction as
+    the real trajectory at the same prediction time. True means the direction is
+    not the same (wrong direction).
+  </summary>
+</histogram>
+
+<histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
+    units="pixels" expires_after="2021-04-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    {Direction}shoot distance in pixels between a predicted point and the
+    corresponding interpolated real point that occurred at the prediction time.
+  </summary>
+  <token key="Direction">
+    <variant name="Over"/>
+    <variant name="Under"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
+    units="pixels" expires_after="2021-04-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    Euclidean distance in pixels between two successive variations of delegated
+    ink trail deltas which are the difference beween a predicted delegated ink
+    point and its corresponding interpolated real position that occurred at
+    {Type} time.
+  </summary>
+  <token key="Type">
+    <variant name="Prediction" summary="prediction"/>
+    <variant name="Visual" summary="frame"/>
   </token>
 </histogram>
 
