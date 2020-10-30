@@ -88,7 +88,7 @@ bool ShouldShowOnDisplay(PaletteTray* palette_tray) {
   return display.IsInternal();
 }
 
-class TitleView : public views::View, public views::ButtonListener {
+class TitleView : public views::View {
  public:
   explicit TitleView(PaletteTray* palette_tray) : palette_tray_(palette_tray) {
     // TODO(tdanderson|jdufault): Use TriView to handle the layout of the title.
@@ -108,10 +108,22 @@ class TitleView : public views::View, public views::ButtonListener {
                              true /* use_unified_theme */);
     style.SetupLabel(title_label);
     layout_ptr->SetFlexForView(title_label, 1);
-    help_button_ = new TopShortcutButton(this, kSystemMenuHelpIcon,
-                                         IDS_ASH_STATUS_TRAY_HELP);
-    settings_button_ = new TopShortcutButton(this, kSystemMenuSettingsIcon,
-                                             IDS_ASH_PALETTE_SETTINGS);
+    help_button_ = new TopShortcutButton(
+        base::BindRepeating(
+            &TitleView::ButtonPressed, base::Unretained(this),
+            PaletteTrayOptions::PALETTE_HELP_BUTTON,
+            base::BindRepeating(
+                &SystemTrayClient::ShowPaletteHelp,
+                base::Unretained(Shell::Get()->system_tray_model()->client()))),
+        kSystemMenuHelpIcon, IDS_ASH_STATUS_TRAY_HELP);
+    settings_button_ = new TopShortcutButton(
+        base::BindRepeating(
+            &TitleView::ButtonPressed, base::Unretained(this),
+            PaletteTrayOptions::PALETTE_SETTINGS_BUTTON,
+            base::BindRepeating(
+                &SystemTrayClient::ShowPaletteSettings,
+                base::Unretained(Shell::Get()->system_tray_model()->client()))),
+        kSystemMenuSettingsIcon, IDS_ASH_PALETTE_SETTINGS);
 
     AddChildView(help_button_);
     AddChildView(settings_button_);
@@ -123,23 +135,12 @@ class TitleView : public views::View, public views::ButtonListener {
   const char* GetClassName() const override { return "TitleView"; }
 
  private:
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    if (sender == settings_button_) {
-      palette_tray_->RecordPaletteOptionsUsage(
-          PaletteTrayOptions::PALETTE_SETTINGS_BUTTON,
-          PaletteInvocationMethod::MENU);
-      Shell::Get()->system_tray_model()->client()->ShowPaletteSettings();
-      palette_tray_->HidePalette();
-    } else if (sender == help_button_) {
-      palette_tray_->RecordPaletteOptionsUsage(
-          PaletteTrayOptions::PALETTE_HELP_BUTTON,
-          PaletteInvocationMethod::MENU);
-      Shell::Get()->system_tray_model()->client()->ShowPaletteHelp();
-      palette_tray_->HidePalette();
-    } else {
-      NOTREACHED();
-    }
+  void ButtonPressed(PaletteTrayOptions option,
+                     base::RepeatingClosure callback) {
+    palette_tray_->RecordPaletteOptionsUsage(option,
+                                             PaletteInvocationMethod::MENU);
+    std::move(callback).Run();
+    palette_tray_->HidePalette();
   }
 
   // Unowned pointers to button views so we can determine which button was
