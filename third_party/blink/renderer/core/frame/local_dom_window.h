@@ -387,7 +387,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void AcceptLanguagesChanged();
 
   // https://dom.spec.whatwg.org/#dom-window-event
-  ScriptValue event(ScriptState*) const;
+  ScriptValue event(ScriptState*);
   Event* CurrentEvent() const;
   void SetCurrentEvent(Event*);
 
