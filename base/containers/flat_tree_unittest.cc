@@ -37,6 +37,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
+#include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -287,31 +288,6 @@ TEST(FlatTree, DefaultConstructor) {
   }
 }
 
-// flat_tree(InputIterator first,
-//           InputIterator last,
-//           const Compare& comp = Compare())
-
-TEST(FlatTree, RangeConstructor) {
-  {
-    IntPair input_vals[] = {{1, 1}, {1, 2}, {2, 1}, {2, 2}, {1, 3},
-                            {2, 3}, {3, 1}, {3, 2}, {3, 3}};
-
-    IntPairTree first_of(MakeInputIterator(std::begin(input_vals)),
-                         MakeInputIterator(std::end(input_vals)));
-    EXPECT_THAT(first_of,
-                ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1)));
-  }
-  {
-    TreeWithStrangeCompare::value_type input_vals[] = {1, 1, 1, 2, 2,
-                                                       2, 3, 3, 3};
-
-    TreeWithStrangeCompare cont(MakeInputIterator(std::begin(input_vals)),
-                                MakeInputIterator(std::end(input_vals)),
-                                NonDefaultConstructibleCompare(0));
-    EXPECT_THAT(cont, ElementsAre(1, 2, 3));
-  }
-}
-
 // flat_tree(const flat_tree& x)
 
 TEST(FlatTree, CopyConstructor) {
@@ -339,11 +315,36 @@ TEST(FlatTree, MoveConstructor) {
   EXPECT_EQ(1U, moved.count(MoveOnlyInt(4)));
 }
 
+// flat_tree(InputIterator first,
+//           InputIterator last,
+//           const Compare& comp = Compare())
+
+TEST(FlatTree, RangeConstructor) {
+  {
+    IntPair input_vals[] = {{1, 1}, {1, 2}, {2, 1}, {2, 2}, {1, 3},
+                            {2, 3}, {3, 1}, {3, 2}, {3, 3}};
+
+    IntPairTree first_of(MakeInputIterator(std::begin(input_vals)),
+                         MakeInputIterator(std::end(input_vals)));
+    EXPECT_THAT(first_of,
+                ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1)));
+  }
+  {
+    TreeWithStrangeCompare::value_type input_vals[] = {1, 1, 1, 2, 2,
+                                                       2, 3, 3, 3};
+
+    TreeWithStrangeCompare cont(MakeInputIterator(std::begin(input_vals)),
+                                MakeInputIterator(std::end(input_vals)),
+                                NonDefaultConstructibleCompare(0));
+    EXPECT_THAT(cont, ElementsAre(1, 2, 3));
+  }
+}
+
 // flat_tree(const std::vector<value_type>&)
 
 TEST(FlatTree, VectorCopyConstructor) {
   std::vector<int> items = {1, 2, 3, 4};
-  IntTree tree = items;
+  IntTree tree(items);
 
   EXPECT_THAT(tree, ElementsAre(1, 2, 3, 4));
   EXPECT_THAT(items, ElementsAre(1, 2, 3, 4));
@@ -396,6 +397,89 @@ TEST(FlatTree, InitializerListConstructor) {
   }
   {
     IntPairTree first_of({{1, 1}, {2, 1}, {1, 2}});
+    EXPECT_THAT(first_of, ElementsAre(IntPair(1, 1), IntPair(2, 1)));
+  }
+}
+
+// flat_tree(sorted_unique_t,
+//           InputIterator first,
+//           InputIterator last,
+//           const Compare& comp = Compare())
+
+TEST(FlatTree, SortedUniqueRangeConstructor) {
+  {
+    IntPair input_vals[] = {{1, 1}, {2, 1}, {3, 1}};
+
+    IntPairTree first_of(sorted_unique,
+                         MakeInputIterator(std::begin(input_vals)),
+                         MakeInputIterator(std::end(input_vals)));
+    EXPECT_THAT(first_of,
+                ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1)));
+  }
+  {
+    TreeWithStrangeCompare::value_type input_vals[] = {1, 2, 3};
+
+    TreeWithStrangeCompare cont(sorted_unique,
+                                MakeInputIterator(std::begin(input_vals)),
+                                MakeInputIterator(std::end(input_vals)),
+                                NonDefaultConstructibleCompare(0));
+    EXPECT_THAT(cont, ElementsAre(1, 2, 3));
+  }
+}
+
+// flat_tree(sorted_unique_t, const std::vector<value_type>&)
+
+TEST(FlatTree, SortedUniqueVectorCopyConstructor) {
+  std::vector<int> items = {1, 2, 3, 4};
+  IntTree tree(sorted_unique, items);
+
+  EXPECT_THAT(tree, ElementsAre(1, 2, 3, 4));
+  EXPECT_THAT(items, ElementsAre(1, 2, 3, 4));
+}
+
+// flat_tree(sorted_unique_t, std::vector<value_type>&&)
+
+TEST(FlatTree, SortedUniqueVectorMoveConstructor) {
+  using Pair = std::pair<int, MoveOnlyInt>;
+
+  std::vector<Pair> storage;
+  storage.push_back(Pair(1, MoveOnlyInt(0)));
+  storage.push_back(Pair(2, MoveOnlyInt(0)));
+
+  using Tree =
+      flat_tree<Pair, Pair, GetKeyFromValueIdentity<Pair>, LessByFirst<Pair>>;
+  Tree tree(sorted_unique, std::move(storage));
+
+  ASSERT_EQ(2u, tree.size());
+  const Pair& zeroth = *tree.begin();
+  ASSERT_EQ(1, zeroth.first);
+  ASSERT_EQ(0, zeroth.second.data());
+
+  const Pair& first = *(tree.begin() + 1);
+  ASSERT_EQ(2, first.first);
+  ASSERT_EQ(0, first.second.data());
+}
+
+// flat_tree(sorted_unique_t,
+//           std::initializer_list<value_type> ilist,
+//           const Compare& comp = Compare())
+
+TEST(FlatTree, SortedUniqueInitializerListConstructor) {
+  {
+    IntTree cont(sorted_unique, {1, 2, 3, 4, 5, 6, 8, 10});
+    EXPECT_THAT(cont, ElementsAre(1, 2, 3, 4, 5, 6, 8, 10));
+  }
+  {
+    IntTree cont(sorted_unique, {1, 2, 3, 4, 5, 6, 8, 10});
+    EXPECT_THAT(cont, ElementsAre(1, 2, 3, 4, 5, 6, 8, 10));
+  }
+  {
+    TreeWithStrangeCompare cont(sorted_unique, {1, 2, 3, 4, 5, 6, 8, 10},
+                                NonDefaultConstructibleCompare(0));
+    EXPECT_THAT(cont, ElementsAre(1, 2, 3, 4, 5, 6, 8, 10));
+  }
+  {
+    IntPairTree first_of(sorted_unique, {{1, 1}, {2, 1}});
     EXPECT_THAT(first_of, ElementsAre(IntPair(1, 1), IntPair(2, 1)));
   }
 }
@@ -1329,6 +1413,51 @@ TEST(FlatSet, EraseIf) {
   x = {1, 2, 3, 4};
   EXPECT_EQ(2u, EraseIf(x, [](int elem) { return elem & 1; }));
   EXPECT_THAT(x, ElementsAre(2, 4));
+}
+
+// Test unsorted containers or containers with repeated elements cause a DCHECK
+// if used with the sorted_unique tag.
+TEST(FlatTreeDeathTest, SortedUniqueRangeConstructor) {
+  int unsorted[] = {2, 1};
+  EXPECT_DCHECK_DEATH(
+      IntTree(sorted_unique, std::begin(unsorted), std::end(unsorted)));
+
+  int repeated[] = {1, 2, 2};
+  EXPECT_DCHECK_DEATH(
+      IntTree(sorted_unique, std::begin(repeated), std::end(repeated)));
+}
+
+TEST(FlatTreeDeathTest, SortedUniqueVectorCopyConstructor) {
+  std::vector<int> unsorted = {2, 1};
+  EXPECT_DCHECK_DEATH(IntTree(sorted_unique, unsorted));
+
+  std::vector<int> repeated = {1, 2, 2};
+  EXPECT_DCHECK_DEATH(IntTree(sorted_unique, repeated));
+}
+
+TEST(FlatTreeDeathTest, SortedUniqueVectorMoveConstructor) {
+  std::vector<int> unsorted = {2, 1};
+  EXPECT_DCHECK_DEATH(IntTree(sorted_unique, std::move(unsorted)));
+
+  std::vector<int> repeated = {1, 2, 2};
+  EXPECT_DCHECK_DEATH(IntTree(sorted_unique, std::move(repeated)));
+}
+
+TEST(FlatTreeDeathTest, SortedUniqueInitializerListConstructor) {
+  std::initializer_list<int> unsorted = {2, 1};
+  EXPECT_DCHECK_DEATH(IntTree(sorted_unique, unsorted));
+
+  std::initializer_list<int> repeated = {1, 2, 2};
+  EXPECT_DCHECK_DEATH(IntTree(sorted_unique, repeated));
+}
+
+TEST(FlatTreeDeathTest, Replace) {
+  IntTree tree;
+  std::vector<int> unsorted = {2, 1};
+  EXPECT_DCHECK_DEATH(tree.replace(std::move(unsorted)));
+
+  std::vector<int> repeated = {1, 2, 2};
+  EXPECT_DCHECK_DEATH(tree.replace(std::move(repeated)));
 }
 
 }  // namespace internal

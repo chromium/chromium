@@ -15,6 +15,9 @@ namespace base {
 // flat_set is a container with a std::set-like interface that stores its
 // contents in a sorted vector.
 //
+// Its implementation mostly tracks the corresponding standardization proposal
+// https://wg21.link/P1222.
+//
 // Please see //base/containers/README.md for an overview of which container
 // to select.
 //
@@ -45,15 +48,29 @@ namespace base {
 // reference, the functions available are:
 //
 // Constructors (inputs need not be sorted):
-//   flat_set(InputIterator first, InputIterator last,
-//            const Compare& compare = Compare());
 //   flat_set(const flat_set&);
 //   flat_set(flat_set&&);
+//   flat_set(InputIterator first, InputIterator last,
+//            const Compare& compare = Compare());
 //   flat_set(const std::vector<Key>& items,
 //            const Compare& compare = Compare());
 //   flat_set(std::vector<Key>&& items,
 //            const Compare& compare = Compare());  // Re-use storage.
 //   flat_set(std::initializer_list<value_type> ilist,
+//            const Compare& comp = Compare());
+//
+// Constructors (inputs need to be sorted):
+//   flat_set(sorted_unique_t,
+//            InputIterator first, InputIterator last,
+//            const Compare& compare = Compare());
+//   flat_set(sorted_unique_t,
+//            const std::vector<Key>& items,
+//            const Compare& compare = Compare());
+//   flat_set(sorted_unique_t,
+//            std::vector<Key>&& items,
+//            const Compare& compare = Compare());  // Re-use storage.
+//   flat_set(sorted_unique_t,
+//            std::initializer_list<value_type> ilist,
 //            const Compare& comp = Compare());
 //
 // Assignment functions:

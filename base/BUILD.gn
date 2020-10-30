@@ -182,6 +182,7 @@ component("base") {
     "containers/contiguous_iterator.h",
     "containers/flat_map.h",
     "containers/flat_set.h",
+    "containers/flat_tree.cc",
     "containers/flat_tree.h",
     "containers/id_map.h",
     "containers/intrusive_heap.cc",

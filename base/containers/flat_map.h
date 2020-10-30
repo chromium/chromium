@@ -31,6 +31,10 @@ struct GetKeyFromValuePairFirst {
 // flat_map is a container with a std::map-like interface that stores its
 // contents in a sorted vector.
 //
+// Its implementation mostly tracks the corresponding standardization proposal
+// https://wg21.link/P0429, except that the storage of keys and values is not
+// split.
+//
 // Please see //base/containers/README.md for an overview of which container
 // to select.
 //
@@ -59,15 +63,29 @@ struct GetKeyFromValuePairFirst {
 // reference, the functions available are:
 //
 // Constructors (inputs need not be sorted):
-//   flat_map(InputIterator first, InputIterator last,
-//            const Compare& compare = Compare());
 //   flat_map(const flat_map&);
 //   flat_map(flat_map&&);
+//   flat_map(InputIterator first, InputIterator last,
+//            const Compare& compare = Compare());
 //   flat_map(const std::vector<value_type>& items,
 //            const Compare& compare = Compare());
 //   flat_map(std::vector<value_type>&& items,
 //            const Compare& compare = Compare()); // Re-use storage.
 //   flat_map(std::initializer_list<value_type> ilist,
+//            const Compare& comp = Compare());
+//
+// Constructors (inputs need to be sorted):
+//   flat_map(sorted_unique_t,
+//            InputIterator first, InputIterator last,
+//            const Compare& compare = Compare());
+//   flat_map(sorted_unique_t,
+//            const std::vector<Key>& items,
+//            const Compare& compare = Compare());
+//   flat_map(sorted_unique_t,
+//            std::vector<Key>&& items,
+//            const Compare& compare = Compare());  // Re-use storage.
+//   flat_map(sorted_unique_t,
+//            std::initializer_list<value_type> ilist,
 //            const Compare& comp = Compare());
 //
 // Assignment functions:

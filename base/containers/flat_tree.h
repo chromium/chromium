@@ -11,13 +11,32 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/template_util.h"
 
 namespace base {
 
+// Tag type that allows skipping the sort_and_unique step when constructing a
+// flat_tree in case the underlying container is already sorted and has no
+// duplicate elements.
+struct sorted_unique_t {
+  constexpr explicit sorted_unique_t() = default;
+};
+extern sorted_unique_t sorted_unique;
+
 namespace internal {
+
+// Helper functions used in DCHECKs below to make sure that inputs tagged with
+// sorted_unique are indeed sorted and unique.
+template <typename Range, typename Comp>
+bool is_sorted_and_unique(const Range& range, Comp comp) {
+  return ranges::is_sorted(range, comp) &&
+         // Being unique implies that there are no adjacent elements that
+         // compare equal.
+         ranges::adjacent_find(range, base::not_fn(comp)) == ranges::end(range);
+}
 
 // This is a convenience method returning true if Iterator is at least a
 // ForwardIterator and thus supports multiple passes over a range.
@@ -99,8 +118,15 @@ class flat_tree {
   //
   // The constructors that take ranges, lists, and vectors do not require that
   // the input be sorted.
+  //
+  // When passing the base::sorted_unique tag as the first argument no sort and
+  // unique step takes places. This is useful if the underlying container
+  // already has the required properties.
 
-  flat_tree();
+  flat_tree() = default;
+  flat_tree(const flat_tree&) = default;
+  flat_tree(flat_tree&&) noexcept = default;
+
   explicit flat_tree(const key_compare& comp);
 
   template <class InputIterator>
@@ -108,17 +134,33 @@ class flat_tree {
             InputIterator last,
             const key_compare& comp = key_compare());
 
-  flat_tree(const flat_tree&);
-  flat_tree(flat_tree&&) noexcept = default;
-
   flat_tree(const underlying_type& items,
             const key_compare& comp = key_compare());
+
   flat_tree(underlying_type&& items, const key_compare& comp = key_compare());
 
   flat_tree(std::initializer_list<value_type> ilist,
             const key_compare& comp = key_compare());
 
-  ~flat_tree();
+  template <class InputIterator>
+  flat_tree(sorted_unique_t,
+            InputIterator first,
+            InputIterator last,
+            const key_compare& comp = key_compare());
+
+  flat_tree(sorted_unique_t,
+            const underlying_type& items,
+            const key_compare& comp = key_compare());
+
+  flat_tree(sorted_unique_t,
+            underlying_type&& items,
+            const key_compare& comp = key_compare());
+
+  flat_tree(sorted_unique_t,
+            std::initializer_list<value_type> ilist,
+            const key_compare& comp = key_compare());
+
+  ~flat_tree() = default;
 
   // --------------------------------------------------------------------------
   // Assignments.
@@ -431,14 +473,12 @@ class flat_tree {
     // Preserve stability for the unique code below.
     std::stable_sort(first, last, value_comp());
 
-    auto equal_comp = [this](const value_type& lhs, const value_type& rhs) {
-      // lhs is already <= rhs due to sort, therefore
-      // !(lhs < rhs) <=> lhs == rhs.
-      return !value_comp()(lhs, rhs);
-    };
-
+    // lhs is already <= rhs due to sort, therefore !(lhs < rhs) <=> lhs == rhs.
+    auto equal_comp = base::not_fn(value_comp());
     erase(std::unique(first, last, equal_comp), last);
   }
+
+  void sort_and_unique() { sort_and_unique(begin(), end()); }
 
   // To support comparators that may not be possible to default-construct, we
   // have to store an instance of Compare. Using this to store all internal
@@ -469,9 +509,6 @@ class flat_tree {
 // Lifetime.
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
-flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree() = default;
-
-template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
 flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
     const KeyCompare& comp)
     : impl_(comp) {}
@@ -483,19 +520,15 @@ flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
     InputIterator last,
     const KeyCompare& comp)
     : impl_(comp, first, last) {
-  sort_and_unique(begin(), end());
+  sort_and_unique();
 }
-
-template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
-flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
-    const flat_tree&) = default;
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
 flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
     const underlying_type& items,
     const KeyCompare& comp)
     : impl_(comp, items) {
-  sort_and_unique(begin(), end());
+  sort_and_unique();
 }
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
@@ -503,7 +536,7 @@ flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
     underlying_type&& items,
     const KeyCompare& comp)
     : impl_(comp, std::move(items)) {
-  sort_and_unique(begin(), end());
+  sort_and_unique();
 }
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
@@ -513,7 +546,40 @@ flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
     : flat_tree(std::begin(ilist), std::end(ilist), comp) {}
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
-flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::~flat_tree() = default;
+template <class InputIterator>
+flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
+    sorted_unique_t,
+    InputIterator first,
+    InputIterator last,
+    const KeyCompare& comp)
+    : impl_(comp, first, last) {
+  DCHECK(is_sorted_and_unique(*this, comp));
+}
+
+template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
+flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
+    sorted_unique_t,
+    const underlying_type& items,
+    const KeyCompare& comp)
+    : impl_(comp, items) {
+  DCHECK(is_sorted_and_unique(*this, comp));
+}
+
+template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
+flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
+    sorted_unique_t,
+    underlying_type&& items,
+    const KeyCompare& comp)
+    : impl_(comp, std::move(items)) {
+  DCHECK(is_sorted_and_unique(*this, comp));
+}
+
+template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
+flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::flat_tree(
+    sorted_unique_t,
+    std::initializer_list<value_type> ilist,
+    const KeyCompare& comp)
+    : flat_tree(sorted_unique, std::begin(ilist), std::end(ilist), comp) {}
 
 // ----------------------------------------------------------------------------
 // Assignments.
@@ -532,7 +598,7 @@ template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
 auto flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::operator=(
     std::initializer_list<value_type> ilist) -> flat_tree& {
   impl_.body_ = ilist;
-  sort_and_unique(begin(), end());
+  sort_and_unique();
   return *this;
 }
 
@@ -756,11 +822,9 @@ auto flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
 void flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::replace(
     underlying_type&& body) {
-  // Ensure that |body| is sorted and has no repeated elements.
-  DCHECK(ranges::is_sorted(body, value_comp()));
-  DCHECK(ranges::adjacent_find(body, [this](const auto& lhs, const auto& rhs) {
-           return !value_comp()(lhs, rhs);
-         }) == body.end());
+  // Ensure that `body` is sorted and has no repeated elements according to
+  // `value_comp()`.
+  DCHECK(is_sorted_and_unique(body, value_comp()));
   impl_.body_ = std::move(body);
 }
 
