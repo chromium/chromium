@@ -832,7 +832,9 @@ TEST_P(FormDataImporterTest,
   EXPECT_EQ(0, expected.Compare(*results[0]));
 }
 
-TEST_P(FormDataImporterTest, ImportAddressProfiles_UnFocussableFields) {
+// Test that a form is imported correctly even if some fields are not
+// focusable.
+TEST_P(FormDataImporterTest, ImportAddressProfiles_WithUnFocussableFields) {
   FormData form;
   form.url = GURL("https://wwww.foo.com");
 
@@ -854,7 +856,8 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_UnFocussableFields) {
   form.fields.push_back(field);
 
   test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
-  // Set this field to be unfocusable.
+
+  // Set this field to be not focusable.
   field.is_focusable = false;
   form.fields.push_back(field);
 
@@ -867,18 +870,6 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_UnFocussableFields) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes();
 
-  // Verify the status quo that the form is not imported with the unfocusable
-  // fields.
-  // TODO(crbug.com/1101280): Remove once feature is launched.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillProfileImportFromUnfocusableFields);
-  ImportAddressProfiles(/*extraction_successful=*/false, form_structure);
-
-  // Activate the feature and test again.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillProfileImportFromUnfocusableFields);
   ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
