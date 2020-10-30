@@ -45,7 +45,7 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(page_callback, scan_data_.value(), /*page_number=*/0));
+        base::BindOnce(page_callback, scan_data_.value(), /*page_number=*/1));
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(

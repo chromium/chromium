@@ -140,11 +140,10 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
     return;
   }
 
-  // The |page_number| is 0-indexed.
   const std::string filename = base::StringPrintf(
       "scan_%02d%02d%02d-%02d%02d%02d_%d.png", start_time_.year,
       start_time_.month, start_time_.day_of_month, start_time_.hour,
-      start_time_.minute, start_time_.second, page_number + 1);
+      start_time_.minute, start_time_.second, page_number);
   const auto file_path = scan_to_path.Append(filename);
   if (!base::WriteFile(file_path, scanned_image)) {
     LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
