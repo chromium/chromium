@@ -1113,9 +1113,10 @@ void GetOsVersion(std::string* version) {
       if (VerQueryValue(buffer.data(), L"\\", &fixed_version_info_raw, &size)) {
         VS_FIXEDFILEINFO* fixed_version_info =
             static_cast<VS_FIXEDFILEINFO*>(fixed_version_info_raw);
-        int major = HIWORD(fixed_version_info->dwFileVersionMS);
-        int minor = LOWORD(fixed_version_info->dwFileVersionMS);
-        int build = HIWORD(fixed_version_info->dwFileVersionLS);
+        // https://stackoverflow.com/questions/38068477
+        int major = HIWORD(fixed_version_info->dwProductVersionMS);
+        int minor = LOWORD(fixed_version_info->dwProductVersionMS);
+        int build = HIWORD(fixed_version_info->dwProductVersionLS);
         char version_buffer[kVersionStringSize];
         snprintf(version_buffer, kVersionStringSize, "%d.%d.%d", major, minor,
                  build);

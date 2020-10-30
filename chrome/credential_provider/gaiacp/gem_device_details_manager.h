@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/windows_types.h"
+#include "chrome/credential_provider/extension/task_manager.h"
 #include "url/gurl.h"
 
 namespace credential_provider {
@@ -24,18 +25,32 @@ class GemDeviceDetailsManager {
 
   static GemDeviceDetailsManager* Get();
 
-  // Upload device details to gem database.
+  // Provides the GCPW extension with a TaskCreator which can be used to create
+  // a task for uploading device details.
+  static extension::TaskCreator UploadDeviceDetailsTaskCreator();
+
+  // Upload device details to GEM database using access token.
   HRESULT UploadDeviceDetails(const std::string& access_token,
                               const base::string16& sid,
                               const base::string16& username,
                               const base::string16& domain);
 
+  // Upload device details to GEM database using dmToken.
+  HRESULT UploadDeviceDetails(const extension::UserDeviceContext& context);
+
   // Set the upload device details http response status for the
   // purpose of unit testing.
   void SetUploadStatusForTesting(HRESULT hr) { upload_status_ = hr; }
 
-  // Calculates the full url of various gem service requests.
+  // Calculates the full url of various GEM service requests.
   GURL GetGemServiceUploadDeviceDetailsUrl();
+
+  // Return true if upload device details feature is enabled in ESA.
+  bool UploadDeviceDetailsFromEsaFeatureEnabled() const;
+
+  // For testing manually control if the upload device details feature is
+  // enabled in ESA.
+  void SetUploadDeviceDetailsFromEsaFeatureEnabledForTesting(bool value);
 
  protected:
   // Returns the storage used for the instance pointer.
@@ -63,6 +78,13 @@ class GemDeviceDetailsManager {
   base::TimeDelta upload_device_details_request_timeout_;
   HRESULT upload_status_;
   std::unique_ptr<base::Value> request_dict_;
+  HRESULT UploadDeviceDetailsInternal(const std::string access_token,
+                                      const base::string16 obfuscated_user_id,
+                                      const base::string16 dm_token,
+                                      const base::string16 sid,
+                                      const base::string16 device_resource_id,
+                                      const base::string16 username,
+                                      const base::string16 domain);
 };
 
 }  // namespace credential_provider

@@ -14,6 +14,7 @@
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/service.h"
 #include "chrome/credential_provider/extension/task_manager.h"
+#include "chrome/credential_provider/gaiacp/gem_device_details_manager.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
@@ -27,6 +28,14 @@ void RegisterAllTasks() {
   credential_provider::extension::TaskManager::Get()->RegisterTask(
       "FetchCloudPolicies",
       credential_provider::UserPoliciesManager::GetFetchPoliciesTaskCreator());
+
+  // Task to Upload device details.
+  if (credential_provider::GemDeviceDetailsManager::Get()
+          ->UploadDeviceDetailsFromEsaFeatureEnabled()) {
+    credential_provider::extension::TaskManager::Get()->RegisterTask(
+        "UploadDeviceDetails", credential_provider::GemDeviceDetailsManager::
+                                   UploadDeviceDetailsTaskCreator());
+  }
 }
 
 int APIENTRY wWinMain(HINSTANCE hInstance,
