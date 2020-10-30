@@ -27,12 +27,12 @@ TestRenderFrameHostFactory::CreateRenderFrameHost(
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
     const base::UnguessableToken& frame_token,
-    bool renderer_initiated_creation) {
+    bool renderer_initiated_creation,
+    RenderFrameHostImpl::LifecycleState lifecycle_state) {
   DCHECK(!renderer_initiated_creation);
   return std::make_unique<TestRenderFrameHost>(
       site_instance, std::move(render_view_host), delegate, frame_tree,
-      frame_tree_node, routing_id, frame_token,
-      RenderFrameHostImpl::LifecycleState::kActive);
+      frame_tree_node, routing_id, frame_token, lifecycle_state);
 }
 
 }  // namespace content

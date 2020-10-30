@@ -28,7 +28,8 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostFactory::Create(
   if (factory_) {
     return factory_->CreateRenderFrameHost(
         site_instance, std::move(render_view_host), delegate, frame_tree,
-        frame_tree_node, routing_id, frame_token, renderer_initiated_creation);
+        frame_tree_node, routing_id, frame_token, renderer_initiated_creation,
+        lifecycle_state);
   }
   return base::WrapUnique(new RenderFrameHostImpl(
       site_instance, std::move(render_view_host), delegate, frame_tree,

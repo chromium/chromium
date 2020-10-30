@@ -997,8 +997,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // cannot use DidCommitProvisionalLoad to set the policy container, since we
   // could run into a race condition. Hence we need to set The policy container
   // immediately when creating the RenderFrameHost here.
-  if (!frame_tree_node_->has_committed_real_load() &&
-      lifecycle_state_ != LifecycleState::kSpeculative) {
+  if (lifecycle_state_ != LifecycleState::kSpeculative) {
+    // Creating a RFH in kActive state implies that it is the RFH for a
+    // newly-created FTN, which should not have committed a real load yet.
+    DCHECK(!frame_tree_node_->has_committed_real_load());
     if (parent_) {
       policy_container_ = parent_->policy_container()->Clone();
     } else if (frame_tree_node_->opener()) {

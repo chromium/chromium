@@ -1444,11 +1444,12 @@ class RenderFrameHostFactoryForLocalMainFrameInterceptor
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
       const base::UnguessableToken& frame_token,
-      bool renderer_initiated_creation) override {
+      bool renderer_initiated_creation,
+      RenderFrameHostImpl::LifecycleState lifecycle_state) override {
     return base::WrapUnique(new RenderFrameHostImplForLocalMainFrameInterceptor(
         site_instance, std::move(render_view_host), delegate, frame_tree,
         frame_tree_node, routing_id, frame_token, renderer_initiated_creation,
-        RenderFrameHostImpl::LifecycleState::kActive));
+        lifecycle_state));
   }
 };
 

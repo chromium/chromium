@@ -1862,9 +1862,9 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   EXPECT_EQ(host1, GetPendingFrameHost(iframe1));
   EXPECT_EQ(host2, GetPendingFrameHost(iframe2));
   EXPECT_EQ(GetPendingFrameHost(iframe1)->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kActive);
+            RenderFrameHostImpl::LifecycleState::kSpeculative);
   EXPECT_EQ(GetPendingFrameHost(iframe2)->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kActive);
+            RenderFrameHostImpl::LifecycleState::kSpeculative);
   EXPECT_NE(GetPendingFrameHost(iframe1), GetPendingFrameHost(iframe2));
   EXPECT_EQ(GetPendingFrameHost(iframe1)->GetSiteInstance(),
             GetPendingFrameHost(iframe2)->GetSiteInstance());

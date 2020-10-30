@@ -58,7 +58,8 @@ class CONTENT_EXPORT RenderFrameHostFactory {
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
       const base::UnguessableToken& frame_token,
-      bool renderer_initiated_creation) = 0;
+      bool renderer_initiated_creation,
+      RenderFrameHostImpl::LifecycleState lifecycle_state) = 0;
 
   // Registers a factory to be called when new RenderFrameHostImpls are created.
   // We have only one global factory, so there must be no factory registered
