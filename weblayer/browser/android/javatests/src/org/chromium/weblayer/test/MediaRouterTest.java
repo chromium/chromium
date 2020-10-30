@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.util.ClickUtils;
@@ -248,6 +249,7 @@ public class MediaRouterTest {
     @Test
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"MediaRouter"})
+    @DisabledTest(message = "https://crbug.com/1144233")
     @LargeTest
     public void testFailStartCancelled() throws Exception {
         getTestWebLayer().initializeMockMediaRouteProvider(/*closeRouteWithErrorOnSend=*/false,
