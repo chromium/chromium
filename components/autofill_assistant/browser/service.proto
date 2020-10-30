@@ -432,6 +432,89 @@ message ActionsResponseProto {
   optional UpdateScriptListProto update_script_list = 5;
 }
 
+// Can be used to indicate the presence of a field, without the ambiguity that
+// a boolean field would have.
+message Empty {}
+
+// RPC request to fetch the available trigger scripts for a particular domain.
+message GetTriggerScriptsRequestProto {
+  // The domain for which to fetch the trigger scripts.
+  optional string domain = 1;
+  // The client context.
+  // NOTE: Currently, this will only contain the Chrome version number for
+  // privacy reasons.
+  optional ClientContextProto client_context = 2;
+  // Optional debug script parameters.
+  repeated ScriptParameterProto debug_script_parameters = 3;
+}
+
+// The RPC response to a |GetTriggerScriptsRequestProto|.
+message GetTriggerScriptsResponseProto {
+  // The available trigger scripts, if any.
+  repeated TriggerScriptProto trigger_scripts = 1;
+}
+
+// A trigger script contains the full specification for a trigger script that is
+// run when a specific condition is true, prior to the full run.
+message TriggerScriptProto {
+  enum TriggerScriptAction {
+    UNDEFINED = 0;
+    // The current trigger script is cancelled. If the prompt is not currently
+    // being shown, this has no effect. If the prompt is currently being shown,
+    // the prompt is hidden and the trigger script is restarted once the trigger
+    // condition has become false again.
+    NOT_NOW = 1;
+    // Cancels the current trigger script and does not restart it for this
+    // session.
+    CANCEL_SESSION = 2;
+    // Cancels the current trigger script and prevents trigger scripts from ever
+    // running again. TODO(b/172039582): allow a per-domain opt-out.
+    CANCEL_FOREVER = 3;
+    // Displays a popup to give users additional cancel options.
+    SHOW_CANCEL_POPUP = 4;
+    // Stop the trigger script and start the regular script.
+    ACCEPT = 5;
+  }
+
+  // The |trigger_condition| must be true for the script to trigger.
+  optional TriggerScriptConditionProto trigger_condition = 1;
+  // The action that should automatically be executed when a trigger condition
+  // is first true and then stops being true.
+  optional TriggerScriptAction on_trigger_condition_no_longer_true = 2;
+
+  // The user interface to show.
+  optional TriggerScriptUIProto user_interface = 3;
+}
+
+message TriggerScriptConditionProto {
+  oneof type {
+    // The condition matches if all of these conditions match.
+    TriggerScriptConditionsProto all_of = 1;
+    // The condition matches if at least one of these conditions matches.
+    TriggerScriptConditionsProto any_of = 2;
+    // The condition matches if none of these conditions match.
+    TriggerScriptConditionsProto none_of = 3;
+
+    // The condition matches if the element matches the specified condition.
+    ElementConditionProto element_condition = 4;
+    // The condition matches if the user has stored login credentials for the
+    // domain.
+    Empty stored_login_credentials = 5;
+    // The condition matches if the user has never seen a trigger script before.
+    Empty is_first_time_user = 6;
+    // The condition matches if the client is in the specified experiment.
+    int32 experiment_id = 7;
+  }
+}
+
+message TriggerScriptConditionsProto {
+  repeated TriggerScriptConditionProto conditions = 1;
+}
+
+message TriggerScriptUIProto {
+  // stub. TODO(b/171776026) Add fields as per the design doc.
+}
+
 enum KeyboardValueFillStrategy {
   UNSPECIFIED_KEYBAORD_STRATEGY = 0;
 
