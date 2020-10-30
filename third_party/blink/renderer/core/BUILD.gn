@@ -402,6 +402,8 @@ source_set("testing") {
     "testing/mock_clipboard_host.h",
     "testing/mock_hyphenation.cc",
     "testing/mock_hyphenation.h",
+    "testing/mock_policy_container_host.cc",
+    "testing/mock_policy_container_host.h",
     "testing/null_execution_context.cc",
     "testing/null_execution_context.h",
     "testing/origin_trials_test.cc",
@@ -426,6 +428,8 @@ source_set("testing") {
     "timing/internals_profiler.cc",
     "timing/internals_profiler.h",
   ]
+
+  public_deps = [ "//testing/gmock:gmock" ]
 }
 
 # core_bindings_generated ------------------------------------------------------
@@ -1278,6 +1282,7 @@ source_set("unit_tests") {
     "frame/mhtml_archive_test.cc",
     "frame/mhtml_loading_test.cc",
     "frame/performance_monitor_test.cc",
+    "frame/policy_container_test.cc",
     "frame/report_test.cc",
     "frame/reporting_context_test.cc",
     "frame/root_frame_viewport_test.cc",

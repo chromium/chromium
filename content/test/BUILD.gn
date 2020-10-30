@@ -1939,6 +1939,7 @@ test("content_unittests") {
     "../browser/renderer_host/navigator_unittest.cc",
     "../browser/renderer_host/origin_policy_throttle_unittest.cc",
     "../browser/renderer_host/overscroll_controller_unittest.cc",
+    "../browser/renderer_host/policy_container_unittest.cc",
     "../browser/renderer_host/render_frame_host_feature_policy_unittest.cc",
     "../browser/renderer_host/render_frame_host_impl_unittest.cc",
     "../browser/renderer_host/render_frame_host_manager_unittest.cc",
