@@ -368,6 +368,7 @@ public abstract class ChromeFeatureList {
     public static final String PROBABILISTIC_CRYPTID_RENDERER = "ProbabilisticCryptidRenderer";
     public static final String QUERY_TILES_GEO_FILTER = "QueryTilesGeoFilter";
     public static final String QUERY_TILES = "QueryTiles";
+    public static final String QUERY_TILES_IN_NTP = "QueryTilesInNTP";
     public static final String QUERY_TILES_IN_OMNIBOX = "QueryTilesInOmnibox";
     public static final String QUERY_TILES_ENABLE_QUERY_EDITING = "QueryTilesEnableQueryEditing";
     public static final String QUERY_TILES_LOCAL_ORDERING = "QueryTilesLocalOrdering";

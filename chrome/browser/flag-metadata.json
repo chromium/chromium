@@ -3857,42 +3857,47 @@
   {
     "name": "query-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-country-code",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-enable-query-editing",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-enable-trending",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-instant-fetch",
     "owners": [ "xingliu" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-local-ordering",
     "owners": [ "hesen", "qinmin" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
+  },
+  {
+    "name": "query-tiles-ntp",
+    "owners": [ "shaktisahu", "qinmin" ],
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-omnibox",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "query-tiles-single-tier",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "quiet-notification-prompts",

@@ -1734,6 +1734,8 @@ extern const char kProcessSharingWithStrictSiteInstancesDescription[];
 
 extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];
+extern const char kQueryTilesNTPName[];
+extern const char kQueryTilesNTPDescription[];
 extern const char kQueryTilesOmniboxName[];
 extern const char kQueryTilesOmniboxDescription[];
 extern const char kQueryTilesSingleTierName[];

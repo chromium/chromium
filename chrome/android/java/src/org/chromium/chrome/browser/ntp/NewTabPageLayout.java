@@ -259,7 +259,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
         mSearchProviderLogoView.showSearchProviderInitialView();
 
-        if (searchProviderIsGoogle && QueryTileUtils.isFeatureEnabled()) {
+        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
             mQueryTileSection = new QueryTileSection(findViewById(R.id.query_tiles),
                     mSearchBoxCoordinator, profile, mManager::performSearchQuery);
         }

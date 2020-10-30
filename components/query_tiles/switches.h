@@ -15,8 +15,12 @@ namespace features {
 // feature in the user's country. Must be checked in addition to any other flag.
 extern const base::Feature kQueryTilesGeoFilter;
 
-// Main feature flag for the query tiles feature.
+// Main feature flag for the query tiles feature. All other flags are
+// effective only when this flag is enabled.
 extern const base::Feature kQueryTiles;
+
+// Feature flag to determine whether query tiles should be shown on NTP.
+extern const base::Feature kQueryTilesInNTP;
 
 // Feature flag to determine whether query tiles should be shown on omnibox.
 extern const base::Feature kQueryTilesInOmnibox;
