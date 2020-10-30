@@ -2993,7 +2993,7 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_MESSAGE" desc="The message shows in the screenshot or screen recording notification.">
         Show in folder
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT" desc="The edit button label for the screen catpure notification.">
+      <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT" desc="The edit button label for the screen capture notification.">
         Edit
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE" desc="The delete button label for the screen capture notificaiton.">
@@ -3003,7 +3003,7 @@ Here are some things you can try to get started.
         Click anywhere to capture full screen
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_IMAGE_CAPTURE_TABLET" desc="The capture label message which shows in the middle of the screen when in fullscreen image capture mode in tablet mode.">
-        Tap anywhere to catpure full screen
+        Tap anywhere to capture full screen
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE" desc="The caputre label message which shows in the middle of the screen when in region image capture mode.">
         Drag to select an area to capture
