@@ -1969,6 +1969,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTestWithVerifier,
   // Make sure the first Profile has an overridden policy provider.
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
   policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
 
   // Set up sync.

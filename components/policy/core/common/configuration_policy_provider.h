@@ -60,6 +60,12 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   // case implementations need to do asynchronous operations for initialization.
   virtual bool IsInitializationComplete(PolicyDomain domain) const;
 
+  // Check whether this provider has loaded its first policies for the given
+  // policy |domain|. This is used to detect whether policies have been loaded
+  // is done in case implementations need to do asynchronous operations to get
+  // the policies.
+  virtual bool IsFirstPolicyLoadComplete(PolicyDomain domain) const;
+
   // Asks the provider to refresh its policies. All the updates caused by this
   // call will be visible on the next call of OnUpdatePolicy on the observers,
   // which are guaranteed to happen even if the refresh fails.

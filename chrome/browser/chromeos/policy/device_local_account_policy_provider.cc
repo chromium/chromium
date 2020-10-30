@@ -90,6 +90,11 @@ bool DeviceLocalAccountPolicyProvider::IsInitializationComplete(
   return true;
 }
 
+bool DeviceLocalAccountPolicyProvider::IsFirstPolicyLoadComplete(
+    PolicyDomain domain) const {
+  return IsInitializationComplete(domain);
+}
+
 void DeviceLocalAccountPolicyProvider::RefreshPolicies() {
   DeviceLocalAccountPolicyBroker* broker = GetBroker();
   if (broker && broker->core()->service()) {

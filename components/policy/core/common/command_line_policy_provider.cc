@@ -48,7 +48,13 @@ CommandLinePolicyProvider::~CommandLinePolicyProvider() = default;
 
 void CommandLinePolicyProvider::RefreshPolicies() {
   std::unique_ptr<PolicyBundle> bundle = loader_.Load();
+  first_policies_loaded_ = true;
   UpdatePolicy(std::move(bundle));
+}
+
+bool CommandLinePolicyProvider::IsFirstPolicyLoadComplete(
+    PolicyDomain domain) const {
+  return first_policies_loaded_;
 }
 
 CommandLinePolicyProvider::CommandLinePolicyProvider(

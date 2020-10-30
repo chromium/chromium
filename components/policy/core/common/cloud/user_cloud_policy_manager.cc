@@ -52,6 +52,11 @@ void UserCloudPolicyManager::SetSigninAccountId(const AccountId& account_id) {
   store_->SetSigninAccountId(account_id);
 }
 
+void UserCloudPolicyManager::SetPoliciesRequired(bool required) {
+  policies_required_ = required;
+  RefreshPolicies();
+}
+
 void UserCloudPolicyManager::Connect(
     PrefService* local_state,
     std::unique_ptr<CloudPolicyClient> client) {
@@ -95,6 +100,7 @@ void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   // all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
   store_->Clear();
+  SetPoliciesRequired(false);
 }
 
 bool UserCloudPolicyManager::IsClientRegistered() const {
@@ -117,6 +123,12 @@ void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
                     base::Value(false), nullptr /* external_data_fetcher */);
   }
 #endif
+}
+
+bool UserCloudPolicyManager::IsFirstPolicyLoadComplete(
+    PolicyDomain domain) const {
+  return !policies_required_ ||
+         CloudPolicyManager::IsFirstPolicyLoadComplete(domain);
 }
 
 }  // namespace policy

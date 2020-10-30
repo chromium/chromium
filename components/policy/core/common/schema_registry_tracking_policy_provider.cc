@@ -37,6 +37,14 @@ bool SchemaRegistryTrackingPolicyProvider::IsInitializationComplete(
   return state_ == READY;
 }
 
+bool SchemaRegistryTrackingPolicyProvider::IsFirstPolicyLoadComplete(
+    PolicyDomain domain) const {
+  if (domain == POLICY_DOMAIN_CHROME)
+    return delegate_->IsFirstPolicyLoadComplete(domain);
+  // This provider keeps its own state for all the other domains.
+  return state_ == READY;
+}
+
 void SchemaRegistryTrackingPolicyProvider::RefreshPolicies() {
   delegate_->RefreshPolicies();
 }

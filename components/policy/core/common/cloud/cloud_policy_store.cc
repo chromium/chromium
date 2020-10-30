@@ -12,10 +12,7 @@ namespace policy {
 
 CloudPolicyStore::Observer::~Observer() {}
 
-CloudPolicyStore::CloudPolicyStore()
-    : status_(STATUS_OK),
-      invalidation_version_(0),
-      is_initialized_(false) {}
+CloudPolicyStore::CloudPolicyStore() = default;
 
 CloudPolicyStore::~CloudPolicyStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -52,6 +49,7 @@ void CloudPolicyStore::RemoveObserver(CloudPolicyStore::Observer* observer) {
 
 void CloudPolicyStore::NotifyStoreLoaded() {
   is_initialized_ = true;
+  first_policies_loaded_ |= has_policy();
   // The |external_data_manager_| must be notified first so that when other
   // observers are informed about the changed policies and try to fetch external
   // data referenced by these, the |external_data_manager_| has the required
@@ -64,6 +62,7 @@ void CloudPolicyStore::NotifyStoreLoaded() {
 
 void CloudPolicyStore::NotifyStoreError() {
   is_initialized_ = true;
+  first_policies_loaded_ |= has_policy();
   for (auto& observer : observers_)
     observer.OnStoreError(this);
 }
@@ -85,4 +84,7 @@ void CloudPolicyStore::SetPolicyMapForTesting(const PolicyMap& policy_map) {
   NotifyStoreLoaded();
 }
 
+void CloudPolicyStore::SetFirstPoliciesLoaded(bool loaded) {
+  first_policies_loaded_ = loaded;
+}
 }  // namespace policy
