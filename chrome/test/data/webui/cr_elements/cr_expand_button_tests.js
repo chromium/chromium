@@ -49,4 +49,12 @@ suite('cr-expand-button', function() {
     assertFalse(icon.hasAttribute('aria-expanded'));
     assertTrue(icon.disabled);
   });
+
+  // Ensure that the label is marked with aria-hidden="true", so that screen
+  // reader focus goes straight to the cr-icon-button.
+  test('label aria-hidden', () => {
+    const labelId = 'label';
+    assertEquals('true', button.$$(`#${labelId}`).getAttribute('aria-hidden'));
+    assertEquals(labelId, icon.getAttribute('aria-labelledby'));
+  });
 });
