@@ -72,28 +72,16 @@ class BatchElementChecker {
   void Run(WebController* web_controller);
 
  private:
-  using FindGetFieldValueCallback = base::OnceCallback<void(
-      const ElementFinder::Result&,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>)>;
-
   // Gets called for each ElementCheck.
   void OnElementChecked(std::vector<ElementCheckCallback>* callbacks,
                         const ClientStatus& element_status,
                         std::unique_ptr<ElementFinder::Result> element_result);
 
   // Gets called for each FieldValueCheck.
-  void OnFindElementForGetFieldValue(
-      FindGetFieldValueCallback perform,
-      GetFieldValueCallback done,
-      const ClientStatus& element_status,
-      std::unique_ptr<ElementFinder::Result> element_result);
-  void OnGetFieldValue(std::unique_ptr<ElementFinder::Result> element,
-                       GetFieldValueCallback done,
-                       const ClientStatus& status,
-                       const std::string& value);
-  void OnFieldValueCheckDone(std::vector<GetFieldValueCallback>* callbacks,
-                             const ClientStatus& status,
-                             const std::string& value);
+  void OnFieldValueChecked(std::vector<GetFieldValueCallback>* callbacks,
+                           const ClientStatus& status,
+                           const std::string& value);
+
   void CheckDone();
 
   // A map of ElementCheck arguments (check_type, selector) to callbacks that

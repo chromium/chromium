@@ -1257,9 +1257,10 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
         &ActionDelegate::ScrollToElementPosition, main_script_->GetWeakPtr(),
         main_script_->last_focused_element_selector_,
         main_script_->last_focused_element_top_padding_));
-    action_delegate_util::FindElementAndPerformAll(
+    action_delegate_util::FindElementAndPerform(
         main_script_, main_script_->last_focused_element_selector_,
-        std::move(actions), base::DoNothing());
+        base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
+        base::DoNothing());
   }
 }
 

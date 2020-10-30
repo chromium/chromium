@@ -78,8 +78,9 @@ void ShowCastAction::OnWaitForElement(ProcessActionCallback callback,
   actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollToElementPosition,
                                        delegate_->GetWeakPtr(), selector,
                                        top_padding));
-  action_delegate_util::FindElementAndPerformAll(
-      delegate_, selector, std::move(actions),
+  action_delegate_util::FindElementAndPerform(
+      delegate_, selector,
+      base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
       base::BindOnce(&ShowCastAction::OnScrollToElementPosition,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -33,26 +33,27 @@ void FindElementAndPerform(const ActionDelegate* delegate,
                            ElementActionCallback perform,
                            base::OnceCallback<void(const ClientStatus&)> done);
 
-// Finds the element given by the selector. If the resolution fails, it
-// immediately executes the |done| callback. If the resolution succeeds, it
-// executes the |perform_actions| callbacks in sequence with the element and
-// the |done| callback as arguments, while retaining the element.
-void FindElementAndPerformAll(
-    const ActionDelegate* delegate,
-    const Selector& selector,
-    std::unique_ptr<ElementActionVector> perform_actions,
-    base::OnceCallback<void(const ClientStatus&)> done);
+// Take ownership of the |element| and execute the |perform| callback with the
+// element and the |done| callback as arguments, while retaining the element.
+// If the initial status is not ok, execute the |done| callback immediately.
+void TakeElementAndPerform(ElementActionCallback perform,
+                           base::OnceCallback<void(const ClientStatus&)> done,
+                           const ClientStatus& element_status,
+                           std::unique_ptr<ElementFinder::Result> element);
 
-// Finds the element given by the selector. If the resolution fails, it
-// immediately executes the |done| callback with the default value.
-// If the resolution succeeds, it executes the |perform_and_get| callback with
-// the element and the |done| callback as arguments, while retaining the
-// element.
-void FindElementAndGetProperty(
-    const ActionDelegate* delegate,
-    const Selector& selector,
+// Take ownership of the |element| and execute the |perform| callback with the
+// element and the |done| callback as arguments, while retaining the element.
+// If the initial status is not ok, execute the |done| callback with the default
+// value immediately.
+void TakeElementAndGetProperty(
     ElementActionGetCallback<std::string> perform_and_get,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)> done);
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> done,
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> element);
+
+void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
+                const ElementFinder::Result& element,
+                base::OnceCallback<void(const ClientStatus&)> done);
 
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,

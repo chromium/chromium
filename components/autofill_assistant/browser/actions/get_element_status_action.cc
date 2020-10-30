@@ -125,12 +125,14 @@ void GetElementStatusAction::OnWaitForElement(
       return;
   }
 
-  action_delegate_util::FindElementAndGetProperty(
-      delegate_, selector_,
-      base::BindOnce(&ActionDelegate::GetStringAttribute,
-                     delegate_->GetWeakPtr(), attribute_list),
-      base::BindOnce(&GetElementStatusAction::OnGetStringAttribute,
-                     weak_ptr_factory_.GetWeakPtr()));
+  delegate_->FindElement(
+      selector_,
+      base::BindOnce(
+          &action_delegate_util::TakeElementAndGetProperty,
+          base::BindOnce(&ActionDelegate::GetStringAttribute,
+                         delegate_->GetWeakPtr(), attribute_list),
+          base::BindOnce(&GetElementStatusAction::OnGetStringAttribute,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void GetElementStatusAction::OnGetStringAttribute(const ClientStatus& status,
