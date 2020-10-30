@@ -78,15 +78,15 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
                                       base::StringPiece peer_public_value);
 
   // Records a key pair (stores only private key).
-  // Executes on a sequenced thread, returns with callback.
+  // Executes on a sequenced thread, returns key id or error with callback.
   void RecordKeyPair(base::StringPiece private_key,
                      base::StringPiece public_key,
-                     base::OnceCallback<void(Status)> cb);
+                     base::OnceCallback<void(StatusOr<int64_t>)> cb);
 
   // Retrieves private key matching the public key hash.
   // Executes on a sequenced thread, returns with callback.
   void RetrieveMatchingPrivateKey(
-      uint32_t public_key_id,
+      int64_t public_key_id,
       base::OnceCallback<void(StatusOr<std::string>)> cb);
 
  private:
@@ -102,7 +102,7 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
     std::string private_key;
     base::Time time_stamp;
   };
-  base::flat_map<uint32_t, KeyInfo> keys_;
+  base::flat_map<int64_t, KeyInfo> keys_;
 
   // Sequential task runner for all keys_ activities:
   // recording, lookup, purge.

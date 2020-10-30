@@ -35,7 +35,8 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
 
   // Records current public asymmetric key.
   virtual void UpdateAsymmetricKey(
-      base::StringPiece new_key,
+      base::StringPiece new_public_key,
+      int64_t new_public_key_id,
       base::OnceCallback<void(Status)> response_cb);
 
  protected:

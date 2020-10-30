@@ -47,7 +47,7 @@ void Encryptor::Handle::CloseRecord(
 
 void Encryptor::Handle::ProduceEncryptedRecord(
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
-    StatusOr<std::string> asymmetric_key_result) {
+    StatusOr<std::pair<std::string, int64_t>> asymmetric_key_result) {
   // Make sure the record self-destructs when returning from this method.
   const auto self_destruct = base::WrapUnique(this);
 
@@ -57,12 +57,12 @@ void Encryptor::Handle::ProduceEncryptedRecord(
     return;
   }
   const auto& asymmetric_key = asymmetric_key_result.ValueOrDie();
-  if (asymmetric_key.size() != X25519_PUBLIC_VALUE_LEN) {
+  if (asymmetric_key.first.size() != X25519_PUBLIC_VALUE_LEN) {
     std::move(cb).Run(Status(
         error::INTERNAL,
         base::StrCat({"Asymmetric key size mismatch, expected=",
                       base::NumberToString(X25519_PUBLIC_VALUE_LEN), " actual=",
-                      base::NumberToString(asymmetric_key.size())})));
+                      base::NumberToString(asymmetric_key.first.size())})));
     return;
   }
 
@@ -74,7 +74,7 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   // Compute shared secret.
   uint8_t out_shared_secret[X25519_SHARED_KEY_LEN];
   if (!X25519(out_shared_secret, out_private_key,
-              reinterpret_cast<const uint8_t*>(asymmetric_key.data()))) {
+              reinterpret_cast<const uint8_t*>(asymmetric_key.first.data()))) {
     std::move(cb).Run(Status(error::DATA_LOSS, "Curve25519 encryption failed"));
     return;
   }
@@ -105,7 +105,7 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   // Prepare encrypted record.
   EncryptedRecord encrypted_record;
   encrypted_record.mutable_encryption_info()->set_public_key_id(
-      base::PersistentHash(asymmetric_key));
+      asymmetric_key.second);
   encrypted_record.mutable_encryption_info()->set_encryption_key(
       reinterpret_cast<const char*>(out_public_value), X25519_PUBLIC_VALUE_LEN);
 
@@ -132,9 +132,10 @@ Encryptor::Encryptor()
 Encryptor::~Encryptor() = default;
 
 void Encryptor::UpdateAsymmetricKey(
-    base::StringPiece new_key,
+    base::StringPiece new_public_key,
+    int64_t new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
-  if (new_key.empty()) {
+  if (new_public_key.empty()) {
     std::move(response_cb)
         .Run(Status(error::INVALID_ARGUMENT, "Provided key is empty"));
     return;
@@ -144,10 +145,13 @@ void Encryptor::UpdateAsymmetricKey(
   asymmetric_key_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::StringPiece new_key, scoped_refptr<Encryptor> encryptor) {
-            encryptor->asymmetric_key_ = std::string(new_key);
+          [](base::StringPiece new_public_key, int64_t new_public_key_id,
+             scoped_refptr<Encryptor> encryptor) {
+            encryptor->asymmetric_key_ =
+                std::make_pair(std::string(new_public_key), new_public_key_id);
           },
-          std::string(new_key), base::WrapRefCounted(this)));
+          std::string(new_public_key), new_public_key_id,
+          base::WrapRefCounted(this)));
 
   // Response OK not waiting for the update.
   std::move(response_cb).Run(Status::StatusOK());
@@ -158,27 +162,29 @@ void Encryptor::OpenRecord(base::OnceCallback<void(StatusOr<Handle*>)> cb) {
 }
 
 void Encryptor::RetrieveAsymmetricKey(
-    base::OnceCallback<void(StatusOr<std::string>)> cb) {
+    base::OnceCallback<void(StatusOr<std::pair<std::string, int64_t>>)> cb) {
   // Schedule key retrieval on the sequenced task runner.
   asymmetric_key_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::OnceCallback<void(StatusOr<std::string>)> cb,
+          [](base::OnceCallback<void(StatusOr<std::pair<std::string, int64_t>>)>
+                 cb,
              scoped_refptr<Encryptor> encryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(
                 encryptor->asymmetric_key_sequence_checker_);
-            StatusOr<std::string> response;
+            StatusOr<std::pair<std::string, int64_t>> response;
             // Schedule response on regular thread pool.
             base::ThreadPool::PostTask(
                 FROM_HERE,
                 base::BindOnce(
-                    [](base::OnceCallback<void(StatusOr<std::string>)> cb,
-                       StatusOr<std::string> response) {
+                    [](base::OnceCallback<void(
+                           StatusOr<std::pair<std::string, int64_t>>)> cb,
+                       StatusOr<std::pair<std::string, int64_t>> response) {
                       std::move(cb).Run(response);
                     },
                     std::move(cb),
                     !encryptor->asymmetric_key_.has_value()
-                        ? StatusOr<std::string>(Status(
+                        ? StatusOr<std::pair<std::string, int64_t>>(Status(
                               error::NOT_FOUND, "Asymmetric key not set"))
                         : encryptor->asymmetric_key_.value()));
           },

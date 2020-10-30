@@ -28,7 +28,8 @@ class TestEncryptionModuleStrict : public EncryptionModule {
               (const override));
 
   void UpdateAsymmetricKey(
-      base::StringPiece new_key,
+      base::StringPiece new_public_key,
+      int64_t new_public_key_id,
       base::OnceCallback<void(Status)> response_cb) override;
 
  protected:

@@ -65,7 +65,7 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
     // as a callback after asynchronous retrieval of the asymmetric key.
     void ProduceEncryptedRecord(
         base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
-        StatusOr<std::string> asymmetric_key_result);
+        StatusOr<std::pair<std::string, int64_t>> asymmetric_key_result);
 
     // Accumulated data to encrypt.
     std::string record_;
@@ -80,25 +80,26 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
   // Hands the Handle raw pointer over to the callback, or error status).
   void OpenRecord(base::OnceCallback<void(StatusOr<Handle*>)> cb);
 
-  // Delivers public asymmetric key to the implementation.
+  // Delivers public asymmetric key and its id to the implementation.
   // To affect specific record, must happen before Handle::CloseRecord
   // (it is OK to do it after OpenRecord and Handle::AddToRecord).
   // Executes on a sequenced thread, returns with callback.
-  void UpdateAsymmetricKey(base::StringPiece new_key,
+  void UpdateAsymmetricKey(base::StringPiece new_public_key,
+                           int64_t new_public_key_id,
                            base::OnceCallback<void(Status)> response_cb);
 
   // Retrieves the current public key.
   // Executes on a sequenced thread, returns with callback.
   void RetrieveAsymmetricKey(
-      base::OnceCallback<void(StatusOr<std::string>)> cb);
+      base::OnceCallback<void(StatusOr<std::pair<std::string, int64_t>>)> cb);
 
  private:
   friend class base::RefCountedThreadSafe<Encryptor>;
   Encryptor();
   ~Encryptor();
 
-  // Public key used for asymmetric encryption of symmetric key.
-  base::Optional<std::string> asymmetric_key_;
+  // Public key used for asymmetric encryption of symmetric key and its id.
+  base::Optional<std::pair<std::string, int64_t>> asymmetric_key_;
 
   // Sequential task runner for all asymmetric_key_ activities: update, read.
   scoped_refptr<base::SequencedTaskRunner>

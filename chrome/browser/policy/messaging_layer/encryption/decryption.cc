@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -123,16 +124,16 @@ Decryptor::~Decryptor() = default;
 
 void Decryptor::RecordKeyPair(base::StringPiece private_key,
                               base::StringPiece public_key,
-                              base::OnceCallback<void(Status)> cb) {
+                              base::OnceCallback<void(StatusOr<int64_t>)> cb) {
   // Schedule key recording on the sequenced task runner.
   keys_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](std::string public_key, KeyInfo key_info,
-             base::OnceCallback<void(Status)> cb,
+             base::OnceCallback<void(StatusOr<int64_t>)> cb,
              scoped_refptr<Decryptor> decryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);
-            Status result;
+            StatusOr<int64_t> result;
             if (key_info.private_key.size() != X25519_PRIVATE_KEY_LEN) {
               result = Status(
                   error::FAILED_PRECONDITION,
@@ -147,19 +148,27 @@ void Decryptor::RecordKeyPair(base::StringPiece private_key,
                       {"Public key size mismatch, expected=",
                        base::NumberToString(X25519_PUBLIC_VALUE_LEN),
                        " actual=", base::NumberToString(public_key.size())}));
-            } else if (!decryptor->keys_
-                            .emplace(base::PersistentHash(public_key), key_info)
-                            .second) {
-              result = Status(error::ALREADY_EXISTS,
-                              base::StrCat({"Public key='", public_key,
-                                            "' already recorded"}));
+            } else {
+              // Assign a random number to be public key id for testing purposes
+              // only (in production it will be Java Fingerprint2011 which is
+              // 'long').
+              int64_t public_key_id;
+              base::RandBytes(&public_key_id, sizeof(public_key_id));
+              if (!decryptor->keys_.emplace(public_key_id, key_info).second) {
+                result = Status(error::ALREADY_EXISTS,
+                                base::StrCat({"Public key='", public_key,
+                                              "' already recorded"}));
+              } else {
+                result = public_key_id;
+              }
             }
             // Schedule response on a generic thread pool.
             base::ThreadPool::PostTask(
                 FROM_HERE,
-                base::BindOnce([](base::OnceCallback<void(Status)> cb,
-                                  Status result) { std::move(cb).Run(result); },
-                               std::move(cb), result));
+                base::BindOnce(
+                    [](base::OnceCallback<void(StatusOr<int64_t>)> cb,
+                       StatusOr<int64_t> result) { std::move(cb).Run(result); },
+                    std::move(cb), result));
           },
           std::string(public_key),
           KeyInfo{.private_key = std::string(private_key),
@@ -168,13 +177,13 @@ void Decryptor::RecordKeyPair(base::StringPiece private_key,
 }
 
 void Decryptor::RetrieveMatchingPrivateKey(
-    uint32_t public_key_id,
+    int64_t public_key_id,
     base::OnceCallback<void(StatusOr<std::string>)> cb) {
   // Schedule key retrieval on the sequenced task runner.
   keys_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](uint32_t public_key_id,
+          [](int64_t public_key_id,
              base::OnceCallback<void(StatusOr<std::string>)> cb,
              scoped_refptr<Decryptor> decryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);

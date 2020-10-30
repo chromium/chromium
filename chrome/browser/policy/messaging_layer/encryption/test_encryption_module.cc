@@ -27,7 +27,8 @@ TestEncryptionModuleStrict::TestEncryptionModuleStrict() {
 }
 
 void TestEncryptionModuleStrict::UpdateAsymmetricKey(
-    base::StringPiece new_key,
+    base::StringPiece new_public_key,
+    int64_t new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
   std::move(response_cb)
       .Run(Status(error::UNIMPLEMENTED,
