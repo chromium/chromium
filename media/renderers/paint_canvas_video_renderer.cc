@@ -54,7 +54,7 @@
 #define LIBYUV_I422_TO_ARGB libyuv::I422ToARGB
 #define LIBYUV_I444_TO_ARGB libyuv::I444ToARGB
 
-#define LIBYUV_I420ALPHA_TO_ARGB libyuv::I420AlphaToARGB
+#define LIBYUV_I420ALPHA_TO_ARGB_MATRIX libyuv::I420AlphaToARGBMatrix
 
 #define LIBYUV_J400_TO_ARGB libyuv::J400ToARGB
 #define LIBYUV_J420_TO_ARGB libyuv::J420ToARGB
@@ -93,7 +93,7 @@
 #define LIBYUV_I422_TO_ARGB libyuv::I422ToABGR
 #define LIBYUV_I444_TO_ARGB libyuv::I444ToABGR
 
-#define LIBYUV_I420ALPHA_TO_ARGB libyuv::I420AlphaToABGR
+#define LIBYUV_I420ALPHA_TO_ARGB_MATRIX libyuv::I420AlphaToABGRMatrix
 
 #define LIBYUV_J400_TO_ARGB libyuv::J400ToARGB
 #define LIBYUV_J420_TO_ARGB libyuv::J420ToABGR
@@ -470,15 +470,58 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       break;
 
     case PIXEL_FORMAT_I420A:
-      LIBYUV_I420ALPHA_TO_ARGB(plane_meta[VideoFrame::kYPlane].data,
-                               plane_meta[VideoFrame::kYPlane].stride,
-                               plane_meta[VideoFrame::kUPlane].data,
-                               plane_meta[VideoFrame::kUPlane].stride,
-                               plane_meta[VideoFrame::kVPlane].data,
-                               plane_meta[VideoFrame::kVPlane].stride,
-                               plane_meta[VideoFrame::kAPlane].data,
-                               plane_meta[VideoFrame::kAPlane].stride, pixels,
-                               row_bytes, width, rows, premultiply_alpha);
+      switch (color_space) {
+        case kJPEG_SkYUVColorSpace:
+          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
+              plane_meta[VideoFrame::kYPlane].data,
+              plane_meta[VideoFrame::kYPlane].stride,
+              plane_meta[VideoFrame::kUPlane].data,
+              plane_meta[VideoFrame::kUPlane].stride,
+              plane_meta[VideoFrame::kVPlane].data,
+              plane_meta[VideoFrame::kVPlane].stride,
+              plane_meta[VideoFrame::kAPlane].data,
+              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
+              &libyuv::kYuvJPEGConstants, width, rows, premultiply_alpha);
+          break;
+        case kRec709_SkYUVColorSpace:
+          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
+              plane_meta[VideoFrame::kYPlane].data,
+              plane_meta[VideoFrame::kYPlane].stride,
+              plane_meta[VideoFrame::kUPlane].data,
+              plane_meta[VideoFrame::kUPlane].stride,
+              plane_meta[VideoFrame::kVPlane].data,
+              plane_meta[VideoFrame::kVPlane].stride,
+              plane_meta[VideoFrame::kAPlane].data,
+              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
+              &libyuv::kYuvH709Constants, width, rows, premultiply_alpha);
+          break;
+        case kRec601_SkYUVColorSpace:
+          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
+              plane_meta[VideoFrame::kYPlane].data,
+              plane_meta[VideoFrame::kYPlane].stride,
+              plane_meta[VideoFrame::kUPlane].data,
+              plane_meta[VideoFrame::kUPlane].stride,
+              plane_meta[VideoFrame::kVPlane].data,
+              plane_meta[VideoFrame::kVPlane].stride,
+              plane_meta[VideoFrame::kAPlane].data,
+              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
+              &libyuv::kYuvI601Constants, width, rows, premultiply_alpha);
+          break;
+        case kBT2020_SkYUVColorSpace:
+          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
+              plane_meta[VideoFrame::kYPlane].data,
+              plane_meta[VideoFrame::kYPlane].stride,
+              plane_meta[VideoFrame::kUPlane].data,
+              plane_meta[VideoFrame::kUPlane].stride,
+              plane_meta[VideoFrame::kVPlane].data,
+              plane_meta[VideoFrame::kVPlane].stride,
+              plane_meta[VideoFrame::kAPlane].data,
+              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
+              &libyuv::kYuv2020Constants, width, rows, premultiply_alpha);
+          break;
+        default:
+          NOTREACHED();
+      }
       break;
 
     case PIXEL_FORMAT_I444:

@@ -127,7 +127,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaNotPremultiplied,
      ColorBehavior::Tag(),
-     1,
+     3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
          {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},
@@ -211,7 +211,7 @@ StaticColorCheckParam kTestParams[] = {
      ImageDecoder::kLosslessFormat,
      ImageDecoder::kAlphaPremultiplied,
      ColorBehavior::TransformToSRGB(),
-     1,
+     3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
          {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},

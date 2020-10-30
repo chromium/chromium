@@ -109,17 +109,17 @@ bool IsColorSpaceSupportedByPCVR(const avifImage* image) {
   SkYUVColorSpace yuv_color_space;
   if (!GetColorSpace(image).ToSkYUVColorSpace(image->depth, &yuv_color_space))
     return false;
-  if (!image->alphaPlane) {
-    return yuv_color_space == kJPEG_Full_SkYUVColorSpace ||
-           yuv_color_space == kRec601_Limited_SkYUVColorSpace ||
-           yuv_color_space == kRec709_Limited_SkYUVColorSpace ||
-           yuv_color_space == kBT2020_8bit_Limited_SkYUVColorSpace;
-  }
+  const bool color_space_is_supported =
+      yuv_color_space == kJPEG_Full_SkYUVColorSpace ||
+      yuv_color_space == kRec601_Limited_SkYUVColorSpace ||
+      yuv_color_space == kRec709_Limited_SkYUVColorSpace ||
+      yuv_color_space == kBT2020_8bit_Limited_SkYUVColorSpace;
   // libyuv supports the alpha channel only with the I420 pixel format, which is
-  // 8-bit YUV 4:2:0 with kRec601_Limited_SkYUVColorSpace.
-  return image->depth == 8 && image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420 &&
-         yuv_color_space == kRec601_Limited_SkYUVColorSpace &&
-         image->alphaRange == AVIF_RANGE_FULL;
+  // 8-bit YUV 4:2:0.
+  return color_space_is_supported &&
+         (!image->alphaPlane ||
+          (image->depth == 8 && image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420 &&
+           image->alphaRange == AVIF_RANGE_FULL));
 }
 
 media::VideoPixelFormat AvifToVideoPixelFormat(avifPixelFormat fmt, int depth) {
