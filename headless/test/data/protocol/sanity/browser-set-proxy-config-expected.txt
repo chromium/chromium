@@ -2,4 +2,4 @@ Tests that headless session can configure proxy.
 
 No proxy: Page with body
 Proxied to itself: Page with body
-Proxied to another server: Default response given for path: http://not-an-actual-domain.tld/hello.html
+Proxied to another server: Hello headless world!

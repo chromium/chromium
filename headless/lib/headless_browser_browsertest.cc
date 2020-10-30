@@ -35,6 +35,7 @@
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -192,8 +193,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, CreateWithBadURL) {
 class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
  public:
   HeadlessBrowserTestWithProxy()
-      : proxy_server_(net::SpawnedTestServer::TYPE_HTTP,
-                      base::FilePath(FILE_PATH_LITERAL("headless/test/data"))) {
+      : proxy_server_(net::EmbeddedTestServer::TYPE_HTTP) {
+    proxy_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("headless/test/data")));
   }
 
   void SetUp() override {
@@ -202,14 +204,14 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   }
 
   void TearDown() override {
-    proxy_server_.Stop();
+    EXPECT_TRUE(proxy_server_.ShutdownAndWaitUntilComplete());
     HeadlessBrowserTest::TearDown();
   }
 
-  net::SpawnedTestServer* proxy_server() { return &proxy_server_; }
+  net::EmbeddedTestServer* proxy_server() { return &proxy_server_; }
 
  private:
-  net::SpawnedTestServer proxy_server_;
+  net::EmbeddedTestServer proxy_server_;
 };
 
 #if defined(NO_WIN_FLAKES) || (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
