@@ -253,6 +253,25 @@ class MODULES_EXPORT ManifestParser {
   base::Optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
       const JSONObject* object);
 
+  // Parses the 'url_handlers' field of a Manifest, as defined in:
+  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // Returns the parsed list of UrlHandlers. The returned UrlHandlers are empty
+  // if the field didn't exist, parsing failed, the input list was empty, or if
+  // the blink feature flag is disabled.
+  // This feature is experimental and is only enabled by the blink feature flag:
+  // blink::features::kWebAppEnableUrlHandlers.
+  Vector<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandlers(
+      const JSONObject* object);
+
+  // Parses a single URL handler entry in 'url_handlers', as defined in:
+  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // Returns |base::nullopt| if the UrlHandler was invalid, or a UrlHandler if
+  // parsing succeeded.
+  // This feature is experimental and is only enabled by the blink feature flag:
+  // blink::features::kWebAppEnableUrlHandlers.
+  base::Optional<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandler(
+      const JSONObject* object);
+
   // Parses the 'file_handlers' field of a Manifest, as defined in:
   // https://github.com/WICG/file-handling/blob/master/explainer.md
   // Returns the parsed list of FileHandlers. The returned FileHandlers are

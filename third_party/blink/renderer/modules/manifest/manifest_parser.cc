@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/manifest/manifest_parser.h"
 
+#include "base/feature_list.h"
 #include "net/base/mime_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
@@ -19,6 +21,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/url_constants.h"
 
 namespace blink {
 
@@ -92,7 +95,7 @@ void ManifestParser::Parse() {
 
   manifest_->file_handlers = ParseFileHandlers(root_object.get());
   manifest_->protocol_handlers = ParseProtocolHandlers(root_object.get());
-
+  manifest_->url_handlers = ParseUrlHandlers(root_object.get());
   manifest_->related_applications = ParseRelatedApplications(root_object.get());
   manifest_->prefer_related_applications =
       ParsePreferRelatedApplications(root_object.get());
@@ -1004,6 +1007,80 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
   }
 
   return std::move(protocol_handler);
+}
+
+Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
+    const JSONObject* from) {
+  Vector<mojom::blink::ManifestUrlHandlerPtr> url_handlers;
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableUrlHandlers) ||
+      !from->Get("url_handlers")) {
+    return url_handlers;
+  }
+  JSONArray* handlers_list = from->GetArray("url_handlers");
+  if (!handlers_list) {
+    AddErrorInfo("property 'url_handlers' ignored, type array expected.");
+    return url_handlers;
+  }
+  for (wtf_size_t i = 0; i < handlers_list->size(); ++i) {
+    const JSONObject* handler_object = JSONObject::Cast(handlers_list->at(i));
+    if (!handler_object) {
+      AddErrorInfo("url_handlers entry ignored, type object expected.");
+      continue;
+    }
+
+    base::Optional<mojom::blink::ManifestUrlHandlerPtr> url_handler =
+        ParseUrlHandler(handler_object);
+    if (!url_handler) {
+      continue;
+    }
+    url_handlers.push_back(std::move(url_handler.value()));
+  }
+  return url_handlers;
+}
+
+base::Optional<mojom::blink::ManifestUrlHandlerPtr>
+ManifestParser::ParseUrlHandler(const JSONObject* object) {
+  DCHECK(
+      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers));
+  if (!object->Get("origin")) {
+    AddErrorInfo(
+        "url_handlers entry ignored, required property 'origin' is missing.");
+    return base::nullopt;
+  }
+  const base::Optional<String> origin_string =
+      ParseString(object, "origin", Trim);
+  if (!origin_string.has_value()) {
+    AddErrorInfo(
+        "url_handlers entry ignored, required property 'origin' is invalid.");
+    return base::nullopt;
+  }
+
+  // TODO(crbug.com/1072058): pre-process for sub-domain wildcard
+  // prefix before parsing as origin. Add a boolean value to indicate the
+  // presence of a sub-domain wildcard prefix so the browser process does not
+  // have to parse it.
+
+  // TODO(crbug.com/1072058): pre-process for input without scheme.
+  // (eg. example.com instead of https://example.com) because we can always
+  // assume the use of https for URL handling. Remove this TODO if we decide
+  // to require fully specified https scheme in this origin input.
+
+  auto origin = SecurityOrigin::CreateFromString(*origin_string);
+  if (!origin || origin->IsOpaque()) {
+    AddErrorInfo(
+        "url_handlers entry ignored, required property 'origin' is invalid.");
+    return base::nullopt;
+  }
+  if (origin->Protocol() != url::kHttpsScheme) {
+    AddErrorInfo(
+        "url_handlers entry ignored, required property 'origin' must use the "
+        "https scheme.");
+    return base::nullopt;
+  }
+  auto url_handler = mojom::blink::ManifestUrlHandler::New();
+  url_handler->origin = origin;
+  return std::move(url_handler);
 }
 
 String ManifestParser::ParseRelatedApplicationPlatform(

@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 
 // The Manifest structure is an internal representation of the Manifest file
@@ -45,6 +46,8 @@ struct Manifest {
   // The URLProtocolHandler explainer can be found here:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
   array<ManifestProtocolHandler> protocol_handlers;
+
+  array<ManifestUrlHandler> url_handlers;
 
   array<ManifestRelatedApplication> related_applications;
 
@@ -122,6 +125,10 @@ struct ManifestFileFilter {
 struct ManifestProtocolHandler {
   mojo_base.mojom.String16 protocol;
   url.mojom.Url url;
+};
+
+struct ManifestUrlHandler {
+  url.mojom.Origin origin;
 };
 
 // Structure representing a related application.

@@ -54,6 +54,11 @@ TypeConverter<blink::Manifest, blink::mojom::blink::ManifestPtr>::Convert(
         uri_protocol.To<blink::Manifest::ProtocolHandler>());
   }
 
+  for (auto& url_handler : input->url_handlers) {
+    output.url_handlers.push_back(
+        url_handler.To<blink::Manifest::UrlHandler>());
+  }
+
   for (auto& related_application : input->related_applications) {
     output.related_applications.push_back(
         related_application.To<blink::Manifest::RelatedApplication>());
@@ -232,6 +237,20 @@ TypeConverter<blink::Manifest::ProtocolHandler,
     return output;
   output.protocol = blink::WebString(input->protocol).Utf16();
   output.url = input->url;
+  return output;
+}
+
+blink::Manifest::UrlHandler
+TypeConverter<blink::Manifest::UrlHandler,
+              blink::mojom::blink::ManifestUrlHandlerPtr>::
+    Convert(const blink::mojom::blink::ManifestUrlHandlerPtr& input) {
+  blink::Manifest::UrlHandler output;
+  if (input.is_null())
+    return output;
+
+  if (!output.origin.opaque())
+    output.origin = input->origin->ToUrlOrigin();
+
   return output;
 }
 

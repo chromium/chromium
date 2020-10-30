@@ -10,7 +10,10 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -2299,6 +2302,151 @@ TEST_F(ManifestParserTest, ProtocolHandlerParseRules) {
     ASSERT_EQ("http://foo.com/?test=%s", protocol_handlers[1]->url);
     ASSERT_EQ("web+relative", protocol_handlers[2]->protocol);
     ASSERT_EQ("http://foo.com/relativeURL=%s", protocol_handlers[2]->url);
+  }
+}
+
+TEST_F(ManifestParserTest, UrlHandlerParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kWebAppEnableUrlHandlers);
+
+  // Manifest does not contain a 'url_handlers' field.
+  {
+    auto& manifest = ParseManifest("{ }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->url_handlers.size());
+  }
+
+  // 'url_handlers' is not an array.
+  {
+    auto& manifest = ParseManifest("{ \"url_handlers\": { } }");
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'url_handlers' ignored, type array expected.",
+              errors()[0]);
+    EXPECT_EQ(0u, manifest->url_handlers.size());
+  }
+
+  // Contains 'url_handlers' field but no URL handler entries.
+  {
+    auto& manifest = ParseManifest("{ \"url_handlers\": [ ] }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->url_handlers.size());
+  }
+
+  // 'url_handlers' array entries must be objects.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    \"foo.com\""
+        "  ]"
+        "}");
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("url_handlers entry ignored, type object expected.", errors()[0]);
+    EXPECT_EQ(0u, manifest->url_handlers.size());
+  }
+
+  // A valid url handler.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://foo.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+  }
+
+  // Scheme must be https.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"http://foo.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "url_handlers entry ignored, required property 'origin' must use the "
+        "https scheme.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Origin must be valid.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https:///////\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "url_handlers entry ignored, required property 'origin' is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse multiple valid handlers.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://foo.com\""
+        "    },"
+        "    {"
+        "      \"origin\": \"https://bar.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(2u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://bar.com")
+                    ->IsSameOriginWith(url_handlers[1]->origin.get()));
+  }
+
+  // Parse both valid and invalid handlers.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://foo.com\""
+        "    },"
+        "    {"
+        "      \"origin\": \"about:\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "url_handlers entry ignored, required property 'origin' is invalid.",
+        errors()[0]);
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
   }
 }
 

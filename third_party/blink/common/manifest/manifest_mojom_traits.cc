@@ -77,6 +77,9 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
   if (!data.ReadProtocolHandlers(&out->protocol_handlers))
     return false;
 
+  if (!data.ReadUrlHandlers(&out->url_handlers))
+    return false;
+
   if (!data.ReadRelatedApplications(&out->related_applications))
     return false;
 
@@ -188,6 +191,16 @@ bool StructTraits<blink::mojom::ManifestFileFilterDataView,
   out->name = *std::move(name.string);
 
   if (!data.ReadAccept(&out->accept))
+    return false;
+
+  return true;
+}
+
+bool StructTraits<blink::mojom::ManifestUrlHandlerDataView,
+                  ::blink::Manifest::UrlHandler>::
+    Read(blink::mojom::ManifestUrlHandlerDataView data,
+         ::blink::Manifest::UrlHandler* out) {
+  if (!data.ReadOrigin(&out->origin))
     return false;
 
   return true;

@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -125,6 +126,10 @@ struct BLINK_COMMON_EXPORT Manifest {
     GURL url;
   };
 
+  struct BLINK_COMMON_EXPORT UrlHandler {
+    url::Origin origin;
+  };
+
   // Structure representing a related application.
   struct BLINK_COMMON_EXPORT RelatedApplication {
     RelatedApplication();
@@ -198,6 +203,13 @@ struct BLINK_COMMON_EXPORT Manifest {
   // The URLProtocolHandler explainer can be found here:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
   std::vector<ProtocolHandler> protocol_handlers;
+
+  // TODO(crbug.com/1072058): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+  // Empty if the parsing failed, the field was not present, empty or all the
+  // entries inside the array were invalid.
+  std::vector<UrlHandler> url_handlers;
 
   // Empty if the parsing failed, the field was not present, empty or all the
   // applications inside the array were invalid. The order of the array
