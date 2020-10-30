@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import android.content.Context;
 import android.content.res.Resources;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +24,11 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.video_tutorials.FeatureType;
+import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
+import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.chrome.browser.video_tutorials.languages.LanguagePickerCoordinator;
@@ -145,6 +149,55 @@ public class VideoPlayerMediatorUnitTest {
     }
 
     @Test
+    public void testChangeLanguage() {
+        Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
+        mMediator.playVideoTutorial(tutorial);
+        mMediator.onPlay();
+        mMediator.onEnded();
+
+        Language language = new Language("en", "English", "English native");
+        Mockito.when(mLanguageProvider.getLanguageInfo("en")).thenReturn(language);
+        mModel.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
+        Mockito.verify(mLanguagePicker, Mockito.times(1))
+                .showLanguagePicker(mLanguagePickerCallback.capture(), any());
+        mTestVideoTutorialService.setPreferredLocale("en");
+        ((Runnable) mLanguagePickerCallback.getValue()).run();
+    }
+
+    @Test
+    public void verifyButtonCallbacks() {
+        Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
+        mMediator.playVideoTutorial(tutorial);
+        mMediator.onPlay();
+        mMediator.onPause();
+
+        mModel.get(VideoPlayerProperties.CALLBACK_TRY_NOW).run();
+        Mockito.verify(mTryNowCallback).onResult(tutorial);
+
+        mModel.get(VideoPlayerProperties.CALLBACK_CLOSE).run();
+        Mockito.verify(mCloseCallback).run();
+
+        mModel.get(VideoPlayerProperties.CALLBACK_SHARE).run();
+        mModel.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
+        Mockito.verify(mLanguagePicker).showLanguagePicker(any(), any());
+
+        WatchStateInfo watchStateInfo = new WatchStateInfo();
+        watchStateInfo.videoLength = 10;
+        watchStateInfo.currentPosition = 8;
+        Mockito.doReturn(watchStateInfo).when(mPlaybackStateObserver).getWatchStateInfo();
+        mModel.get(VideoPlayerProperties.CALLBACK_WATCH_NEXT).run();
+        mMediator.destroy();
+    }
+
+    @Test
+    public void testHandleBackPressed() {
+        Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
+        mMediator.playVideoTutorial(tutorial);
+        mMediator.onPlay();
+        Assert.assertFalse(mMediator.handleBackPressed());
+    }
+
+    @Test
     public void testVideoLengthString() {
         assertThat(VideoTutorialUtils.getVideoLengthString(0), equalTo("0:00"));
         assertThat(VideoTutorialUtils.getVideoLengthString(5), equalTo("0:05"));
@@ -152,5 +205,14 @@ public class VideoPlayerMediatorUnitTest {
         assertThat(VideoTutorialUtils.getVideoLengthString(70), equalTo("1:10"));
         assertThat(VideoTutorialUtils.getVideoLengthString(1200), equalTo("20:00"));
         assertThat(VideoTutorialUtils.getVideoLengthString(3615), equalTo("1:00:15"));
+    }
+
+    @Test
+    public void testTryNowEnabledForFeatures() {
+        Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(FeatureType.CHROME_INTRO));
+        Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.DOWNLOAD));
+        Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.SEARCH));
+        Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.VOICE_SEARCH));
+        Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(99));
     }
 }
