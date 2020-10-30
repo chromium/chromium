@@ -118,6 +118,8 @@ bool LayoutSVGBlock::UpdateTransformAfterLayout(bool bounds_changed) {
 void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  LayoutBlock::StyleDidChange(diff, old_style);
+
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
 
@@ -127,19 +129,19 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  if (diff.BlendModeChanged() && Parent()) {
+  SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
+
+  if (!Parent())
+    return;
+  if (diff.BlendModeChanged()) {
     DCHECK(IsBlendingAllowed());
     Parent()->DescendantIsolationRequirementsChanged(
         StyleRef().HasBlendMode() ? kDescendantIsolationRequired
                                   : kDescendantIsolationNeedsUpdate);
   }
-
   if (diff.CompositingReasonsChanged())
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-
-  LayoutBlock::StyleDidChange(diff, old_style);
-  SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
-  if (diff.HasDifference() && Parent()) {
+  if (diff.HasDifference()) {
     SVGResourcesCache::UpdateResources(*this);
     LayoutSVGResourceContainer::StyleDidChange(*this, diff);
   }

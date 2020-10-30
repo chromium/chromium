@@ -126,17 +126,20 @@ void LayoutSVGInline::WillBeDestroyed() {
 void LayoutSVGInline::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  LayoutInline::StyleDidChange(diff, old_style);
+
   if (diff.NeedsFullLayout())
     SetNeedsBoundariesUpdate();
 
-  if (diff.CompositingReasonsChanged())
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-
-  LayoutInline::StyleDidChange(diff, old_style);
   SVGResources::UpdateClipPathFilterMask(To<SVGElement>(*GetNode()), old_style,
                                          StyleRef());
   SVGResources::UpdatePaints(To<SVGElement>(*GetNode()), old_style, StyleRef());
-  if (diff.HasDifference() && Parent()) {
+
+  if (!Parent())
+    return;
+  if (diff.CompositingReasonsChanged())
+    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
+  if (diff.HasDifference()) {
     SVGResourcesCache::UpdateResources(*this);
     LayoutSVGResourceContainer::StyleDidChange(*this, diff);
   }

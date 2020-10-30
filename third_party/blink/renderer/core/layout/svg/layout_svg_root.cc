@@ -367,16 +367,19 @@ void LayoutSVGRoot::IntrinsicSizingInfoChanged() {
 void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  LayoutReplaced::StyleDidChange(diff, old_style);
+
   if (diff.NeedsFullLayout())
     SetNeedsBoundariesUpdate();
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();
 
-  LayoutReplaced::StyleDidChange(diff, old_style);
   SVGResources::UpdateClipPathFilterMask(To<SVGSVGElement>(*GetNode()),
                                          old_style, StyleRef());
-  if (diff.HasDifference() && Parent()) {
+  if (!Parent())
+    return;
+  if (diff.HasDifference()) {
     SVGResourcesCache::UpdateResources(*this);
     LayoutSVGResourceContainer::StyleDidChange(*this, diff);
   }

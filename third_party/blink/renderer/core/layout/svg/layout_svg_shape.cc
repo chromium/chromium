@@ -66,9 +66,10 @@ LayoutSVGShape::~LayoutSVGShape() = default;
 void LayoutSVGShape::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  LayoutSVGModelObject::StyleDidChange(diff, old_style);
+
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
-  LayoutSVGModelObject::StyleDidChange(diff, old_style);
   SVGResources::UpdatePaints(*GetElement(), old_style, StyleRef());
 
   // Most of the stroke attributes (caps, joins, miters, width, etc.) will cause

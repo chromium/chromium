@@ -139,25 +139,27 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
 void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  LayoutObject::StyleDidChange(diff, old_style);
+
   if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
     if (diff.TransformChanged())
       SetNeedsTransformUpdate();
   }
 
-  if (diff.BlendModeChanged() && Parent() && !IsSVGHiddenContainer()) {
+  SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
+
+  if (!Parent())
+    return;
+  if (diff.BlendModeChanged() && !IsSVGHiddenContainer()) {
     DCHECK(IsBlendingAllowed());
     Parent()->DescendantIsolationRequirementsChanged(
         StyleRef().HasBlendMode() ? kDescendantIsolationRequired
                                   : kDescendantIsolationNeedsUpdate);
   }
-
   if (diff.CompositingReasonsChanged())
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-
-  LayoutObject::StyleDidChange(diff, old_style);
-  SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
-  if (diff.HasDifference() && Parent()) {
+  if (diff.HasDifference()) {
     SVGResourcesCache::UpdateResources(*this);
     LayoutSVGResourceContainer::StyleDidChange(*this, diff);
   }

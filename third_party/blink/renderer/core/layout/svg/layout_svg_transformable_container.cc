@@ -122,9 +122,10 @@ void LayoutSVGTransformableContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  LayoutSVGContainer::StyleDidChange(diff, old_style);
+
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
-  LayoutSVGContainer::StyleDidChange(diff, old_style);
 }
 
 }  // namespace blink
