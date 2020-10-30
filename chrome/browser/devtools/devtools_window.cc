@@ -943,9 +943,7 @@ bool DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(
   // beforeunload.
   if (browser->tab_strip_model()->empty())
     return true;
-  WebContents* contents =
-      browser->tab_strip_model()->GetWebContentsAt(0);
-  DevToolsWindow* window = AsDevToolsWindow(contents);
+  DevToolsWindow* window = AsDevToolsWindow(browser);
   if (!window)
     return false;
   return window->intercepted_page_beforeunload_;
@@ -1164,21 +1162,35 @@ DevToolsWindow* DevToolsWindow::AsDevToolsWindow(
   return nullptr;
 }
 
+// static
+DevToolsWindow* DevToolsWindow::AsDevToolsWindow(Browser* browser) {
+  DCHECK(browser->is_type_devtools());
+  if (browser->tab_strip_model()->empty())
+    return nullptr;
+  WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(0);
+  return AsDevToolsWindow(contents);
+}
+
 WebContents* DevToolsWindow::OpenURLFromTab(
     WebContents* source,
     const content::OpenURLParams& params) {
   DCHECK(source == main_web_contents_);
   if (!params.url.SchemeIs(content::kChromeDevToolsScheme)) {
-    WebContents* inspected_web_contents = GetInspectedWebContents();
-    if (!inspected_web_contents)
-      return nullptr;
-    content::OpenURLParams modified = params;
-    modified.referrer = content::Referrer();
-    return inspected_web_contents->OpenURL(modified);
+    return OpenURLFromInspectedTab(params);
   }
   main_web_contents_->GetController().Reload(content::ReloadType::NORMAL,
                                              false);
   return main_web_contents_;
+}
+
+WebContents* DevToolsWindow::OpenURLFromInspectedTab(
+    const content::OpenURLParams& params) {
+  WebContents* inspected_web_contents = GetInspectedWebContents();
+  if (!inspected_web_contents)
+    return nullptr;
+  content::OpenURLParams modified = params;
+  modified.referrer = content::Referrer();
+  return inspected_web_contents->OpenURL(modified);
 }
 
 void DevToolsWindow::ActivateContents(WebContents* contents) {

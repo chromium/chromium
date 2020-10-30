@@ -349,7 +349,8 @@ void HatsService::LaunchSurveyForBrowser(Browser* browser,
                                          const std::string& trigger,
                                          base::OnceClosure success_callback,
                                          base::OnceClosure failure_callback) {
-  if (!browser || !browser->is_type_normal() ||
+  if (!browser ||
+      (!browser->is_type_normal() && !browser->is_type_devtools()) ||
       !profiles::IsRegularOrGuestSession(browser)) {
     // Never show HaTS bubble for Incognito mode.
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,

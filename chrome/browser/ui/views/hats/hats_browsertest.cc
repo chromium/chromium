@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
@@ -241,6 +243,17 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
             browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
   }
 
+  // Open a blank tab in the main browser, inspect it, and return the devtools
+  // Browser for the undocked devtools window.
+  Browser* OpenUndockedDevToolsWindow() {
+    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+    const bool is_docked = false;
+    DevToolsWindow* devtools_window =
+        DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), is_docked);
+    return devtools_window->browser_;
+  }
+
   MockHatsService* hats_service() { return hats_service_; }
 
   base::OnceClosure GetSuccessClosure() {
@@ -405,6 +418,31 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "open_new_web_contents_for_testing",
+      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+
+  // The mock hats dialog will push a close state after it has attempted to
+  // open another web contents.
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
+  dialog->WaitForClose();
+
+  // Check that a tab with http://foo.com (defined in hats_next_mock.html) has
+  // been opened in the regular browser and is active.
+  EXPECT_EQ(
+      GURL("http://foo.com"),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+}
+
+// The devtools browser for undocked devtools has no tab strip and can't open
+// new tabs. Instead it should open new WebContents in the main browser.
+IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
+                       NewWebContentsForDevtoolsBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Browser* devtools_browser = OpenUndockedDevToolsWindow();
+
+  auto* dialog = new MockHatsNextWebDialog(
+      devtools_browser, "open_new_web_contents_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
 

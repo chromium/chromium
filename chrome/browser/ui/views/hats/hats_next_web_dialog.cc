@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/hats/hats_bubble_view.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -79,10 +80,21 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     // The HaTS Next WebDialog runs with a non-primary OTR profile. This profile
     // cannot open new browser windows, so they are instead opened in the
     // regular browser that initiated the HaTS survey.
-    browser_->OpenURL(
+    content::OpenURLParams params =
         content::OpenURLParams(target_url, content::Referrer(),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false));
+                               ui::PAGE_TRANSITION_LINK, false);
+
+    // For the case where we are showing a survey in an undocked DevTools
+    // window, we open the URL in the browser of the inspected page.
+    if (browser_->is_type_devtools()) {
+      DevToolsWindow* devtools_window =
+          DevToolsWindow::AsDevToolsWindow(browser_);
+      DCHECK(devtools_window);
+      devtools_window->OpenURLFromInspectedTab(params);
+    } else {
+      browser_->OpenURL(params);
+    }
     return nullptr;
   }
 
@@ -130,10 +142,15 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
                                      const base::TimeDelta& timeout,
                                      base::OnceClosure success_callback,
                                      base::OnceClosure failure_callback)
-    : BubbleDialogDelegateView(BrowserView::GetBrowserViewForBrowser(browser)
-                                   ->toolbar_button_provider()
-                                   ->GetAppMenuButton(),
-                               views::BubbleBorder::TOP_RIGHT),
+    : BubbleDialogDelegateView(
+          browser->is_type_devtools()
+              ? static_cast<views::View*>(
+                    BrowserView::GetBrowserViewForBrowser(browser)
+                        ->top_container())
+              : BrowserView::GetBrowserViewForBrowser(browser)
+                    ->toolbar_button_provider()
+                    ->GetAppMenuButton(),
+          views::BubbleBorder::TOP_RIGHT),
       otr_profile_(browser->profile()->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"))),
       browser_(browser),

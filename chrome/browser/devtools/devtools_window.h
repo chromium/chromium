@@ -75,6 +75,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   static bool IsDevToolsWindow(content::WebContents* web_contents);
   static DevToolsWindow* AsDevToolsWindow(content::WebContents* web_contents);
+  static DevToolsWindow* AsDevToolsWindow(Browser* browser);
   static DevToolsWindow* FindDevToolsWindow(content::DevToolsAgentHost*);
 
   // Open or reveal DevTools window, and perform the specified action.
@@ -146,6 +147,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
+
+  content::WebContents* OpenURLFromInspectedTab(
+      const content::OpenURLParams& params);
 
   // BeforeUnload interception ////////////////////////////////////////////////
 
@@ -226,6 +230,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
  private:
   friend class DevToolsWindowTesting;
   friend class DevToolsWindowCreationObserver;
+  friend class HatsNextWebDialogBrowserTest;
 
   using CreationCallback = base::Callback<void(DevToolsWindow*)>;
   static void AddCreationCallbackForTest(const CreationCallback& callback);
