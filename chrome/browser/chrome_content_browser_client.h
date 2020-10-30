@@ -111,7 +111,7 @@ blink::UserAgentBrandList GenerateBrandVersionList(
 
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
-  explicit ChromeContentBrowserClient(StartupData* startup_data = nullptr);
+  ChromeContentBrowserClient();
   ~ChromeContentBrowserClient() override;
 
   // TODO(https://crbug.com/787567): This file is about calls from content/ out
@@ -706,6 +706,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
 
+  StartupData* startup_data() { return &startup_data_; }
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
@@ -773,7 +775,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
       safe_browsing_url_checker_delegate_;
 
-  StartupData* startup_data_;
+  StartupData startup_data_;
 
 #if !defined(OS_ANDROID)
   std::unique_ptr<ChromeSerialDelegate> serial_delegate_;

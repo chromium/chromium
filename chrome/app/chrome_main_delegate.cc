@@ -531,9 +531,9 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   chromeos::InitializeDBus();
 #endif
 
-  DCHECK(startup_data_);
-  auto* chrome_feature_list_creator =
-      startup_data_->chrome_feature_list_creator();
+  ChromeFeatureListCreator* chrome_feature_list_creator =
+      chrome_content_browser_client_->startup_data()
+          ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
   PostFieldTrialInitialization();
 
@@ -556,7 +556,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #endif
 
 #if defined(OS_ANDROID)
-  startup_data_->CreateProfilePrefService();
+  chrome_content_browser_client_->startup_data()->CreateProfilePrefService();
   net::NetworkChangeNotifier::SetFactory(
       new net::NetworkChangeNotifierFactoryAndroid());
 #endif
@@ -569,7 +569,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
         base::FeatureList::IsEnabled(chrome::android::kUmaBackgroundSessions);
 #endif
     if (record)
-      startup_data_->RecordCoreSystemProfile();
+      chrome_content_browser_client_->startup_data()->RecordCoreSystemProfile();
   }
 
 #if defined(OS_ANDROID)
@@ -1214,13 +1214,8 @@ content::ContentClient* ChromeMainDelegate::CreateContentClient() {
 
 content::ContentBrowserClient*
 ChromeMainDelegate::CreateContentBrowserClient() {
-  if (chrome_content_browser_client_ == nullptr) {
-    DCHECK(!startup_data_);
-    startup_data_ = std::make_unique<StartupData>();
-
-    chrome_content_browser_client_ =
-        std::make_unique<ChromeContentBrowserClient>(startup_data_.get());
-  }
+  chrome_content_browser_client_ =
+      std::make_unique<ChromeContentBrowserClient>();
   return chrome_content_browser_client_.get();
 }
 

@@ -79,8 +79,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;
 
-  std::unique_ptr<StartupData> startup_data_;
-
   std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler_;
 
   // The controller schedules UMA heap profiles collections and forwarding down
