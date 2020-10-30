@@ -1236,7 +1236,51 @@
     },
     "short_name-member": {
      "short_name-member-manual.html": [
-      "7d959ad78fa08d91993db13c3819e4d3a6d916ac",
+      "2ccb68cf0a7007c58b8a6c3e32fddc85690b2b86",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "shortcuts-member": {
+     "shortcuts-member-manual.html": [
+      "af4b79c0585b75f31856cbfc0425d81a82c3f4a6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shortcuts-member-skip-for-empty-name-manual.html": [
+      "e15a69e421794e31648d8e1008245aee069ef082",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shortcuts-member-skip-for-invalid-url-manual.html": [
+      "0e2adc0d275f9d7010d4acbaea994176497b2b1e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shortcuts-member-skip-for-out-of-scope-url-manual.html": [
+      "cdb3f3b57f701bbb1e1406842459d1cba18a8c64",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shortcuts-member-skip-for-undefined-name-manual.html": [
+      "af543f99fa6ecf8bcb8f767215c765dadb750710",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shortcuts-member-skip-for-undefined-url-manual.html": [
+      "278a53c6088d0102ed83ab4c12c2168c84e20029",
       [
        null,
        {}
@@ -168630,6 +168674,68 @@
      ],
      "short_name-member.webmanifest.headers": [
       "23f36ea27ced7bba400a60e8e618757e5701cd88",
+      []
+     ]
+    },
+    "shortcuts-member": {
+     "pass.png": [
+      "be7433a3e2c305ff699e74f9bbd56e87484ba35c",
+      []
+     ],
+     "shortcut_fail.html": [
+      "d3259744d32f30190fd100f47c15c217ef2e9f94",
+      []
+     ],
+     "shortcut_pass.html": [
+      "f15bfe114153c6e2f0d027cf6c0ca67a430df259",
+      []
+     ],
+     "shortcuts-member-skip-for-empty-name.webmanifest": [
+      "e23771fad70afa9d2e729b01e51311161b5c70e9",
+      []
+     ],
+     "shortcuts-member-skip-for-empty-name.webmanifest.headers": [
+      "2bab061d43ab9e533b0160ca506231939886cd89",
+      []
+     ],
+     "shortcuts-member-skip-for-invalid-url.webmanifest": [
+      "1385939c189de8a5ea035c7d4d2718ea59f5848b",
+      []
+     ],
+     "shortcuts-member-skip-for-invalid-url.webmanifest.headers": [
+      "2bab061d43ab9e533b0160ca506231939886cd89",
+      []
+     ],
+     "shortcuts-member-skip-for-out-of-scope-url.webmanifest": [
+      "ed89f6da9ba699919851b59dda3496c7cb9749dc",
+      []
+     ],
+     "shortcuts-member-skip-for-out-of-scope-url.webmanifest.headers": [
+      "2bab061d43ab9e533b0160ca506231939886cd89",
+      []
+     ],
+     "shortcuts-member-skip-for-undefined-name.webmanifest": [
+      "03d58af0dccbd19587399d098554ba677f168e7e",
+      []
+     ],
+     "shortcuts-member-skip-for-undefined-name.webmanifest.headers": [
+      "2bab061d43ab9e533b0160ca506231939886cd89",
+      []
+     ],
+     "shortcuts-member-skip-for-undefined-url.webmanifest": [
+      "1559c63360dcff7688b78834551d4511dfd3f185",
+      []
+     ],
+     "shortcuts-member-skip-for-undefined-url.webmanifest.headers": [
+      "2bab061d43ab9e533b0160ca506231939886cd89",
+      []
+     ],
+     "shortcuts-member.webmanifest": [
+      "37ff3f804ed8f16a736cb54c0f932e1a9e711317",
+      []
+     ],
+     "shortcuts-member.webmanifest.headers": [
+      "2bab061d43ab9e533b0160ca506231939886cd89",
       []
      ]
     },
