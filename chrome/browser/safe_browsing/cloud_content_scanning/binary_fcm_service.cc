@@ -21,7 +21,6 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 
 namespace safe_browsing {
 
@@ -111,15 +110,8 @@ void BinaryFCMService::SetCallbackForToken(const std::string& token,
   message_token_map_[token] = std::move(callback);
 }
 
-void BinaryFCMService::SetCallbackForToken(
-    const std::string& token,
-    OnConnectorMessageCallback callback) {
-  connector_message_token_map_[token] = std::move(callback);
-}
-
 void BinaryFCMService::ClearCallbackForToken(const std::string& token) {
   message_token_map_.erase(token);
-  connector_message_token_map_.erase(token);
 }
 
 void BinaryFCMService::UnregisterInstanceID(
@@ -197,48 +189,22 @@ void BinaryFCMService::OnMessage(const std::string& app_id,
   if (!parsed)
     return;
 
-  DeepScanningClientResponse response;
+  enterprise_connectors::ContentAnalysisResponse response;
   parsed = response.ParseFromString(serialized_proto);
-  if (!parsed) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", false);
+  base::UmaHistogramBoolean("SafeBrowsingFCMService.IncomingMessageParsedProto",
+                            parsed);
+
+  if (!parsed)
     return;
-  }
 
-  // The received proto is either a DeepScanningClientResponse or a
-  // ContentAnalysisResponse. These protos only overlap on the request token
-  // field, so having that token exist in |connector_message_token_map_| means
-  // it should be parsed as a ContentAnalysisResponse instead.
-  if (connector_message_token_map_.contains(response.token())) {
-    enterprise_connectors::ContentAnalysisResponse response;
-    bool parsed = response.ParseFromString(serialized_proto);
-    base::UmaHistogramBoolean(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", parsed);
+  auto callback_it = message_token_map_.find(response.request_token());
+  bool has_valid_token = (callback_it != message_token_map_.end());
+  base::UmaHistogramBoolean(
+      "SafeBrowsingFCMService.IncomingMessageHasValidToken", has_valid_token);
+  if (!has_valid_token)
+    return;
 
-    if (!parsed)
-      return;
-
-    auto callback_it =
-        connector_message_token_map_.find(response.request_token());
-    bool has_valid_token = (callback_it != connector_message_token_map_.end());
-    base::UmaHistogramBoolean(
-        "SafeBrowsingFCMService.IncomingMessageHasValidToken", has_valid_token);
-    if (!has_valid_token)
-      return;
-
-    callback_it->second.Run(std::move(response));
-  } else {
-    base::UmaHistogramBoolean(
-        "SafeBrowsingFCMService.IncomingMessageParsedProto", true);
-    auto callback_it = message_token_map_.find(response.token());
-    bool has_valid_token = (callback_it != message_token_map_.end());
-    base::UmaHistogramBoolean(
-        "SafeBrowsingFCMService.IncomingMessageHasValidToken", has_valid_token);
-    if (!has_valid_token)
-      return;
-
-    callback_it->second.Run(std::move(response));
-  }
+  callback_it->second.Run(std::move(response));
 }
 
 void BinaryFCMService::OnMessagesDeleted(const std::string& app_id) {}
