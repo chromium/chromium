@@ -386,6 +386,10 @@ UIView* ChromeWebClient::GetWindowedContainer() {
   return windowed_container_;
 }
 
+bool ChromeWebClient::EnableLongPressAndForceTouchHandling() const {
+  return !web::features::UseWebViewNativeContextMenu();
+}
+
 bool ChromeWebClient::ForceMobileVersionByDefault(const GURL& url) {
   DCHECK(web::features::UseWebClientDefaultUserAgent());
   if (base::FeatureList::IsEnabled(web::kMobileGoogleSRP)) {

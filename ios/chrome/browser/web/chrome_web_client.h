@@ -61,6 +61,7 @@ class ChromeWebClient : public web::WebClient {
                         int64_t navigation_id,
                         base::OnceCallback<void(NSString*)> callback) override;
   UIView* GetWindowedContainer() override;
+  bool EnableLongPressAndForceTouchHandling() const override;
   bool ForceMobileVersionByDefault(const GURL& url) override;
   web::UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                          const GURL& url) override;

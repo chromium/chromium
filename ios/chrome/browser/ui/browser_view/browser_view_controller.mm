@@ -178,6 +178,7 @@
 #import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_controller.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#include "ios/web/common/features.h"
 #include "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/deprecated/crw_web_controller_util.h"
@@ -3213,6 +3214,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)webState:(web::WebState*)webState
     handleContextMenu:(const web::ContextMenuParams&)params {
+  DCHECK(!web::features::UseWebViewNativeContextMenu());
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
   if (webState != self.currentWebState) {
@@ -3536,6 +3538,26 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (UIView*)webViewContainerForWebState:(web::WebState*)webState {
   return self.contentArea;
+}
+
+- (void)webState:(web::WebState*)webState
+    contextMenuConfigurationForLinkWithURL:(const GURL&)linkURL
+                         completionHandler:
+                             (void (^)(UIContextMenuConfiguration*))
+                                 completionHandler API_AVAILABLE(ios(13.0)) {
+  // Prevent context menu from displaying for a tab which is no longer the
+  // current one.
+  if (webState != self.currentWebState) {
+    return;
+  }
+
+  // No custom context menu if no valid url is available.
+  if (!linkURL.is_valid())
+    return;
+
+  DCHECK(self.browserState);
+
+  // TODO(crbug.com/1140387): Add support for the context menu.
 }
 
 #pragma mark - CRWWebStateDelegate helpers

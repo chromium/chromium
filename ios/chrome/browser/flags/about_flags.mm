@@ -668,6 +668,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"location-change-string", flag_descriptions::kLocationStringChangeName,
      flag_descriptions::kLocationStringChangeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLocationStringChange)},
+    {"web-view-native-context-menu",
+     flag_descriptions::kWebViewNativeContextMenuName,
+     flag_descriptions::kWebViewNativeContextMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kWebViewNativeContextMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

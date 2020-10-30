@@ -70,10 +70,17 @@ extern const base::Feature kScrollToTextIOS;
 // When enabled, display an interstitial on legacy TLS connections.
 extern const base::Feature kIOSLegacyTLSInterstitial;
 
+// When enabled, use the native context menu in web content, for the iOS version
+// that supports it.
+extern const base::Feature kWebViewNativeContextMenu;
+
 // When true, for each navigation, the default user agent is chosen by the
 // WebClient GetDefaultUserAgent() method. If it is false, the mobile version
 // is requested by default.
 bool UseWebClientDefaultUserAgent();
+
+// When true, the native context menu for the web content are used.
+bool UseWebViewNativeContextMenu();
 
 }  // namespace features
 }  // namespace web

@@ -459,6 +459,11 @@ extern const char kWebPageTextAccessibilityDescription[];
 extern const char kWebPageAlternativeTextZoomName[];
 extern const char kWebPageAlternativeTextZoomDescription[];
 
+// Title and description for the flag to enable the native context menus in the
+// WebView.
+extern const char kWebViewNativeContextMenuName[];
+extern const char kWebViewNativeContextMenuDescription[];
+
 extern const char kWellKnownChangePasswordName[];
 extern const char kWellKnownChangePasswordDescription[];
 

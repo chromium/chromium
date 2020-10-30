@@ -56,9 +56,19 @@ const base::Feature kScrollToTextIOS{"ScrollToTextIOS",
 const base::Feature kIOSLegacyTLSInterstitial{
     "IOSLegacyTLSInterstitial", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebViewNativeContextMenu{
+    "WebViewNativeContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool UseWebClientDefaultUserAgent() {
   if (@available(iOS 13, *)) {
     return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
+  }
+  return false;
+}
+
+bool UseWebViewNativeContextMenu() {
+  if (@available(iOS 13, *)) {
+    return base::FeatureList::IsEnabled(kWebViewNativeContextMenu);
   }
   return false;
 }
