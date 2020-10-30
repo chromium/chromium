@@ -5,14 +5,12 @@
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace cssvalue {
 
 CSSRevertValue* CSSRevertValue::Create() {
-  DCHECK(RuntimeEnabledFeatures::CSSRevertEnabled());
   return CssValuePool().RevertValue();
 }
 

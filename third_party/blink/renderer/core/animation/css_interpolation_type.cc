@@ -116,7 +116,6 @@ class RevertChecker : public CSSInterpolationType::ConversionChecker {
   RevertChecker(const PropertyHandle& property_handle,
                 const CSSValue* resolved_value)
       : property_handle_(property_handle), resolved_value_(resolved_value) {
-    DCHECK(RuntimeEnabledFeatures::CSSRevertEnabled());
   }
 
  private:
@@ -186,7 +185,6 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
   }
 
   if (value->IsRevertValue()) {
-    DCHECK(RuntimeEnabledFeatures::CSSRevertEnabled());
     value = css_environment.Resolve(GetProperty(), value);
     DCHECK(value);
     conversion_checkers.push_back(
@@ -220,7 +218,6 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   DCHECK(value) << "CSSVarCycleInterpolationType should have handled nullptr";
 
   if (declaration.IsRevert()) {
-    DCHECK(RuntimeEnabledFeatures::CSSRevertEnabled());
     conversion_checkers.push_back(
         std::make_unique<RevertChecker>(GetProperty(), value));
   }

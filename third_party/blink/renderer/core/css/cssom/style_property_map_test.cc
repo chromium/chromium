@@ -15,8 +15,6 @@ namespace blink {
 class StylePropertyMapTest : public PageTestBase {};
 
 TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
-  ScopedCSSRevertForTest scoped_revert(true);
-
   DummyExceptionStateForTesting exception_state;
 
   HeapVector<CSSStyleValueOrString> revert_string;
@@ -48,53 +46,6 @@ TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
             DynamicTo<CSSKeywordValue>(top)->KeywordValueID());
 
   EXPECT_FALSE(exception_state.HadException());
-}
-
-TEST_F(StylePropertyMapTest, SetRevertWithFeatureDisabled) {
-  ScopedCSSRevertForTest scoped_revert(false);
-
-  HeapVector<CSSStyleValueOrString> revert_string;
-  revert_string.push_back(CSSStyleValueOrString::FromString(" revert"));
-
-  HeapVector<CSSStyleValueOrString> revert_style_value;
-
-  DummyExceptionStateForTesting exception_state;
-  revert_style_value.push_back(CSSStyleValueOrString::FromCSSStyleValue(
-      CSSKeywordValue::Create("revert", exception_state)));
-  EXPECT_FALSE(exception_state.HadException());
-
-  auto* map =
-      MakeGarbageCollected<InlineStylePropertyMap>(GetDocument().body());
-
-  {
-    DummyExceptionStateForTesting exception_state;
-    map->set(GetDocument().GetExecutionContext(), "top", revert_string,
-             exception_state);
-    EXPECT_TRUE(exception_state.HadException());
-  }
-  {
-    DummyExceptionStateForTesting exception_state;
-    map->set(GetDocument().GetExecutionContext(), "left", revert_style_value,
-             exception_state);
-    EXPECT_TRUE(exception_state.HadException());
-  }
-  {
-    DummyExceptionStateForTesting exception_state;
-    map->set(GetDocument().GetExecutionContext(), "--y", revert_style_value,
-             exception_state);
-    EXPECT_TRUE(exception_state.HadException());
-  }
-
-  CSSStyleValue* top =
-      map->get(GetDocument().GetExecutionContext(), "top", exception_state);
-  CSSStyleValue* left =
-      map->get(GetDocument().GetExecutionContext(), "left", exception_state);
-  CSSStyleValue* y =
-      map->get(GetDocument().GetExecutionContext(), "--y", exception_state);
-
-  EXPECT_FALSE(top);
-  EXPECT_FALSE(left);
-  EXPECT_FALSE(y);
 }
 
 TEST_F(StylePropertyMapTest, SetOverflowClipString) {

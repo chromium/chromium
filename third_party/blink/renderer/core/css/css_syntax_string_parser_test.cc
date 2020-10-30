@@ -122,13 +122,6 @@ TEST_F(CSSSyntaxStringParserTest, InvalidIdents) {
   EXPECT_FALSE(CSSSyntaxStringParser("unset").Parse());
   EXPECT_FALSE(CSSSyntaxStringParser("default").Parse());
   EXPECT_FALSE(CSSSyntaxStringParser("revert").Parse());
-
-  // 'revert' is forbidden also with CSSRevert toggled.
-  {
-    ScopedCSSRevertForTest scoped_revert(
-        !RuntimeEnabledFeatures::CSSRevertEnabled());
-    EXPECT_FALSE(CSSSyntaxStringParser("revert").Parse());
-  }
 }
 
 TEST_F(CSSSyntaxStringParserTest, Combinator) {

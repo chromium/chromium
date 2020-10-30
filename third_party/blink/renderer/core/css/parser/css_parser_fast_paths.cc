@@ -1142,8 +1142,7 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
     if (!EqualIgnoringASCIICase(string, "initial") &&
         !EqualIgnoringASCIICase(string, "inherit") &&
         !EqualIgnoringASCIICase(string, "unset") &&
-        (!RuntimeEnabledFeatures::CSSRevertEnabled() ||
-         !EqualIgnoringASCIICase(string, "revert")))
+        !EqualIgnoringASCIICase(string, "revert"))
       return nullptr;
 
     // Parse CSS-wide keyword shorthands using the CSSPropertyParser.
@@ -1166,10 +1165,8 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
     return CSSInitialValue::Create();
   if (value_id == CSSValueID::kUnset)
     return cssvalue::CSSUnsetValue::Create();
-  if (RuntimeEnabledFeatures::CSSRevertEnabled() &&
-      value_id == CSSValueID::kRevert) {
+  if (value_id == CSSValueID::kRevert)
     return cssvalue::CSSRevertValue::Create();
-  }
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property_id, value_id,
                                                          parser_mode))
     return CSSIdentifierValue::Create(value_id);

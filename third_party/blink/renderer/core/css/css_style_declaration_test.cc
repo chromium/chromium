@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,8 +27,6 @@ TEST(CSSStyleDeclarationTest, getPropertyShorthand) {
 }
 
 TEST(CSSStyleDeclarationTest, ParsingRevertWithFeatureEnabled) {
-  ScopedCSSRevertForTest scoped_revert(true);
-
   css_test_helpers::TestStyleSheet sheet;
   sheet.AddCSSRules("div { top: revert; --x: revert; }");
   ASSERT_TRUE(sheet.CssRules());
@@ -53,35 +50,6 @@ TEST(CSSStyleDeclarationTest, ParsingRevertWithFeatureEnabled) {
 
   EXPECT_EQ("revert", style->getPropertyValue("left"));
   EXPECT_EQ("revert", style->getPropertyValue("--y"));
-  EXPECT_FALSE(exception_state.HadException());
-}
-
-TEST(CSSStyleDeclarationTest, ParsingRevertWithFeatureDisabled) {
-  ScopedCSSRevertForTest scoped_revert(false);
-
-  css_test_helpers::TestStyleSheet sheet;
-  sheet.AddCSSRules("div { top: revert; --x: revert; }");
-  ASSERT_TRUE(sheet.CssRules());
-  ASSERT_EQ(1u, sheet.CssRules()->length());
-  CSSStyleRule* style_rule = To<CSSStyleRule>(sheet.CssRules()->item(0));
-  CSSStyleDeclaration* style = style_rule->style();
-  ASSERT_TRUE(style);
-  EXPECT_EQ("", style->getPropertyValue("top"));
-  EXPECT_EQ(" revert", style->getPropertyValue("--x"));
-
-  // Test setProperty/getPropertyValue:
-
-  DummyExceptionStateForTesting exception_state;
-
-  style->SetPropertyInternal(CSSPropertyID::kLeft, "left", "revert", false,
-                             SecureContextMode::kSecureContext,
-                             exception_state);
-  style->SetPropertyInternal(CSSPropertyID::kVariable, "--y", " revert", false,
-                             SecureContextMode::kSecureContext,
-                             exception_state);
-
-  EXPECT_EQ("", style->getPropertyValue("left"));
-  EXPECT_EQ(" revert", style->getPropertyValue("--y"));
   EXPECT_FALSE(exception_state.HadException());
 }
 

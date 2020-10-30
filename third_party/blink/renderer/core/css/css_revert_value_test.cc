@@ -6,7 +6,6 @@
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -14,22 +13,18 @@ namespace blink {
 using CSSRevertValue = cssvalue::CSSRevertValue;
 
 TEST(CSSRevertValueTest, IsCSSWideKeyword) {
-  ScopedCSSRevertForTest scoped_revert(true);
   EXPECT_TRUE(CSSRevertValue::Create()->IsCSSWideKeyword());
 }
 
 TEST(CSSRevertValueTest, CssText) {
-  ScopedCSSRevertForTest scoped_revert(true);
   EXPECT_EQ("revert", CSSRevertValue::Create()->CssText());
 }
 
 TEST(CSSRevertValueTest, Equals) {
-  ScopedCSSRevertForTest scoped_revert(true);
   EXPECT_EQ(*CSSRevertValue::Create(), *CSSRevertValue::Create());
 }
 
 TEST(CSSRevertValueTest, NotEquals) {
-  ScopedCSSRevertForTest scoped_revert(true);
   EXPECT_FALSE(*CSSRevertValue::Create() == *CSSInitialValue::Create());
 }
 

@@ -2591,9 +2591,7 @@ bool IsContentPositionOrLeftOrRightKeyword(CSSValueID id) {
 
 bool IsCSSWideKeyword(CSSValueID id) {
   return id == CSSValueID::kInherit || id == CSSValueID::kInitial ||
-         id == CSSValueID::kUnset ||
-         (RuntimeEnabledFeatures::CSSRevertEnabled() &&
-          (id == CSSValueID::kRevert));
+         id == CSSValueID::kUnset || id == CSSValueID::kRevert;
 }
 
 // https://drafts.csswg.org/css-values-4/#css-wide-keywords
@@ -2601,8 +2599,7 @@ bool IsCSSWideKeyword(StringView keyword) {
   return EqualIgnoringASCIICase(keyword, "initial") ||
          EqualIgnoringASCIICase(keyword, "inherit") ||
          EqualIgnoringASCIICase(keyword, "unset") ||
-         (RuntimeEnabledFeatures::CSSRevertEnabled() &&
-          EqualIgnoringASCIICase(keyword, "revert"));
+         EqualIgnoringASCIICase(keyword, "revert");
 }
 
 // https://drafts.csswg.org/css-cascade/#default

@@ -586,10 +586,6 @@
       name: "CSSReducedFontLoadingLayoutInvalidations",
       status: "stable",
     },
-    {
-      name: "CSSRevert",
-      status: "stable",
-    },
     // Scrollbar styling.
     // https://drafts.csswg.org/css-scrollbars/
     {

@@ -793,20 +793,10 @@ TEST(CSSPropertyParserTest, ParseRevert) {
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
 
-  {
-    ScopedCSSRevertForTest scoped_revert(true);
-    const CSSValue* value = CSSPropertyParser::ParseSingleValue(
-        CSSPropertyID::kMarginLeft, CSSParserTokenRange(tokens), context);
-    ASSERT_TRUE(value);
-    EXPECT_TRUE(value->IsRevertValue());
-  }
-
-  {
-    ScopedCSSRevertForTest scoped_revert(false);
-    const CSSValue* value = CSSPropertyParser::ParseSingleValue(
-        CSSPropertyID::kMarginLeft, CSSParserTokenRange(tokens), context);
-    EXPECT_FALSE(value);
-  }
+  const CSSValue* value = CSSPropertyParser::ParseSingleValue(
+      CSSPropertyID::kMarginLeft, CSSParserTokenRange(tokens), context);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->IsRevertValue());
 }
 
 }  // namespace blink

@@ -58,7 +58,6 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
   // Revert enabled, IsKeywordPropertyID=false
   {
     DCHECK(!CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kMarginTop));
-    ScopedCSSRevertForTest scoped_revert(true);
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kMarginTop, "revert", kHTMLStandardMode);
     ASSERT_TRUE(value);
@@ -68,29 +67,10 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
   // Revert enabled, IsKeywordPropertyID=true
   {
     DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
-    ScopedCSSRevertForTest scoped_revert(true);
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kDirection, "revert", kHTMLStandardMode);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertValue());
-  }
-
-  // Revert disabled, IsKeywordPropertyID=false
-  {
-    DCHECK(!CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kMarginTop));
-    ScopedCSSRevertForTest scoped_revert(false);
-    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kMarginTop, "revert", kHTMLStandardMode);
-    EXPECT_FALSE(value);
-  }
-
-  // Revert disabled, IsKeywordPropertyID=true
-  {
-    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
-    ScopedCSSRevertForTest scoped_revert(false);
-    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kDirection, "revert", kHTMLStandardMode);
-    EXPECT_FALSE(value);
   }
 }
 

@@ -2941,8 +2941,6 @@ TEST_F(StyleEngineTest, SummaryDisplayUseCount) {
 }
 
 TEST_F(StyleEngineTest, RevertUseCount) {
-  ScopedCSSRevertForTest scoped_feature(true);
-
   GetDocument().body()->setInnerHTML(
       "<style>div { display: unset; }</style><div></div>");
   UpdateAllLifecyclePhases();
@@ -2955,8 +2953,6 @@ TEST_F(StyleEngineTest, RevertUseCount) {
 }
 
 TEST_F(StyleEngineTest, RevertUseCountForCustomProperties) {
-  ScopedCSSRevertForTest scoped_feature(true);
-
   GetDocument().body()->setInnerHTML(
       "<style>div { --x: unset; }</style><div></div>");
   UpdateAllLifecyclePhases();

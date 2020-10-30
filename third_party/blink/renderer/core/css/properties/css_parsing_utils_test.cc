@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -26,17 +25,8 @@ TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
 }
 
 TEST(CSSParsingUtilsTest, Revert) {
-  {
-    ScopedCSSRevertForTest scoped_revert(true);
-    EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword(CSSValueID::kRevert));
-    EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword("revert"));
-  }
-
-  {
-    ScopedCSSRevertForTest scoped_revert(false);
-    EXPECT_FALSE(css_parsing_utils::IsCSSWideKeyword(CSSValueID::kRevert));
-    EXPECT_FALSE(css_parsing_utils::IsCSSWideKeyword("revert"));
-  }
+  EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword(CSSValueID::kRevert));
+  EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword("revert"));
 }
 
 TEST(CSSParsingUtilsTest, ConsumeIdSelector) {

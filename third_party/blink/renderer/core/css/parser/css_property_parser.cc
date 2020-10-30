@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
@@ -47,7 +46,7 @@ const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
     value = CSSInheritedValue::Create();
   if (id == CSSValueID::kUnset)
     value = cssvalue::CSSUnsetValue::Create();
-  if (RuntimeEnabledFeatures::CSSRevertEnabled() && id == CSSValueID::kRevert)
+  if (id == CSSValueID::kRevert)
     value = cssvalue::CSSRevertValue::Create();
 
   if (value)
