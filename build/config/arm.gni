@@ -87,6 +87,12 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
       } else {
         arm_float_abi = "hard"
       }
+    } else if (current_os == "android") {
+      # The build/toolchain/android:android_clang_arm toolchain explicitly
+      # enforces this, so that chromeos builds can customize arm_float_abi
+      # for the outer chromeos build without affecting the android portion of
+      # a chromeos build.
+      assert(arm_float_abi == "softfp")
     }
 
     if (arm_fpu == "") {
