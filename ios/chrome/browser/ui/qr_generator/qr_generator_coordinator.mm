@@ -148,8 +148,12 @@
 
 #pragma mark - ActivityServicePositioner
 
-- (UIView*)shareButtonView {
-  return [self.viewController primaryActionButton];
+- (UIView*)sourceView {
+  return self.viewController.primaryActionButton;
+}
+
+- (CGRect)sourceRect {
+  return self.viewController.primaryActionButton.bounds;
 }
 
 #pragma mark - ActivityServicePresentation

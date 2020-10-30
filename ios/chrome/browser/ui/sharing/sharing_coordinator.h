@@ -20,11 +20,23 @@ class Browser;
 // Creates a coordinator configured to share the current tab's URL using the
 // base |viewController|, a |browser|, |params| with all the necessary values
 // to drive the scenario, and an |originView| from which the scenario was
-// triggered.
+// triggered. This initializer also uses the |originView|'s bounds to position
+// the activity view popover on iPad.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(ActivityParams*)params
+                                originView:(UIView*)originView;
+
+// Creates a coordinator configured to share the current tab's URL using the
+// base |viewController|, a |browser|, |params| with all the necessary values
+// to drive the scenario, and an |originView| from which the scenario was
+// triggered. This initializer also uses the |originRect| to position the
+// activity view popover on iPad.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                     params:(ActivityParams*)params
                                 originView:(UIView*)originView
+                                originRect:(CGRect)originRect
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

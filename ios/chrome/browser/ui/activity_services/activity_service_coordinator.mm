@@ -121,9 +121,10 @@ const char kSharePageLatencyHistogram[] = "IOS.SharePageLatency";
 
   // Set-up popover positioning (for iPad).
   DCHECK(self.positionProvider);
-  UIView* inView = [self.positionProvider shareButtonView];
-  self.viewController.popoverPresentationController.sourceView = inView;
-  self.viewController.popoverPresentationController.sourceRect = inView.bounds;
+  self.viewController.popoverPresentationController.sourceView =
+      self.positionProvider.sourceView;
+  self.viewController.popoverPresentationController.sourceRect =
+      self.positionProvider.sourceRect;
 
   // Set completion callback.
   __weak __typeof(self) weakSelf = self;

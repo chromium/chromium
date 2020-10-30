@@ -471,36 +471,36 @@
 #pragma mark - ActivityServiceCommands
 
 - (void)sharePage {
-  UIView* shareButton =
-      [self.viewController.activityServicePositioner shareButtonView];
-
   ActivityParams* params = [[ActivityParams alloc]
       initWithScenario:ActivityScenario::TabShareButton];
 
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  originView:shareButton];
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      originView:self.viewController.activityServicePositioner
+                                     .sourceView
+                      originRect:self.viewController.activityServicePositioner
+                                     .sourceRect];
   [self.sharingCoordinator start];
 }
 
 - (void)shareHighlight:(ShareHighlightCommand*)command {
-  // TODO(crbug.com/1099268): Get the right share view origin.
-  UIView* shareButton =
-      [self.viewController.activityServicePositioner shareButtonView];
-
   ActivityParams* params =
       [[ActivityParams alloc] initWithURL:command.URL
                                     title:command.title
                            additionalText:command.selectedText
                                  scenario:ActivityScenario::SharedHighlight];
 
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  originView:shareButton];
+  // TODO(crbug.com/1099268): Get the right share view origin.
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      originView:self.viewController.activityServicePositioner
+                                     .sourceView
+                      originRect:self.viewController.activityServicePositioner
+                                     .sourceRect];
   [self.sharingCoordinator start];
 }
 
