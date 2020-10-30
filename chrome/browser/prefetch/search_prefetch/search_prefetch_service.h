@@ -46,6 +46,9 @@ class SearchPrefetchService : public KeyedService {
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url);
 
+  // Clear all prefetches from the service.
+  void ClearPrefetches();
+
   // Takes the response from this object if |url| matches a prefetched URL.
   std::unique_ptr<PrefetchedResponseContainer> TakePrefetchResponse(
       const GURL& url);

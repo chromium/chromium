@@ -150,7 +150,8 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  if (!template_url_service)
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider())
     return false;
   base::string16 search_terms;
 
@@ -201,7 +202,8 @@ std::unique_ptr<PrefetchedResponseContainer>
 SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  if (!template_url_service)
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider())
     return nullptr;
 
   base::string16 search_terms;
@@ -242,6 +244,11 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   DeletePrefetch(search_terms);
 
   return response;
+}
+
+void SearchPrefetchService::ClearPrefetches() {
+  prefetches_.clear();
+  prefetch_expiry_timers_.clear();
 }
 
 void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {

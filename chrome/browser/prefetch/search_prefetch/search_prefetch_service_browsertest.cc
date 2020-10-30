@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,8 +27,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -118,6 +122,10 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     return search_server_->GetURL(kSearchDomain, path);
   }
 
+  GURL GetSuggestServerURL(const std::string& path) const {
+    return search_suggest_server_->GetURL(kSuggestDomain, path);
+  }
+
   void WaitUntilStatusChanges(base::string16 search_terms) {
     auto* search_prefetch_service =
         SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -167,6 +175,22 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   }
 
   void set_phi_is_one(bool phi_is_one) { phi_is_one_ = phi_is_one; }
+
+  void ClearBrowsingCacheData(base::Optional<GURL> url_origin) {
+    auto filter = content::BrowsingDataFilterBuilder::Create(
+        url_origin ? content::BrowsingDataFilterBuilder::Mode::kDelete
+                   : content::BrowsingDataFilterBuilder::Mode::kPreserve);
+    if (url_origin)
+      filter->AddOrigin(url::Origin::Create(url_origin.value()));
+    content::BrowsingDataRemover* remover =
+        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+    remover->RemoveWithFilterAndReply(
+        base::Time(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_CACHE,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        std::move(filter), &completion_observer);
+  }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
@@ -792,6 +816,75 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kRequestCancelled, prefetch_status.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ClearCacheRemovesPrefetch) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  ClearBrowsingCacheData(base::nullopt);
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ClearCacheSearchRemovesPrefetch) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  ClearBrowsingCacheData(GURL(GetSearchServerQueryURLWithNoQuery("/")));
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ClearCacheOtherSavesCache) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  ClearBrowsingCacheData(GetSuggestServerURL("/"));
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
 }
 
 class SearchPrefetchServiceZeroCacheTimeBrowserTest

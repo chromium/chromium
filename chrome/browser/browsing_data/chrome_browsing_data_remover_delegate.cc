@@ -60,11 +60,14 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/browser/previews/previews_service.h"
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -106,6 +109,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "components/previews/content/previews_ui_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
@@ -1096,13 +1100,41 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // Zero suggest.
-  // Remove omnibox zero-suggest cache results. Filtering is not supported.
-  // This is not a problem, as deleting more data than necessary will just cause
-  // another server round-trip; no data is actually lost.
+  // Zero suggest and Search prefetch.
+  // Remove omnibox zero-suggest cache results and Search Prefetch cached
+  // results, we only delete when the default search engine is in the filter.
   if ((remove_mask & (content::BrowsingDataRemover::DATA_TYPE_CACHE |
                       content::BrowsingDataRemover::DATA_TYPE_COOKIES))) {
-    prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
+    // If there is no template service or DSE, clear the caches.
+    bool should_clear_zero_suggest = true;
+    bool should_clear_search_prefetch = true;
+
+    auto* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile_);
+
+    // If there is no default search engine, clearing the cache is fine.
+    if (template_url_service &&
+        template_url_service->GetDefaultSearchProvider()) {
+      // The suggest URL is used for zero suggest.
+      GURL suggest_url(
+          template_url_service->GetDefaultSearchProvider()->suggestions_url());
+      should_clear_zero_suggest =
+          nullable_filter.is_null() || nullable_filter.Run(suggest_url);
+
+      // The search URL is used for search prefetch.
+      GURL search_url(template_url_service->GetDefaultSearchProvider()->url());
+      should_clear_search_prefetch =
+          nullable_filter.is_null() || nullable_filter.Run(search_url);
+    }
+
+    if (should_clear_zero_suggest)
+      prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
+
+    // |search_prefetch_service| is null if |profile_| is off the record.
+    auto* search_prefetch_service =
+        SearchPrefetchServiceFactory::GetForProfile(profile_);
+    if (should_clear_search_prefetch && search_prefetch_service)
+      search_prefetch_service->ClearPrefetches();
   }
 
   //////////////////////////////////////////////////////////////////////////////
