@@ -356,8 +356,9 @@ void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
 void RequiredFieldsFallbackHandler::OnShortWaitForElement(
     const Selector& selector_to_click,
     size_t required_fields_index,
-
-    const ClientStatus& find_element_status) {
+    const ClientStatus& find_element_status,
+    base::TimeDelta wait_time) {
+  total_wait_time_ += wait_time;
   const RequiredField& required_field = required_fields_[required_fields_index];
   if (!find_element_status.ok()) {
     FillStatusDetailsWithError(

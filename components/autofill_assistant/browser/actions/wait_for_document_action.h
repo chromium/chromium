@@ -27,8 +27,9 @@ class WaitForDocumentAction : public Action {
   void OnGetStartState(const ClientStatus& status,
                        DocumentReadyState start_state);
   void OnWaitForStartState(const ClientStatus& status,
-                           DocumentReadyState end_state);
-  void OnTimeout();
+                           DocumentReadyState current_state,
+                           base::TimeDelta wait_time);
+  void OnTimeout(base::TimeTicks wait_time_start);
   void OnTimeoutInState(const ClientStatus& status,
                         DocumentReadyState end_state);
   void SendResult(const ClientStatus& status, DocumentReadyState end_state);

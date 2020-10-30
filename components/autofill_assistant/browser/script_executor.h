@@ -110,14 +110,16 @@ class ScriptExecutor : public ActionDelegate,
   void RunElementChecks(BatchElementChecker* checker) override;
   void ShortWaitForElement(
       const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override;
   void WaitForDom(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)> check_elements,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override;
   void SetStatusMessage(const std::string& message) override;
   std::string GetStatusMessage() override;
   void SetBubbleMessage(const std::string& message) override;
@@ -228,8 +230,9 @@ class ScriptExecutor : public ActionDelegate,
   void WaitForDocumentReadyState(
       const Selector& optional_frame,
       DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback) override;
+      base::OnceCallback<void(const ClientStatus&,
+                              DocumentReadyState,
+                              base::TimeDelta)> callback) override;
 
   void LoadURL(const GURL& url) override;
   void Shutdown() override;
@@ -287,7 +290,8 @@ class ScriptExecutor : public ActionDelegate,
     // If the given result is non-null, it should be forwarded as the result of
     // the main script.
     using Callback = base::OnceCallback<void(const ClientStatus&,
-                                             const ScriptExecutor::Result*)>;
+                                             const ScriptExecutor::Result*,
+                                             base::TimeDelta)>;
 
     // |main_script_| must not be null and outlive this instance.
     WaitForDomOperation(
@@ -360,6 +364,9 @@ class ScriptExecutor : public ActionDelegate,
     // An empty vector of interrupts that can be passed to interrupt_executor_
     // and outlives it. Interrupts must not run interrupts.
     const std::vector<std::unique_ptr<Script>> no_interrupts_;
+    Stopwatch wait_time_stopwatch_;
+    Stopwatch period_stopwatch_;
+    base::TimeDelta wait_time_total_;
 
     // The interrupt that's currently running.
     std::unique_ptr<ScriptExecutor> interrupt_executor_;
@@ -405,13 +412,15 @@ class ScriptExecutor : public ActionDelegate,
       const ClientStatus& status,
       const ElementFinder::Result& ignored_element);
   void OnShortWaitForElement(
-      base::OnceCallback<void(const ClientStatus&)> callback,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
       const ClientStatus& element_status,
-      const Result* interrupt_result);
+      const Result* interrupt_result,
+      base::TimeDelta wait_time);
   void OnWaitForElementVisibleWithInterrupts(
-      base::OnceCallback<void(const ClientStatus&)> callback,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
       const ClientStatus& element_status,
-      const Result* interrupt_result);
+      const Result* interrupt_result,
+      base::TimeDelta wait_time);
   void OnGetUserData(
       base::OnceCallback<void(UserData*, const UserModel*)> callback,
       UserData* user_data,

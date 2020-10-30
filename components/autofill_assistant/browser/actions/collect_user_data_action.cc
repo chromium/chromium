@@ -481,6 +481,7 @@ void CollectUserDataAction::InternalProcessAction(
   } else {
     ShowToUser();
   }
+  action_stopwatch_.StartWaitTime();
 }
 
 void CollectUserDataAction::EndAction(const ClientStatus& status) {
@@ -628,6 +629,7 @@ void CollectUserDataAction::OnGetUserData(
     const UserModel* user_model) {
   if (!callback_)
     return;
+  action_stopwatch_.StartActiveTime();
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   WriteProcessedAction(user_data, user_model);
@@ -642,6 +644,7 @@ void CollectUserDataAction::OnAdditionalActionTriggered(
     const UserModel* user_model) {
   if (!callback_)
     return;
+  action_stopwatch_.StartActiveTime();
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   processed_action_proto_->mutable_collect_user_data_result()
@@ -656,6 +659,7 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
     const UserModel* user_model) {
   if (!callback_)
     return;
+  action_stopwatch_.StartActiveTime();
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   processed_action_proto_->mutable_collect_user_data_result()->set_terms_link(

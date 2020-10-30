@@ -57,7 +57,8 @@ TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
   expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
+                                   base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_)).Times(0);
 
   EXPECT_CALL(callback_,
@@ -75,7 +76,8 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
   expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
@@ -95,7 +97,8 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
 
 TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
   ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                        base::TimeDelta::FromSeconds(0)));
   test_util::MockFindAnyElement(mock_action_delegate_);
   ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus()));

@@ -273,6 +273,7 @@ source_set("unit_tests") {
     "actions/action_delegate_util_unittest.cc",
     "actions/action_test_utils.cc",
     "actions/action_test_utils.h",
+    "actions/action_unittest.cc",
     "actions/click_action_unittest.cc",
     "actions/collect_user_data_action_unittest.cc",
     "actions/configure_bottom_sheet_action_unittest.cc",

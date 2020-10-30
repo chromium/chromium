@@ -61,7 +61,8 @@ class SetFormFieldValueActionTest : public testing::Test {
     ON_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
         .WillByDefault(RunOnceCallback<1>(true, kFakePassword));
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                          base::TimeDelta::FromSeconds(0)));
     ON_CALL(mock_action_delegate_, GetFieldValue(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
     test_util::MockFindAnyElement(mock_action_delegate_);
@@ -235,7 +236,8 @@ TEST_F(SetFormFieldValueActionTest, KeyboardInputHasExpectedCallChain) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
@@ -290,7 +292,8 @@ TEST_F(SetFormFieldValueActionTest, TextWithKeystrokeHasExpectedCallChain) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
@@ -328,7 +331,8 @@ TEST_F(SetFormFieldValueActionTest,
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,

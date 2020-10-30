@@ -73,7 +73,8 @@ class UseCreditCardActionTest : public testing::Test {
           checker->Run(&mock_web_controller_);
         }));
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                          base::TimeDelta::FromSeconds(0)));
     ON_CALL(mock_action_delegate_, OnGetFullCard)
         .WillByDefault(Invoke([](const autofill::CreditCard* credit_card,
                                  base::OnceCallback<void(
@@ -156,7 +157,8 @@ TEST_F(UseCreditCardActionTest, PreconditionFailedNoCreditCardInUserData) {
 TEST_F(UseCreditCardActionTest, CreditCardInUserDataSucceeds) {
   ON_CALL(mock_action_delegate_,
           OnShortWaitForElement(Selector({kFakeSelector}).MustBeVisible(), _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                        base::TimeDelta::FromSeconds(0)));
   ON_CALL(mock_web_controller_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
   ActionProto action;
@@ -191,7 +193,8 @@ TEST_F(UseCreditCardActionTest,
 TEST_F(UseCreditCardActionTest, CreditCardInUserModelSucceeds) {
   ON_CALL(mock_action_delegate_,
           OnShortWaitForElement(Selector({kFakeSelector}).MustBeVisible(), _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                        base::TimeDelta::FromSeconds(0)));
   ON_CALL(mock_web_controller_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
   ActionProto action;

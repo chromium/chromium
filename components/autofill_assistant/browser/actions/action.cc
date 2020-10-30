@@ -17,8 +17,27 @@ Action::Action(ActionDelegate* delegate, const ActionProto& proto)
 Action::~Action() {}
 
 void Action::ProcessAction(ProcessActionCallback callback) {
+  action_stopwatch_.StartActiveTime();
   processed_action_proto_ = std::make_unique<ProcessedActionProto>();
-  InternalProcessAction(std::move(callback));
+  InternalProcessAction(base::BindOnce(&Action::RecordActionTimes,
+                                       weak_ptr_factory_.GetWeakPtr(),
+                                       std::move(callback)));
+}
+
+void Action::RecordActionTimes(
+    ProcessActionCallback callback,
+    std::unique_ptr<ProcessedActionProto> processed_action_proto) {
+  // Record times.
+  action_stopwatch_.Stop();
+
+  processed_action_proto->mutable_timing_stats()->set_delay_ms(
+      proto_.action_delay_ms());
+  processed_action_proto->mutable_timing_stats()->set_active_time_ms(
+      action_stopwatch_.TotalActiveTime().InMilliseconds());
+  processed_action_proto->mutable_timing_stats()->set_wait_time_ms(
+      action_stopwatch_.TotalWaitTime().InMilliseconds());
+
+  std::move(callback).Run(std::move(processed_action_proto));
 }
 
 void Action::UpdateProcessedAction(ProcessedActionStatusProto status_proto) {
@@ -29,6 +48,14 @@ void Action::UpdateProcessedAction(const ClientStatus& status) {
   // Safety check in case process action is run twice.
   *processed_action_proto_->mutable_action() = proto_;
   status.FillProto(processed_action_proto_.get());
+}
+
+void Action::OnWaitForElementTimed(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& element_status,
+    base::TimeDelta wait_time) {
+  action_stopwatch_.TransferToWaitTime(wait_time);
+  std::move(callback).Run(element_status);
 }
 
 // static

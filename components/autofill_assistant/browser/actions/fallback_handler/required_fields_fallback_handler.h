@@ -43,6 +43,8 @@ class RequiredFieldsFallbackHandler {
                               const base::Optional<ClientStatus>&)>
           status_update_callback);
 
+  base::TimeDelta TotalWaitTime() { return total_wait_time_; }
+
  private:
   // Check whether all required fields have a non-empty value. If it is the
   // case, update the status to success. If it's not and |apply_fallback|
@@ -87,7 +89,8 @@ class RequiredFieldsFallbackHandler {
   // Called after waiting for option element to appear before clicking it.
   void OnShortWaitForElement(const Selector& selector_to_click,
                              size_t required_fields_index,
-                             const ClientStatus& find_element_status);
+                             const ClientStatus& find_element_status,
+                             base::TimeDelta wait_time);
 
   // Called after trying to set form values without Autofill in case of
   // fallback after failed validation.
@@ -104,6 +107,7 @@ class RequiredFieldsFallbackHandler {
       status_update_callback_;
   ActionDelegate* action_delegate_;
   std::unique_ptr<BatchElementChecker> batch_element_checker_;
+  base::TimeDelta total_wait_time_ = base::TimeDelta::FromSeconds(0);
   base::WeakPtrFactory<RequiredFieldsFallbackHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RequiredFieldsFallbackHandler);

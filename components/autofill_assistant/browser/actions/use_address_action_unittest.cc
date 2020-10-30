@@ -73,7 +73,8 @@ class UseAddressActionTest : public testing::Test {
           checker->Run(&mock_web_controller_);
         }));
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                          base::TimeDelta::FromSeconds(0)));
     test_util::MockFindAnyElement(mock_web_controller_);
   }
 
@@ -161,7 +162,8 @@ TEST_F(UseAddressActionTest, PreconditionFailedNoProfileForName) {
 TEST_F(UseAddressActionTest, ResolveProfileByNameSucceeds) {
   ON_CALL(mock_action_delegate_,
           OnShortWaitForElement(Selector({kFakeSelector}).MustBeVisible(), _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                        base::TimeDelta::FromSeconds(0)));
   ON_CALL(mock_web_controller_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
 
@@ -195,7 +197,8 @@ TEST_F(UseAddressActionTest, PreconditionFailedNoProfileForModelIdentifier) {
 TEST_F(UseAddressActionTest, ResolveProfileByModelIdentifierSucceeds) {
   ON_CALL(mock_action_delegate_,
           OnShortWaitForElement(Selector({kFakeSelector}).MustBeVisible(), _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                        base::TimeDelta::FromSeconds(0)));
   ON_CALL(mock_web_controller_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
 
@@ -236,7 +239,8 @@ TEST_F(UseAddressActionTest, ShortWaitForElementVisible) {
   EXPECT_CALL(
       mock_action_delegate_,
       OnShortWaitForElement(Selector({kFakeSelector}).MustBeVisible(), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
 
   ActionProto action_proto = CreateUseAddressAction();
   // Autofill succeeds.

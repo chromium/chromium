@@ -272,7 +272,7 @@ void ScriptExecutor::RunElementChecks(BatchElementChecker* checker) {
 
 void ScriptExecutor::ShortWaitForElement(
     const Selector& selector,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, delegate_->GetSettings().short_wait_for_element_deadline,
       /* allow_interrupt= */ false,
@@ -289,7 +289,7 @@ void ScriptExecutor::WaitForDom(
     base::RepeatingCallback<void(BatchElementChecker*,
                                  base::OnceCallback<void(const ClientStatus&)>)>
         check_elements,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, max_wait_time, allow_interrupt, check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
@@ -689,8 +689,9 @@ void ScriptExecutor::GetDocumentReadyState(
 void ScriptExecutor::WaitForDocumentReadyState(
     const Selector& optional_frame,
     DocumentReadyState min_ready_state,
-    base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-        callback) {
+    base::OnceCallback<void(const ClientStatus&,
+                            DocumentReadyState,
+                            base::TimeDelta)> callback) {
   delegate_->GetWebController()->WaitForDocumentReadyState(
       optional_frame, min_ready_state, std::move(callback));
 }
@@ -969,6 +970,18 @@ void ScriptExecutor::OnProcessedAction(
   previous_action_type_ = processed_action_proto->action().action_info_case();
   processed_actions_.emplace_back(*processed_action_proto);
 
+#ifdef NDEBUG
+  VLOG(2) << "Action completed";
+#else
+  VLOG(2) << "Requested delay ms: "
+          << processed_action_proto->timing_stats().delay_ms();
+  VLOG(2) << "Active time ms: "
+          << processed_action_proto->timing_stats().active_time_ms();
+  VLOG(2) << "Wait time ms: "
+          << processed_action_proto->timing_stats().wait_time_ms();
+  VLOG(2) << "Run time: " << run_time;
+#endif
+
   auto& processed_action = processed_actions_.back();
   processed_action.set_run_time_ms(run_time.InMilliseconds());
   processed_action.set_direct_action(current_action_data_.direct_action);
@@ -1002,32 +1015,34 @@ void ScriptExecutor::CheckElementMatchesCallback(
 }
 
 void ScriptExecutor::OnShortWaitForElement(
-    base::OnceCallback<void(const ClientStatus&)> callback,
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
     const ClientStatus& element_status,
-    const Result* interrupt_result) {
+    const Result* interrupt_result,
+    base::TimeDelta wait_time) {
   // Interrupts cannot run, so should never be reported.
   DCHECK(!interrupt_result);
 
-  std::move(callback).Run(element_status);
+  std::move(callback).Run(element_status, wait_time);
 }
 
 void ScriptExecutor::OnWaitForElementVisibleWithInterrupts(
-    base::OnceCallback<void(const ClientStatus&)> callback,
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,
     const ClientStatus& element_status,
-    const Result* interrupt_result) {
+    const Result* interrupt_result,
+    base::TimeDelta wait_time) {
   if (interrupt_result) {
     if (!interrupt_result->success) {
-      std::move(callback).Run(ClientStatus(INTERRUPT_FAILED));
+      std::move(callback).Run(ClientStatus(INTERRUPT_FAILED), wait_time);
       return;
     }
     if (interrupt_result->at_end != CONTINUE) {
       at_end_ = interrupt_result->at_end;
       should_stop_script_ = true;
-      std::move(callback).Run(ClientStatus(MANUAL_FALLBACK));
+      std::move(callback).Run(ClientStatus(MANUAL_FALLBACK), wait_time);
       return;
     }
   }
-  std::move(callback).Run(element_status);
+  std::move(callback).Run(element_status, wait_time);
 }
 
 ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
@@ -1054,6 +1069,7 @@ ScriptExecutor::WaitForDomOperation::~WaitForDomOperation() {
 
 void ScriptExecutor::WaitForDomOperation::Run() {
   delegate_->AddNavigationListener(this);
+  wait_time_stopwatch_.Start();
   Start();
 }
 
@@ -1106,6 +1122,16 @@ void ScriptExecutor::WaitForDomOperation::OnScriptListChanged(
 
 void ScriptExecutor::WaitForDomOperation::RunChecks(
     base::OnceCallback<void(const ClientStatus&)> report_attempt_result) {
+  wait_time_total_ =
+      (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period())
+          // It's the first run of the checks, set the total time waited to 0.
+          ? base::TimeDelta::FromSeconds(0)
+          // If this is not the first run of the checks, in order to estimate
+          // the real cost of periodic checks, half the duration of the retry
+          // timer period is removed from the total wait time. This is to
+          // account for the fact that the conditions could have been satisfied
+          // at any point between the two consecutive checks.
+          : wait_time_stopwatch_.TotalElapsed() - retry_timer_.period() / 2;
   // Reset state possibly left over from previous runs.
   element_check_result_ = ClientStatus();
   runnable_interrupts_.clear();
@@ -1225,7 +1251,7 @@ void ScriptExecutor::WaitForDomOperation::RunCallbackWithResult(
   if (!callback_)
     return;
 
-  std::move(callback_).Run(element_status, result);
+  std::move(callback_).Run(element_status, result, wait_time_total_);
 }
 
 void ScriptExecutor::WaitForDomOperation::SavePreInterruptState() {

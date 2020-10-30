@@ -250,7 +250,10 @@ void AppendWaitForDocumentReadyStateFunction(std::string* out) {
 // code work on both EvaluateResult and CallFunctionOnResult.
 template <typename T>
 void OnWaitForDocumentReadyState(
-    base::OnceCallback<void(const ClientStatus&, DocumentReadyState)> callback,
+    base::OnceCallback<void(const ClientStatus&,
+                            DocumentReadyState,
+                            base::TimeDelta)> callback,
+    base::TimeTicks wait_start_time,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<T> result) {
   ClientStatus status =
@@ -259,7 +262,16 @@ void OnWaitForDocumentReadyState(
                            << " Failed to get document ready state.";
   int ready_state;
   SafeGetIntValue(result->GetResult(), &ready_state);
-  std::move(callback).Run(status, static_cast<DocumentReadyState>(ready_state));
+  std::move(callback).Run(status, static_cast<DocumentReadyState>(ready_state),
+                          base::TimeTicks::Now() - wait_start_time);
+}
+
+void WrapCallbackNoWait(
+    base::OnceCallback<void(const ClientStatus&, DocumentReadyState)> callback,
+    const ClientStatus& status,
+    DocumentReadyState state,
+    base::TimeDelta ignored_time) {
+  std::move(callback).Run(status, state);
 }
 
 void DecorateWebControllerStatus(
@@ -637,15 +649,17 @@ void WebController::GetDocumentReadyState(
     const Selector& optional_frame,
     base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
         callback) {
-  WaitForDocumentReadyState(optional_frame, DOCUMENT_UNKNOWN_READY_STATE,
-                            std::move(callback));
+  WaitForDocumentReadyState(
+      optional_frame, DOCUMENT_UNKNOWN_READY_STATE,
+      base::BindOnce(&WrapCallbackNoWait, std::move(callback)));
 }
 
 void WebController::WaitForDocumentReadyState(
     const Selector& optional_frame,
     DocumentReadyState min_ready_state,
-    base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-        callback) {
+    base::OnceCallback<void(const ClientStatus&,
+                            DocumentReadyState,
+                            base::TimeDelta)> callback) {
   if (optional_frame.empty()) {
     std::string expression;
     expression.append("(");
@@ -660,7 +674,7 @@ void WebController::WaitForDocumentReadyState(
             .Build(),
         /* node_frame_id= */ std::string(),
         base::BindOnce(&OnWaitForDocumentReadyState<runtime::EvaluateResult>,
-                       std::move(callback)));
+                       std::move(callback), base::TimeTicks::Now()));
     return;
   }
   FindElement(
@@ -672,11 +686,14 @@ void WebController::WaitForDocumentReadyState(
 
 void WebController::OnFindElementForWaitForDocumentReadyState(
     DocumentReadyState min_ready_state,
-    base::OnceCallback<void(const ClientStatus&, DocumentReadyState)> callback,
+    base::OnceCallback<void(const ClientStatus&,
+                            DocumentReadyState,
+                            base::TimeDelta)> callback,
     const ClientStatus& status,
     std::unique_ptr<ElementFinder::Result> element) {
   if (!status.ok()) {
-    std::move(callback).Run(status, DOCUMENT_UNKNOWN_READY_STATE);
+    std::move(callback).Run(status, DOCUMENT_UNKNOWN_READY_STATE,
+                            base::TimeDelta::FromSeconds(0));
     return;
   }
 
@@ -696,7 +713,7 @@ void WebController::OnFindElementForWaitForDocumentReadyState(
       element->node_frame_id,
       base::BindOnce(
           &OnWaitForDocumentReadyState<runtime::CallFunctionOnResult>,
-          std::move(callback)));
+          std::move(callback), base::TimeTicks::Now()));
 }
 
 void WebController::FindElement(const Selector& selector,

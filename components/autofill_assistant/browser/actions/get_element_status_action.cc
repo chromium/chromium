@@ -101,8 +101,11 @@ void GetElementStatusAction::InternalProcessAction(
   }
 
   delegate_->ShortWaitForElement(
-      selector_, base::BindOnce(&GetElementStatusAction::OnWaitForElement,
-                                weak_ptr_factory_.GetWeakPtr()));
+      selector_,
+      base::BindOnce(&GetElementStatusAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&GetElementStatusAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void GetElementStatusAction::OnWaitForElement(

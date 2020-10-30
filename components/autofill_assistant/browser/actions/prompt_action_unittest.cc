@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -27,6 +29,7 @@ using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::SaveArgPointee;
 using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
@@ -65,7 +68,8 @@ class PromptActionTest : public testing::Test {
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)>& check_elements,
-      base::OnceCallback<void(const ClientStatus&)>& done_waiting_callback) {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&
+          done_waiting_callback) {
     fake_wait_for_dom_done_ = std::move(done_waiting_callback);
     RunFakeWaitForDom(check_elements);
   }
@@ -82,6 +86,8 @@ class PromptActionTest : public testing::Test {
     check_elements.Run(checker_.get(),
                        base::BindOnce(&PromptActionTest::OnCheckElementsDone,
                                       base::Unretained(this)));
+    task_env_.FastForwardBy(
+        base::TimeDelta::FromMilliseconds(fake_check_time_));
     checker_->AddAllDoneCallback(
         base::BindOnce(&PromptActionTest::OnWaitForDomDone,
                        base::Unretained(this), check_elements));
@@ -108,7 +114,9 @@ class PromptActionTest : public testing::Test {
       return;
 
     if (check_elements_result_.ok()) {
-      std::move(fake_wait_for_dom_done_).Run(check_elements_result_);
+      std::move(fake_wait_for_dom_done_)
+          .Run(check_elements_result_,
+               base::TimeDelta::FromMilliseconds(fake_wait_time_));
     } else {
       wait_for_dom_timer_ = std::make_unique<base::OneShotTimer>();
       wait_for_dom_timer_->Start(
@@ -125,7 +133,8 @@ class PromptActionTest : public testing::Test {
   MockActionDelegate mock_action_delegate_;
   MockWebController mock_web_controller_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
-  base::OnceCallback<void(const ClientStatus&)> fake_wait_for_dom_done_;
+  base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+      fake_wait_for_dom_done_;
   ActionProto proto_;
   PromptProto* prompt_proto_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
@@ -133,6 +142,8 @@ class PromptActionTest : public testing::Test {
   bool has_check_elements_result_ = false;
   ClientStatus check_elements_result_;
   std::unique_ptr<base::OneShotTimer> wait_for_dom_timer_;
+  int fake_wait_time_ = 0;
+  int fake_check_time_ = 0;
 };
 
 TEST_F(PromptActionTest, ChoicesMissing) {
@@ -231,6 +242,43 @@ TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
   ASSERT_THAT(user_actions_, Pointee(IsEmpty()));
 }
 
+TEST_F(PromptActionTest, TimingStatsUserAction) {
+  auto* ok_proto = prompt_proto_->add_choices();
+  ok_proto->mutable_chip()->set_text("Ok");
+  ok_proto->mutable_chip()->set_type(HIGHLIGHTED_ACTION);
+  ok_proto->set_server_payload("ok");
+  *ok_proto->mutable_show_only_when()->mutable_match() =
+      ToSelectorProto("element");
+
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+
+  fake_check_time_ = 200;
+  PromptAction action(&mock_action_delegate_, proto_);
+  action.ProcessAction(callback_.Get());
+
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
+
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
+  EXPECT_TRUE((*user_actions_)[0].HasCallback());
+  (*user_actions_)[0].Call(TriggerContext::CreateEmpty());
+  EXPECT_EQ(capture.timing_stats().active_time_ms(), 700);
+  EXPECT_EQ(capture.timing_stats().wait_time_ms(), 2500);
+}
+
 TEST_F(PromptActionTest, DisabledUnlessElementExists) {
   auto* ok_proto = prompt_proto_->add_choices();
   ok_proto->mutable_chip()->set_text("Ok");
@@ -285,6 +333,31 @@ TEST_F(PromptActionTest, AutoSelectWhenElementExists) {
                                  Property(&PromptProto::Result::server_payload,
                                           "auto-select"))))));
   task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(PromptActionTest, TimingStatsAutoSelect) {
+  auto* choice_proto = prompt_proto_->add_choices();
+  choice_proto->set_server_payload("auto-select");
+  *choice_proto->mutable_auto_select_when()->mutable_match() =
+      ToSelectorProto("element");
+
+  fake_wait_time_ = 500;
+  PromptAction action(&mock_action_delegate_, proto_);
+  action.ProcessAction(callback_.Get());
+  EXPECT_THAT(user_actions_, Pointee(SizeIs(0)));
+
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_EQ(capture.timing_stats().active_time_ms(), 500);
+  EXPECT_EQ(capture.timing_stats().wait_time_ms(), 500);
 }
 
 TEST_F(PromptActionTest, AutoSelectWithButton) {
@@ -443,7 +516,8 @@ TEST_F(PromptActionTest, ForwardInterruptFailure) {
               Property(&ProcessedActionProto::prompt_choice,
                        Property(&PromptProto::Result::server_payload, ""))))));
   ASSERT_TRUE(fake_wait_for_dom_done_);
-  std::move(fake_wait_for_dom_done_).Run(ClientStatus(INTERRUPT_FAILED));
+  std::move(fake_wait_for_dom_done_)
+      .Run(ClientStatus(INTERRUPT_FAILED), base::TimeDelta::FromSeconds(0));
 }
 
 TEST_F(PromptActionTest, EndActionOnNavigation) {
@@ -471,6 +545,36 @@ TEST_F(PromptActionTest, EndActionOnNavigation) {
                    Property(&PromptProto::Result::navigation_ended, true))))));
 
   action.ProcessAction(callback_.Get());
+}
+
+TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
+  auto timer = std::make_unique<base::OneShotTimer>();
+  EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
+      .WillOnce(
+          [this, &timer](std::unique_ptr<std::vector<UserAction>> user_actions,
+                         bool disable_force_expand_sheet,
+                         base::OnceCallback<void()> callback, bool browse_mode,
+                         bool browse_mode_invisible) {
+            user_actions_ = std::move(user_actions);
+            timer->Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
+                         std::move(callback));
+          });
+
+  prompt_proto_->set_end_on_navigation(true);
+  PromptProto_Choice* ok_proto = prompt_proto_->add_choices();
+  ok_proto->mutable_chip()->set_text("ok");
+
+  PromptAction action(&mock_action_delegate_, proto_);
+
+  // Set new expectations for when the navigation event arrives.
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
+  action.ProcessAction(callback_.Get());
+  EXPECT_TRUE(task_env_.NextTaskIsDelayed());
+  task_env_.DescribePendingMainThreadTasks();
+  task_env_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(capture.timing_stats().wait_time_ms(), 1000);
 }
 
 }  // namespace

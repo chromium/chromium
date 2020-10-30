@@ -43,8 +43,11 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
       max_wait_time, proto_.wait_for_dom().allow_interrupt(),
       base::BindRepeating(&WaitForDomAction::CheckElements,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&WaitForDomAction::ReportActionResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &WaitForDomAction::OnWaitForElementTimed,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&WaitForDomAction::ReportActionResult,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void WaitForDomAction::CheckElements(

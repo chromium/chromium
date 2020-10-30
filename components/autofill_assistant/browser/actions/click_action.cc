@@ -36,10 +36,13 @@ void ClickAction::InternalProcessAction(ProcessActionCallback callback) {
     std::move(callback).Run(std::move(processed_action_proto_));
     return;
   }
-  delegate_->ShortWaitForElement(selector,
-                                 base::BindOnce(&ClickAction::OnWaitForElement,
-                                                weak_ptr_factory_.GetWeakPtr(),
-                                                std::move(callback), selector));
+
+  delegate_->ShortWaitForElement(
+      selector, base::BindOnce(&ClickAction::OnWaitForElementTimed,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               base::BindOnce(&ClickAction::OnWaitForElement,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              std::move(callback), selector)));
 }
 
 void ClickAction::OnWaitForElement(ProcessActionCallback callback,

@@ -32,10 +32,14 @@ void HighlightElementAction::InternalProcessAction(
     std::move(callback).Run(std::move(processed_action_proto_));
     return;
   }
+
   delegate_->ShortWaitForElement(
-      selector, base::BindOnce(&HighlightElementAction::OnWaitForElement,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback), selector));
+      selector,
+      base::BindOnce(&HighlightElementAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&HighlightElementAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), selector)));
 }
 
 void HighlightElementAction::OnWaitForElement(

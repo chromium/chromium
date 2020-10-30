@@ -28,8 +28,12 @@ void WaitForDocumentAction::InternalProcessAction(
     return;
   }
   delegate_->ShortWaitForElement(
-      selector, base::BindOnce(&WaitForDocumentAction::OnShortWaitForElement,
-                               weak_ptr_factory_.GetWeakPtr()));
+      selector,
+      base::BindOnce(
+          &WaitForDocumentAction::OnWaitForElementTimed,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&WaitForDocumentAction::OnShortWaitForElement,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void WaitForDocumentAction::OnShortWaitForElement(
@@ -66,9 +70,10 @@ void WaitForDocumentAction::OnGetStartState(const ClientStatus& status,
     return;
   }
 
-  timer_.Start(FROM_HERE, timeout,
-               base::BindOnce(&WaitForDocumentAction::OnTimeout,
-                              weak_ptr_factory_.GetWeakPtr()));
+  timer_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&WaitForDocumentAction::OnTimeout,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   delegate_->WaitForDocumentReadyState(
       Selector(proto_.wait_for_document().frame()),
       proto_.wait_for_document().min_ready_state(),
@@ -78,15 +83,19 @@ void WaitForDocumentAction::OnGetStartState(const ClientStatus& status,
 
 void WaitForDocumentAction::OnWaitForStartState(
     const ClientStatus& status,
-    DocumentReadyState current_state) {
+    DocumentReadyState current_state,
+    base::TimeDelta wait_time) {
+  action_stopwatch_.TransferToWaitTime(wait_time);
   SendResult(status, current_state);
 }
 
-void WaitForDocumentAction::OnTimeout() {
+void WaitForDocumentAction::OnTimeout(base::TimeTicks wait_time_start) {
   // We've already returned successfully.
   if (!callback_)
     return;
 
+  action_stopwatch_.TransferToWaitTime(base::TimeTicks::Now() -
+                                       wait_time_start);
   delegate_->GetDocumentReadyState(
       Selector(proto_.wait_for_document().frame()),
       base::BindOnce(&WaitForDocumentAction::OnTimeoutInState,

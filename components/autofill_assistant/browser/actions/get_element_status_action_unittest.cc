@@ -40,7 +40,8 @@ class GetElementStatusActionTest : public testing::Test {
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
+                                          base::TimeDelta::FromSeconds(0)));
     test_util::MockFindAnyElement(mock_action_delegate_);
     ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
         .WillByDefault(RunOnceCallback<2>(OkClientStatus(), kValue));
@@ -76,7 +77,8 @@ TEST_F(GetElementStatusActionTest, ActionFailsForNonExistentElement) {
       kValue);
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
+                                   base::TimeDelta::FromSeconds(0)));
 
   EXPECT_CALL(callback_,
               Run(Pointee(Property(&ProcessedActionProto::status, TIMED_OUT))));

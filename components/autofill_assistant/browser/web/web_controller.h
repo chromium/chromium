@@ -233,8 +233,8 @@ class WebController {
   // empty, in the main document.
   virtual void GetDocumentReadyState(
       const Selector& optional_frame,
-      base::OnceCallback<void(const ClientStatus&,
-                              DocumentReadyState end_state)> callback);
+      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
+          callback);
 
   // Waits for the value of Document.readyState to satisfy |min_ready_state| in
   // |optional_frame| or, if it is empty, in the main document.
@@ -242,7 +242,8 @@ class WebController {
       const Selector& optional_frame,
       DocumentReadyState min_ready_state,
       base::OnceCallback<void(const ClientStatus&,
-                              DocumentReadyState end_state)> callback);
+                              DocumentReadyState,
+                              base::TimeDelta)> callback);
 
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
@@ -412,8 +413,9 @@ class WebController {
       std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnFindElementForWaitForDocumentReadyState(
       DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback,
+      base::OnceCallback<void(const ClientStatus&,
+                              DocumentReadyState,
+                              base::TimeDelta)> callback,
       const ClientStatus& status,
       std::unique_ptr<ElementFinder::Result> element);
 

@@ -56,9 +56,12 @@ void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
   }
 
   delegate_->ShortWaitForElement(
-      selector, base::BindOnce(&ShowCastAction::OnWaitForElement,
+      selector, base::BindOnce(&ShowCastAction::OnWaitForElementTimed,
                                weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback), selector, top_padding));
+                               base::BindOnce(&ShowCastAction::OnWaitForElement,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              std::move(callback), selector,
+                                              top_padding)));
 }
 
 void ShowCastAction::OnWaitForElement(ProcessActionCallback callback,

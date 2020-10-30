@@ -135,17 +135,19 @@ class MockWebController : public WebController {
     OnGetDocumentReadyState(frame, callback);
   }
 
-  MOCK_METHOD3(
-      OnWaitForDocumentReadyState,
-      void(const Selector&,
-           DocumentReadyState min_ready_state,
-           base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>&));
+  MOCK_METHOD3(OnWaitForDocumentReadyState,
+               void(const Selector&,
+                    DocumentReadyState min_ready_state,
+                    base::OnceCallback<void(const ClientStatus&,
+                                            DocumentReadyState,
+                                            base::TimeDelta)>&));
 
   void WaitForDocumentReadyState(
       const Selector& frame,
       DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback) override {
+      base::OnceCallback<void(const ClientStatus&,
+                              DocumentReadyState,
+                              base::TimeDelta)> callback) override {
     OnWaitForDocumentReadyState(frame, min_ready_state, callback);
   }
 

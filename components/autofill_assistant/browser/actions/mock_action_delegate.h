@@ -34,12 +34,14 @@ class MockActionDelegate : public ActionDelegate {
 
   void ShortWaitForElement(
       const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override {
     OnShortWaitForElement(selector, callback);
   }
-  MOCK_METHOD2(OnShortWaitForElement,
-               void(const Selector& selector,
-                    base::OnceCallback<void(const ClientStatus&)>&));
+  MOCK_METHOD2(
+      OnShortWaitForElement,
+      void(const Selector& selector,
+           base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
 
   void WaitForDom(
       base::TimeDelta max_wait_time,
@@ -47,16 +49,18 @@ class MockActionDelegate : public ActionDelegate {
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)> check_elements,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override {
     OnWaitForDom(max_wait_time, allow_interrupt, check_elements, callback);
   }
-  MOCK_METHOD4(OnWaitForDom,
-               void(base::TimeDelta,
-                    bool,
-                    base::RepeatingCallback<
-                        void(BatchElementChecker*,
-                             base::OnceCallback<void(const ClientStatus&)>)>&,
-                    base::OnceCallback<void(const ClientStatus&)>&));
+  MOCK_METHOD4(
+      OnWaitForDom,
+      void(base::TimeDelta,
+           bool,
+           base::RepeatingCallback<
+               void(BatchElementChecker*,
+                    base::OnceCallback<void(const ClientStatus&)>)>&,
+           base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
 
   MOCK_METHOD1(SetStatusMessage, void(const std::string& message));
 
@@ -296,17 +300,19 @@ class MockActionDelegate : public ActionDelegate {
     OnGetDocumentReadyState(frame, callback);
   }
 
-  MOCK_METHOD3(
-      OnWaitForDocumentReadyState,
-      void(const Selector&,
-           DocumentReadyState min_ready_state,
-           base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>&));
+  MOCK_METHOD3(OnWaitForDocumentReadyState,
+               void(const Selector&,
+                    DocumentReadyState min_ready_state,
+                    base::OnceCallback<void(const ClientStatus&,
+                                            DocumentReadyState,
+                                            base::TimeDelta)>&));
 
   void WaitForDocumentReadyState(
       const Selector& frame,
       DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback) override {
+      base::OnceCallback<void(const ClientStatus&,
+                              DocumentReadyState,
+                              base::TimeDelta)> callback) override {
     OnWaitForDocumentReadyState(frame, min_ready_state, callback);
   }
 

@@ -546,7 +546,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
   expected_option_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_option_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(
       mock_action_delegate_,
       ClickOrTapElement(ClickType::TAP,
@@ -591,7 +592,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   expected_option_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_option_selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                   base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_action_delegate_, FindElement(_, _))
       .Times(0)
       .After(main_click);

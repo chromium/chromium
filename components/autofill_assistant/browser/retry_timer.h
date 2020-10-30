@@ -51,7 +51,8 @@ class RetryTimer {
   void Cancel();
 
   // Returns true if the timer was started but did not report any results yet.
-  bool running() { return on_done_ ? true : false; }
+  bool running() const { return on_done_ ? true : false; }
+  base::TimeDelta period() const { return period_; }
 
  private:
   void Reset();

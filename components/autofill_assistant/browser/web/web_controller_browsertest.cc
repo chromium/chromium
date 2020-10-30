@@ -323,7 +323,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                                    ClientStatus* result_output,
                                    DocumentReadyState* ready_state_out,
                                    const ClientStatus& status,
-                                   DocumentReadyState ready_state) {
+                                   DocumentReadyState ready_state,
+                                   base::TimeDelta) {
     *result_output = status;
     *ready_state_out = ready_state;
     std::move(done_callback).Run();

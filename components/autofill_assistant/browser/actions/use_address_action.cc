@@ -118,6 +118,9 @@ void UseAddressAction::InternalProcessAction(
 void UseAddressAction::EndAction(
     const ClientStatus& final_status,
     const base::Optional<ClientStatus>& optional_details_status) {
+  if (fallback_handler_)
+    action_stopwatch_.TransferToWaitTime(fallback_handler_->TotalWaitTime());
+
   UpdateProcessedAction(final_status);
   if (optional_details_status.has_value() && !optional_details_status->ok()) {
     processed_action_proto_->mutable_status_details()->MergeFrom(
@@ -134,8 +137,11 @@ void UseAddressAction::FillFormWithData() {
   }
 
   delegate_->ShortWaitForElement(
-      selector_, base::BindOnce(&UseAddressAction::OnWaitForElement,
-                                weak_ptr_factory_.GetWeakPtr()));
+      selector_,
+      base::BindOnce(&UseAddressAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&UseAddressAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void UseAddressAction::OnWaitForElement(const ClientStatus& element_status) {

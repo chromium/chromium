@@ -160,8 +160,11 @@ void SetFormFieldValueAction::InternalProcessAction(
   }
 
   delegate_->ShortWaitForElement(
-      selector_, base::BindOnce(&SetFormFieldValueAction::OnWaitForElement,
-                                weak_ptr_factory_.GetWeakPtr()));
+      selector_,
+      base::BindOnce(&SetFormFieldValueAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&SetFormFieldValueAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void SetFormFieldValueAction::OnWaitForElement(

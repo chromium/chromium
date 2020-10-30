@@ -46,7 +46,8 @@ class WaitForDomActionTest : public testing::Test {
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)>& check_elements,
-      base::OnceCallback<void(const ClientStatus&)>& callback) {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&
+          callback) {
     checker_ = std::make_unique<BatchElementChecker>();
     has_check_elements_result_ = false;
     check_elements.Run(
@@ -69,10 +70,11 @@ class WaitForDomActionTest : public testing::Test {
   // Called by |checker_| once it's done. This ends the call to
   // FakeWaitForDom().
   void OnWaitForDomDone(
-      base::OnceCallback<void(const ClientStatus&)> callback) {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
     ASSERT_TRUE(
         has_check_elements_result_);  // OnCheckElementsDone() not called
-    std::move(callback).Run(check_elements_result_);
+    std::move(callback).Run(check_elements_result_,
+                            base::TimeDelta::FromMilliseconds(fake_wait_time_));
   }
 
   // Runs the action defined in |proto_| and reports the result to |callback_|.
@@ -90,6 +92,7 @@ class WaitForDomActionTest : public testing::Test {
   std::unique_ptr<BatchElementChecker> checker_;
   bool has_check_elements_result_ = false;
   ClientStatus check_elements_result_;
+  int fake_wait_time_ = 0;
 };
 
 TEST_F(WaitForDomActionTest, NoSelectors) {
@@ -112,6 +115,24 @@ TEST_F(WaitForDomActionTest, ConditionMet) {
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   Run();
+}
+
+TEST_F(WaitForDomActionTest, TimingStatsConditionMet) {
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+
+  fake_wait_time_ = 500;
+  *proto_.mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("#element");
+
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&capture));
+  Run();
+
+  EXPECT_EQ(capture.timing_stats().wait_time_ms(), 500);
 }
 
 TEST_F(WaitForDomActionTest, ConditionNotMet) {

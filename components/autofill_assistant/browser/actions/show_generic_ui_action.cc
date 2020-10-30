@@ -194,16 +194,22 @@ void ShowGenericUiAction::OnViewInflationFinished(const ClientStatus& status) {
           preconditions_.begin(), preconditions_.end(),
           [&](const auto& precondition) { return !precondition->empty(); })) {
     has_pending_wait_for_dom_ = true;
+
     delegate_->WaitForDom(
         base::TimeDelta::Max(), proto_.show_generic_ui().allow_interrupt(),
         base::BindRepeating(&ShowGenericUiAction::RegisterChecks,
                             weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&ShowGenericUiAction::OnDoneWaitForDom,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&ShowGenericUiAction::OnWaitForElementTimed,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::BindOnce(&ShowGenericUiAction::OnDoneWaitForDom,
+                                      weak_ptr_factory_.GetWeakPtr())));
   }
+  wait_time_start_ = base::TimeTicks::Now();
 }
 
 void ShowGenericUiAction::OnNavigationEnded() {
+  action_stopwatch_.TransferToWaitTime(base::TimeTicks::Now() -
+                                       wait_time_start_);
   processed_action_proto_->mutable_show_generic_ui_result()
       ->set_navigation_ended(true);
   OnEndActionInteraction(ClientStatus(ACTION_APPLIED));
@@ -272,6 +278,8 @@ void ShowGenericUiAction::OnEndActionInteraction(const ClientStatus& status) {
     should_end_action_ = true;
     return;
   }
+  action_stopwatch_.TransferToWaitTime(base::TimeTicks::Now() -
+                                       wait_time_start_);
   EndAction(status);
 }
 

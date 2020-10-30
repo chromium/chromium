@@ -78,7 +78,8 @@ class ActionDelegate {
   // WebController and eliminate double-lookup.
   virtual void ShortWaitForElement(
       const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+          callback) = 0;
 
   // Wait for up to |max_wait_time| for element conditions to match on the page,
   // then call |callback| with the last status.
@@ -94,7 +95,8 @@ class ActionDelegate {
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)> check_elements,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+          callback) = 0;
 
   // Find an element specified by |selector| on the web page.
   virtual void FindElement(const Selector&,
@@ -310,8 +312,9 @@ class ActionDelegate {
   virtual void WaitForDocumentReadyState(
       const Selector& optional_frame,
       DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback) = 0;
+      base::OnceCallback<void(const ClientStatus&,
+                              DocumentReadyState,
+                              base::TimeDelta)> callback) = 0;
 
   // Gets the value of Document.readyState in |optional_frame| or, if it is
   // empty, in the main document.

@@ -57,7 +57,8 @@ TEST_F(HighlightElementActionTest, ActionFailsForNonExistentElement) {
   expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
+                                   base::TimeDelta::FromSeconds(0)));
 
   EXPECT_CALL(callback_,
               Run(Pointee(Property(&ProcessedActionProto::status, TIMED_OUT))));
@@ -74,7 +75,8 @@ TEST_F(HighlightElementActionTest, CheckExpectedCallChain) {
   expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,

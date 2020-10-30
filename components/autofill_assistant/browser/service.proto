@@ -675,6 +675,16 @@ message CollectUserDataResultProto {
   reserved 7, 8;
 }
 
+message ActionTimingStats {
+  // Requested delay before executing the action.
+  optional int64 delay_ms = 1;
+  // Time actively spent by the client to execute the action.
+  optional int64 active_time_ms = 2;
+  // Time spent waiting for users to complete a task and/or for website
+  // loading/navigation.
+  optional int64 wait_time_ms = 3;
+}
+
 message ProcessedActionProto {
   // The action that was processed.
   optional ActionProto action = 1;
@@ -708,6 +718,9 @@ message ProcessedActionProto {
   // Reports how long it took for the client to run the action. This does not
   // include the delay specified in action.delay_ms.
   optional int64 run_time_ms = 23;
+
+  // Collects the timing stats related to the action execution.
+  optional ActionTimingStats timing_stats = 32;
 
   // If true, the user triggered, during the client action, at least one user
   // action, such as a prompt choice, through a direct action instead of

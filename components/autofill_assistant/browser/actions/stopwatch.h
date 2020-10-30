@@ -31,10 +31,19 @@ class Stopwatch {
   bool StopAt(base::TimeTicks stop_time);
   // Adds `time` to the cumulative elapsed time held by this stopwatch.
   void AddTime(base::TimeDelta time);
+  // Add `other`'s `TotalElapsed` to the cumulative elapsed time held by this
+  // stopwatch.
+  void AddTime(const Stopwatch& other);
   // Remove `time` from the cumulative elapsed time held by this stopwatch.
   void RemoveTime(base::TimeDelta time);
+  // Remove up to `other`'s `TotalElapsed` from the cumulative elapsed time held
+  // by this stopwatch.
+  void RemoveTime(const Stopwatch& other);
+  // Resets the stopwatch and doesn't start it again.
+  void Reset();
   // Returns the total time accumulated by this stopwatch.
   base::TimeDelta TotalElapsed() const;
+
   // Whether the stopwatch is running or not.
   bool IsRunning() const;
 

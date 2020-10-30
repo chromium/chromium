@@ -32,9 +32,12 @@ void SetAttributeAction::InternalProcessAction(ProcessActionCallback callback) {
     return;
   }
   delegate_->ShortWaitForElement(
-      selector, base::BindOnce(&SetAttributeAction::OnWaitForElement,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback), selector));
+      selector,
+      base::BindOnce(&SetAttributeAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&SetAttributeAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), selector)));
 }
 
 void SetAttributeAction::OnWaitForElement(ProcessActionCallback callback,

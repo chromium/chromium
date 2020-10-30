@@ -51,6 +51,7 @@ class ShowGenericUiAction : public Action,
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;
 
+  base::TimeTicks wait_time_start_;
   bool has_pending_wait_for_dom_ = false;
   bool should_end_action_ = false;
   std::vector<std::unique_ptr<ElementPrecondition>> preconditions_;

@@ -32,8 +32,11 @@ void UploadDomAction::InternalProcessAction(ProcessActionCallback callback) {
     return;
   }
   delegate_->ShortWaitForElement(
-      selector, base::BindOnce(&UploadDomAction::OnWaitForElement,
-                               weak_ptr_factory_.GetWeakPtr(), selector));
+      selector,
+      base::BindOnce(&UploadDomAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&UploadDomAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr(), selector)));
 }
 
 void UploadDomAction::OnWaitForElement(const Selector& selector,

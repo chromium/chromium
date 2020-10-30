@@ -100,6 +100,9 @@ void UseCreditCardAction::InternalProcessAction(
 void UseCreditCardAction::EndAction(
     const ClientStatus& final_status,
     const base::Optional<ClientStatus>& optional_details_status) {
+  if (fallback_handler_)
+    action_stopwatch_.TransferToWaitTime(fallback_handler_->TotalWaitTime());
+
   UpdateProcessedAction(final_status);
   if (optional_details_status.has_value() && !optional_details_status->ok()) {
     processed_action_proto_->mutable_status_details()->MergeFrom(
@@ -116,8 +119,11 @@ void UseCreditCardAction::FillFormWithData() {
   }
 
   delegate_->ShortWaitForElement(
-      selector_, base::BindOnce(&UseCreditCardAction::OnWaitForElement,
-                                weak_ptr_factory_.GetWeakPtr()));
+      selector_,
+      base::BindOnce(&UseCreditCardAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&UseCreditCardAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void UseCreditCardAction::OnWaitForElement(const ClientStatus& element_status) {
@@ -130,11 +136,13 @@ void UseCreditCardAction::OnWaitForElement(const ClientStatus& element_status) {
   delegate_->GetFullCard(credit_card_.get(),
                          base::BindOnce(&UseCreditCardAction::OnGetFullCard,
                                         weak_ptr_factory_.GetWeakPtr()));
+  action_stopwatch_.StartWaitTime();
 }
 
 void UseCreditCardAction::OnGetFullCard(
     std::unique_ptr<autofill::CreditCard> card,
     const base::string16& cvc) {
+  action_stopwatch_.StartActiveTime();
   if (!card) {
     EndAction(ClientStatus(GET_FULL_CARD_FAILED));
     return;
@@ -180,6 +188,7 @@ void UseCreditCardAction::OnGetFullCard(
 
 void UseCreditCardAction::ExecuteFallback(const ClientStatus& status) {
   DCHECK(fallback_handler_ != nullptr);
+  action_stopwatch_.TransferToWaitTime(fallback_handler_->TotalWaitTime());
   fallback_handler_->CheckAndFallbackRequiredFields(
       status, base::BindOnce(&UseCreditCardAction::EndAction,
                              weak_ptr_factory_.GetWeakPtr()));

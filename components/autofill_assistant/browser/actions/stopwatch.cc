@@ -51,6 +51,10 @@ void Stopwatch::AddTime(base::TimeDelta time) {
   elapsed_time_ += time;
 }
 
+void Stopwatch::AddTime(const Stopwatch& other) {
+  AddTime(other.TotalElapsed());
+}
+
 void Stopwatch::RemoveTime(base::TimeDelta time) {
   if (elapsed_time_ > time) {
     elapsed_time_ -= time;
@@ -60,6 +64,15 @@ void Stopwatch::RemoveTime(base::TimeDelta time) {
       start_time_ += (time - elapsed_time_);
     }
   }
+}
+
+void Stopwatch::RemoveTime(const Stopwatch& other) {
+  RemoveTime(other.TotalElapsed());
+}
+
+void Stopwatch::Reset() {
+  Stop();
+  elapsed_time_ = base::TimeDelta::FromMilliseconds(0);
 }
 
 base::TimeDelta Stopwatch::TotalElapsed() const {

@@ -55,7 +55,8 @@ TEST_F(UploadDomActionTest, ActionFailsForNonExistentElement) {
   *proto_.mutable_tree_root() = selector.proto;
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
+                                   base::TimeDelta::FromSeconds(0)));
 
   EXPECT_CALL(
       callback_,
@@ -71,7 +72,8 @@ TEST_F(UploadDomActionTest, CheckExpectedCallChain) {
   *proto_.mutable_tree_root() = selector.proto;
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, selector);
   EXPECT_CALL(mock_action_delegate_,
@@ -96,7 +98,8 @@ TEST_F(UploadDomActionTest, ReturnsEmptyStringForNotFoundElement) {
   // too. Failing FindElement is however the more interesting test than failing
   // GetOuterHtml.
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_action_delegate_, FindElement(selector, _))
       .WillOnce(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));

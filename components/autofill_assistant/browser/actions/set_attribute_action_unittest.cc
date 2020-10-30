@@ -59,7 +59,8 @@ TEST_F(SetAttributeActionTest, CheckExpectedCallChain) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   std::vector<std::string> expected_attributes = {"value"};

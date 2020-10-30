@@ -61,8 +61,11 @@ void SelectOptionAction::InternalProcessAction(ProcessActionCallback callback) {
   }
 
   delegate_->ShortWaitForElement(
-      selector, base::BindOnce(&SelectOptionAction::OnWaitForElement,
-                               weak_ptr_factory_.GetWeakPtr(), selector));
+      selector,
+      base::BindOnce(&SelectOptionAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&SelectOptionAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr(), selector)));
 }
 
 void SelectOptionAction::OnWaitForElement(const Selector& selector,

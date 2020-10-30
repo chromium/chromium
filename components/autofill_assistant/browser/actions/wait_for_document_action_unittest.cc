@@ -37,7 +37,8 @@ class WaitForDocumentActionTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_action_delegate_, OnWaitForDocumentReadyState(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE));
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
+                                          base::TimeDelta::FromSeconds(0)));
   }
 
   // Runs the action defined in |proto_| and reports the result to
@@ -136,7 +137,8 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractive) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_LOADING));
   EXPECT_CALL(mock_action_delegate_,
               OnWaitForDocumentReadyState(_, DOCUMENT_INTERACTIVE, _))
-      .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_INTERACTIVE));
+      .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_INTERACTIVE,
+                                   base::TimeDelta::FromSeconds(0)));
   proto_.set_timeout_ms(1000);
   Run();
   EXPECT_EQ(ACTION_APPLIED, processed_action_.status());
@@ -152,15 +154,18 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_LOADING));
 
   // The document doesn't become complete right away.
-  base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
+  base::OnceCallback<void(const ClientStatus&, DocumentReadyState,
+                          base::TimeDelta)>
       captured_callback;
   EXPECT_CALL(mock_action_delegate_,
               OnWaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
       .WillOnce(Invoke(
           [&captured_callback](
               const Selector& frame, DocumentReadyState min_ready_state,
-              base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>&
-                  callback) { captured_callback = std::move(callback); }));
+              base::OnceCallback<void(const ClientStatus&, DocumentReadyState,
+                                      base::TimeDelta)>& callback) {
+            captured_callback = std::move(callback);
+          }));
 
   proto_.set_timeout_ms(1000);
   proto_.set_min_ready_state(DOCUMENT_COMPLETE);
@@ -179,13 +184,16 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
             processed_action_.wait_for_document_result().end_ready_state());
 
   // This callback should be ignored. It's too late. This should not crash.
-  std::move(captured_callback).Run(OkClientStatus(), DOCUMENT_COMPLETE);
+  std::move(captured_callback)
+      .Run(OkClientStatus(), DOCUMENT_COMPLETE,
+           base::TimeDelta::FromSeconds(0));
 }
 
 TEST_F(WaitForDocumentActionTest, CheckDocumentInFrame) {
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(Selector({"#frame"}), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(),
+                                         base::TimeDelta::FromSeconds(0)));
 
   EXPECT_CALL(mock_action_delegate_,
               OnGetDocumentReadyState(Selector({"#frame"}), _))
@@ -200,7 +208,8 @@ TEST_F(WaitForDocumentActionTest, CheckDocumentInFrame) {
 TEST_F(WaitForDocumentActionTest, CheckFrameElementNotFound) {
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                             base::TimeDelta::FromSeconds(0)));
 
   proto_.set_timeout_ms(0);
   *proto_.mutable_frame() = ToSelectorProto("#frame");
