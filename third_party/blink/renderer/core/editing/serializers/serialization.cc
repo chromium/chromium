@@ -790,7 +790,8 @@ static Document* CreateStagingDocumentForMarkupSanitization() {
       nullptr,  // Frame* previous_sibling
       FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
       nullptr,  // WindowAgentFactory*
-      nullptr   // InterfaceRegistry*
+      nullptr,  // InterfaceRegistry*
+      nullptr   // policy_container
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =

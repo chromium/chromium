@@ -191,7 +191,7 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
       params->devtools_frame_token, params->replication_state,
       &ToImpl(render_thread_), std::move(params->widget_params),
       std::move(params->frame_owner_properties),
-      params->has_committed_real_load);
+      params->has_committed_real_load, std::move(params->policy_container));
 }
 
 void AgentSchedulingGroup::CreateFrameProxy(

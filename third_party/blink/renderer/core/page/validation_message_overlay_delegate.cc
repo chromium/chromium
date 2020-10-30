@@ -161,7 +161,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   auto* frame = MakeGarbageCollected<LocalFrame>(
       MakeGarbageCollected<EmptyLocalFrameClient>(), *page_, nullptr, nullptr,
       nullptr, FrameInsertType::kInsertInConstructor,
-      base::UnguessableToken::Create(), nullptr, nullptr);
+      base::UnguessableToken::Create(), nullptr, nullptr,
+      /* policy_container */ nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame, view_size));
   frame->Init(nullptr);
   frame->View()->SetCanHaveScrollbars(false);

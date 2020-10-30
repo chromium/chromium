@@ -170,6 +170,7 @@ class CORE_EXPORT LocalFrame final
       const base::UnguessableToken& frame_token,
       WindowAgentFactory* inheriting_agent_factory,
       InterfaceRegistry*,
+      std::unique_ptr<blink::PolicyContainer> policy_container,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
 
   void Init(Frame* opener);

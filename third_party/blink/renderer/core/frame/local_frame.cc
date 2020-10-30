@@ -1350,6 +1350,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                        const base::UnguessableToken& frame_token,
                        WindowAgentFactory* inheriting_agent_factory,
                        InterfaceRegistry* interface_registry,
+                       std::unique_ptr<PolicyContainer> policy_container,
                        const base::TickClock* clock)
     : Frame(client,
             page,
@@ -1384,7 +1385,8 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
       is_save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled()),
-      lifecycle_state_(mojom::FrameLifecycleState::kRunning) {
+      lifecycle_state_(mojom::FrameLifecycleState::kRunning),
+      policy_container_(std::move(policy_container)) {
   auto frame_tracking_result = GetLocalFramesMap().insert(
       base::UnguessableTokenHash()(frame_token), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";

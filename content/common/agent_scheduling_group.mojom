@@ -11,6 +11,7 @@ import "ipc/constants.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
@@ -122,6 +123,13 @@ struct CreateViewParams {
 
   // Endpoint for any messages that are broadcast to all views in a WebContents.
   pending_associated_receiver<blink.mojom.PageBroadcast> blink_page_broadcast;
+
+  // The policy container for the main frame to be created. This is null when
+  // creating a RenderView for a remote main frame, or when the main frame has
+  // no policy container yet (for example, because it is a speculative
+  // RenderFrameHost), and the policy container will be sent during
+  // CommitNavigation.
+  blink.mojom.PolicyContainerClient? policy_container;
 };
 
 struct CreateFrameWidgetParams {
@@ -194,6 +202,12 @@ struct CreateFrameParams {
 
   // Whether or not the frame has previously committed a real load.
   bool has_committed_real_load;
+
+  // The policy container for the frame to be created. This can be null if we
+  // could not determine a policy container yet, for example in case of a
+  // speculative RenderFrameHost. In that case, the final policy container will
+  // be sent along CommitNavigation.
+  blink.mojom.PolicyContainerClient? policy_container;
 };
 
 

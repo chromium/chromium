@@ -34,6 +34,7 @@ import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.moj
 import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/frame/lifecycle.mojom";
 import "third_party/blink/public/mojom/frame/navigation_initiator.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
@@ -345,6 +346,10 @@ struct CreateNewWindowReply {
   // that it should pause created window and wait for an explicit resume command
   // from the client.
   bool wait_for_debugger;
+
+  // The policy container for the new frame that will be created by Blink in
+  // response.
+  blink.mojom.PolicyContainerClient policy_container;
 };
 
 [Native]

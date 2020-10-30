@@ -178,7 +178,8 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const WebFrameOwnerProperties& frame_owner_properties,
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
     const base::UnguessableToken& frame_token,
-    WebFrame* opener) {
+    WebFrame* opener,
+    std::unique_ptr<blink::WebPolicyContainerClient> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       util::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
       frame_token);
@@ -192,10 +193,10 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     window_agent_factory = &GetFrame()->window_agent_factory();
   }
 
-  child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, this,
-                             previous_sibling,
-                             FrameInsertType::kInsertInConstructor, name,
-                             window_agent_factory, opener);
+  child->InitializeCoreFrame(
+      *GetFrame()->GetPage(), owner, this, previous_sibling,
+      FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
+      std::move(policy_container));
   DCHECK(child->GetFrame());
   return child;
 }

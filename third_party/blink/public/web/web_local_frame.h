@@ -109,6 +109,7 @@ class WebLocalFrame : public WebFrame {
       WebLocalFrameClient*,
       blink::InterfaceRegistry*,
       const base::UnguessableToken& frame_token,
+      std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),
       network::mojom::WebSandboxFlags = network::mojom::WebSandboxFlags::kNone,

@@ -28,6 +28,7 @@
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
+#include "content/public/test/policy_container_utils.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/mock_agent_scheduling_group.h"
 #include "content/renderer/render_process.h"
@@ -514,6 +515,7 @@ void RenderViewTest::SetUp() {
       render_widget_host_->BindNewWidgetInterfaces();
   std::tie(view_params->frame_widget_host, view_params->frame_widget) =
       render_widget_host_->BindNewFrameWidgetInterfaces();
+  view_params->policy_container = CreateStubPolicyContainerClient();
 
   RenderViewImpl* view = RenderViewImpl::Create(
       *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),

@@ -148,7 +148,8 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
             web_view_,
             &web_local_frame_client_,
             nullptr,
-            base::UnguessableToken::Create()))
+            base::UnguessableToken::Create(),
+            /*policy_container=*/nullptr))
 #endif
   {
     MediaStreamSourceVector dummy_components;

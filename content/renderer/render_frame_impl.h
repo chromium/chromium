@@ -226,7 +226,8 @@ class CONTENT_EXPORT RenderFrameImpl
       CompositorDependencies* compositor_deps,
       mojom::CreateFrameWidgetParamsPtr widget_params,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-      bool has_committed_real_load);
+      bool has_committed_real_load,
+      blink::mojom::PolicyContainerClientPtr policy_container);
 
   // Returns the RenderFrameImpl for the given routing ID.
   static RenderFrameImpl* FromRoutingID(int routing_id);

@@ -346,6 +346,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const AtomicString& name,
       WindowAgentFactory*,
       WebFrame* opener,
+      std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone,
       const FeaturePolicyFeatureState& opener_feature_state =
@@ -364,6 +365,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebFrame* opener,
       const WebString& name,
       network::mojom::blink::WebSandboxFlags,
+      std::unique_ptr<blink::WebPolicyContainerClient>,
       const FeaturePolicyFeatureState&);
   static WebLocalFrameImpl* CreateProvisional(
       WebLocalFrameClient*,
@@ -501,6 +503,21 @@ class CORE_EXPORT WebLocalFrameImpl final
       const WebNode& constrain_to_node);
 
   Node* ContextMenuNodeInner() const;
+
+  void InitializeCoreFrameInternal(
+      Page&,
+      FrameOwner*,
+      WebFrame* parent,
+      WebFrame* previous_sibling,
+      FrameInsertType,
+      const AtomicString& name,
+      WindowAgentFactory*,
+      WebFrame* opener,
+      std::unique_ptr<PolicyContainer> policy_container,
+      network::mojom::blink::WebSandboxFlags sandbox_flags =
+          network::mojom::blink::WebSandboxFlags::kNone,
+      const FeaturePolicyFeatureState& opener_feature_state =
+          FeaturePolicyFeatureState());
 
   WebLocalFrameClient* client_;
 

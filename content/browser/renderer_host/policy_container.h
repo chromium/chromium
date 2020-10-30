@@ -7,6 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 
@@ -38,7 +39,14 @@ class CONTENT_EXPORT PolicyContainer
   // PolicyContainerClient, invalidating the remote of the previous one.
   blink::mojom::PolicyContainerClientPtr CreateClientForBlink();
 
+  // Create a new PolicyContainer with the same policies (i.e. a deep copy), but
+  // with a new, unbound mojo receiver.
   std::unique_ptr<PolicyContainer> Clone() const;
+
+  // Bind this PolicyContainer with the given mojo receiver, so that it can
+  // handle mojo messages coming from the corresponding remote.
+  void Bind(mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+                receiver);
 
  private:
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;

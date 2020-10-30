@@ -29,6 +29,7 @@
 #include "content/public/renderer/document_state.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/local_frame_host_interceptor.h"
+#include "content/public/test/policy_container_utils.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/agent_scheduling_group.h"
@@ -149,7 +150,7 @@ class RenderFrameImplTest : public RenderViewTest {
         base::UnguessableToken::Create(), base::UnguessableToken::Create(),
         frame_replication_state, &compositor_deps_, std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
-        /*has_committed_real_load=*/true);
+        /*has_committed_real_load=*/true, CreateStubPolicyContainerClient());
 
     frame_ = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(kSubframeRouteId));

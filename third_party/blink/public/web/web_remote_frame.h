@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "ui/events/types/scroll_types.h"
 #include "v8/include/v8.h"
@@ -83,7 +84,8 @@ class WebRemoteFrame : public WebFrame {
       const WebFrameOwnerProperties&,
       mojom::FrameOwnerElementType,
       const base::UnguessableToken& frame_token,
-      WebFrame* opener) = 0;
+      WebFrame* opener,
+      std::unique_ptr<blink::WebPolicyContainerClient> policy_container) = 0;
 
   virtual WebRemoteFrame* CreateRemoteChild(
       mojom::TreeScopeType,

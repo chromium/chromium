@@ -483,6 +483,7 @@ WebView* RenderViewImpl::CreateView(
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
   view_params->visual_properties = reply->visual_properties;
+  view_params->policy_container = std::move(reply->policy_container);
 
   RenderViewImpl* view = RenderViewImpl::Create(
       agent_scheduling_group_, compositor_deps_, std::move(view_params),

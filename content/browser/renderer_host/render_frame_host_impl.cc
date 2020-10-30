@@ -997,7 +997,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // cannot use DidCommitProvisionalLoad to set the policy container, since we
   // could run into a race condition. Hence we need to set The policy container
   // immediately when creating the RenderFrameHost here.
-  if (!frame_tree_node_->has_committed_real_load()) {
+  if (!frame_tree_node_->has_committed_real_load() &&
+      lifecycle_state_ != LifecycleState::kSpeculative) {
     if (parent_) {
       policy_container_ = parent_->policy_container()->Clone();
     } else if (frame_tree_node_->opener()) {
@@ -2199,6 +2200,15 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->replication_state = frame_tree_node()->current_replication_state();
   params->frame_token = frame_token_;
   params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
+
+  // If this is a new RenderFrameHost for a frame that has already committed a
+  // document, we don't have a policy container yet. Indeed, in that case, this
+  // RenderFrameHost will not display any document until it commits a
+  // navigation. The policy container for the navigated document will be sent to
+  // Blink at CommitNavigation time and then stored in this RenderFrameHost in
+  // DidCommitNewDocument.
+  if (policy_container())
+    params->policy_container = policy_container()->CreateClientForBlink();
 
   // Normally, the replication state contains effective frame policy, excluding
   // sandbox flags and feature policy attributes that were updated but have not
@@ -5244,7 +5254,8 @@ void RenderFrameHostImpl::CreateNewWindow(
           std::move(main_frame_interface_provider_info),
           std::move(browser_interface_broker)),
       cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
-      wait_for_debugger);
+      wait_for_debugger,
+      main_frame->policy_container()->CreateClientForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
@@ -7752,6 +7763,12 @@ void RenderFrameHostImpl::CreateNotificationService(
 void RenderFrameHostImpl::CreateInstalledAppProvider(
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
   InstalledAppProviderImpl::Create(this, std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindPolicyContainer(
+    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+        receiver) {
+  policy_container_->Bind(std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(

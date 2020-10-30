@@ -1579,7 +1579,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       render_view->GetWebView(), render_frame,
       render_frame->blink_interface_registry_.get(),
-      params->main_frame_frame_token, opener,
+      params->main_frame_frame_token,
+      ToWebPolicyContainerClient(std::move(params->policy_container)), opener,
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(params->replicated_frame_state.name),
@@ -1646,7 +1647,8 @@ void RenderFrameImpl::CreateFrame(
     CompositorDependencies* compositor_deps,
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-    bool has_committed_real_load) {
+    bool has_committed_real_load,
+    blink::mojom::PolicyContainerClientPtr policy_container) {
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the RenderView and RenderFrame for it. The
   // second block uses that to make a RenderWidget, if needed.
@@ -1693,7 +1695,8 @@ void RenderFrameImpl::CreateFrame(
         render_frame->blink_interface_registry_.get(),
         previous_sibling_web_frame,
         frame_owner_properties->To<blink::WebFrameOwnerProperties>(),
-        replicated_state.frame_owner_element_type, frame_token, opener);
+        replicated_state.frame_owner_element_type, frame_token, opener,
+        ToWebPolicyContainerClient(std::move(policy_container)));
 
     // The RenderFrame is created and inserted into the frame tree in the above
     // call to createLocalChild.

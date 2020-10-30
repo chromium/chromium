@@ -33,6 +33,7 @@ import "third_party/blink/public/mojom/frame/fullscreen.mojom";
 import "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom";
 import "third_party/blink/public/mojom/frame/lifecycle.mojom";
 import "third_party/blink/public/mojom/frame/media_player_action.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom";
@@ -430,6 +431,10 @@ interface LocalFrameHost {
   DidChangeCSPAttribute(
       mojo_base.mojom.UnguessableToken child_frame_token,
       network.mojom.ContentSecurityPolicy? parsed_csp_attribute);
+
+  // Binds LocalFrame's policy container to RenderFrameHost's one.
+  BindPolicyContainer(
+      pending_associated_receiver<blink.mojom.PolicyContainerHost> receiver);
 
   // Sent by the renderer to request a paint preview of a subframe. |clip_rect|
   // is the size of the frame in it's parent. |guid| is an an identifier for

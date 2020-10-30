@@ -860,7 +860,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     frame = MakeGarbageCollected<LocalFrame>(
         frame_client_, *page, nullptr, nullptr, nullptr,
         FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
-        nullptr, nullptr);
+        nullptr, nullptr, /* policy_container */ nullptr);
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
     frame->Init(nullptr);
   }

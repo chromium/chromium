@@ -356,7 +356,8 @@ void WebPagePopupImpl::Initialize(WebViewImpl* web_view,
       /* Frame* previous_sibling */ nullptr,
       FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
       window_agent_factory,
-      /* InterfaceRegistry* */ nullptr);
+      /* InterfaceRegistry* */ nullptr,
+      /* policy_container */ nullptr);
   frame->SetPagePopupOwner(popup_client_->OwnerElement());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
 

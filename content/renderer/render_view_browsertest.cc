@@ -44,6 +44,7 @@
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/local_frame_host_interceptor.h"
+#include "content/public/test/policy_container_utils.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
@@ -1282,7 +1283,8 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       base::UnguessableToken::Create(), replication_state,
       compositor_deps_.get(), std::move(widget_params),
       blink::mojom::FrameOwnerProperties::New(),
-      /*has_committed_real_load=*/true);
+      /*has_committed_real_load=*/true, CreateStubPolicyContainerClient());
+
   TestRenderFrame* provisional_frame =
       static_cast<TestRenderFrame*>(RenderFrameImpl::FromRoutingID(routing_id));
   EXPECT_TRUE(provisional_frame);
@@ -1350,7 +1352,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       replication_state, nullptr,
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
-      /*has_committed_real_load=*/true);
+      /*has_committed_real_load=*/true, CreateStubPolicyContainerClient());
   {
     TestRenderFrame* provisional_frame = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(routing_id));

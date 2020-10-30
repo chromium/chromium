@@ -60,16 +60,19 @@ class CORE_EXPORT WebRemoteFrameImpl final
   WebView* View() const override;
 
   // WebRemoteFrame methods:
-  WebLocalFrame* CreateLocalChild(mojom::blink::TreeScopeType,
-                                  const WebString& name,
-                                  const FramePolicy&,
-                                  WebLocalFrameClient*,
-                                  blink::InterfaceRegistry*,
-                                  WebFrame* previous_sibling,
-                                  const WebFrameOwnerProperties&,
-                                  mojom::FrameOwnerElementType,
-                                  const base::UnguessableToken& frame_token,
-                                  WebFrame* opener) override;
+  WebLocalFrame* CreateLocalChild(
+      mojom::blink::TreeScopeType,
+      const WebString& name,
+      const FramePolicy&,
+      WebLocalFrameClient*,
+      blink::InterfaceRegistry*,
+      WebFrame* previous_sibling,
+      const WebFrameOwnerProperties&,
+      mojom::FrameOwnerElementType,
+      const base::UnguessableToken& frame_token,
+      WebFrame* opener,
+      std::unique_ptr<blink::WebPolicyContainerClient> policy_container)
+      override;
   WebRemoteFrame* CreateRemoteChild(mojom::blink::TreeScopeType,
                                     const WebString& name,
                                     const FramePolicy&,

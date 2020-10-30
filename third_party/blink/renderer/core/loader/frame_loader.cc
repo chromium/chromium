@@ -1049,10 +1049,8 @@ void FrameLoader::CommitNavigation(
   }
 
   // The navigation to the initial empty document is committed directly by Blink
-  // and doesn't have a policy container.
-  //
-  // TODO(antoniosartori): Implement inheritance from the parent/opener for the
-  // initial empty document.
+  // and doesn't have a policy container, so we keep the frame's policy
+  // container (which was inherited by the parent/opener) in that case.
   if (navigation_params->policy_container) {
     frame_->SetPolicyContainer(
         PolicyContainer::CreateFromWebPolicyContainerClient(

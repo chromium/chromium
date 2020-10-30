@@ -36,4 +36,10 @@ std::unique_ptr<PolicyContainer> PolicyContainer::Clone() const {
   return copy;
 }
 
+void PolicyContainer::Bind(
+    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+        receiver) {
+  policy_container_host_receiver_.Bind(std::move(receiver));
+}
+
 }  // namespace content

@@ -104,6 +104,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/policy_container_utils.h"
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -6307,6 +6308,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
+    params->policy_container = CreateStubPolicyContainerClient();
     agent_scheduling_group->CreateFrame(std::move(params));
   }
 
@@ -6400,6 +6402,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->replication_state.unique_name = "name";
     params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
+    params->policy_container = CreateStubPolicyContainerClient();
     agent_scheduling_group->CreateFrame(std::move(params));
   }
 

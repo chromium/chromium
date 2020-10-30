@@ -1779,13 +1779,14 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
     const base::UnguessableToken& frame_token,
+    std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const FeaturePolicyFeatureState& opener_feature_state) {
   return WebLocalFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, frame_token, opener, name,
-      sandbox_flags, opener_feature_state);
+      sandbox_flags, std::move(policy_container), opener_feature_state);
 }
 
 WebLocalFrame* WebLocalFrame::CreateProvisional(
@@ -1808,6 +1809,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
+    std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
     const FeaturePolicyFeatureState& opener_feature_state) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       util::PassKey<WebLocalFrameImpl>(),
@@ -1818,7 +1820,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
-      opener, sandbox_flags, opener_feature_state);
+      opener, std::move(policy_container), sandbox_flags, opener_feature_state);
   return frame;
 }
 
@@ -1868,7 +1870,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       frame_policy.disallow_document_access
           ? nullptr
           : &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
-      previous_web_frame->Opener(), sandbox_flags, feature_state);
+      previous_web_frame->Opener(), /* policy_container */ nullptr,
+      sandbox_flags, feature_state);
 
   LocalFrame* new_frame = web_frame->GetFrame();
   new_frame->SetOwner(previous_frame->Owner());
@@ -1953,6 +1956,27 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     const AtomicString& name,
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
+    std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
+    network::mojom::blink::WebSandboxFlags sandbox_flags,
+    const FeaturePolicyFeatureState& opener_feature_state) {
+  InitializeCoreFrameInternal(
+      page, owner, parent, previous_sibling, insert_type, name,
+      window_agent_factory, opener,
+      PolicyContainer::CreateFromWebPolicyContainerClient(
+          std::move(policy_container)),
+      sandbox_flags, opener_feature_state);
+}
+
+void WebLocalFrameImpl::InitializeCoreFrameInternal(
+    Page& page,
+    FrameOwner* owner,
+    WebFrame* parent,
+    WebFrame* previous_sibling,
+    FrameInsertType insert_type,
+    const AtomicString& name,
+    WindowAgentFactory* window_agent_factory,
+    WebFrame* opener,
+    std::unique_ptr<PolicyContainer> policy_container,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const FeaturePolicyFeatureState& opener_feature_state) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
@@ -1961,7 +1985,7 @@ void WebLocalFrameImpl::InitializeCoreFrame(
   SetCoreFrame(MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), page, owner, parent_frame,
       previous_sibling_frame, insert_type, GetFrameToken(),
-      window_agent_factory, interface_registry_));
+      window_agent_factory, interface_registry_, std::move(policy_container)));
   frame_->Tree().SetName(name);
   if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled())
     frame_->SetOpenerFeatureState(opener_feature_state);
@@ -2014,13 +2038,34 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   if (!webframe_child)
     return nullptr;
 
-  webframe_child->InitializeCoreFrame(
+  // Inherit policy container from parent.
+  mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
+      policy_container_remote;
+  mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
+      policy_container_receiver =
+          policy_container_remote.InitWithNewEndpointAndPassReceiver();
+  mojom::blink::PolicyContainerDataPtr policy_container_data =
+      mojo::Clone(GetFrame()->GetPolicyContainer()->GetPolicies());
+  std::unique_ptr<PolicyContainer> policy_container =
+      std::make_unique<PolicyContainer>(std::move(policy_container_remote),
+                                        std::move(policy_container_data));
+
+  webframe_child->InitializeCoreFrameInternal(
       *GetFrame()->GetPage(), owner_element, this, LastChild(),
       FrameInsertType::kInsertInConstructor, name,
       owner_element->GetFramePolicy().disallow_document_access
           ? nullptr
           : &GetFrame()->window_agent_factory(),
-      nullptr);
+      nullptr, std::move(policy_container));
+
+  // TODO(antoniosartori): Ideally, we could have sent the mojo receiver to the
+  // Browser with the CreateChildFrame IPC. Unfortunately, that's not so easy,
+  // both because that is a legacy (non-mojo) IPC sync call, and because it
+  // starts from the content layer, so it would require additional type
+  // conversions. But we should revisit this after that IPC gets reworked (see
+  // https://crbug.com/1064336).
+  webframe_child->GetFrame()->GetLocalFrameHostRemote().BindPolicyContainer(
+      std::move(policy_container_receiver));
 
   DCHECK(webframe_child->Parent());
   return webframe_child->GetFrame();
