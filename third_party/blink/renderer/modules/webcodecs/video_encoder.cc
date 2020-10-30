@@ -11,7 +11,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "media/base/async_destroy_video_encoder.h"
 #include "media/base/mime_util.h"
+#include "media/base/offloading_video_encoder.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
@@ -21,7 +23,6 @@
 #if BUILDFLAG(ENABLE_LIBVPX)
 #include "media/video/vpx_video_encoder.h"
 #endif
-#include "media/base/async_destroy_video_encoder.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
@@ -288,31 +289,27 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
   switch (config.acc_pref) {
     case AccelerationPreference::kRequire:
       return CreateAcceleratedVideoEncoder(config.profile, config.options);
-    case AccelerationPreference::kAllow: {
-      auto result =
-          CreateAcceleratedVideoEncoder(config.profile, config.options);
-      if (result)
+    case AccelerationPreference::kAllow:
+      if (auto result =
+              CreateAcceleratedVideoEncoder(config.profile, config.options))
         return result;
-      switch (config.codec) {
-        case media::kCodecVP8:
-        case media::kCodecVP9:
-          return CreateVpxVideoEncoder();
-        case media::kCodecH264:
-          return CreateOpenH264VideoEncoder();
-        default:
-          return nullptr;
-      }
-    }
+      FALLTHROUGH;
     case AccelerationPreference::kDeny: {
+      std::unique_ptr<media::VideoEncoder> result;
       switch (config.codec) {
         case media::kCodecVP8:
         case media::kCodecVP9:
-          return CreateVpxVideoEncoder();
+          result = CreateVpxVideoEncoder();
+          break;
         case media::kCodecH264:
-          return CreateOpenH264VideoEncoder();
+          result = CreateOpenH264VideoEncoder();
+          break;
         default:
           return nullptr;
       }
+      if (!result)
+        return nullptr;
+      return std::make_unique<media::OffloadingVideoEncoder>(std::move(result));
     }
 
     default:

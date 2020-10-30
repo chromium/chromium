@@ -100,6 +100,11 @@ std::string MockVideoDecoder::GetDisplayName() const {
   return decoder_name_;
 }
 
+MockVideoEncoder::MockVideoEncoder() = default;
+MockVideoEncoder::~MockVideoEncoder() {
+  Dtor();
+}
+
 MockAudioDecoder::MockAudioDecoder() : MockAudioDecoder("MockAudioDecoder") {}
 
 MockAudioDecoder::MockAudioDecoder(std::string decoder_name)

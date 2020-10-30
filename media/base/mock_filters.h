@@ -42,6 +42,7 @@
 #include "media/base/time_source.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
+#include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_renderer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -259,6 +260,42 @@ class MockVideoDecoder : public VideoDecoder {
   const bool supports_decryption_;
   const std::string decoder_name_;
   DISALLOW_COPY_AND_ASSIGN(MockVideoDecoder);
+};
+
+class MockVideoEncoder : public VideoEncoder {
+ public:
+  MockVideoEncoder();
+  ~MockVideoEncoder() override;
+
+  // VideoEncoder implementation.
+  MOCK_METHOD(void,
+              Initialize,
+              (VideoCodecProfile profile,
+               const VideoEncoder::Options& options,
+               VideoEncoder::OutputCB output_cb,
+               VideoEncoder::StatusCB done_cb),
+              (override));
+
+  MOCK_METHOD(void,
+              Encode,
+              (scoped_refptr<VideoFrame> frame,
+               bool key_frame,
+               VideoEncoder::StatusCB done_cb),
+              (override));
+
+  MOCK_METHOD(void,
+              ChangeOptions,
+              (const VideoEncoder::Options& options,
+               VideoEncoder::StatusCB done_cb),
+              (override));
+
+  MOCK_METHOD(void, Flush, (VideoEncoder::StatusCB done_cb), (override));
+
+  // A function for mocking destructor calls
+  MOCK_METHOD(void, Dtor, ());
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockVideoEncoder);
 };
 
 class MockAudioDecoder : public AudioDecoder {
