@@ -179,11 +179,14 @@ class CAPTURE_EXPORT VideoCaptureDevice
         int frame_feedback_id = 0) = 0;
 
     // Captured a new video frame. The data for this frame is in |handle|,
-    // which is owned by the platform-specific capture device, and is kept valid
-    // by |read_access_permission|.
+    // which is owned by the platform-specific capture device. It is the
+    // responsibilty of the implementation to prevent the buffer in |handle|
+    // from being reused by the external capturer. In practice, this is used
+    // only on macOS, the external capturer maintains a CVPixelBufferPool, and
+    // gfx::ScopedInUseIOSurface is used to prevent reuse of buffers until all
+    // consumers have consumed them.
     virtual void OnIncomingCapturedExternalBuffer(
         gfx::GpuMemoryBufferHandle handle,
-        std::unique_ptr<Buffer::ScopedAccessPermission> read_access_permission,
         const VideoCaptureFormat& format,
         const gfx::ColorSpace& color_space,
         base::TimeTicks reference_time,

@@ -30,9 +30,6 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
   MOCK_METHOD(void,
               ReceiveExternalGpuMemoryBufferFrame,
               (gfx::GpuMemoryBufferHandle handle,
-               std::unique_ptr<
-                   VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-                   read_access_permission,
                const VideoCaptureFormat& frame_format,
                const gfx::ColorSpace color_space,
                base::TimeDelta timestamp),

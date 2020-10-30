@@ -82,7 +82,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
                                    int frame_feedback_id = 0) override;
   void OnIncomingCapturedExternalBuffer(
       gfx::GpuMemoryBufferHandle handle,
-      std::unique_ptr<Buffer::ScopedAccessPermission> read_access_permission,
       const VideoCaptureFormat& format,
       const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,

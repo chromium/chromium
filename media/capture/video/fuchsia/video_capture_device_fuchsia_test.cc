@@ -164,7 +164,6 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
   }
   void OnIncomingCapturedExternalBuffer(
       gfx::GpuMemoryBufferHandle handle,
-      std::unique_ptr<Buffer::ScopedAccessPermission> read_access_permission,
       const VideoCaptureFormat& format,
       const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,

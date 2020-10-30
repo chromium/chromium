@@ -466,8 +466,6 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
 
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     gfx::GpuMemoryBufferHandle handle,
-    std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-        scoped_access_permission_to_wrap,
     const VideoCaptureFormat& format,
     const gfx::ColorSpace& color_space,
     base::TimeTicks reference_time,

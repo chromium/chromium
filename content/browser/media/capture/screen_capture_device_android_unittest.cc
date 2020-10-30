@@ -34,10 +34,8 @@ class MockDeviceClient : public media::VideoCaptureDevice::Client {
                     base::TimeTicks reference_time,
                     base::TimeDelta timestamp,
                     int frame_feedback_id));
-  MOCK_METHOD6(OnIncomingCapturedExternalBuffer,
+  MOCK_METHOD5(OnIncomingCapturedExternalBuffer,
                void(gfx::GpuMemoryBufferHandle handle,
-                    std::unique_ptr<Buffer::ScopedAccessPermission>
-                        read_access_permission,
                     const media::VideoCaptureFormat& format,
                     const gfx::ColorSpace& color_space,
                     base::TimeTicks reference_time,

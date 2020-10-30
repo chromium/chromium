@@ -804,8 +804,6 @@ void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
 
 void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
     gfx::GpuMemoryBufferHandle handle,
-    std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-        read_access_permission,
     const VideoCaptureFormat& format,
     const gfx::ColorSpace color_space,
     base::TimeDelta timestamp) {
@@ -816,9 +814,9 @@ void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
                      ", and expected " + capture_format_.frame_size.ToString());
     return;
   }
-  client_->OnIncomingCapturedExternalBuffer(
-      std::move(handle), std::move(read_access_permission), format, color_space,
-      base::TimeTicks::Now(), timestamp);
+  client_->OnIncomingCapturedExternalBuffer(std::move(handle), format,
+                                            color_space, base::TimeTicks::Now(),
+                                            timestamp);
 }
 
 void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,

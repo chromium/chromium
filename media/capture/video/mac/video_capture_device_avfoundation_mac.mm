@@ -48,17 +48,6 @@ base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
   return timestamp;
 }
 
-class CMSampleBufferScopedAccessPermission
-    : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
- public:
-  CMSampleBufferScopedAccessPermission(CMSampleBufferRef buffer)
-      : buffer_(buffer, base::scoped_policy::RETAIN) {}
-  ~CMSampleBufferScopedAccessPermission() override { buffer_.reset(); }
-
- private:
-  base::ScopedCFTypeRef<CMSampleBufferRef> buffer_;
-};
-
 }  // anonymous namespace
 
 namespace media {
@@ -608,7 +597,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   _lock.AssertAcquired();
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
       std::move(handle),
-      std::make_unique<CMSampleBufferScopedAccessPermission>(sampleBuffer),
       captureFormat, colorSpace, timestamp);
   return YES;
 }
