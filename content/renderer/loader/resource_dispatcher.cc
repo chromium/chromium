@@ -25,7 +25,6 @@
 #include "content/common/navigation_params.h"
 #include "content/public/renderer/request_peer.h"
 #include "content/public/renderer/resource_dispatcher_delegate.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/sync_load_context.h"
 #include "content/renderer/loader/url_loader_client_impl.h"
 #include "content/renderer/render_frame_impl.h"

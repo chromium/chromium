@@ -22,6 +22,7 @@
 
 namespace blink {
 class ResourceLoadInfoNotifierWrapper;
+class WebURLRequestExtraData;
 }  // namespace blink
 
 namespace content {
@@ -72,7 +73,7 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
   // WebURLLoader methods:
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<blink::WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
@@ -88,7 +89,7 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
           resource_load_info_notifier_wrapper) override;
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<blink::WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

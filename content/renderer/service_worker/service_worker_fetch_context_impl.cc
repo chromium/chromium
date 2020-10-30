@@ -10,13 +10,13 @@
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/url_loader_throttle_provider.h"
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 
 namespace content {
 
@@ -118,9 +118,10 @@ void ServiceWorkerFetchContextImpl::WillSendRequest(
     request.SetHttpHeaderField(blink::WebString::FromUTF8(kDoNotTrackHeader),
                                "1");
   }
-  auto extra_data = base::MakeRefCounted<RequestExtraData>();
-  extra_data->set_originated_from_service_worker(true);
-  extra_data->set_render_frame_id(service_worker_route_id_);
+  auto url_request_extra_data =
+      base::MakeRefCounted<blink::WebURLRequestExtraData>();
+  url_request_extra_data->set_originated_from_service_worker(true);
+  url_request_extra_data->set_render_frame_id(service_worker_route_id_);
 
   const bool needs_to_skip_throttling =
       static_cast<GURL>(request.Url()) == script_url_to_skip_throttling_ &&
@@ -138,11 +139,11 @@ void ServiceWorkerFetchContextImpl::WillSendRequest(
     // worker scripts.
     script_url_to_skip_throttling_ = GURL();
   } else if (throttle_provider_) {
-    extra_data->set_url_loader_throttles(
+    url_request_extra_data->set_url_loader_throttles(
         throttle_provider_->CreateThrottles(MSG_ROUTING_NONE, request));
   }
 
-  request.SetExtraData(std::move(extra_data));
+  request.SetURLRequestExtraData(std::move(url_request_extra_data));
 
   if (!renderer_preferences_.enable_referrers) {
     request.SetReferrerString(blink::WebString());

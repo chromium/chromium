@@ -15,6 +15,7 @@
 namespace blink {
 
 class WebData;
+class WebURLRequestExtraData;
 class WebURLLoaderClient;
 class WebURLLoaderMockFactoryImpl;
 class WebURLLoaderTestDelegate;
@@ -45,7 +46,7 @@ class WebURLLoaderMock : public WebURLLoader {
   // WebURLLoader methods:
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
@@ -61,7 +62,7 @@ class WebURLLoaderMock : public WebURLLoader {
           resource_load_info_notifier_wrapper) override;
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

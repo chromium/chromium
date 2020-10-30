@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 
 namespace blink {
 
@@ -33,7 +34,7 @@ InternetDisconnectedWebURLLoader::~InternetDisconnectedWebURLLoader() = default;
 
 void InternetDisconnectedWebURLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     int requestor_id,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
@@ -52,7 +53,7 @@ void InternetDisconnectedWebURLLoader::LoadSynchronously(
 
 void InternetDisconnectedWebURLLoader::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     int requestor_id,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

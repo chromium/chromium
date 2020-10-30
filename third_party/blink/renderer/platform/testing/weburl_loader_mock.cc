@@ -14,6 +14,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -96,7 +97,7 @@ WebURL WebURLLoaderMock::ServeRedirect(
 
 void WebURLLoaderMock::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     int requestor_id,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
@@ -117,7 +118,7 @@ void WebURLLoaderMock::LoadSynchronously(
 
 void WebURLLoaderMock::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+    scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     int requestor_id,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

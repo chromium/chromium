@@ -2467,7 +2467,7 @@ source_set("unit_tests") {
     "graphics/test/stub_image.h",
 
     # Tests migrated from the web/tests directory.
-    "exported/web_url_request_test.cc",
+    "exported/web_url_request_extra_data_test.cc",
     "exported/web_url_response_test.cc",
     "timer_perf_test.cc",
   ]

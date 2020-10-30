@@ -1235,7 +1235,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     bool no_mime_sniffing = request.GetRequestContext() ==
                             blink::mojom::blink::RequestContextType::FETCH;
     loader_->LoadSynchronously(
-        std::move(network_resource_request), request.GetExtraData(),
+        std::move(network_resource_request), request.GetURLRequestExtraData(),
         request.RequestorID(), request.DownloadToBlob(), no_mime_sniffing,
         request.TimeoutInterval(), this, response_out, error_out, data_out,
         encoded_data_length, encoded_body_length, downloaded_blob,
@@ -1299,7 +1299,7 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
   if (form_body)
     request_body_ = ResourceRequestBody(std::move(form_body));
   loader_->LoadAsynchronously(
-      std::move(network_resource_request), request.GetExtraData(),
+      std::move(network_resource_request), request.GetURLRequestExtraData(),
       request.RequestorID(), no_mime_sniffing,
       Context().CreateResourceLoadInfoNotifierWrapper(), this);
   if (code_cache_request_) {

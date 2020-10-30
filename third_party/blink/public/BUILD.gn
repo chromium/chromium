@@ -262,6 +262,7 @@ source_set("blink_headers") {
     "platform/web_url_loader_mock_factory.h",
     "platform/web_url_loader_test_delegate.h",
     "platform/web_url_request.h",
+    "platform/web_url_request_extra_data.h",
     "platform/web_url_request_util.h",
     "platform/web_url_response.h",
     "platform/web_vector.h",

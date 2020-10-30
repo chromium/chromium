@@ -21,7 +21,6 @@
 #include "content/public/renderer/url_loader_throttle_provider.h"
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "content/renderer/loader/child_url_loader_factory_bundle.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -36,6 +35,7 @@
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 
 namespace content {
 
@@ -450,14 +450,15 @@ void WebWorkerFetchContextImpl::WillSendRequest(blink::WebURLRequest& request) {
                                "1");
   }
 
-  auto extra_data = base::MakeRefCounted<RequestExtraData>();
-  extra_data->set_render_frame_id(ancestor_frame_id_);
-  extra_data->set_frame_request_blocker(frame_request_blocker_);
+  auto url_request_extra_data =
+      base::MakeRefCounted<blink::WebURLRequestExtraData>();
+  url_request_extra_data->set_render_frame_id(ancestor_frame_id_);
+  url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
   if (throttle_provider_) {
-    extra_data->set_url_loader_throttles(
+    url_request_extra_data->set_url_loader_throttles(
         throttle_provider_->CreateThrottles(ancestor_frame_id_, request));
   }
-  request.SetExtraData(std::move(extra_data));
+  request.SetURLRequestExtraData(std::move(url_request_extra_data));
 
   if (g_rewrite_url)
     request.SetUrl(g_rewrite_url(request.Url().GetString().Utf8(), false));

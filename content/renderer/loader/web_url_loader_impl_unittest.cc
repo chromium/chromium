@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/request_peer.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "url/gurl.h"
@@ -307,7 +307,8 @@ class WebURLLoaderImplTest : public testing::Test {
         static_cast<int>(blink::mojom::ResourceType::kSubResource);
     request->priority = net::IDLE;
     client()->loader()->LoadAsynchronously(
-        std::move(request), /*extra_data=*/nullptr, /*requestor_id=*/0,
+        std::move(request), /*url_request_extra_data=*/nullptr,
+        /*requestor_id=*/0,
         /*no_mime_sniffing=*/false,
         std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
@@ -667,7 +668,8 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
   blink::WebBlobInfo downloaded_blob;
 
   client()->loader()->LoadSynchronously(
-      std::move(request), /*extra_data=*/nullptr, /*requestor_id=*/0,
+      std::move(request), /*url_request_extra_data=*/nullptr,
+      /*requestor_id=*/0,
       /*pass_response_pipe_to_client=*/false, /*no_mime_sniffing=*/false,
       base::TimeDelta(), nullptr, response, error, data, encoded_data_length,
       encoded_body_length, downloaded_blob,

@@ -49,7 +49,6 @@
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_process.h"

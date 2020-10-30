@@ -28,6 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,7 @@ namespace blink {
 
 namespace {
 
-class RequestTestExtraData : public WebURLRequest::ExtraData {
+class RequestTestExtraData : public WebURLRequestExtraData {
  public:
   explicit RequestTestExtraData(bool* alive) : alive_(alive) { *alive = true; }
 
@@ -48,25 +49,30 @@ class RequestTestExtraData : public WebURLRequest::ExtraData {
 
 }  // anonymous namespace
 
-TEST(WebURLRequestTest, ExtraData) {
+TEST(WebURLRequestExtraDataTest, ExtraData) {
   bool alive = false;
   {
     WebURLRequest url_request;
-    auto extra_data = base::MakeRefCounted<RequestTestExtraData>(&alive);
+    auto url_request_extra_data =
+        base::MakeRefCounted<RequestTestExtraData>(&alive);
     EXPECT_TRUE(alive);
 
-    auto* raw_extra_data_pointer = extra_data.get();
-    url_request.SetExtraData(std::move(extra_data));
-    EXPECT_EQ(raw_extra_data_pointer, url_request.GetExtraData());
+    auto* raw_request_extra_data_pointer = url_request_extra_data.get();
+    url_request.SetURLRequestExtraData(std::move(url_request_extra_data));
+    EXPECT_EQ(raw_request_extra_data_pointer,
+              url_request.GetURLRequestExtraData());
     {
       WebURLRequest other_url_request;
       other_url_request.CopyFrom(url_request);
       EXPECT_TRUE(alive);
-      EXPECT_EQ(raw_extra_data_pointer, other_url_request.GetExtraData());
-      EXPECT_EQ(raw_extra_data_pointer, url_request.GetExtraData());
+      EXPECT_EQ(raw_request_extra_data_pointer,
+                other_url_request.GetURLRequestExtraData());
+      EXPECT_EQ(raw_request_extra_data_pointer,
+                url_request.GetURLRequestExtraData());
     }
     EXPECT_TRUE(alive);
-    EXPECT_EQ(raw_extra_data_pointer, url_request.GetExtraData());
+    EXPECT_EQ(raw_request_extra_data_pointer,
+              url_request.GetURLRequestExtraData());
   }
   EXPECT_FALSE(alive);
 }

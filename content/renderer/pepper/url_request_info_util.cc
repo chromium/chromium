@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/service_names.mojom.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_file_ref_renderer_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -33,6 +32,7 @@
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
@@ -247,10 +247,11 @@ bool CreateWebURLRequest(PP_Instance instance,
     dest->SetRequestedWithHeader(WebString::FromUTF8(name_version));
 
   if (data->has_custom_user_agent) {
-    auto extra_data = base::MakeRefCounted<RequestExtraData>();
-    extra_data->set_custom_user_agent(
+    auto url_request_extra_data =
+        base::MakeRefCounted<blink::WebURLRequestExtraData>();
+    url_request_extra_data->set_custom_user_agent(
         WebString::FromUTF8(data->custom_user_agent));
-    dest->SetExtraData(std::move(extra_data));
+    dest->SetURLRequestExtraData(std::move(url_request_extra_data));
   }
 
   dest->SetRequestContext(blink::mojom::RequestContextType::PLUGIN);

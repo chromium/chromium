@@ -14,6 +14,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -82,7 +83,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     ~NoopWebURLLoader() override = default;
     void LoadSynchronously(
         std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
         int requestor_id,
         bool pass_response_pipe_to_client,
         bool no_mime_sniffing,
@@ -100,7 +101,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     }
     void LoadAsynchronously(
         std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
         int requestor_id,
         bool no_mime_sniffing,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

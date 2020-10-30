@@ -36,7 +36,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/renderer/request_peer.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/variations_render_thread_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -84,6 +83,7 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_security_policy.h"
@@ -300,17 +300,19 @@ void SetSecurityStyleAndDetails(const GURL& url,
   response->SetSecurityDetails(webSecurityDetails);
 }
 
-bool IsBannedCrossSiteAuth(network::ResourceRequest* resource_request,
-                           WebURLRequest::ExtraData* passed_extra_data) {
+bool IsBannedCrossSiteAuth(
+    network::ResourceRequest* resource_request,
+    blink::WebURLRequestExtraData* passed_url_request_extra_data) {
   auto& request_url = resource_request->url;
   auto& first_party = resource_request->site_for_cookies;
 
   bool allow_cross_origin_auth_prompt = false;
-  if (passed_extra_data) {
-    RequestExtraData* extra_data =
-        static_cast<RequestExtraData*>(passed_extra_data);
+  if (passed_url_request_extra_data) {
+    blink::WebURLRequestExtraData* url_request_extra_data =
+        static_cast<blink::WebURLRequestExtraData*>(
+            passed_url_request_extra_data);
     allow_cross_origin_auth_prompt =
-        extra_data->allow_cross_origin_auth_prompt();
+        url_request_extra_data->allow_cross_origin_auth_prompt();
   }
 
   if (first_party.IsFirstPartyWithSchemefulMode(
@@ -378,15 +380,16 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
   void SetDefersLoading(bool value);
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value);
-  void Start(std::unique_ptr<network::ResourceRequest> request,
-             scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
-             int requestor_id,
-             bool pass_response_pipe_to_client,
-             bool no_mime_sniffing,
-             base::TimeDelta timeout_interval,
-             blink::SyncLoadResponse* sync_load_response,
-             std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-                 resource_load_info_notifier_wrapper);
+  void Start(
+      std::unique_ptr<network::ResourceRequest> request,
+      scoped_refptr<blink::WebURLRequestExtraData> url_request_extra_data,
+      int requestor_id,
+      bool pass_response_pipe_to_client,
+      bool no_mime_sniffing,
+      base::TimeDelta timeout_interval,
+      blink::SyncLoadResponse* sync_load_response,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper);
 
   void OnUploadProgress(uint64_t position, uint64_t size);
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
@@ -535,7 +538,7 @@ void WebURLLoaderImpl::Context::DidChangePriority(
 
 void WebURLLoaderImpl::Context::Start(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<blink::WebURLRequest::ExtraData> passed_extra_data,
+    scoped_refptr<blink::WebURLRequestExtraData> passed_url_request_extra_data,
     int requestor_id,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
@@ -559,7 +562,8 @@ void WebURLLoaderImpl::Context::Start(
 
   // TODO(yhirano): Move the logic below to blink/platform/loader.
   if (resource_type == blink::mojom::ResourceType::kImage &&
-      IsBannedCrossSiteAuth(request.get(), passed_extra_data.get())) {
+      IsBannedCrossSiteAuth(request.get(),
+                            passed_url_request_extra_data.get())) {
     // Prevent third-party image content from prompting for login, as this
     // is often a scam to extract credentials for another domain from the
     // user. Only block image loads, as the attack applies largely to the
@@ -572,15 +576,17 @@ void WebURLLoaderImpl::Context::Start(
     request->load_flags |= net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
   }
 
-  scoped_refptr<RequestExtraData> empty_extra_data;
-  RequestExtraData* extra_data;
-  if (passed_extra_data) {
-    extra_data = static_cast<RequestExtraData*>(passed_extra_data.get());
+  scoped_refptr<blink::WebURLRequestExtraData> empty_url_request_extra_data;
+  blink::WebURLRequestExtraData* url_request_extra_data;
+  if (passed_url_request_extra_data) {
+    url_request_extra_data = static_cast<blink::WebURLRequestExtraData*>(
+        passed_url_request_extra_data.get());
   } else {
-    empty_extra_data = base::MakeRefCounted<RequestExtraData>();
-    extra_data = empty_extra_data.get();
+    empty_url_request_extra_data =
+        base::MakeRefCounted<blink::WebURLRequestExtraData>();
+    url_request_extra_data = empty_url_request_extra_data.get();
   }
-  extra_data->CopyToResourceRequest(request.get());
+  url_request_extra_data->CopyToResourceRequest(request.get());
 
   auto peer = std::make_unique<WebURLLoaderImpl::RequestPeerImpl>(this);
 
@@ -592,12 +598,13 @@ void WebURLLoaderImpl::Context::Start(
     request->corb_excluded = true;
   }
 
-  auto throttles = extra_data->TakeURLLoaderThrottles();
+  auto throttles =
+      url_request_extra_data->TakeURLLoaderThrottles().ReleaseVector();
   // The frame request blocker is only for a frame's subresources.
-  if (extra_data->frame_request_blocker() &&
+  if (url_request_extra_data->frame_request_blocker() &&
       !blink::IsResourceTypeFrame(resource_type)) {
-    auto throttle =
-        extra_data->frame_request_blocker()->GetThrottleIfRequestsBlocked();
+    auto throttle = url_request_extra_data->frame_request_blocker()
+                        ->GetThrottleIfRequestsBlocked();
     if (throttle)
       throttles.push_back(std::move(throttle));
   }
@@ -997,7 +1004,7 @@ WebURLError WebURLLoaderImpl::PopulateURLError(
 
 void WebURLLoaderImpl::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
+    scoped_refptr<blink::WebURLRequestExtraData> url_request_extra_data,
     int requestor_id,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
@@ -1018,7 +1025,7 @@ void WebURLLoaderImpl::LoadSynchronously(
   context_->set_client(client);
 
   const bool report_raw_headers = request->report_raw_headers;
-  context_->Start(std::move(request), std::move(request_extra_data),
+  context_->Start(std::move(request), std::move(url_request_extra_data),
                   requestor_id, pass_response_pipe_to_client, no_mime_sniffing,
                   timeout_interval, &sync_load_response,
                   std::move(resource_load_info_notifier_wrapper));
@@ -1064,7 +1071,7 @@ void WebURLLoaderImpl::LoadSynchronously(
 
 void WebURLLoaderImpl::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
+    scoped_refptr<blink::WebURLRequestExtraData> url_request_extra_data,
     int requestor_id,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
@@ -1075,7 +1082,7 @@ void WebURLLoaderImpl::LoadAsynchronously(
   DCHECK(!context_->client());
 
   context_->set_client(client);
-  context_->Start(std::move(request), std::move(request_extra_data),
+  context_->Start(std::move(request), std::move(url_request_extra_data),
                   requestor_id,
                   /*pass_response_pipe_to_client=*/false, no_mime_sniffing,
                   base::TimeDelta(), nullptr,

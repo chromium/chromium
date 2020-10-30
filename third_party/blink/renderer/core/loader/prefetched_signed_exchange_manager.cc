@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -67,7 +68,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
   // WebURLLoader methods:
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
@@ -85,7 +86,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
   }
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
@@ -93,7 +94,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       WebURLLoaderClient* client) override {
     if (url_loader_) {
       url_loader_->LoadAsynchronously(
-          std::move(request), std::move(request_extra_data), requestor_id,
+          std::move(request), std::move(url_request_extra_data), requestor_id,
           no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
           client);
       return;
@@ -103,7 +104,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     // |this| here.
     pending_method_calls_.push(WTF::Bind(
         &PrefetchedSignedExchangeLoader::LoadAsynchronously, GetWeakPtr(),
-        std::move(request), std::move(request_extra_data), requestor_id,
+        std::move(request), std::move(url_request_extra_data), requestor_id,
         no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
         WTF::Unretained(client)));
   }

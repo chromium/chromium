@@ -69,6 +69,7 @@ enum class RequestContextFrameType : int32_t;
 class ResourceRequest;
 class WebHTTPBody;
 class WebHTTPHeaderVisitor;
+class WebURLRequestExtraData;
 class WebSecurityOrigin;
 class WebString;
 class WebURL;
@@ -86,56 +87,6 @@ class WebURLRequest {
     kVeryHigh,
     kLowest = kVeryLow,
     kHighest = kVeryHigh,
-  };
-
-  class ExtraData : public base::RefCounted<ExtraData> {
-   public:
-    void set_render_frame_id(int render_frame_id) {
-      render_frame_id_ = render_frame_id;
-    }
-    void set_is_main_frame(bool is_main_frame) {
-      is_main_frame_ = is_main_frame;
-    }
-    ui::PageTransition transition_type() const { return transition_type_; }
-    void set_transition_type(ui::PageTransition transition_type) {
-      transition_type_ = transition_type;
-    }
-
-    // The request is for a prefetch-only client (i.e. running NoStatePrefetch)
-    // and should use LOAD_PREFETCH network flags.
-    bool is_for_no_state_prefetch() const { return is_for_no_state_prefetch_; }
-    void set_is_for_no_state_prefetch(bool prefetch) {
-      is_for_no_state_prefetch_ = prefetch;
-    }
-
-    // true if the request originated from within a service worker e.g. due to
-    // a fetch() in the service worker script.
-    void set_originated_from_service_worker(
-        bool originated_from_service_worker) {
-      originated_from_service_worker_ = originated_from_service_worker;
-    }
-
-    // Determines whether SameSite cookies will be attached to the request
-    // even when the request looks cross-site.
-    bool force_ignore_site_for_cookies() const {
-      return force_ignore_site_for_cookies_;
-    }
-    void set_force_ignore_site_for_cookies(bool attach) {
-      force_ignore_site_for_cookies_ = attach;
-    }
-
-   protected:
-    friend class base::RefCounted<ExtraData>;
-    virtual ~ExtraData() = default;
-
-    BLINK_PLATFORM_EXPORT ExtraData();
-
-    int render_frame_id_;
-    bool is_main_frame_ = false;
-    ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
-    bool is_for_no_state_prefetch_ = false;
-    bool originated_from_service_worker_ = false;
-    bool force_ignore_site_for_cookies_ = false;
   };
 
   BLINK_PLATFORM_EXPORT ~WebURLRequest();
@@ -291,8 +242,10 @@ class WebURLRequest {
   // deleted when the last resource request is destroyed. Setting the extra
   // data pointer will cause the underlying resource request to be
   // dissociated from any existing non-null extra data pointer.
-  BLINK_PLATFORM_EXPORT const scoped_refptr<ExtraData>& GetExtraData() const;
-  BLINK_PLATFORM_EXPORT void SetExtraData(scoped_refptr<ExtraData>);
+  BLINK_PLATFORM_EXPORT const scoped_refptr<WebURLRequestExtraData>&
+  GetURLRequestExtraData() const;
+  BLINK_PLATFORM_EXPORT void SetURLRequestExtraData(
+      scoped_refptr<WebURLRequestExtraData>);
 
   // The request is downloaded to the network cache, but not rendered or
   // executed.

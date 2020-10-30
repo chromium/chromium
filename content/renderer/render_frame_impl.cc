@@ -97,7 +97,6 @@
 #include "content/renderer/impression_conversions.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
-#include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/tracked_child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
@@ -180,6 +179,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -554,9 +554,10 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->source_location.url.Latin1(), info->source_location.line_number,
       info->source_location.column_number);
 
-  const RequestExtraData* extra_data =
-      static_cast<RequestExtraData*>(info->url_request.GetExtraData().get());
-  DCHECK(extra_data);
+  const blink::WebURLRequestExtraData* url_request_extra_data =
+      static_cast<blink::WebURLRequestExtraData*>(
+          info->url_request.GetURLRequestExtraData().get());
+  DCHECK(url_request_extra_data);
 
   // Convert from WebVector<int> to std::vector<int>.
   std::vector<int> initiator_origin_trial_features(
@@ -581,8 +582,8 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
 
   return mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),
-      std::move(referrer), extra_data->transition_type(), navigation_type,
-      download_policy,
+      std::move(referrer), url_request_extra_data->transition_type(),
+      navigation_type, download_policy,
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem, GURL(),
       GURL(),
       static_cast<blink::PreviewsState>(info->url_request.GetPreviewsState()),
@@ -4737,11 +4738,12 @@ void RenderFrameImpl::WillSendRequestInternal(
   // agent. This needs to be done here, after WebKit is through with setting the
   // user agent on its own.
   WebString custom_user_agent;
-  if (request.GetExtraData()) {
-    RequestExtraData* old_extra_data =
-        static_cast<RequestExtraData*>(request.GetExtraData().get());
+  if (request.GetURLRequestExtraData()) {
+    blink::WebURLRequestExtraData* old_request_extra_data =
+        static_cast<blink::WebURLRequestExtraData*>(
+            request.GetURLRequestExtraData().get());
 
-    custom_user_agent = old_extra_data->custom_user_agent();
+    custom_user_agent = old_request_extra_data->custom_user_agent();
     if (!custom_user_agent.IsNull()) {
       if (custom_user_agent.IsEmpty())
         request.ClearHttpHeaderField("User-Agent");
@@ -4751,20 +4753,23 @@ void RenderFrameImpl::WillSendRequestInternal(
   }
 
   WebDocument frame_document = frame_->GetDocument();
-  if (!request.GetExtraData())
-    request.SetExtraData(base::MakeRefCounted<RequestExtraData>());
-  auto* extra_data =
-      static_cast<RequestExtraData*>(request.GetExtraData().get());
-  extra_data->set_custom_user_agent(custom_user_agent);
-  extra_data->set_render_frame_id(routing_id_);
-  extra_data->set_is_main_frame(IsMainFrame());
-  extra_data->set_transition_type(transition_type);
+  if (!request.GetURLRequestExtraData())
+    request.SetURLRequestExtraData(
+        base::MakeRefCounted<blink::WebURLRequestExtraData>());
+  auto* url_request_extra_data = static_cast<blink::WebURLRequestExtraData*>(
+      request.GetURLRequestExtraData().get());
+  url_request_extra_data->set_custom_user_agent(custom_user_agent);
+  url_request_extra_data->set_render_frame_id(routing_id_);
+  url_request_extra_data->set_is_main_frame(IsMainFrame());
+  url_request_extra_data->set_transition_type(transition_type);
   bool is_for_no_state_prefetch =
       GetContentClient()->renderer()->IsPrefetchOnly(this, request);
-  extra_data->set_is_for_no_state_prefetch(is_for_no_state_prefetch);
-  extra_data->set_force_ignore_site_for_cookies(force_ignore_site_for_cookies);
-  extra_data->set_frame_request_blocker(frame_request_blocker_);
-  extra_data->set_allow_cross_origin_auth_prompt(
+  url_request_extra_data->set_is_for_no_state_prefetch(
+      is_for_no_state_prefetch);
+  url_request_extra_data->set_force_ignore_site_for_cookies(
+      force_ignore_site_for_cookies);
+  url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
+  url_request_extra_data->set_allow_cross_origin_auth_prompt(
       render_view_->GetRendererPreferences().allow_cross_origin_auth_prompt);
 
   request.SetDownloadToNetworkCacheOnly(is_for_no_state_prefetch &&
@@ -4775,7 +4780,7 @@ void RenderFrameImpl::WillSendRequestInternal(
   RenderThreadImpl* render_thread = RenderThreadImpl::current();
   if (!for_redirect && render_thread &&
       render_thread->url_loader_throttle_provider()) {
-    extra_data->set_url_loader_throttles(
+    url_request_extra_data->set_url_loader_throttles(
         render_thread->url_loader_throttle_provider()->CreateThrottles(
             routing_id_, request));
   }
@@ -6167,8 +6172,10 @@ void RenderFrameImpl::BeginNavigationInternal(
   WillSendRequestInternal(request, for_main_frame, transition_type,
                           ForRedirect(false));
 
-  if (!info->url_request.GetExtraData())
-    info->url_request.SetExtraData(base::MakeRefCounted<RequestExtraData>());
+  if (!info->url_request.GetURLRequestExtraData()) {
+    info->url_request.SetURLRequestExtraData(
+        base::MakeRefCounted<blink::WebURLRequestExtraData>());
+  }
 
   // TODO(clamy): Same-document navigations should not be sent back to the
   // browser.
@@ -6233,7 +6240,8 @@ void RenderFrameImpl::BeginNavigationInternal(
           searchable_form_encoding, client_side_redirect_url,
           initiator ? base::make_optional<base::Value>(std::move(*initiator))
                     : base::nullopt,
-          info->url_request.GetExtraData()->force_ignore_site_for_cookies(),
+          info->url_request.GetURLRequestExtraData()
+              ->force_ignore_site_for_cookies(),
           info->url_request.TrustTokenParams()
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,

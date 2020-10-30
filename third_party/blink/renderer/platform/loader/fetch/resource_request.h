@@ -43,7 +43,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
-#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -257,11 +257,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   // Extra data associated with this request.
-  const scoped_refptr<WebURLRequest::ExtraData>& GetExtraData() const {
-    return extra_data_;
+  const scoped_refptr<WebURLRequestExtraData>& GetURLRequestExtraData() const {
+    return url_request_extra_data_;
   }
-  void SetExtraData(scoped_refptr<WebURLRequest::ExtraData> extra_data) {
-    extra_data_ = extra_data;
+  void SetURLRequestExtraData(
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data) {
+    url_request_extra_data_ = std::move(url_request_extra_data);
   }
 
   bool IsDownloadToNetworkCacheOnly() const { return download_to_cache_only_; }
@@ -520,7 +521,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   int intra_priority_value_;
   int requestor_id_;
   PreviewsState previews_state_;
-  scoped_refptr<WebURLRequest::ExtraData> extra_data_;
+  scoped_refptr<WebURLRequestExtraData> url_request_extra_data_;
   mojom::blink::RequestContextType request_context_;
   network::mojom::RequestDestination destination_;
   network::mojom::RequestMode mode_;

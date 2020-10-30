@@ -50,6 +50,7 @@ namespace blink {
 
 class ResourceLoadInfoNotifierWrapper;
 class WebData;
+class WebURLRequestExtraData;
 class WebURLLoaderClient;
 class WebURLResponse;
 struct WebURLError;
@@ -67,7 +68,7 @@ class WebURLLoader {
   // |downloaded_blob|.
   virtual void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
@@ -87,7 +88,7 @@ class WebURLLoader {
   // loader is disposed before it completes its work.
   virtual void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       int requestor_id,
       bool no_mime_sniffing,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>,
