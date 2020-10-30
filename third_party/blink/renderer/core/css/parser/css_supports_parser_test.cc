@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -200,21 +199,18 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsInParens) {
             ConsumeSupportsInParens("(color:red)and (color:green)"));
   EXPECT_EQ(Result::kSupported,
             ConsumeSupportsInParens("(color:red)or (color:green)"));
-  {
-    ScopedCSSSupportsSelectorForTest css_supports_selector(true);
-    EXPECT_EQ(Result::kSupported,
-              ConsumeSupportsInParens("selector(div)or (color:green)"));
-    EXPECT_EQ(Result::kSupported,
-              ConsumeSupportsInParens("selector(div)and (color:green)"));
+  EXPECT_EQ(Result::kSupported,
+            ConsumeSupportsInParens("selector(div)or (color:green)"));
+  EXPECT_EQ(Result::kSupported,
+            ConsumeSupportsInParens("selector(div)and (color:green)"));
 
-    // Invalid <supports-selector-fn> formerly handled by
-    // ConsumeSupportsSelectorFn()
-    EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens("#test"));
-    EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens("test"));
+  // Invalid <supports-selector-fn> formerly handled by
+  // ConsumeSupportsSelectorFn()
+  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens("#test"));
+  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens("test"));
 
-    // Invalid <supports-selector-fn> but valid <general-enclosed>
-    EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("test(1)"));
-  }
+  // Invalid <supports-selector-fn> but valid <general-enclosed>
+  EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("test(1)"));
 
   // Invalid <supports-decl> formerly handled by ConsumeSupportsDecl()
   EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens(""));
@@ -230,8 +226,6 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsInParens) {
 }
 
 TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFn) {
-  ScopedCSSSupportsSelectorForTest css_supports_selector(true);
-
   EXPECT_EQ(Result::kSupported, ConsumeSupportsSelectorFn("selector(*)"));
   EXPECT_EQ(Result::kSupported, ConsumeSupportsSelectorFn("selector(*:hover)"));
   EXPECT_EQ(Result::kSupported, ConsumeSupportsSelectorFn("selector(:hover)"));
@@ -294,14 +288,6 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFn) {
             ConsumeSupportsSelectorFn("selector(::asdf)"));
 }
 
-TEST_F(CSSSupportsParserTest, ConsumeSupportsSelectorFnWithFeatureDisabled) {
-  ScopedCSSSupportsSelectorForTest css_supports_selector(false);
-
-  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsSelectorFn("selector(*)"));
-  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsSelectorFn("selector(div)"));
-  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsSelectorFn("selector(.a)"));
-}
-
 TEST_F(CSSSupportsParserTest, ConsumeSupportsDecl) {
   EXPECT_EQ(Result::kSupported, ConsumeSupportsDecl("(color:red)"));
   EXPECT_EQ(Result::kSupported, ConsumeSupportsDecl("(color:    red)"));
@@ -328,11 +314,7 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsDecl) {
 
 TEST_F(CSSSupportsParserTest, ConsumeSupportsFeature) {
   EXPECT_EQ(Result::kSupported, ConsumeSupportsFeature("(color:red)"));
-
-  {
-    ScopedCSSSupportsSelectorForTest css_supports_selector(true);
-    EXPECT_EQ(Result::kParseFailure, ConsumeSupportsFeature("asdf(1)"));
-  }
+  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsFeature("asdf(1)"));
 }
 
 TEST_F(CSSSupportsParserTest, ConsumeGeneralEnclosed) {

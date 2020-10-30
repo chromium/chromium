@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -194,8 +193,6 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsFeature(
 CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsSelectorFn(
     const CSSParserToken& first_token,
     CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSSupportsSelectorEnabled())
-    return Result::kParseFailure;
   DCHECK(IsSupportsSelectorFn(first_token, stream.Peek()));
   auto block = stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
   if (CSSSelectorParser::SupportsComplexSelector(block, parser_.GetContext()))
