@@ -824,16 +824,16 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordTimeoutAsOutcome) {
         mock_provider_ptr->NotifyFailure(FailureType::kPromptTimeout);
       }));
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
-       navigator.credentials.get({otp: {transport: ["sms"]}});
-     )"));
-
   base::RunLoop ukm_loop;
 
   // Wait for UKM to be recorded to avoid race condition between outcome
   // capture and evaluation.
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+       navigator.credentials.get({otp: {transport: ["sms"]}});
+     )"));
 
   ukm_loop.Run();
 
@@ -901,16 +901,16 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
         mock_provider_ptr->NotifyFailure(FailureType::kPromptCancelled);
       }));
 
-  EXPECT_TRUE(ExecJs(shell(), R"(
-       navigator.credentials.get({otp: {transport: ["sms"]}});
-     )"));
-
   base::RunLoop ukm_loop;
 
   // Wait for UKM to be recorded to avoid race condition between outcome
   // capture and evaluation.
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+       navigator.credentials.get({otp: {transport: ["sms"]}});
+     )"));
 
   ukm_loop.Run();
 
