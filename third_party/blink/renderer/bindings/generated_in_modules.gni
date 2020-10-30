@@ -2157,6 +2157,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_hit_test_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_hit_test_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_hit_test_source.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_result.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_input_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_input_source.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_input_source_array.cc",

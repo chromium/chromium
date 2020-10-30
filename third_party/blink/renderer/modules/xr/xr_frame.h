@@ -22,6 +22,7 @@ class XRAnchorSet;
 class XRDepthInformation;
 class XRHitTestResult;
 class XRHitTestSource;
+class XRImageTrackingResult;
 class XRInputSource;
 class XRLightEstimate;
 class XRLightProbe;
@@ -76,6 +77,9 @@ class XRFrame final : public ScriptWrappable {
                              XRRigidTransform* initial_pose,
                              XRSpace* space,
                              ExceptionState& exception_state);
+
+  HeapVector<Member<XRImageTrackingResult>> getImageTrackingResults(
+      ExceptionState&);
 
  private:
   std::unique_ptr<TransformationMatrix> GetAdjustedPoseMatrix(XRSpace*) const;

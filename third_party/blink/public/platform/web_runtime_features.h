@@ -191,6 +191,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableWebXRCameraAccess(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRDepth(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRHitTest(bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebXRImageTracking(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRLightEstimation(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRPlaneDetection(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRReflectionEstimation(bool);

@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_tracked_image_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -141,6 +144,9 @@ base::Optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
   } else if (RuntimeEnabledFeatures::WebXRDepthEnabled(context) &&
              feature_string == "depth-sensing") {
     return device::mojom::XRSessionFeature::DEPTH;
+  } else if (RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context) &&
+             feature_string == "image-tracking") {
+    return device::mojom::XRSessionFeature::IMAGE_TRACKING;
   }
 
   return base::nullopt;
@@ -173,6 +179,17 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
         return false;
       }
       return true;
+    case device::mojom::XRSessionFeature::IMAGE_TRACKING:
+      if (mode != device::mojom::blink::XRSessionMode::kImmersiveAr)
+        return false;
+      if (!session_init->hasTrackedImages()) {
+        execution_context->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript, error_level,
+                "Must specify trackedImages in XRSessionInit"));
+        return false;
+      }
+      return true;
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::CAMERA_ACCESS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
@@ -202,6 +219,7 @@ bool HasRequiredFeaturePolicy(const ExecutionContext* context,
     case device::mojom::XRSessionFeature::CAMERA_ACCESS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
     case device::mojom::XRSessionFeature::DEPTH:
+    case device::mojom::XRSessionFeature::IMAGE_TRACKING:
       return context->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);
@@ -756,6 +774,12 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
   CopyToVector(query.RequiredFeatures(), session_options->required_features);
   CopyToVector(query.OptionalFeatures(), session_options->optional_features);
 
+  session_options->tracked_images.resize(query.TrackedImages().size());
+  for (unsigned i = 0; i < query.TrackedImages().size(); ++i) {
+    session_options->tracked_images[i] =
+        device::mojom::blink::XRTrackedImage::New();
+    *session_options->tracked_images[i] = query.TrackedImages()[i];
+  }
   return session_options;
 }
 
@@ -848,6 +872,10 @@ XRFrameProvider* XRSystem::frameProvider() {
 device::mojom::blink::XREnvironmentIntegrationProvider*
 XRSystem::xrEnvironmentProviderRemote() {
   return environment_provider_.get();
+}
+
+device::mojom::blink::VRService* XRSystem::BrowserService() {
+  return service_.get();
 }
 
 void XRSystem::AddEnvironmentProviderErrorHandler(
@@ -1300,6 +1328,25 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     DCHECK(session_init->hasDomOverlay());
     DCHECK(session_init->domOverlay()->hasRoot()) << "required in IDL";
     query->SetDOMOverlayElement(session_init->domOverlay()->root());
+  }
+
+  if (query->HasFeature(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
+    // Prerequisites were checked by IsFeatureValidForMode.
+    DCHECK(session_init);
+    DCHECK(session_init->hasTrackedImages());
+    DVLOG(3) << __func__ << ": set up trackedImages";
+    Vector<device::mojom::blink::XRTrackedImage> images;
+    for (auto& image : session_init->trackedImages()) {
+      // Extract an SkBitmap snapshot for each image.
+      scoped_refptr<StaticBitmapImage> static_bitmap_image =
+          image->image()->BitmapImage();
+      SkBitmap sk_bitmap = static_bitmap_image->AsSkBitmapForCurrentFrame(
+          kRespectImageOrientation);
+      IntSize int_size = static_bitmap_image->Size();
+      gfx::Size size(int_size.Width(), int_size.Height());
+      images.emplace_back(sk_bitmap, size, image->widthInMeters());
+    }
+    query->SetTrackedImages(images);
   }
 
   // The various session request methods may have other checks that would reject

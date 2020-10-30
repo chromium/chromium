@@ -45,6 +45,7 @@ class XRDepthInformation;
 class XRDOMOverlayState;
 class XRHitTestOptionsInit;
 class XRHitTestSource;
+class XRImageTrackingResult;
 class XRLightProbe;
 class XRReferenceSpace;
 class XRRenderState;
@@ -199,6 +200,9 @@ class XRSession final
       ExceptionState& exception_state);
 
   ScriptPromise requestLightProbe(ScriptState* script_state, ExceptionState&);
+
+  ScriptPromise getTrackedImageScores(ScriptState* script_state,
+                                      ExceptionState&);
 
   // Called by JavaScript to manually end the session.
   ScriptPromise end(ScriptState* script_state, ExceptionState&);
@@ -356,6 +360,9 @@ class XRSession final
   // a specific HTMLVideoELement, for the next requestAnimationFrame() call.
   void ScheduleVideoFrameCallbacksExecution(ExecuteVfcCallback);
 
+  HeapVector<Member<XRImageTrackingResult>> ImageTrackingResults(
+      ExceptionState&);
+
  private:
   class XRSessionResizeObserverDelegate;
 
@@ -422,6 +429,13 @@ class XRSession final
           hit_test_data);
 
   void ProcessDepthData(device::mojom::blink::XRDepthDataPtr depth_data);
+
+  void ProcessTrackedImagesData(
+      const device::mojom::blink::XRTrackedImagesData*);
+  HeapVector<Member<XRImageTrackingResult>> frame_tracked_images_;
+  bool tracked_image_scores_available_ = false;
+  Vector<String> tracked_image_scores_;
+  HeapVector<Member<ScriptPromiseResolver>> image_scores_resolvers_;
 
   void HandleShutdown();
 

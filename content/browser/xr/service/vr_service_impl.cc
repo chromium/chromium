@@ -527,9 +527,21 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
   }
 
   if (device::XRSessionModeUtils::IsImmersive(runtime_options->mode)) {
+    if (!request.options->tracked_images.empty()) {
+      DVLOG(3) << __func__ << ": request.options->tracked_images.size()="
+               << request.options->tracked_images.size();
+      runtime_options->tracked_images.resize(
+          request.options->tracked_images.size());
+      for (std::size_t i = 0; i < request.options->tracked_images.size(); ++i) {
+        runtime_options->tracked_images[i] =
+            request.options->tracked_images[i].Clone();
+      }
+    }
+
     base::OnceCallback<void(device::mojom::XRSessionPtr)> immersive_callback =
         base::BindOnce(&VRServiceImpl::OnImmersiveSessionCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(request));
+
     runtime->RequestSession(this, std::move(runtime_options),
                             std::move(immersive_callback));
   } else {

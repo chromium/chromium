@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
+import "skia/public/mojom/bitmap.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
@@ -64,6 +65,7 @@ enum XRSessionFeature {
   CAMERA_ACCESS = 10, // Experimental feature.
   PLANE_DETECTION = 11, // Experimental feature.
   DEPTH = 12, // Experimental feature.
+  IMAGE_TRACKING = 13, // Experimental feature.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -108,6 +110,12 @@ enum XRInteractionMode {
   kWorldSpace = 2,
 };
 
+struct XRTrackedImage {
+  skia.mojom.Bitmap bitmap;
+  gfx.mojom.Size size_in_pixels;
+  float width_in_meters;
+};
+
 struct XRSessionOptions {
   // Represents the type of session that is being requested.
   XRSessionMode mode;
@@ -121,6 +129,8 @@ struct XRSessionOptions {
   // the feature will not be added to the enabled_features set on the XRSession
   // struct that is returned.
   array<XRSessionFeature> optional_features;
+
+  array<XRTrackedImage> tracked_images;
 };
 
 // This structure contains a description of the device's active configuration
@@ -610,6 +620,35 @@ union XRDepthData {
   XRDepthDataUpdated updated_depth_data;
 };
 
+struct XRTrackedImageData {
+  // Index of the image within the tracked images array passed to requestSession
+  uint32 index;
+
+  // Pose of the image. Must be non-null, images are only included in results
+  // if they have a pose.
+  Pose mojo_from_image;
+
+  // If true, the image is currently actively tracked. If false, the pose is
+  // inferred from previous tracking results. In that case, it's likely
+  // accurate for stationary images, but may be stale for a moving image.
+  bool actively_tracked;
+
+  // The best-effort measured width in meters for the physical image. Zero
+  // if the width is unknown due to the image never having been tracked
+  // successfully.
+  float width_in_meters;
+};
+
+struct XRTrackedImagesData {
+  array<XRTrackedImageData> images_data;
+
+  // The first returned result includes an array of trackable/untrackable
+  // scores, in the same order as tracked_images in the session request.
+  // (This is unambiguous since only used for immersive sessions, and
+  // there can only be one immersive session at a time.)
+  array<bool>? image_trackable_scores;
+};
+
 // The data needed for each animation frame of an XRSession.
 struct XRFrameData {
   // General XRSession value
@@ -699,6 +738,8 @@ struct XRFrameData {
   // intended to be used as input for renderer-side adaptive viewport sizing.
   // A value of zero means the ratio is unknown and must not be used.
   float rendering_time_ratio;
+
+  XRTrackedImagesData? tracked_images;
 };
 
 // Used primarily in logging to indicate why a session was rejecting to aid

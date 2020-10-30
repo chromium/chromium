@@ -11329,6 +11329,7 @@ interface XRFrame
     method getDepthInformation
     method getHitTestResults
     method getHitTestResultsForTransientInput
+    method getImageTrackingResults
     method getLightEstimate
     method getPose
     method getViewerPose
@@ -11340,6 +11341,13 @@ interface XRHitTestResult
 interface XRHitTestSource
     attribute @@toStringTag
     method cancel
+    method constructor
+interface XRImageTrackingResult
+    attribute @@toStringTag
+    getter imageSpace
+    getter index
+    getter measuredWidthInMeters
+    getter trackingState
     method constructor
 interface XRInputSource
     attribute @@toStringTag
@@ -11464,6 +11472,7 @@ interface XRSession : EventTarget
     method cancelAnimationFrame
     method constructor
     method end
+    method getTrackedImageScores
     method requestAnimationFrame
     method requestHitTestSource
     method requestHitTestSourceForTransientInput

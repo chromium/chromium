@@ -97,6 +97,8 @@ class XRSystem final : public EventTargetWithInlineData,
   device::mojom::blink::XREnvironmentIntegrationProvider*
   xrEnvironmentProviderRemote();
 
+  device::mojom::blink::VRService* BrowserService();
+
   // VRServiceClient overrides.
   void OnDeviceChanged() override;
 
@@ -218,6 +220,14 @@ class XRSystem final : public EventTargetWithInlineData,
     }
     Element* DOMOverlayElement() { return dom_overlay_element_; }
 
+    void SetTrackedImages(
+        const Vector<device::mojom::blink::XRTrackedImage>& images) {
+      tracked_images_ = images;
+    }
+    Vector<device::mojom::blink::XRTrackedImage> TrackedImages() const {
+      return tracked_images_;
+    }
+
     virtual void Trace(Visitor*) const;
 
    private:
@@ -240,6 +250,9 @@ class XRSystem final : public EventTargetWithInlineData,
     const int64_t ukm_source_id_;
 
     Member<Element> dom_overlay_element_;
+
+    Vector<device::mojom::blink::XRTrackedImage> tracked_images_;
+
     DISALLOW_COPY_AND_ASSIGN(PendingRequestSessionQuery);
   };
 

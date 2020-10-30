@@ -2195,6 +2195,11 @@
       status: "experimental"
     },
     {
+      name: "WebXRImageTracking",
+      depends_on: ["WebXRARModule"],
+      status: "experimental",
+    },
+    {
       name: "WebXRLightEstimation",
       depends_on: ["WebXRARModule"],
       status: "experimental",

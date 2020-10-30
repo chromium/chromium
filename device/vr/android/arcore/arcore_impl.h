@@ -109,7 +109,9 @@ class ArCoreImpl : public ArCore {
   bool Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features) override;
+          enabled_features,
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images)
+      override;
   MinMaxRange GetTargetFramerateRange() override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
@@ -173,11 +175,17 @@ class ArCoreImpl : public ArCore {
 
   mojom::XRDepthDataPtr GetDepthData() override;
 
+  mojom::XRTrackedImagesDataPtr GetTrackedImages() override;
+
  protected:
   std::vector<float> TransformDisplayUvCoords(
       const base::span<const float> uvs) const override;
 
  private:
+  void BuildImageDatabase(
+      const ArSession*,
+      ArAugmentedImageDatabase*,
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images);
   bool IsOnGlThread() const;
   base::WeakPtr<ArCoreImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -201,6 +209,16 @@ class ArCoreImpl : public ArCore {
   std::unique_ptr<ArCorePlaneManager> plane_manager_;
   // Anchor manager. Valid after a call to Initialize.
   std::unique_ptr<ArCoreAnchorManager> anchor_manager_;
+
+  // For each image in the input list of images to track, store a true/false
+  // score to indicate if it's trackable by ARCore or not. These are sent
+  // to Blink only once, for the first frame, and the boolean tracks that.
+  std::vector<bool> image_trackable_scores_;
+  bool image_trackable_scores_sent_ = false;
+
+  // Map from ARCore's internal image IDs to the index position in the input
+  // list of images. The index values are needed for blink communication.
+  std::unordered_map<int32_t, uint64_t> tracked_image_arcore_id_to_index_;
 
   uint64_t next_id_ = 1;
 

@@ -347,6 +347,11 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
       reference_space_information->native_origin, exception_state);
 }
 
+HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
+    ExceptionState& exception_state) {
+  return session_->ImageTrackingResults(exception_state);
+}
+
 void XRFrame::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   visitor->Trace(world_information_);

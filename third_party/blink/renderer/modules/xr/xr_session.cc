@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_hit_test_options_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_transient_input_hit_test_options_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -96,6 +97,9 @@ const char kAnchorCreationFailed[] = "Anchor creation failed.";
 
 const char kLightEstimationFeatureNotSupported[] =
     "Light estimation feature is not supported.";
+
+const char kImageTrackingFeatureNotSupported[] =
+    "Image tracking feature is not supported.";
 
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
@@ -298,6 +302,7 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::CAMERA_ACCESS:
     case XRSessionFeature::PLANE_DETECTION:
     case XRSessionFeature::DEPTH:
+    case XRSessionFeature::IMAGE_TRACKING:
       // Not recording metrics for these features currently.
       break;
   }
@@ -1024,6 +1029,13 @@ void XRSession::OnEnvironmentProviderError() {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, kDeviceDisconnected));
   }
+
+  HeapVector<Member<ScriptPromiseResolver>> image_score_promises;
+  image_scores_resolvers_.swap(image_score_promises);
+  for (ScriptPromiseResolver* resolver : image_score_promises) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDeviceDisconnected));
+  }
 }
 
 void XRSession::ProcessAnchorsData(
@@ -1638,6 +1650,83 @@ void XRSession::UpdatePresentationFrameState(
   }
 }
 
+ScriptPromise XRSession::getTrackedImageScores(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  DVLOG(3) << __func__;
+  if (ended_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionEnded);
+    return ScriptPromise();
+  }
+
+  if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kImageTrackingFeatureNotSupported);
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  if (tracked_image_scores_available_) {
+    DVLOG(3) << __func__ << ": returning existing results";
+    resolver->Resolve(tracked_image_scores_);
+  } else {
+    DVLOG(3) << __func__ << ": storing promise";
+    image_scores_resolvers_.push_back(resolver);
+  }
+
+  return promise;
+}
+
+void XRSession::ProcessTrackedImagesData(
+    const device::mojom::blink::XRTrackedImagesData* images_data) {
+  DVLOG(3) << __func__;
+  frame_tracked_images_.clear();
+
+  if (!images_data) {
+    return;
+  }
+
+  for (const auto& image : images_data->images_data) {
+    DVLOG(3) << __func__ << ": image index=" << image->index;
+    XRImageTrackingResult* result =
+        MakeGarbageCollected<XRImageTrackingResult>(this, *image);
+    frame_tracked_images_.push_back(result);
+  }
+
+  if (images_data->image_trackable_scores) {
+    DVLOG(3) << ": got image_trackable_scores";
+    DCHECK(!tracked_image_scores_available_);
+    auto& scores = images_data->image_trackable_scores.value();
+    for (WTF::wtf_size_t index = 0; index < scores.size(); ++index) {
+      tracked_image_scores_.push_back(scores[index] ? "trackable"
+                                                    : "untrackable");
+      DVLOG(3) << __func__ << ": score[" << index
+               << "]=" << tracked_image_scores_[index];
+    }
+    HeapVector<Member<ScriptPromiseResolver>> image_score_promises;
+    image_scores_resolvers_.swap(image_score_promises);
+    for (ScriptPromiseResolver* resolver : image_score_promises) {
+      DVLOG(3) << __func__ << ": resolving promise";
+      resolver->Resolve(tracked_image_scores_);
+    }
+    tracked_image_scores_available_ = true;
+  }
+}
+
+HeapVector<Member<XRImageTrackingResult>> XRSession::ImageTrackingResults(
+    ExceptionState& exception_state) {
+  if (!IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kImageTrackingFeatureNotSupported);
+    return {};
+  }
+
+  return frame_tracked_images_;
+}
+
 void XRSession::UpdateWorldUnderstandingStateForFrame(
     double timestamp,
     const device::mojom::blink::XRFrameDataPtr& frame_data) {
@@ -1648,6 +1737,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
     ProcessHitTestData(frame_data->hit_test_subscription_results.get());
     ProcessDepthData(std::move(frame_data->depth_data));
+    ProcessTrackedImagesData(frame_data->tracked_images.get());
 
     const device::mojom::blink::XRLightEstimationData* light_data =
         frame_data->light_estimation_data.get();
@@ -1659,6 +1749,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
     ProcessDepthData(nullptr);
+    ProcessTrackedImagesData(nullptr);
 
     if (world_light_probe_) {
       world_light_probe_->ProcessLightEstimationData(nullptr, timestamp);
@@ -2203,6 +2294,8 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(hit_test_source_ids_to_hit_test_sources_);
   visitor->Trace(hit_test_source_ids_to_transient_input_hit_test_sources_);
   visitor->Trace(views_);
+  visitor->Trace(frame_tracked_images_);
+  visitor->Trace(image_scores_resolvers_);
   EventTargetWithInlineData::Trace(visitor);
 }
 

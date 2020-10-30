@@ -11,6 +11,7 @@ modules_idl_files = [
   "xr_depth_information.idl",
   "xr_dom_overlay_state.idl",
   "xr_frame.idl",
+  "xr_image_tracking_result.idl",
   "xr_input_source.idl",
   "xr_input_source_array.idl",
   "xr_input_source_event.idl",
@@ -56,6 +57,7 @@ modules_dictionary_idl_files = [
   "xr_render_state_init.idl",
   "xr_session_event_init.idl",
   "xr_session_init.idl",
+  "xr_tracked_image_init.idl",
   "xr_transient_input_hit_test_options_init.idl",
   "xr_webgl_layer_init.idl",
 ]

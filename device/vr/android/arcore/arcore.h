@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/display/display.h"
 #include "ui/gfx/transform.h"
@@ -38,7 +39,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   virtual bool Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features) = 0;
+          enabled_features,
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) = 0;
 
   // Returns the target framerate range in Hz. Actual capture frame rate will
   // vary within this range, i.e. lower in low light to increase exposure time.
@@ -77,6 +79,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   virtual mojom::XRLightEstimationDataPtr GetLightEstimationData() = 0;
 
   virtual mojom::XRDepthDataPtr GetDepthData() = 0;
+
+  virtual mojom::XRTrackedImagesDataPtr GetTrackedImages() = 0;
 
   virtual bool RequestHitTest(
       const mojom::XRRayPtr& ray,

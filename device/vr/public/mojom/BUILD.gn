@@ -19,6 +19,7 @@ mojom_component("mojom") {
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
+    "//skia/public/mojom",
     "//ui/display/mojom:mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",

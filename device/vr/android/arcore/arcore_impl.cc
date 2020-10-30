@@ -10,6 +10,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
 #include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/util/type_safety/pass_key.h"
 #include "device/vr/android/arcore/arcore_math_utils.h"
@@ -17,6 +18,12 @@
 #include "device/vr/android/arcore/type_converters.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -340,8 +347,8 @@ ArCoreImpl::~ArCoreImpl() {
 
 bool ArCoreImpl::Initialize(
     base::android::ScopedJavaLocalRef<jobject> context,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        enabled_features) {
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
 
@@ -383,6 +390,37 @@ bool ArCoreImpl::Initialize(
   // Enable lighting estimation with spherical harmonics
   ArConfig_setLightEstimationMode(session.get(), arcore_config.get(),
                                   AR_LIGHT_ESTIMATION_MODE_ENVIRONMENTAL_HDR);
+
+  if (base::Contains(enabled_features,
+                     device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
+    internal::ScopedArCoreObject<ArAugmentedImageDatabase*> image_db;
+    ArAugmentedImageDatabase_create(
+        session.get(),
+        internal::ScopedArCoreObject<ArAugmentedImageDatabase*>::Receiver(
+            image_db)
+            .get());
+    if (!image_db.is_valid()) {
+      DLOG(ERROR) << "ArAugmentedImageDatabase creation failed";
+      return false;
+    }
+
+    // Populate the image tracking database and set up data structures,
+    // this doesn't modify the ArConfig or session yet.
+    BuildImageDatabase(session.get(), image_db.get(), tracked_images);
+
+    if (!tracked_image_arcore_id_to_index_.empty()) {
+      // Image tracking with a non-empty image DB adds a few frames of
+      // synchronization delay internally in ARCore, has a high CPU cost, and
+      // reconfigures its graphics pipeline. Only activate it if we got images.
+      // (Apparently an empty image db is equivalent, but that seems fragile.)
+      ArConfig_setAugmentedImageDatabase(session.get(), arcore_config.get(),
+                                         image_db.get());
+      // Switch to autofocus mode when tracking images. The default fixed focus
+      // mode has trouble tracking close images since they end up blurry.
+      ArConfig_setFocusMode(session.get(), arcore_config.get(),
+                            AR_FOCUS_MODE_AUTO);
+    }
+  }
 
   if (base::Contains(enabled_features,
                      device::mojom::XRSessionFeature::DEPTH)) {
@@ -646,6 +684,59 @@ ArCore::MinMaxRange ArCoreImpl::GetTargetFramerateRange() {
   return target_framerate_range_;
 }
 
+void ArCoreImpl::BuildImageDatabase(
+    const ArSession* session,
+    ArAugmentedImageDatabase* image_db,
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+  for (std::size_t index = 0; index < tracked_images.size(); ++index) {
+    const device::mojom::XRTrackedImage* image = tracked_images[index].get();
+    gfx::Size size = image->size_in_pixels;
+
+    // Use Skia to convert the image to grayscale.
+    const SkBitmap& src_bitmap = image->bitmap;
+    SkBitmap canvas_bitmap;
+    canvas_bitmap.allocPixelsFlags(
+        SkImageInfo::Make(size.width(), size.height(), kGray_8_SkColorType,
+                          kOpaque_SkAlphaType),
+        SkBitmap::kZeroPixels_AllocFlag);
+    SkCanvas gray_canvas(canvas_bitmap);
+    SkPaint paint;
+    sk_sp<SkImage> src_image = SkImage::MakeFromBitmap(src_bitmap);
+    gray_canvas.drawImage(src_image, 0, 0, &paint);
+    SkPixmap gray_pixmap;
+    if (!gray_canvas.peekPixels(&gray_pixmap)) {
+      DLOG(WARNING) << __func__ << ": failed to access grayscale bitmap";
+      image_trackable_scores_.push_back(false);
+      continue;
+    }
+
+    const SkPixmap& pixmap = gray_pixmap;
+    float width_in_meters = image->width_in_meters;
+    DVLOG(3) << __func__ << " tracked image index=" << index
+             << " size=" << pixmap.width() << "x" << pixmap.height()
+             << " width_in_meters=" << width_in_meters;
+    int32_t arcore_id = -1;
+    std::string id_name = base::NumberToString(index);
+    ArStatus status = ArAugmentedImageDatabase_addImageWithPhysicalSize(
+        session, image_db, id_name.c_str(), pixmap.addr8(), pixmap.width(),
+        pixmap.height(), pixmap.rowBytesAsPixels(), width_in_meters,
+        &arcore_id);
+    if (status != AR_SUCCESS) {
+      DVLOG(2) << __func__ << ": add image failed";
+      image_trackable_scores_.push_back(false);
+      continue;
+    }
+
+    // ARCore uses internal IDs for images, these only include the trackable
+    // images. The tracking results need to refer to the original image index
+    // corresponding to its position in the input tracked_images array.
+    tracked_image_arcore_id_to_index_[arcore_id] = index;
+    DVLOG(2) << __func__ << ": added image, index=" << index
+             << " arcore_id=" << arcore_id;
+    image_trackable_scores_.push_back(true);
+  }
+}
+
 void ArCoreImpl::SetCameraTexture(uint32_t camera_texture_id) {
   DCHECK(IsOnGlThread());
   DCHECK(arcore_session_.is_valid());
@@ -751,6 +842,89 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
   TRACE_EVENT_END0("gpu", "ArCoreAnchorManager Update");
 
   return mojo_from_viewer;
+}
+
+mojom::XRTrackedImagesDataPtr ArCoreImpl::GetTrackedImages() {
+  std::vector<mojom::XRTrackedImageDataPtr> images_data;
+
+  internal::ScopedArCoreObject<ArTrackableList*> updated_images;
+  ArTrackableList_create(
+      arcore_session_.get(),
+      internal::ScopedArCoreObject<ArTrackableList*>::Receiver(updated_images)
+          .get());
+  ArFrame_getUpdatedTrackables(arcore_session_.get(), arcore_frame_.get(),
+                               AR_TRACKABLE_AUGMENTED_IMAGE,
+                               updated_images.get());
+
+  int32_t images_count = 0;
+  ArTrackableList_getSize(arcore_session_.get(), updated_images.get(),
+                          &images_count);
+  DVLOG(2) << __func__ << ": trackable images count=" << images_count;
+
+  for (int32_t i = 0; i < images_count; ++i) {
+    internal::ScopedArCoreObject<ArTrackable*> trackable;
+    ArTrackableList_acquireItem(
+        arcore_session_.get(), updated_images.get(), i,
+        internal::ScopedArCoreObject<ArTrackable*>::Receiver(trackable).get());
+    ArTrackingState tracking_state;
+    ArTrackable_getTrackingState(arcore_session_.get(), trackable.get(),
+                                 &tracking_state);
+    ArAugmentedImage* image = ArAsAugmentedImage(trackable.get());
+
+    // Get the original image index from ARCore's internal ID for use in the
+    // returned results.
+    int32_t arcore_id;
+    ArAugmentedImage_getIndex(arcore_session_.get(), image, &arcore_id);
+    uint64_t index = tracked_image_arcore_id_to_index_[arcore_id];
+    DVLOG(3) << __func__ << ": #" << i << " tracked image index=" << index
+             << " arcore_id=" << arcore_id << " state=" << tracking_state;
+
+    if (tracking_state == AR_TRACKING_STATE_TRACKING) {
+      internal::ScopedArCoreObject<ArPose*> arcore_pose;
+      ArPose_create(
+          arcore_session_.get(), nullptr,
+          internal::ScopedArCoreObject<ArPose*>::Receiver(arcore_pose).get());
+      if (!arcore_pose.is_valid()) {
+        DLOG(ERROR) << "ArPose_create failed!";
+        continue;
+      }
+      ArAugmentedImage_getCenterPose(arcore_session_.get(), image,
+                                     arcore_pose.get());
+      float pose_raw[7];
+      ArPose_getPoseRaw(arcore_session_.get(), arcore_pose.get(), &pose_raw[0]);
+      DVLOG(3) << __func__ << ": tracked image pose_raw pos=(" << pose_raw[4]
+               << ", " << pose_raw[5] << ", " << pose_raw[6] << ")";
+
+      device::Pose device_pose =
+          GetPoseFromArPose(arcore_session_.get(), arcore_pose.get());
+
+      ArAugmentedImageTrackingMethod tracking_method;
+      ArAugmentedImage_getTrackingMethod(arcore_session_.get(), image,
+                                         &tracking_method);
+      bool actively_tracked =
+          tracking_method == AR_AUGMENTED_IMAGE_TRACKING_METHOD_FULL_TRACKING;
+
+      float width_in_meters;
+      ArAugmentedImage_getExtentX(arcore_session_.get(), image,
+                                  &width_in_meters);
+
+      images_data.push_back(mojom::XRTrackedImageData::New(
+          index, device_pose, actively_tracked, width_in_meters));
+    }
+  }
+
+  // Include information about each image's trackability status in the first
+  // returned result list.
+  if (!image_trackable_scores_sent_) {
+    auto ret = mojom::XRTrackedImagesData::New(
+        std::move(images_data), std::move(image_trackable_scores_));
+    image_trackable_scores_sent_ = true;
+    image_trackable_scores_.clear();
+    return ret;
+  } else {
+    return mojom::XRTrackedImagesData::New(std::move(images_data),
+                                           base::nullopt);
+  }
 }
 
 base::TimeDelta ArCoreImpl::GetFrameTimestamp() {

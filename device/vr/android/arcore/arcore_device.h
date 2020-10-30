@@ -135,6 +135,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
 
     // List of features that are enabled on the session.
     std::vector<device::mojom::XRSessionFeature> enabled_features_;
+
+    std::vector<device::mojom::XRTrackedImagePtr> tracked_images_;
   };
 
   // This object is reset to initial values when ending a session. This helps

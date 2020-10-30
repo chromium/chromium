@@ -35,6 +35,8 @@ blink_modules_sources("xr") {
     "xr_hit_test_result.h",
     "xr_hit_test_source.cc",
     "xr_hit_test_source.h",
+    "xr_image_tracking_result.cc",
+    "xr_image_tracking_result.h",
     "xr_input_source.cc",
     "xr_input_source.h",
     "xr_input_source_array.cc",

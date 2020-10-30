@@ -473,6 +473,10 @@ void WebRuntimeFeatures::EnableWebXRHitTest(bool enable) {
   RuntimeEnabledFeatures::SetWebXRHitTestEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebXRImageTracking(bool enable) {
+  RuntimeEnabledFeatures::SetWebXRImageTrackingEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebXRLightEstimation(bool enable) {
   RuntimeEnabledFeatures::SetWebXRLightEstimationEnabled(enable);
 }

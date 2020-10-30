@@ -27,6 +27,11 @@ enum XRInteractionMode {
   "world-space"
 };
 
+enum XRImageTrackingScore {
+  "untrackable",
+  "trackable",
+};
+
 [
     ActiveScriptWrappable,
     SecureContext,
@@ -70,4 +75,7 @@ enum XRInteractionMode {
 
   [RuntimeEnabled=WebXRLightEstimation, CallWith=ScriptState, RaisesException]
   Promise<XRLightProbe> requestLightProbe();
+
+  [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, RaisesException]
+  Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();
 };

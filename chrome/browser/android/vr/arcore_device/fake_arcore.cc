@@ -23,8 +23,8 @@ ArCore::MinMaxRange FakeArCore::GetTargetFramerateRange() {
 
 bool FakeArCore::Initialize(
     base::android::ScopedJavaLocalRef<jobject> application_context,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        enabled_features) {
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
   DCHECK(IsOnGlThread());
   return true;
 }
@@ -339,6 +339,11 @@ void FakeArCore::ProcessAnchorCreationRequests(
 void FakeArCore::DetachAnchor(uint64_t anchor_id) {
   auto count = anchors_.erase(anchor_id);
   DCHECK_EQ(1u, count);
+}
+
+mojom::XRTrackedImagesDataPtr FakeArCore::GetTrackedImages() {
+  std::vector<mojom::XRTrackedImageDataPtr> images_data;
+  return mojom::XRTrackedImagesData::New(std::move(images_data), base::nullopt);
 }
 
 void FakeArCore::Pause() {

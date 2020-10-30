@@ -25,7 +25,9 @@ class FakeArCore : public ArCore {
   bool Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features) override;
+          enabled_features,
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images)
+      override;
   MinMaxRange GetTargetFramerateRange() override;
   void SetCameraTexture(uint32_t texture) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
@@ -79,6 +81,8 @@ class FakeArCore : public ArCore {
       const base::TimeTicks& frame_time) override;
 
   void DetachAnchor(uint64_t anchor_id) override;
+
+  mojom::XRTrackedImagesDataPtr GetTrackedImages() override;
 
   void SetCameraAspect(float aspect) { camera_aspect_ = aspect; }
 

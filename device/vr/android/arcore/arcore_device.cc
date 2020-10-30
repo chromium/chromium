@@ -128,6 +128,12 @@ void ArCoreDevice::RequestSession(
   // OnSessionEnded().
   DCHECK(mailbox_bridge_);
 
+  for (auto& image : options->tracked_images) {
+    DVLOG(3) << __func__ << ": tracked image size_in_pixels="
+             << image->size_in_pixels.ToString();
+    session_state_->tracked_images_.push_back(std::move(image));
+  }
+
   session_state_->arcore_gl_thread_ = std::make_unique<ArCoreGlThread>(
       std::move(ar_image_transport_factory_), std::move(mailbox_bridge_),
       CreateMainThreadCallback(
@@ -330,6 +336,7 @@ void ArCoreDevice::RequestArCoreGlInitialization(
         session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),
         arcore_session_utils_.get(), arcore_factory_.get(), drawing_widget,
         frame_size, rotation, session_state_->enabled_features_,
+        std::move(session_state_->tracked_images_),
         CreateMainThreadCallback(base::BindOnce(
             &ArCoreDevice::OnArCoreGlInitializationComplete, GetWeakPtr()))));
     return;

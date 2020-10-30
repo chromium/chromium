@@ -113,6 +113,7 @@ void ArCoreGl::Initialize(
     const gfx::Size& frame_size,
     display::Display::Rotation display_rotation,
     const std::vector<device::mojom::XRSessionFeature>& enabled_features,
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
     base::OnceCallback<void(bool)> callback) {
   DVLOG(3) << __func__;
 
@@ -143,7 +144,8 @@ void ArCoreGl::Initialize(
   }
 
   arcore_ = arcore_factory->Create();
-  if (!arcore_->Initialize(application_context, enabled_features_)) {
+  if (!arcore_->Initialize(application_context, enabled_features_,
+                           tracked_images)) {
     DLOG(ERROR) << "ARCore failed to initialize";
     std::move(callback).Run(false);
     return;
@@ -1141,6 +1143,10 @@ void ArCoreGl::ProcessFrame(
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
     frame_data->depth_data = arcore_->GetDepthData();
+  }
+
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
+    frame_data->tracked_images = arcore_->GetTrackedImages();
   }
 
   // Running this callback after resolving all the hit-test requests ensures

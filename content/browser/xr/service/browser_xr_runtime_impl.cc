@@ -145,6 +145,7 @@ constexpr device::mojom::XRSessionFeature kARCoreDeviceFeatures[] = {
     device::mojom::XRSessionFeature::ANCHORS,
     device::mojom::XRSessionFeature::PLANE_DETECTION,
     device::mojom::XRSessionFeature::DEPTH,
+    device::mojom::XRSessionFeature::IMAGE_TRACKING,
 };
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)

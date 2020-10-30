@@ -25,6 +25,17 @@ device::mojom::blink::XRNativeOriginInformation Create(const XRAnchor* anchor) {
 }
 
 device::mojom::blink::XRNativeOriginInformation Create(
+    const XRImageTrackingResult* image) {
+  DCHECK(image);
+
+  // TODO(https://crbug.com/1143575): We'll want these to correspond to an
+  // actual, independent space eventually, but at the moment it's sufficient for
+  // the ARCore implementation to have it be equivalent to the local reference
+  // space.
+  return Create(device::mojom::XRReferenceSpaceType::kLocal);
+}
+
+device::mojom::blink::XRNativeOriginInformation Create(
     const XRInputSource* input_source) {
   DCHECK(input_source);
 

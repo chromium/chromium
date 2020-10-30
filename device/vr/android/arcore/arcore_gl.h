@@ -76,6 +76,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
       const gfx::Size& frame_size,
       display::Display::Rotation display_rotation,
       const std::vector<device::mojom::XRSessionFeature>& enabled_features,
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       base::OnceCallback<void(bool)> callback);
 
   void CreateSession(mojom::VRDisplayInfoPtr display_info,
