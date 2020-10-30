@@ -307,6 +307,7 @@ public class FeedNewTabPageTest {
     @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(SigninPromoParams.class)
+    @DisabledTest(message = "https://crbug.com/1143974")
     public void testArticleSectionHeaderWithMenu(boolean disableSigninPromoCard) throws Exception {
         openNewTabPage();
         // Scroll to the article section header in case it is not visible.
