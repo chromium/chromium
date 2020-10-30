@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faerská klávesnica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Súbory (<ph name="NUMBER_OF_ITEMS" />) sa sprístupňujú offline</translation>
 <translation id="1646136617204068573">maďarská klávesnica</translation>
 <translation id="164729547906544836">Tamilská klávesnica (itrans)</translation>
 <translation id="164969095109328410">Zariadenie Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Americká klávesnica s medzinárodným rozložením klávesov</translation>
 <translation id="2562685439590298522">Dokumenty</translation>
 <translation id="2563185590376525700">Žaba</translation>
+<translation id="2572501073504669105">Súbory si môžete sprístupniť v režime offline, aby ste s nimi mohli pracovať aj bez internetového pripojenia.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Služba Disk Google nie je momentálne k dispozícii.</translation>
 <translation id="2638942478653899953">Disk Google je nedostupný. <ph name="BEGIN_LINK" />Odhláste sa<ph name="END_LINK" /> a znova sa prihláste.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Umiestnenie súboru</translation>
 <translation id="2672394958563893062">Vyskytla sa chyba. Kliknutím spustíte prehrávanie od začiatku.</translation>
 <translation id="2676946222714718093">Prehráva sa na zariadení</translation>
+<translation id="2735623501230989521">Povoľte aplikácii Parallels Desktop prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Rumunská štandardná klávesnica</translation>
 <translation id="2771816809568414714">Syr</translation>
 <translation id="2781645665747935084">Belgická klávesnica</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezentácia aplikácie PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Povoľte aplikácii Parallels Desktop prístup k súborom na vašom Disku Google. Zmeny sa budú synchronizovať do vašich ďalších zariadení.</translation>
 <translation id="4801956050125744859">Ponechať obidve</translation>
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4823651846660089135">Zariadenie je len na čítanie</translation>
@@ -609,11 +613,14 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7505167922889582512">Zobraziť skryté súbory</translation>
 <translation id="7508545000531937079">Prezentácia</translation>
 <translation id="751507702149411736">Bieloruština</translation>
+<translation id="7544830582642184299">Povoľte aplikáciám pre Linux prístup k súborom na vašom Disku Google. Zmeny sa budú synchronizovať do vašich ďalších zariadení.</translation>
 <translation id="7544853251252956727">Náhodne prehrávať</translation>
 <translation id="7547811415869834682">Holandčina</translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
+<translation id="7553492409867692754">Povoľte aplikáciám pre Linux prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Vydržte chvíľu</translation>
+<translation id="7592775719802218421">Súbor <ph name="FILE_NAME" /> sa sprístupňuje offline</translation>
 <translation id="7603724359189955920">Mriežky</translation>
 <translation id="7627790789328695202">Hops, súbor <ph name="FILE_NAME" /> už existuje. Premenujte ho a skúste to znova.</translation>
 <translation id="7628656427739290098">Dokončené: <ph name="PERCENT" /> %.</translation>

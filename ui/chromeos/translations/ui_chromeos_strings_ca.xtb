@@ -45,7 +45,7 @@
 <translation id="1363028406613469049">Pista</translation>
 <translation id="1378727793141957596">Us donem la benvinguda a Google Drive.</translation>
 <translation id="1383876407941801731">Cerca</translation>
-<translation id="1395262318152388157">Control lliscant de reproducció</translation>
+<translation id="1395262318152388157">Control lliscant de cerca</translation>
 <translation id="1399648040768741453">Teclat telugu (fonètic)</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Teclat feroès</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Càmera</translation>
+<translation id="1646019627374511909">S'està fent que <ph name="NUMBER_OF_ITEMS" /> fitxers estiguin disponibles sense connexió</translation>
 <translation id="1646136617204068573">Teclat hongarès</translation>
 <translation id="164729547906544836">Teclat tàmil (itrans)</translation>
 <translation id="164969095109328410">Dispositiu Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
 <translation id="2562685439590298522">Google Docs</translation>
 <translation id="2563185590376525700">Granota</translation>
+<translation id="2572501073504669105">Pots fer que els fitxers estiguin disponibles sense connexió per accedir-hi quan no tinguis accés a Internet.</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">No es pot contactar amb Google Drive en aquest moment.</translation>
 <translation id="2638942478653899953">No s'ha pogut accedir a Google Drive. <ph name="BEGIN_LINK" />Tanqueu la sessió<ph name="END_LINK" /> i torneu-la a iniciar.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Ubicació del fitxer</translation>
 <translation id="2672394958563893062">S'ha produït un error. Feu clic per reiniciar des del principi.</translation>
 <translation id="2676946222714718093">En reproducció</translation>
+<translation id="2735623501230989521">Dona permís a Parallels Desktop per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Teclat estàndard romanès</translation>
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2781645665747935084">Belga</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentació de PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Dona permís a Parallels Desktop per accedir als teus fitxers de Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
 <translation id="4801956050125744859">Mantén-les totes dues</translation>
 <translation id="4804827417948292437">Alvocat</translation>
 <translation id="4823651846660089135">El dispositiu és només de lectura</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Mostra els fitxers amagats</translation>
 <translation id="7508545000531937079">Presentació de diapositives</translation>
 <translation id="751507702149411736">Bielorús</translation>
+<translation id="7544830582642184299">Dona permís a les aplicacions de Linux per accedir als teus fitxers de Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
 <translation id="7544853251252956727">Aleatori</translation>
 <translation id="7547811415869834682">Neerlandès</translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>
+<translation id="7553492409867692754">Dona permís a les aplicacions de Linux per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Espereu un moment.</translation>
+<translation id="7592775719802218421">S'està fent que <ph name="FILE_NAME" /> estigui disponible sense connexió</translation>
 <translation id="7603724359189955920">Quadrícules</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> ja existeix. Canvieu-ne el nom i torneu-ho a provar.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% completat.</translation>

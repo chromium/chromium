@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">スクリーンショットを撮影し、クリップボードに保存しました</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
+<translation id="1456407467406159627">画面上に機密コンテンツがあるため、画面の録画を停止しました。</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="1475439723810528286">全画面をキャプチャするには任意の場所をタップしてください</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
 <translation id="2390318262976603432">言語 / 地域設定</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">メディア コントロール</translation>
 <translation id="2405664212338326887">未接続</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="3126069444801937830">再起動して更新</translation>
 <translation id="3139942575505304791">デスク 1</translation>
+<translation id="3147157020428159854">画面の録画を停止しました</translation>
 <translation id="315116470104423982">モバイル データ</translation>
 <translation id="3151786313568798007">向き</translation>
 <translation id="3153444934357957346">マルチログインに使用できるのは <ph name="MULTI_PROFILE_USER_LIMIT" /> アカウントまでです。</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">はい、どんなご用でしょう？</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
+<translation id="3846214748874656680">全画面表示を終了</translation>
 <translation id="3846575436967432996">利用可能なネットワーク情報がありません</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="385300504083504382">先頭</translation>
@@ -656,7 +660,6 @@
 <translation id="7551643184018910560">シェルフに固定</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
-<translation id="7568637526529101738">右クリックするか長押しすると、選択した項目の情報（定義や単位変換など）が表示されます。</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7590883480672980941">入力設定</translation>
@@ -708,6 +711,7 @@
 <translation id="7995804128062002838">画面をキャプチャできませんでした</translation>
 <translation id="8000066093800657092">ネットワーク接続なし</translation>
 <translation id="8004512796067398576">増やす</translation>
+<translation id="8029247720646289474">アクセス ポイント接続エラー</translation>
 <translation id="8029629653277878342">セキュリティ強化のため PIN またはパスワードが必要です</translation>
 <translation id="8030169304546394654">切断済み</translation>
 <translation id="8042893070933512245">ユーザー補助機能の設定メニューを開く</translation>
@@ -743,7 +747,6 @@
 <translation id="8375916635258623388">この <ph name="DEVICE_NAME" /> とお使いのスマートフォンは自動的に接続されます</translation>
 <translation id="8380784334203145311">おやすみなさい</translation>
 <translation id="8388750414311082622">最後のデスクは削除できません。</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> のオプション メニュー</translation>
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
 <translation id="8412677897383510995">ディスプレイの設定を表示</translation>
 <translation id="8425213833346101688">変更</translation>

@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">Екранната снимка е направена и запазена в буферната памет</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
+<translation id="1456407467406159627">Записването на екрана спря, тъй като той изобразява поверително съдържание.</translation>
 <translation id="1460620680449458626">Звукът е спрян.</translation>
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="1475439723810528286">Докоснете произволно място, за да се заснеме целият екран</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
 <translation id="2390318262976603432">Настройки на локала</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Контроли за мултимедия</translation>
 <translation id="2405664212338326887">Няма връзка</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Рестартирайте, за да актуализирате</translation>
 <translation id="3139942575505304791">Работен кът 1</translation>
+<translation id="3147157020428159854">Записването на екрана бе спряно</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3151786313568798007">Ориентация</translation>
 <translation id="3153444934357957346">Можете да използвате най-много <ph name="MULTI_PROFILE_USER_LIMIT" /> профила с функцията за централизиран вход.</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">Здравейте, как мога да помогна?</translation>
 <translation id="3826099427150913765">Превключване към парола</translation>
 <translation id="383629559565718788">Показване на настройките на клавиатурата</translation>
+<translation id="3846214748874656680">Изход от цял екран</translation>
 <translation id="3846575436967432996">Не е налице информация за мрежата</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Началото</translation>
@@ -655,7 +659,6 @@
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
 <translation id="7564874036684306347">Преместването на прозорци към друг работен плот може да предизвика неочаквано поведение. Последващите известия, прозорци и диалогови прозорци може да бъдат разделени между работните плотове.</translation>
-<translation id="7568637526529101738">Когато кликнете с десния бутон на мишката или натиснете продължително, Асистент ви показва информация за избраното от вас, като например определение или преобразуване на мерни единици.</translation>
 <translation id="7569509451529460200">Активирахте функцията за брайлово писмо и ChromeVox</translation>
 <translation id="7579778809502851308">Заснемане на екрана</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
@@ -707,6 +710,7 @@
 <translation id="7995804128062002838">Екранът не бе заснет</translation>
 <translation id="8000066093800657092">Няма мрежа</translation>
 <translation id="8004512796067398576">Увеличаване</translation>
+<translation id="8029247720646289474">Не бе установена връзка с точката за достъп</translation>
 <translation id="8029629653277878342">За по-висока сигурност се изисква парола или ПИН</translation>
 <translation id="8030169304546394654">Няма връзка</translation>
 <translation id="8042893070933512245">Отваряне на менюто с настройки за достъпност</translation>
@@ -742,7 +746,6 @@
 <translation id="8375916635258623388">Това устройство <ph name="DEVICE_NAME" /> и телефонът ви ще се свържат автоматично</translation>
 <translation id="8380784334203145311">Добър вечер,</translation>
 <translation id="8388750414311082622">Последният работен кът не може да бъде премахнат.</translation>
-<translation id="8392451568018454956">Меню с опции за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Родителят ви заключи това устройство</translation>
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8425213833346101688">Промяна</translation>

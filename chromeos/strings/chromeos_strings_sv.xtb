@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
+<translation id="1204296502688602597">DNS-latens</translation>
+<translation id="1290331692326790741">svag signal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Gateway går att pinga</translation>
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1468664791493211953">Erbjudanden</translation>
 <translation id="1478594628797167447">Skanner</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Startprogram</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
+<translation id="1706391837335750954">DNS-resolver finns</translation>
 <translation id="1734367976349034509">Enheten är företagshanterad</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1930797645656624981">Tjänst för inmatningsmetod för Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Aktivera Bluetooth så att det går att upptäcka enheter i närheten</translation>
+<translation id="2364498172489649528">Godkänd</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> försök kvar</translation>
+<translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} försök kvar}other{<ph name="ERROR_MESSAGE" /> {0} försök kvar}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2872961005593481000">Stäng av</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
+<translation id="3083667275341675831">Anslutningsdiagnostik</translation>
 <translation id="3091839911843451378">Misslyckades – skrivaren har stannat</translation>
+<translation id="3188257591659621405">Mina filer</translation>
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
 <translation id="3268178239013324452">Misslyckades – luckan är öppen</translation>
+<translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
 <translation id="3456078764689556234">Sida <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" /> har skrivits ut.</translation>
 <translation id="3459509316159669723">Skriva ut</translation>
 <translation id="3515615323037921860">Utskriftsjobb</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
+<translation id="360565022852130722">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3749289110408117711">Filnamn</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="3865414814144988605">Upplösning</translation>
+<translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
+<translation id="4378373042927530923">Har inte körts</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos-biljetten upphör snart att gälla</translation>
 <translation id="445059817448385655">Gammalt lösenord</translation>
+<translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
+<translation id="4548483925627140043">Ingen signal hittades</translation>
+<translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
+<translation id="4646949265910132906">Säker Wi-Fi-anslutning</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
 <translation id="4691278870498629773">Har stoppats – fack saknas</translation>
+<translation id="469379815867856270">Signalstyrka</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4985509611418653372">Kör</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="520299634122159966">Det finns inga tillgängliga skannrar</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
@@ -71,6 +90,8 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Välj ett nytt nu</translation>
+<translation id="5372659122375744710">Wi-Fi-nätverket är inte säkert</translation>
+<translation id="5401938042319910061">Kör alla rutiner</translation>
 <translation id="5457599981699367932">Använd som gäst</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
@@ -78,15 +99,21 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6048107060512778456">Misslyckades – papperstrassel</translation>
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
+<translation id="6108689792487843350">Gateway kan inte nås</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
+<translation id="6325525973963619867">Misslyckades</translation>
 <translation id="636850387210749493">Företagsregistrering</translation>
 <translation id="649050271426829538">Har stoppats – papperstrassel</translation>
 <translation id="6517239166834772319">Utforska</translation>
+<translation id="6527081081771465939">Okänt säkerhetsprotokoll för Wi-Fi</translation>
 <translation id="6564646048574748301">Misslyckades – skrivaren kan inte nås</translation>
 <translation id="6620487321149975369">Utskriftsjobb visas i historiken såvida de inte tas bort manuellt</translation>
 <translation id="6643016212128521049">Rensa</translation>
+<translation id="6704062477274546131">DNS-matchning</translation>
 <translation id="6747215703636344499">Har stoppats – utmatningsfacket är fullt</translation>
+<translation id="714876143603641390">LAN-anslutningar</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtyp</translation>
@@ -94,15 +121,22 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Inga namnservrar hittades</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
 <translation id="8208861521865154048">Förmåner</translation>
+<translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>
 <translation id="8294431847097064396">Källa</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>
+<translation id="8364946094152050673">Inga namnservrar har angetts</translation>
+<translation id="8475690821716466388">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
+<translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
 <translation id="8668052347555487755">Färgläge</translation>
 <translation id="871560550817059752">Misslyckades – slut på bläck</translation>
+<translation id="8723108084122415655">Tröskelvärdet för latens överskreds för nätverket som inte är standard</translation>
 <translation id="8726019395068607495">Har stoppats – luckan är öppen</translation>
 <translation id="8747900814994928677">Bekräfta ändring</translation>
+<translation id="8910721771319628100">Tröskelvärdet för latens överskreds för standardnätverket</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>

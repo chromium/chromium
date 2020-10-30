@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ፋሮኛ ቁልፍ ሰሌዳ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ፔባ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ፋይሎች ከመስመር ውጪ እንዲገኙ በመደረግ ላይ</translation>
 <translation id="1646136617204068573">የሃንጋሪኛ ሰሌዳ ቁልፍ</translation>
 <translation id="164729547906544836">የታሚል ቁልፍ ሰሌዳ (itrans)</translation>
 <translation id="164969095109328410">የChrome መሣሪያ</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
 <translation id="2562685439590298522">ሰነዶች</translation>
 <translation id="2563185590376525700">እንቁራሪት</translation>
+<translation id="2572501073504669105">የበይነመረብ ግንኙነት በማይኖርበት ጊዜ ፋይሎችን ለመድረስ ከመስመር ውጭ እንዲገኙ ማድረግ ይችላሉ።</translation>
 <translation id="2614589611416690597">የ<ph name="VIDEO_TYPE" /> ቪዲዮ</translation>
 <translation id="2620090360073999360">Google Drive በዚህ ጊዜ ሊደረስበት አይችልም።</translation>
 <translation id="2638942478653899953">Google Drive ሊደረስበት አልተቻለም። እባክዎ <ph name="BEGIN_LINK" />ዘግተው ይውጡ<ph name="END_LINK" />ና ተመልሰው ይግቡ።</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">የፋይል ቦታ</translation>
 <translation id="2672394958563893062">አንድ ስህተት ተከስቷል። ከመጀመሪያው ጀምሮ ዳግም ለማስጀመር ጠቅ ያድርጉ።</translation>
 <translation id="2676946222714718093">እየተጫወተ ያለው በ፦</translation>
+<translation id="2735623501230989521">Parallels ዴስክቶፕ በ<ph name="FOLDER_NAME" /> አቃፊው ውስጥ ያሉ ፋይሎችን እንዲደርስ ፈቃድ ይስጡት</translation>
 <translation id="2735698359135166290">የሮማኒያኛ መደበኛ የቁልፍ ሰሌዳ</translation>
 <translation id="2771816809568414714">ቺዝ</translation>
 <translation id="2781645665747935084">የቤልጂየም</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ኦኒጊሪ</translation>
 <translation id="4784330909746505604">PowerPoint ማቅረቢያ</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> ኪባ</translation>
+<translation id="4789067489790477934">Parallels ዴስክቶፕ በእርስዎ Google Drive ውስጥ ፋይሎችን የመድረስ ፈቃድ ይስጧቸው። ለውጦች ከሌሎች መሣሪያዎችዎ ጋር ይሳመራሉ።</translation>
 <translation id="4801956050125744859">ሁለቱንም አስቀምጥ</translation>
 <translation id="4804827417948292437">አቮካዶ</translation>
 <translation id="4823651846660089135">መሣሪያው ተነባቢ-ብቻ ነው</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">የተደበቁ ፋይሎችን አሳይ</translation>
 <translation id="7508545000531937079">የተንሸራታች ትዕይንት</translation>
 <translation id="751507702149411736">ቤላራሻኛ</translation>
+<translation id="7544830582642184299">የLinux መተግበሪያዎች በእርስዎ Google Drive ውስጥ ፋይሎችን የመድረስ ፈቃድ ይስጧቸው። ለውጦች ከሌሎች መሣሪያዎችዎ ጋር ይሳመራሉ።</translation>
 <translation id="7544853251252956727">በውዝ</translation>
 <translation id="7547811415869834682">ደች</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
+<translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጪ እንዲገኝ በማድረግ ላይ</translation>
 <translation id="7603724359189955920">ፍርግርግ</translation>
 <translation id="7627790789328695202">ውይ፣ <ph name="FILE_NAME" /> አስቀድሞ አለ። ዳግም ይሰይሙትና እንደገና ይሞክሩ።</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% ተጠናቅቋል።</translation>

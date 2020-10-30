@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">إخفاء قائمة مقاطع الترجمة والشرح</translation>
 <translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
 <translation id="1758486001363313524">آخر...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> الحالي</translation>
 <translation id="1787192514241997742">الوقت الإجمالي: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">مربع حوار_للتنبيه</translation>
 <translation id="1821985195704844674">شبكة متفرعة</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
 <translation id="2759744352195237655">زر بقائمة منبثقة</translation>
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
+<translation id="2838616441696617235">خطوة</translation>
 <translation id="2844350028562914727">التفاصيل</translation>
 <translation id="2896972712917208084">مجموعة أزرار الاختيار</translation>
 <translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">شريط قوائم</translation>
 <translation id="4293574643247337246">رأس الصفحة</translation>
 <translation id="4360991593054037559">يُرجى إدخال قيمة صالحة. علمًا بأن القيم الصالحة تتراوح بين <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">هذه الصورة غير مصنَّفة. افتح قائمة "الخيارات الأخرى" في أعلى يسار الصفحة للحصول على أوصاف الصور.</translation>
 <translation id="4384583879834880242">سين وجيم</translation>
 <translation id="4444765639179266822">يبدو أنه يقول: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">مرجع مسرد مصطلحات</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
+<translation id="4576178047100686001">هذه الصورة غير مصنَّفة. افتح قائمة "الخيارات الأخرى" في أعلى يمين الصفحة للحصول على أوصاف الصور.</translation>
 <translation id="4597532268155981612">نموذج</translation>
 <translation id="4661075872484491155">متفرع</translation>
 <translation id="4664250907885839816">يجب ألا يشتمل الجزء الذي يلي العلامة "<ph name="ATSIGN" />" على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">إدخال قائمة مراجع</translation>
 <translation id="4915360478455618802">عرض منتقي الوقت</translation>
 <translation id="492244087561876220">تعليق</translation>
+<translation id="4934662370368414994">عنصر</translation>
 <translation id="4950364064308314478">عرض منتقي الوقت والتاريخ المحلييَن</translation>
 <translation id="4971739861736909480">تم اختيار <ph name="ACCNAME" />.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> محددة</translation>
@@ -172,6 +177,7 @@
 <translation id="6011459053400940133">شريط تمرير مستوى الصوت</translation>
 <translation id="6015796118275082299">عام</translation>
 <translation id="6023896073578205740">مربع القائمة</translation>
+<translation id="6131824478727057281">الموقع</translation>
 <translation id="6150588977291308318">قائمة مراجع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>

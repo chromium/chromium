@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">kuficha menyu ya manukuu</translation>
 <translation id="1729654308190250600">Tafadhali jaza sehemu ya anwani ya barua pepe.</translation>
 <translation id="1758486001363313524">Nyingine...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> cha sasa</translation>
 <translation id="1787192514241997742">muda wote uliotumika: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">kidirisha cha arifa</translation>
 <translation id="1821985195704844674">gridi ya mti</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Thamani lazima iwe <ph name="MINIMUM_DATE_OR_TIME" /> au baadaye.</translation>
 <translation id="2759744352195237655">kitufe cha dirisha ibukizi</translation>
 <translation id="2761667185364618470">Tafadhali angalia kikasha hiki iwapo unataka kuendelea.</translation>
+<translation id="2838616441696617235">hatua</translation>
 <translation id="2844350028562914727">maelezo</translation>
 <translation id="2896972712917208084">kikundi cha vitufe</translation>
 <translation id="2908441821576996758">Tafadhali weka orodha ya anwani za barua pepe zilizotenganishwa kwa vikomo.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">upau wa menyu</translation>
 <translation id="4293574643247337246">kijajuu cha ukurasa</translation>
 <translation id="4360991593054037559">Tafadhali ingiza thamani halali. Thamani mbili halali za karibu ni <ph name="VALID_VALUE_LOW" /> na <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Picha hii haina lebo. Fungua menyu ya Chaguo Zaidi katika sehemu ya juu kulia ili upate maelezo ya picha.</translation>
 <translation id="4384583879834880242">Maswali na Majibu</translation>
 <translation id="4444765639179266822">Inaonekana kusema: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">marejeleo ya farahasa</translation>
 <translation id="4522570452068850558">Maelezo</translation>
+<translation id="4576178047100686001">Picha hii haina lebo. Fungua menyu ya Chaguo Zaidi katika sehemu ya juu kushoto ili upate maelezo ya picha.</translation>
 <translation id="4597532268155981612">fomu</translation>
 <translation id="4661075872484491155">mti</translation>
 <translation id="4664250907885839816">Sehemu inayofuata '<ph name="ATSIGN" />' haipaswi kuwa na alama ya '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">maelezo ya bibliografia</translation>
 <translation id="4915360478455618802">Onyesha kiteua saa</translation>
 <translation id="492244087561876220">maoni</translation>
+<translation id="4934662370368414994">kipengee</translation>
 <translation id="4950364064308314478">Onyesha kiteua tarehe na saa za mahali uliko</translation>
 <translation id="4971739861736909480">Umechagua <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Vipengee <ph name="SELECTED_COUNT" /> vimechaguliwa</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">kitelezi cha sauti</translation>
 <translation id="6015796118275082299">Mwaka</translation>
 <translation id="6023896073578205740">kikasha cha orodha</translation>
+<translation id="6131824478727057281">mahali</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">mita</translation>
 <translation id="6166809985690652833">maelezo kuhusu kitabu</translation>

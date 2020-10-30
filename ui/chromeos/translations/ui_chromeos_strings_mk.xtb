@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Фарска тастатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> датотеки се прават достапни офлајн</translation>
 <translation id="1646136617204068573">унгарска тастатура</translation>
 <translation id="164729547906544836">тамилска тастатура (itrans)</translation>
 <translation id="164969095109328410">Уред со Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
 <translation id="2562685439590298522">Документи</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2572501073504669105">Може да ги направите датотеките да бидат достапни офлајн за да пристапувате до нив кога нема да имате интернет-врска.</translation>
 <translation id="2614589611416690597">Видео: <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Не може да се достапи до Google Диск во моментов.</translation>
 <translation id="2638942478653899953">Не можеше да се добие Google Диск. <ph name="BEGIN_LINK" />Одјавете се<ph name="END_LINK" /> и повторно најавете се.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Локација на датотеката</translation>
 <translation id="2672394958563893062">Настана грешка. Кликнете за да се рестартира отпочеток.</translation>
 <translation id="2676946222714718093">Се репродуцира на</translation>
+<translation id="2735623501230989521">Дајте ѝ дозвола на Parallels Desktop да пристапува до датотеките во папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2735698359135166290">Романска стандардна тастатура</translation>
 <translation id="2771816809568414714">Сирење</translation>
 <translation id="2781645665747935084">Белгиски</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint-презентација</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Дајте ѝ дозвола на Parallels Desktop да пристапува до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="4801956050125744859">Задржи ги двете</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Уредот е само за читање</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Прикажи скриени датотеки</translation>
 <translation id="7508545000531937079">Приказ на слајдови</translation>
 <translation id="751507702149411736">белоруска</translation>
+<translation id="7544830582642184299">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="7544853251252956727">Измешај</translation>
 <translation id="7547811415869834682">Холандски</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
+<translation id="7553492409867692754">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеки во папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Почекајте малку</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> се прави достапна офлајн</translation>
 <translation id="7603724359189955920">Мрежи</translation>
 <translation id="7627790789328695202">Упс, <ph name="FILE_NAME" /> веќе постои. Преименувајте и обидете се повторно.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % завршени.</translation>

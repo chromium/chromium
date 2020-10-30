@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Tastiera në faroisht</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Po i bën të disponueshëm jashtë linje <ph name="NUMBER_OF_ITEMS" /> skedarë</translation>
 <translation id="1646136617204068573">Tastiera në hungarisht</translation>
 <translation id="164729547906544836">Tastierë në tamilisht (itrans)</translation>
 <translation id="164969095109328410">Pajisje Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Amerikane ndërkombëtare</translation>
 <translation id="2562685439590298522">Dokumente</translation>
 <translation id="2563185590376525700">Bretkosa</translation>
+<translation id="2572501073504669105">Mund t'i bësh skedarët të disponueshëm jashtë linje për qasje kur nuk ke lidhje në internet.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">"Disku i Google" nuk mund të arrihet në këtë moment.</translation>
 <translation id="2638942478653899953">"Disku i Google" është i paarritshëm. <ph name="BEGIN_LINK" />Dil<ph name="END_LINK" /> dhe identifikohu përsëri.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Vendndodhja e skedarit</translation>
 <translation id="2672394958563893062">Ndodhi një gabim. Kliko për të rinisur nga fillimi.</translation>
 <translation id="2676946222714718093">Po luan</translation>
+<translation id="2735623501230989521">Jepi leje Parallels Desktop që të qaset në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Tastierë standarde në rumanisht</translation>
 <translation id="2771816809568414714">Djathë</translation>
 <translation id="2781645665747935084">belge</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezantim në PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Jepi leje Parallels Desktop që të qaset në skedarët në "Diskun tënd të Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="4801956050125744859">Mbaji të dyja</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Pajisja është vetëm për lexim</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Shfaq skedarët e fshehur</translation>
 <translation id="7508545000531937079">Prezantimi</translation>
 <translation id="751507702149411736">Bjellorusisht</translation>
+<translation id="7544830582642184299">Jepu leje aplikacioneve të Linux që të kenë qasje në skedarët në "Diskun e Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="7544853251252956727">Përziej</translation>
 <translation id="7547811415869834682">Hollandisht</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
+<translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
+<translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm jashtë linje</translation>
 <translation id="7603724359189955920">Rrjeta</translation>
 <translation id="7627790789328695202">Mos, <ph name="FILE_NAME" /> ekziston tashmë. Riemërtoje dhe provo sërish.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% i përfunduar.</translation>

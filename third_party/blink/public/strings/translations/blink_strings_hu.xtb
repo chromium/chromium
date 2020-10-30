@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">a feliratok menü elrejtése</translation>
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
 <translation id="1758486001363313524">Más...</translation>
+<translation id="1774577460079229490">jelenlegi állapot: <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">összes idő: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">értesítő párbeszédpanel</translation>
 <translation id="1821985195704844674">farács</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Az érték <ph name="MINIMUM_DATE_OR_TIME" /> vagy azt követő kell, hogy legyen.</translation>
 <translation id="2759744352195237655">előugró gomb</translation>
 <translation id="2761667185364618470">Kérjük, jelölje be ezt a jelölőnégyzetet, ha tovább kíván haladni.</translation>
+<translation id="2838616441696617235">lépés</translation>
 <translation id="2844350028562914727">részletek</translation>
 <translation id="2896972712917208084">választógombcsoport</translation>
 <translation id="2908441821576996758">Kérjük, adjon meg egy vesszőkkel elválasztott e-mail címlistát.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menüsor</translation>
 <translation id="4293574643247337246">oldalfejléc</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Ez a kép nincs megcímkézve. A jobb felső sarokban lévő További lehetőségek menü megnyitásával képleírásokhoz juthat.</translation>
 <translation id="4384583879834880242">Kérdések és válaszok</translation>
 <translation id="4444765639179266822">Úgy tűnik, hogy a következő látható rajta: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">szószedet-hivatkozás</translation>
 <translation id="4522570452068850558">Részletek</translation>
+<translation id="4576178047100686001">Ez a kép nincs megcímkézve. A bal felső sarokban lévő További lehetőségek menü megnyitásával képleírásokhoz juthat.</translation>
 <translation id="4597532268155981612">űrlap</translation>
 <translation id="4661075872484491155">fa</translation>
 <translation id="4664250907885839816">A „<ph name="ATSIGN" />” utáni rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliográfiai bejegyzés</translation>
 <translation id="4915360478455618802">Időválasztó megjelenítése</translation>
 <translation id="492244087561876220">megjegyzés</translation>
+<translation id="4934662370368414994">elem</translation>
 <translation id="4950364064308314478">Helyi dátum és idő választójának megjelenítése</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> kiválasztva</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> kiválasztva</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">hangerőcsúszka</translation>
 <translation id="6015796118275082299">Év</translation>
 <translation id="6023896073578205740">listamező</translation>
+<translation id="6131824478727057281">helyszín</translation>
 <translation id="6150588977291308318">bibliográfia</translation>
 <translation id="6164829606128959761">mérő</translation>
 <translation id="6166809985690652833">utószó</translation>

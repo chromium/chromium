@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">коштомо жазуулар менюсун жашыруу</translation>
 <translation id="1729654308190250600">Бош эмес электрондук почта дарегин киргизиңиз.</translation>
 <translation id="1758486001363313524">Башка…</translation>
+<translation id="1774577460079229490">учурдагы элемент: <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">жалпы убакыт: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">айгай кабар_диалогу</translation>
 <translation id="1821985195704844674">дарак торчосу</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Маани <ph name="MINIMUM_DATE_OR_TIME" /> же андан жаңыраак болушу керек.</translation>
 <translation id="2759744352195237655">калкып чыкма баскычы</translation>
 <translation id="2761667185364618470">Уланткыңыз келсе бул кутуну белгилеңиз.</translation>
+<translation id="2838616441696617235">кадам</translation>
 <translation id="2844350028562914727">чоо-жайы</translation>
 <translation id="2896972712917208084">радио баскыч тобу</translation>
 <translation id="2908441821576996758">Электрондук почта даректеринин тизмесин үтүр менен бөлүп киргизиңиз.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">меню тилкеси</translation>
 <translation id="4293574643247337246">беттин аталышы</translation>
 <translation id="4360991593054037559">Жарактуу маанини киргизиңиз. Эң жакын жарактуу эки маани <ph name="VALID_VALUE_LOW" /> жана <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Бул сүрөт белгиленген эмес. Сүрөттүн түшүндүрмөлөрүн алуу үчүн жогорку оң бурчтагы Кошумча параметрлер менюсун ачыңыз.</translation>
 <translation id="4384583879834880242">Суроолор жана жооптор</translation>
 <translation id="4444765639179266822">Төмөнкү жазылыптыр: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">глоссарийге шилтеме</translation>
 <translation id="4522570452068850558">Чоо-жайлары</translation>
+<translation id="4576178047100686001">Бул сүрөт белгиленген эмес. Сүрөттүн түшүндүрмөлөрүн алуу үчүн жогорку сол бурчтагы Кошумча параметрлер менюсун ачыңыз.</translation>
 <translation id="4597532268155981612">форма</translation>
 <translation id="4661075872484491155">дарак</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' дегенден кийинки бөлүктө '<ph name="INVALIDCHARACTER" />' символу болбошу керек.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">библиографиялык жазуу</translation>
 <translation id="4915360478455618802">Убакыт тандагычты көрсөтүү</translation>
 <translation id="492244087561876220">пикир</translation>
+<translation id="4934662370368414994">нерсе</translation>
 <translation id="4950364064308314478">Жергиликтүү күн менен убакытты тандагычты көрсөтүү</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> тандалды</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> тандалды</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">үн башкаруучу сыдырма</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6023896073578205740">тизме кутусу</translation>
+<translation id="6131824478727057281">жайгашкан жер</translation>
 <translation id="6150588977291308318">библиография</translation>
 <translation id="6164829606128959761">ченегич</translation>
 <translation id="6166809985690652833">соңку сөз</translation>

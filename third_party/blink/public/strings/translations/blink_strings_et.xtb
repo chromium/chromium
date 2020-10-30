@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">peida subtiitrite menüü</translation>
 <translation id="1729654308190250600">Sisestage mittetühi e-posti aadress.</translation>
 <translation id="1758486001363313524">Muu ...</translation>
+<translation id="1774577460079229490">praegune <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">aeg kokku: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">hoiatusdialoog</translation>
 <translation id="1821985195704844674">puuruudustik</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Väärtus peab olema <ph name="MINIMUM_DATE_OR_TIME" /> või hilisem.</translation>
 <translation id="2759744352195237655">hüpikunupp</translation>
 <translation id="2761667185364618470">Märkige see ruut, kui soovite jätkata.</translation>
+<translation id="2838616441696617235">etapp</translation>
 <translation id="2844350028562914727">üksikasjad</translation>
 <translation id="2896972712917208084">raadionuppude grupp</translation>
 <translation id="2908441821576996758">Sisestage meiliaadresside loend komadega eraldatult.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menüüriba</translation>
 <translation id="4293574643247337246">lehe päis</translation>
 <translation id="4360991593054037559">Sisestage kehtiv väärtus. Kaks lähimat kehtivat väärtust on <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Sellel pildil pole silti. Piltide kirjelduste saamiseks avage paremal ülanurgas menüü Rohkem Valikuid.</translation>
 <translation id="4384583879834880242">Küsimused ja vastused</translation>
 <translation id="4444765639179266822">Näib ütlevat: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">sõnastiku viide</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
+<translation id="4576178047100686001">Sellel pildil pole silti. Piltide kirjelduste saamiseks avage vasakul ülanurgas menüü Rohkem Valikuid.</translation>
 <translation id="4597532268155981612">vorm</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Märgile „<ph name="ATSIGN" />” järgnev osa ei tohi sisaldada sümbolit „<ph name="INVALIDCHARACTER" />”.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliograafia kirje</translation>
 <translation id="4915360478455618802">Kuva kellaaja valija</translation>
 <translation id="492244087561876220">kommentaar</translation>
+<translation id="4934662370368414994">üksus</translation>
 <translation id="4950364064308314478">Kuva kohaliku kuupäeva ja kellaaja valija</translation>
 <translation id="4971739861736909480">Valitud on <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Valitud on <ph name="SELECTED_COUNT" /> üksust</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">helitugevuse liugur</translation>
 <translation id="6015796118275082299">Aasta</translation>
 <translation id="6023896073578205740">loendikast</translation>
+<translation id="6131824478727057281">asukoht</translation>
 <translation id="6150588977291308318">bibliograafia</translation>
 <translation id="6164829606128959761">mõõdik</translation>
 <translation id="6166809985690652833">järelsõna</translation>

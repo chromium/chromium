@@ -291,6 +291,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider ?</translation>
 <translation id="3826099427150913765">Authentification par mot de passe</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
+<translation id="3846214748874656680">Quitter le mode plein écran</translation>
 <translation id="3846575436967432996">Aucune information disponible concernant le réseau</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
@@ -655,7 +656,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
-<translation id="7568637526529101738">Si vous effectuez un clic droit ou appuyez de manière prolongée sur cette fonctionnalité, l'Assistant vous fournit des informations, comme une définition ou une conversion d'unités, en fonction de l'élément sélectionné.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7590883480672980941">Paramètres de saisie</translation>
@@ -742,7 +742,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>
 <translation id="8380784334203145311">Bonsoir,</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
-<translation id="8392451568018454956">Menu "Options" de l'adresse e-mail <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
 <translation id="8425213833346101688">Modifier</translation>

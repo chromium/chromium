@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ແປ້ນ​ພິມ​ພາ​ສາ​ຟາ​ໂຣ​ອີ​ສ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
+<translation id="1646019627374511909">ກຳລັງເຮັດໃຫ້ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ເປັນໄຟລ໌ອອບລາຍ</translation>
 <translation id="1646136617204068573">ຄີບອດພາສາຮັງ​ກາ​ຣີ</translation>
 <translation id="164729547906544836">ຄີບອດພາສາຕາມິນ (itrans​)</translation>
 <translation id="164969095109328410">ອຸປະກອນ Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
 <translation id="2562685439590298522">ເອກະສານ</translation>
 <translation id="2563185590376525700">ກົບ</translation>
+<translation id="2572501073504669105">ທ່ານສາມາດເຮັດໃຫ້ໄຟລ໌ນຳໃຊ້ແບບອອບລາຍໄດ້ເພື່ອເຂົ້າເຖິງເມື່ອທ່ານບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="2614589611416690597">ວິດີໂອ <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">ບໍ່ສາມາດເຂົ້າເຖິງ Google Drive ໄດ້ໃນເວລານີ້.</translation>
 <translation id="2638942478653899953">ບໍ່ສາມາດເຂົ້າຫາ Google Drive ໄດ້. ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ<ph name="END_LINK" /> ແລະລົງຊື່ກັບເຂົ້າຫາອີກ.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ສະຖານທີ່ຂອງໄຟລ໌</translation>
 <translation id="2672394958563893062">ເກີດຄວາມຜິດພາດຂຶ້ນ. ຄລິກເພື່ອເລີ່ມຈາກການເລີ່ມຕົ້ນ.</translation>
 <translation id="2676946222714718093">ກຳລັງຫຼິ້ນຢູ່</translation>
+<translation id="2735623501230989521">ອະນຸຍາດໃຫ້ Parallels Desktop ເຂົ້າເຖິງໄຟລ໌ໃນໂຟນເດີ <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">ແປ້ນ​ພິມ​ມາດ​ຕະ​ຖານ​ພາ​ສາ​ໂຣ​ມັນ</translation>
 <translation id="2771816809568414714">ເນີຍແຂງ</translation>
 <translation id="2781645665747935084">ພາສາແບນຊິກ</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ໂອະນິງິຣິ</translation>
 <translation id="4784330909746505604">ການ​ນໍາ​ສະ​ເຫນີ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">ອະນຸຍາດໃຫ້ Parallels Desktop ເຂົ້າເຖິງໄຟລ໌ໃນ Google Drive ຂອງທ່ານ. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນຂອງທ່ານ.</translation>
 <translation id="4801956050125744859">ຮັກສາ​ທັງ​ສອງ</translation>
 <translation id="4804827417948292437">ອາໂວຄາໂດ</translation>
 <translation id="4823651846660089135">ອຸປະກອນເປັນແບບອ່ານເທົ່ານັ້ນ</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">ສະ​ແດງ​ໄຟ​ລ໌​ທີ່​ເຊື່ອງ​ໄວ້</translation>
 <translation id="7508545000531937079">ສະໄລດ໌ໂຊ</translation>
 <translation id="751507702149411736">ພາສາ​ເບ​ລາຣຸສ</translation>
+<translation id="7544830582642184299">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງໄຟລ໌ຕ່າງໆໃນ Google Drive ຂອງທ່ານ. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນຂອງທ່ານ.</translation>
 <translation id="7544853251252956727">ສັບປ່ຽນ</translation>
 <translation id="7547811415869834682">ພາສາດັຊ</translation>
 <translation id="7551643184018910560">ປັກໝຸດໃສ່ຖ້ານ</translation>
+<translation id="7553492409867692754">ໃຫ້ການອະນຸຍາດແກ່ແອັບ Linux ເພື່ອເຂົ້າເຖິງໄຟລ໌ຕ່າງໆໃນໂຟນເດີ <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ລໍ​ຖ້າ​ຈັກໜ້ອຍ</translation>
+<translation id="7592775719802218421">ກຳລັງເຮັດໃຫ້ <ph name="FILE_NAME" /> ນຳໃຊ້ແບບອອບລາຍໄດ້</translation>
 <translation id="7603724359189955920">ຕາໜ່າງ</translation>
 <translation id="7627790789328695202">ອຸ້ຍ, <ph name="FILE_NAME" /> ມີຢູ່ແລ້ວ. ປ່ຽນຊື່ມັນ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="7628656427739290098">ສຳເລັດ <ph name="PERCENT" />%.</translation>

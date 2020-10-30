@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">skjul menuen for undertekster</translation>
 <translation id="1729654308190250600">Angiv en mailadresse, der ikke er tom.</translation>
 <translation id="1758486001363313524">Andet...</translation>
+<translation id="1774577460079229490">aktuelt <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">tid i alt: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">trægitter</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Værdien må ikke være tidligere end <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2759744352195237655">pop op-knap</translation>
 <translation id="2761667185364618470">Markér dette felt, hvis du vil fortsætte.</translation>
+<translation id="2838616441696617235">trin</translation>
 <translation id="2844350028562914727">detaljer</translation>
 <translation id="2896972712917208084">gruppe af alternativknapper</translation>
 <translation id="2908441821576996758">Angiv en kommasepareret liste over mailadresser.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menulinje</translation>
 <translation id="4293574643247337246">sideoverskrift</translation>
 <translation id="4360991593054037559">Angiv en gyldig værdi. De to nærmeste gyldige værdier er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Der er ikke føjet en etiket til dette billede. Åbn menuen Flere valgmuligheder øverst til højre for at få billedbeskrivelser.</translation>
 <translation id="4384583879834880242">Spørgsmål og svar</translation>
 <translation id="4444765639179266822">Der lader til at stå: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">reference på ordliste</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4576178047100686001">Der er ikke føjet en etiket til dette billede. Åbn menuen Flere valgmuligheder øverst til venstre for at få billedbeskrivelser.</translation>
 <translation id="4597532268155981612">formular</translation>
 <translation id="4661075872484491155">træ</translation>
 <translation id="4664250907885839816">Den del, der kommer efter "<ph name="ATSIGN" />", må ikke indeholde symbolet "<ph name="INVALIDCHARACTER" />".</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliografipost</translation>
 <translation id="4915360478455618802">Vis tidsvælger</translation>
 <translation id="492244087561876220">kommentar</translation>
+<translation id="4934662370368414994">element</translation>
 <translation id="4950364064308314478">Vis lokal dato- og tidsvælger</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> er valgt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">lydstyrkeskyder</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6023896073578205740">listefelt</translation>
+<translation id="6131824478727057281">placering</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">måler</translation>
 <translation id="6166809985690652833">efterskrift</translation>

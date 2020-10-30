@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Tastatură feroeză</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cameră</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fișiere devin disponibile offline</translation>
 <translation id="1646136617204068573">Tastatură maghiară</translation>
 <translation id="164729547906544836">Tastatură tamilă (itrans)</translation>
 <translation id="164969095109328410">Dispozitiv Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">S.U.A. internațională</translation>
 <translation id="2562685439590298522">Documente</translation>
 <translation id="2563185590376525700">Broască</translation>
+<translation id="2572501073504669105">Poți face fișiere disponibile offline pentru a le accesa când nu ai conexiune la internet.</translation>
 <translation id="2614589611416690597">Videoclip <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Disc Google nu poate fi accesat în acest moment.</translation>
 <translation id="2638942478653899953">Google Drive nu a putut fi accesat. <ph name="BEGIN_LINK" />Deconectați-vă<ph name="END_LINK" /> și conectați-vă din nou.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Locația fișierului</translation>
 <translation id="2672394958563893062">A apărut o eroare. Dați clic pentru a relua de la început.</translation>
 <translation id="2676946222714718093">Se redă pe</translation>
+<translation id="2735623501230989521">Acordă Parallels Desktop permisiunea de a accesa fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Tastatură română standard</translation>
 <translation id="2771816809568414714">Brânză</translation>
 <translation id="2781645665747935084">Belgiană</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Prezentare PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Acordă Parallels Desktop permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="4801956050125744859">Păstrați-le pe amândouă</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4823651846660089135">Dispozitivul este numai în citire</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Afișează fișierele ascunse</translation>
 <translation id="7508545000531937079">Slideshow</translation>
 <translation id="751507702149411736">Belarusă</translation>
+<translation id="7544830582642184299">Acordă aplicațiilor Linux permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="7544853251252956727">Redă aleatoriu</translation>
 <translation id="7547811415869834682">Neerlandeză</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
+<translation id="7553492409867692754">Acordă aplicațiilor Linux permisiunea să acceseze fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Așteptați puțin</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> devine disponibil offline</translation>
 <translation id="7603724359189955920">Grile</translation>
 <translation id="7627790789328695202">Hopa, <ph name="FILE_NAME" /> există deja. Redenumiți și încercați din nou.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % finalizat</translation>

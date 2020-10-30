@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">skrij meni s podnapisi</translation>
 <translation id="1729654308190250600">Vnesite e-poštni naslov (polje ne sme biti prazno).</translation>
 <translation id="1758486001363313524">Drugo ...</translation>
+<translation id="1774577460079229490">trenutno <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">skupni čas: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">pogovorno okno z opozorilom</translation>
 <translation id="1821985195704844674">drevesna mreža</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Vrednost mora biti <ph name="MINIMUM_DATE_OR_TIME" /> ali pozneje.</translation>
 <translation id="2759744352195237655">pojavni gumb</translation>
 <translation id="2761667185364618470">Potrdite to polje, če želite nadaljevati.</translation>
+<translation id="2838616441696617235">korak</translation>
 <translation id="2844350028562914727">podrobnosti</translation>
 <translation id="2896972712917208084">skupina izbirnih gumbov</translation>
 <translation id="2908441821576996758">Vnesite seznam e-poštnih naslovov, ločenih z vejicami</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menijska vrstica</translation>
 <translation id="4293574643247337246">glava strani</translation>
 <translation id="4360991593054037559">Vnesite veljavno vrednost. Najbližji veljavni vrednosti sta <ph name="VALID_VALUE_LOW" /> in <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Ta slika ni označena. Odprite meni z več možnostmi v zgornjem desnem kotu, če želite dobiti opise slik.</translation>
 <translation id="4384583879834880242">Vprašanja</translation>
 <translation id="4444765639179266822">Videti je, da piše: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">vnos v glosarju</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
+<translation id="4576178047100686001">Ta slika ni označena. Odprite meni z več možnostmi v zgornjem levem kotu, če želite dobiti opise slik.</translation>
 <translation id="4597532268155981612">obrazec</translation>
 <translation id="4661075872484491155">drevo</translation>
 <translation id="4664250907885839816">Del po »<ph name="ATSIGN" />« ne sme vsebovati znaka »<ph name="INVALIDCHARACTER" />«.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliografski vnos</translation>
 <translation id="4915360478455618802">Prikaz izbirnika ure</translation>
 <translation id="492244087561876220">komentar</translation>
+<translation id="4934662370368414994">element</translation>
 <translation id="4950364064308314478">Prikaz izbirnika lokalnega datuma in ure</translation>
 <translation id="4971739861736909480">Izbran je predmet <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Št. izbranih: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">drsnik za glasnost</translation>
 <translation id="6015796118275082299">Leto</translation>
 <translation id="6023896073578205740">polje s seznamom</translation>
+<translation id="6131824478727057281">lokacija</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">merilnik</translation>
 <translation id="6166809985690652833">spremna beseda</translation>

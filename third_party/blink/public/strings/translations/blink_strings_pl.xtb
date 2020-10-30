@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ukrywanie menu napisów</translation>
 <translation id="1729654308190250600">Podaj adres e-mail.</translation>
 <translation id="1758486001363313524">Inny...</translation>
+<translation id="1774577460079229490">bieżąca wartość: <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">łączny czas: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">siatka drzewa</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Musisz podać wartość <ph name="MINIMUM_DATE_OR_TIME" /> lub późniejszą.</translation>
 <translation id="2759744352195237655">przycisk wyskakującego okienka</translation>
 <translation id="2761667185364618470">Zaznacz to pole, jeśli chcesz kontynuować.</translation>
+<translation id="2838616441696617235">krok</translation>
 <translation id="2844350028562914727">szczegóły</translation>
 <translation id="2896972712917208084">grupa przycisków opcji</translation>
 <translation id="2908441821576996758">Podaj listę adresów e-mail rozdzielonych przecinkami.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">pasek menu</translation>
 <translation id="4293574643247337246">nagłówek strony</translation>
 <translation id="4360991593054037559">Podaj prawidłową wartość. Dwie najbliższe prawidłowe wartości to <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Ten obraz nie ma etykiety. Aby pobrać opisy obrazów, otwórz menu Więcej opcji w prawym górnym rogu.</translation>
 <translation id="4384583879834880242">Pytania i odpowiedzi</translation>
 <translation id="4444765639179266822">Wygląda jak napis: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">odniesienie do słownika</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
+<translation id="4576178047100686001">Ten obraz nie ma etykiety. Aby pobrać opisy obrazów, otwórz menu Więcej opcji w lewym górnym rogu.</translation>
 <translation id="4597532268155981612">formularz</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Część po znaku „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">pozycja bibliograficzna</translation>
 <translation id="4915360478455618802">Pokaż selektor godziny</translation>
 <translation id="492244087561876220">komentarz</translation>
+<translation id="4934662370368414994">element</translation>
 <translation id="4950364064308314478">Pokaż selektor lokalnej daty i godziny</translation>
 <translation id="4971739861736909480">Wybrano <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Wybrano: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">suwak głośności</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6023896073578205740">pole listy</translation>
+<translation id="6131824478727057281">lokalizacja</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">miernik</translation>
 <translation id="6166809985690652833">posłowie</translation>

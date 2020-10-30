@@ -56,6 +56,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1420527829902822813">Skermkiekie is geneem en na knipbord gestoor</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Wys taalinstellings</translation>
+<translation id="1456407467406159627">Skermopnemer het gestop omdat daar vertroulike inhoud op jou skerm is.</translation>
 <translation id="1460620680449458626">Volume is gedemp.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1475439723810528286">Tik enige plek om volskerm vas te vang</translation>
@@ -150,6 +151,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
 <translation id="2390318262976603432">Locale-instellings</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Mediakontroles</translation>
 <translation id="2405664212338326887">Nie gekoppel nie</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2412593942846481727">Opdatering is beskikbaar</translation>
@@ -220,6 +222,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Herbegin om op te dateer</translation>
 <translation id="3139942575505304791">Lessenaar 1</translation>
+<translation id="3147157020428159854">Skermopnemer het gestop</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3151786313568798007">Oriëntasie</translation>
 <translation id="3153444934357957346">Jy kan net tot en met <ph name="MULTI_PROFILE_USER_LIMIT" /> rekeninge in veelvoudige aanmelding hê.</translation>
@@ -292,6 +295,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="380165613292957338">Hallo, hoe kan ek help?</translation>
 <translation id="3826099427150913765">Skakel oor na wagwoord</translation>
 <translation id="383629559565718788">Wys sleutelbordinstellings</translation>
+<translation id="3846214748874656680">Verlaat volskerm</translation>
 <translation id="3846575436967432996">Geen netwerkinligting beskikbaar nie</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
@@ -656,7 +660,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7561982940498449837">Maak kieslys toe</translation>
 <translation id="7564874036684306347">Om vensters na 'n ander werkskerm te skuif, kan lei tot onverwagte gedrag. Opeenvolgende kennisgewings, vensters en dialoë kan tussen werkskerms verdeel word.</translation>
-<translation id="7568637526529101738">Met 'n regsklik of langdruk wys Assistent inligting soos die definisie of eenheidomskakeling van jou keuse.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox is geaktiveer</translation>
 <translation id="7579778809502851308">Skermskoot</translation>
 <translation id="7590883480672980941">Invoerinstellings</translation>
@@ -708,6 +711,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7995804128062002838">Kon nie skermkiekie neem nie</translation>
 <translation id="8000066093800657092">Geen netwerk nie</translation>
 <translation id="8004512796067398576">Inkrement</translation>
+<translation id="8029247720646289474">Kon nie aan warmkol koppel nie</translation>
 <translation id="8029629653277878342">PIN of wagwoord word vereis vir meer sekuriteit</translation>
 <translation id="8030169304546394654">Ontkoppel</translation>
 <translation id="8042893070933512245">Maak toeganklikheidinstellingskieslys oop</translation>
@@ -743,7 +747,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8375916635258623388">Hierdie <ph name="DEVICE_NAME" /> en jou foon sal outomaties koppel</translation>
 <translation id="8380784334203145311">Goeienag</translation>
 <translation id="8388750414311082622">Jongste lessenaar kan nie verwyder word nie.</translation>
-<translation id="8392451568018454956">Opsieskieslys vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Jou ouer het hierdie toestel gesluit</translation>
 <translation id="8412677897383510995">Wys vertoonskerminstellings</translation>
 <translation id="8425213833346101688">Verander</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ocultar menu de legendas ocultas</translation>
 <translation id="1729654308190250600">Introduza um endereço de email que não esteja vazio.</translation>
 <translation id="1758486001363313524">Outra...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> atual</translation>
 <translation id="1787192514241997742">tempo total: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">grelha de árvore</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">O valor tem de ser <ph name="MINIMUM_DATE_OR_TIME" /> ou posterior.</translation>
 <translation id="2759744352195237655">botão pop-up</translation>
 <translation id="2761667185364618470">Selecione esta caixa se pretender continuar.</translation>
+<translation id="2838616441696617235">passo</translation>
 <translation id="2844350028562914727">detalhes</translation>
 <translation id="2896972712917208084">grupo de botões de opção</translation>
 <translation id="2908441821576996758">Introduza uma lista de endereços de email separados por vírgula.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">barra de menu</translation>
 <translation id="4293574643247337246">cabeçalho da página</translation>
 <translation id="4360991593054037559">Introduza um valor válido. Os dois valores válidos mais próximos são <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Esta imagem não está etiquetada. Abra o menu Mais opções na parte superior direita para obter descrições da imagem.</translation>
 <translation id="4384583879834880242">Perg e Resp</translation>
 <translation id="4444765639179266822">Parece indicar: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">referência do glossário</translation>
 <translation id="4522570452068850558">Detalhes</translation>
+<translation id="4576178047100686001">Esta imagem não está etiquetada. Abra o menu Mais opções na parte superior esquerda para obter descrições da imagem.</translation>
 <translation id="4597532268155981612">formulário</translation>
 <translation id="4661075872484491155">árvore</translation>
 <translation id="4664250907885839816">Uma parte a seguir a "<ph name="ATSIGN" />" não deve conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">entrada da bibliografia</translation>
 <translation id="4915360478455618802">Mostrar selecionador de hora</translation>
 <translation id="492244087561876220">comentário</translation>
+<translation id="4934662370368414994">item</translation>
 <translation id="4950364064308314478">Mostrar selecionador de data e hora locais</translation>
 <translation id="4971739861736909480">Selecionado: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> selecionados</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">controlo de deslize do volume</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6023896073578205740">caixa de lista</translation>
+<translation id="6131824478727057281">localização</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">contador</translation>
 <translation id="6166809985690652833">posfácio</translation>

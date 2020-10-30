@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
+<translation id="1204296502688602597">Задержка DNS</translation>
+<translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Запрос ping к шлюзу</translation>
 <translation id="1413240736185167732">Сбой: ошибка в работе фильтра</translation>
 <translation id="1468664791493211953">Предложения</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
+<translation id="1706391837335750954">Наличие DNS-резолвера</translation>
 <translation id="1734367976349034509">Это корпоративное устройство</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1930797645656624981">Выбор способа ввода в Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
+<translation id="2364498172489649528">Завершено</translation>
 <translation id="2375079107209812402">Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
+<translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
+<translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
+<translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
+<translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Печать</translation>
 <translation id="3515615323037921860">Задания печати</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
+<translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3749289110408117711">Название файла</translation>
 <translation id="38114475217616659">Очистить всю историю</translation>
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3865414814144988605">Разрешение</translation>
+<translation id="3941014780699102620">Не удалось преобразовать имя хоста.</translation>
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="4003259559679196451">Это управляемое устройство. Администратору домена <ph name="ENROLLMENT_DOMAIN" /> доступна информация обо всех действиях пользователя, в том числе о посещенных сайтах, используемом адресе электронной почты и введенных паролях.</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
+<translation id="4378373042927530923">Не проверено</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
 <translation id="445059817448385655">Старый пароль</translation>
+<translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
+<translation id="4548483925627140043">Отсутствует сигнал Wi-Fi.</translation>
+<translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4627232916386272576">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, напечатано страниц: <ph name="PRINTED_PAGE_NUMBER" /> из <ph name="TOTAL_PAGE_NUMBER" />. Чтобы отменить задание печати, нажмите клавишу "Ввод".</translation>
+<translation id="4646949265910132906">Защищенное подключение к Wi-Fi</translation>
 <translation id="467510802200863975">Пароли не совпадают.</translation>
 <translation id="4691278870498629773">Печать прервана: нет лотка для бумаги</translation>
+<translation id="469379815867856270">Уровень сигнала</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4985509611418653372">Проверить</translation>
 <translation id="5094480857972195099">Это управляемый аккаунт. Администратор (<ph name="ENROLLMENT_DOMAIN" />) может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
@@ -71,6 +90,8 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
+<translation id="5372659122375744710">Сеть Wi-Fi недостаточно безопасна.</translation>
+<translation id="5401938042319910061">Запустить все проверки</translation>
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
@@ -78,15 +99,21 @@
 <translation id="6048107060512778456">Сбой: застряла бумага</translation>
 <translation id="6058625436358447366">Для завершения введите старый и новый пароли.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
+<translation id="6108689792487843350">Шлюз недоступен.</translation>
 <translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
+<translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
+<translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
 <translation id="6643016212128521049">Удалить</translation>
+<translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
+<translation id="714876143603641390">Подключение к локальной сети</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файла</translation>
@@ -94,15 +121,22 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7805768142964895445">Состояние</translation>
+<translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8208861521865154048">Преимущества</translation>
+<translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8352772353338965963">Добавить аккаунт в систему множественного входа. Для доступа к аккаунтам, в которые выполнен вход, пароль не требуется, поэтому эту функцию следует использовать только для надежных аккаунтов.</translation>
+<translation id="8364946094152050673">Не указаны серверы доменных имен.</translation>
+<translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
+<translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="8668052347555487755">Цвета</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
+<translation id="8723108084122415655">В сети, не используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8726019395068607495">Печать прервана: открыта крышка</translation>
 <translation id="8747900814994928677">Подтверждение изменений</translation>
+<translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>

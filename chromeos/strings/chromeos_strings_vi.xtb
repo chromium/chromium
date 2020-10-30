@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Đã hủy</translation>
 <translation id="1075811647922107217">Kích thước trang</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
+<translation id="1204296502688602597">Độ trễ DNS</translation>
+<translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Có thể ping cổng vào</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
 <translation id="1478594628797167447">Máy quét</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1644574205037202324">Lịch sử</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
+<translation id="1706391837335750954">Tồn tại trình phân giải hệ thống tên miền (DNS)</translation>
 <translation id="1734367976349034509">Thiết bị này do doanh nghiệp quản lý</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Hủy lệnh in</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
+<translation id="2364498172489649528">Đã đạt</translation>
 <translation id="2375079107209812402">Còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
+<translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
+<translation id="3083667275341675831">Chẩn đoán kết nối</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
+<translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
+<translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">In</translation>
 <translation id="3515615323037921860">Lệnh in</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
+<translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
 <translation id="38114475217616659">Xóa toàn bộ lịch sử</translation>
 <translation id="3820172043799983114">Mã PIN không hợp lệ.</translation>
 <translation id="3838338534323494292">Mật khẩu mới</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
+<translation id="3941014780699102620">Không phân giải được máy chủ</translation>
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
+<translation id="4378373042927530923">Không chạy</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Vé Kerberos sẽ sớm hết hạn</translation>
 <translation id="445059817448385655">Mật khẩu cũ</translation>
+<translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4548483925627140043">Không tìm thấy tín hiệu</translation>
+<translation id="458794348635939462">Không phân giải được một số máy chủ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
+<translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
 <translation id="467510802200863975">Mật khẩu không khớp</translation>
 <translation id="4691278870498629773">Đã dừng – Thiếu khay</translation>
+<translation id="469379815867856270">Cường độ tín hiệu</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
+<translation id="4985509611418653372">Chạy</translation>
 <translation id="5094480857972195099">Miền <ph name="ENROLLMENT_DOMAIN" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
@@ -71,6 +90,8 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Chọn ngay một mật khẩu mới</translation>
+<translation id="5372659122375744710">Mạng Wi-Fi không bảo mật</translation>
+<translation id="5401938042319910061">Chạy tất cả quy trình</translation>
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5832805196449965646">Thêm người</translation>
@@ -78,15 +99,21 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6048107060512778456">Không thành công – Kẹt giấy</translation>
 <translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
+<translation id="6108689792487843350">Không thể kết nối với cổng</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
+<translation id="6325525973963619867">Lỗi</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
+<translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>
 <translation id="6564646048574748301">Không thành công – Không thể kết nối với máy in</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
+<translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
+<translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Loại tệp</translation>
@@ -94,15 +121,22 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
+<translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
+<translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8294431847097064396">Nguồn</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
+<translation id="8364946094152050673">Máy chủ định danh trống</translation>
+<translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
+<translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
 <translation id="8668052347555487755">Chế độ màu</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
+<translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8726019395068607495">Đã dừng – Cửa máy in đang mở</translation>
 <translation id="8747900814994928677">Xác nhận thay đổi</translation>
+<translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>

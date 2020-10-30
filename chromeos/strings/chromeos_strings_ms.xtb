@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
+<translation id="1204296502688602597">Kependaman DNS</translation>
+<translation id="1290331692326790741">Isyarat lemah</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Get laluan boleh Ping</translation>
 <translation id="1413240736185167732">Gagal - Penapis gagal</translation>
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
+<translation id="1706391837335750954">Pelerai DNS Ada</translation>
 <translation id="1734367976349034509">Peranti ini diurus perusahaan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1930797645656624981">Perkhidmatan Kaedah Input OS Chrome</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Hidupkan Bluetooth untuk menemui peranti berdekatan</translation>
+<translation id="2364498172489649528">Lulus</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> percubaan lagi</translation>
+<translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Imbas</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
+<translation id="3083667275341675831">Diagnostik Ketersambungan</translation>
 <translation id="3091839911843451378">Gagal - Dihentikan</translation>
+<translation id="3188257591659621405">Fail saya</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
+<translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
 <translation id="3515615323037921860">Tugas Cetak</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
+<translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3749289110408117711">Nama fail</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3865414814144988605">Peleraian</translation>
+<translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
+<translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
 <translation id="445059817448385655">Kata laluan lama</translation>
+<translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
+<translation id="4548483925627140043">Isyarat tidak ditemukan</translation>
+<translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
+<translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
 <translation id="467510802200863975">Kata laluan tidak sepadan</translation>
 <translation id="4691278870498629773">Dihentikan - Dulang tiada</translation>
+<translation id="469379815867856270">Kekuatan Isyarat</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4808449224298348341">Tugas cetak <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
 <translation id="4890353053343094602">Pilih kata laluan baharu secepat mungkin</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
 <translation id="4932733599132424254">Tarikh</translation>
+<translation id="4985509611418653372">Jalankan</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="520299634122159966">Tiada pengimbas tersedia</translation>
 <translation id="5212543919916444558">Saya tidak menemui apa-apa pada skrin anda yang boleh saya bantu.
@@ -71,6 +90,8 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pilih kata laluan baharu sekarang</translation>
+<translation id="5372659122375744710">Rangkaian Wi-Fi tidak selamat</translation>
+<translation id="5401938042319910061">Jalankan Semua Rutin</translation>
 <translation id="5457599981699367932">Semak Imbas sebagai Tetamu</translation>
 <translation id="54609108002486618">Diuruskan</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
@@ -78,15 +99,21 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6048107060512778456">Gagal - Kertas tersangkut</translation>
 <translation id="6058625436358447366">Untuk menyelesaikan proses ini, masukkan kata laluan lama dan baharu</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
+<translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan proses ini, masukkan kata laluan baharu anda</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Pelayan nama cacat</translation>
+<translation id="6325525973963619867">Gagal</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
 <translation id="6517239166834772319">Teroka</translation>
+<translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
 <translation id="6564646048574748301">Gagal - Pencetak tidak dapat dicapai</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
+<translation id="6704062477274546131">Peleraian DNS</translation>
 <translation id="6747215703636344499">Dihentikan - Output penuh</translation>
+<translation id="714876143603641390">Kesambungan LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Jenis fail</translation>
@@ -94,15 +121,22 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8208861521865154048">Manfaat</translation>
+<translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>
+<translation id="8364946094152050673">Pelayan tiada nama</translation>
+<translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
+<translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8668052347555487755">Mod warna</translation>
 <translation id="871560550817059752">Gagal - Kehabisan dakwat</translation>
+<translation id="8723108084122415655">Rangkaian bukan lalai melebihi ambang kependaman</translation>
 <translation id="8726019395068607495">Dihentikan - Pintu terbuka</translation>
 <translation id="8747900814994928677">Sahkan penukaran</translation>
+<translation id="8910721771319628100">Rangkaian lalai melebihi ambang kependaman</translation>
 <translation id="8919837981463578619">Gagal - Dulang tiada</translation>
 <translation id="8928727111548978589">Gagal - Kehabisan kertas</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>

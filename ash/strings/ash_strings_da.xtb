@@ -56,6 +56,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1420527829902822813">Screenshottet blev taget og gemt i udklipsholderen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
+<translation id="1456407467406159627">Skærmoptagelsen stoppede på grund af fortroligt indhold på din skærm.</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1475439723810528286">Tryk et vilkårligt sted for at tage et billede af hele skærmen</translation>
@@ -150,6 +151,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2369165858548251131">"Hej" på kinesisk</translation>
 <translation id="2390318262976603432">Lokale indstillinger</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Mediestyring</translation>
 <translation id="2405664212338326887">Ikke forbundet</translation>
 <translation id="2408955596600435184">Angiv din pinkode</translation>
 <translation id="2412593942846481727">Der er en tilgængelig opdatering</translation>
@@ -220,6 +222,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Genstart for at opdatere</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
+<translation id="3147157020428159854">Skærmoptagelsen er stoppet</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3153444934357957346">Du kan kun have op til <ph name="MULTI_PROFILE_USER_LIMIT" /> konti i samlet login fra flere konti.</translation>
@@ -291,6 +294,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="380165613292957338">Hej, hvad kan jeg hjælpe med?</translation>
 <translation id="3826099427150913765">Skift til adgangskode</translation>
 <translation id="383629559565718788">Vis tastaturindstillinger</translation>
+<translation id="3846214748874656680">Afslut fuld skærm</translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="385300504083504382">Begyndelsen</translation>
@@ -656,7 +660,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="7561982940498449837">Luk menu</translation>
 <translation id="7564874036684306347">Hvis du flytter vinduer til et andet skrivebord, kan det resultere i uventet adfærd. Efterfølgende notifikationer, vinduer og dialogbokse kan blive delt mellem skriveborde.</translation>
-<translation id="7568637526529101738">Når du højreklikker eller bruger langt tryk, viser Google Assistent dig oplysninger som f.eks. definitionen eller enhedskonverteringen for dit valg.</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er aktiveret</translation>
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
@@ -708,6 +711,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7995804128062002838">Screenshottet blev ikke gemt</translation>
 <translation id="8000066093800657092">Intet netværk</translation>
 <translation id="8004512796067398576">Forøg</translation>
+<translation id="8029247720646289474">Der kunne ikke oprettes forbindelse til hotspot</translation>
 <translation id="8029629653277878342">Der kræves en pinkode eller adgangskode som ekstra sikkerhed</translation>
 <translation id="8030169304546394654">Afbrudt</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
@@ -743,7 +747,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8375916635258623388">Denne <ph name="DEVICE_NAME" /> og din telefon forbindes automatisk</translation>
 <translation id="8380784334203145311">Hej</translation>
 <translation id="8388750414311082622">Det seneste skrivebord kan ikke fjernes.</translation>
-<translation id="8392451568018454956">Menuen Indstillinger for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Din forælder har låst denne enhed</translation>
 <translation id="8412677897383510995">Vis skærmindstillinger</translation>
 <translation id="8425213833346101688">Skift</translation>

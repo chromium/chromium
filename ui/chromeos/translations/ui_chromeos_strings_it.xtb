@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Tastiera faroese</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Videocamera</translation>
+<translation id="1646019627374511909">Preparazione per la visualizzazione offline di <ph name="NUMBER_OF_ITEMS" /> file…</translation>
 <translation id="1646136617204068573">Tastiera ungherese</translation>
 <translation id="164729547906544836">Tastiera Tamil (itrans)</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Internazionale USA</translation>
 <translation id="2562685439590298522">Documenti</translation>
 <translation id="2563185590376525700">Rana</translation>
+<translation id="2572501073504669105">Puoi rendere accessibili i file per l'accesso offline quando non hai una connessione a Internet.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Al momento non è possibile raggiungere Google Drive.</translation>
 <translation id="2638942478653899953">Impossibile raggiungere Google Drive. <ph name="BEGIN_LINK" />Esci<ph name="END_LINK" /> e accedi di nuovo.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Posizione file</translation>
 <translation id="2672394958563893062">Si è verificato un errore. Fai clic per ricominciare dall'inizio.</translation>
 <translation id="2676946222714718093">In riproduzione su:</translation>
+<translation id="2735623501230989521">Concedi a Parallels Desktop l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Tastiera Rumeno standard</translation>
 <translation id="2771816809568414714">Formaggio</translation>
 <translation id="2781645665747935084">Belga</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentazione PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Concedi a Parallels Desktop l'autorizzazione per accedere ai file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="4801956050125744859">Conserva entrambe</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4823651846660089135">Il dispositivo è in sola lettura</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Mostra file nascosti</translation>
 <translation id="7508545000531937079">Slideshow</translation>
 <translation id="751507702149411736">Bielorusso</translation>
+<translation id="7544830582642184299">Concedi a Linux l'autorizzazione per accedere ai file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="7544853251252956727">Riproduzione casuale</translation>
 <translation id="7547811415869834682">Olandese</translation>
 <translation id="7551643184018910560">Fissa sullo shelf</translation>
+<translation id="7553492409867692754">Concedi a Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
+<translation id="7592775719802218421">Preparazione per la visualizzazione offline del file <ph name="FILE_NAME" />…</translation>
 <translation id="7603724359189955920">Griglie</translation>
 <translation id="7627790789328695202">Spiacenti. <ph name="FILE_NAME" /> esiste già. Rinominarlo e riprovare.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% completato.</translation>

@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Atcelts</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
+<translation id="1204296502688602597">DNS latentums</translation>
+<translation id="1290331692326790741">Vājš signāls</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Vārteju var ehotestēt</translation>
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
 <translation id="1478594628797167447">Skeneris</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
+<translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
 <translation id="1734367976349034509">Šo ierīci pārvalda uzņēmums</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1930797645656624981">Chrome OS ievades metodes pakalpojums</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
+<translation id="2364498172489649528">Pārbaude izpildīta</translation>
 <translation id="2375079107209812402">Vēl <ph name="ATTEMPTS_LEFT" /> mēģinājumi</translation>
+<translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Atlicis {0} mēģinājums.}zero{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}one{<ph name="ERROR_MESSAGE" />. Atlicis {0} mēģinājums.}other{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Meklēt</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
+<translation id="3083667275341675831">Savienojamības diagnostika</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
+<translation id="3188257591659621405">Mani faili</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
 <translation id="3268178239013324452">Neizdevās — durtiņas ir atvērtas</translation>
+<translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
 <translation id="3456078764689556234">Izdrukāto lapu skaits: <ph name="PRINTED_PAGES" /> no<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Drukāšana</translation>
 <translation id="3515615323037921860">Drukas uzdevumi</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
+<translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
+<translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> pārvalda šo ierīci un tam ir piekļuve visām lietotāja darbībām, tostarp tīmekļa lapām, kuras apmeklējāt, parolēm un e-pastam.</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenotiek neviens drukas darbs</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
+<translation id="4378373042927530923">Nav veikta izpilde</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos biļetes termiņš drīz beigsies</translation>
 <translation id="445059817448385655">Iepriekšējā parole</translation>
+<translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4548483925627140043">Signāls nav atrasts</translation>
+<translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
+<translation id="4646949265910132906">Drošs Wi-Fi savienojums</translation>
 <translation id="467510802200863975">Paroles nav vienādas</translation>
 <translation id="4691278870498629773">Apturēts — trūkst paliktņa</translation>
+<translation id="469379815867856270">Signāla stiprums</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
 <translation id="4932733599132424254">Datums</translation>
+<translation id="4985509611418653372">Izpildīt</translation>
 <translation id="5094480857972195099">Šis lietotājs tiek pārvaldīts domēnā <ph name="ENROLLMENT_DOMAIN" />, un tajā var tikt attālināti pārvaldīti iestatījumi un uzraudzītas lietotāja darbības.</translation>
 <translation id="520299634122159966">Nav pieejamu skeneru</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
@@ -71,6 +90,8 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Izvēlieties jaunu jau tūlīt</translation>
+<translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
+<translation id="5401938042319910061">Izpildīt visas pārbaudes</translation>
 <translation id="5457599981699367932">Pārlūkot kā viesim</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
@@ -78,15 +99,21 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6048107060512778456">Neizdevās — iestrēdzis papīrs</translation>
 <translation id="6058625436358447366">Lai pabeigtu, ievadiet savu iepriekšējo un jauno paroli</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
+<translation id="6108689792487843350">Vārteja nav sasniedzama</translation>
 <translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Nepareizi nosaukumu serveri</translation>
+<translation id="6325525973963619867">Neizdevās</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
 <translation id="6517239166834772319">Izpēte</translation>
+<translation id="6527081081771465939">Nezināms Wi-Fi drošības protokols</translation>
 <translation id="6564646048574748301">Neizdevās — printeris nav sasniedzams</translation>
 <translation id="6620487321149975369">Drukas uzdevumi būs redzami vēsturē, ja vien tie netiks noņemti manuāli</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
+<translation id="6704062477274546131">DNS atrise</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
+<translation id="714876143603641390">LAN savienojamība</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faila tips</translation>
@@ -94,15 +121,22 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7805768142964895445">Statuss</translation>
+<translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
+<translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8294431847097064396">Avots</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
+<translation id="8364946094152050673">Tukši nosaukumu serveri</translation>
+<translation id="8475690821716466388">Wi-Fi tīkls aizsargā nedrošs protokols WEP PSK</translation>
+<translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
 <translation id="8668052347555487755">Krāsu režīms</translation>
 <translation id="871560550817059752">Neizdevās — beigusies tinte</translation>
+<translation id="8723108084122415655">Tīklā, kas nav noklusējuma tīkls, latentums pārsniedza slieksni</translation>
 <translation id="8726019395068607495">Apturēts — durtiņas ir atvērtas</translation>
 <translation id="8747900814994928677">Apstiprināt izmaiņas</translation>
+<translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">slėpti subtitrų meniu</translation>
 <translation id="1729654308190250600">Įveskite el. pašto adresą (nepalikite lauko tuščio).</translation>
 <translation id="1758486001363313524">Kita...</translation>
+<translation id="1774577460079229490">dabartin. <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">bendras laikas: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">medžio tinklelis</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Vertė turi būti <ph name="MINIMUM_DATE_OR_TIME" /> ar vėlesnė data.</translation>
 <translation id="2759744352195237655">Iššokantysis mygtukas</translation>
 <translation id="2761667185364618470">Jei norite tęsti, pažymėkite šį laukelį.</translation>
+<translation id="2838616441696617235">veiksmas</translation>
 <translation id="2844350028562914727">išsami informacija</translation>
 <translation id="2896972712917208084">akučių grupė</translation>
 <translation id="2908441821576996758">Įveskite kableliais atskirtą el. pašto adresų sąrašą.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">meniu juosta</translation>
 <translation id="4293574643247337246">puslapio antraštė</translation>
 <translation id="4360991593054037559">Įveskite galiojančią vertę. Dvi artimiausios vertės yra <ph name="VALID_VALUE_LOW" /> ir <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Šis vaizdas neturi etiketės. Viršuje dešinėje atidarykite meniu „Daugiau parinkčių“, kad gautumėte vaizdo aprašų.</translation>
 <translation id="4384583879834880242">Klausimai ir atsakymai</translation>
 <translation id="4444765639179266822">Tai tikriausiai reiškia: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">aiškinamojo terminų žodyno nuoroda</translation>
 <translation id="4522570452068850558">Išsami informacija</translation>
+<translation id="4576178047100686001">Šis vaizdas neturi etiketės. Viršuje kairėje atidarykite meniu „Daugiau parinkčių“, kad gautumėte vaizdo aprašų.</translation>
 <translation id="4597532268155981612">forma</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Po „<ph name="ATSIGN" />“ esančioje dalyje neturėtų būti simbolio „<ph name="INVALIDCHARACTER" />“.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliografijos įrašas</translation>
 <translation id="4915360478455618802">Rodyti laiko rinkiklį</translation>
 <translation id="492244087561876220">komentaras</translation>
+<translation id="4934662370368414994">elementas</translation>
 <translation id="4950364064308314478">Rodyti vietos datą ir laiko rinkiklį</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> pasirinkta</translation>
 <translation id="4975562563186953947">Pasirinkta: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">garsumo šliaužiklis</translation>
 <translation id="6015796118275082299">Metai</translation>
 <translation id="6023896073578205740">sąrašo laukelis</translation>
+<translation id="6131824478727057281">vieta</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">matuoklis</translation>
 <translation id="6166809985690652833">baigiamasis žodis</translation>

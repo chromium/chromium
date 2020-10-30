@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">စာတန်းများမီနူးကို ဖျောက်ရန်</translation>
 <translation id="1729654308190250600">ကျေးဇူးပြု၍ ဗလာမဟုတ်သည့် အီးမေးလ် လိပ်စာ ရိုက်ထည့်ပါ။</translation>
 <translation id="1758486001363313524">အခြား...</translation>
+<translation id="1774577460079229490">လက်ရှိ <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">စုစုပေါင်းအချိန်- <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">သတိပေးချက် ဒိုင်ယာလော့</translation>
 <translation id="1821985195704844674">သစ်ပင်ပုံစံဇယားကွက်</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">တန်ဖိုးမှာ <ph name="MINIMUM_DATE_OR_TIME" /> သို့မဟုတ် ပိုနောက်ကျတာ ဖြစ်ရမည်။</translation>
 <translation id="2759744352195237655">အကွက်အသစ်ဖြင့်ပေါ်လာသည့် ခလုတ်</translation>
 <translation id="2761667185364618470">သင်သည် ဆက်လုပ်ကိုင် လိုလျှင် ကျေးဇူးပြုပြီး ဒီအကွက်ကို ခြစ်ပါ။</translation>
+<translation id="2838616441696617235">အဆင့်</translation>
 <translation id="2844350028562914727">အသေးစိတ်</translation>
 <translation id="2896972712917208084">ရေဒီယိုအုပ်စု</translation>
 <translation id="2908441821576996758">ကျေးဇူးပြုပြီး ကော်မာဖြင့် ခြားထားသည့် အီးမေးလ် လိပ်စာများ စာရင်းကို ထည့်သွင်းပါ။</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">မီနူးဘားတန်း</translation>
 <translation id="4293574643247337246">စာမျက်နှာ ခေါင်းစီး</translation>
 <translation id="4360991593054037559">ကျေးဇူးပြုပြီး မှန်ကန်သည့် တန်ဖိုးကို ရိုက်ထည့်ပါ။ မှန်ကန်သည့် အနီးဆုံး တန်ဖိုး နှစ်ခုမှာ <ph name="VALID_VALUE_LOW" /> နှင့် <ph name="VALID_VALUE_HIGHER" /> ဖြစ်သည်။</translation>
+<translation id="4384249794467006333">ဤပုံကို အညွှန်းတပ်မထားပါ။ ပုံ၏ရှင်းလင်းချက်များ ရယူရန် ညာဘက်ထိပ်ရှိ 'နောက်ထပ်ရွေးစရာများ' မီနူးကို ဖွင့်ပါ။</translation>
 <translation id="4384583879834880242">အမေးအဖြေ</translation>
 <translation id="4444765639179266822">အောက်ပါကို ပြောပုံရသည်- <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ခက်ဆစ်အညွှန်း</translation>
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
+<translation id="4576178047100686001">ဤပုံကို အညွှန်းတပ်မထားပါ။ ပုံ၏ရှင်းလင်းချက်များ ရယူရန် ဘယ်ဘက်ထိပ်ရှိ 'နောက်ထပ်ရွေးစရာများ' မီနူးကို ဖွင့်ပါ။</translation>
 <translation id="4597532268155981612">ပုံစံ</translation>
 <translation id="4661075872484491155">အပင်</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'၏ နောက်မှာ ပါလာသည့် အပိုင်း ထဲတွင် သင်္ကေတာ '<ph name="INVALIDCHARACTER" />' မပါရပါ။</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ကျမ်းကိုးစာရင်း အကြောင်းအရာ</translation>
 <translation id="4915360478455618802">အချိန်ရွေးချယ်ရေးစနစ် ပြရန်</translation>
 <translation id="492244087561876220">မှတ်ချက်</translation>
+<translation id="4934662370368414994">အကြောင်းအရာ</translation>
 <translation id="4950364064308314478">စက်အတွင်း ရက်စွဲနှင့် အချိန်ရွေးချယ်ရေးစနစ် ပြရန်</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ကို ရွေးထားသည်</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ရွေးထား</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">အသံအတိုးအကျယ်ချိန်သည့် ဆလိုက်ဒါ</translation>
 <translation id="6015796118275082299">နှစ်</translation>
 <translation id="6023896073578205740">စာရင်းအကွက်</translation>
+<translation id="6131824478727057281">တည်နေရာ</translation>
 <translation id="6150588977291308318">ကျမ်းကိုးစာရင်း</translation>
 <translation id="6164829606128959761">မီတာ</translation>
 <translation id="6166809985690652833">စာအုပ်ဖတ်ပြီးနောက် သုံးသပ်ချက်</translation>

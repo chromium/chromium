@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faroëse sleutelbord</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Maak tans <ph name="NUMBER_OF_ITEMS" /> lêers vanlyn beskikbaar</translation>
 <translation id="1646136617204068573">Hongaarse sleutelbord</translation>
 <translation id="164729547906544836">Tamil-sleutelbord (itrans)</translation>
 <translation id="164969095109328410">Chrome-toestel</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">VSA internasionaal</translation>
 <translation id="2562685439590298522">Dokumente</translation>
 <translation id="2563185590376525700">Padda</translation>
+<translation id="2572501073504669105">Jy kan lêers vanlyn beskikbaar stel vir toegang wanneer jy nie 'n internetverbinding het nie.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2620090360073999360">Google Drive kan nie op hierdie oomblik bereik word nie.</translation>
 <translation id="2638942478653899953">Google Drive kon nie bereik word nie. <ph name="BEGIN_LINK" />Meld asseblief af<ph name="END_LINK" /> en meld dan weer aan.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Lêerligging</translation>
 <translation id="2672394958563893062">'n Fout het voorgekom. Klik om van die begin af te herbegin.</translation>
 <translation id="2676946222714718093">Speel tans op</translation>
+<translation id="2735623501230989521">Gee Parallels Desktop toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="2735698359135166290">Roemeense standaardsleutelbord</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgiese</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-aanbieding</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Gee Parallels Desktop toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="4801956050125744859">Hou albei</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Toestel is leesalleen</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Wys versteekte lêers</translation>
 <translation id="7508545000531937079">Skyfievertoning</translation>
 <translation id="751507702149411736">Wit Russies</translation>
+<translation id="7544830582642184299">Gee Linux-programme toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="7544853251252956727">Skommel</translation>
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
+<translation id="7553492409867692754">Gee Linux-programme toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Wag net 'n oomblik</translation>
+<translation id="7592775719802218421">Maak tans <ph name="FILE_NAME" /> vanlyn beskikbaar</translation>
 <translation id="7603724359189955920">Roosters</translation>
 <translation id="7627790789328695202">Oeps, <ph name="FILE_NAME" /> bestaan reeds. Hernoem dit en probeer weer.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% voltooi.</translation>

@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Zrušené</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
+<translation id="1204296502688602597">Latencia DNS</translation>
+<translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Je možné testovať dostupnosť (ping) brány</translation>
 <translation id="1413240736185167732">Nepodarilo sa – zlyhal filter</translation>
 <translation id="1468664791493211953">Ponuky</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
+<translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
 <translation id="1734367976349034509">Toto zariadenie je spravované organizáciou</translation>
 <translation id="1905710495812624430">Maximálny počet povolených pokusov bol prekročený.</translation>
 <translation id="1930797645656624981">Služba metódy vstupu systému Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
+<translation id="2364498172489649528">Úspešné</translation>
 <translation id="2375079107209812402">Zostávajúce pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus.}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy.}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhľadať</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
+<translation id="3083667275341675831">Diagnostika pripojenia</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
+<translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
+<translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Tlač</translation>
 <translation id="3515615323037921860">Tlačové úlohy</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
+<translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3749289110408117711">Názov súboru</translation>
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
+<translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="4003384961948020559">Nepodarilo sa – výstup je plný</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
+<translation id="4378373042927530923">Nebolo spustené</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Platnosť tiketu Kerberos čoskoro uplynie</translation>
 <translation id="445059817448385655">Staré heslo</translation>
+<translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
+<translation id="4548483925627140043">Signál sa nenašiel</translation>
+<translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
+<translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>
 <translation id="467510802200863975">Heslá sa nezhodujú</translation>
 <translation id="4691278870498629773">Zastavené – chýba zásobník</translation>
+<translation id="469379815867856270">Intenzita signálu</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="4773299976671772492">Zastavené</translation>
 <translation id="4808449224298348341">Bola zrušená tlačová úloha <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Okamžite si zvoľte nové heslo</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="4985509611418653372">Spustiť</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
 <translation id="520299634122159966">K dispozícii nie sú žiadne skenery</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
@@ -71,6 +90,8 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Zvoľte si nové heslo teraz</translation>
+<translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
+<translation id="5401938042319910061">Spustiť všetky postupy</translation>
 <translation id="5457599981699367932">Prehliadať ako hosť</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
@@ -78,15 +99,21 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6048107060512778456">Nepodarilo sa – zaseknutý papier</translation>
 <translation id="6058625436358447366">Ak chcete zmenu dokončiť, zadajte staré a nové heslo</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
+<translation id="6108689792487843350">Brána je nedostupná</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
+<translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
+<translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
 <translation id="6564646048574748301">Nepodarilo sa – nedostupné</translation>
 <translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
 <translation id="6643016212128521049">Vymazať</translation>
+<translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
+<translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
 <translation id="7162487448488904999">Galéria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ súboru</translation>
@@ -94,15 +121,22 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7805768142964895445">Stav</translation>
+<translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8208861521865154048">Výhody</translation>
+<translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
+<translation id="8364946094152050673">Prázdne DNS servery</translation>
+<translation id="8475690821716466388">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP PSK</translation>
+<translation id="8477551185774834963">Latencia servera DNS mierne prekračuje povolenú úroveň</translation>
 <translation id="8668052347555487755">Farebný režim</translation>
 <translation id="871560550817059752">Nepodarilo sa – minul sa atrament</translation>
+<translation id="8723108084122415655">Nepredvolená sieť prekračuje úroveň latencie</translation>
 <translation id="8726019395068607495">Zastavené – dvierka sú otvorené</translation>
 <translation id="8747900814994928677">Potvrdenie zmeny</translation>
+<translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>

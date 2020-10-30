@@ -503,7 +503,6 @@
 <translation id="2996674880327704673">შემოთავაზებები Google-ისგან</translation>
 <translation id="3002501248619246229">შეამოწმეთ შეყვანის ლანგრის მედია</translation>
 <translation id="3005723025932146533">შენახული ასლის ჩვენება</translation>
-<translation id="3007719053326478567">ამ კონტენტის ბეჭდვა დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="3008447029300691911">შეიყვანეთ <ph name="CREDIT_CARD" />-ის CVC. დადასტურების შემდეგ, თქვენი ბარათის დეტალები ამ საიტთან გაზიარდება.</translation>
 <translation id="3010559122411665027">სიის ჩანაწერი „<ph name="ENTRY_INDEX" />“ <ph name="ERROR" /></translation>
 <translation id="301521992641321250">დაბლოკილია ავტომატურად</translation>
@@ -1101,6 +1100,7 @@
 <translation id="541416427766103491">სტეკერი 4</translation>
 <translation id="5421136146218899937">დათვალიერების მონაცემების გასუფთავება…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
+<translation id="542872847390508405">თქვენ ათვალიერებთ საიტს სტუმრის სტატუსით</translation>
 <translation id="5430298929874300616">სანიშნის ამოშლა</translation>
 <translation id="5439770059721715174">ქსემის გადამოწმევის შეცდომა „<ph name="ERROR_PATH" />“: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">უკუმიმდევრობა ნაბეჭდი მხარით აღმა</translation>

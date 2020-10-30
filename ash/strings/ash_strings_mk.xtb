@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">Сликата од екранот е направена и зачувана во привремената меморија</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
+<translation id="1456407467406159627">Снимањето на екранот запре поради доверливи содржини на вашиот екран.</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
 <translation id="1467432559032391204">Лево</translation>
 <translation id="1475439723810528286">Допрете каде било за да го сликате целиот екран</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
 <translation id="2390318262976603432">Поставки за локален стандард</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Контроли за аудиовизуелни содржини</translation>
 <translation id="2405664212338326887">Не е поврзано</translation>
 <translation id="2408955596600435184">Внесете го вашиот PIN</translation>
 <translation id="2412593942846481727">Достапно е ажурирање</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Рестартирај за да се ажурира</translation>
 <translation id="3139942575505304791">Биро 1</translation>
+<translation id="3147157020428159854">Снимањето на екранот запре</translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
 <translation id="3151786313568798007">Ориентација</translation>
 <translation id="3153444934357957346">Може да имате само до <ph name="MULTI_PROFILE_USER_LIMIT" /> сметки при многукратно најавување.</translation>
@@ -292,6 +295,7 @@
 <translation id="380165613292957338">Здраво. Како може да помогнам?</translation>
 <translation id="3826099427150913765">Префрли на лозинка</translation>
 <translation id="383629559565718788">Прикажи ги поставките за тастатура</translation>
+<translation id="3846214748874656680">Излези од цел екран</translation>
 <translation id="3846575436967432996">Нема достапни информации за мрежа</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почеток</translation>
@@ -656,7 +660,6 @@
 <translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
-<translation id="7568637526529101738">Со кликнување со десното копче или со долго притискање, „Помошникот“ ви прикажува информации, како што се дефиниција или конверзија на единиците за вашиот избор.</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
 <translation id="7579778809502851308">Снимање на екранот</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
@@ -708,6 +711,7 @@
 <translation id="7995804128062002838">Не успеа да се сними екранот</translation>
 <translation id="8000066093800657092">Нема мрежа</translation>
 <translation id="8004512796067398576">Зголемување</translation>
+<translation id="8029247720646289474">Поврзувањето со точка на пристап не успеа</translation>
 <translation id="8029629653277878342">Потребен е PIN или лозинка за поголема безбедност</translation>
 <translation id="8030169304546394654">Исклучено</translation>
 <translation id="8042893070933512245">Отворете го менито со поставки за пристапност</translation>
@@ -743,7 +747,6 @@
 <translation id="8375916635258623388">Овој <ph name="DEVICE_NAME" /> и вашиот телефон ќе се поврзат автоматски</translation>
 <translation id="8380784334203145311">Добра ноќ,</translation>
 <translation id="8388750414311082622">Последниот работен простор не може да се отстрани.</translation>
-<translation id="8392451568018454956">Мени со опции за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Вашиот родител го заклучи уредов</translation>
 <translation id="8412677897383510995">Прикажи ги поставките за екранот</translation>
 <translation id="8425213833346101688">Промени</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Farerų klaviatūra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Nustatoma, kad failai (<ph name="NUMBER_OF_ITEMS" />) būtų pasiekiami neprisijungus</translation>
 <translation id="1646136617204068573">Vengriška klaviatūra</translation>
 <translation id="164729547906544836">Tamiliška klaviatūra („itrans“)</translation>
 <translation id="164969095109328410">„Chrome“ įrenginys</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">JAV tarptautinė</translation>
 <translation id="2562685439590298522">Dokumentai</translation>
 <translation id="2563185590376525700">Varlė</translation>
+<translation id="2572501073504669105">Galite nustatyti, kad failai būtų pasiekiami neprisijungus prie interneto.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> vaizdo įrašas</translation>
 <translation id="2620090360073999360">„Google“ diskas šiuo metu nepasiekiamas.</translation>
 <translation id="2638942478653899953">Nepavyko pasiekti „Google“ disko. <ph name="BEGIN_LINK" />Atsijunkite<ph name="END_LINK" /> ir vėl prisijunkite.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Failo vieta</translation>
 <translation id="2672394958563893062">Įvyko klaida. Spustelėkite, kad paleistumėte iš naujo nuo pradžios.</translation>
 <translation id="2676946222714718093">Leidžiama</translation>
+<translation id="2735623501230989521">Suteikite „Parallels Desktop“ leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2735698359135166290">Rumunų k. standartinė klaviatūra</translation>
 <translation id="2771816809568414714">Sūris</translation>
 <translation id="2781645665747935084">Belgų</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiris</translation>
 <translation id="4784330909746505604">„PowerPoint“ pristatymas</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Suteikite „Parallels Desktop“ leidimą pasiekti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="4801956050125744859">Palikti abu</translation>
 <translation id="4804827417948292437">Avokadas</translation>
 <translation id="4823651846660089135">Įrenginys yra tik skaitomas</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Rodyti paslėptus failus</translation>
 <translation id="7508545000531937079">Skaidrių demonstracija</translation>
 <translation id="751507702149411736">Baltarusių</translation>
+<translation id="7544830582642184299">Suteikite „Linux“ programoms leidimą pasiekti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="7544853251252956727">Maišyti</translation>
 <translation id="7547811415869834682">Olandų</translation>
 <translation id="7551643184018910560">Prisegti prie lentynos</translation>
+<translation id="7553492409867692754">Suteikite „Linux“ programoms leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Luktelėkite sekundėlę</translation>
+<translation id="7592775719802218421">Nustatoma, kad failas „<ph name="FILE_NAME" />“ būtų pasiekiamas neprisijungus</translation>
 <translation id="7603724359189955920">Tinkleliai</translation>
 <translation id="7627790789328695202">Oi, „<ph name="FILE_NAME" />“ jau yra. Pervardykite jį ir bandykite dar kartą.</translation>
 <translation id="7628656427739290098">Baigta <ph name="PERCENT" /> proc.</translation>

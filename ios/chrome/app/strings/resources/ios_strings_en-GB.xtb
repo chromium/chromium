@@ -513,6 +513,9 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
 <translation id="648164694371393720">Authentication error</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items deleted</translation>
+<translation id="6497772452874122664">If you trust <ph name="TIME" />, you can use a saved password from another site.
+
+Try to use a unique password for every site.</translation>
 <translation id="651505212789431520">Cancel sync? You can turn on sync at any time in Settings.</translation>
 <translation id="6561262006871132942">Zoom in</translation>
 <translation id="6585618849026997638">You can get back to a page that's important to you by adding a bookmark</translation>
@@ -592,6 +595,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="739941347996872055">Previous tab</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> unread articles.</translation>
+<translation id="7412027924265291969">Continue</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7454057999980797137">State / County</translation>

@@ -56,6 +56,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1420527829902822813">Đã chụp ảnh màn hình và lưu vào khay nhớ tạm</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
+<translation id="1456407467406159627">Đã dừng ghi màn hình do có nội dung cần bảo mật trên màn hình của bạn.</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
 <translation id="1467432559032391204">Trái</translation>
 <translation id="1475439723810528286">Nhấn vào bất cứ đâu để chụp toàn màn hình</translation>
@@ -150,6 +151,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2369165858548251131">"Xin chào" bằng tiếng Trung</translation>
 <translation id="2390318262976603432">Cài đặt ngôn ngữ</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
 <translation id="2405664212338326887">Chưa kết nối</translation>
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
 <translation id="2412593942846481727">Đã có bản cập nhật</translation>
@@ -220,6 +222,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Khởi động lại để cập nhật</translation>
 <translation id="3139942575505304791">Không gian làm việc 1</translation>
+<translation id="3147157020428159854">Đã dừng ghi màn hình</translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3151786313568798007">Hướng</translation>
 <translation id="3153444934357957346">Bạn chỉ có thể có tối đa <ph name="MULTI_PROFILE_USER_LIMIT" /> tài khoản khi sử dụng tính năng đăng nhập nhiều tài khoản.</translation>
@@ -291,6 +294,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="380165613292957338">Xin chào, tôi có thể trợ giúp gì?</translation>
 <translation id="3826099427150913765">Chuyển sang mật khẩu</translation>
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
+<translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
 <translation id="3846575436967432996">Không có thông tin mạng</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="385300504083504382">Phần đầu</translation>
@@ -655,7 +659,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7551643184018910560">Ghim vào giá</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
-<translation id="7568637526529101738">Khi nhấp chuột phải hoặc nhấn và giữ, Trợ lý sẽ hiển thị các thông tin như định nghĩa hoặc hoạt động chuyển đổi đơn vị để bạn lựa chọn.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
 <translation id="7579778809502851308">Chụp ảnh màn hình</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
@@ -707,6 +710,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7995804128062002838">Không chụp được ảnh màn hình</translation>
 <translation id="8000066093800657092">Không có mạng nào</translation>
 <translation id="8004512796067398576">Tăng dần</translation>
+<translation id="8029247720646289474">Không kết nối được điểm phát sóng</translation>
 <translation id="8029629653277878342">Bạn cần nhập mã PIN hoặc mật khẩu để tăng cường bảo mật</translation>
 <translation id="8030169304546394654">Đã ngắt kết nối</translation>
 <translation id="8042893070933512245">Mở trình đơn cài đặt hỗ trợ tiếp cận</translation>
@@ -742,7 +746,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> này và điện thoại của bạn sẽ tự động kết nối</translation>
 <translation id="8380784334203145311">Xin chào!</translation>
 <translation id="8388750414311082622">Không thể xóa không gian làm việc gần đây nhất.</translation>
-<translation id="8392451568018454956">Menu tùy chọn dành cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Cha mẹ của bạn đã khóa thiết bị này</translation>
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
 <translation id="8425213833346101688">Thay đổi</translation>

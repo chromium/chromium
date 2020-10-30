@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
+<translation id="1204296502688602597">Latència de DNS</translation>
+<translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1478594628797167447">Escàners</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
+<translation id="1706391837335750954">Solucionador de DNS present</translation>
 <translation id="1734367976349034509">Aquest dispositiu està gestionat per una empresa</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
 <translation id="1930797645656624981">Servei del mètode d'introducció de text a Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
+<translation id="2364498172489649528">Comprovació superada</translation>
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2517472476991765520">Cerca</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
+<translation id="3083667275341675831">Diagnòstic de connectivitat</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
+<translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
+<translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
 <translation id="3515615323037921860">Tasques d'impressió</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
+<translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3865414814144988605">Resolució</translation>
+<translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
+<translation id="4378373042927530923">No s'ha executat</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
+<translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
+<translation id="4548483925627140043">No s'ha trobat el senyal</translation>
+<translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
+<translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="4691278870498629773">S'ha aturat: no es troba la safata</translation>
+<translation id="469379815867856270">Intensitat del senyal</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4808449224298348341">S'ha cancel·lat la tasca d'impressió del document <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4985509611418653372">Executa</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="520299634122159966">No hi ha cap escàner disponible</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
@@ -71,6 +90,8 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Tria'n una de nova ara</translation>
+<translation id="5372659122375744710">La xarxa Wi-Fi no és segura</translation>
+<translation id="5401938042319910061">S'han executat totes les rutines</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
@@ -78,15 +99,21 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6048107060512778456">Error: embús de paper</translation>
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
+<translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
+<translation id="6325525973963619867">Error</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
+<translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
 <translation id="6643016212128521049">Esborra</translation>
+<translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
+<translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
@@ -94,15 +121,22 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8208861521865154048">Avantatges</translation>
+<translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8294431847097064396">Font</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
+<translation id="8364946094152050673">Servidors de noms buits</translation>
+<translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
+<translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
 <translation id="8668052347555487755">Mode de color</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
+<translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>
+<translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>

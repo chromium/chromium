@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ફોરિસ્ત કીબોર્ડ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">કૅમેરો</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ફાઇલ ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="1646136617204068573">હંગેરિયન કીબોર્ડ</translation>
 <translation id="164729547906544836">તમિલ કીબોર્ડ (itrans)</translation>
 <translation id="164969095109328410">Chrome ઉપકરણ</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">યુએસ આંતરરાષ્ટ્રીય</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">દેડકો</translation>
+<translation id="2572501073504669105">તમારી પાસે ઇન્ટરનેટ કનેક્શન ન હોય, ત્યારે તમે ફાઇલોને ઍક્સેસ માટે ઑફલાઇન ઉપલબ્ધ કરી શકો છો.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> વીડિયો</translation>
 <translation id="2620090360073999360">આ સમયે Google ડ્રાઇવ પર જઈ શકાતું નથી.</translation>
 <translation id="2638942478653899953">Google ડ્રાઇવ પર પહોંચી શકાયું નથી. કૃપા કરીને <ph name="BEGIN_LINK" />લૉગ આઉટ કરો<ph name="END_LINK" /> અને પાછા લૉગ ઇન કરો.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ફાઇલનું સ્થાન</translation>
 <translation id="2672394958563893062">એક ભૂલ આવી. શરૂઆતથી પુન: પ્રારંભ કરોને ક્લિક કરો.</translation>
 <translation id="2676946222714718093">આ પર ચલાવી રહ્યાં છે</translation>
+<translation id="2735623501230989521">Parallels ડેસ્કટૉપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="2735698359135166290">રોમાનિયન માનક કીબોર્ડ</translation>
 <translation id="2771816809568414714">ચીઝ</translation>
 <translation id="2781645665747935084">બેલ્જિયન</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ઓનિગિરી - ભાતની એક જાપાની વાનગી</translation>
 <translation id="4784330909746505604">PowerPoint પ્રસ્તુતિ</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels ડેસ્કટૉપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="4801956050125744859">બંનેને રાખો</translation>
 <translation id="4804827417948292437">એવોકેડો</translation>
 <translation id="4823651846660089135">ઉપકરણ ફક્ત વાંચવા માટે છે</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">છુપાવેલી ફાઇલો દર્શાવો</translation>
 <translation id="7508545000531937079">સ્લાઇડશો</translation>
 <translation id="751507702149411736">બેલારુશિયન</translation>
+<translation id="7544830582642184299">Linux ઍપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="7544853251252956727">શફલ કરો</translation>
 <translation id="7547811415869834682">ડચ</translation>
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
+<translation id="7553492409867692754">Linux ઍપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગીઓ આપો</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ક્ષણભર રોકાવ</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="7603724359189955920">ગ્રીડ</translation>
 <translation id="7627790789328695202">ઉફ્ફ, <ph name="FILE_NAME" /> પહેલાંથી અસ્તિત્વમાં છે. તેનું નામ બદલો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% પૂર્ણ.</translation>

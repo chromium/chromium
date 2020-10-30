@@ -503,7 +503,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2996674880327704673">Sugestões do Google</translation>
 <translation id="3002501248619246229">Verificar mídia de bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar cópia salva</translation>
-<translation id="3007719053326478567">Seu administrador bloqueou a opção de imprimir este conteúdo</translation>
 <translation id="3008447029300691911">Digite o CVC do <ph name="CREDIT_CARD" />. Depois da confirmação, os detalhes do seu cartão serão compartilhados com esse site.</translation>
 <translation id="3010559122411665027">Entrada de lista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
@@ -1101,6 +1100,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
+<translation id="542872847390508405">Você está navegando como visitante</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
 <translation id="5439770059721715174">Erro de validação de esquema em "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Ordem reversa virada para cima</translation>

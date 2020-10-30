@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Færeyskt lyklaborð</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Myndavél</translation>
+<translation id="1646019627374511909">Gerir <ph name="NUMBER_OF_ITEMS" /> skrár aðgengilegar án nettengingar</translation>
 <translation id="1646136617204068573">Ungverskt lyklaborð</translation>
 <translation id="164729547906544836">Tamil-lyklaborð (itrans)</translation>
 <translation id="164969095109328410">Chrome tæki</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Bandarískt (alþjóðlegt)</translation>
 <translation id="2562685439590298522">Skjöl</translation>
 <translation id="2563185590376525700">Fúsi</translation>
+<translation id="2572501073504669105">Þú getur gert skrár aðgengilegar án nettengingar til að geta opnað þær þegar engin nettenging er til staðar.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> myndskeið</translation>
 <translation id="2620090360073999360">Ekki næst í Google Drive á þessari stundu.</translation>
 <translation id="2638942478653899953">Ekki náðist í Google Drive. <ph name="BEGIN_LINK" />Skráðu þig út<ph name="END_LINK" /> og svo aftur inn.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Staðsetning skráar</translation>
 <translation id="2672394958563893062">Villa kom upp. Smelltu til að byrja aftur frá byrjun.</translation>
 <translation id="2676946222714718093">Spilast í</translation>
+<translation id="2735623501230989521">Veita Parallels Desktop aðgang að skrám í möppunni <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Staðlað rúmenskt lyklaborð</translation>
 <translation id="2771816809568414714">Ostur</translation>
 <translation id="2781645665747935084">Belgískt</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-kynning</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Veita Parallels Desktop aðgang að skránum þínum á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="4801956050125744859">Halda báðum</translation>
 <translation id="4804827417948292437">Avókadó</translation>
 <translation id="4823651846660089135">Tæki er skrifvarið</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Sýna faldar skrár</translation>
 <translation id="7508545000531937079">Skyggnusýning</translation>
 <translation id="751507702149411736">Hvítrússneskt</translation>
+<translation id="7544830582642184299">Veita Linux-forritum aðgang að skránum þínum á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="7544853251252956727">Stokka</translation>
 <translation id="7547811415869834682">Hollenskt</translation>
 <translation id="7551643184018910560">Festa á hillu</translation>
+<translation id="7553492409867692754">Veita Linux-forritum aðgang að skrám í möppunni <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Hinkraðu augnablik</translation>
+<translation id="7592775719802218421">Gerir <ph name="FILE_NAME" /> aðgengilega án nettengingar</translation>
 <translation id="7603724359189955920">Grind</translation>
 <translation id="7627790789328695202">Obb, <ph name="FILE_NAME" /> er til nú þegar. Veldu nýtt heiti og reyndu aftur.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% lokið.</translation>

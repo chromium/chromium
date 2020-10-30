@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ក្តារចុចហ្វារូស</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
+<translation id="1646019627374511909">កំពុង​កំណត់​ឱ្យ​ឯកសារ <ph name="NUMBER_OF_ITEMS" /> អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="1646136617204068573">ក្តារចុចហុងគ្រី</translation>
 <translation id="164729547906544836">ក្តារចុចតាមិល (itrans)</translation>
 <translation id="164969095109328410">ឧបករណ៍ Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US អន្តរជាតិ</translation>
 <translation id="2562685439590298522">ឯកសារ</translation>
 <translation id="2563185590376525700">កង្កែប</translation>
+<translation id="2572501073504669105">អ្នកអាចកំណត់ឱ្យមានសិទ្ធិចូលប្រើឯកសារ នៅពេលគ្មានការតភ្ជាប់អ៊ីនធឺណិត។</translation>
 <translation id="2614589611416690597">វីដេអូ <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">មិនអាចទៅកាន់ Google Drive បានទេនៅពេលនេះ។</translation>
 <translation id="2638942478653899953">មិនអាចទៅកាន់ Google Drive ទេ។ សូម <ph name="BEGIN_LINK" />ចាកចេញ<ph name="END_LINK" /> ហើយចូលត្រលប់វិញ។</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ទីតាំង​ឯកសារ</translation>
 <translation id="2672394958563893062">កំហុសឆ្គងបានកើតឡើង។ ចុចដើម្បីចាប់ផ្តើមពីដំបូងឡើងវិញ។</translation>
 <translation id="2676946222714718093">កំពុងលេងនៅលើ</translation>
+<translation id="2735623501230989521">ផ្ដល់ការអនុញ្ញាតឱ្យ Parallels Desktop ចូលប្រើឯកសារ​នៅក្នុងថត <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">ក្តារចុចតាមបទដ្ឋានរ៉ូម៉ានី</translation>
 <translation id="2771816809568414714">ឈីស</translation>
 <translation id="2781645665747935084">ភាសាប៊ែលស៊ិក</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">អូនីហ្គីរិ</translation>
 <translation id="4784330909746505604">បទបង្ហាញ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">ផ្ដល់ការអនុញ្ញាតឱ្យ Parallels Desktop ចូលប្រើ​ឯកសារ​នៅក្នុង Google ថាស​របស់អ្នក។ ការផ្លាស់ប្ដូរនឹង​ធ្វើសមកាលកម្ម​ទៅឧបករណ៍​ផ្សេងទៀត​របស់អ្នក។</translation>
 <translation id="4801956050125744859">រក្សាទាំងពីរ</translation>
 <translation id="4804827417948292437">ផ្លែបឺរ</translation>
 <translation id="4823651846660089135">ឧបករណ៍គឺសម្រាប់តែអានប៉ុណ្ណោះ</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">បង្ហាញឯកសារដែលត្រូវបានលាក់</translation>
 <translation id="7508545000531937079">បង្ហាញស្លាយ៍</translation>
 <translation id="751507702149411736">ភាសាបេឡារុស្ស</translation>
+<translation id="7544830582642184299">ផ្ដល់ការអនុញ្ញាតឱ្យកម្មវិធី Linux ចូលប្រើ​ឯកសារ​នៅក្នុង Google ថាស​របស់អ្នក។ ការផ្លាស់ប្ដូរនឹង​ធ្វើសមកាលកម្ម​ទៅឧបករណ៍​ផ្សេងទៀត​របស់អ្នក។</translation>
 <translation id="7544853251252956727">ច្របល់</translation>
 <translation id="7547811415869834682">ភាសាហូឡង់</translation>
 <translation id="7551643184018910560">ដៅទៅធ្នើ</translation>
+<translation id="7553492409867692754">ផ្ដល់ការអនុញ្ញាតឱ្យ​កម្មវិធី Linux ចូលប្រើឯកសារ​នៅក្នុងថត <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">រង់ចាំមួយភ្លែត</translation>
+<translation id="7592775719802218421">កំពុង​​កំណត់ឱ្យ <ph name="FILE_NAME" /> អាចប្រើបានពេល​​គ្មាន​​​អ៊ីនធឺណិត</translation>
 <translation id="7603724359189955920">ក្រឡា</translation>
 <translation id="7627790789328695202">អូ <ph name="FILE_NAME" /> មានរូួចទៅហើយ។ ប្តូរឈ្មោះវា ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% បញ្ចប់​។</translation>

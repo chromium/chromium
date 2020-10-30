@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Фарэрская клавіятура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1646019627374511909">Ідзе адкрыццё пазасеткавага доступу да файлаў (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="1646136617204068573">Венгерская клавіятура</translation>
 <translation id="164729547906544836">Тамільская клавіятура (ITRANS)</translation>
 <translation id="164969095109328410">Прылада Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">ЗША, міжнародная</translation>
 <translation id="2562685439590298522">Дакументы</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2572501073504669105">Вы можаце зрабіць файлы даступнымі ў пазасеткавым рэжыме, каб мець магчымасць працаваць з імі, калі не будзе падключэння да інтэрнэту.</translation>
 <translation id="2614589611416690597">Відэа <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Зараз звязацца з Google Дыскам не ўдалося.</translation>
 <translation id="2638942478653899953">Не ўдалося атрымаць доступ да Google Дыска. <ph name="BEGIN_LINK" />Выйдзіце<ph name="END_LINK" /> і зноў увайдзіце ва ўліковы запіс.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Месцазнаходжанне файла</translation>
 <translation id="2672394958563893062">Адбылася памылка. Націсніце, каб перазапусціць і пачаць спачатку.</translation>
 <translation id="2676946222714718093">Прайграецца на прыладзе</translation>
+<translation id="2735623501230989521">Даць Parallels Desktop доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2735698359135166290">Румынская стандартная клавіятура</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгійская</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Рысавы шарык</translation>
 <translation id="4784330909746505604">Прэзентацыя PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
+<translation id="4789067489790477934">Даць Parallels Desktop доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="4801956050125744859">Пакінуць абодва</translation>
 <translation id="4804827417948292437">Авакада</translation>
 <translation id="4823651846660089135">Прылада толькі для чытання</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Паказаць схаваныя файлы</translation>
 <translation id="7508545000531937079">Слайд-шоу</translation>
 <translation id="751507702149411736">Беларуская</translation>
+<translation id="7544830582642184299">Даць праграмам Linux доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="7544853251252956727">Перамяшаць</translation>
 <translation id="7547811415869834682">Галандская</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
+<translation id="7553492409867692754">Даць праграмам Linux доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Пачакайце</translation>
+<translation id="7592775719802218421">Ідзе адкрыццё пазасеткавага доступу да файла "<ph name="FILE_NAME" />"</translation>
 <translation id="7603724359189955920">Сеткі</translation>
 <translation id="7627790789328695202">Ужо існуе файл з назвай "<ph name="FILE_NAME" />". Пераймянуйце яго і паўтарыце спробу.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% выканана.</translation>

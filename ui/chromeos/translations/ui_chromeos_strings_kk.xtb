@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Фарер пернетақтасы</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл офлайн режимде қолжетімді етілуде</translation>
 <translation id="1646136617204068573">Венгр пернетақтасы</translation>
 <translation id="164729547906544836">Тамил пернетақтасы (itrans)</translation>
 <translation id="164969095109328410">Chrome құрылғысы</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">АҚШ халықаралық</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Бақа</translation>
+<translation id="2572501073504669105">Файлдарды офлайн режимде қолжетімді етіп, интернет байланысы болмаған кезде пайдалануыңызға болады.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> бейнесі</translation>
 <translation id="2620090360073999360">Google Drive жүйесіне қазір кіру мүмкін емес.</translation>
 <translation id="2638942478653899953">Google Drive мазмұнына қол жеткізу мүмкін емес. <ph name="BEGIN_LINK" />Жүйеден шығып<ph name="END_LINK" />, қайта кіріңіз.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Файлдың орналасқан жері</translation>
 <translation id="2672394958563893062">Қате орын алды. Басынан бастап қайта іске қосу үшін басыңыз.</translation>
 <translation id="2676946222714718093">Бейне көрсетіліп жатыр:</translation>
+<translation id="2735623501230989521">Parallels Desktop үшін <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат берілсін.</translation>
 <translation id="2735698359135166290">Румын стандартты пернетақтасы</translation>
 <translation id="2771816809568414714">Ірімшік</translation>
 <translation id="2781645665747935084">Бельгиялық</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint презентациясы</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
+<translation id="4789067489790477934">Parallels Desktop үшін Google Drive дискісіндегі файлдарды пайдалануға рұқсат берілсін. Өзгертулер барлық құрылғыда болады.</translation>
 <translation id="4801956050125744859">Екеуін де сақтау</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Құрылғы тек оқуға арналған</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Жасырын файлдарды көрсету</translation>
 <translation id="7508545000531937079">Слайдшоу</translation>
 <translation id="751507702149411736">беларус</translation>
+<translation id="7544830582642184299">Linux қолданбаларына Google Drive дискісіндегі файлдарды пайдалануға рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
 <translation id="7544853251252956727">Кездейсоқ</translation>
 <translation id="7547811415869834682">голланд</translation>
 <translation id="7551643184018910560">Сөреге бекіту</translation>
+<translation id="7553492409867692754">Linux қолданбаларына <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат беріңіз.</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Күте тұрыңыз</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы офлайн режимде қолжетімді етілуде</translation>
 <translation id="7603724359189955920">Торлар</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> бұрыннан бар. Оның атын өзгертіп, әрекетті қайталап көріңіз.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% аяқталды.</translation>

@@ -3,7 +3,10 @@
 <translationbundle lang="mr">
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
+<translation id="1204296502688602597">DNS लेटंसी</translation>
+<translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">गेटवेला पिंग करता येते</translation>
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1468664791493211953">ऑफर</translation>
 <translation id="1478594628797167447">स्कॅनर</translation>
@@ -12,6 +15,7 @@
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
+<translation id="1706391837335750954">DNS रिसॉल्व्हर प्रेझेंट</translation>
 <translation id="1734367976349034509">या डिव्हाइसला संस्थेेने व्यवस्थापित केेले आहे</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1930797645656624981">Chrome OS इनपुट पद्धत सेवा</translation>
@@ -22,25 +26,33 @@
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
+<translation id="2364498172489649528">पास झाले</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>
+<translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}other{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
+<translation id="3083667275341675831">कनेक्टिव्हिटी निदान</translation>
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
+<translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
+<translation id="3310640316857623290">DNS लेटंसी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
 <translation id="3515615323037921860">प्रिंट कार्ये</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
+<translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
+<translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="4003259559679196451">हे डिव्हाइस <ph name="ENROLLMENT_DOMAIN" />व्यवस्थापित करते आणि भेट दिलेली वेबपेज पासवर्ड आणि ईमेलसह सर्व वापरकर्ता ॲक्टिव्हिटीचा त्यांना ॲक्सेस आहे.</translation>
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
@@ -49,18 +61,25 @@
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
+<translation id="4378373042927530923">रन झाले नाही</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
 <translation id="4429881212383817840">Kerberos तिकीट लवकरच एक्स्पायर होईल</translation>
 <translation id="445059817448385655">जुना पासवर्ड</translation>
+<translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
+<translation id="4548483925627140043">सिग्नल मिळाला नाही</translation>
+<translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर दाबा.</translation>
+<translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
 <translation id="4691278870498629773">थांबले - ट्रे गहाळ आहे</translation>
+<translation id="469379815867856270">सिग्नल क्षमता</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="4773299976671772492">थांबविले</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> हे प्रिंट कार्य रद्द केले</translation>
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="4985509611418653372">रन</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> या वापरकर्त्याला व्यवस्थापित करते आणि रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकते आणि वापरकर्ता अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकते.</translation>
 <translation id="520299634122159966">कोणतीही स्कॅनर उपलब्ध नाही</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
@@ -70,6 +89,8 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">आता नवीन निवडा</translation>
+<translation id="5372659122375744710">वायफाय नेटवर्क सुरक्षित नाही</translation>
+<translation id="5401938042319910061">सर्व दिनक्रम रन करा</translation>
 <translation id="5457599981699367932">अतिथी म्हणून ब्राउझ करा</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
@@ -77,15 +98,21 @@
 <translation id="6048107060512778456">अयशस्वी झाले - कागद अडकला</translation>
 <translation id="6058625436358447366">पूर्ण करण्यासाठी, तुमचे जुने आणि नवीन पासवर्ड एंटर करा</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
+<translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
+<translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
+<translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>
 <translation id="6564646048574748301">अयशस्वी झाले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
 <translation id="6643016212128521049">साफ करा</translation>
+<translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
+<translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
 <translation id="7162487448488904999">गॅलरी</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">फाइल प्रकार</translation>
@@ -93,15 +120,22 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7690294790491645610">नवीन पासवर्ड कन्फर्म करा</translation>
 <translation id="7805768142964895445">स्थिती</translation>
+<translation id="7936303884198020182">नेम सर्व्हर आढळले नाहीत</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
 <translation id="8208861521865154048">लाभ</translation>
+<translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
+<translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>
+<translation id="8475690821716466388">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP PSK सह सुरक्षित केले गेले आहे</translation>
+<translation id="8477551185774834963">DNS लेटंसी अनुमती असलेल्या सीमेपेक्षा किंचित जास्त आहे</translation>
 <translation id="8668052347555487755">रंगीत मोड</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
+<translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटंसी सीमेपेक्षा जास्त आहे</translation>
 <translation id="8726019395068607495">थांबले - दार उघडे आहे</translation>
 <translation id="8747900814994928677">बदलाची खात्री करा</translation>
+<translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटंसी सीमेच्या वर आहे</translation>
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>
 <translation id="8928727111548978589">अयशस्वी झाले - कागद संपला आहे</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>

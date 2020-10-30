@@ -56,6 +56,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1420527829902822813">Picha ya skrini imepigwa na ikahifadhiwa kwenye ubao wa kunakili</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
+<translation id="1456407467406159627">Imeacha kurekodi skrini kwa sababu kuna maudhui ya siri kwenye skrini yako.</translation>
 <translation id="1460620680449458626">Umezima sauti.</translation>
 <translation id="1467432559032391204">Kushoto</translation>
 <translation id="1475439723810528286">Gusa popote ili unase skrini nzima</translation>
@@ -150,6 +151,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2369165858548251131">"Hujambo" kwa Kichina</translation>
 <translation id="2390318262976603432">Mipangilio ya Lugha</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Vidhibiti vya maudhui</translation>
 <translation id="2405664212338326887">Haijaunganishwa</translation>
 <translation id="2408955596600435184">Weka PIN yako</translation>
 <translation id="2412593942846481727">Sasisho linapatikana</translation>
@@ -220,6 +222,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Anzisha upya ili kusasisha</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
+<translation id="3147157020428159854">Imeacha kurekodi skrini</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
 <translation id="3151786313568798007">Mkao</translation>
 <translation id="3153444934357957346">Unaweza kuingia katika akaunti <ph name="MULTI_PROFILE_USER_LIMIT" /> pekee ukitumia kipengele cha uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja.</translation>
@@ -291,6 +294,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="380165613292957338">Hujambo, ungependa nikusaidie vipi?</translation>
 <translation id="3826099427150913765">Tumia nenosiri</translation>
 <translation id="383629559565718788">Onyesha mipangilio ya kibodi</translation>
+<translation id="3846214748874656680">Ondoka kwenye skrini nzima</translation>
 <translation id="3846575436967432996">Hakuna maelezo ya mtandao yanayopatikana</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="385300504083504382">Mwanzo</translation>
@@ -656,7 +660,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7561982940498449837">Funga menyu</translation>
 <translation id="7564874036684306347">Hatua ya kuhamishia madirisha kwenye eneo-kazi lingine inaweza kusababisha utendaji usiotarajiwa. 
 Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</translation>
-<translation id="7568637526529101738">Ukibofya kulia au kubonyeza kwa muda mrefu, programu ya Mratibu itaonyesha maelezo kama vile ufafanuzi au ubadilishaji wa kipimo cha chaguo lako.</translation>
 <translation id="7569509451529460200">Breli na ChromeVox zimewashwa</translation>
 <translation id="7579778809502851308">Kurekodi skrini</translation>
 <translation id="7590883480672980941">Mipangilio ya kuweka data</translation>
@@ -708,6 +711,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7995804128062002838">Imeshindwa kupiga picha ya skrini</translation>
 <translation id="8000066093800657092">Hakuna mtandao</translation>
 <translation id="8004512796067398576">Ongezeko</translation>
+<translation id="8029247720646289474">Imeshindwa kuunganisha kwenye mtandao pepe</translation>
 <translation id="8029629653277878342">PIN au nenosiri linahitajika kwa usalama zaidi</translation>
 <translation id="8030169304546394654">Hujaunganishwa</translation>
 <translation id="8042893070933512245">Fungua menyu ya mipangilio ya ufikivu</translation>
@@ -743,7 +747,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> hii na simu yako zitaunganishwa kiotomatiki</translation>
 <translation id="8380784334203145311">Usiku mwema,</translation>
 <translation id="8388750414311082622">Huruhusiwi kuondoa kiolesura cha mwisho.</translation>
-<translation id="8392451568018454956">Menyu ya chaguo za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Kifaa hiki kimefungwa na mzazi wako</translation>
 <translation id="8412677897383510995">Onyesha mipangilio ya skrini</translation>
 <translation id="8425213833346101688">Badilisha</translation>

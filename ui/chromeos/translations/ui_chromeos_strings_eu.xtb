@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Teklatu faroetarra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fitxategi konexiorik gabe erabilgarri ezartzen</translation>
 <translation id="1646136617204068573">Teklatu hungariarra</translation>
 <translation id="164729547906544836">Teklatu tamildarra (itrans)</translation>
 <translation id="164969095109328410">Chrome gailua</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">AEBko nazioarteko teklatu-diseinua</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Igela</translation>
+<translation id="2572501073504669105">Fitxategiak konexiorik gabe erabilgarri jartzeko aukera duzu, Interneteko konexiorik gabe atzi ditzazun.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> bideoa</translation>
 <translation id="2620090360073999360">Une honetan, ezin da konektatu Google Drive zerbitzuarekin.</translation>
 <translation id="2638942478653899953">Ezin izan da Google Drive-rekin konektatu. <ph name="BEGIN_LINK" />Amaitu saioa<ph name="END_LINK" /> eta hasi saioa berriro.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Fitxategiaren kokapena</translation>
 <translation id="2672394958563893062">Errore bat gertatu da. Berriro hasieratik hasteko, sakatu hau.</translation>
 <translation id="2676946222714718093">Hemen erreproduzitzen:</translation>
+<translation id="2735623501230989521">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak atzitzeko baimena Parallels Desktop aplikazioari</translation>
 <translation id="2735698359135166290">Errumanierako teklatu estandarra</translation>
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2781645665747935084">Belgikarra</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiria</translation>
 <translation id="4784330909746505604">PowerPoint aurkezpena</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Eman Google Drive-ko fitxategiak atzitzeko baimena Parallels Desktop aplikazioari. Aldaketak beste gailuekin sinkronizatuko dira.</translation>
 <translation id="4801956050125744859">Mantendu biak</translation>
 <translation id="4804827417948292437">Ahuakatea</translation>
 <translation id="4823651846660089135">Gailua irakurtzeko soilik da</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Erakutsi ezkutatutako fitxategiak</translation>
 <translation id="7508545000531937079">Diapositiba-aurkezpena</translation>
 <translation id="751507702149411736">Bielorrusiarra</translation>
+<translation id="7544830582642184299">Eman Google Drive-ko fitxategiak atzitzeko baimena Linux aplikazioei. Aldaketak beste gailuekin sinkronizatuko dira.</translation>
 <translation id="7544853251252956727">Ausazko erreprodukzioa</translation>
 <translation id="7547811415869834682">Nederlandarra</translation>
 <translation id="7551643184018910560">Ainguratu apalean</translation>
+<translation id="7553492409867692754">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak atzitzeko baimena Linux-eko aplikazioei</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Itxaron segundotxo batez</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> fitxategia konexiorik gabe erabiltzeko gordetzen</translation>
 <translation id="7603724359189955920">Saretak</translation>
 <translation id="7627790789328695202">Badago <ph name="FILE_NAME" /> izena duen fitxategia. Aldatu izena eta saiatu berriro.</translation>
 <translation id="7628656427739290098">% <ph name="PERCENT" /> osatuta.</translation>

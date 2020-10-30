@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ezkutatu azpitituluen menua</translation>
 <translation id="1729654308190250600">Idatzi helbide elektronikoa.</translation>
 <translation id="1758486001363313524">Beste batzuk…</translation>
+<translation id="1774577460079229490">uneko <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">iraupena, guztira: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">zuhaitz-sareta</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Balioak <ph name="MINIMUM_DATE_OR_TIME" /> edo geroago izan behar du.</translation>
 <translation id="2759744352195237655">leihoa ateratzeko botoia</translation>
 <translation id="2761667185364618470">Jarraitu nahi baduzu, hautatu koadro hau.</translation>
+<translation id="2838616441696617235">pausoa</translation>
 <translation id="2844350028562914727">xehetasunak</translation>
 <translation id="2896972712917208084">aukera-botoi sorta</translation>
 <translation id="2908441821576996758">Idatzi helbide elektronikoak komaz bereizita.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menu-barra</translation>
 <translation id="4293574643247337246">orri-goiburua</translation>
 <translation id="4360991593054037559">Idatzi balio egoki bat. <ph name="VALID_VALUE_LOW" /> eta <ph name="VALID_VALUE_HIGHER" /> dira gertuen dauden bi balio egokiak.</translation>
+<translation id="4384249794467006333">Irudi hau ez dago etiketatuta. Ireki goian eskuinean dagoen Aukera gehiago menua irudien deskribapenak eskuratzeko.</translation>
 <translation id="4384583879834880242">Galde-erantzunak</translation>
 <translation id="4444765639179266822">Badirudi hau dioela: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">glosarioaren erreferentzia</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
+<translation id="4576178047100686001">Irudi hau ez dago etiketatuta. Ireki goian ezkerrean dagoen Aukera gehiago menua irudien deskribapenak eskuratzeko.</translation>
 <translation id="4597532268155981612">inprimakia</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" ikurra ezarri.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliografia-sarrera</translation>
 <translation id="4915360478455618802">Erakutsi ordu-hautatzailea</translation>
 <translation id="492244087561876220">iruzkina</translation>
+<translation id="4934662370368414994">elementua</translation>
 <translation id="4950364064308314478">Erakutsi tokiko data- eta ordu-hautatzailea</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> hautatuta</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> hautatuta</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">bolumen-graduatzailea</translation>
 <translation id="6015796118275082299">Urtea</translation>
 <translation id="6023896073578205740">zerrenda-koadroa</translation>
+<translation id="6131824478727057281">kokapena</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">neurgailua</translation>
 <translation id="6166809985690652833">hitzatzea</translation>

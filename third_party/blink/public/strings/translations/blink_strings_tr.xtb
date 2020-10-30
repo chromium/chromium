@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">altyazı menüsünü gizle</translation>
 <translation id="1729654308190250600">Lütfen e-posta adresini boş bırakmayın.</translation>
 <translation id="1758486001363313524">Diğer...</translation>
+<translation id="1774577460079229490">geçerli <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">toplam süre: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ağaç tablo</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Değer <ph name="MINIMUM_DATE_OR_TIME" /> veya daha ileri olmalıdır.</translation>
 <translation id="2759744352195237655">pop-up düğmesi</translation>
 <translation id="2761667185364618470">İlerlemek istiyorsanız lütfen bu kutuyu işaretleyin.</translation>
+<translation id="2838616441696617235">adım</translation>
 <translation id="2844350028562914727">ayrıntılar</translation>
 <translation id="2896972712917208084">radyo düğmesi grubu</translation>
 <translation id="2908441821576996758">Lütfen e-posta adreslerinin virgülle ayrılmış listesini girin.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menü çubuğu</translation>
 <translation id="4293574643247337246">sayfa üstbilgisi</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Bu resim etiketlenmemiş. Resim açıklamalarını almak için sağ üstteki Diğer Seçenekler menüsünü açın.</translation>
 <translation id="4384583879834880242">Soru-Cevap</translation>
 <translation id="4444765639179266822">Şöyle diyor olabilir: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">terimler sözlüğü referansı</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
+<translation id="4576178047100686001">Bu resim etiketlenmemiş. Resim açıklamalarını almak için sol üstteki Diğer Seçenekler menüsünü açın.</translation>
 <translation id="4597532268155981612">form</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">kaynakça girişi</translation>
 <translation id="4915360478455618802">Saat seçiciyi gösterir</translation>
 <translation id="492244087561876220">yorum</translation>
+<translation id="4934662370368414994">öğe</translation>
 <translation id="4950364064308314478">Yerel tarih ve saat seçiciyi gösterir</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> seçildi</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> öğe seçildi</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">ses kaydırma çubuğu</translation>
 <translation id="6015796118275082299">Yıl</translation>
 <translation id="6023896073578205740">liste kutusu</translation>
+<translation id="6131824478727057281">konum</translation>
 <translation id="6150588977291308318">kaynakça</translation>
 <translation id="6164829606128959761">ölçüm aracı</translation>
 <translation id="6166809985690652833">sonsöz</translation>

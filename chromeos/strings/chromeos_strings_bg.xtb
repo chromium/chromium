@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
+<translation id="1204296502688602597">Забавяне на DNS</translation>
+<translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1478594628797167447">Скенер</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Стартов панел</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
+<translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1734367976349034509">Това устройство се управлява корпоративно</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1930797645656624981">Услуга за метод на въвеждане в Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
+<translation id="2364498172489649528">Премината</translation>
 <translation id="2375079107209812402">Остават <ph name="ATTEMPTS_LEFT" /> опита</translation>
+<translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
+<translation id="3083667275341675831">Диагностика на свързаността</translation>
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
+<translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
+<translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
 <translation id="3456078764689556234">Отпечатана е страница <ph name="PRINTED_PAGES" /> от <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Отпечатване</translation>
 <translation id="3515615323037921860">Задания за отпечатване</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
+<translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3749289110408117711">Име на файла</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
 <translation id="3838338534323494292">Нова парола</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
+<translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
+<translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
 <translation id="445059817448385655">Стара парола</translation>
+<translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
+<translation id="4548483925627140043">Не бе открит сигнал</translation>
+<translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
+<translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
 <translation id="467510802200863975">Паролите не са идентични</translation>
 <translation id="4691278870498629773">Спряло – липсваща тава</translation>
+<translation id="469379815867856270">Сила на сигнала</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4773299976671772492">Спряно</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4985509611418653372">Стартиране</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="520299634122159966">Няма налични скенери</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
@@ -71,6 +90,8 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Изберете нова сега</translation>
+<translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
+<translation id="5401938042319910061">Стартиране на всички процедури</translation>
 <translation id="5457599981699367932">Сърфиране като гост</translation>
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
@@ -78,15 +99,21 @@
 <translation id="6048107060512778456">Неуспешно – заседнала хартия</translation>
 <translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
+<translation id="6108689792487843350">Шлюзът е недостъпен</translation>
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Неправилно образувани сървъри за имена</translation>
+<translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
 <translation id="6564646048574748301">Неуспешно – няма връзка с принтера</translation>
 <translation id="6620487321149975369">Заданията за отпечатване ще се показват в историята, освен ако не ги премахнете ръчно</translation>
 <translation id="6643016212128521049">Изчистване</translation>
+<translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
+<translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлов тип</translation>
@@ -94,15 +121,22 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7805768142964895445">Състояние</translation>
+<translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8208861521865154048">Предимства</translation>
+<translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
+<translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
+<translation id="8475690821716466388">Wi-Fi мрежата е защитена със слабия протокол WEP PSK</translation>
+<translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
 <translation id="8668052347555487755">Цветови режим</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
+<translation id="8723108084122415655">Забавянето на допълнителната мрежа е над прага</translation>
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
+<translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>

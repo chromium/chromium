@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Фарерська клавіатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1646019627374511909">Файли (<ph name="NUMBER_OF_ITEMS" />) завантажуються на пристрій</translation>
 <translation id="1646136617204068573">Угорська розкладка</translation>
 <translation id="164729547906544836">Тамільська клавіатура (індійська транслітерація)</translation>
 <translation id="164969095109328410">Пристрій Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Міжнародна (США)</translation>
 <translation id="2562685439590298522">Документи</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2572501073504669105">Ви можете зробити файли доступними офлайн, щоб відкривати їх, коли немає інтернет-з'єднання.</translation>
 <translation id="2614589611416690597">Відео <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Зараз неможливо отримати доступ до Google Диска.</translation>
 <translation id="2638942478653899953">Диск Google недоступний. <ph name="BEGIN_LINK" />Вийдіть<ph name="END_LINK" /> і ввійдіть знову.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Місце розташування файлу</translation>
 <translation id="2672394958563893062">Сталася помилка. Натисніть, щоб знову запустити з початку.</translation>
 <translation id="2676946222714718093">Відтворюється на пристрої</translation>
+<translation id="2735623501230989521">Надати додатку Parallels Desktop доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2735698359135166290">Стандартна румунська клавіатура</translation>
 <translation id="2771816809568414714">Сир</translation>
 <translation id="2781645665747935084">Бельгійська</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Оніґірі</translation>
 <translation id="4784330909746505604">Презентація PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
+<translation id="4789067489790477934">Надати додатку Parallels Desktop доступ до файлів на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
 <translation id="4801956050125744859">Залишити обидві версії</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Пристрій лише для перегляду</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Показати сховані файли</translation>
 <translation id="7508545000531937079">Слайд-шоу</translation>
 <translation id="751507702149411736">Білоруська</translation>
+<translation id="7544830582642184299">Надайте додаткам Linux доступ до файлів на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
 <translation id="7544853251252956727">Перемішати</translation>
 <translation id="7547811415869834682">Нідерландська</translation>
 <translation id="7551643184018910560">Закріпити на полиці</translation>
+<translation id="7553492409867692754">Надати додаткам Linux доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Зачекайте</translation>
+<translation id="7592775719802218421">Файл "<ph name="FILE_NAME" />" завантажується на пристрій</translation>
 <translation id="7603724359189955920">Сітка</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" вже існує. Перейменуйте його та повторіть спробу.</translation>
 <translation id="7628656427739290098">Завершено <ph name="PERCENT" />%.</translation>

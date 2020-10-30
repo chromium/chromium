@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faroese klaviaturası</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fayl oflayn əlçatan edilir</translation>
 <translation id="1646136617204068573">Macar klaviaturası</translation>
 <translation id="164729547906544836">Tamil klaviaturası (itrans)</translation>
 <translation id="164969095109328410">Chrome cihazı</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">ABŞ Beynəlxalq</translation>
 <translation id="2562685439590298522">Sənəd</translation>
 <translation id="2563185590376525700">Qurbağa</translation>
+<translation id="2572501073504669105">İnternet bağlantınız olmadıqda oflayn giriş üçün faylları əlçatan edə bilərsiniz.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videosu</translation>
 <translation id="2620090360073999360">Hazırda Google Diskə daxil olmaq mümkün deyil.</translation>
 <translation id="2638942478653899953">Google Diskə daxil olmaq alınmadı. Lütfən, <ph name="BEGIN_LINK" />hesabdan çıxın<ph name="END_LINK" /> və yenidən daxil olun.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Faylın yeri</translation>
 <translation id="2672394958563893062">Xəta oldu. Əvvəldən başlamaq üçün klikləyin.</translation>
 <translation id="2676946222714718093">Playing</translation>
+<translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
 <translation id="2735698359135166290">Rumın standart klaviaturası</translation>
 <translation id="2771816809568414714">Pendir</translation>
 <translation id="2781645665747935084">Belçikalı</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Oniqiri</translation>
 <translation id="4784330909746505604">PowerPoint təqdimatı</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktop'a Google Diskinizdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="4801956050125744859">İkisini də saxlayın</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Cihaz yalnız oxu rejimindədir</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Gizlədilmiş faylları göstərin</translation>
 <translation id="7508545000531937079">Slaydşou</translation>
 <translation id="751507702149411736">Belarusca</translation>
+<translation id="7544830582642184299">Linux tətbiqlərinə Google Diskinizdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="7544853251252956727">Qarışdırın</translation>
 <translation id="7547811415869834682">Holland</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
+<translation id="7553492409867692754">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Bir saniyə gözləyin</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> oflayn əlçatan edilir</translation>
 <translation id="7603724359189955920">Cədvəl</translation>
 <translation id="7627790789328695202">Oooohhhh, <ph name="FILE_NAME" /> artıq mövcuddur. Adını dəyişin və yenidən cəhd edin.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% tamamlanıb.</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ବନ୍ଦ ଥିବା କ୍ୟାପ୍‌ସନ୍ ମେନୁକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1729654308190250600">ଦୟାକରି ଏକ ଖାଲି ନଥିବା ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ।</translation>
 <translation id="1758486001363313524">ଅନ୍ୟ...</translation>
+<translation id="1774577460079229490">ବର୍ତ୍ତମାନର <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">ମୋଟ ସମୟ: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ଆଲର୍ଟ ଡାୟଲଗ୍‌</translation>
 <translation id="1821985195704844674">ଟ୍ରୀ ଗ୍ରିଡ୍</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">ମୂଲ୍ୟ <ph name="MINIMUM_DATE_OR_TIME" /> କିମ୍ବା ତା’ପର ହେବା ଉଚିତ।</translation>
 <translation id="2759744352195237655">ପପ୍ ଅପ୍ ବଟନ୍</translation>
 <translation id="2761667185364618470">ଯଦି ଆପଣ ଆଗକୁ ବଢ଼ିବାକୁ ଚାହାନ୍ତି, ତେବେ ଦୟାକରି ଏହି ବକ୍ସରେ ଠିକ୍ ଚିହ୍ନ ଦିଅନ୍ତୁ।</translation>
+<translation id="2838616441696617235">ଷ୍ଟେପ୍</translation>
 <translation id="2844350028562914727">ବିବରଣୀ</translation>
 <translation id="2896972712917208084">ରେଡିଓ ଗ୍ରୁପ୍</translation>
 <translation id="2908441821576996758">ଦୟାକରି ଇମେଲ୍ ଠିକଣାଗୁଡ଼ିକର ଏକ କମା ଦ୍ୱାରା ଅଲଗା କରାଯାଇଥିବା ତାଲିକା ଲେଖନ୍ତୁ।</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">ମେନୁ ବାର୍</translation>
 <translation id="4293574643247337246">ପୃଷ୍ଠାର ହେଡର୍</translation>
 <translation id="4360991593054037559">ଦୟାକରି, ଏକ ବୈଧ ମୂଲ୍ୟ ଲେଖନ୍ତୁ ଦୁଇଟି ନିକଟସ୍ଥ ବୈଧ ମାନ <ph name="VALID_VALUE_LOW" /> ଏବଂ <ph name="VALID_VALUE_HIGHER" />ଅଟେ।</translation>
+<translation id="4384249794467006333">ଏହି ଛବିକୁ ଲେବଲ୍ କରାଯାଇନାହିଁ। ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଡାହାଣପଟ ଶୀର୍ଷରେ ଥିବା ଅଧିକ ବିକଳ୍ପ ମେନୁକୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="4384583879834880242">ପ୍ରଶ୍ନ&amp;ଉତ୍ତର</translation>
 <translation id="4444765639179266822">ଏହି ସୂଚନା ଏହି ବିଷୟରେ ଲାଗୁଛି: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ଶବ୍ଦାବଳୀର ସନ୍ଦର୍ଭ</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
+<translation id="4576178047100686001">ଏହି ଛବିକୁ ଲେବଲ୍ କରାଯାଇନାହିଁ। ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ବାମପଟ ଶୀର୍ଷରେ ଥିବା ଅଧିକ ବିକଳ୍ପ ମେନୁକୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="4597532268155981612">ଫର୍ମ</translation>
 <translation id="4661075872484491155">ଟ୍ରୀ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ପରେ ଆସୁଥିବା ଅଂଶରେ '<ph name="INVALIDCHARACTER" />' ଚିହ୍ନ ରହିବା ଉଚିତ ନୁହେଁ।</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ଗ୍ରନ୍ଥସୂଚୀ ଏଣ୍ଟ୍ରି</translation>
 <translation id="4915360478455618802">ସମୟ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="492244087561876220">ମନ୍ତବ୍ୟ</translation>
+<translation id="4934662370368414994">ଆଇଟମ୍</translation>
 <translation id="4950364064308314478">ସ୍ଥାନୀୟ ତାରିଖ ଏବଂ ସମୟ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />ଟି ଚୟନ କରାଯାଇଛି</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">ଭଲ୍ୟୁମ୍‍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
 <translation id="6023896073578205740">ତାଲିକା ବାକ୍ସ</translation>
+<translation id="6131824478727057281">ଲୋକେସନ୍</translation>
 <translation id="6150588977291308318">ଗ୍ରନ୍ଥସୂଚୀ</translation>
 <translation id="6164829606128959761">ମିଟର୍</translation>
 <translation id="6166809985690652833">ଉପସଂହାର</translation>

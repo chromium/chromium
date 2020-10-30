@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Färöiskt tangentbord</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer görs tillgängliga offline</translation>
 <translation id="1646136617204068573">Ungerskt tangentbord</translation>
 <translation id="164729547906544836">Tangentbord för tamil (itrans)</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">USA (internationell)</translation>
 <translation id="2562685439590298522">Dokument</translation>
 <translation id="2563185590376525700">Groda</translation>
+<translation id="2572501073504669105">Du kan göra filer tillgängliga offline så att du kommer åt de, när du inte har internetanslutning.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2620090360073999360">Det går inte att nå Google Drive just nu.</translation>
 <translation id="2638942478653899953">Det gick inte att nå Google Drive. <ph name="BEGIN_LINK" />Logga ut<ph name="END_LINK" /> och sedan in igen.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Filens plats</translation>
 <translation id="2672394958563893062">Ett fel inträffade. Klicka här och börja om från början.</translation>
 <translation id="2676946222714718093">Spelas på</translation>
+<translation id="2735623501230989521">Ge Parallels Desktop behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Rumänskt standardtangentbord</translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgiska</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri (risbollar)</translation>
 <translation id="4784330909746505604">PowerPoint-presentation</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Ge Parallels Desktop behörighet att öppn filer på Google Drive. Ändringarna synkroniseras med dina andra enheter.</translation>
 <translation id="4801956050125744859">Behåll båda</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Enheten är skrivskyddad</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Visa dolda filer</translation>
 <translation id="7508545000531937079">Bildvisning</translation>
 <translation id="751507702149411736">vitryska</translation>
+<translation id="7544830582642184299">Ge Linux-appar behörighet att öppna filer på din Google Drive. Ändringarna synkroniseras med dina andra enheter.</translation>
 <translation id="7544853251252956727">Blanda</translation>
 <translation id="7547811415869834682">nederländska</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
+<translation id="7553492409867692754">Ge Linux-appar behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6:4</translation>
 <translation id="7589661784326793847">Ett ögonblick</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> görs tillgänglig offline</translation>
 <translation id="7603724359189955920">Rutnät</translation>
 <translation id="7627790789328695202">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Byt namn på filen och försök igen.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % klart.</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">उपशीर्षकहरूको मेनु लुकाउनुहोस्</translation>
 <translation id="1729654308190250600">कृपया एउटा खाली नभएको इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
 <translation id="1758486001363313524">अन्य ...</translation>
+<translation id="1774577460079229490">हालको <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">कुल समय: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ट्री ग्रिड</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">मान <ph name="MINIMUM_DATE_OR_TIME" /> वा पछि हुनुरपर्छ।</translation>
 <translation id="2759744352195237655">पप अप बटन</translation>
 <translation id="2761667185364618470">यदि तपाईं अगाडि बढ्न चाहनुहुन्छ भने यस बाकसमा ठिक चिह्न लगाउनुहोस्।</translation>
+<translation id="2838616441696617235">चरण</translation>
 <translation id="2844350028562914727">विवरणहरू</translation>
 <translation id="2896972712917208084">रेडियो समूह</translation>
 <translation id="2908441821576996758">कृपया अल्पविरामले विभाजित गरिएको इमले ठेगानाहरूको सूची प्रविष्टि गर्नुहोस्।</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">मेनु बार</translation>
 <translation id="4293574643247337246">पेज हेडर</translation>
 <translation id="4360991593054037559">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। दुईवा सबैभण्दा नजिकका वैध मानहरू <ph name="VALID_VALUE_LOW" /> र <ph name="VALID_VALUE_HIGHER" /> हुन्।</translation>
+<translation id="4384249794467006333">यो फोटोमा लेबल प्रदान गरिएको छैन। फोटोका विवरणहरू प्राप्त गर्न सिरानको दायाँपट्टि रहेको थप विकल्पहरू नामक मेनु खोल्नुहोस्।</translation>
 <translation id="4384583879834880242">प्रश्नोत्तर</translation>
 <translation id="4444765639179266822">निम्न कुरा भन्न खोजे जस्तो छ: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">शब्दावलीको सन्दर्भ</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
+<translation id="4576178047100686001">यो फोटोमा लेबल प्रदान गरिएको छैन। फोटोका विवरणहरू प्राप्त गर्न सिरानको बायाँपट्टि रहेको थप विकल्पहरू नामक मेनु खोल्नुहोस्।</translation>
 <translation id="4597532268155981612">फाराम</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' पछ्याउने भागले '<ph name="INVALIDCHARACTER" />' चिन्ह समावेश गर्नु हुँदैन।</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ग्रन्थसूचीको प्रविष्टि</translation>
 <translation id="4915360478455618802">समय चयनकर्ता देखाउनुहोस्</translation>
 <translation id="492244087561876220">टिप्पणी</translation>
+<translation id="4934662370368414994">वस्तु</translation>
 <translation id="4950364064308314478">स्थानीय मिति र समय चयनकर्ता देखाउनुहोस्</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> चयन गरियो</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> चयन गरिएको</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">भोल्युम स्लाइडर</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6023896073578205740">सूची बाकस</translation>
+<translation id="6131824478727057281">स्थान</translation>
 <translation id="6150588977291308318">ग्रन्थसूची</translation>
 <translation id="6164829606128959761">मिटर</translation>
 <translation id="6166809985690652833">उपसंहार</translation>

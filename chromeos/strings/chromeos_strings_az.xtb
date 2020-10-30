@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1075811647922107217">Səhifə ölçüsü</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
+<translation id="1204296502688602597">DNS Gecikməsi</translation>
+<translation id="1290331692326790741">Zəif siqnal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Giriş test edilə bilər</translation>
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
 <translation id="1478594628797167447">Skaner</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Başladıcı</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
+<translation id="1706391837335750954">DNS Həlledicisi Mövcuddur</translation>
 <translation id="1734367976349034509">Bu cihaz korporativ idarə olunur</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1930797645656624981">Chrome OS Daxiletmə Metodu Xidməti</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
+<translation id="2364498172489649528">Keçdi</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> cəhd qalıb</translation>
+<translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}other{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
+<translation id="3083667275341675831">Bağlantı Diaqnostikası</translation>
 <translation id="3091839911843451378">Alınmadı - Dayandırılıb</translation>
+<translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
+<translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> səhifə çap edilib.</translation>
 <translation id="3459509316159669723">Çap edilir</translation>
 <translation id="3515615323037921860">Çap İşləri</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
+<translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
 <translation id="38114475217616659">Bütün tarixçəni silin</translation>
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
+<translation id="3941014780699102620">Hostu həll etmək alınmadı</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> gündən köhnə çap işləri silinəcək</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
+<translation id="4378373042927530923">İşə salınmayıb</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
 <translation id="445059817448385655">Köhnə parol</translation>
+<translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
+<translation id="4548483925627140043">Siqnal tapılmadı</translation>
+<translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
+<translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>
 <translation id="4691278870498629773">Dayanıb - Altlıq yoxdur</translation>
+<translation id="469379815867856270">Siqnal Gücü</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> çap işi ləğv edilib</translation>
 <translation id="4890353053343094602">Dərhal yenisini seçin</translation>
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
 <translation id="4932733599132424254">Tarix</translation>
+<translation id="4985509611418653372">İşə salın</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="520299634122159966">Əlçatan skaner yoxdur</translation>
 <translation id="5212543919916444558">Ekranınızda kömək edə biləcəyim heç nə tapmadım. Məndən hər hansı bir şey soruşmaq üçün mikrofona klikləyin.</translation>
@@ -70,6 +89,8 @@
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">İndi yenisini seçin</translation>
+<translation id="5372659122375744710">WiFi şəbəkəsi güvənli deyil</translation>
+<translation id="5401938042319910061">Bütün Rejimləri İşə Salın</translation>
 <translation id="5457599981699367932">Qonaq kimi gözdən keçirin</translation>
 <translation id="54609108002486618">İdarə edilən</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
@@ -77,15 +98,21 @@
 <translation id="6048107060512778456">Alınmadı - Kağız ilişib</translation>
 <translation id="6058625436358447366">Tamamlamaq üçün yeni və köhnə parolları yazın</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
+<translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Yanlış ad serverləri</translation>
+<translation id="6325525973963619867">Alınmadı</translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="649050271426829538">Dayanıb - Kağız ilişib</translation>
 <translation id="6517239166834772319">Araşdırın</translation>
+<translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
 <translation id="6620487321149975369">Manual olaraq silinməsə, çap işləri tarixçədə görünəcək</translation>
 <translation id="6643016212128521049">Silin</translation>
+<translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
+<translation id="714876143603641390">Lan Bağlantısı</translation>
 <translation id="7162487448488904999">Qalereya</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fayl növü</translation>
@@ -93,15 +120,22 @@
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
+<translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8294431847097064396">Mənbə</translation>
 <translation id="8347227221149377169">Çap işləri</translation>
 <translation id="8352772353338965963">Çoxsaylı giriş üçün hesab əlavə edin. Bu hesablara parolsuz daxil olmaq olar, ona görə də bu funksiya yalnız güvənilən hesablar ilə işlədilməlidir.</translation>
+<translation id="8364946094152050673">Boş ad serverləri</translation>
+<translation id="8475690821716466388">WiFi şəbəkəsi zəif protokol WEP PSK ilə qorunur</translation>
+<translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
 <translation id="8668052347555487755">Rəng rejimi</translation>
 <translation id="871560550817059752">Alınmadı - Mürəkkəb yoxdur</translation>
+<translation id="8723108084122415655">Qeyri-defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8726019395068607495">Dayanıb - Qapı açıqdır</translation>
 <translation id="8747900814994928677">Dəyişikliyi təsdiqləyin</translation>
+<translation id="8910721771319628100">Defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8919837981463578619">Alınmadı - Altlıq yoxdur</translation>
 <translation id="8928727111548978589">Alınmadı - Kağız yoxdur</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ფარერული კლავიატურა</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> პბაიტი</translation>
 <translation id="1620510694547887537">კამერა</translation>
+<translation id="1646019627374511909">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ფაილის ხაზგარეშე ხელმისაწვდომად გარდაქმნა</translation>
 <translation id="1646136617204068573">უნგრული კლავიატურა</translation>
 <translation id="164729547906544836">ტამილური კლავიატურა (itrans)</translation>
 <translation id="164969095109328410">Chrome მოწყობილობა</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">აშშ საერთაშორისო</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ბაყაყი</translation>
+<translation id="2572501073504669105">სურვილისამებრ, შეგიძლიათ გარდაქმნათ ფაილები ხაზგარეშე რეჟიმში ხელმისაწვდომად, რომ მათზე წვდომა შეინარჩუნოთ მაშინაც, როცა ინტერნეტ-კავშირი არ გექნებათ.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ვიდეო</translation>
 <translation id="2620090360073999360">Google Drive-ზე წვდომა ამჟამად შეუძლებელია.</translation>
 <translation id="2638942478653899953">Google Drive-თან დაკავშირება ვერ მოხერხდა. <ph name="BEGIN_LINK" />გამოდით<ph name="END_LINK" /> და ხელახლა შედით.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ფაილის მდებარეობა</translation>
 <translation id="2672394958563893062">შეცდომა მოხდა. დააწკაპუნეთ, რათა თავიდან დაიწყოთ.</translation>
 <translation id="2676946222714718093">ჩართვა</translation>
+<translation id="2735623501230989521">მიეცით Parallels Desktop-ს „<ph name="FOLDER_NAME" />“-ში არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="2735698359135166290">რუმინული სტანდარტული კლავიატურა</translation>
 <translation id="2771816809568414714">ყველი</translation>
 <translation id="2781645665747935084">ბელგიური</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ონიგირი</translation>
 <translation id="4784330909746505604">PowerPoint პრეზენტაცია</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> კბაიტი</translation>
+<translation id="4789067489790477934">მიეცით Parallels Desktop-ს თქვენს Google Drive-ში არსებულ ფაილებზე წვდომის ნებართვა. ცვლილებები სინქრონიზებული იქნება თქვენს სხვა მოწყობილობებთან.</translation>
 <translation id="4801956050125744859">ორივე შენარჩუნდეს</translation>
 <translation id="4804827417948292437">ავოკადო</translation>
 <translation id="4823651846660089135">მოწყობილობა მხოლოდ კითხვადია</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">დამალული ფაილების ჩვენება</translation>
 <translation id="7508545000531937079">სლაიდ-შოუ</translation>
 <translation id="751507702149411736">ბელორუსული</translation>
+<translation id="7544830582642184299">მიეცით Linux აპებს თქვენს Google Drive-ში არსებულ ფაილებზე წვდომის ნებართვა. ცვლილებები სინქრონიზებული იქნება თქვენს სხვა მოწყობილობებთან.</translation>
 <translation id="7544853251252956727">არეულად დაკვრა</translation>
 <translation id="7547811415869834682">ჰოლანდიური</translation>
 <translation id="7551643184018910560">დაამაგრეთ თაროზე</translation>
+<translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> გარდაიქმნება ხაზგარეშე ხელმისაწვდომად</translation>
 <translation id="7603724359189955920">ბადეები</translation>
 <translation id="7627790789328695202">უპს, <ph name="FILE_NAME" /> უკვე არსებობს. შეუცვალეთ სახელი და სცადეთ კიდევ ერთხელ.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% დასრულდა.</translation>

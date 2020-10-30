@@ -6,7 +6,6 @@
 <translation id="1051826050538111504">Der er skadelig software på din computer. Chrome kan fjerne den, gendanne dine indstillinger og deaktivere udgivelser, så din browser fungerer normalt igen.</translation>
 <translation id="1065672644894730302">Dine præferencer kan ikke læses. Visse funktioner er muligvis ikke tilgængelige, og ændringer af præferencer gemmes ikke.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> brugte tidligere Chrome</translation>
-<translation id="1088654056000736875">Chrome fjerner skadelig software fra din computer...</translation>
 <translation id="1097330777386562916">Ryd cookies og websitedata, når du afslutter Chrome</translation>
 <translation id="110877069173485804">Dette er din Chrome-browser</translation>
 <translation id="1125124144982679672">Hvem bruger Chrome?</translation>
@@ -17,7 +16,6 @@
 <translation id="1355000804395496115">Brug forskellige profiler i Chrome til at adskille arbejdsmæssig og personlig browsing, eller for at flere forskellige personer kan bruge denne enhed.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Denne computer har allerede en nyere version af Google Chrome. Hvis programmet ikke virker, skal du afinstallere Google Chrome og prøve igen.</translation>
-<translation id="140541193409212341">Der opstod en fejl under Chromes forsøg på at scanne din computer for skadelig software</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
 <translation id="1513277449617685876">Hvis du vil adskille din personlige browsing og <ph name="NEW_USER" />-browsing, kan du oprette en ny profil i Chrome</translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
@@ -57,7 +55,6 @@
 <translation id="2429317896000329049">Google Chrome kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>
 <translation id="2467438592969358367">Google Chrome anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
-<translation id="252502352004572774">Chrome scanner din computer for skadelig software...</translation>
 <translation id="2534507159460261402">Google Pay (kopieret til Chrome)</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
@@ -114,12 +111,10 @@
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="4053720452172726777">Tilpas Google Chrome</translation>
 <translation id="4110895483821904099">Konfigurer din nye Chrome-profil</translation>
-<translation id="4127976662406264741">{NUM_MINS,plural, =1{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For 1 minut siden.}one{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_MINS} minut siden.}other{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_MINS} minutter siden.}}</translation>
 <translation id="4143243756087420366">Chrome-navn og -billede</translation>
 <translation id="4147555960264124640">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Installationsprogrammet kunne ikke pakke arkivet ud. Download Google Chrome igen.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Genstart Chrome inden for én dag}one{Genstart Chrome inden for # dag}other{Genstart Chrome inden for # dage}}</translation>
-<translation id="4205362703535890467">Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: I går.</translation>
 <translation id="4205939740494406371">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4251615635259297716">Vil du linke dine Chrome-data til denne konto?</translation>
@@ -148,7 +143,6 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Denne fil kan være farlig, så Chrome har blokeret den.</translation>
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
-<translation id="4831688036548685548">Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For et øjeblik siden.</translation>
 <translation id="4891791193823137474">Lad Google Chrome køre i baggrunden</translation>
 <translation id="4895437082222824641">Åbn linket i en ny Chrome-&amp;fane</translation>
 <translation id="4953650215774548573">Angiv Google Chrome som din standardbrowser</translation>
@@ -162,7 +156,6 @@
 <translation id="532046782124376502">Advarsel! Google Chrome kan ikke forhindre udvidelser i at registrere din browserhistorik. Fravælg denne indstilling for at deaktivere udvidelsen i inkognitotilstand.</translation>
 <translation id="5386244825306882791">Den styrer også, hvilken side der vises, når du åbner Chrome eller søger via omnifeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
-<translation id="5409605318138185493">{NUM_DAYS,plural, =1{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For 1 dag siden.}one{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_DAYS} dag siden.}other{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_DAYS} dage siden.}}</translation>
 <translation id="5430073640787465221">Din præferencefil er beskadiget eller ugyldig. Google Chrome kan ikke gendanne dine præferencer.</translation>
 <translation id="556024056938947818">Google Chrome forsøger at vise adgangskoder.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -198,7 +191,6 @@
 <translation id="6750954913813541382">Chrome sender den tekst, du angiver i browseren, til Google for at rette stavefejl</translation>
 <translation id="677276454032249905">Vil du afslutte Chrome alligevel?</translation>
 <translation id="683440813066116847">Indgående regel for Google Chrome Canary om at tillade mDNS-trafik.</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />Din administrator<ph name="END_LINK" /> har deaktiveret Chromes scanning efter skadelig software</translation>
 <translation id="6885412569789873916">Apps i Chrome beta</translation>
 <translation id="6943584222992551122">Brugerens browserdata slettes fra denne enhed. Log ind på Chrome som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
 <translation id="6967962315388095737">Indgående regel for Google Chrome beta om at tillade mDNS-trafik.</translation>
@@ -262,7 +254,6 @@
 <translation id="8641606876632989680">Chrome giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
-<translation id="8681614230122836773">Chrome har registreret skadelig software på din computer</translation>
 <translation id="870251953148363156">Opdater &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="8748242232968346981">Vil du oprette din egen profil i Chrome?</translation>
@@ -270,7 +261,6 @@
 <translation id="8834965163890861871">Google Chrome forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="884296878221830158">Den styrer også, hvilken side der vises, når du åbner Chrome eller klikker på knappen Startside.</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
-<translation id="8907906903932240086">Chrome kan scanne din computer for skadelig software</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
@@ -278,7 +268,6 @@
 <translation id="9067395829937117663">Google Chrome kræver Windows 7 eller nyere.</translation>
 <translation id="911206726377975832">Slet også dine browserdata?</translation>
 <translation id="9138603949443464873">Åbn Chrome igen for at anvende ændringerne</translation>
-<translation id="9155112650704618965">{NUM_HOURS,plural, =1{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For 1 time siden.}one{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_HOURS} time siden.}other{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_HOURS} timer siden.}}</translation>
 <translation id="919706545465235479">Opdater Chrome for at starte synkroniseringen</translation>
 <translation id="989369509083708165">Google Chrome er din standardbrowser</translation>
 </translationbundle>

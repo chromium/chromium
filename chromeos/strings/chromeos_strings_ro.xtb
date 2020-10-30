@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1075811647922107217">Dimensiunea paginii</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
+<translation id="1204296502688602597">Latența DNS</translation>
+<translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1478594628797167447">Scaner</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
+<translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
 <translation id="1734367976349034509">Acest dispozitiv este gestionat de companie</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1930797645656624981">Serviciul metodei de introducere a textului din sistemul de operare Chrome</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
+<translation id="2364498172489649528">Reușită</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> încercări rămase</translation>
+<translation id="2391082728065870591">Trimite un raport de feedback</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} încercare rămasă}few{<ph name="ERROR_MESSAGE" /> {0} încercări rămase}other{<ph name="ERROR_MESSAGE" /> {0} de încercări rămase}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
+<translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
+<translation id="3188257591659621405">Fișierele mele</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
+<translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Printare</translation>
 <translation id="3515615323037921860">Sarcini de printare</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
+<translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
+<translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
+<translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
 <translation id="445059817448385655">Parolă veche</translation>
+<translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4548483925627140043">Nu s-a detectat semnal</translation>
+<translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
+<translation id="4646949265910132906">Conexiune Wi-Fi securizată</translation>
 <translation id="467510802200863975">Parolele nu se potrivesc</translation>
 <translation id="4691278870498629773">Oprită – Tavă lipsă</translation>
+<translation id="469379815867856270">Puterea semnalului</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4985509611418653372">Rulează</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="520299634122159966">Nu sunt disponibile scanere</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
@@ -71,6 +90,8 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Alege una nouă acum</translation>
+<translation id="5372659122375744710">Rețeaua Wi-Fi nu este sigură</translation>
+<translation id="5401938042319910061">Rulează toate rutinele</translation>
 <translation id="5457599981699367932">Navighează ca invitat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
@@ -78,15 +99,21 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6048107060512778456">Nereușită – Blocaj de hârtie</translation>
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
+<translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Servere de nume cu formă incorectă</translation>
+<translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>
+<translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6643016212128521049">Șterge</translation>
+<translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
+<translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
@@ -94,15 +121,22 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7805768142964895445">Stare</translation>
+<translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8208861521865154048">Avantaje</translation>
+<translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
+<translation id="8364946094152050673">Serverele de nume sunt goale</translation>
+<translation id="8475690821716466388">Rețeaua Wi-Fi este securizată cu protocolul slab WEP PSK</translation>
+<translation id="8477551185774834963">Latența DNS depășește ușor pragul permisibil</translation>
 <translation id="8668052347555487755">Modul de culoare</translation>
 <translation id="871560550817059752">Nereușită – Cerneală epuizată</translation>
+<translation id="8723108084122415655">Rețeaua care nu este prestabilită depășește pragul de latență</translation>
 <translation id="8726019395068607495">Oprită – Ușă deschisă</translation>
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
+<translation id="8910721771319628100">Rețeaua prestabilită depășește pragul de latență</translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>

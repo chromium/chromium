@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டு கிளிப்போர்டில் சேமிக்கப்பட்டது</translation>
 <translation id="1426410128494586442">ஆம்</translation>
 <translation id="1455242230282523554">மொழி அமைப்புகளைக் காட்டும்</translation>
+<translation id="1456407467406159627">உங்கள் திரையில் ரகசிய உள்ளடக்கம் இருப்பதால் ஸ்கிரீன் ரெக்கார்டிங் நிறுத்தப்பட்டது.</translation>
 <translation id="1460620680449458626">ஒலி முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1467432559032391204">இடது</translation>
 <translation id="1475439723810528286">முழுத்திரையையும் படமெடுக்க, எங்கு வேண்டுமானாலும் தட்டவும்</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
 <translation id="2390318262976603432">மொழி அமைப்புகள்</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="2405664212338326887">இணைக்கப்படவில்லை</translation>
 <translation id="2408955596600435184">பின்னை உள்ளிடவும்</translation>
 <translation id="2412593942846481727">புதுப்பிப்பு உள்ளது</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (புளூடூத்)</translation>
 <translation id="3126069444801937830">புதுப்பிக்க மீண்டும் தொடங்குக</translation>
 <translation id="3139942575505304791">மேசை 1</translation>
+<translation id="3147157020428159854">ஸ்கிரீன் ரெக்கார்டிங் நிறுத்தப்பட்டது</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
 <translation id="3151786313568798007">திசையமைப்பு</translation>
 <translation id="3153444934357957346">பல உள்நுழைவில் <ph name="MULTI_PROFILE_USER_LIMIT" /> கணக்குகள் வரை மட்டுமே வைத்திருக்கலாம்.</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">வணக்கம், நான் எவ்வாறு உதவலாம்?</translation>
 <translation id="3826099427150913765">கடவுச்சொல்லிற்கு மாற்று</translation>
 <translation id="383629559565718788">கீபோர்ட் அமைப்புகளைக் காண்பிக்கும்</translation>
+<translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
 <translation id="3846575436967432996">நெட்வொர்க் தகவல் எதுவும் இல்லை</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="385300504083504382">தொடக்கம்</translation>
@@ -655,7 +659,6 @@
 <translation id="7551643184018910560">அடுக்கில் பொருத்து</translation>
 <translation id="7561982940498449837">மெனுவை மூடு</translation>
 <translation id="7564874036684306347">சாளரத்தை வேறு டெஸ்க்டாப்க்கு மாற்றினால், அது எதிர்பாராதவிதமாகச் செயல்படக் கூடும். அடுத்தடுத்து வரும் அறிவிப்புகளும் சாளரங்களும் உரையாடல்களும் டெஸ்க்டாப்களுக்கு இடையே பிரிக்கப்படலாம்.</translation>
-<translation id="7568637526529101738">வலது கிளிக் செய்தாலோ நீண்ட நேரம் அழுத்தினாலோ நீங்கள் தேர்ந்தெடுத்ததற்கான விளக்கம், அலகு மாற்றம் போன்ற தகவலை Assistant காட்டும்.</translation>
 <translation id="7569509451529460200">பிரெய்லி மற்றும் ChromeVox இயக்கப்பட்டன</translation>
 <translation id="7579778809502851308">திரையைப் படமெடு</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
@@ -707,6 +710,7 @@
 <translation id="7995804128062002838">திரையைப் படமெடுக்க முடியவில்லை</translation>
 <translation id="8000066093800657092">நெட்வொர்க் இல்லை</translation>
 <translation id="8004512796067398576">அதிகரி</translation>
+<translation id="8029247720646289474">ஹாட்ஸ்பாட் இணைப்பு வேலை செய்யவில்லை</translation>
 <translation id="8029629653277878342">மேலும் பாதுகாப்பிற்குக் கடவுச்சொல் அல்லது பின் அவசியம்</translation>
 <translation id="8030169304546394654">துண்டிக்கப்பட்டது</translation>
 <translation id="8042893070933512245">அணுகல்தன்மை அமைப்புகள் மெனுவைத் திற</translation>
@@ -742,7 +746,6 @@
 <translation id="8375916635258623388">இந்த <ph name="DEVICE_NAME" /> உம் உங்கள் ஃபோனும் தானாக இணைக்கப்படும்</translation>
 <translation id="8380784334203145311">இரவு வணக்கம்,</translation>
 <translation id="8388750414311082622">இறுதி டெஸ்க்கை அகற்ற இயலாது.</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> க்கான விருப்பத்தேர்வுகள் மெனு</translation>
 <translation id="8394567579869570560">உங்கள் பெற்றோர் இந்தச் சாதனத்தைப் பூட்டிவிட்டனர்</translation>
 <translation id="8412677897383510995">திரை அமைப்புகளைக் காட்டும்</translation>
 <translation id="8425213833346101688">மாற்று</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">paslēpt subtitru izvēlni</translation>
 <translation id="1729654308190250600">Lūdzu, ievadiet e-pasta adresi.</translation>
 <translation id="1758486001363313524">Cits...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> pašlaik</translation>
 <translation id="1787192514241997742">Kopējais laiks: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">brīdinājuma dialoglodziņš</translation>
 <translation id="1821985195704844674">koka režģis</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Vērtībai ir jābūt “<ph name="MINIMUM_DATE_OR_TIME" />” vai vēlākam datumam vai laikam.</translation>
 <translation id="2759744352195237655">uznirstoša poga</translation>
 <translation id="2761667185364618470">Lai turpinātu, atzīmējiet šo izvēles rūtiņu.</translation>
+<translation id="2838616441696617235">darbība</translation>
 <translation id="2844350028562914727">detalizēta informācija</translation>
 <translation id="2896972712917208084">radiopogu grupa</translation>
 <translation id="2908441821576996758">Lūdzu, ievadiet ar komatu atdalītu e-pasta adrešu sarakstu.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">izvēļņu josla</translation>
 <translation id="4293574643247337246">lapas galvene</translation>
 <translation id="4360991593054037559">Lūdzu, ievadiet derīgu vērtību. Divas tuvākās derīgās vērtības ir <ph name="VALID_VALUE_LOW" /> un <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Šim attēlam nav iezīmes. Lai iegūtu attēlu aprakstus, atveriet izvēlni Citas opcijas, kas atrodas labajā augšējā stūrī.</translation>
 <translation id="4384583879834880242">Jautājumi un atbildes</translation>
 <translation id="4444765639179266822">Izklausās: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">atsauce uz glosāriju</translation>
 <translation id="4522570452068850558">Informācija</translation>
+<translation id="4576178047100686001">Šim attēlam nav iezīmes. Lai iegūtu attēlu aprakstus, atveriet izvēlni Citas opcijas, kas atrodas kreisajā augšējā stūrī.</translation>
 <translation id="4597532268155981612">veidlapa</translation>
 <translation id="4661075872484491155">koks</translation>
 <translation id="4664250907885839816">Daļā, kas atrodas aiz zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliogrāfijas ieraksts</translation>
 <translation id="4915360478455618802">Rādīt laika atlasītāju</translation>
 <translation id="492244087561876220">komentārs</translation>
+<translation id="4934662370368414994">vienums</translation>
 <translation id="4950364064308314478">Rādīt vietējo datuma un laika atlasītāju</translation>
 <translation id="4971739861736909480">Atlasīts: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Atlasīti <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">skaļuma slīdnis</translation>
 <translation id="6015796118275082299">Gads</translation>
 <translation id="6023896073578205740">sarakstlodziņš</translation>
+<translation id="6131824478727057281">atrašanās vieta</translation>
 <translation id="6150588977291308318">bibliogrāfija</translation>
 <translation id="6164829606128959761">mērītājs</translation>
 <translation id="6166809985690652833">pēcvārds</translation>

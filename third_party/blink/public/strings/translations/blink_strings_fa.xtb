@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">پنهان کردن منوی زیرنویس ناشنوایان</translation>
 <translation id="1729654308190250600">لطفاً یک نشانی ایمیل غیرخالی وارد کنید.</translation>
 <translation id="1758486001363313524">موارد دیگر...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> کنونی</translation>
 <translation id="1787192514241997742">زمان کل: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">شبکه درختی</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">مقدار باید <ph name="MINIMUM_DATE_OR_TIME" /> یا بعد از آن باشد.</translation>
 <translation id="2759744352195237655">دکمه بازشو</translation>
 <translation id="2761667185364618470">درصورتی‌که می‌خواهید ادامه دهید، این کادر را انتخاب کنید.</translation>
+<translation id="2838616441696617235">گام</translation>
 <translation id="2844350028562914727">جزئیات</translation>
 <translation id="2896972712917208084">گروه رادیویی</translation>
 <translation id="2908441821576996758">لطفاً لیستی از آدرس‌های ایمیل که با کاما از هم جدا شده‌اند را وارد کنید.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">نوار منو</translation>
 <translation id="4293574643247337246">سرصفحه</translation>
 <translation id="4360991593054037559">لطفاً یک مقدار معتبر وارد کنید. نزدیک‌ترین مقادیر معتبر <ph name="VALID_VALUE_LOW" /> و <ph name="VALID_VALUE_HIGHER" /> هستند.</translation>
+<translation id="4384249794467006333">این تصویر برچسب ندارد. برای دریافت شرح تصویر، منوی «گزینه‌های بیشتر» را در بالا سمت چپ باز کنید.</translation>
 <translation id="4384583879834880242">پرسش و پاسخ</translation>
 <translation id="4444765639179266822">ظاهراً <ph name="OCR_TEXT" /> را نشان می‌دهد</translation>
 <translation id="4446524499724042288">مرجع واژه‌نامه</translation>
 <translation id="4522570452068850558">جزئیات</translation>
+<translation id="4576178047100686001">این تصویر برچسب ندارد. برای دریافت شرح تصویر، منوی «گزینه‌های بیشتر» را در بالا سمت راست باز کنید.</translation>
 <translation id="4597532268155981612">فرم</translation>
 <translation id="4661075872484491155">درخت</translation>
 <translation id="4664250907885839816">قسمت بعد از «<ph name="ATSIGN" />» نباید حاوی نماد «<ph name="INVALIDCHARACTER" />» باشد.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ورودی فهرست منابع</translation>
 <translation id="4915360478455618802">نمایش انتخابگر زمان</translation>
 <translation id="492244087561876220">نظر</translation>
+<translation id="4934662370368414994">مورد</translation>
 <translation id="4950364064308314478">نمایش انتخابگر تاریخ و زمان محلی</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> انتخاب شد</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> انتخاب شد</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">لغزنده میزان صدا</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6023896073578205740">کادر فهرست</translation>
+<translation id="6131824478727057281">مکان</translation>
 <translation id="6150588977291308318">فهرست منابع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">سخن پایانی</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">sembunyikan menu sari kata</translation>
 <translation id="1729654308190250600">Sila masukkan alamat e-mel bukan kosong.</translation>
 <translation id="1758486001363313524">Lain-lain...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> semasa</translation>
 <translation id="1787192514241997742">jumlah masa: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">dialog_makluman</translation>
 <translation id="1821985195704844674">grid pohon</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Nilai mestilah <ph name="MINIMUM_DATE_OR_TIME" /> atau kemudian.</translation>
 <translation id="2759744352195237655">butang timbul</translation>
 <translation id="2761667185364618470">Sila tandakan kotak ini jika anda mahu teruskan.</translation>
+<translation id="2838616441696617235">langkah</translation>
 <translation id="2844350028562914727">butiran</translation>
 <translation id="2896972712917208084">kumpulan radio</translation>
 <translation id="2908441821576996758">Sila masukkan senarai alamat e-mel yang dipisahkan dengan koma.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">bar menu</translation>
 <translation id="4293574643247337246">pengepala halaman</translation>
 <translation id="4360991593054037559">Sila masukkan nilai yang sah. Dua nilai sah yang terdekat ialah <ph name="VALID_VALUE_LOW" /> dan <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Imej ini tidak dilabelkan. Buka menu Lagi Pilihan di bahagian atas sebelah kanan untuk mendapatkan perihalan imej.</translation>
 <translation id="4384583879834880242">Soal Jawab</translation>
 <translation id="4444765639179266822">Nampaknya menyatakan: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">rujukan glosari</translation>
 <translation id="4522570452068850558">Butiran</translation>
+<translation id="4576178047100686001">Imej ini tidak dilabelkan. Buka menu Lagi Pilihan di bahagian atas sebelah kiri untuk mendapatkan perihalan imej.</translation>
 <translation id="4597532268155981612">borang</translation>
 <translation id="4661075872484491155">pohon</translation>
 <translation id="4664250907885839816">Bahagian selepas '<ph name="ATSIGN" />' tidak boleh mengandungi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">masukan bibliografi</translation>
 <translation id="4915360478455618802">Paparkan pemilih masa</translation>
 <translation id="492244087561876220">ulasan</translation>
+<translation id="4934662370368414994">item</translation>
 <translation id="4950364064308314478">Paparkan pemilih tarikh dan masa tempatan</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> dipilih</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> dipilih</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">peluncur kelantangan</translation>
 <translation id="6015796118275082299">Tahun</translation>
 <translation id="6023896073578205740">kotak senarai</translation>
+<translation id="6131824478727057281">lokasi</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">kata hujungan</translation>

@@ -56,6 +56,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1420527829902822813">Captura de pantalla realizada y guardada en el portapapeles</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1455242230282523554">Mostrar los ajustes de idioma</translation>
+<translation id="1456407467406159627">Se ha dejado de grabar la pantalla al detectar que mostraba contenido confidencial.</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="1475439723810528286">Toca cualquier parte de la pantalla para hacer una captura de la pantalla completa</translation>
@@ -150,6 +151,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2405664212338326887">No conectado</translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
@@ -220,6 +222,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reinicia el sistema para actualizarlo.</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
+<translation id="3147157020428159854">Grabación de pantalla detenida</translation>
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3153444934357957346">Solo puedes tener un máximo de <ph name="MULTI_PROFILE_USER_LIMIT" /> cuentas en el inicio de sesión múltiple.</translation>
@@ -292,6 +295,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383629559565718788">Mostrar configuración de teclado</translation>
+<translation id="3846214748874656680">Salir de pantalla completa</translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="385300504083504382">Principio</translation>
@@ -371,7 +375,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4513946894732546136">Comentarios</translation>
 <translation id="4527045527269911712">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para vincularse.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> para completar la carga</translation>
-<translation id="4538824937723742295">Hacer captura de la pantalla completa</translation>
+<translation id="4538824937723742295">Hacer captura de pantalla completa</translation>
 <translation id="4544483149666270818">Selecciona una ventana para grabar</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -636,7 +640,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
-<translation id="7371404428569700291">Grabar pantalla</translation>
+<translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7377169924702866686">El bloqueo de mayúsculas está activado.</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área de grabación</translation>
 <translation id="7378594059915113390">Controles multimedia</translation>
@@ -656,7 +660,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves ventanas a otro escritorio, es posible que se produzca un comportamiento inesperado. Puede que las notificaciones, las ventanas y los cuadros de diálogo que aparezcan después de realizar esta acción se dividan entre los escritorios.</translation>
-<translation id="7568637526529101738">Si haces clic con el botón derecho en el texto seleccionado o lo mantienes pulsado, el Asistente te mostrará información sobre él, como su definición o la conversión de unidades.</translation>
 <translation id="7569509451529460200">Braille y ChromeVox están habilitados</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuración de introducción de texto</translation>
@@ -708,6 +711,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7995804128062002838">No se ha podido hacer una captura de pantalla</translation>
 <translation id="8000066093800657092">Ninguna red</translation>
 <translation id="8004512796067398576">Aumentar</translation>
+<translation id="8029247720646289474">No se ha podido conectar con el punto de acceso</translation>
 <translation id="8029629653277878342">Debes introducir el PIN o la contraseña como medida de seguridad adicional</translation>
 <translation id="8030169304546394654">Desconectado</translation>
 <translation id="8042893070933512245">Abrir menú de configuración de accesibilidad</translation>
@@ -743,7 +747,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> y tu teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches,</translation>
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>
-<translation id="8392451568018454956">Menú de opciones de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Tu padre, madre o tutor han bloqueado este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar ajustes de pantalla</translation>
 <translation id="8425213833346101688">Cambiar</translation>

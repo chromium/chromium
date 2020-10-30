@@ -509,7 +509,6 @@
 <translation id="2996674880327704673">Google сунуштайт</translation>
 <translation id="3002501248619246229">Киргизүү түпкүчүнүн медиасын текшерүү</translation>
 <translation id="3005723025932146533">Сакталган көчүрмөнү көрсөтүү</translation>
-<translation id="3007719053326478567">Бул мазмунду басып чыгаруу аракети администраторуңуз тарабынан бөгөттөлгөн</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> карточкаңыздын CVC кодун киргизиңиз. Текшерилгенден кийин карточкаңыздын маалыматы бул сайтта көрүнөт.</translation>
 <translation id="3010559122411665027">Тизмедеги жазуу "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Автоматтык түрдө бөгөттөлдү</translation>
@@ -1111,6 +1110,7 @@
 <translation id="541416427766103491">4-төшөгүч</translation>
 <translation id="5421136146218899937">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
+<translation id="542872847390508405">Конок катары серептеп жатасыз</translation>
 <translation id="5430298929874300616">Кыстарманы алып салуу</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />": <ph name="ERROR" /> схемалык текшерүү катасы</translation>
 <translation id="5443468954631487277">Тескери иретте алдыңкы бетин өйдө каратып</translation>

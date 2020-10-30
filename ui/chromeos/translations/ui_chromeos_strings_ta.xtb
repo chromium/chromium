@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ஃபாரோயீஸ் விசைப்பலகை</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> பெ.பை.</translation>
 <translation id="1620510694547887537">கேமரா</translation>
+<translation id="1646019627374511909">ஆஃப்லைனில் பயன்படுத்த <ph name="NUMBER_OF_ITEMS" /> கோப்புகளைப் பதிவிறக்குகிறது</translation>
 <translation id="1646136617204068573">ஹங்கேரியன் விசைப்பலகை</translation>
 <translation id="164729547906544836">தமிழ் விசைப்பலகை (ஐடிரான்ஸ்)</translation>
 <translation id="164969095109328410">Chrome சாதனம்</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">தவளை</translation>
+<translation id="2572501073504669105">இணைய இணைப்பு இல்லாதபோதும் கோப்புகளை அணுகும் வகையில் அவற்றை ஆஃப்லைனில் கிடைக்கும்படி செய்யலாம்.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> வீடியோ</translation>
 <translation id="2620090360073999360">இந்த நேரத்தில் Google இயக்ககத்தை அடைய முடியாது.</translation>
 <translation id="2638942478653899953">Google இயக்ககத்தை அடைய முடியவில்லை. <ph name="BEGIN_LINK" />வெளியேறி<ph name="END_LINK" /> திரும்பவும் உள்நுழையவும்.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">கோப்பின் இடம்</translation>
 <translation id="2672394958563893062">பிழை ஏற்பட்டது. ஆரம்பத்திலிருந்து மீண்டும் தொடங்க கிளிக் செய்க.</translation>
 <translation id="2676946222714718093">இதில் இயங்குகிறது</translation>
+<translation id="2735623501230989521"><ph name="FOLDER_NAME" /> கோப்புறையில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Parallels Desktopபிற்கு வழங்கவும்</translation>
 <translation id="2735698359135166290">வழக்கமான ரோமானியன் விசைப்பலகை</translation>
 <translation id="2771816809568414714">பாலாடைக் கட்டி</translation>
 <translation id="2781645665747935084">பெல்ஜியன்</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ஒனிஜிரி</translation>
 <translation id="4784330909746505604">PowerPoint விளக்கக்காட்சி</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> கி.பை.</translation>
+<translation id="4789067489790477934">உங்கள் Google Driveவில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Parallels Desktopபிற்கு வழங்கவும். மாற்றங்கள் உங்களின் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="4801956050125744859">இரண்டையும் வைத்திரு</translation>
 <translation id="4804827417948292437">அவகாடோ</translation>
 <translation id="4823651846660089135">படிப்பதற்கு மட்டுமேயான சாதனம்</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">மறைக்கப்பட்ட கோப்புகளைக் காட்டு</translation>
 <translation id="7508545000531937079">ஸ்லைடுகாட்சி</translation>
 <translation id="751507702149411736">பெலாரஷ்யன்</translation>
+<translation id="7544830582642184299">உங்கள் Google Driveவில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸுக்கு வழங்கவும். மாற்றங்கள் உங்களின் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="7544853251252956727">கலை</translation>
 <translation id="7547811415869834682">டச்சு</translation>
 <translation id="7551643184018910560">அடுக்கில் பொருத்து</translation>
+<translation id="7553492409867692754"><ph name="FOLDER_NAME" /> கோப்புறையில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸுக்கு வழங்கவும்</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ஒரு வினாடி காத்திருக்கவும்</translation>
+<translation id="7592775719802218421">ஆஃப்லைனில் பயன்படுத்த <ph name="FILE_NAME" /> கோப்பினைப் பதிவிறக்குகிறது</translation>
 <translation id="7603724359189955920">கட்டங்கள்</translation>
 <translation id="7627790789328695202">அடடா, <ph name="FILE_NAME" /> ஏற்கனவே உள்ளது. இதற்கு மறுபெயரிட்டு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% முடிந்தது.</translation>

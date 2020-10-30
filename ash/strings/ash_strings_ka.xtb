@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">ეკრანის ანაბეჭდი გადაღებულია და შენახულია გაცვლის ბუფერში</translation>
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
+<translation id="1456407467406159627">ეკრანის ჩაწერა შეწყდა, რადგან ეკრანზე კონფიდენციალური კონტენტი გაქვთ.</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
 <translation id="1475439723810528286">სრული ეკრანის აღსაბეჭდად შეეხეთ ნებისმიერ ადგილს</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2390318262976603432">ლოკალის პარამეტრები</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">მედიის მართვის საშუალებები</translation>
 <translation id="2405664212338326887">არ არის დაკავშირებული</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
+<translation id="3147157020428159854">ეკრანის ჩაწერა შეწყდა</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
 <translation id="3151786313568798007">ორიენტაცია</translation>
 <translation id="3153444934357957346">მრავალჯერადი შესვლის ფუნქციისთვის შესაძლებელია მხოლოდ <ph name="MULTI_PROFILE_USER_LIMIT" /> ანგარიშის გამოყენება.</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">გამარჯობა, რით შემიძლია გემსახუროთ?</translation>
 <translation id="3826099427150913765">პაროლზე გადართვა</translation>
 <translation id="383629559565718788">კლავიატურის პარამეტრების ჩვენება</translation>
+<translation id="3846214748874656680">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="3846575436967432996">ქსელის შესახებ ინფორმაცია არ არის</translation>
 <translation id="385051799172605136">უკან</translation>
 <translation id="385300504083504382">დასაწყისი</translation>
@@ -655,7 +659,6 @@
 <translation id="7551643184018910560">დაამაგრეთ თაროზე</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
-<translation id="7568637526529101738">მარჯვენა ღილაკზე დაწკაპუნების ან ხანგრძლივად დაჭერის შემთხვევაში ასისტენტი გაჩვენებთ არჩეულ კონტენტთან დაკავშირებულ ინფორმაციას, მაგალითად, განმარტებას ან საზომი ერთეულის გარდაქმნის ვარიანტს.</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
 <translation id="7579778809502851308">ეკრანის აღბეჭდვა</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
@@ -707,6 +710,7 @@
 <translation id="7995804128062002838">ეკრანის აღბეჭდვა ვერ მოხერხდა</translation>
 <translation id="8000066093800657092">ქსელი არ არის</translation>
 <translation id="8004512796067398576">ზრდა</translation>
+<translation id="8029247720646289474">უსადენო ქსელმა ვერ მოახერხა კავშირის დამყარება</translation>
 <translation id="8029629653277878342">დამატებითი უსაფრთხოებისთვის საჭიროა PIN-კოდის ან პაროლის შეყვანა</translation>
 <translation id="8030169304546394654">გათიშული</translation>
 <translation id="8042893070933512245">მარტივი წვდომის პარამეტრების მენიუს გახსნა</translation>
@@ -742,7 +746,6 @@
 <translation id="8375916635258623388">ეს <ph name="DEVICE_NAME" /> და თქვენი ტელეფონი ავტომატურად დაკავშირდება</translation>
 <translation id="8380784334203145311">ღამე მშვიდობის,</translation>
 <translation id="8388750414311082622">ბოლო სამუშაო მაგიდის ამოშლა ვერ მოხერხდა.</translation>
-<translation id="8392451568018454956">პარამეტრების მენიუ მომხმარებლისთვის: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">თქვენმა მშობელმა ჩაკეტა ეს მოწყობილობა</translation>
 <translation id="8412677897383510995">ჩვენების პარამეტრების ჩვენება</translation>
 <translation id="8425213833346101688">შეცვლა</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Keyboard Faeroe</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Membuat <ph name="NUMBER_OF_ITEMS" /> file tersedia secara offline</translation>
 <translation id="1646136617204068573">Keyboard untuk bahasa Magyar</translation>
 <translation id="164729547906544836">Keyboard Tamil (itrans)</translation>
 <translation id="164969095109328410">Perangkat Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Internasional AS</translation>
 <translation id="2562685439590298522">Dokumen</translation>
 <translation id="2563185590376525700">Katak</translation>
+<translation id="2572501073504669105">Anda bisa membuat file dapat diakses secara offline saat tidak memiliki koneksi internet.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Google Drive tidak dapat dijangkau saat ini.</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dibuka. <ph name="BEGIN_LINK" />Keluar<ph name="END_LINK" /> dan masuk lagi.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Lokasi file</translation>
 <translation id="2672394958563893062">Terjadi kesalahan. Klik untuk memulai ulang dari awal.</translation>
 <translation id="2676946222714718093">Diputar di</translation>
+<translation id="2735623501230989521">Beri Parallels Desktop izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Keyboard standar Rumania</translation>
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Belgia</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentasi PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Beri Parallels Desktop izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="4801956050125744859">Simpan keduanya</translation>
 <translation id="4804827417948292437">Avokad</translation>
 <translation id="4823651846660089135">Perangkat berstatus hanya-baca</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Tampilkan file tersembunyi</translation>
 <translation id="7508545000531937079">Rangkai Slide</translation>
 <translation id="751507702149411736">Belarusian</translation>
+<translation id="7544830582642184299">Beri aplikasi Linux izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="7544853251252956727">Acak</translation>
 <translation id="7547811415869834682">Belanda</translation>
 <translation id="7551643184018910560">Pin ke rak</translation>
+<translation id="7553492409867692754">Beri aplikasi Linux izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Tunggu sebentar</translation>
+<translation id="7592775719802218421">Membuat <ph name="FILE_NAME" /> tersedia secara offline</translation>
 <translation id="7603724359189955920">Petak</translation>
 <translation id="7627790789328695202">Ups, <ph name="FILE_NAME" /> sudah ada. Ganti nama dan coba lagi.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% selesai.</translation>

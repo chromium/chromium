@@ -65,6 +65,7 @@
 <translation id="158809615184981282">페로스어 키보드</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" />PB</translation>
 <translation id="1620510694547887537">카메라</translation>
+<translation id="1646019627374511909">파일 <ph name="NUMBER_OF_ITEMS" />개를 오프라인에서 사용하도록 설정 중</translation>
 <translation id="1646136617204068573">헝가리어 키보드</translation>
 <translation id="164729547906544836">타밀어 키보드(itrans)</translation>
 <translation id="164969095109328410">Chrome 기기</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">영어(미국 국제)</translation>
 <translation id="2562685439590298522">문서도구</translation>
 <translation id="2563185590376525700">개구리</translation>
+<translation id="2572501073504669105">파일을 오프라인에서 사용하도록 설정하면 인터넷에 연결되어 있지 않을 때도 액세스할 수 있습니다.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 동영상</translation>
 <translation id="2620090360073999360">현재 Google 드라이브에 연결할 수 없습니다.</translation>
 <translation id="2638942478653899953">Google 드라이브에 연결할 수 없습니다. <ph name="BEGIN_LINK" />로그아웃<ph name="END_LINK" />한 후 다시 로그인하세요.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">파일 위치</translation>
 <translation id="2672394958563893062">오류가 발생했습니다. 클릭하여 처음부터 다시 시작하세요.</translation>
 <translation id="2676946222714718093">재생 중:</translation>
+<translation id="2735623501230989521">Parallels Desktop이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="2735698359135166290">루마니아 표준 키보드</translation>
 <translation id="2771816809568414714">치즈</translation>
 <translation id="2781645665747935084">벨기에어</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4784330909746505604">PowerPoint 프레젠테이션</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" />KB</translation>
+<translation id="4789067489790477934">Parallels Desktop이 Google 드라이브의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="4801956050125744859">모두 보관</translation>
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4823651846660089135">읽기 전용 기기</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">숨긴 파일 표시</translation>
 <translation id="7508545000531937079">슬라이드쇼</translation>
 <translation id="751507702149411736">벨로루시어</translation>
+<translation id="7544830582642184299">Linux 앱이 Google 드라이브의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="7544853251252956727">셔플</translation>
 <translation id="7547811415869834682">네덜란드어</translation>
 <translation id="7551643184018910560">임시보관함에 고정</translation>
+<translation id="7553492409867692754">Linux 앱이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정 중</translation>
 <translation id="7603724359189955920">격자</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" />이(가) 이미 있습니다. 이름을 변경한 후 다시 시도해 주세요.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% 완료</translation>

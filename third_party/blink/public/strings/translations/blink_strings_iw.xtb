@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">הסתרה של תפריט הכתוביות</translation>
 <translation id="1729654308190250600">הזן ערך נדרש בשדה של כתובת האימייל.</translation>
 <translation id="1758486001363313524">אחר...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> הנוכחי</translation>
 <translation id="1787192514241997742">משך כולל: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">רשת של עץ</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">על הערך להיות <ph name="MINIMUM_DATE_OR_TIME" /> ומעלה.</translation>
 <translation id="2759744352195237655">לחצן קופץ</translation>
 <translation id="2761667185364618470">סמן תיבה זו אם אתה רוצה להמשיך.</translation>
+<translation id="2838616441696617235">שלב</translation>
 <translation id="2844350028562914727">פרטים</translation>
 <translation id="2896972712917208084">קבוצת לחצני בחירה</translation>
 <translation id="2908441821576996758">יש להזין רשימה של כתובות אימייל המופרדות באמצעות פסיקים.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">שורת תפריטים</translation>
 <translation id="4293574643247337246">הכותרת העליונה של הדף</translation>
 <translation id="4360991593054037559">הזן ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">לתמונה הזו לא נוספה תווית. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה השמאלית העליונה כדי לקבל תיאורי תמונה.</translation>
 <translation id="4384583879834880242">שאלות ותשובות</translation>
 <translation id="4444765639179266822">נראה שכתובים כאן הדברים הבאים: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">הפניה למילון מונחים</translation>
 <translation id="4522570452068850558">פרטים</translation>
+<translation id="4576178047100686001">לתמונה הזו לא נוספה תווית. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה הימנית העליונה כדי לקבל תיאורי תמונה.</translation>
 <translation id="4597532268155981612">טופס</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ערך ביבליוגרפי</translation>
 <translation id="4915360478455618802">הצגת בוחר השעה</translation>
 <translation id="492244087561876220">תגובה</translation>
+<translation id="4934662370368414994">פריט</translation>
 <translation id="4950364064308314478">הצגה של בוחר התאריך והשעה על סמך אזור הזמן המקומי</translation>
 <translation id="4971739861736909480">הפריט <ph name="ACCNAME" /> נבחר</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> נבחרו</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">מחוון עוצמת קול</translation>
 <translation id="6015796118275082299">שנה</translation>
 <translation id="6023896073578205740">תיבת רשימה</translation>
+<translation id="6131824478727057281">מיקום</translation>
 <translation id="6150588977291308318">ביבליוגרפיה</translation>
 <translation id="6164829606128959761">מד</translation>
 <translation id="6166809985690652833">אחרית דבר</translation>
@@ -200,7 +206,7 @@
 <translation id="6820615603175220800">הפניה לביבליוגרפיה</translation>
 <translation id="6831465880655513317">דוגמית צבע עם מחוון דו-ממדי לבחירת הרוויה והבהירות</translation>
 <translation id="6843725295806269523">השתקה</translation>
-<translation id="6885760532393684712">ספריה</translation>
+<translation id="6885760532393684712">מאגר</translation>
 <translation id="689129560213475294">קולופון</translation>
 <translation id="6901540140423170855">date</translation>
 <translation id="6934078000481955284">‏רכיב blockquote</translation>

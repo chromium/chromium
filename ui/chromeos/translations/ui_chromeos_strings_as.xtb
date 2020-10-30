@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ফা’ৰছ কীব’র্ড</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> পি.বি.</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> টা ফাইল অফলাইনত উপলব্ধ কৰি থকা হৈছে</translation>
 <translation id="1646136617204068573">হাংগেৰীয়ান কীব’ৰ্ড</translation>
 <translation id="164729547906544836">তামিল কীব’ৰ্ড (itrans)</translation>
 <translation id="164969095109328410">Chrome ডিভাইচ</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US আন্তৰ্জাতিক</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ভেকুলী</translation>
+<translation id="2572501073504669105">আপোনাৰ ইণ্টাৰনেট সংযোগ নথকাৰ সময়ত এক্সেছ কৰিবলৈ নিজৰ ফাইলসমূহ অফলাইনত উপলব্ধ কৰাব পাৰে।</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিঅ’</translation>
 <translation id="2620090360073999360">এই মুহূৰ্তত Google Driveৰ সৈতে সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="2638942478653899953">Google Drive পাব পৰা অৱস্থাত নাই। অনুগ্ৰহ কৰি <ph name="BEGIN_LINK" />লগ আউট কৰক<ph name="END_LINK" /> আৰু পুনৰ লগ ইন কৰক।</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ফাইলৰ অৱস্থান</translation>
 <translation id="2672394958563893062">কোনো আসোঁৱাহ হৈছে। আৰম্ভণিৰে পৰা পুনৰাৰম্ভ কৰিবলৈ ক্লিক কৰক৷</translation>
 <translation id="2676946222714718093">ইয়াত প্লে’ কৰি থকা হৈছে</translation>
+<translation id="2735623501230989521">Parallels Desktopক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="2735698359135166290">ৰোমানিয়ান উন্নত কীব'র্ড</translation>
 <translation id="2771816809568414714">চ্চীজ</translation>
 <translation id="2781645665747935084">বেলজিয়ান</translation>
@@ -341,6 +344,7 @@
 <translation id="4779136857077979611">অনিগিৰি</translation>
 <translation id="4784330909746505604">PowerPoint উপস্থাপন</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> কেবি</translation>
+<translation id="4789067489790477934">Parallels Desktopক আপোনাৰ Google Driveত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক। সালসলনিসমূহ আপোনাৰ অন্য ডিভাইচৰ সৈতে ছিংক হ’ব।</translation>
 <translation id="4801956050125744859">দুয়োটাই ৰাখক</translation>
 <translation id="4804827417948292437">এভ‘কাড‘</translation>
 <translation id="4823651846660089135">ডিভাইচটো কেৱল পঢ়িব পৰা</translation>
@@ -603,11 +607,14 @@
 <translation id="7505167922889582512">লুকুৱাই থোৱা ফাইলসমূহ দেখুৱাওক</translation>
 <translation id="7508545000531937079">শ্লাইডশ্ব’</translation>
 <translation id="751507702149411736">বেলাৰ’ছিয়ান</translation>
+<translation id="7544830582642184299">Linuxৰ এপ্‌সমূহ আপোনাৰ Google Driveত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক। সালসলনিসমূহ আপোনাৰ অন্য ডিভাইচৰ সৈতে ছিংক হ’ব।</translation>
 <translation id="7544853251252956727">সানমিহলি কৰক</translation>
 <translation id="7547811415869834682">ডাচ্চ</translation>
 <translation id="7551643184018910560">শ্বেল্‌ফত পিন কৰক</translation>
+<translation id="7553492409867692754">Linuxৰ এপ্‌সমূহক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="7576032389798113292">৬x৪</translation>
 <translation id="7589661784326793847">কেইছেকেণ্ডমান অপেক্ষা কৰক</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> অফলাইনত উপলব্ধ কৰি থকা হৈছে</translation>
 <translation id="7603724359189955920">গ্ৰীড</translation>
 <translation id="7627790789328695202">আমি দুঃখিত, <ph name="FILE_NAME" /> ইতিমধ্যে আছেই। নতুন নাম দি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% সম্পূর্ণ হৈছে।</translation>

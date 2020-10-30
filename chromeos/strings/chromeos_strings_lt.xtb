@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Atšaukta</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
+<translation id="1204296502688602597">DNS delsa</translation>
+<translation id="1290331692326790741">Silpnas signalas</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
+<translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
 <translation id="1734367976349034509">Šis įrenginys valdomas įmonės</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1930797645656624981">„Chrome“ OS įvesties metodo paslauga</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
+<translation id="2364498172489649528">Pavyko</translation>
 <translation id="2375079107209812402">Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Siųsti atsiliepimo ataskaitą</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
+<translation id="3083667275341675831">Ryšio diagnostika</translation>
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
+<translation id="3188257591659621405">Mano failai</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
+<translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
 <translation id="3456078764689556234">Atspausdinta <ph name="PRINTED_PAGES" /> iš <ph name="TOTAL_PAGES" /> psl.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
 <translation id="3515615323037921860">Spausdinimo užduotys</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
+<translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
 <translation id="38114475217616659">Išvalyti visą istoriją</translation>
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
 <translation id="3838338534323494292">Naujas slaptažodis</translation>
 <translation id="3865414814144988605">Skyra</translation>
+<translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
 <translation id="39823212440917567">Senesnės nei <ph name="NUMBER_OF_DAYS" /> d. spausdinimo užduotys bus pašalintos</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="4003384961948020559">Nepavyko – išvestis pilna</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
+<translation id="4378373042927530923">Nevykdyti</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
 <translation id="445059817448385655">Senas slaptažodis</translation>
+<translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
+<translation id="4548483925627140043">Signalas nerastas</translation>
+<translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
+<translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
 <translation id="467510802200863975">Slaptažodžiai neatitinka</translation>
 <translation id="4691278870498629773">Sustabdyta – nėra dėklo</translation>
+<translation id="469379815867856270">Signalo stiprumas</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4808449224298348341">Spausdinimo užduotis atšaukta: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4985509611418653372">Vykdyti</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
 <translation id="520299634122159966">Nėra pasiekiamų skaitytuvų</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
@@ -71,6 +90,8 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pasirinkite naują slaptažodį dabar</translation>
+<translation id="5372659122375744710">„Wi-Fi“ tinklas nesaugus</translation>
+<translation id="5401938042319910061">Vykdyti visas veiksmų sekas</translation>
 <translation id="5457599981699367932">Naršyti kaip svečiui</translation>
 <translation id="54609108002486618">Valdoma</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
@@ -78,15 +99,21 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6048107060512778456">Nepavyko – įstrigęs popierius</translation>
 <translation id="6058625436358447366">Norėdami užbaigti įveskite seną ir naują slaptažodžius</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
+<translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
 <translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Netinkamai sukonfigūruoti domenų pavadinimų serveriai</translation>
+<translation id="6325525973963619867">Nepavyko</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
 <translation id="6564646048574748301">Nepavyko – spausdintuvas nepasiekiamas</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
+<translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6747215703636344499">Sustabdyta – išvestis pilna</translation>
+<translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Failo tipas</translation>
@@ -94,15 +121,22 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
 <translation id="7805768142964895445">Būsena</translation>
+<translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
+<translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>
+<translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>
+<translation id="8475690821716466388">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP PSK</translation>
+<translation id="8477551185774834963">DNS delsa šiek tiek viršija leistiną slenksčio vertę</translation>
 <translation id="8668052347555487755">Spalvos režimas</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
+<translation id="8723108084122415655">Nenumatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8726019395068607495">Sustabdyta – atidarytos durelės</translation>
 <translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
+<translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>
 <translation id="8928727111548978589">Nepavyko – baigėsi popierius</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>

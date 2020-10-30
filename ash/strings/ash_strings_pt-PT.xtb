@@ -56,6 +56,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1420527829902822813">Captura de ecrã tirada e guardada na área de transferência</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1455242230282523554">Mostrar definições de idioma</translation>
+<translation id="1456407467406159627">A gravação de ecrã parou devido a conteúdo confidencial no seu ecrã.</translation>
 <translation id="1460620680449458626">O volume está desativado.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1475439723810528286">Toque em qualquer local para capturar o ecrã inteiro.</translation>
@@ -150,6 +151,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Definições locais</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Controlos de multimédia</translation>
 <translation id="2405664212338326887">Sem ligação</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
@@ -220,6 +222,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
+<translation id="3147157020428159854">Gravação de ecrã parada</translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3151786313568798007">Orientação</translation>
 <translation id="3153444934357957346">Apenas pode ter, no máximo, <ph name="MULTI_PROFILE_USER_LIMIT" /> contas no início de sessão integrado.</translation>
@@ -291,6 +294,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="380165613292957338">Olá, como posso ajudar?</translation>
 <translation id="3826099427150913765">Mudar para palavra-passe</translation>
 <translation id="383629559565718788">Mostrar definições do teclado</translation>
+<translation id="3846214748874656680">Sair do modo de ecrã inteiro</translation>
 <translation id="3846575436967432996">Não existem informações de rede disponíveis</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="385300504083504382">Início</translation>
@@ -655,7 +659,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
-<translation id="7568637526529101738">Ao clicar com o botão direito do rato ou ao manter o botão premido, o Assistente mostra-lhe informações como a definição ou a conversão de unidades para a sua seleção.</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>
 <translation id="7579778809502851308">Captura de ecrã</translation>
 <translation id="7590883480672980941">Definições de introdução</translation>
@@ -707,6 +710,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7995804128062002838">Falha ao capturar o ecrã.</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8004512796067398576">Aumentar</translation>
+<translation id="8029247720646289474">Falha na ligação à zona Wi-Fi</translation>
 <translation id="8029629653277878342">É necessário um PIN ou uma palavra-passe para uma maior segurança.</translation>
 <translation id="8030169304546394654">Desligado</translation>
 <translation id="8042893070933512245">Abrir menu de definições de acessibilidade</translation>
@@ -742,7 +746,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o telemóvel serão associados automaticamente.</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
-<translation id="8392451568018454956">Menu de opções para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Os teus pais bloquearam este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar definições de visualização</translation>
 <translation id="8425213833346101688">Alterar</translation>

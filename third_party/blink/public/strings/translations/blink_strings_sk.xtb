@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">skryť ponuku skrytých titulkov</translation>
 <translation id="1729654308190250600">Zadajte e-mailovú adresu, ktorá nie je prázdna hodnota.</translation>
 <translation id="1758486001363313524">Iné...</translation>
+<translation id="1774577460079229490">aktuál. <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">celkový čas: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">dialóg_upozornenia</translation>
 <translation id="1821985195704844674">stromová mriežka</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Hodnota musí byť <ph name="MINIMUM_DATE_OR_TIME" /> alebo neskôr.</translation>
 <translation id="2759744352195237655">kontextové tlačidlo</translation>
 <translation id="2761667185364618470">Ak chcete pokračovať, začiarknite toto políčko.</translation>
+<translation id="2838616441696617235">krok</translation>
 <translation id="2844350028562914727">podrobnosti</translation>
 <translation id="2896972712917208084">skupina prepínačov</translation>
 <translation id="2908441821576996758">Zadajte zoznam e-mailových adries oddelených čiarkou.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">panel s ponukami</translation>
 <translation id="4293574643247337246">hlavička stránky</translation>
 <translation id="4360991593054037559">Zadajte platnú hodnotu. Najbližšie platné hodnoty sú <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Tento obrázok nie je označený štítkom. Popisy obrázkov nájdete po otvorení ponuky Ďalšie možnosti vpravo hore.</translation>
 <translation id="4384583879834880242">Otázky a odpovede</translation>
 <translation id="4444765639179266822">Zrejme znamená: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">glosárový termín</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
+<translation id="4576178047100686001">Tento obrázok nie je označený štítkom. Popisy obrázkov nájdete po otvorení ponuky Ďalšie možnosti vľavo hore.</translation>
 <translation id="4597532268155981612">formulár</translation>
 <translation id="4661075872484491155">strom</translation>
 <translation id="4664250907885839816">Časť za znakom <ph name="ATSIGN" /> by nemala obsahovať symbol <ph name="INVALIDCHARACTER" />.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliografický záznam</translation>
 <translation id="4915360478455618802">Zobraziť výber času</translation>
 <translation id="492244087561876220">komentár</translation>
+<translation id="4934662370368414994">položka</translation>
 <translation id="4950364064308314478">Zobraziť výber miestneho dátumu a času</translation>
 <translation id="4971739861736909480">Vybrané: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Počet vybraných položiek: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">posúvač hlasitosti</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6023896073578205740">zoznamové pole</translation>
+<translation id="6131824478727057281">poloha</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">doslov</translation>

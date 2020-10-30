@@ -56,6 +56,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1420527829902822813">Tangkapan skrin diambil dan disimpan di papan keratan</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1455242230282523554">Tunjukkan tetapan bahasa</translation>
+<translation id="1456407467406159627">Rakaman skrin dihentikan kerana terdapat kandungan sulit pada skrin anda.</translation>
 <translation id="1460620680449458626">Kelantangan diredamkan.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1475439723810528286">Ketik mana-mana bahagian untuk menangkap skrin penuh</translation>
@@ -150,6 +151,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2369165858548251131">"Helo" dalam bahasa Cina</translation>
 <translation id="2390318262976603432">Tetapan Tempat Peristiwa</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Kawalan media</translation>
 <translation id="2405664212338326887">Tidak disambungkan</translation>
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
 <translation id="2412593942846481727">Kemas kini tersedia</translation>
@@ -220,6 +222,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Mulakan semula untuk mengemas kini</translation>
 <translation id="3139942575505304791">Meja 1</translation>
+<translation id="3147157020428159854">Rakaman skrin dihentikan</translation>
 <translation id="315116470104423982">Data mudah alih</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3153444934357957346">Anda hanya boleh memiliki sehingga <ph name="MULTI_PROFILE_USER_LIMIT" /> akaun dalam log masuk berbilang.</translation>
@@ -292,6 +295,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="380165613292957338">Hai, bagaimanakah saya boleh membantu?</translation>
 <translation id="3826099427150913765">Tukar kepada kata laluan</translation>
 <translation id="383629559565718788">Tunjukkan tetapan papan kekunci</translation>
+<translation id="3846214748874656680">Keluar dari skrin penuh</translation>
 <translation id="3846575436967432996">Tiada maklumat rangkaian tersedia</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Permulaan</translation>
@@ -656,7 +660,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Tindakan memindahkan tetingkap ke desktop lain boleh menyebabkan gelagat yang tidak dijangka. Pemberitahuan, tetingkap dan dialog yang seterusnya mungkin dipisahkan antara desktop.</translation>
-<translation id="7568637526529101738">Dengan klik kanan atau tekan lama, Assistant menunjukkan maklumat seperti takrif atau penukaran unit untuk pilihan anda.</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox didayakan</translation>
 <translation id="7579778809502851308">Tangkapan skrin</translation>
 <translation id="7590883480672980941">Tetapan input</translation>
@@ -708,6 +711,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7995804128062002838">Gagal untuk menangkap skrin</translation>
 <translation id="8000066093800657092">Tiada rangkaian</translation>
 <translation id="8004512796067398576">Kenaikan</translation>
+<translation id="8029247720646289474">Penyambungan tempat liputan gagal</translation>
 <translation id="8029629653277878342">PIN atau kata laluan diperlukan untuk meningkatkan keselamatan</translation>
 <translation id="8030169304546394654">Diputuskan sambungan</translation>
 <translation id="8042893070933512245">Buka menu tetapan kebolehaksesan</translation>
@@ -743,7 +747,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan telefon anda akan disambungkan secara automatik</translation>
 <translation id="8380784334203145311">Selamat malam,</translation>
 <translation id="8388750414311082622">Meja terakhir tidak boleh dialih keluar.</translation>
-<translation id="8392451568018454956">Menu pilihan untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Ibu/bapa anda mengunci peranti ini</translation>
 <translation id="8412677897383510995">Tunjukkan tetapan paparan</translation>
 <translation id="8425213833346101688">Tukar</translation>

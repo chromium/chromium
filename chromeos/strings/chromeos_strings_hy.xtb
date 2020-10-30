@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
+<translation id="1204296502688602597">DNS-ի հապաղում</translation>
+<translation id="1290331692326790741">Թույլ ազդանշան</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Անցախուցը պատասխանում է փինգ հարցմանը</translation>
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
+<translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
 <translation id="1734367976349034509">Այս սարքը կառավարվում է կազմակերպության կողմից</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1930797645656624981">Chrome OS-ում ներածման եղանակի ծառայություն</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
+<translation id="2364498172489649528">Անցել է ստուգում</translation>
 <translation id="2375079107209812402">Մնաց <ph name="ATTEMPTS_LEFT" /> փորձ</translation>
+<translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}one{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}other{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
+<translation id="3083667275341675831">Կապի դիագնոստիկա</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
+<translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
+<translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
 <translation id="3456078764689556234">Տպված էջ՝ <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />։</translation>
 <translation id="3459509316159669723">Տպում</translation>
 <translation id="3515615323037921860">Տպման աշխատանքներ</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
+<translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
+<translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> տիրույթը կառավարում է այս սարքը, և դրան տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
+<translation id="4378373042927530923">Չի գործարկվել</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos տոմսի գործողության ժամկետը շուտով կսպառվի</translation>
 <translation id="445059817448385655">Հին գաղտնաբառը</translation>
+<translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4548483925627140043">Ազդանշան չի գտնվել</translation>
+<translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
+<translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="4691278870498629773">Դադարեցվել է – Դարակը բացակայում է</translation>
+<translation id="469379815867856270">Ազդանշանի հզորությունը</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4773299976671772492">Դադարեցված է</translation>
 <translation id="4808449224298348341">Տպման առաջադրանքը չեղարկվեց՝ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
+<translation id="4985509611418653372">Գործարկել</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> տիրույթը կառավարում է այս օգտատիրոջը։ Այն նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="520299634122159966">Հասանելի սկաներներ չկան</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
@@ -71,6 +90,8 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
+<translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
+<translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
 <translation id="5457599981699367932">Մտնել հյուրի ռեժիմ</translation>
 <translation id="54609108002486618">Կառավարվող</translation>
 <translation id="5832805196449965646">Ավելացնել անձ</translation>
@@ -78,15 +99,21 @@
 <translation id="6048107060512778456">Չհաջողվեց տպել – Թղթի խցանում</translation>
 <translation id="6058625436358447366">Ավարտելու համար մուտքագրեք ձեր հին և նոր գաղտնաբառերը</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
+<translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
 <translation id="6146993107019042706">Ավարտելու համար մուտքագրեք ձեր նոր գաղտնաբառը</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
+<translation id="6325525973963619867">Սխալ առաջացավ</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
+<translation id="6527081081771465939">Wi-Fi-ի անվտանգության անհայտ հաղորդակարգ</translation>
 <translation id="6564646048574748301">Չհաջողվեց տպել – Տպիչն անհասանելի է</translation>
 <translation id="6620487321149975369">Տպելու առաջադրանքները կցուցադրվեն պատմության մեջ, եթե դրանք ձեռքով չեն հեռացվել</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
+<translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
+<translation id="714876143603641390">LAN-ի կապ</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
@@ -94,15 +121,22 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
+<translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
+<translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
 <translation id="8294431847097064396">Աղբյուր</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8352772353338965963">Ավելացնել հաշիվ բազմակի մուտքի համակարգում: Բոլոր մուտք գործած հաշիվները մատչելի են առանց գաղտնաբառի մուտքագրման, ուստի այս գործառույթը պետք է միայն օգտագործվի վստահելի հաշիվների հետ:</translation>
+<translation id="8364946094152050673">DNS սերվերները դատարկ են</translation>
+<translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
+<translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="8668052347555487755">Գույների ռեժիմ</translation>
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>
+<translation id="8723108084122415655">Չկանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8726019395068607495">Դադարեցվել է – Դռնակը բաց է</translation>
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
+<translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>

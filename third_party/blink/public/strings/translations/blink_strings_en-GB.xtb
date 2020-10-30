@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">hide closed captions menu</translation>
 <translation id="1729654308190250600">Please enter a non-empty email address.</translation>
 <translation id="1758486001363313524">Other...</translation>
+<translation id="1774577460079229490">current <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">total time: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialogue</translation>
 <translation id="1821985195704844674">tree grid</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Value must be <ph name="MINIMUM_DATE_OR_TIME" /> or later.</translation>
 <translation id="2759744352195237655">pop-up button</translation>
 <translation id="2761667185364618470">Please tick this box if you want to proceed.</translation>
+<translation id="2838616441696617235">step</translation>
 <translation id="2844350028562914727">details</translation>
 <translation id="2896972712917208084">radio group</translation>
 <translation id="2908441821576996758">Please enter a comma-separated list of email addresses.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">menu bar</translation>
 <translation id="4293574643247337246">page header</translation>
 <translation id="4360991593054037559">Please enter a valid value. The two nearest valid values are <ph name="VALID_VALUE_LOW" /> and <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">This image isn‘t labelled. Open the 'More options' menu at the top right to get image descriptions.</translation>
 <translation id="4384583879834880242">Q&amp;A</translation>
 <translation id="4444765639179266822">Appears to say: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">glossary reference</translation>
 <translation id="4522570452068850558">Details</translation>
+<translation id="4576178047100686001">This image isn‘t labelled. Open the 'More options' menu at the top left to get image descriptions.</translation>
 <translation id="4597532268155981612">form</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">A part following '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliography entry</translation>
 <translation id="4915360478455618802">Show time picker</translation>
 <translation id="492244087561876220">comment</translation>
+<translation id="4934662370368414994">item</translation>
 <translation id="4950364064308314478">Show local date and time picker</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> selected</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> selected</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">volume slider</translation>
 <translation id="6015796118275082299">Year</translation>
 <translation id="6023896073578205740">list box</translation>
+<translation id="6131824478727057281">location</translation>
 <translation id="6150588977291308318">bibliography</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">afterword</translation>

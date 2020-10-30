@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">сокриј го менито за затворени титли</translation>
 <translation id="1729654308190250600">Внесете адреса на е-пошта што не е празна.</translation>
 <translation id="1758486001363313524">Друго...</translation>
+<translation id="1774577460079229490">тековен избор на <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">вкупно време: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">дијалог_за_предупредување</translation>
 <translation id="1821985195704844674">мрежа на дрвото</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Вредноста мора да биде <ph name="MINIMUM_DATE_OR_TIME" /> или подоцна.</translation>
 <translation id="2759744352195237655">копче за појавен прозорец</translation>
 <translation id="2761667185364618470">Означете го полето ако сакате да продолжите.</translation>
+<translation id="2838616441696617235">чекор</translation>
 <translation id="2844350028562914727">детали</translation>
 <translation id="2896972712917208084">група на радиокопчиња</translation>
 <translation id="2908441821576996758">Внесете листа на адреси на е-пошта одвоени со запирка.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">лента за мени</translation>
 <translation id="4293574643247337246">заглавие на страницата</translation>
 <translation id="4360991593054037559">Внесете важечка вредност. Двете најблиски важечки вредности се <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Сликава нема етикета. Отворете го менито „Повеќе опции“ горе десно за да добиете описи за сликата.</translation>
 <translation id="4384583879834880242">П и О</translation>
 <translation id="4444765639179266822">Се чини дека вели: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">референца за поимник</translation>
 <translation id="4522570452068850558">Детали</translation>
+<translation id="4576178047100686001">Сликава нема етикета. Отворете го менито „Повеќе опции“ горе лево за да добиете описи за сликата.</translation>
 <translation id="4597532268155981612">образец</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Следниот дел „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">библиографски запис</translation>
 <translation id="4915360478455618802">Прикажи го избирачот за време</translation>
 <translation id="492244087561876220">коментар</translation>
+<translation id="4934662370368414994">ставка</translation>
 <translation id="4950364064308314478">Прикажи го избирачот за локален датум и време</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />, избрано</translation>
 <translation id="4975562563186953947">Избрани: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">лизгач за јачина на звук</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6023896073578205740">поле со список</translation>
+<translation id="6131824478727057281">локација</translation>
 <translation id="6150588977291308318">библиографија</translation>
 <translation id="6164829606128959761">мерач</translation>
 <translation id="6166809985690652833">поговор</translation>

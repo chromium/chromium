@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">sakrijte meni opcionalnog titla</translation>
 <translation id="1729654308190250600">Unesite imejl adresu koja nije prazna.</translation>
 <translation id="1758486001363313524">Drugo...</translation>
+<translation id="1774577460079229490">aktuelan/na <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">ukupno vreme: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">dijalog obaveštenja</translation>
 <translation id="1821985195704844674">mreža stabla</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Vrednost mora da bude <ph name="MINIMUM_DATE_OR_TIME" /> ili novija.</translation>
 <translation id="2759744352195237655">iskačuće dugme</translation>
 <translation id="2761667185364618470">Potvrdite izbor u ovom polju za potvrdu ukoliko želite da nastavite.</translation>
+<translation id="2838616441696617235">korak</translation>
 <translation id="2844350028562914727">detalji</translation>
 <translation id="2896972712917208084">grupa dugmadi za izbor</translation>
 <translation id="2908441821576996758">Unesite listu imejl adresa razdvojenih zarezima.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">traka sa menijima</translation>
 <translation id="4293574643247337246">zaglavlje stranice</translation>
 <translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Ova slika nema oznaku. Otvorite meni Još opcija u gornjem desnom uglu da biste videli opise slika.</translation>
 <translation id="4384583879834880242">Pitanja i odgovori</translation>
 <translation id="4444765639179266822">Izgleda da piše: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">referenca rečnika termina</translation>
 <translation id="4522570452068850558">Detalji</translation>
+<translation id="4576178047100686001">Ova slika nema oznaku. Otvorite meni Još opcija u gornjem levom uglu da biste videli opise slika.</translation>
 <translation id="4597532268155981612">obrazac</translation>
 <translation id="4661075872484491155">stablo</translation>
 <translation id="4664250907885839816">Deo posle „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">bibliografska stavka</translation>
 <translation id="4915360478455618802">Prikazuj birač vremena</translation>
 <translation id="492244087561876220">komentar</translation>
+<translation id="4934662370368414994">stavka</translation>
 <translation id="4950364064308314478">Prikazuj birač lokalnog datuma i vremena</translation>
 <translation id="4971739861736909480">Izabrano: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Izabrano: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">klizač za jačinu zvuka</translation>
 <translation id="6015796118275082299">Godina</translation>
 <translation id="6023896073578205740">okvir sa listom</translation>
+<translation id="6131824478727057281">lokacija</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">merač</translation>
 <translation id="6166809985690652833">pogovor</translation>

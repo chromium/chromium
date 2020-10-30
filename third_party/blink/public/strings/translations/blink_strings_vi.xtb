@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ẩn menu phụ đề chi tiết</translation>
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> hiện tại</translation>
 <translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">lưới dạng cây</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Giá trị phải là <ph name="MINIMUM_DATE_OR_TIME" /> hoặc muộn hơn.</translation>
 <translation id="2759744352195237655">nút cửa sổ bật lên</translation>
 <translation id="2761667185364618470">Vui lòng chọn hộp kiểm này nếu bạn muốn tiếp tục.</translation>
+<translation id="2838616441696617235">bước</translation>
 <translation id="2844350028562914727">chi tiết</translation>
 <translation id="2896972712917208084">nhóm radio</translation>
 <translation id="2908441821576996758">Vui lòng nhập danh sách địa chỉ email được phân cách bằng dấu phẩy.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">thanh menu</translation>
 <translation id="4293574643247337246">đầu đề trang</translation>
 <translation id="4360991593054037559">Vui lòng nhập giá trị hợp lệ. Hai giá trị hợp lệ gần nhất là <ph name="VALID_VALUE_LOW" /> và <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Hình ảnh này chưa được gắn nhãn. Hãy mở trình đơn Tùy chọn khác ở trên cùng bên phải để xem thông tin mô tả hình ảnh.</translation>
 <translation id="4384583879834880242">Hỏi và đáp</translation>
 <translation id="4444765639179266822">Có vẻ như nội dung là: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">tham chiếu bảng thuật ngữ</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
+<translation id="4576178047100686001">Hình ảnh này chưa được gắn nhãn. Hãy mở trình đơn Tùy chọn khác ở trên cùng bên trái để xem thông tin mô tả hình ảnh.</translation>
 <translation id="4597532268155981612">biểu mẫu</translation>
 <translation id="4661075872484491155">cây</translation>
 <translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">mục nhập danh mục</translation>
 <translation id="4915360478455618802">Hiển thị bộ chọn giờ</translation>
 <translation id="492244087561876220">nhận xét</translation>
+<translation id="4934662370368414994">mục</translation>
 <translation id="4950364064308314478">Hiển thị bộ chọn ngày và giờ địa phương</translation>
 <translation id="4971739861736909480">Đã chọn <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Đã chọn <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">thanh trượt âm lượng</translation>
 <translation id="6015796118275082299">Năm</translation>
 <translation id="6023896073578205740">hộp danh sách</translation>
+<translation id="6131824478727057281">vị trí</translation>
 <translation id="6150588977291308318">danh mục</translation>
 <translation id="6164829606128959761">thước đo</translation>
 <translation id="6166809985690652833">lời bạt</translation>

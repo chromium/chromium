@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Бас тартылды</translation>
 <translation id="1075811647922107217">Бет өлшемі</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
+<translation id="1204296502688602597">DNS кідірісі</translation>
+<translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Шлюздің байланысын тексеруге болады</translation>
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
+<translation id="1706391837335750954">DNS түрлендіргіші бар</translation>
 <translation id="1734367976349034509">Бұл құрылғыны ұйым басқарады</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
 <translation id="1930797645656624981">Chrome OS енгізу әдісі қызметі</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
 <translation id="2338501278241028356">Маңайдағы құрылғыларды табу үшін Bluetooth функциясын қосыңыз</translation>
+<translation id="2364498172489649528">Сынақтан өтті</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> мүмкіндік қалды</translation>
+<translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
+<translation id="3083667275341675831">Байланыс диагностикасы</translation>
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
+<translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
+<translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
 <translation id="3515615323037921860">Баспа жұмыстары</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
+<translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3749289110408117711">Файл атауы</translation>
 <translation id="38114475217616659">Тарихты толығымен тазалау</translation>
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
 <translation id="3838338534323494292">Жаңа құпия сөз</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
+<translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="4003384961948020559">Сәтсіз: шығыс науа толып кеткен</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
+<translation id="4378373042927530923">Іске қосылмаған</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos билетінің жарамдылық мерзімі жақында аяқталады</translation>
 <translation id="445059817448385655">Ескі құпия сөз</translation>
+<translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="4548483925627140043">Сигнал жоқ.</translation>
+<translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
+<translation id="4646949265910132906">Қорғалған Wi-Fi байланысы</translation>
 <translation id="467510802200863975">Құпия сөздер сәйкес келмейді.</translation>
 <translation id="4691278870498629773">Тоқтатылды: науа жоқ</translation>
+<translation id="469379815867856270">Сигнал күші</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
 <translation id="4932733599132424254">Күні</translation>
+<translation id="4985509611418653372">Іске қосу</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> бұл пайдаланушыны басқарады және параметрлер мен пайдаланушы әрекеттерін қашықтан бақылай алады.</translation>
 <translation id="520299634122159966">Қолжетімді сканерлер жоқ.</translation>
 <translation id="5212543919916444558">Экранда мен көмектесе алатын ештеңе жоқ. Микрофон белгішесін түртіп, маған сұрақ қойыңыз.</translation>
@@ -70,6 +89,8 @@
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Жаңа құпия сөз енгізіңіз.</translation>
+<translation id="5372659122375744710">WiFi желісі қауіпсіз емес.</translation>
+<translation id="5401938042319910061">Барлық әрекеттер тізімін іске қосу</translation>
 <translation id="5457599981699367932">Қонақ ретінде шолу</translation>
 <translation id="54609108002486618">Басқарылады</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
@@ -77,15 +98,21 @@
 <translation id="6048107060512778456">Сәтсіз: қағаз кептеліп қалды</translation>
 <translation id="6058625436358447366">Аяқтау үшін ескі және жаңа құпия сөздерді енгізіңіз.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
+<translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Атау серверлері форматы дұрыс емес.</translation>
+<translation id="6325525973963619867">Қате шықты</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
 <translation id="6517239166834772319">Шолу</translation>
+<translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
 <translation id="6564646048574748301">Сәтсіз: принтер қолжетімді емес</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
+<translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
+<translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файл түрі</translation>
@@ -93,15 +120,22 @@
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7805768142964895445">Күйі</translation>
+<translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше есептік жазбаға кіру үшін есептік жазба қосыңыз. Барлық кірілген есептік жазбаларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді есептік жазбалар пайдалануы тиіс.</translation>
+<translation id="8364946094152050673">Атау серверлері бос.</translation>
+<translation id="8475690821716466388">WiFi желісі WEP PSK әлсіз протоколымен қорғалған.</translation>
+<translation id="8477551185774834963">DNS кідірісі рұқсат етілетін шектен сәл жоғары.</translation>
 <translation id="8668052347555487755">Түс режимі</translation>
 <translation id="871560550817059752">Сәтсіз: сия бітіп қалды</translation>
+<translation id="8723108084122415655">Әдепкі емес желі кідірісі шекті мәннен асады.</translation>
 <translation id="8726019395068607495">Тоқтатылды: есігі ашық</translation>
 <translation id="8747900814994928677">Өзгерісті растау</translation>
+<translation id="8910721771319628100">Әдепкі желі кідірісі шекті мәннен асады.</translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>

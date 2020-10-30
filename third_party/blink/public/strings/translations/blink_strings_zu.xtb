@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">fihla imenyu yamazwibela avaliwe</translation>
 <translation id="1729654308190250600">Sicela ufake ikheli le imeyili elinokuthile.</translation>
 <translation id="1758486001363313524">Okunye...</translation>
+<translation id="1774577460079229490">i-<ph name="TYPE" /> yamanje</translation>
 <translation id="1787192514241997742">isikhathi esiphelele: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ingxoxo_yokwazisa</translation>
 <translation id="1821985195704844674">igridi yesihlahla</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Inani kumele libe ngomhla ka-<ph name="MINIMUM_DATE_OR_TIME" /> noma emuva kwalokho.</translation>
 <translation id="2759744352195237655">inkinobho ezivelelayo</translation>
 <translation id="2761667185364618470">Sicela uthikhe leli bhokisi uma ufuna ukuqhubeka.</translation>
+<translation id="2838616441696617235">isinyathelo</translation>
 <translation id="2844350028562914727">imininingwane</translation>
 <translation id="2896972712917208084">iqembu lerediyo</translation>
 <translation id="2908441821576996758">Sicela ufake uhlu oluhlukaniswa ngukhefana lwamakheli we-imeyili.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">ibha yemenyu</translation>
 <translation id="4293574643247337246">phezulu ekhasini</translation>
 <translation id="4360991593054037559">Sicela ufake inani elivumelekile. Amanani amabili avumelekile asondele kakhulu ngu-<ph name="VALID_VALUE_LOW" /> no-<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Lesi sithombe asilebuliwe. Vula imenyu Yezinketho Eziningi phezulu ngakwesokudla ukuze uthole izincazelo zesithombe.</translation>
 <translation id="4384583879834880242">I-Q&amp;A</translation>
 <translation id="4444765639179266822">Ibonakala ithi: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ireferensi yeglosari</translation>
 <translation id="4522570452068850558">Imininingwane</translation>
+<translation id="4576178047100686001">Lesi sithombe asilebuliwe. Vula imenyu Yezinketho Eziningi phezulu ngakwesokunxele ukuze uthole izincazelo zesithombe.</translation>
 <translation id="4597532268155981612">ifomu</translation>
 <translation id="4661075872484491155">isihlahla</translation>
 <translation id="4664250907885839816">Ingxenye elandelai-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ukufakwa kwe-bibliography</translation>
 <translation id="4915360478455618802">Bonisa isikhi sesikhathi</translation>
 <translation id="492244087561876220">amazwana</translation>
+<translation id="4934662370368414994">into</translation>
 <translation id="4950364064308314478">Bonisa idatha yasendaweni nesikhi sesikhathi</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />okukhethiwe</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> okukhethiwe</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">isilayida sevolumu</translation>
 <translation id="6015796118275082299">Unyaka</translation>
 <translation id="6023896073578205740">ibhokisi lohlu</translation>
+<translation id="6131824478727057281">indawo</translation>
 <translation id="6150588977291308318">i-bibliography</translation>
 <translation id="6164829606128959761">imitha</translation>
 <translation id="6166809985690652833">amazwi angemuva</translation>

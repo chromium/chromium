@@ -56,6 +56,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1420527829902822813">Utworzono zrzut ekranu i zapisano go w schowku</translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
+<translation id="1456407467406159627">Nagrywanie ekranu zostało zatrzymane z powodu wyświetlenia treści poufnych.</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="1475439723810528286">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
@@ -150,6 +151,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
 <translation id="2390318262976603432">Ustawienia języka</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Sterowanie multimediami</translation>
 <translation id="2405664212338326887">Brak połączenia</translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
@@ -220,6 +222,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Uruchom ponownie i zaktualizuj</translation>
 <translation id="3139942575505304791">Biurko 1</translation>
+<translation id="3147157020428159854">Nagrywanie ekranu zostało zatrzymane</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3151786313568798007">Orientacja</translation>
 <translation id="3153444934357957346">W wielokrotnym logowaniu nie możesz mieć więcej kont niż <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
@@ -291,6 +294,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
+<translation id="3846214748874656680">Zamknij pełny ekran</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
@@ -655,7 +659,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
-<translation id="7568637526529101738">Gdy klikniesz prawym przyciskiem lub przytrzymasz zaznaczony na ekranie fragment, Asystent poda Ci związane z nim informacje, takie jak definicja lub przeliczenie jednostek.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
@@ -707,6 +710,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7995804128062002838">Nie udało się zrobić zrzutu ekranu</translation>
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8004512796067398576">Zwiększ</translation>
+<translation id="8029247720646289474">Nie udało się nawiązać połączenia z hotspotem</translation>
 <translation id="8029629653277878342">Dla większego bezpieczeństwa musisz podać kod PIN lub hasło</translation>
 <translation id="8030169304546394654">Rozłączone</translation>
 <translation id="8042893070933512245">Otwórz menu ustawień ułatwień dostępu</translation>
@@ -742,7 +746,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8375916635258623388">To urządzenie <ph name="DEVICE_NAME" /> i Twój telefon będą się łączyć automatycznie</translation>
 <translation id="8380784334203145311">Dobranoc,</translation>
 <translation id="8388750414311082622">Ostatniego biurka nie można usunąć.</translation>
-<translation id="8392451568018454956">Menu opcji dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Twój rodzic zablokował urządzenie</translation>
 <translation id="8412677897383510995">Pokaż ustawienia wyświetlania</translation>
 <translation id="8425213833346101688">Zmień</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Farer klaviaturasi</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ta fayl oflaynga nusxalanmoqda</translation>
 <translation id="1646136617204068573">Venger klaviaturasi</translation>
 <translation id="164729547906544836">Tamil klaviaturasi (itrans)</translation>
 <translation id="164969095109328410">Chrome qurilmasi</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">AQSH (xalqaro)</translation>
 <translation id="2562685439590298522">Hujjatlar</translation>
 <translation id="2563185590376525700">Qurbaqa</translation>
+<translation id="2572501073504669105">Fayllarni internetsiz ochish uchun oflaynga nusxalashingiz mumkin.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
 <translation id="2620090360073999360">Ayni paytda Google Disk ish faoliyatida emas.</translation>
 <translation id="2638942478653899953">Google Drive‘ga ulanib bo‘lmadi. Iltimos, <ph name="BEGIN_LINK" />tizimdan chiqing<ph name="END_LINK" /> va qaytadan kiring.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Fayl joylashuvi</translation>
 <translation id="2672394958563893062">Xatolik yuz berdi. Boshidan boshlash uchun bosing.</translation>
 <translation id="2676946222714718093">Qurilma:</translation>
+<translation id="2735623501230989521">Parallels Desktopga <ph name="FOLDER_NAME" /> jildidagi fayllarni ochishga ruxsat berish</translation>
 <translation id="2735698359135166290">Rumin standart klaviaturasi</translation>
 <translation id="2771816809568414714">Pishloq</translation>
 <translation id="2781645665747935084">Belgiya</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint taqdimoti</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktopga Google Drive omboringizdagi fayllarni ochishga ruxsat bering. Oʻzgarishlar boshqa qurilmalaringizga sinxronlanadi.</translation>
 <translation id="4801956050125744859">Ikkala versiya qolsin</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Qurilma faqat o‘qish rejimida</translation>
@@ -608,11 +612,14 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7505167922889582512">Yashirin fayllarni ko‘rsatish</translation>
 <translation id="7508545000531937079">Slayd-shou</translation>
 <translation id="751507702149411736">Belarus tilida</translation>
+<translation id="7544830582642184299">Parallels Desktopga Google Drive omboringizdagi fayllarni ochishga ruxsat bering. Oʻzgarishlar boshqa qurilmalaringizga sinxronlanadi.</translation>
 <translation id="7544853251252956727">Tasodifiy</translation>
 <translation id="7547811415869834682">Golland tili</translation>
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
+<translation id="7553492409867692754">Linux ilovalarga <ph name="FOLDER_NAME" /> jildidagi fayllarini ochishga ruxsat berish</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Kutib turing...</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> fayli oflaynga nusxalanmoqda</translation>
 <translation id="7603724359189955920">To‘r</translation>
 <translation id="7627790789328695202">“<ph name="FILE_NAME" />” fayli allaqachon mavjud. Boshqa nom berib qaytadan urinib ko‘ring.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% bajarildi.</translation>

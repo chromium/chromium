@@ -56,6 +56,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1420527829902822813">Skjermdumpen er tatt og lagret på utklippstavlen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Vis språkinnstillinger</translation>
+<translation id="1456407467406159627">Skjermopptaket ble stanset på grunn av konfidensielt innhold på skjermen.</translation>
 <translation id="1460620680449458626">Lyden er dempet.</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1475439723810528286">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
@@ -150,6 +151,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2405664212338326887">Ikke tilkoblet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
@@ -220,6 +222,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Start på nytt for å oppdatere</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
+<translation id="3147157020428159854">Skjermopptaket er stanset</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3153444934357957346">Du kan bare ha opptil <ph name="MULTI_PROFILE_USER_LIMIT" /> kontoer i multipålogging.</translation>
@@ -291,6 +294,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="380165613292957338">Hei! Hva kan jeg hjelpe deg med?</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383629559565718788">Vis tastaturinnstillinger</translation>
+<translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
 <translation id="3846575436967432996">Ingen nettverksinformasjon tilgjengelig</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="385300504083504382">Begynnelsen</translation>
@@ -655,7 +659,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
 <translation id="7564874036684306347">Flytting av vinduer til et annet skrivebord kan føre til uventet atferd. Følgende varsler, vinduer og dialogbokser kan bli delt mellom skrivebordene.</translation>
-<translation id="7568637526529101738">Med et høyreklikk eller langt trykk viser assistenten informasjon, som for eksempel definisjonen eller enhetsomregningen for det du har merket.</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er slått på</translation>
 <translation id="7579778809502851308">Skjermdump</translation>
 <translation id="7590883480672980941">Inndatainnstillinger</translation>
@@ -707,6 +710,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7995804128062002838">Kunne ikke ta opp skjermen</translation>
 <translation id="8000066093800657092">Ingen nettverk</translation>
 <translation id="8004512796067398576">Øk</translation>
+<translation id="8029247720646289474">Tilkoblingen til Wi-Fi-sonen mislyktes</translation>
 <translation id="8029629653277878342">PIN-kode eller passord kreves for mer sikkerhet</translation>
 <translation id="8030169304546394654">Frakoblet</translation>
 <translation id="8042893070933512245">Åpne menyen for tilgjengelighetsinnstillinger</translation>
@@ -742,7 +746,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> og telefonen din kobles sammen automatisk</translation>
 <translation id="8380784334203145311">God natt</translation>
 <translation id="8388750414311082622">Det siste skrivebordet kan ikke fjernes.</translation>
-<translation id="8392451568018454956">Alternativmenyen for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Forelderen din har låst denne enheten</translation>
 <translation id="8412677897383510995">Vis skjerminnstillinger</translation>
 <translation id="8425213833346101688">Endre</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ଫାରୋଇଜ୍‍ କୀବୋର୍ଡ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" />ଟି ଫାଇଲକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
 <translation id="1646136617204068573">ହଙ୍ଗେରୀଅନ୍ କୀବୋର୍ଡ</translation>
 <translation id="164729547906544836">ତାମିଲ୍‌ କୀବୋର୍ଡ (itrans)</translation>
 <translation id="164969095109328410">Chrome ଡିଭାଇସ୍</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US ଆନ୍ତର୍ଜାତିକ</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ବେଙ୍ଗ</translation>
+<translation id="2572501073504669105">ଯେତେବେଳେ ଆପଣଙ୍କ ପାଖରେ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ନଥାଏ, ସେତେବେଳେ ଆପଣ ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିପାରିବେ।</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ଭିଡିଓ</translation>
 <translation id="2620090360073999360">ଏହି ସମୟରେ Google Driveରେ ପହଞ୍ଚି ହେବ ନାହିଁ।</translation>
 <translation id="2638942478653899953">Google Drive ପର୍ଯ୍ୟନ୍ତ ପହଞ୍ଚିହେଲା ନାହିଁ। ଦୟାକରି <ph name="BEGIN_LINK" />ଲଗ୍‌ ଆଉଟ୍‍<ph name="END_LINK" /> ଏବଂ ଫେରି ଲଗ୍‍ ଇନ୍‍ କରନ୍ତୁ।</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ଫାଇଲ୍ ଲୋକେସନ୍</translation>
 <translation id="2672394958563893062">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। ଆରମ୍ଭରୁ ପୁଣିଥରେ ଚଲାଇବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2676946222714718093">ଏଥିରେ ଚାଲୁଛି</translation>
+<translation id="2735623501230989521">Parallels Desktopକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2735698359135166290">ରୋମାନିୟାନ୍ ସାଧାରଣ କୀ'ବୋର୍ଡ</translation>
 <translation id="2771816809568414714">ଚିଜ୍</translation>
 <translation id="2781645665747935084">ବେଲ୍‍ଜିଆନ୍</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ଓନିଗିରି</translation>
 <translation id="4784330909746505604">PowerPoint ଉପସ୍ଥାପନା</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktopକୁ ଆପଣଙ୍କ Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ୍ ହୋଇଯିବ।</translation>
 <translation id="4801956050125744859">ଉଭୟ ରଖନ୍ତୁ</translation>
 <translation id="4804827417948292437">ଆଭୋକାଡୋ</translation>
 <translation id="4823651846660089135">ଡିଭାଇସ୍‌ କେବଳ ପଢ଼ିବା ପାଇଁ ଅଟେ</translation>
@@ -603,11 +607,14 @@
 <translation id="7505167922889582512">ଲୁଚିଥିବା ଫାଇଲ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="7508545000531937079">ସ୍ଲାଇଡ୍ ଶୋ</translation>
 <translation id="751507702149411736">ବେଲାରଷୀୟ</translation>
+<translation id="7544830582642184299">ଆପଣଙ୍କର Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ Linux ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ୍ ହୋଇଯିବ।</translation>
 <translation id="7544853251252956727">ଅଦଳବଦଳ</translation>
 <translation id="7547811415869834682">ଡଚ୍</translation>
 <translation id="7551643184018910560">ସେଲ୍ଫରେ ପିନ୍‌ କରନ୍ତୁ</translation>
+<translation id="7553492409867692754">Linux ଆପ୍ସକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ଗୋଟିଏ ସେକେଣ୍ଡ ଅପେକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
 <translation id="7603724359189955920">ଗ୍ରିଡ୍ସ</translation>
 <translation id="7627790789328695202">ଓହୋଃ, <ph name="FILE_NAME" /> ପୂର୍ବରୁ ଅଛି। ଏହାକୁ ରିନେମ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">隐藏字幕菜单</translation>
 <translation id="1729654308190250600">请输入有效的电子邮件地址。</translation>
 <translation id="1758486001363313524">其他...</translation>
+<translation id="1774577460079229490">当前<ph name="TYPE" /></translation>
 <translation id="1787192514241997742">总时间：<ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">提醒对话框</translation>
 <translation id="1821985195704844674">树状网格</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">指定的值不得早于<ph name="MINIMUM_DATE_OR_TIME" />。</translation>
 <translation id="2759744352195237655">弹出式按钮</translation>
 <translation id="2761667185364618470">如果要继续，请选中此框。</translation>
+<translation id="2838616441696617235">步骤</translation>
 <translation id="2844350028562914727">详细信息</translation>
 <translation id="2896972712917208084">单选按钮组</translation>
 <translation id="2908441821576996758">请输入用逗号分隔的电子邮件地址的列表。</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">菜单栏</translation>
 <translation id="4293574643247337246">页首</translation>
 <translation id="4360991593054037559">请输入有效值。两个最接近的有效值分别为<ph name="VALID_VALUE_LOW" />和<ph name="VALID_VALUE_HIGHER" />。</translation>
+<translation id="4384249794467006333">此图片未加标签。打开右上角的“更多选项”菜单即可获取图片说明。</translation>
 <translation id="4384583879834880242">问答</translation>
 <translation id="4444765639179266822">似乎是说：<ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">词汇表参考资料</translation>
 <translation id="4522570452068850558">详细信息</translation>
+<translation id="4576178047100686001">此图片未加标签。打开左上角的“更多选项”菜单即可获取图片说明。</translation>
 <translation id="4597532268155981612">表单</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">“<ph name="ATSIGN" />”后面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">参考书目</translation>
 <translation id="4915360478455618802">显示时间选择器</translation>
 <translation id="492244087561876220">评论</translation>
+<translation id="4934662370368414994">条目</translation>
 <translation id="4950364064308314478">显示当地日期和时间选择器</translation>
 <translation id="4971739861736909480">已选择“<ph name="ACCNAME" />”</translation>
 <translation id="4975562563186953947">选择了<ph name="SELECTED_COUNT" />项</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">音量滑块</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6023896073578205740">列表框</translation>
+<translation id="6131824478727057281">位置</translation>
 <translation id="6150588977291308318">参考书目</translation>
 <translation id="6164829606128959761">计量条</translation>
 <translation id="6166809985690652833">后记</translation>

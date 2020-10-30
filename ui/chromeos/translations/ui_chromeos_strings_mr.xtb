@@ -65,6 +65,7 @@
 <translation id="158809615184981282">फारोसे कीबोर्ड</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फाइल ऑफलाइन उपलब्ध करत आहे</translation>
 <translation id="1646136617204068573">हंगेरियन कीबोर्ड</translation>
 <translation id="164729547906544836">तामिळ कीबोर्ड (itrans)</translation>
 <translation id="164969095109328410">Chrome डिव्हाइस</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">बेडूक</translation>
+<translation id="2572501073504669105">तुमच्याकडे इंटरनेट कनेक्शन नसते तेव्हा तुम्ही फाइल ॲक्सेस करण्यासाठी त्या ऑफलाइन उपलब्ध करू शकता.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> व्हिडिओ</translation>
 <translation id="2620090360073999360">Google ड्राइव्ह यावेळी पोहोचू शकत नाही.</translation>
 <translation id="2638942478653899953">Google ड्राइव्ह पर्यंत पोहोचणे शक्य नाही. कृपया <ph name="BEGIN_LINK" />लॉग आउट करा<ph name="END_LINK" /> आणि परत लॉग इन करा.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">फाइलचे स्थान</translation>
 <translation id="2672394958563893062">एरर आली. सुरवातीपासून रीस्टार्ट करण्यासाठी क्लिक करा.</translation>
 <translation id="2676946222714718093">यावर प्ले होत आहे</translation>
+<translation id="2735623501230989521">Parallels Desktop ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="2735698359135166290">रोमेनियन मानक कीबोर्ड</translation>
 <translation id="2771816809568414714">चीज</translation>
 <translation id="2781645665747935084">बेल्जियन</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint सादरीकरण</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktop ला तुमच्या Google Drive मधील फाइल ॲक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="4801956050125744859">दोन्ही ठेवा</translation>
 <translation id="4804827417948292437">ॲव्होकॅडो</translation>
 <translation id="4823651846660089135">डिव्हाइस केवळ वाचनीय आहे</translation>
@@ -609,11 +613,14 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7505167922889582512">लपविलेल्या फाइल दर्शवा</translation>
 <translation id="7508545000531937079">स्लाइडशो</translation>
 <translation id="751507702149411736">बेलारुशियन</translation>
+<translation id="7544830582642184299">Linux ॲप्सना तुमच्या Google Drive मधील फाइल ॲक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="7544853251252956727">शफल करा</translation>
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
+<translation id="7553492409867692754">Linux अ‍ॅप्सना <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">फक्त एक सेकंद प्रतीक्षा करा</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> ऑफलाइन उपलब्ध करत आहे</translation>
 <translation id="7603724359189955920">ग्रिड</translation>
 <translation id="7627790789328695202">अरेरे, <ph name="FILE_NAME" /> आधीपासून अस्तित्वात आहे. हे पुनर्नामित करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% पूर्ण झाले.</translation>

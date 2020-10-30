@@ -56,6 +56,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1420527829902822813">Screenshot taken and saved to clipboard</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1455242230282523554">Show language settings</translation>
+<translation id="1456407467406159627">Screen recording stopped due to confidential content on your screen.</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="1475439723810528286">Tap anywhere to capture full screen</translation>
@@ -150,6 +151,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2390318262976603432">Locale settings</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Media controls</translation>
 <translation id="2405664212338326887">Not connected</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
@@ -220,6 +222,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139942575505304791">Desk 1</translation>
+<translation id="3147157020428159854">Screen recording stopped</translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3153444934357957346">You can only have up to <ph name="MULTI_PROFILE_USER_LIMIT" /> accounts in multiple sign-in.</translation>
@@ -291,6 +294,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="380165613292957338">Hi, how can I help?</translation>
 <translation id="3826099427150913765">Switch to password</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
+<translation id="3846214748874656680">Exit full screen</translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
@@ -655,7 +659,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="7551643184018910560">Pin to shelf</translation>
 <translation id="7561982940498449837">Close menu</translation>
 <translation id="7564874036684306347">Moving windows to another desktop may result in unexpected behaviour. Subsequent notifications, windows and dialogues may be split between desktops.</translation>
-<translation id="7568637526529101738">With a right-click or a long press, Assistant shows info such as the definition or unit conversion for your selection.</translation>
 <translation id="7569509451529460200">Braille and ChromeVox are enabled</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7590883480672980941">Input settings</translation>
@@ -707,6 +710,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7995804128062002838">Failed to capture screen</translation>
 <translation id="8000066093800657092">No network</translation>
 <translation id="8004512796067398576">Increment</translation>
+<translation id="8029247720646289474">Hotspot connection failed</translation>
 <translation id="8029629653277878342">PIN or password required for more security</translation>
 <translation id="8030169304546394654">Disconnected</translation>
 <translation id="8042893070933512245">Open accessibility settings menu</translation>
@@ -742,7 +746,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8375916635258623388">This <ph name="DEVICE_NAME" /> and your phone will connect automatically</translation>
 <translation id="8380784334203145311">Good night,</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>
-<translation id="8392451568018454956">Options menu for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
 <translation id="8412677897383510995">Show display settings</translation>
 <translation id="8425213833346101688">Change</translation>

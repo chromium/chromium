@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">બંધ કરેલું ઉપશીર્ષક મેનૂ છુપાવો</translation>
 <translation id="1729654308190250600">કૃપા કરીને ખાલી ન હોય એવું ઇમેઇલ ઍડ્રેસ દાખલ કરો.</translation>
 <translation id="1758486001363313524">અન્ય...</translation>
+<translation id="1774577460079229490">વર્તમાન <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">કુલ સમય: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ચેતવણી_સંવાદ</translation>
 <translation id="1821985195704844674">ટ્રી ગ્રિડ</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">મૂલ્ય <ph name="MINIMUM_DATE_OR_TIME" /> અથવા પછીનું હોવું આવશ્યક છે.</translation>
 <translation id="2759744352195237655">પૉપ-અપ બટન</translation>
 <translation id="2761667185364618470">જો તમે આગળ વધવા માંગતા હો તો કૃપા કરીને આ બૉક્સને ચેક કરો.</translation>
+<translation id="2838616441696617235">પગલું</translation>
 <translation id="2844350028562914727">વિગતો</translation>
 <translation id="2896972712917208084">રેડિઓ જૂથ</translation>
 <translation id="2908441821576996758">કૃપા કરીને અલ્પવિરામથી વિભાજિત ઇમેઇલ સરનામાંઓની સૂચિ દાખલ કરો.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">મેનૂ બાર</translation>
 <translation id="4293574643247337246">પેજ હેડર</translation>
 <translation id="4360991593054037559">કૃપા કરીને એક માન્ય મૂલ્ય દાખલ કરો. બે નિકટતમ માન્ય મૂલ્યો <ph name="VALID_VALUE_LOW" /> અને <ph name="VALID_VALUE_HIGHER" /> છે.</translation>
+<translation id="4384249794467006333">આ છબીને લેબલ કરવામાં આવી નથી. છબીનું વર્ણન મેળવવા માટે ઉપર જમણી બાજુએ વધુ વિકલ્પોનું મેનૂ ખોલો.</translation>
 <translation id="4384583879834880242">પ્રશ્ન અને જવાબ</translation>
 <translation id="4444765639179266822">આવું બોલતા જણાય છે: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">શબ્દાવલીનો સંદર્ભ</translation>
 <translation id="4522570452068850558">વિગતો</translation>
+<translation id="4576178047100686001">આ છબીને લેબલ કરવામાં આવી નથી. છબીનું વર્ણન મેળવવા માટે ઉપર ડાબી બાજુએ વધુ વિકલ્પોનું મેનૂ ખોલો.</translation>
 <translation id="4597532268155981612">ફોર્મ</translation>
 <translation id="4661075872484491155">ટ્રી</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ને અનુસરી રહેલા ભાગમાં '<ph name="INVALIDCHARACTER" />' પ્રતીક શામેલ હોવું જોઈએ નહીં.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ગ્રંથસૂચિની એન્ટ્રી</translation>
 <translation id="4915360478455618802">સમય પિકર બતાવો</translation>
 <translation id="492244087561876220">કૉમેન્ટ</translation>
+<translation id="4934662370368414994">આઇટમ</translation>
 <translation id="4950364064308314478">સ્થાનિક તારીખ અને સમય પિકર બતાવો</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />ની પસંદગી કરી</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> પસંદ કર્યા</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">વોલ્યુમ સ્લાઇડર</translation>
 <translation id="6015796118275082299">વર્ષ</translation>
 <translation id="6023896073578205740">સૂચિ બૉક્સ</translation>
+<translation id="6131824478727057281">સ્થાન</translation>
 <translation id="6150588977291308318">ગ્રંથસૂચિ</translation>
 <translation id="6164829606128959761">મીટર</translation>
 <translation id="6166809985690652833">સમાપન ભાષણ</translation>

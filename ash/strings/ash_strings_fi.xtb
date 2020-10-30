@@ -56,6 +56,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1420527829902822813">Kuvakaappaus otettu ja tallennettu leikepöydälle</translation>
 <translation id="1426410128494586442">Kyllä</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
+<translation id="1456407467406159627">Näytön tallennus loppui, koska näytöllä on luottamuksellista sisältöä.</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="1475439723810528286">Ota kuvakaappaus koko ruudusta koskettamalla minne tahansa</translation>
@@ -150,6 +151,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2369165858548251131">"Hei" kiinaksi</translation>
 <translation id="2390318262976603432">Kieli- ja maa-asetukset</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Mediaohjaimet</translation>
 <translation id="2405664212338326887">Ei yhdistetty</translation>
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
@@ -220,6 +222,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Päivitä käynnistämällä uudelleen</translation>
 <translation id="3139942575505304791">Pöytä 1</translation>
+<translation id="3147157020428159854">Näytön tallennus lopetettu</translation>
 <translation id="315116470104423982">Mobiilitiedonsiirto</translation>
 <translation id="3151786313568798007">Suunta</translation>
 <translation id="3153444934357957346">Voit lisätä enintään <ph name="MULTI_PROFILE_USER_LIMIT" /> tiliä useille tileille kirjautumista varten.</translation>
@@ -291,6 +294,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="380165613292957338">Hei. Kuinka voin auttaa?</translation>
 <translation id="3826099427150913765">Vaihda salasanan käyttöön</translation>
 <translation id="383629559565718788">Näytä näppäimistöasetukset</translation>
+<translation id="3846214748874656680">Sulje koko näytön tila.</translation>
 <translation id="3846575436967432996">Verkon tietoja ei saatavilla</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="385300504083504382">Alku</translation>
@@ -657,7 +661,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
-<translation id="7568637526529101738">Kun klikkaat jotain kakkospainikkeella tai painat sitä pitkään, Assistant näyttää valintaasi liittyviä tietoja, kuten määritelmän tai yksikkömuunnoksen.</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>
 <translation id="7590883480672980941">Syöttöasetukset</translation>
@@ -709,6 +712,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7995804128062002838">Kuvakaappaus epäonnistui</translation>
 <translation id="8000066093800657092">Ei verkkoa</translation>
 <translation id="8004512796067398576">Lisää</translation>
+<translation id="8029247720646289474">Ei hotspot-yhteyttä</translation>
 <translation id="8029629653277878342">PIN-koodi tai salasana vaaditaan suojauksen parantamiseksi</translation>
 <translation id="8030169304546394654">Yhteys katkaistu</translation>
 <translation id="8042893070933512245">Avaa Esteettömyysasetukset-valikko</translation>
@@ -744,7 +748,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> muodostaa yhteyden puhelimeesi automaattisesti</translation>
 <translation id="8380784334203145311">Hyvää yötä</translation>
 <translation id="8388750414311082622">Viimeistä työpöytää ei voi poistaa.</translation>
-<translation id="8392451568018454956">Tilin <ph name="USER_EMAIL_ADDRESS" /> vaihtoehtovalikko</translation>
 <translation id="8394567579869570560">Vanhempasi lukitsi tämän laitteen</translation>
 <translation id="8412677897383510995">Näytä näyttöasetukset</translation>
 <translation id="8425213833346101688">Vaihda</translation>

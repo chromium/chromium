@@ -56,6 +56,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1420527829902822813">Ekraanipilt jäädvustati ja salvestati lõikelauale</translation>
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
+<translation id="1456407467406159627">Ekraanikuva salvestamine peatati, kuna ekraanil kuvati konfidentsiaalset sisu.</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="1475439723810528286">Täisekraani jäädvustamiseks puudutage ekraanikuval kus tahes</translation>
@@ -150,6 +151,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2369165858548251131">„Tere” hiina keeles</translation>
 <translation id="2390318262976603432">Lokaadi seaded</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Meedia juhtnupud</translation>
 <translation id="2405664212338326887">Ühendus puudub</translation>
 <translation id="2408955596600435184">Sisestage PIN-kood</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
@@ -220,6 +222,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Taaskäivitage värskendamiseks</translation>
 <translation id="3139942575505304791">Töölaud 1</translation>
+<translation id="3147157020428159854">Ekraanikuva salvestamine on peatatud</translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3151786313568798007">Suund</translation>
 <translation id="3153444934357957346">Saate korraga sisse logida kuni <ph name="MULTI_PROFILE_USER_LIMIT" /> kontole.</translation>
@@ -292,6 +295,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="380165613292957338">Tere! Kuidas saan aidata?</translation>
 <translation id="3826099427150913765">Kasuta parooli</translation>
 <translation id="383629559565718788">Kuvab klaviatuuriseaded</translation>
+<translation id="3846214748874656680">Täisekraanilt väljumine</translation>
 <translation id="3846575436967432996">Võrguteave ei ole saadaval</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="385300504083504382">Algus</translation>
@@ -656,7 +660,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7551643184018910560">Riiulile kinnitamine</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
-<translation id="7568637526529101738">Paremkliki või pika vajutusega kuvab assistent teavet, näiteks teie valitud üksuse definitsiooni või ühiku teisenduse.</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>
 <translation id="7590883480672980941">Sisendi seaded</translation>
@@ -708,6 +711,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7995804128062002838">Ekraanikuva jäädvustamine ebaõnnestus</translation>
 <translation id="8000066093800657092">Võrku pole</translation>
 <translation id="8004512796067398576">Juurdekasv</translation>
+<translation id="8029247720646289474">Kuumkohaga ühendamine ebaõnnestus</translation>
 <translation id="8029629653277878342">Turvalisuse suurendamiseks on vaja PIN-koodi või parooli</translation>
 <translation id="8030169304546394654">Ühendus katkestatud</translation>
 <translation id="8042893070933512245">Ava juurdepääsetavuse seadete menüü</translation>
@@ -743,7 +747,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8375916635258623388">See <ph name="DEVICE_NAME" /> ja teie telefon ühendatakse automaatselt</translation>
 <translation id="8380784334203145311">Head ööd!</translation>
 <translation id="8388750414311082622">Viimast töölauda ei saa eemaldada.</translation>
-<translation id="8392451568018454956">Konto <ph name="USER_EMAIL_ADDRESS" /> valikute menüü</translation>
 <translation id="8394567579869570560">Vanem lukustas selle seadme</translation>
 <translation id="8412677897383510995">Kuva kuvaseaded</translation>
 <translation id="8425213833346101688">Muuda</translation>

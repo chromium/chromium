@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Anulowano</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
+<translation id="1204296502688602597">Opóźnienie DNS</translation>
+<translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Brama reaguje na ping</translation>
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1478594628797167447">Skanery</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
+<translation id="1706391837335750954">Resolver DNS – obecność</translation>
 <translation id="1734367976349034509">Tym urządzeniem zarządza firma</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1930797645656624981">Usługa Metoda wprowadzania Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
+<translation id="2364498172489649528">Zaliczone</translation>
 <translation id="2375079107209812402">Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
+<translation id="3083667275341675831">Diagnostyka problemów z łącznością</translation>
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
+<translation id="3188257591659621405">Moje pliki</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
+<translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
 <translation id="3515615323037921860">Zadania drukowania</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
+<translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
 <translation id="38114475217616659">Wyczyść całą historię</translation>
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
+<translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
+<translation id="4378373042927530923">Nie wykonano</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Bilet Kerberos wkrótce straci ważność</translation>
 <translation id="445059817448385655">Stare hasło</translation>
+<translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
+<translation id="4548483925627140043">Nie znaleziono sygnału</translation>
+<translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
+<translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>
 <translation id="467510802200863975">Hasła nie są zgodne</translation>
 <translation id="4691278870498629773">Zatrzymano – brak zasobnika</translation>
+<translation id="469379815867856270">Siła sygnału</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4985509611418653372">Uruchom</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="520299634122159966">Brak dostępnych skanerów</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
@@ -71,6 +90,8 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Wybierz teraz nowe.</translation>
+<translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
+<translation id="5401938042319910061">Uruchom wszystkie testy</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
@@ -78,15 +99,21 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6048107060512778456">Niepowodzenie – zacięcie papieru</translation>
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
+<translation id="6108689792487843350">Brama jest nieosiągalna</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
+<translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
+<translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
 <translation id="6620487321149975369">Zadania drukowania będą widoczne w historii, dopóki ich nie usuniesz</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
+<translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
+<translation id="714876143603641390">Łączność LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ pliku</translation>
@@ -94,15 +121,22 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
 <translation id="7805768142964895445">Stan</translation>
+<translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8208861521865154048">Korzyści</translation>
+<translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8294431847097064396">Źródło</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>
+<translation id="8364946094152050673">Puste serwery nazw</translation>
+<translation id="8475690821716466388">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP PSK</translation>
+<translation id="8477551185774834963">Opóźnienie DNS nieco przekracza dopuszczalny próg</translation>
 <translation id="8668052347555487755">Tryb koloru</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
+<translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8726019395068607495">Zatrzymano – otwarte drzwiczki drukarki</translation>
 <translation id="8747900814994928677">Potwierdź zmianę</translation>
+<translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
 <translation id="910415269708673980">Odśwież bilet przypisany do konta <ph name="PRINCIPAL_NAME" />.</translation>

@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Tühistatud</translation>
 <translation id="1075811647922107217">Lehe suurus</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
+<translation id="1204296502688602597">DNS-i latentsusaeg</translation>
+<translation id="1290331692326790741">Nõrk signaal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Lüüsi saab pingida</translation>
 <translation id="1413240736185167732">Ebaõnnestus – filter ei toiminud</translation>
 <translation id="1468664791493211953">Pakkumised</translation>
 <translation id="1478594628797167447">Skanner</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1662989795263954667">Peatati – tint on otsas</translation>
+<translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
 <translation id="1734367976349034509">Seda seadet haldab ettevõte</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1930797645656624981">Chrome OS sisestusmeetodi teenus</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Tühista prinditöö</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
+<translation id="2364498172489649528">Läbitud</translation>
 <translation id="2375079107209812402">Jäänud on <ph name="ATTEMPTS_LEFT" /> katset</translation>
+<translation id="2391082728065870591">Saada tagasisidearuanne</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} katse jäänud}other{<ph name="ERROR_MESSAGE" />, {0} katset jäänud}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
+<translation id="3083667275341675831">Ühenduvuse diagnostika</translation>
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
+<translation id="3188257591659621405">Minu failid</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
+<translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
 <translation id="3459509316159669723">Printimine</translation>
 <translation id="3515615323037921860">Prinditööd</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
+<translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="3838338534323494292">Uus parool</translation>
 <translation id="3865414814144988605">Eraldusvõime</translation>
+<translation id="3941014780699102620">Hosti lahendamine ebaõnnestus</translation>
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> haldab seda seadet ja sellel on juurdepääs kogu kasutaja tegevusele, sh külastatud veebilehtedele, paroolidele ning e-postile.</translation>
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
+<translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
 <translation id="445059817448385655">Vana parool</translation>
+<translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
+<translation id="4548483925627140043">Signaali ei leitud</translation>
+<translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
+<translation id="4646949265910132906">Turvaline WiFi-ühendus</translation>
 <translation id="467510802200863975">Paroolid ei kattu</translation>
 <translation id="4691278870498629773">Peatatud – salv on puudu</translation>
+<translation id="469379815867856270">Signaali tugevus</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4773299976671772492">Peatatud</translation>
 <translation id="4808449224298348341">Prinditöö <ph name="DOCUMENT_TITLE" /> tühistati</translation>
 <translation id="4890353053343094602">Valige kohe uus</translation>
 <translation id="4917889632206600977">Peatatud – paber on otsas</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
+<translation id="4985509611418653372">Käitati</translation>
 <translation id="5094480857972195099">Seda kasutajat haldab domeen <ph name="ENROLLMENT_DOMAIN" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="520299634122159966">Ühtegi skannerit pole saadaval</translation>
 <translation id="5212543919916444558">Ma ei leia teie ekraanilt midagi, mille puhul saaksin aidata.
@@ -71,6 +90,8 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Valige kohe uus</translation>
+<translation id="5372659122375744710">WiFi-võrk pole turvaline</translation>
+<translation id="5401938042319910061">Käita kõiki rutiine</translation>
 <translation id="5457599981699367932">Sirvi külalisena</translation>
 <translation id="54609108002486618">Hallatud</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
@@ -78,15 +99,21 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6048107060512778456">Ebaõnnestus – paberiummistus</translation>
 <translation id="6058625436358447366">Toimingu lõpuleviimiseks sisestage oma vana ja uus parool</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
+<translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
 <translation id="6146993107019042706">Toimingu lõpuleviimiseks sisestage oma uus parool</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Vigased nimeserverid</translation>
+<translation id="6325525973963619867">Ebaõnnestus</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
 <translation id="6517239166834772319">Avastamine</translation>
+<translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
 <translation id="6564646048574748301">Ebaõnnestus – printeriga ei saa ühendust</translation>
 <translation id="6620487321149975369">Prinditööd kuvatakse ajaloos, kui neid käsitsi ei eemaldata</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
+<translation id="6704062477274546131">DNS-lahendus</translation>
 <translation id="6747215703636344499">Peatatud – väljastussalv on täis</translation>
+<translation id="714876143603641390">LAN-i ühenduvus</translation>
 <translation id="7162487448488904999">Galerii</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faili tüüp</translation>
@@ -94,15 +121,22 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7690294790491645610">Kinnitage uus parool</translation>
 <translation id="7805768142964895445">Olek</translation>
+<translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="8208861521865154048">Hüved</translation>
+<translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
+<translation id="8364946094152050673">Tühjad nimeserverid</translation>
+<translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
+<translation id="8477551185774834963">DNS-i latentsusaeg ületab veidi lubatud piiri</translation>
 <translation id="8668052347555487755">Värvirežiim</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
+<translation id="8723108084122415655">Mittevaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8726019395068607495">Peatatud – luuk on avatud</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
+<translation id="8910721771319628100">Vaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8919837981463578619">Ebaõnnestus – salv puudub</translation>
 <translation id="8928727111548978589">Ebaõnnestus – paber on otsas</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">amaga el menú de subtítols</translation>
 <translation id="1729654308190250600">Introduïu una adreça electrònica.</translation>
 <translation id="1758486001363313524">Altres...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> actual</translation>
 <translation id="1787192514241997742">temps total: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">quadrícula d'arbre</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">El valor ha de ser <ph name="MINIMUM_DATE_OR_TIME" /> o posterior.</translation>
 <translation id="2759744352195237655">botó emergent</translation>
 <translation id="2761667185364618470">Marqueu aquesta casella si voleu continuar.</translation>
+<translation id="2838616441696617235">pas</translation>
 <translation id="2844350028562914727">detalls</translation>
 <translation id="2896972712917208084">grup de botons d'opció</translation>
 <translation id="2908441821576996758">Introduïu una llista d'adreces electròniques separades per comes.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">barra de menús</translation>
 <translation id="4293574643247337246">capçalera de pàgina</translation>
 <translation id="4360991593054037559">Introduïu un valor vàlid. Els valors vàlids més propers són <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Aquesta imatge no està etiquetada. Obre el menú Més opcions, a la part superior dreta, per obtenir descripcions d'imatges.</translation>
 <translation id="4384583879834880242">Preguntes</translation>
 <translation id="4444765639179266822">Sembla que diu "<ph name="OCR_TEXT" />"</translation>
 <translation id="4446524499724042288">referència del glossari</translation>
 <translation id="4522570452068850558">Detalls</translation>
+<translation id="4576178047100686001">Aquesta imatge no està etiquetada. Obre el menú Més opcions, a la part superior esquerra, per obtenir descripcions d'imatges.</translation>
 <translation id="4597532268155981612">formulari</translation>
 <translation id="4661075872484491155">arbre</translation>
 <translation id="4664250907885839816">Un domini precedit per "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">entrada bibliogràfica</translation>
 <translation id="4915360478455618802">Mostra el selector d'hora</translation>
 <translation id="492244087561876220">comentari</translation>
+<translation id="4934662370368414994">element</translation>
 <translation id="4950364064308314478">Mostra la data local i el selector d'hora</translation>
 <translation id="4971739861736909480">S'ha seleccionat <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Elements seleccionats: <ph name="SELECTED_COUNT" /></translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">control lliscant de volum</translation>
 <translation id="6015796118275082299">Any</translation>
 <translation id="6023896073578205740">quadre de llista</translation>
+<translation id="6131824478727057281">ubicació</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">comptador</translation>
 <translation id="6166809985690652833">cloenda</translation>

@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
 <translation id="1075811647922107217">Orriaren tamaina</translation>
 <translation id="1195447618553298278">Errore ezezaguna.</translation>
+<translation id="1204296502688602597">DNSaren itxarote-denbora</translation>
+<translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Ping egin dakioke atebideari</translation>
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
+<translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
 <translation id="1734367976349034509">Enpresak kudeatzen du gailu hau</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
 <translation id="1930797645656624981">Chrome OS sistemako idazketa-metodoaren zerbitzua</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Inguruko gailuak ikusteko, aktibatu Bluetooth-a</translation>
+<translation id="2364498172489649528">Gaindituta</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> saiakera gelditzen dira</translation>
+<translation id="2391082728065870591">Bidali zerbitzuari buruzko iritzien txostena</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} saiaketa gelditzen da}other{<ph name="ERROR_MESSAGE" /> {0} saiakera gelditzen dira}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
+<translation id="3083667275341675831">Konexio-diagnostikoak</translation>
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
+<translation id="3188257591659621405">Nire fitxategiak</translation>
 <translation id="3246869037381808805">Egun bat baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="3268178239013324452">Hutsegitea - Atea irekita dago</translation>
+<translation id="3310640316857623290">DNSaren itxarote-denbora onartzen den atalasetik askoz gorago dago</translation>
 <translation id="3369013195428705271">Ziur inprimatze-historia guztia garbitu nahi duzula? Ez dira garbituko abian dauden inprimatze-lanak.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> orria inprimatu da.</translation>
 <translation id="3459509316159669723">Inprimaketa</translation>
 <translation id="3515615323037921860">Inprimatze-lanak</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
+<translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
+<translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
+<translation id="4378373042927530923">Ez da exekutatu</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Laster iraungiko da Kerberos-eko zerbitzu-eskaera</translation>
 <translation id="445059817448385655">Pasahitz zaharra</translation>
+<translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
+<translation id="4548483925627140043">Ez da aurkitu seinalea</translation>
+<translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
+<translation id="4646949265910132906">Wifi-konexio segurua</translation>
 <translation id="467510802200863975">Pasahitzak ez datoz bat</translation>
 <translation id="4691278870498629773">Geldituta: erretilua falta da</translation>
+<translation id="469379815867856270">Seinalearen indarra</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
 <translation id="4773299976671772492">Gelditu egin da</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> inprimatze-lana bertan behera utzi da</translation>
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4985509611418653372">Exekutatu</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> arduratzen da erabiltzaile hau kudeatzeaz eta haren jarduerak gainbegira ditzake urrunetik.</translation>
 <translation id="520299634122159966">Ez dago eskanerrik erabilgarri</translation>
 <translation id="5212543919916444558">Ezin dizut lagundu pantailako ezerekin.
@@ -71,6 +90,8 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Aukeratu beste bat</translation>
+<translation id="5372659122375744710">Wifi-sarea ez da segurua</translation>
+<translation id="5401938042319910061">Exekutatu errutina guztiak</translation>
 <translation id="5457599981699367932">Arakatu gonbidatu gisa</translation>
 <translation id="54609108002486618">Kudeatua</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
@@ -78,15 +99,21 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6048107060512778456">Hutsegitea - Papera trabatuta dago</translation>
 <translation id="6058625436358447366">Amaitzeko, idatzi pasahitz zaharra eta berria</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
+<translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
 <translation id="6146993107019042706">Amaitzeko, idatzi pasahitz berria</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Gaizki eratuta daude izenen zerbitzariak</translation>
+<translation id="6325525973963619867">Huts egin du</translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
 <translation id="649050271426829538">Geldituta: papera trabatuta dago</translation>
 <translation id="6517239166834772319">Arakatu</translation>
+<translation id="6527081081771465939">Wifiaren segurtasun-protokoloa ezezaguna da</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
 <translation id="6620487321149975369">Inprimatze-lanak historian agertuko dira, eskuz kendu ezean</translation>
 <translation id="6643016212128521049">Garbitu</translation>
+<translation id="6704062477274546131">DNS bidezko ebazpena</translation>
 <translation id="6747215703636344499">Geldituta: irteera-erretilua beteta dago</translation>
+<translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
@@ -94,15 +121,22 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
 <translation id="7805768142964895445">Egoera</translation>
+<translation id="7936303884198020182">Ez da aurkitu izenen zerbitzaririk</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8208861521865154048">Abantailak</translation>
+<translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8294431847097064396">Iturburua</translation>
 <translation id="8347227221149377169">Inprimatze-lanak</translation>
 <translation id="8352772353338965963">Gehitu kontu bat saio-hasiera anitzean. Saioa hasita daukaten kontu guztiak pasahitzik gabe atzi daitezkeenez, kontu fidagarriekin soilik erabili behar da eginbide hori.</translation>
+<translation id="8364946094152050673">Izenen zerbitzariak hutsik daude</translation>
+<translation id="8475690821716466388">WEP PSK protokolo ahulak babesten du wifi-sarea</translation>
+<translation id="8477551185774834963">DNSaren itxarote-denbora onartzen den atalasetik apur bat gorago dago</translation>
 <translation id="8668052347555487755">Kolore modua</translation>
 <translation id="871560550817059752">Hutsegitea - Ez dago tintarik</translation>
+<translation id="8723108084122415655">Lehenetsi gabeko sarea itxarote-denboraren atalasetik gora dago</translation>
 <translation id="8726019395068607495">Geldituta: atea irekita dago</translation>
 <translation id="8747900814994928677">Berretsi aldaketa</translation>
+<translation id="8910721771319628100">Sare lehenetsia itxarote-denboraren atalasetik gora dago</translation>
 <translation id="8919837981463578619">Hutsegitea - Erretilua falta da</translation>
 <translation id="8928727111548978589">Hutsegitea - Ez dago paperik</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>

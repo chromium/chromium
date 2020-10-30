@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">已截取屏幕截图并将其保存至剪贴板</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
+<translation id="1456407467406159627">由于您的屏幕上包含机密内容，系统已停止录制屏幕。</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1475439723810528286">点按任意位置即可截取整个屏幕</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2390318262976603432">语言区域设置</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">媒体控件</translation>
 <translation id="2405664212338326887">未连接</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
+<translation id="3147157020428159854">已停止录制屏幕</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多帐号登录时，一次最多只能登入 <ph name="MULTI_PROFILE_USER_LIMIT" /> 个帐号。</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
+<translation id="3846214748874656680">退出全屏模式</translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
@@ -655,7 +659,6 @@
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
-<translation id="7568637526529101738">只要您右键点击或长按所选内容，Google 助理即会显示与其相关的信息（例如定义或单位换算）。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
 <translation id="7579778809502851308">截取屏幕</translation>
 <translation id="7590883480672980941">输入设置</translation>
@@ -707,6 +710,7 @@
 <translation id="7995804128062002838">未能截取屏幕</translation>
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8004512796067398576">增加</translation>
+<translation id="8029247720646289474">热点连接失败</translation>
 <translation id="8029629653277878342">需要输入 PIN 码或密码以增强安全性</translation>
 <translation id="8030169304546394654">连接已断开</translation>
 <translation id="8042893070933512245">打开无障碍功能设置菜单</translation>
@@ -742,7 +746,6 @@
 <translation id="8375916635258623388">此<ph name="DEVICE_NAME" />将会自动连接到您的手机</translation>
 <translation id="8380784334203145311">晚安！</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> 的“选项”菜单</translation>
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
 <translation id="8412677897383510995">显示“显示设置”部分</translation>
 <translation id="8425213833346101688">更改</translation>

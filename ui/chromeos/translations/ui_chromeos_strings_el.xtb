@@ -66,6 +66,7 @@
 <translation id="158809615184981282">Πληκτρολόγιο Φερόε</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> αρχεία γίνονται διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="1646136617204068573">Πληκτρολόγιο με ουγγρικούς χαρακτήρες</translation>
 <translation id="164729547906544836">Πληκτρολόγιο Ταμίλ (itrans)</translation>
 <translation id="164969095109328410">Συσκευή Chrome</translation>
@@ -151,6 +152,7 @@
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
 <translation id="2562685439590298522">Έγγραφα</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
+<translation id="2572501073504669105">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="2614589611416690597">Βίντεο <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Δεν είναι δυνατή η σύνδεση με το Google Drive αυτή τη φορά.</translation>
 <translation id="2638942478653899953">Δεν ήταν δυνατή η επικοινωνία με το Google Drive. <ph name="BEGIN_LINK" />Αποσυνδεθείτε<ph name="END_LINK" /> και συνδεθείτε ξανά.</translation>
@@ -159,6 +161,7 @@
 <translation id="2664412712123763093">Τοποθεσία αρχείου</translation>
 <translation id="2672394958563893062">Παρουσιάστηκε σφάλμα. Κάντε κλικ για επανεκκίνηση από την αρχή.</translation>
 <translation id="2676946222714718093">Αναπαραγωγή σε</translation>
+<translation id="2735623501230989521">Δώστε άδεια στο Parallels Desktop για πρόσβαση σε αρχεία στον φάκελο <ph name="FOLDER_NAME" />.</translation>
 <translation id="2735698359135166290">Τυπικό πληκτρολόγιο Ρουμανικών</translation>
 <translation id="2771816809568414714">Τυρί</translation>
 <translation id="2781645665747935084">Βελγικά</translation>
@@ -352,6 +355,7 @@
 <translation id="4779136857077979611">Ονιγκίρι</translation>
 <translation id="4784330909746505604">Παρουσίαση PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Παραχωρήστε στο Parallels Desktop άδεια πρόσβασης σε αρχεία στο Google Drive. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="4801956050125744859">Διατήρηση και των δύο</translation>
 <translation id="4804827417948292437">Αβοκάντο</translation>
 <translation id="4823651846660089135">Η συσκευή είναι μόνο για ανάγνωση</translation>
@@ -625,12 +629,15 @@
 <translation id="7508545000531937079">Παρουσίαση</translation>
 <translation id="751507702149411736">Λευκορωσικά
 </translation>
+<translation id="7544830582642184299">Δώστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στο Google Drive σας. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
 <translation id="7547811415869834682">Ολλανδικά
 </translation>
 <translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
+<translation id="7553492409867692754">Παραχωρήστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
+<translation id="7592775719802218421">Το αρχείο <ph name="FILE_NAME" /> γίνεται διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="7603724359189955920">Πλέγματα</translation>
 <translation id="7627790789328695202">Ωχ! Το αρχείο <ph name="FILE_NAME" /> υπάρχει ήδη. Μετονομάστε το και δοκιμάστε ξανά.</translation>
 <translation id="7628656427739290098">Ολοκληρώθηκε <ph name="PERCENT" />%.</translation>

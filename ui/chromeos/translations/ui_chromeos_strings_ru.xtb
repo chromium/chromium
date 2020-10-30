@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Фарерская клавиатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1646019627374511909">Скачивание файлов (<ph name="NUMBER_OF_ITEMS" />) для офлайн-доступа…</translation>
 <translation id="1646136617204068573">Венгерская раскладка</translation>
 <translation id="164729547906544836">Тамильская раскладка (itrans)</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">США (международная)</translation>
 <translation id="2562685439590298522">Документы</translation>
 <translation id="2563185590376525700">Лягушка</translation>
+<translation id="2572501073504669105">Вы можете скачать файлы, чтобы получать к ним доступ без подключения к Интернету.</translation>
 <translation id="2614589611416690597">Видео <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">В данный момент Google Диск недоступен.</translation>
 <translation id="2638942478653899953">Не удается подключиться к Google Диску. Попробуйте <ph name="BEGIN_LINK" />выйти<ph name="END_LINK" /> и снова зайти в систему.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Местоположение файла</translation>
 <translation id="2672394958563893062">Произошла ошибка. Нажмите, чтобы воспроизвести сначала.</translation>
 <translation id="2676946222714718093">Устройство:</translation>
+<translation id="2735623501230989521">Parallels Desktop сможет получать доступ к файлам в папке "<ph name="FOLDER_NAME" />".</translation>
 <translation id="2735698359135166290">Cтандартная румынская клавиатура</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгийская</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">Презентация PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
+<translation id="4789067489790477934">Parallels Desktop сможет получать доступ к файлам Google Диска. Изменения вступят в силу на всех ваших устройствах.</translation>
 <translation id="4801956050125744859">Оставить обе версии</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Устройство доступно только для чтения</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Показывать скрытые файлы</translation>
 <translation id="7508545000531937079">Слайд-шоу</translation>
 <translation id="751507702149411736">Белорусский</translation>
+<translation id="7544830582642184299">Приложения Linux смогут получать доступ к файлам Google Диска. Изменения вступят в силу на всех ваших устройствах.</translation>
 <translation id="7544853251252956727">Перемешать</translation>
 <translation id="7547811415869834682">Нидерландская</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
+<translation id="7553492409867692754">Приложения Linux смогут получать доступ к файлам папки "<ph name="FOLDER_NAME" />".</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Подождите…</translation>
+<translation id="7592775719802218421">Скачивание файла "<ph name="FILE_NAME" />" для офлайн-доступа…</translation>
 <translation id="7603724359189955920">Сетка</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" уже существует. Задайте другое название и повторите попытку.</translation>
 <translation id="7628656427739290098">Выполнено на <ph name="PERCENT" /> %.</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Fäärikeelne klaviatuur</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kaamera</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> faili võrguühenduseta kättesaadavaks tegemine</translation>
 <translation id="1646136617204068573">Ungari klaviatuur</translation>
 <translation id="164729547906544836">Tamili klaviatuur (itrans)</translation>
 <translation id="164969095109328410">Chrome'i seade</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">USA rahvusvaheline</translation>
 <translation id="2562685439590298522">Dokumendid</translation>
 <translation id="2563185590376525700">Konn</translation>
+<translation id="2572501073504669105">Teil on võimalik muuta failid kättesaadavaks ka siis, kui puudub internetiühendus.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2620090360073999360">Google Drive'iga ei saa praegu ühendust.</translation>
 <translation id="2638942478653899953">Google Drive'iga ei saadud ühendust. <ph name="BEGIN_LINK" />Logige välja<ph name="END_LINK" /> ja tagasi sisse.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Faili asukoht</translation>
 <translation id="2672394958563893062">Ilmnes viga. Klõpsake uuesti alustamiseks.</translation>
 <translation id="2676946222714718093">Mängib seadmes</translation>
+<translation id="2735623501230989521">Andke üksusele Parallels Desktop luba pääseda juurde kaustas <ph name="FOLDER_NAME" /> olevatele failidele</translation>
 <translation id="2735698359135166290">Rumeenia standardne klaviatuur</translation>
 <translation id="2771816809568414714">Juust</translation>
 <translation id="2781645665747935084">Belgia</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPointi esitlus</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Andke üksusele Parallels Desktop luba pääseda juurde Google Drive'is olevatele failidele. Muudatused sünkroonitakse muude seadmetega.</translation>
 <translation id="4801956050125744859">Säilita mõlemad</translation>
 <translation id="4804827417948292437">Avokaado</translation>
 <translation id="4823651846660089135">Seade on kirjutuskaitstud</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Kuva peidetud failid</translation>
 <translation id="7508545000531937079">Slaidiseanss</translation>
 <translation id="751507702149411736">valgevene keel</translation>
+<translation id="7544830582642184299">Andke Linuxi rakendustele luba pääseda juurde teie Google Drive'is olevatele failidele. Muudatused sünkroonitakse muude seadmetega.</translation>
 <translation id="7544853251252956727">Esita juhuslikus järjekorras</translation>
 <translation id="7547811415869834682">hollandi keel</translation>
 <translation id="7551643184018910560">Riiulile kinnitamine</translation>
+<translation id="7553492409867692754">Andke Linuxi rakendustele õigus pääseda juurde kaustas <ph name="FOLDER_NAME" /> olevatele failidele</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Oodake sekund</translation>
+<translation id="7592775719802218421">Fail <ph name="FILE_NAME" /> tehakse võrguühenduseta kättesaadavaks</translation>
 <translation id="7603724359189955920">Ruudustikud</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> on juba olemas. Nimetage see ümber ja proovige uuesti.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% on lõpetatud.</translation>

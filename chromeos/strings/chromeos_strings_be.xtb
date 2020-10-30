@@ -2,8 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1018656279737460067">Скасавана</translation>
+<translation id="1075811647922107217">Памер старонкі</translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
+<translation id="1204296502688602597">Затрымка DNS</translation>
+<translation id="1290331692326790741">Слабы сігнал</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Можна выканаць праверку ping для шлюза</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -12,6 +16,7 @@
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1662989795263954667">Спынена: скончылася чарніла</translation>
+<translation id="1706391837335750954">Наяўнасць DNS-рэзолвера</translation>
 <translation id="1734367976349034509">Прылада знаходзіцца пад кіраваннем арганізацыі</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
 <translation id="1930797645656624981">Сэрвіс метадаў уводу Chrome OS</translation>
@@ -22,25 +27,33 @@
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Каб знайсці прылады паблізу, уключыце Bluetooth</translation>
+<translation id="2364498172489649528">Пройдзена</translation>
 <translation id="2375079107209812402">Засталося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
+<translation id="3083667275341675831">Дыягностыка падключэння</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
+<translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
+<translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
 <translation id="3456078764689556234">Надрукавана старонка <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Друк</translation>
 <translation id="3515615323037921860">Заданні друку</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
+<translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
 <translation id="3749289110408117711">Назва файла</translation>
 <translation id="38114475217616659">Ачысціць усю гісторыю</translation>
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
+<translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
 <translation id="4003259559679196451">Дамен "<ph name="ENROLLMENT_DOMAIN" />" кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
@@ -49,18 +62,25 @@
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
+<translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
 <translation id="445059817448385655">Стары пароль</translation>
+<translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
+<translation id="4548483925627140043">Сігнал не знойдзены</translation>
+<translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
+<translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>
 <translation id="4691278870498629773">Спынена: няма латка</translation>
+<translation id="469379815867856270">Магутнасць сігналу</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4808449224298348341">Заданне друку "<ph name="DOCUMENT_TITLE" />" скасавана</translation>
 <translation id="4890353053343094602">Неадкладна задайце новы</translation>
 <translation id="4917889632206600977">Спынена: скончылася папера</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4985509611418653372">Запусціць</translation>
 <translation id="5094480857972195099">Дамен <ph name="ENROLLMENT_DOMAIN" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
 <translation id="520299634122159966">Няма даступных сканераў</translation>
 <translation id="5212543919916444558">Я не магу знайсці на экране нічога, з чым я мог бы вам дапамагчы.
@@ -70,6 +90,8 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Задайце новы</translation>
+<translation id="5372659122375744710">Сетка Wi-Fi не абаронена</translation>
+<translation id="5401938042319910061">Запусціць усе паслядоўнасці дзеянняў</translation>
 <translation id="5457599981699367932">Праглядаць як госць</translation>
 <translation id="54609108002486618">Пад кіраваннем</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
@@ -77,15 +99,21 @@
 <translation id="6048107060512778456">Збой: захрасла папера</translation>
 <translation id="6058625436358447366">Каб закончыць, увядзіце стары і новы паролі</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
+<translation id="6108689792487843350">Шлюз недаступны</translation>
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Серверы даменных імён маюць няправільны фармат</translation>
+<translation id="6325525973963619867">Збой</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
+<translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>
 <translation id="6564646048574748301">Збой: прынтар недаступны</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
+<translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
+<translation id="714876143603641390">Магчымасць падключэння LAN</translation>
 <translation id="7162487448488904999">Галерэя</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тып файла</translation>
@@ -93,15 +121,22 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
 <translation id="7805768142964895445">Стан</translation>
+<translation id="7936303884198020182">Серверы даменных імён не знойдзены</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8208861521865154048">Бонусы</translation>
+<translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8294431847097064396">Крыніца</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
+<translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
+<translation id="8475690821716466388">Сетка Wi-Fi абаронена слабым пратаколам WEP PSK</translation>
+<translation id="8477551185774834963">Затрымка DNS крыху перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="8668052347555487755">Рэжым колеру</translation>
 <translation id="871560550817059752">Збой: скончылася чарніла</translation>
+<translation id="8723108084122415655">Затрымка ў нестандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8726019395068607495">Спынена: дзверцы прынтара адкрыты</translation>
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
+<translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>

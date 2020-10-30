@@ -513,6 +513,9 @@
 <translation id="6476800141292307438">페이지를 <ph name="LANGUAGE" />로 번역합니다. 화면 하단에 옵션이 있습니다.</translation>
 <translation id="648164694371393720">인증 오류</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 삭제함</translation>
+<translation id="6497772452874122664"><ph name="TIME" /> 사이트를 신뢰한다면 다른 사이트의 저장된 비밀번호를 사용할 수 있습니다.
+
+하지만 모든 사이트에 고유한 비밀번호를 사용하는 것이 좋습니다.</translation>
 <translation id="651505212789431520">동기화를 취소하시겠습니까? 언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="6561262006871132942">확대</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
@@ -592,6 +595,7 @@
 <translation id="739941347996872055">이전 탭</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">읽지 않은 기사 <ph name="UNREAD_COUNT" />개 있음</translation>
+<translation id="7412027924265291969">계속</translation>
 <translation id="7425346204213733349">북마크, 방문 기록, 비밀번호, 기타 설정이 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장됩니다.</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7454057999980797137">도/군</translation>

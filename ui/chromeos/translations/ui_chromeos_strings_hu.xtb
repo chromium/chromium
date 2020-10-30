@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Feröer-szigeteki billentyűzet</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fájl offline hozzáférhetővé tétele…</translation>
 <translation id="1646136617204068573">Magyar billentyűzet</translation>
 <translation id="164729547906544836">Tamil billentyűzet (itrans)</translation>
 <translation id="164969095109328410">Chrome-eszköz</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">USA nemzetközi</translation>
 <translation id="2562685439590298522">Dokumentumok</translation>
 <translation id="2563185590376525700">Béka</translation>
+<translation id="2572501073504669105">Engedélyezheti a fájlokhoz való hozzáférést offline állapotban, amikor nincs internetkapcsolat.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videó</translation>
 <translation id="2620090360073999360">A Google Drive jelenleg nem érhető el.</translation>
 <translation id="2638942478653899953">A Google Drive nem érhető el. Kérjük, <ph name="BEGIN_LINK" />jelentkezzen ki<ph name="END_LINK" />, majd jelentkezzen be újra.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Fájl helye</translation>
 <translation id="2672394958563893062">Hiba történt. Kattintson az újrakezdéshez az elejéről.</translation>
 <translation id="2676946222714718093">Lejátszás folyamatban a következőn:</translation>
+<translation id="2735623501230989521">A Parallels Desktop engedélyt kap arra, hogy hozzáférjen a fájlokhoz a következő mappában: <ph name="FOLDER_NAME" />.</translation>
 <translation id="2735698359135166290">Hagyományos román billentyűzet</translation>
 <translation id="2771816809568414714">Sajt</translation>
 <translation id="2781645665747935084">belga</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-bemutató</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">A Parallels Desktop engedélyt kap arra, hogy hozzáférjen a fájlokhoz az Ön Google Drive-fiókjában. A változtatások minden eszközön szinkronizálódnak.</translation>
 <translation id="4801956050125744859">Mindkettő megtartása</translation>
 <translation id="4804827417948292437">Avokádó</translation>
 <translation id="4823651846660089135">Az eszköz csak olvasható</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Rejtett fájlok megjelenítése</translation>
 <translation id="7508545000531937079">Diavetítés</translation>
 <translation id="751507702149411736">fehérorosz</translation>
+<translation id="7544830582642184299">A Linux-alkalmazások engedélyt kapnak arra, hogy hozzáférjenek az Ön fájljaihoz a Google Drive-fiókjában. A változtatások minden eszközön szinkronizálódnak.</translation>
 <translation id="7544853251252956727">Keverés</translation>
 <translation id="7547811415869834682">holland</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
+<translation id="7553492409867692754">A Linux-alkalmazások engedélyt kapnak a(z) <ph name="FOLDER_NAME" /> mappában lévő fájlokhoz való hozzáférésre.</translation>
 <translation id="7576032389798113292">6×4</translation>
 <translation id="7589661784326793847">Egy pillanat…</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> offline hozzáférhetővé tétele…</translation>
 <translation id="7603724359189955920">Rácsok</translation>
 <translation id="7627790789328695202">Hoppá! <ph name="FILE_NAME" /> már létezik. Nevezze át, majd próbálja újra.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% kész.</translation>

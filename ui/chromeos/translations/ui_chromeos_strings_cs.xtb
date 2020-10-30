@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faerská klávesnice</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Zpřístupňování <ph name="NUMBER_OF_ITEMS" /> souborů offline</translation>
 <translation id="1646136617204068573">Maďarská klávesnice</translation>
 <translation id="164729547906544836">Tamilská klávesnice (itrans)</translation>
 <translation id="164969095109328410">Zařízení Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
 <translation id="2562685439590298522">Dokumenty</translation>
 <translation id="2563185590376525700">Žába</translation>
+<translation id="2572501073504669105">Soubory můžete zpřístupnit offline pro případ, že nebudete mít připojení k internetu.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Disk Google není momentálně k dispozici.</translation>
 <translation id="2638942478653899953">Disk Google nelze použít. <ph name="BEGIN_LINK" />Odhlaste se prosím<ph name="END_LINK" /> a opět se přihlaste.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Umístění souboru</translation>
 <translation id="2672394958563893062">Došlo k chybě. Kliknutím spustíte přehrávání od začátku.</translation>
 <translation id="2676946222714718093">Přehrávání v zařízení</translation>
+<translation id="2735623501230989521">Udělujete nástroji Parallels Desktop oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Standardní rumunská klávesnice</translation>
 <translation id="2771816809568414714">Sýr</translation>
 <translation id="2781645665747935084">Belgická klávesnice</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Rýže onigiri</translation>
 <translation id="4784330909746505604">Prezentace aplikace PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Udělujete nástroji Parallels Desktop oprávnění k přístupu k souborům na Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="4801956050125744859">Ponechat obojí</translation>
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4823651846660089135">Zařízení je pouze pro čtení</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Zobrazit skryté soubory</translation>
 <translation id="7508545000531937079">Prezentace</translation>
 <translation id="751507702149411736">běloruština</translation>
+<translation id="7544830582642184299">Udělujete linuxovým aplikacím oprávnění přistupovat k souborům na vašem Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="7544853251252956727">Přehrávat náhodně</translation>
 <translation id="7547811415869834682">holandština</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
+<translation id="7553492409867692754">Udělujete linuxovým aplikacím oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" />.</translation>
 <translation id="7576032389798113292">6:4</translation>
 <translation id="7589661784326793847">Chvilku strpení</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> se zpřístupňuje pro použití offline</translation>
 <translation id="7603724359189955920">Mřížky</translation>
 <translation id="7627790789328695202">Jejda, soubor <ph name="FILE_NAME" /> již existuje. Přejmenujte jej a zkuste to znovu.</translation>
 <translation id="7628656427739290098">Hotovo <ph name="PERCENT" /> %.</translation>

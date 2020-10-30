@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faroese na keyboard</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1646019627374511909">Ginagawang available offline ang <ph name="NUMBER_OF_ITEMS" /> (na) file</translation>
 <translation id="1646136617204068573">Hungarian na keyboard</translation>
 <translation id="164729547906544836">Tamil keyboard (itrans)</translation>
 <translation id="164969095109328410">Chrome device</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Palaka</translation>
+<translation id="2572501073504669105">Puwede mong gawing available offline ang mga file para ma-access ang mga ito kapag wala kang koneksyon sa internet.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> na video</translation>
 <translation id="2620090360073999360">Hindi maaabot ang Google Drive sa ngayon.</translation>
 <translation id="2638942478653899953">Hindi maabot ang Google Drive. Mangyaring <ph name="BEGIN_LINK" />mag-log out<ph name="END_LINK" /> at mag-log in muli.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Lokasyon ng file</translation>
 <translation id="2672394958563893062">May naganap na error. I-click upang magsimulang muli.</translation>
 <translation id="2676946222714718093">Nagpe-play sa</translation>
+<translation id="2735623501230989521">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Romanian standard keyboard</translation>
 <translation id="2771816809568414714">Keso</translation>
 <translation id="2781645665747935084">Belgian</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentation ng PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Bigyan ng pahintulot ang Parallels Desktop na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="4801956050125744859">Panatilihin pareho</translation>
 <translation id="4804827417948292437">Abukado</translation>
 <translation id="4823651846660089135">Read-only ang device</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Magpakita ng mga natatagong file</translation>
 <translation id="7508545000531937079">Slideshow</translation>
 <translation id="751507702149411736">Belarusian</translation>
+<translation id="7544830582642184299">Bigyan ang mga Linux app ng pahintulot na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="7544853251252956727">I-shuffle</translation>
 <translation id="7547811415869834682">Dutch</translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
+<translation id="7553492409867692754">Bigyan ng pahintulot ang mga Linux app na ma-access ang mga file sa folder na <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Maghintay lamang ng isang segundo</translation>
+<translation id="7592775719802218421">Ginagawang available offline ang <ph name="FILE_NAME" /></translation>
 <translation id="7603724359189955920">Mga Grid</translation>
 <translation id="7627790789328695202">Whoops, umiiral na ang <ph name="FILE_NAME" />. Palitan ang pangalan nito at subukang muli.</translation>
 <translation id="7628656427739290098">Kumpleto na nang <ph name="PERCENT" />%.</translation>

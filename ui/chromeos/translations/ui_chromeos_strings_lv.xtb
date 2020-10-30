@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Fēru valodas tastatūra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Vairāki faili tiek padarīti pieejami bezsaistē (skaits: <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="1646136617204068573">Ungāru valodas tastatūra</translation>
 <translation id="164729547906544836">Tamilu valodas tastatūra (itrans)</translation>
 <translation id="164969095109328410">Chrome ierīce</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">ASV starptautiskā</translation>
 <translation id="2562685439590298522">Dokumenti</translation>
 <translation id="2563185590376525700">Varde</translation>
+<translation id="2572501073504669105">Varat padarīt failus pieejamus bezsaistē, lai varētu tiem piekļūt bez interneta savienojuma.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
 <translation id="2620090360073999360">Šobrīd Google disku nevar sasniegt.</translation>
 <translation id="2638942478653899953">Nevarēja piekļūt Google diskam. Lūdzu, <ph name="BEGIN_LINK" />atsakieties<ph name="END_LINK" /> un atkārtoti piesakieties.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Faila atrašanās vieta</translation>
 <translation id="2672394958563893062">Radās kļūda. Noklikšķiniet, lai sāktu vēlreiz no sākuma.</translation>
 <translation id="2676946222714718093">Tiek atskaņots šeit:</translation>
+<translation id="2735623501230989521">Parallels Desktop saņems atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Rumāņu standarta tastatūra</translation>
 <translation id="2771816809568414714">Siers</translation>
 <translation id="2781645665747935084">Beļģu</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint prezentācija</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktop saņems atļauju piekļūt failiem jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
 <translation id="4801956050125744859">Saglabāt abus</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Ierīce ir tikai lasāma.</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Rādīt paslēptos failus</translation>
 <translation id="7508545000531937079">Slaidrāde</translation>
 <translation id="751507702149411736">Baltkrievu valoda</translation>
+<translation id="7544830582642184299">Linux lietotnes saņems atļauju piekļūt failiem jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
 <translation id="7544853251252956727">Sajaukt</translation>
 <translation id="7547811415869834682">Holandiešu valoda</translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
+<translation id="7553492409867692754">Linux lietotnes saņems atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Mirkli uzgaidiet!</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> tiek padarīts pieejams bezsaistē</translation>
 <translation id="7603724359189955920">Režģi</translation>
 <translation id="7627790789328695202">Diemžēl fails <ph name="FILE_NAME" /> jau pastāv. Pārdēvējiet to un mēģiniet vēlreiz.</translation>
 <translation id="7628656427739290098">Pabeigts: <ph name="PERCENT" />%</translation>

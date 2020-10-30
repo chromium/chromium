@@ -6,7 +6,6 @@
 <translation id="1051826050538111504">お使いのパソコンに有害なソフトウェアが見つかりました。Chrome では、ブラウザを正常な動作に戻すためにこのソフトウェアを削除し、設定を復元して、拡張機能を無効化することができます。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1088300314857992706">Chrome の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
-<translation id="1088654056000736875">お使いのパソコンから有害なソフトウェアを削除しています...</translation>
 <translation id="1097330777386562916">Chrome の終了時に Cookie とサイトデータを削除する</translation>
 <translation id="110877069173485804">自分好みに設定</translation>
 <translation id="1125124144982679672">Chrome はどなたが使用しますか？</translation>
@@ -17,7 +16,6 @@
 <translation id="1355000804395496115">仕事用と個人用のブラウジング環境を分ける場合や複数のユーザーがこのデバイスを使用する場合は、Chrome で個別のプロファイルを作成します</translation>
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
 <translation id="1399397803214730675">新しいバージョンの Google Chrome が既にインストールされています。ソフトウェアが動作しない場合は、Google Chrome をアンインストールしてからもう一度お試しください。</translation>
-<translation id="140541193409212341">Chrome によるパソコン内の有害なソフトウェアの確認中にエラーが発生しました</translation>
 <translation id="1434626383986940139">Chrome Canary アプリ</translation>
 <translation id="1513277449617685876">個人用と <ph name="NEW_USER" /> のブラウジング環境を分けるには、Chrome で新しいプロファイルを作成します</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
@@ -57,7 +55,6 @@
 <translation id="2429317896000329049">お使いのドメインでは同期を利用できないため、Google Chrome はデータを同期できませんでした。</translation>
 <translation id="2467438592969358367">Google Chrome からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="2485422356828889247">アンインストール</translation>
-<translation id="252502352004572774">お使いのパソコンに有害なソフトウェアがないか確認しています...</translation>
 <translation id="2534507159460261402">Google Pay（Chrome にコピー）</translation>
 <translation id="2580411288591421699">実行中の Google Chrome と同じバージョンをインストールすることはできません。Google Chrome を閉じてからもう一度お試しください。</translation>
 <translation id="2586406160782125153">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
@@ -114,12 +111,10 @@
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
-<translation id="4127976662406264741">{NUM_MINS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 分前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_MINS} 分前。}}</translation>
 <translation id="4143243756087420366">Chrome の名前と画像</translation>
 <translation id="4147555960264124640">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロフィールを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">インストーラー アーカイブを解凍できませんでした。Google Chrome をダウンロードし直してください。</translation>
 <translation id="4191857738314598978">{0,plural, =1{1 日以内に Chrome を再起動してください}other{# 日以内に Chrome を再起動してください}}</translation>
-<translation id="4205362703535890467">お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 昨日。</translation>
 <translation id="4205939740494406371">Chrome でパスワードを確認できません。24 時間後にもう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウントでパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>
@@ -148,7 +143,6 @@
 <translation id="4754614261631455953">Google Chrome Canary（mDNS インバウンド）</translation>
 <translation id="4771048833395599659">このファイルは危険なファイルの可能性があるため、Chrome でブロックしました。</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
-<translation id="4831688036548685548">お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 数秒前。</translation>
 <translation id="4891791193823137474">Google Chrome のバックグラウンドでの実行を許可する</translation>
 <translation id="4895437082222824641">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="4953650215774548573">Google Chrome を既定のブラウザとして設定する</translation>
@@ -162,7 +156,6 @@
 <translation id="532046782124376502">警告: 拡張機能による閲覧履歴の記録を Google Chrome で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="5386244825306882791">この拡張機能では、Chrome の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="5394833366792865639">Chrome タブの共有</translation>
-<translation id="5409605318138185493">{NUM_DAYS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 日前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_DAYS} 日前。}}</translation>
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
 <translation id="556024056938947818">Google Chrome はパスワードを表示しようとしています。</translation>
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
@@ -198,7 +191,6 @@
 <translation id="6750954913813541382">スペルミスを修正するために、ブラウザに入力したテキストが Chrome から Google に送信されます</translation>
 <translation id="677276454032249905">今すぐ Chrome を終了しますか？</translation>
 <translation id="683440813066116847">mDNS トラフィックを許可する Google Chrome Canary のインバウンド ルールです。</translation>
-<translation id="6861451385429799394">Chrome による有害なソフトウェアの確認は、<ph name="BEGIN_LINK" />管理者<ph name="END_LINK" />によって無効にされています</translation>
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
@@ -262,7 +254,6 @@
 <translation id="8641606876632989680">不正使用されたパスワードでログインした場合、Chrome で通知します</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">この拡張機能では、Chrome の起動時に表示されるページも制御されます。</translation>
-<translation id="8681614230122836773">お使いのパソコンに有害なソフトウェアが見つかりました</translation>
 <translation id="870251953148363156">Google Chrome を更新(&amp;G)</translation>
 <translation id="873133009373065397">Google Chrome では既定のブラウザを判定または設定できません</translation>
 <translation id="8748242232968346981">Chrome で自分用のプロファイルを作成しますか？</translation>
@@ -270,7 +261,6 @@
 <translation id="8834965163890861871">Google Chrome でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="884296878221830158">この拡張機能では、Chrome の起動時、またはホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>
-<translation id="8907906903932240086">パソコン内の有害なソフトウェアを Chrome で確認できます</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
@@ -278,7 +268,6 @@
 <translation id="9067395829937117663">Google Chrome のご利用には Windows 7 以上が必要です。</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>
 <translation id="9138603949443464873">変更を適用するには Chrome を再起動してください</translation>
-<translation id="9155112650704618965">{NUM_HOURS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 時間前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_HOURS} 時間前。}}</translation>
 <translation id="919706545465235479">同期を開始するには、Chrome を更新します</translation>
 <translation id="989369509083708165">既定のブラウザは Google Chrome です</translation>
 </translationbundle>

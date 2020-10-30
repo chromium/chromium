@@ -507,7 +507,6 @@
 <translation id="2996674880327704673">Пропозиції від Google</translation>
 <translation id="3002501248619246229">Перевірте лоток введення медіа</translation>
 <translation id="3005723025932146533">Показати збережену копію</translation>
-<translation id="3007719053326478567">Адміністратор заблокував можливість друкувати цей контент</translation>
 <translation id="3008447029300691911">Введіть код CVC картки <ph name="CREDIT_CARD" />. Щойно ви підтвердите дані картки, цей сайт отримає доступ до них.</translation>
 <translation id="3010559122411665027">Елемент списку "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Блокується автоматично</translation>
@@ -1110,6 +1109,7 @@
 <translation id="541416427766103491">Накопичувач 4</translation>
 <translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
+<translation id="542872847390508405">Ви переглядаєте в гостьовому режимі</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
 <translation id="5439770059721715174">Помилка перевірки схеми за адресою "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>

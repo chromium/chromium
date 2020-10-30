@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">සිරස්තල මෙනුව සඟවන්න</translation>
 <translation id="1729654308190250600">කරුණාකර හිස් නොවන ඊමේල් ලිපිනයක් ඇතුල් කරන්න.</translation>
 <translation id="1758486001363313524">වෙනත්...</translation>
+<translation id="1774577460079229490">වත්මන් <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">සම්පූර්ණ කාලය: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">ඇඟවුම්_සංවාදය</translation>
 <translation id="1821985195704844674">රුක් ජාලය</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">අගය <ph name="MINIMUM_DATE_OR_TIME" /> හෝ ඊට වඩා පසු විය යුතුය.</translation>
 <translation id="2759744352195237655">උත්පතන බොත්තම</translation>
 <translation id="2761667185364618470">ඔබට ඉදිරියට යාමට අවශ්‍ය නම් කරුණාකර මෙම කොටුව සලකුණු කරන්න.</translation>
+<translation id="2838616441696617235">පියවර</translation>
 <translation id="2844350028562914727">විස්තර</translation>
 <translation id="2896972712917208084">රේඩියෝ සමූහය</translation>
 <translation id="2908441821576996758">කරුණාකර ඊමේල් ලිපිනය කොමාවකින් වෙන් කර ඇතුළු කරන්න.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">මෙනු තීරුව</translation>
 <translation id="4293574643247337246">පිටු ශීර්ෂකය</translation>
 <translation id="4360991593054037559">කරුණාකර වලංගු අගයක් ඇතුළු කරන්න. ආසන්නතම වලංගු අගයයන් දෙක වනුයේ <ph name="VALID_VALUE_LOW" /> සහ <ph name="VALID_VALUE_HIGHER" />වේ.</translation>
+<translation id="4384249794467006333">මෙම රූපය ලේබල් කර නැත. රූප විස්තර ලබා ගැනීම සඳහා ඉහළ දකුණේ තවත් විකල්ප මෙනුව විවෘත කරන්න.</translation>
 <translation id="4384583879834880242">ප්‍රශ්න සහ පිළිතුරු</translation>
 <translation id="4444765639179266822">මෙසේ කියන බව පෙනේ: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ශබ්ද මාලා යොමුව</translation>
 <translation id="4522570452068850558">විස්තර</translation>
+<translation id="4576178047100686001">මෙම රූපය ලේබල් කර නැත. රූප විස්තර ලබා ගැනීම සඳහා ඉහළ වමේ තවත් විකල්ප මෙනුව විවෘත කරන්න.</translation>
 <translation id="4597532268155981612">පෝරමය</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">පහත ඒවායින් කොටසක් '<ph name="ATSIGN" />' තුළ මෙම සංකේතය අඩංගු නොවිය යුතුය '<ph name="INVALIDCHARACTER" />'.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ග්‍රන්ථ නාමාවලිය ඇතුළත් කිරීම</translation>
 <translation id="4915360478455618802">වේලා තෝරකය පෙන්වන්න</translation>
 <translation id="492244087561876220">අදහස් දක්වන්න</translation>
+<translation id="4934662370368414994">අයිතමය</translation>
 <translation id="4950364064308314478">ප්‍රාදේශීය දිනය සහ වේලාව තෝරකය පෙන්වන්න</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> තේරිණි</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> තෝරා ගැනිණි</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">හඬ සර්පණය</translation>
 <translation id="6015796118275082299">වර්ශය</translation>
 <translation id="6023896073578205740">ලැයිස්තු කොටුව</translation>
+<translation id="6131824478727057281">ස්ථානය</translation>
 <translation id="6150588977291308318">ග්‍රන්ථ නාමාවලිය</translation>
 <translation id="6164829606128959761">මීටර්</translation>
 <translation id="6166809985690652833">පසුවදන</translation>

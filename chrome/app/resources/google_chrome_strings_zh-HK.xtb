@@ -8,7 +8,6 @@
 
 部分功能可能無法使用，而系統也不會儲存任何偏好設定的變更。</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chrome</translation>
-<translation id="1088654056000736875">Chrome 正在移除電腦中的有害軟件…</translation>
 <translation id="1097330777386562916">在離開 Chrome 時清除 Cookie 和網站資料</translation>
 <translation id="110877069173485804">這是您專屬的 Chrome</translation>
 <translation id="1125124144982679672">誰在使用 Chrome？</translation>
@@ -19,7 +18,6 @@
 <translation id="1355000804395496115">在 Chrome 使用不同的設定檔，以便將工作和個人瀏覽區分開，或讓不同的使用者共用此裝置</translation>
 <translation id="137466361146087520">Google Chrome 測試版</translation>
 <translation id="1399397803214730675">這部電腦已安裝較新的 Google Chrome 版本，如果軟件無法工作，請解除安裝 Google Chrome，然後再試一次。</translation>
-<translation id="140541193409212341">Chrome 為電腦檢查有害軟件時發生錯誤</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
 <translation id="1513277449617685876">如要將個人瀏覽與 <ph name="NEW_USER" /> 的瀏覽區分開，請在 Chrome 中建立新的設定檔</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
@@ -61,7 +59,6 @@
 <translation id="2429317896000329049">您的網域無法使用「同步功能」，因此 Google Chrome 無法同步處理您的數據。</translation>
 <translation id="2467438592969358367">Google Chrome 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
-<translation id="252502352004572774">Chrome 對電腦進行有害軟件檢查…</translation>
 <translation id="2534507159460261402">Google Pay (已複製至 Chrome)</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
@@ -118,12 +115,10 @@
 <translation id="4050175100176540509">最新版本提供重大保安改良和新功能。</translation>
 <translation id="4053720452172726777">自訂及控制 Google Chrome</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
-<translation id="4127976662406264741">{NUM_MINS,plural, =1{Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：1 分鐘前。}other{Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：{NUM_MINS} 分鐘前。}}</translation>
 <translation id="4143243756087420366">Chrome 名稱和相片</translation>
 <translation id="4147555960264124640">您已登入受管理的帳戶，並將管理控制權授予您的 Chrome 設定檔。您的 Chrome 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">安裝程式無法解壓縮封存檔案，請再次下載 Google Chrome。</translation>
 <translation id="4191857738314598978">{0,plural, =1{請在 1 天內重新啟動 Chrome}other{請在 # 天內重新啟動 Chrome}}</translation>
-<translation id="4205362703535890467">Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：昨天。</translation>
 <translation id="4205939740494406371">Chrome 無法檢查密碼，請於 24 小時後再試一次，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251615635259297716">要將您的 Chrome 數據連結至這個帳戶嗎？</translation>
@@ -152,7 +147,6 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">此檔案可能不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="479167709087336770">這會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。您可以在設定中變更此行為。</translation>
-<translation id="4831688036548685548">Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：剛才。</translation>
 <translation id="4891791193823137474">讓 Google Chrome 在背景執行</translation>
 <translation id="4895437082222824641">在 Chrome 新分頁中開啟連結(&amp;T)</translation>
 <translation id="4953650215774548573">將 Google Chrome 設為預設瀏覽器</translation>
@@ -168,7 +162,6 @@
 <translation id="532046782124376502">警告：Google Chrome 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
 <translation id="5386244825306882791">這個擴充功能也會控管 Chrome 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5394833366792865639">分享 Chrome 分頁</translation>
-<translation id="5409605318138185493">{NUM_DAYS,plural, =1{Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：1 天前。}other{Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：{NUM_DAYS} 天前。}}</translation>
 <translation id="5430073640787465221">您的偏好設定檔已損毀或無效。
 
 Google Chrome 無法復原您的設定。</translation>
@@ -205,7 +198,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6750954913813541382">Chrome 會將您在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />您的管理員<ph name="END_LINK" />已停用 Chrome 檢查有害軟件的功能</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>
@@ -269,7 +261,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8641606876632989680">如果您使用被盜用的密碼登入帳戶，Chrome 會通知您</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>
 <translation id="8679801911857917785">這個擴充功能也會管制 Chrome 啟動時所顯示的網頁。</translation>
-<translation id="8681614230122836773">Chrome 在您的電腦上發現了有害軟件</translation>
 <translation id="870251953148363156">更新 Google Chrome(&amp;G)</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8748242232968346981">要在 Chrome 中建立您自己的設定檔嗎？</translation>
@@ -277,7 +268,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果您同意，請輸入 Windows 密碼。</translation>
 <translation id="884296878221830158">這個擴充功能也會管制 Chrome 啟動時或您按一下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
-<translation id="8907906903932240086">Chrome 可為電腦檢查有害軟件</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
@@ -285,7 +275,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="9067395829937117663">Google Chrome 只能在 Windows 7 或以上作業系統中執行。</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
 <translation id="9138603949443464873">如要套用變更，請重新啟動 Chrome</translation>
-<translation id="9155112650704618965">{NUM_HOURS,plural, =1{Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：1 小時前。}other{Chrome 在您的電腦上找不到已知的有害軟件。上次檢查時間：{NUM_HOURS} 小時前。}}</translation>
 <translation id="919706545465235479">更新 Chrome 即可開始同步</translation>
 <translation id="989369509083708165">Google Chrome 現為您的預設瀏覽器</translation>
 </translationbundle>

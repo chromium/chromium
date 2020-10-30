@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Farska tastatura</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Postavljanje dostupnosti van mreže za fajlove (njih <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="1646136617204068573">Mađarska tastatura</translation>
 <translation id="164729547906544836">Tamilska tastatura (itrans)</translation>
 <translation id="164969095109328410">Chrome uređaj</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">SAD međunarodna</translation>
 <translation id="2562685439590298522">Dokumenti</translation>
 <translation id="2563185590376525700">Žaba</translation>
+<translation id="2572501073504669105">Možete postaviti dostupnost fajlova van mreže da im možete pristupati bez internetske veze.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videozapis</translation>
 <translation id="2620090360073999360">Trenutno nije moguće pristupiti usluzi Google Disk.</translation>
 <translation id="2638942478653899953">Pristupanje Google Disku nije uspjelo. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" /> te se ponovo prijavite.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Lokacija fajla</translation>
 <translation id="2672394958563893062">Došlo je do greške. Kliknite da ponovo pokrenete od početka.</translation>
 <translation id="2676946222714718093">Reproducira se na</translation>
+<translation id="2735623501230989521">Odobrite da Parallels Desktop pristupa fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Rumunska standardna tastatura</translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint prezentacija</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Odobrite da Parallels Desktop pristupa fajlovima na Google Disku. Promjene će se sinhronizirati na vašim drugim uređajima.</translation>
 <translation id="4801956050125744859">Zadrži obje</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Prikaži skrivene fajlove</translation>
 <translation id="7508545000531937079">Prezentacija</translation>
 <translation id="751507702149411736">Bjeloruska</translation>
+<translation id="7544830582642184299">Odobrite Linux aplikacijama da pristupaju fajlovima na vašem Google Disku. Promjene će se sinhronizirati na vašim drugim uređajima.</translation>
 <translation id="7544853251252956727">Izmiješaj</translation>
 <translation id="7547811415869834682">Holandska</translation>
 <translation id="7551643184018910560">Zakači za policu</translation>
+<translation id="7553492409867692754">Dajte Linux aplikacijama odobrenje da pristupaju fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Samo trenutak</translation>
+<translation id="7592775719802218421">Postavljanje dostupnosti van mreže za fajl <ph name="FILE_NAME" /></translation>
 <translation id="7603724359189955920">Mreže</translation>
 <translation id="7627790789328695202">Ups, već postoji fajl <ph name="FILE_NAME" />. Promijenite mu naziv i pokušajte ponovo.</translation>
 <translation id="7628656427739290098">Završeno je <ph name="PERCENT" />%.</translation>

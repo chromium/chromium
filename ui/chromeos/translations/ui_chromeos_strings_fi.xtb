@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Fäärinkielinen näppäimistö</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Pt</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Otetaan <ph name="NUMBER_OF_ITEMS" /> tiedostoa käyttöön offline-tilassa</translation>
 <translation id="1646136617204068573">Näppäimistö: unkari</translation>
 <translation id="164729547906544836">Tamilinkielinen näppäimistö (itrans)</translation>
 <translation id="164969095109328410">Chrome-laite</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
 <translation id="2562685439590298522">Dokumentit</translation>
 <translation id="2563185590376525700">Sammakko</translation>
+<translation id="2572501073504669105">Voit ottaa tiedostoja käyttöön offline-tilassa sitä varten, jos sinulla ei ole internetyhteyttä.</translation>
 <translation id="2614589611416690597">Video, jonka tyyppi on <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Google Drive ei ole käytettävissä juuri nyt.</translation>
 <translation id="2638942478653899953">Google Driveen ei saada yhteyttä. <ph name="BEGIN_LINK" />Kirjaudu ulos<ph name="END_LINK" /> ja takaisin sisään.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Tiedoston sijainti</translation>
 <translation id="2672394958563893062">Tapahtui virhe. Aloita alusta klikkaamalla.</translation>
 <translation id="2676946222714718093">Toistetaan Chromecastilla</translation>
+<translation id="2735623501230989521">Myönnä Parallels Desktopille pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
 <translation id="2735698359135166290">Romanialainen vakionäppäimistö</translation>
 <translation id="2771816809568414714">Juusto</translation>
 <translation id="2781645665747935084">belgialainen</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-esitys</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kt</translation>
+<translation id="4789067489790477934">Myönnä Parallels Desktopille pääsy Google Driveesi tallennetuille tiedostoille. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="4801956050125744859">Pidä molemmat</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Laite on vain luku ‑tilassa.</translation>
@@ -451,7 +455,7 @@
    Sulje kaikki arkistossa tai virtuaalilevyllä olevat tiedostot ja yritä uudelleen.</translation>
 <translation id="5691596662111998220">Hups, kohdetta <ph name="FILE_NAME" /> ei ole enää olemassa.</translation>
 <translation id="5700087501958648444">Äänitiedoston tiedot</translation>
-<translation id="5731409020711461763">1 uusi valokuva</translation>
+<translation id="5731409020711461763">1 uusi kuva</translation>
 <translation id="5752453871435543420">Chrome-käyttöjärjestelmän pilvivarmuuskopiointi</translation>
 <translation id="5756666464756035725">Unkarilainen QWERTY</translation>
 <translation id="5771585441665576801">Translitterointi (geia → γεια)</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Näytä piilotetut tiedostot</translation>
 <translation id="7508545000531937079">Diaesitys</translation>
 <translation id="751507702149411736">valkovenäjä</translation>
+<translation id="7544830582642184299">Myönnä Linux-sovelluksille pääsy Google Driveesi tallennettuihin tiedostoihin. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="7544853251252956727">Satunnaistoisto</translation>
 <translation id="7547811415869834682">hollanti</translation>
 <translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
+<translation id="7553492409867692754">Myönnä Linux-sovelluksille pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Odota hetki</translation>
+<translation id="7592775719802218421">Otetaan <ph name="FILE_NAME" /> käyttöön offline-tilassa</translation>
 <translation id="7603724359189955920">Ruudukot</translation>
 <translation id="7627790789328695202">Hups, <ph name="FILE_NAME" /> on jo olemassa. Anna kohteelle toinen nimi ja yritä uudelleen.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % valmis</translation>

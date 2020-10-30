@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Imeghairiwa</translation>
 <translation id="1075811647922107217">Ukubwa wa ukurasa</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
+<translation id="1204296502688602597">Muda wa Kusubiri wa DNS</translation>
+<translation id="1290331692326790741">Mtandao si thabiti</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Lango linaweza Kuitwa</translation>
 <translation id="1413240736185167732">Haijakamilika - Kichujio kimeshindwa kufanya kazi</translation>
 <translation id="1468664791493211953">Ofa</translation>
 <translation id="1478594628797167447">Kichanganuzi</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
+<translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
 <translation id="1734367976349034509">Kifaa hiki kinadhibitiwa kibiashara</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
 <translation id="1930797645656624981">Huduma ya Mbinu ya Kuingiza Data kwenye Mfumo wa Uendeshaji wa Chrome</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
+<translation id="2364498172489649528">Amefaulu</translation>
 <translation id="2375079107209812402">Umebakisha mara <ph name="ATTEMPTS_LEFT" /> za kujaribu</translation>
+<translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} ya kujaribu}other{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} za kujaribu}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Tafuta</translation>
 <translation id="2805756323405976993">Programu</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
+<translation id="3083667275341675831">Uchunguzi wa Muunganisho</translation>
 <translation id="3091839911843451378">Haijakamilika - Imesimamisha</translation>
+<translation id="3188257591659621405">Faili zangu</translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
 <translation id="3268178239013324452">Haijakamilika - Kifuniko kimefunguka</translation>
+<translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3369013195428705271">Una uhakika kuwa ungependa kufuta historia yote ya kuchapisha? Kazi unazoendelea kuchapisha hazitafutwa.</translation>
 <translation id="3456078764689556234">Imechapisha ukurasa wa <ph name="PRINTED_PAGES" /> kati ya <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Kuchapisha</translation>
 <translation id="3515615323037921860">Kazi za Kuchapisha</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
+<translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
 <translation id="38114475217616659">Futa historia yote</translation>
 <translation id="3820172043799983114">PIN si sahihi</translation>
 <translation id="3838338534323494292">Nenosiri jipya</translation>
 <translation id="3865414814144988605">Ubora</translation>
+<translation id="3941014780699102620">Imeshindwa kusuluhisha seva pangishi</translation>
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> hudhibiti kifaa hiki na ina idhini ya kufikia shughuli zote za mtumiaji, zikiwemo kurasa za wavuti alizotembelea, manenosiri na anwani za barua pepe.</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Hakuna kazi za kuchapisha zinazoendelea</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
+<translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Muda wa kutumia tiketi ya Kerberos unakaribia kuisha</translation>
 <translation id="445059817448385655">Nenosiri la awali</translation>
+<translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
+<translation id="4548483925627140043">Mawimbi ya WiFi hayapatikani</translation>
+<translation id="458794348635939462">Imeshindwa kusuluhisha seva pangishi zote</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kati ya <ph name="TOTAL_PAGE_NUMBER" />. Bonyeza 'Enter' ili ughairi kazi ya kuchapisha.</translation>
+<translation id="4646949265910132906">Muunganisho Salama wa WiFi</translation>
 <translation id="467510802200863975">Manenosiri hayalingani</translation>
 <translation id="4691278870498629773">Imesimama - Trei haipo</translation>
+<translation id="469379815867856270">Uthabiti wa Mtandao</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
 <translation id="4773299976671772492">Imesimamishwa</translation>
 <translation id="4808449224298348341">Kazi ya kuchapisha ya <ph name="DOCUMENT_TITLE" /> ilighairiwa</translation>
 <translation id="4890353053343094602">Chagua nenosiri jipya mara moja</translation>
 <translation id="4917889632206600977">Imesimama - Karatasi zimeisha</translation>
 <translation id="4932733599132424254">Tarehe</translation>
+<translation id="4985509611418653372">Tekeleza</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="520299634122159966">Hakuna vichanganuzi vinavyopatikana</translation>
 <translation id="5212543919916444558">Sijapata swali lolote kwenye skrini yako. Jaribu kugonga maikrofoni ili uniulize chochote.</translation>
@@ -70,6 +89,8 @@
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Chagua nenosiri jipya sasa</translation>
+<translation id="5372659122375744710">Mtandao wa WiFi si salama</translation>
+<translation id="5401938042319910061">Tekeleza Ratiba Zote</translation>
 <translation id="5457599981699367932">Vinjari kama Mgeni</translation>
 <translation id="54609108002486618">Imedhibitiwa</translation>
 <translation id="5832805196449965646">Ongeza Mtumiaji Mwingine</translation>
@@ -77,15 +98,21 @@
 <translation id="6048107060512778456">Haijakamilika - Karatasi imekwama</translation>
 <translation id="6058625436358447366">Ili ukamilishe, weka nenosiri lako la awali na lile jipya</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
+<translation id="6108689792487843350">Imeshindwa kufikia lango</translation>
 <translation id="6146993107019042706">Ili ukamilishe, weka nenosiri jipya</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Seva za majina zilizo na hitilafu</translation>
+<translation id="6325525973963619867">Imeshindwa</translation>
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="649050271426829538">Imesimama - Karatasi imekwama</translation>
 <translation id="6517239166834772319">Gundua</translation>
+<translation id="6527081081771465939">Itifaki isiyojulikana ya ulinzi wa WiFi</translation>
 <translation id="6564646048574748301">Haijakamilika - Printa haiwezi kufikiwa</translation>
 <translation id="6620487321149975369">Kazi za kuchapisha zitaonekana katika historia usipoziondoa mwenyewe</translation>
 <translation id="6643016212128521049">Futa</translation>
+<translation id="6704062477274546131">Usuluhishaji wa DNS</translation>
 <translation id="6747215703636344499">Imesimama - Sehemu ya kutoa karatasi imejaa</translation>
+<translation id="714876143603641390">Muunganisho wa LAN</translation>
 <translation id="7162487448488904999">Matunzio</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Aina ya faili</translation>
@@ -93,15 +120,22 @@
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7690294790491645610">Thibitisha nenosiri jipya</translation>
 <translation id="7805768142964895445">Hali</translation>
+<translation id="7936303884198020182">Hakuna seva za majina zilizopatikana</translation>
 <translation id="808894953321890993">Badilisha nenosiri</translation>
 <translation id="8208861521865154048">Manufaa</translation>
+<translation id="8230672074305416752">Imeshindwa kuita lango la mtandao chaguomsingi</translation>
 <translation id="8294431847097064396">Chanzo</translation>
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8352772353338965963">Ongeza akaunti ya uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja. Akaunti zote zilizoingiwa zinaweza kufikiwa bila nenosiri, hivyo kipengee hiki lazima kitumike kwenye akaunti zinazoaminika pekee.</translation>
+<translation id="8364946094152050673">Seva za majina hazina kitu</translation>
+<translation id="8475690821716466388">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP PSK</translation>
+<translation id="8477551185774834963">Muda wa kusubiri wa DNS umezidi kidogo kiwango cha juu kinachoruhusiwa</translation>
 <translation id="8668052347555487755">Hali ya rangi</translation>
 <translation id="871560550817059752">Haijakamilika - Wino umeisha</translation>
+<translation id="8723108084122415655">Muda wa kusubiri wa mtandao usio chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8726019395068607495">Imesimama - Mlango umefunguka</translation>
 <translation id="8747900814994928677">Thibitisha mabadiliko</translation>
+<translation id="8910721771319628100">Muda wa kusubiri wa mtandao chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8919837981463578619">Haijakamilika - Trei haipo</translation>
 <translation id="8928727111548978589">Haijakamilika - Karatasi zimeisha</translation>
 <translation id="910415269708673980">Onyesha upya tiketi ya <ph name="PRINCIPAL_NAME" /></translation>

@@ -56,6 +56,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1420527829902822813">Screenshot diambil dan disimpan ke papan klip</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1455242230282523554">Tampilkan setelan bahasa</translation>
+<translation id="1456407467406159627">Perekaman layar dihentikan karena terdapat konten rahasia di layar.</translation>
 <translation id="1460620680449458626">Volume dibisukan.</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1475439723810528286">Ketuk di mana saja untuk menangkap gambar dalam layar penuh</translation>
@@ -150,6 +151,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
 <translation id="2390318262976603432">Setelan Lokal</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Kontrol media</translation>
 <translation id="2405664212338326887">Tidak terhubung</translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
@@ -220,6 +222,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Mulai ulang untuk memperbarui</translation>
 <translation id="3139942575505304791">Halaman kerja 1</translation>
+<translation id="3147157020428159854">Perekaman layar dihentikan</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3153444934357957346">Anda hanya dapat memiliki maksimum <ph name="MULTI_PROFILE_USER_LIMIT" /> akun dalam fitur login multipel.</translation>
@@ -291,6 +294,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="380165613292957338">Hai, ada yang bisa dibantu?</translation>
 <translation id="3826099427150913765">Ganti ke sandi</translation>
 <translation id="383629559565718788">Tampilkan setelan keyboard</translation>
+<translation id="3846214748874656680">Keluar dari layar penuh</translation>
 <translation id="3846575436967432996">Tidak tersedia informasi jaringan</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
@@ -655,7 +659,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7551643184018910560">Pin ke rak</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Memindahkan jendela ke desktop lain dapat mengakibatkan perilaku tak terduga. Notifikasi, jendela, dan dialog berikutnya dapat terpisah antardesktop.</translation>
-<translation id="7568637526529101738">Dengan klik kanan atau tekan lama, Asisten akan menampilkan info seperti definisi atau konversi unit untuk pilihan Anda.</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox diaktifkan</translation>
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7590883480672980941">Setelan masukan</translation>
@@ -707,6 +710,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7995804128062002838">Gagal mengambil screenshot</translation>
 <translation id="8000066093800657092">Tidak ada jaringan</translation>
 <translation id="8004512796067398576">Penambahan</translation>
+<translation id="8029247720646289474">Koneksi hotspot gagal</translation>
 <translation id="8029629653277878342">Perlu PIN atau sandi untuk keamanan tambahan</translation>
 <translation id="8030169304546394654">Diputuskan</translation>
 <translation id="8042893070933512245">Buka menu setelan aksesibilitas</translation>
@@ -742,7 +746,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan ponsel Anda akan terhubung otomatis</translation>
 <translation id="8380784334203145311">Selamat malam,</translation>
 <translation id="8388750414311082622">Halaman kerja terakhir tidak dapat dihapus.</translation>
-<translation id="8392451568018454956">Menu opsi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Orang tuamu mengunci perangkat ini</translation>
 <translation id="8412677897383510995">Tampilkan setelan layar</translation>
 <translation id="8425213833346101688">Ubah</translation>

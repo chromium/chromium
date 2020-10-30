@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
+<translation id="1204296502688602597">Latencia de DNS</translation>
+<translation id="1290331692326790741">Señal débil</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Se puede hacer ping a la pasarela</translation>
 <translation id="1413240736185167732">No se ha podido imprimir - Error de filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1478594628797167447">Escáner</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">Detenido: sin tinta</translation>
+<translation id="1706391837335750954">Resolución de DNS presente</translation>
 <translation id="1734367976349034509">Este es un dispositivo administrado por la empresa</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1930797645656624981">Servicio de método de introducción de Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
+<translation id="2364498172489649528">Aprobado</translation>
 <translation id="2375079107209812402">Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Enviar informe de opinión</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
+<translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
+<translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
+<translation id="3310640316857623290">La latencia DNS supera considerablemente el umbral permitido</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresión? Los trabajos de impresión en curso no se borrarán.</translation>
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3515615323037921860">Trabajos de impresión</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
+<translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
 <translation id="3865414814144988605">Resolución</translation>
+<translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, sus contraseñas y su correo electrónico.</translation>
 <translation id="4003384961948020559">No se ha podido imprimir - Salida llena</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">La contraseña caducará dentro de <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay ningún trabajo de impresión en curso</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
+<translation id="4378373042927530923">Sin ejecutar</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">El ticket de Kerberos caducará pronto</translation>
 <translation id="445059817448385655">Contraseña antigua</translation>
+<translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
+<translation id="4548483925627140043">Señal no encontrada</translation>
+<translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
+<translation id="4646949265910132906">Conexión Wi‑Fi segura</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
 <translation id="4691278870498629773">Detenido: falta la bandeja</translation>
+<translation id="469379815867856270">Intensidad de la señal</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
 <translation id="4932733599132424254">Fecha</translation>
+<translation id="4985509611418653372">Ejecutar</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestiona a este usuario, y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
@@ -70,6 +89,8 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Selecciona otra ahora</translation>
+<translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
+<translation id="5401938042319910061">Ejecutar todas las rutinas</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Administrado</translation>
 <translation id="5832805196449965646">Añadir perfil</translation>
@@ -77,15 +98,21 @@
 <translation id="6048107060512778456">No se ha podido imprimir - Atasco de papel</translation>
 <translation id="6058625436358447366">Para finalizar, introduce tu contraseña anterior y la nueva</translation>
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
+<translation id="6108689792487843350">No se puede acceder a la puerta de enlace</translation>
 <translation id="6146993107019042706">Para finalizar, introduce tu contraseña nueva</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Los servidores de nombres presentan errores de formato</translation>
+<translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="649050271426829538">Detenido: atasco de papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
+<translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
 <translation id="6643016212128521049">Eliminar</translation>
+<translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
+<translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
@@ -93,15 +120,22 @@
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirma la nueva contraseña</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8208861521865154048">Ventajas</translation>
+<translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8294431847097064396">Origen</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
+<translation id="8364946094152050673">Servidores de nombres vacíos</translation>
+<translation id="8475690821716466388">La red Wi-Fi está protegida con un protocolo poco seguro WEP PSK</translation>
+<translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>
 <translation id="8668052347555487755">Modo de color</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>
+<translation id="8723108084122415655">La red no predeterminada supera el umbral de latencia</translation>
 <translation id="8726019395068607495">Detenido: cubierta abierta</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>
+<translation id="8910721771319628100">La red predeterminada supera el umbral de latencia</translation>
 <translation id="8919837981463578619">No se ha podido imprimir - Falta una bandeja</translation>
 <translation id="8928727111548978589">No se ha podido imprimir - Sin papel</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>

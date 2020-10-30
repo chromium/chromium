@@ -56,6 +56,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1420527829902822813">En skärmdump har tagits och sparats i Urklipp</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
+<translation id="1456407467406159627">Skärminspelningen stoppades på grund av konfidentiellt innehåll på skärmen.</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
 <translation id="1467432559032391204">Vänster</translation>
 <translation id="1475439723810528286">Tryck var som helst för att ta en bild av hela skärmen</translation>
@@ -150,6 +151,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
 <translation id="2390318262976603432">Inställningar av språkkod</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2405664212338326887">Inte ansluten</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2412593942846481727">Det finns en uppdatering</translation>
@@ -220,6 +222,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
+<translation id="3147157020428159854">Skärminspelningen har stoppats</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Orientering</translation>
 <translation id="3153444934357957346">Du kan högst använda <ph name="MULTI_PROFILE_USER_LIMIT" /> konton för multiinloggning.</translation>
@@ -291,6 +294,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="380165613292957338">Hej. Hur kan jag hjälpa dig?</translation>
 <translation id="3826099427150913765">Byt till lösenord</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
+<translation id="3846214748874656680">Avsluta helskärmsläge</translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
@@ -655,7 +659,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
-<translation id="7568637526529101738">Assistenten visar information om det som är markerat när du högerklickar eller trycker länge på det, t.ex. en definition eller en omräkning till en annan enhet.</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
 <translation id="7579778809502851308">Skärmbild</translation>
 <translation id="7590883480672980941">Inmatningsinställningar</translation>
@@ -707,6 +710,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7995804128062002838">Skärmbild/skärminspelning misslyckades</translation>
 <translation id="8000066093800657092">Inget nätverk</translation>
 <translation id="8004512796067398576">Öka</translation>
+<translation id="8029247720646289474">Anslutning via surfzon misslyckades</translation>
 <translation id="8029629653277878342">Pinkod eller lösenord krävs för större säkerhet</translation>
 <translation id="8030169304546394654">Frånkopplad</translation>
 <translation id="8042893070933512245">Öppna menyn med tillgänglighetsinställningar</translation>
@@ -742,7 +746,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8375916635258623388">Denna <ph name="DEVICE_NAME" /> ansluts automatiskt till din mobil</translation>
 <translation id="8380784334203145311">Hej!</translation>
 <translation id="8388750414311082622">Det sista skrivbordet går inte att ta bort.</translation>
-<translation id="8392451568018454956">Alternativmenyn för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Din förälder har låst enheten</translation>
 <translation id="8412677897383510995">Visa skärminställningar</translation>
 <translation id="8425213833346101688">Ändra</translation>

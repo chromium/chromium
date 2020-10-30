@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Bàn phím dành cho tiếng Faroe</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
+<translation id="1646019627374511909">Đang chọn chế độ xem được khi không có mạng cho <ph name="NUMBER_OF_ITEMS" /> tệp</translation>
 <translation id="1646136617204068573">Bàn phím tiếng Hungari</translation>
 <translation id="164729547906544836">Bàn phím tiếng Tamil (itrans)</translation>
 <translation id="164969095109328410">Thiết bị Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="2562685439590298522">Documents</translation>
 <translation id="2563185590376525700">Ếch</translation>
+<translation id="2572501073504669105">Bạn có thể chọn xem các tệp ở chế độ ngoại tuyến khi không có mạng.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Không thể kết nối với Google Drive tại thời điểm này.</translation>
 <translation id="2638942478653899953">Không thể truy cập Google Drive. Vui lòng <ph name="BEGIN_LINK" />đăng xuất<ph name="END_LINK" /> và đăng nhập lại.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Vị trí tệp</translation>
 <translation id="2672394958563893062">Đã xảy ra lỗi. Nhấp để khởi động lại từ đầu.</translation>
 <translation id="2676946222714718093">Đang phát trên</translation>
+<translation id="2735623501230989521">Cho phép ứng dụng Parallels Desktop truy cập vào các tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Bàn phím chuẩn tiếng Rumani</translation>
 <translation id="2771816809568414714">Pho mát</translation>
 <translation id="2781645665747935084">Tiếng Bỉ</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Cơm nắm Onigiri</translation>
 <translation id="4784330909746505604">Bản trình bày PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Cho phép ứng dụng Parallels Desktop truy cập vào các tệp trên Google Drive của bạn. Các thay đổi sẽ đồng bộ hóa với những thiết bị khác mà bạn có.</translation>
 <translation id="4801956050125744859">Giữ cả hai</translation>
 <translation id="4804827417948292437">Quả bơ</translation>
 <translation id="4823651846660089135">Thiết bị chỉ đọc</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Hiển thị các tệp ẩn</translation>
 <translation id="7508545000531937079">Trình chiếu</translation>
 <translation id="751507702149411736">Tiếng Bê-la-rút</translation>
+<translation id="7544830582642184299">Cho phép các ứng dụng Linux truy cập vào tệp trên Google Drive. Các thay đổi sẽ đồng bộ hóa với những thiết bị khác mà bạn có.</translation>
 <translation id="7544853251252956727">Phát ngẫu nhiên</translation>
 <translation id="7547811415869834682">Tiếng Hà Lan</translation>
 <translation id="7551643184018910560">Ghim vào giá</translation>
+<translation id="7553492409867692754">Cho phép các ứng dụng Linux truy cập vào tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Xin đợi một chút</translation>
+<translation id="7592775719802218421">Đang chọn chế độ sử dụng được khi không có mạng cho <ph name="FILE_NAME" /></translation>
 <translation id="7603724359189955920">Lưới</translation>
 <translation id="7627790789328695202">Rất tiếc, <ph name="FILE_NAME" /> đã tồn tại. Hãy đổi tên tệp và thử lại.</translation>
 <translation id="7628656427739290098">Đã hoàn tất <ph name="PERCENT" />%.</translation>

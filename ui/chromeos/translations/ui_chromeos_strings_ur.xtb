@@ -65,6 +65,7 @@
 <translation id="158809615184981282">فیروئیز کی بورڈ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">کیمرا</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> فائلز کو آف لائن دستیاب بنایا جا رہا ہے</translation>
 <translation id="1646136617204068573">ہنگریائی کی بورڈ</translation>
 <translation id="164729547906544836">‏تامل کی بورڈ (itrans)</translation>
 <translation id="164969095109328410">‏Chrome آلہ</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">مینڈک</translation>
+<translation id="2572501073504669105">انٹرنیٹ کنکشن نہ ہونے پر رسائی کے لیے آپ فائلز کو آف لائن دستیاب بنا سکتے ہیں۔</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ویڈیو</translation>
 <translation id="2620090360073999360">‏اس وقت Google Drive تک رسائی نہیں ہو سکتی ہے۔</translation>
 <translation id="2638942478653899953">‏Google Drive تک رسائی حاصل نہیں ہو سکی۔ براہ کرم <ph name="BEGIN_LINK" />لاگ آؤٹ کریں<ph name="END_LINK" /> اور دوبارہ لاگ ان کریں۔</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">فائل کا مقام</translation>
 <translation id="2672394958563893062">ایک خرابی پیش آگئی۔ ابتدا سے دوبارہ شروع کرنے کیلئے کلک کریں۔</translation>
 <translation id="2676946222714718093">اس پر چل رہا ہے</translation>
+<translation id="2735623501230989521">‏Parallels ڈیسک ٹاپ کو<ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کے لیے اجازت دیں</translation>
 <translation id="2735698359135166290">رومانیائی معیاری کی بورڈ</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بیلجین</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4784330909746505604">‏PowerPoint پیشکش</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">‏Parallels ڈیسک ٹاپ کو اپنے Google Drive میں فائلز تک رسائی کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="4801956050125744859">دونوں کو برقرار رکھیں</translation>
 <translation id="4804827417948292437">مَگَر ناشپاتی</translation>
 <translation id="4823651846660089135">آلہ صرف پڑھنے کیلئے ہے</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">پوشیدہ فائلیں دکھائیں</translation>
 <translation id="7508545000531937079">سلائیڈ شو</translation>
 <translation id="751507702149411736">بيلاروسی</translation>
+<translation id="7544830582642184299">‏Linux ایپس کو اپنے Google Drive میں فائلز تک رسائی کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="7544853251252956727">شفل کریں</translation>
 <translation id="7547811415869834682">ڈچ</translation>
 <translation id="7551643184018910560">شیلف میں پن کریں</translation>
+<translation id="7553492409867692754">‏Linux ایپس کو <ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کرنے کی اجازت دیں</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">بس ایک سیکنڈ انتظار کریں</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> آف لائن دستیاب بنائی جا رہی ہے</translation>
 <translation id="7603724359189955920">گرڈز</translation>
 <translation id="7627790789328695202">افوہ، <ph name="FILE_NAME" /> پہلے سے موجود ہے۔ اس کا نام تبدیل کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% مکمل۔</translation>

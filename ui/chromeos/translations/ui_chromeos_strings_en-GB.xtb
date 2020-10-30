@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faroese keyboard</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1646019627374511909">Making <ph name="NUMBER_OF_ITEMS" /> files available offline</translation>
 <translation id="1646136617204068573">Hungarian keyboard</translation>
 <translation id="164729547906544836">Tamil keyboard (itrans)</translation>
 <translation id="164969095109328410">Chrome device</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Frog</translation>
+<translation id="2572501073504669105">You can make files available offline for access when you don't have Internet connection.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
 <translation id="2620090360073999360">Google Drive cannot be reached at this time.</translation>
 <translation id="2638942478653899953">Google Drive could not be reached. Please <ph name="BEGIN_LINK" />log out<ph name="END_LINK" /> and log back in.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">File location</translation>
 <translation id="2672394958563893062">An error occurred. Click to restart from the beginning.</translation>
 <translation id="2676946222714718093">Playing on</translation>
+<translation id="2735623501230989521">Give Parallels Desktop permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="2735698359135166290">Romanian standard keyboard</translation>
 <translation id="2771816809568414714">Cheese</translation>
 <translation id="2781645665747935084">Belgian</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint presentation</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Give Parallels Desktop permission to access files in your Google Drive. Changes will sync to your other devices.</translation>
 <translation id="4801956050125744859">Keep both</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4823651846660089135">Device is read-only</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Show hidden files</translation>
 <translation id="7508545000531937079">Slideshow</translation>
 <translation id="751507702149411736">Belarusian</translation>
+<translation id="7544830582642184299">Give Linux apps permission to access files in your Google Drive. Changes will sync to your other devices.</translation>
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7547811415869834682">Dutch</translation>
 <translation id="7551643184018910560">Pin to shelf</translation>
+<translation id="7553492409867692754">Give Linux apps permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Wait just a sec</translation>
+<translation id="7592775719802218421">Making <ph name="FILE_NAME" /> available offline</translation>
 <translation id="7603724359189955920">Grids</translation>
 <translation id="7627790789328695202">Whoops, <ph name="FILE_NAME" /> already exists. Rename it and try again.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% complete.</translation>

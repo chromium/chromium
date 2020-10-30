@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">字幕メニューを表示しない</translation>
 <translation id="1729654308190250600">メール アドレスを入力してください。</translation>
 <translation id="1758486001363313524">その他...</translation>
+<translation id="1774577460079229490">現在の <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">合計時間: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">アラート ダイアログ</translation>
 <translation id="1821985195704844674">ツリーグリッド</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311"><ph name="MINIMUM_DATE_OR_TIME" /> 以降の値を指定する必要があります。</translation>
 <translation id="2759744352195237655">ポップアップ ボタン</translation>
 <translation id="2761667185364618470">次に進むにはこのチェックボックスをオンにしてください。</translation>
+<translation id="2838616441696617235">ステップ</translation>
 <translation id="2844350028562914727">詳細</translation>
 <translation id="2896972712917208084">ラジオボタン グループ</translation>
 <translation id="2908441821576996758">メール アドレスのカンマ区切りリストを入力してください。</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">メニューバー</translation>
 <translation id="4293574643247337246">ページヘッダー</translation>
 <translation id="4360991593054037559">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE_LOW" /> と <ph name="VALID_VALUE_HIGHER" /> です。</translation>
+<translation id="4384249794467006333">この画像にはラベルがありません。画像の説明を取得するには、右上のその他メニューを開いてください。</translation>
 <translation id="4384583879834880242">Q＆A</translation>
 <translation id="4444765639179266822"><ph name="OCR_TEXT" /> というテキストのようです</translation>
 <translation id="4446524499724042288">用語参照</translation>
 <translation id="4522570452068850558">詳細</translation>
+<translation id="4576178047100686001">この画像にはラベルがありません。画像の説明を取得するには、左上のその他メニューを開いてください。</translation>
 <translation id="4597532268155981612">フォーム</translation>
 <translation id="4661075872484491155">ツリー</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」に続く文字列に記号「<ph name="INVALIDCHARACTER" />」を使用しないでください。</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">文献情報</translation>
 <translation id="4915360478455618802">時間選択ツールを表示します</translation>
 <translation id="492244087561876220">コメント</translation>
+<translation id="4934662370368414994">アイテム</translation>
 <translation id="4950364064308314478">ローカル日時選択ツールを表示します</translation>
 <translation id="4971739861736909480">「<ph name="ACCNAME" />」は選択済みです</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> 件選択</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">音量スライダー</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6023896073578205740">リストボックス</translation>
+<translation id="6131824478727057281">場所</translation>
 <translation id="6150588977291308318">参考文献</translation>
 <translation id="6164829606128959761">メーター</translation>
 <translation id="6166809985690652833">後書き</translation>

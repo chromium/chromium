@@ -65,6 +65,7 @@
 <translation id="158809615184981282">फारोइज किबोर्ड</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> पि.बि.</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> वटा फाइल अफलाइन उपलब्ध गराइँदै छन्</translation>
 <translation id="1646136617204068573">हंगेरी किबोर्ड</translation>
 <translation id="164729547906544836">तामिल किबोर्ड (ITrans)</translation>
 <translation id="164969095109328410">Chrome यन्त्र</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">यु.एस. अन्तर्राष्ट्रिय</translation>
 <translation id="2562685439590298522">कागजातहरू</translation>
 <translation id="2563185590376525700">भ्यागुतो</translation>
+<translation id="2572501073504669105">तपाईं इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि फाइलहरू अफलाइन उपलब्ध गराउन सक्नुहुन्छ।</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> भिडियो</translation>
 <translation id="2620090360073999360">यस समुमा Google ड्राइभ को पहुँच गर्न सकिँदैन।</translation>
 <translation id="2638942478653899953">Google ड्राइभमा पुग्न सकिएन। कृपया <ph name="BEGIN_LINK" />लग आउट<ph name="END_LINK" /> गर्नुहोस् र फेरि लग इन गर्नुहोस्।</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">फाइल रहेको स्थान</translation>
 <translation id="2672394958563893062">एउटा त्रुटि देखापर्‍यो। सुरुदेखि पुन: सुरु गर्न क्लिक गर्नुहोस्।</translation>
 <translation id="2676946222714718093">प्ले गर्दै</translation>
+<translation id="2735623501230989521">Parallels Desktop लाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="2735698359135166290">रोमानियाली मानक कुञ्जीपाटी</translation>
 <translation id="2771816809568414714">चिज</translation>
 <translation id="2781645665747935084">बेल्गियम</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint प्रस्तुति</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> के.बि.</translation>
+<translation id="4789067489790477934">Parallels Desktop लाई आफ्नो Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
 <translation id="4801956050125744859">दुवै राख्नुहोस्</translation>
 <translation id="4804827417948292437">अभोकाडो</translation>
 <translation id="4823651846660089135">यन्त्र पढ्ने-मात्र मोडमा छ</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">लुकेका फाइलहरू देखाउनुहोस्</translation>
 <translation id="7508545000531937079">स्लाइडशो</translation>
 <translation id="751507702149411736">बेलारूसियन</translation>
+<translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
 <translation id="7544853251252956727">मिसाउनुहोस्</translation>
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
+<translation id="7553492409867692754">Linux का एपलाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">केवल एक सेकेन्ड प्रतिक्षा गर्नुहोस्</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> अफलाइनमा उपलब्ध गराइँदै छ</translation>
 <translation id="7603724359189955920">ग्रिडहरू</translation>
 <translation id="7627790789328695202">ओहो, <ph name="FILE_NAME" /> पहिले नै विद्यमान छ। यसलाई अर्को नाम दिनुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% पूरा भयो।</translation>

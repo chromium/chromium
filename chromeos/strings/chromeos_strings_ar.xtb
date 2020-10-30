@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
+<translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
+<translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">يمكن فحص اتصال البوابة</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1468664791493211953">العروض</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
+<translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
 <translation id="1734367976349034509">يخضع هذا الجهاز لإدارة المؤسسة</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1930797645656624981">‏خدمة أسلوب الإدخال لنظام التشغيل Chrome</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
+<translation id="2364498172489649528">تم الاجتياز.</translation>
 <translation id="2375079107209812402">المحاولات المتبقية: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />. محاولة واحدة ({0}) متبقية}zero{<ph name="ERROR_MESSAGE" />. {0} محاولة متبقية}two{<ph name="ERROR_MESSAGE" />. محاولتان ({0}) متبقيتان}few{<ph name="ERROR_MESSAGE" />. {0} محاولات متبقية}many{<ph name="ERROR_MESSAGE" />. {0} محاولة متبقية}other{<ph name="ERROR_MESSAGE" />. {0} محاولة متبقية}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
+<translation id="3083667275341675831">بيانات تشخيص الاتصال</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
+<translation id="3188257591659621405">ملفاتي</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
+<translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
 <translation id="3456078764689556234">عدد الصفحات التي تمت طباعتها: <ph name="PRINTED_PAGES" /> من أصل <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">الطباعة</translation>
 <translation id="3515615323037921860">مهام الطباعة</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
+<translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
+<translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="4003259559679196451">يُدير <ph name="ENROLLMENT_DOMAIN" /> هذا الجهاز ويحصل على إذن الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
+<translation id="4378373042927530923">لم يتم التشغيل</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
+<translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
+<translation id="4548483925627140043">لم يتم العثور على إشارة.</translation>
+<translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
+<translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
 <translation id="4691278870498629773">توقّفت الطابعة - دُرج الورق غير متوفّر</translation>
+<translation id="469379815867856270">قوة الإشارة</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="4932733599132424254">التاريخ</translation>
+<translation id="4985509611418653372">تشغيل</translation>
 <translation id="5094480857972195099">يدير النطاق <ph name="ENROLLMENT_DOMAIN" /> هذا المستخدم، ويمكنه إدارة الإعدادات ورصد نشاط المستخدم عن بُعد.</translation>
 <translation id="520299634122159966">لا تتوفّر أجهزة مسح ضوئي.</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
@@ -71,6 +90,8 @@
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">اختيار كلمة مرور جديدة الآن</translation>
+<translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
+<translation id="5401938042319910061">تشغيل جميع سلاسل الإجراءات</translation>
 <translation id="5457599981699367932">تصفَّح كزائر</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
@@ -78,15 +99,21 @@
 <translation id="6048107060512778456">تعذَّرت الطباعة - الورق مكدّس</translation>
 <translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
+<translation id="6108689792487843350">يتعذّر الوصول إلى البوابة</translation>
 <translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
+<translation id="6325525973963619867">إخفاق</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
 <translation id="6517239166834772319">استكشاف</translation>
+<translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
 <translation id="6620487321149975369">ستظهر طلبات الطباعة في السجلّ إلّا إذا تمت إزالتها يدويًا.</translation>
 <translation id="6643016212128521049">محو</translation>
+<translation id="6704062477274546131">دقة نظام أسماء النطاقات</translation>
 <translation id="6747215703636344499">توقّفت الطابعة - دُرج الإخراج ممتلئ</translation>
+<translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع الملف</translation>
@@ -94,15 +121,22 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7805768142964895445">الحالة</translation>
+<translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8208861521865154048">المزايا</translation>
+<translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8294431847097064396">المصدر</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="8352772353338965963">يمكنك إضافة حساب إلى الدخول المتعدد. يمكن الدخول إلى جميع الحسابات التي تم تسجيل الدخول إليها بدون كلمة مرور، لذا فإن هذه الميزة لا يجب استخدامها إلا مع الحسابات الموثوق بها.</translation>
+<translation id="8364946094152050673">خادم الأسماء فارغ.</translation>
+<translation id="8475690821716466388">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP PSK ضعيف.</translation>
+<translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
 <translation id="8668052347555487755">وضع اللون</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
+<translation id="8723108084122415655">وقت استجابة الشبكة غير التلقائية أعلى من الحد الأقصى.</translation>
 <translation id="8726019395068607495">توقّفت الطابعة - باب الطابعة مفتوح</translation>
 <translation id="8747900814994928677">تأكيد التغيير</translation>
+<translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>

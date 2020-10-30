@@ -65,6 +65,7 @@
 <translation id="158809615184981282">لوحة مفاتيح فاروية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
+<translation id="1646019627374511909">جارٍ إتاحة <ph name="NUMBER_OF_ITEMS" /> ملف بلا إنترنت</translation>
 <translation id="1646136617204068573">لوحة المفاتيح المجرية</translation>
 <translation id="164729547906544836">‏لوحة المفاتيح التاميلية (itrans)</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">الأمريكية الدولية</translation>
 <translation id="2562685439590298522">المستندات</translation>
 <translation id="2563185590376525700">ضفدع</translation>
+<translation id="2572501073504669105">يمكنك جعل الملفات متاحة للوصول إليها عند عدم توفّر اتصال بالإنترنت.</translation>
 <translation id="2614589611416690597">ملف فيديو <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏لا يمكن الوصول إلى Google Drive في الوقت الحالي.</translation>
 <translation id="2638942478653899953">‏تعذر الوصول إلى Google Drive. يُرجى <ph name="BEGIN_LINK" />الخروج<ph name="END_LINK" /> ثم تسجيل الدخول مرة أخرى.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">موقع الملف</translation>
 <translation id="2672394958563893062">حدث خطأ. انقر لإعادة التشغيل من البداية.</translation>
 <translation id="2676946222714718093">التشغيل بواسطة</translation>
+<translation id="2735623501230989521">‏يمكنك منح نظام Parallels Desktop الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="2735698359135166290">لوحة المفاتيح الرومانية القياسية</translation>
 <translation id="2771816809568414714">جبن</translation>
 <translation id="2781645665747935084">البلجيكية</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">كرات الأرز</translation>
 <translation id="4784330909746505604">‏عرض تقديمي من PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> كيلوبايت</translation>
+<translation id="4789067489790477934">‏يمكنك منح نظام Parallels Desktop الإذن للوصول إلى الملفات في Google Drive. وستتمّ مزامنة التغييرات مع الأجهزة الأخرى.</translation>
 <translation id="4801956050125744859">الاحتفاظ بالاثنتين</translation>
 <translation id="4804827417948292437">أفوكادو</translation>
 <translation id="4823651846660089135">الجهاز للقراءة فقط</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">إظهار الملفات المخفية</translation>
 <translation id="7508545000531937079">عرض الشرائح</translation>
 <translation id="751507702149411736">البيلاروسية</translation>
+<translation id="7544830582642184299">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في Google Drive. وستتمّ مزامنة التغييرات مع الأجهزة الأخرى.</translation>
 <translation id="7544853251252956727">ترتيب عشوائي</translation>
 <translation id="7547811415869834682">الهولندية</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
+<translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">انتظر قليلاً</translation>
+<translation id="7592775719802218421">إتاحة <ph name="FILE_NAME" /> بدون اتصال بالإنترنت</translation>
 <translation id="7603724359189955920">شبكات</translation>
 <translation id="7627790789328695202">عذرًا، <ph name="FILE_NAME" /> موجود من قبل. يمكنك إعادة تسميته وإعادة المحاولة.</translation>
 <translation id="7628656427739290098">اكتملت العملية بنسبة <ph name="PERCENT" />%.</translation>

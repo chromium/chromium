@@ -65,6 +65,7 @@
 <translation id="158809615184981282">フェロー語キーボード</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">カメラ</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
 <translation id="1646136617204068573">ハンガリー語のキーボード</translation>
 <translation id="164729547906544836">タミル語キーボード（itrans）</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2562685439590298522">ドキュメント</translation>
 <translation id="2563185590376525700">カエル</translation>
+<translation id="2572501073504669105">インターネットに接続していないときにファイルをオフラインで使用可能にできます。</translation>
 <translation id="2614589611416690597">動画（<ph name="VIDEO_TYPE" />）</translation>
 <translation id="2620090360073999360">現在 Google ドライブにアクセスできません。</translation>
 <translation id="2638942478653899953">Google ドライブにアクセスできませんでした。<ph name="BEGIN_LINK" />ログアウト<ph name="END_LINK" />してもう一度ログインしてください。</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ファイルの場所</translation>
 <translation id="2672394958563893062">エラーが発生しました。クリックすると最初から再生します。</translation>
 <translation id="2676946222714718093">再生中:</translation>
+<translation id="2735623501230989521">Parallels Desktop に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="2735698359135166290">ルーマニア語標準キーボード</translation>
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2781645665747935084">ベルギー語</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">おにぎり</translation>
 <translation id="4784330909746505604">PowerPoint プレゼンテーション</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktop に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="4801956050125744859">両方を保持</translation>
 <translation id="4804827417948292437">アボカド</translation>
 <translation id="4823651846660089135">デバイスは読み取り専用です</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">非表示のファイルを表示</translation>
 <translation id="7508545000531937079">スライドショー</translation>
 <translation id="751507702149411736">ベラルーシ語</translation>
+<translation id="7544830582642184299">Linux アプリに対して、Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="7544853251252956727">シャッフル</translation>
 <translation id="7547811415869834682">オランダ語</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
+<translation id="7553492409867692754">Linux アプリに対して、<ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="7576032389798113292">6×4</translation>
 <translation id="7589661784326793847">少々お待ちください</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> をオフラインで使用できるようにしています</translation>
 <translation id="7603724359189955920">グリッド</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> は既に存在しています。名前を変更してもう一度お試しください。</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% 完了しました。</translation>

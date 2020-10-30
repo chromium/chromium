@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">스크린샷이 촬영되어 클립보드에 저장됨</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1455242230282523554">언어 설정 표시</translation>
+<translation id="1456407467406159627">화면에 기밀 콘텐츠가 있어 화면 녹화가 중지되었습니다.</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1475439723810528286">전체 화면을 캡처하려면 아무 곳이나 탭하세요</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
 <translation id="2390318262976603432">언어 설정</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">미디어 컨트롤</translation>
 <translation id="2405664212338326887">연결되지 않음</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />(블루투스)</translation>
 <translation id="3126069444801937830">업데이트하려면 다시 시작</translation>
 <translation id="3139942575505304791">데스크 1</translation>
+<translation id="3147157020428159854">화면 녹화 중지됨</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3151786313568798007">방향</translation>
 <translation id="3153444934357957346">멀티 로그인에는 계정을 <ph name="MULTI_PROFILE_USER_LIMIT" />개까지만 사용할 수 있습니다.</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">안녕하세요, 무엇을 도와드릴까요?</translation>
 <translation id="3826099427150913765">비밀번호로 전환</translation>
 <translation id="383629559565718788">키보드 설정 표시</translation>
+<translation id="3846214748874656680">전체화면 종료</translation>
 <translation id="3846575436967432996">네트워크 정보 없음</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="385300504083504382">시작</translation>
@@ -655,7 +659,6 @@
 <translation id="7551643184018910560">임시보관함에 고정</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
 <translation id="7564874036684306347">창을 다른 데스크톱으로 이동하면 예기치 못한 동작이 나타날 수 있습니다. 이후의 알림, 창, 대화상자가 데스크톱 간에 분할될 수 있습니다.</translation>
-<translation id="7568637526529101738">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 어시스턴트가 선택한 항목의 정의 또는 단위 변환과 같은 정보를 표시합니다.</translation>
 <translation id="7569509451529460200">점자와 ChromeVox가 사용 설정되었습니다.</translation>
 <translation id="7579778809502851308">화면 캡처</translation>
 <translation id="7590883480672980941">입력 설정</translation>
@@ -707,6 +710,7 @@
 <translation id="7995804128062002838">화면을 캡처할 수 없습니다.</translation>
 <translation id="8000066093800657092">네트워크 없음</translation>
 <translation id="8004512796067398576">올리기</translation>
+<translation id="8029247720646289474">핫스팟에 연결할 수 없음</translation>
 <translation id="8029629653277878342">보안 강화를 위해 PIN 또는 비밀번호가 필요합니다.</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
 <translation id="8042893070933512245">접근성 설정 메뉴 열기</translation>
@@ -742,7 +746,6 @@
 <translation id="8375916635258623388">이 <ph name="DEVICE_NAME" />과(와) 휴대전화가 자동으로 연결됩니다.</translation>
 <translation id="8380784334203145311">편안한 밤 보내세요</translation>
 <translation id="8388750414311082622">마지막 데스크는 삭제할 수 없습니다.</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" />의 옵션 메뉴</translation>
 <translation id="8394567579869570560">부모님이 이 기기를 잠갔습니다.</translation>
 <translation id="8412677897383510995">디스플레이 설정 표시</translation>
 <translation id="8425213833346101688">변경</translation>

@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">बंद कैप्शन मेन्यू छिपाएं</translation>
 <translation id="1729654308190250600">कृपया गैर-खाली ईमेल पता डालें.</translation>
 <translation id="1758486001363313524">अन्य...</translation>
+<translation id="1774577460079229490">मौजूदा <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">कुल समय: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">सूचना संवाद</translation>
 <translation id="1821985195704844674">ट्री ग्रिड</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">मान <ph name="MINIMUM_DATE_OR_TIME" /> या बाद का होना चाहिए.</translation>
 <translation id="2759744352195237655">पॉप अप बटन</translation>
 <translation id="2761667185364618470">अगर आप आगे बढ़ना चाहते हैं तो इस बॉक्‍स को सही का निशान लगाकर चुनें.</translation>
+<translation id="2838616441696617235">चरण</translation>
 <translation id="2844350028562914727">जानकारी</translation>
 <translation id="2896972712917208084">रेडियो समूह</translation>
 <translation id="2908441821576996758">कृपया ईमेल पतों की अल्पविराम द्वारा विभाजित सूची दर्ज करें.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">मेन्यू बार</translation>
 <translation id="4293574643247337246">पेज हेडर</translation>
 <translation id="4360991593054037559">कृपया कोई मान्य मान डालें. दो निकटतम मान्य मान <ph name="VALID_VALUE_LOW" /> और <ph name="VALID_VALUE_HIGHER" /> हैं.</translation>
+<translation id="4384249794467006333">इस इमेज को लेबल नहीं किया गया है. इमेज का ब्यौरा पाने के लिए, सबसे ऊपर दाईं ओर बना ज़्यादा विकल्पों वाला मेन्यू खोलें.</translation>
 <translation id="4384583879834880242">सवाल और जवाब</translation>
 <translation id="4444765639179266822">यह जानकारी इस बारे में लगती है: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">संदर्भ के लिए शब्दावली</translation>
 <translation id="4522570452068850558">विवरण</translation>
+<translation id="4576178047100686001">इस इमेज को लेबल नहीं किया गया है. इमेज का ब्यौरा पाने के लिए, सबसे ऊपर बाईं ओर बना ज़्यादा विकल्पों का मेन्यू खोलें.</translation>
 <translation id="4597532268155981612">फ़ॉर्म</translation>
 <translation id="4661075872484491155">ट्री</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' के बाद आने वाले भाग में '<ph name="INVALIDCHARACTER" />' प्रतीक शामिल नहीं होना चाहिए.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">संदर्भ सूची प्रविष्टि</translation>
 <translation id="4915360478455618802">समय चुनने वाला टूल दिखाएं</translation>
 <translation id="492244087561876220">टिप्पणी</translation>
+<translation id="4934662370368414994">आइटम</translation>
 <translation id="4950364064308314478">स्थानीय तारीख और समय चुनने वाला टूल दिखाएं</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> चुना गया</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> चुने गए</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">वॉल्यूम स्लाइडर</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6023896073578205740">सूची बॉक्स</translation>
+<translation id="6131824478727057281">जगह की जानकारी</translation>
 <translation id="6150588977291308318">संदर्भ सूची</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6166809985690652833">उपसंहार</translation>

@@ -56,6 +56,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1420527829902822813">Fíxose unha captura de pantalla e gardouse no portapapeis</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
+<translation id="1456407467406159627">Detívose a gravación da pantalla porque nela se mostraba contido confidencial.</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="1475439723810528286">Toca calquera parte para facer unha captura a pantalla completa</translation>
@@ -150,6 +151,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2390318262976603432">Opcións de configuración local</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Controis multimedia</translation>
 <translation id="2405664212338326887">Función non conectada</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
@@ -220,6 +222,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reinicia para actualizar</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
+<translation id="3147157020428159854">Detívose a gravación da pantalla</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3153444934357957346">Só podes ter ata <ph name="MULTI_PROFILE_USER_LIMIT" /> contas no inicio de sesión múltiple.</translation>
@@ -292,6 +295,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="380165613292957338">Ola! Como podo axudarche?</translation>
 <translation id="3826099427150913765">Cambiar ao contrasinal</translation>
 <translation id="383629559565718788">Mostrar a configuración do teclado</translation>
+<translation id="3846214748874656680">Saír da pantalla completa</translation>
 <translation id="3846575436967432996">Non hai información de rede dispoñible</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Comezo</translation>
@@ -656,7 +660,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
-<translation id="7568637526529101738">Se fas clic co botón dereito ou realizas unha pulsación longa, o Asistente móstrache información como a definición ou a conversión de unidades relacionada coa túa selección.</translation>
 <translation id="7569509451529460200">Activouse o braille e ChromeVox</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
@@ -708,6 +711,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7995804128062002838">Produciuse un erro ao facer a captura de pantalla</translation>
 <translation id="8000066093800657092">Sen rede</translation>
 <translation id="8004512796067398576">Aumentar</translation>
+<translation id="8029247720646289474">Produciuse un erro coa conexión á zona wifi</translation>
 <translation id="8029629653277878342">Como medida adicional de seguranza debes escribir o PIN ou o contrasinal</translation>
 <translation id="8030169304546394654">Desconectado</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
@@ -743,7 +747,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
 <translation id="8380784334203145311">Boas noites!</translation>
 <translation id="8388750414311082622">O último escritorio non se pode quitar.</translation>
-<translation id="8392451568018454956">Menú de opcións para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">O teu pai ou nai bloqueou este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar configuración da pantalla</translation>
 <translation id="8425213833346101688">Cambiar</translation>

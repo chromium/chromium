@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Papan kekunci Faroese</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Menjadikan <ph name="NUMBER_OF_ITEMS" /> fail tersedia di luar talian</translation>
 <translation id="1646136617204068573">Papan kekunci Hungary</translation>
 <translation id="164729547906544836">Papan kekunci bahasa Tamil (itrans)</translation>
 <translation id="164969095109328410">Peranti Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Antarabangsa AS</translation>
 <translation id="2562685439590298522">Dokumen</translation>
 <translation id="2563185590376525700">Katak</translation>
+<translation id="2572501073504669105">Anda boleh menjadikan fail tersedia di luar talian untuk diakses semasa anda tidak mempunyai sambungan Internet.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Google Drive tidak dapat dicapai pada masa ini.</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dicapai. Sila <ph name="BEGIN_LINK" />log keluar<ph name="END_LINK" /> dan log masuk kembali.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Lokasi fail</translation>
 <translation id="2672394958563893062">Ralat telah berlaku. Klik untuk memulakan semula dari permulaan.</translation>
 <translation id="2676946222714718093">Dimainkan di</translation>
+<translation id="2735623501230989521">Beri Parallels Desktop kebenaran untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Papan kekunci standard Romania</translation>
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Bahasa Belgium</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Persembahan PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Beri Parallels Desktop kebenaran untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="4801956050125744859">Simpan kedua-duanya</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Peranti dalam mod baca sahaja</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Tunjukkan fail tersembunyi</translation>
 <translation id="7508545000531937079">Tayangan slaid</translation>
 <translation id="751507702149411736">Bahasa Belarus</translation>
+<translation id="7544830582642184299">Beri Linux kebenaran apl untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="7544853251252956727">Rombak</translation>
 <translation id="7547811415869834682">Bahasa Belanda</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>
+<translation id="7553492409867692754">Beri Linux kebenaran apl untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Sila tunggu sebentar</translation>
+<translation id="7592775719802218421">Menjadikan <ph name="FILE_NAME" /> tersedia di luar talian</translation>
 <translation id="7603724359189955920">Grid</translation>
 <translation id="7627790789328695202">Op, <ph name="FILE_NAME" /> telah pun wujud. Namakan semula dan cuba lagi.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% selesai.</translation>

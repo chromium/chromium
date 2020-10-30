@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
+<translation id="1204296502688602597">تأخیر ساناد</translation>
+<translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">دروازه را می‌توان پینگ کرد</translation>
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
 <translation id="1478594628797167447">اسکنر</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
+<translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
 <translation id="1734367976349034509">این دستگاه توسط سازمانی مدیریت می‌شود</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1930797645656624981">‏سرویس روش ورودی سیستم‌عامل Chrome</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
+<translation id="2364498172489649528">موفق</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
+<translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
+<translation id="3083667275341675831">تشخیص خطای اتصال</translation>
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
+<translation id="3188257591659621405">فایل‌های من</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
+<translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
 <translation id="3515615323037921860">کارهای چاپ</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
+<translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3749289110408117711">نام فایل</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="3865414814144988605">وضوح</translation>
+<translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
+<translation id="4378373042927530923">اجرا نشد</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">‏بلیت Kerberos به‌زودی منقضی می‌شود</translation>
 <translation id="445059817448385655">گذرواژه قدیمی</translation>
+<translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
+<translation id="4548483925627140043">سیگنال پیدا نشد</translation>
+<translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
+<translation id="4646949265910132906">‏اتصال Wi-Fi امن</translation>
 <translation id="467510802200863975">گذرواژه‌ها با هم مطابقت ندارند</translation>
 <translation id="4691278870498629773">متوقف شد - سینی موجود نیست</translation>
+<translation id="469379815867856270">قدرت سیگنال</translation>
 <translation id="4731797938093519117">دسترسی والدین</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4808449224298348341">کار چاپ <ph name="DOCUMENT_TITLE" /> لغو شد</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="4985509611418653372">اجرا</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="520299634122159966">اسکنری دردسترس نیست</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
@@ -71,6 +90,8 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">انتخاب گذرواژه جدید، هم‌اکنون</translation>
+<translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
+<translation id="5401938042319910061">اجرای همه روال‌ها</translation>
 <translation id="5457599981699367932">مرور کردن به‌عنوان یک مهمان</translation>
 <translation id="54609108002486618">مدیریت شده</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
@@ -78,15 +99,21 @@
 <translation id="6048107060512778456">انجام نشد - کاغذ گیر کرده است</translation>
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
 <translation id="6106186594183574873">برای تکمیل کار، گذرواژه قدیمی‌تان را وارد کنید</translation>
+<translation id="6108689792487843350">دروازه قابل دسترسی نیست</translation>
 <translation id="6146993107019042706">برای تکمیل کار،‌ گذرواژه جدیدتان را وارد کنید</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">سرورهای نام دامنه ناقص است</translation>
+<translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6517239166834772319">کاوش</translation>
+<translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
 <translation id="6564646048574748301">انجام نشد - دسترسی به چاپگر ممکن نیست</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
+<translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6747215703636344499">متوقف شد - خروجی پُر است</translation>
+<translation id="714876143603641390">‏اتصال LAN</translation>
 <translation id="7162487448488904999">گالری</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع فایل</translation>
@@ -94,15 +121,22 @@
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
 <translation id="7805768142964895445">وضعیت</translation>
+<translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
+<translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
+<translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>
+<translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
+<translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="8668052347555487755">حالت رنگی</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
+<translation id="8723108084122415655">آستانه تأخیر در شبکه غیر پیش‌فرض خیلی زیاد است</translation>
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>
 <translation id="8747900814994928677">تأیید تغییر</translation>
+<translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>

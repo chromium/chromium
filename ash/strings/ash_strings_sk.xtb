@@ -56,6 +56,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1420527829902822813">Snímka obrazovky bola vytvorená a uložená do schránky</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="1455242230282523554">Zobraziť nastavenia jazyka</translation>
+<translation id="1456407467406159627">Nahrávanie obrazovky bolo zastavené, pretože na vašej obrazovke bol dôverný obsah.</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="1475439723810528286">Klepnutím na ľubovoľné miesto nasnímate celú obrazovku</translation>
@@ -150,6 +151,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2369165858548251131">„Dobrý deň“ po čínsky</translation>
 <translation id="2390318262976603432">Miestne nastavenia</translation>
 <translation id="2391579633712104609">180 °</translation>
+<translation id="240006516586367791">Ovládacie prvky médií</translation>
 <translation id="2405664212338326887">Nepripojené</translation>
 <translation id="2408955596600435184">Zadajte kód PIN</translation>
 <translation id="2412593942846481727">K dispozícii je aktualizácia</translation>
@@ -220,6 +222,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reštartovaním vykonáte aktualizáciu</translation>
 <translation id="3139942575505304791">1. plocha</translation>
+<translation id="3147157020428159854">Nahrávanie obrazovky bolo zastavené</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3151786313568798007">Orientácia</translation>
 <translation id="3153444934357957346">V rámci viacnásobného prihlásenia môžete mať maximálne nasledujúci počet účtov: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
@@ -291,6 +294,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="380165613292957338">Ako vám môžem pomôcť?</translation>
 <translation id="3826099427150913765">Prepnúť na heslo</translation>
 <translation id="383629559565718788">Zobraziť nastavenia klávesnice</translation>
+<translation id="3846214748874656680">Ukončiť režim celej obrazovky</translation>
 <translation id="3846575436967432996">Informácie o sieti nie sú k dispozícii</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="385300504083504382">Začiatok</translation>
@@ -655,7 +659,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
-<translation id="7568637526529101738">Po kliknutí pravým tlačidlom alebo dlhom stlačení zobrazí Asistent informácie pre váš výber, napríklad definíciu alebo prevod jednotiek.</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>
 <translation id="7590883480672980941">Nastavenia vstupu</translation>
@@ -707,6 +710,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7995804128062002838">Obrazovku sa nepodarilo nasnímať</translation>
 <translation id="8000066093800657092">Žiadna sieť</translation>
 <translation id="8004512796067398576">Zvýšenie</translation>
+<translation id="8029247720646289474">Nepodarilo sa nadviazať pripojenie s hotspotom</translation>
 <translation id="8029629653277878342">Na zaistenie vyššieho zabezpečenia sa vyžaduje PIN alebo heslo</translation>
 <translation id="8030169304546394654">Odpojené</translation>
 <translation id="8042893070933512245">Otvoriť ponuku nastavení dostupnosti</translation>
@@ -742,7 +746,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8375916635258623388">Toto zariadenie <ph name="DEVICE_NAME" /> a váš telefón sa automaticky pripoja</translation>
 <translation id="8380784334203145311">Dobrú noc,</translation>
 <translation id="8388750414311082622">Posledná plocha sa nedá odstrániť.</translation>
-<translation id="8392451568018454956">Ponuka možností pre používateľa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Tvoj rodič uzamkol toto zariadenie</translation>
 <translation id="8412677897383510995">Zobraziť nastavenia obrazovky</translation>
 <translation id="8425213833346101688">Zmeniť</translation>

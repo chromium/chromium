@@ -2,8 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1018656279737460067">Abgebrochen</translation>
+<translation id="1075811647922107217">Seitengröße</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
+<translation id="1204296502688602597">DNS-Latenz</translation>
+<translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -12,6 +16,7 @@
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
+<translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
 <translation id="1734367976349034509">Dieses Gerät wird vom Unternehmen verwaltet</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1930797645656624981">Dienst für die Chrome OS-Eingabemethoden</translation>
@@ -22,25 +27,31 @@
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
+<translation id="2364498172489649528">Bestanden</translation>
 <translation id="2375079107209812402">Noch <ph name="ATTEMPTS_LEFT" /> Versuche</translation>
+<translation id="2391082728065870591">Feedbackbericht senden</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
 <translation id="2517472476991765520">Suchen</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
+<translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
+<translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3369013195428705271">Möchten Sie den gesamten Druckverlauf wirklich löschen? Ihre laufenden Druckaufträge werden nicht gelöscht.</translation>
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3515615323037921860">Druckaufträge</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
+<translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3749289110408117711">Dateiname</translation>
 <translation id="38114475217616659">Gesamten Verlauf löschen</translation>
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3865414814144988605">Auflösung</translation>
+<translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
@@ -49,18 +60,25 @@
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
+<translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
 <translation id="445059817448385655">Altes Passwort</translation>
+<translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
+<translation id="4548483925627140043">Signal nicht gefunden</translation>
+<translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
+<translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
 <translation id="4691278870498629773">Angehalten – Fach fehlt</translation>
+<translation id="469379815867856270">Signalstärke</translation>
 <translation id="4731797938093519117">Elternfreigabe</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
 <translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4985509611418653372">Ausführen</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen und Nutzeraktivität überwachen.</translation>
 <translation id="520299634122159966">Keine Scanner verfügbar</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
@@ -70,6 +88,8 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Bitte legen Sie jetzt ein neues fest</translation>
+<translation id="5372659122375744710">WLAN ist nicht sicher</translation>
+<translation id="5401938042319910061">Alle Abläufe ausführen</translation>
 <translation id="5457599981699367932">Als Gast nutzen</translation>
 <translation id="54609108002486618">Verwaltet</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
@@ -77,15 +97,21 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6048107060512778456">Fehlgeschlagen – Papierstau</translation>
 <translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
+<translation id="6108689792487843350">Gateway nicht erreichbar</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
+<translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
 <translation id="6517239166834772319">Entdecken</translation>
+<translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
+<translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
+<translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Dateityp</translation>
@@ -93,15 +119,22 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8208861521865154048">Vorteile</translation>
+<translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
+<translation id="8364946094152050673">Kein Nameserver</translation>
+<translation id="8475690821716466388">Das WLAN ist mit dem schwachen Protokoll WEP PSK gesichert</translation>
+<translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
 <translation id="8668052347555487755">Farbmodus</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
+<translation id="8723108084122415655">Das nicht standardmäßige Netzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
 <translation id="8747900814994928677">Änderung bestätigen</translation>
+<translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>

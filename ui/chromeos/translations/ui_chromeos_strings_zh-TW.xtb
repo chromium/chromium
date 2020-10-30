@@ -65,6 +65,7 @@
 <translation id="158809615184981282">法羅文鍵盤</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">攝影機</translation>
+<translation id="1646019627374511909">正在將 <ph name="NUMBER_OF_ITEMS" /> 個檔案設為可離線存取</translation>
 <translation id="1646136617204068573">匈牙利文鍵盤</translation>
 <translation id="164729547906544836">坦米爾文鍵盤 (印度文音譯)</translation>
 <translation id="164969095109328410">Chrome 裝置</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">美國國際</translation>
 <translation id="2562685439590298522">文件</translation>
 <translation id="2563185590376525700">青蛙</translation>
+<translation id="2572501073504669105">你可以將檔案設定為可離線使用，以便在沒有網路連線時存取檔案。</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 影片</translation>
 <translation id="2620090360073999360">目前無法使用 Google 雲端硬碟。</translation>
 <translation id="2638942478653899953">無法連上 Google 雲端硬碟。請<ph name="BEGIN_LINK" />登出<ph name="END_LINK" />並重新登入帳戶。</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">檔案位置</translation>
 <translation id="2672394958563893062">發生錯誤，按一下即可重新從頭播放。</translation>
 <translation id="2676946222714718093">目前播放裝置：</translation>
+<translation id="2735623501230989521">授權 Parallels Desktop 存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="2735698359135166290">羅馬尼亞文標準鍵盤</translation>
 <translation id="2771816809568414714">乳酪</translation>
 <translation id="2781645665747935084">比利時文</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">飯糰</translation>
 <translation id="4784330909746505604">PowerPoint 簡報</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">授權 Parallels Desktop 存取 Google 雲端硬碟中的檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="4801956050125744859">兩個版本都保留</translation>
 <translation id="4804827417948292437">酪梨</translation>
 <translation id="4823651846660089135">裝置目前是唯讀模式</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">顯示隱藏的檔案</translation>
 <translation id="7508545000531937079">播放投影片</translation>
 <translation id="751507702149411736">白俄羅斯語</translation>
+<translation id="7544830582642184299">授權 Linux 應用程式存取你的 Google 雲端硬碟檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="7544853251252956727">隨機播放</translation>
 <translation id="7547811415869834682">荷蘭文</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
+<translation id="7553492409867692754">授權 Linux 應用程式存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">請稍候片刻</translation>
+<translation id="7592775719802218421">正在將「<ph name="FILE_NAME" />」設定為可離線使用</translation>
 <translation id="7603724359189955920">網格</translation>
 <translation id="7627790789328695202">糟糕！已存在名為 <ph name="FILE_NAME" /> 的檔案。請重新命名檔案並再試一次。</translation>
 <translation id="7628656427739290098">已完成 <ph name="PERCENT" />%。</translation>

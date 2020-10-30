@@ -506,7 +506,6 @@
 <translation id="2996674880327704673">Google-ൽ നിന്നുള്ള നിർദ്ദേശങ്ങൾ</translation>
 <translation id="3002501248619246229">ഇൻപുട്ട് ട്രേ മീഡിയ പരിശോധിക്കുക</translation>
 <translation id="3005723025932146533">സംരക്ഷിച്ച പകർപ്പ് കാണിക്കുക</translation>
-<translation id="3007719053326478567">ഈ ഉള്ളടക്കം പ്രിന്റ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്മിൻ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" />-ന്റെ CVC നൽകുക. സ്ഥിരീകരിച്ച് കഴിഞ്ഞാൽ, നിങ്ങളുടെ കാർഡ് വിശദാംശങ്ങൾ ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="3010559122411665027">ലിസ്റ്റ് എൻട്രി "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">സ്വയമേവ ബ്ലോക്കുചെയ്‌തു</translation>
@@ -1106,6 +1105,7 @@
 <translation id="541416427766103491">സ്റ്റാക്കർ 4</translation>
 <translation id="5421136146218899937">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
+<translation id="542872847390508405">നിങ്ങൾ ഒരു അതിഥിയായി ബ്രൗസുചെയ്യുന്നു</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" എന്നതിൽ സ്‌കീമ മൂല്ല്യനിർണ്ണയ പിശക്: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>

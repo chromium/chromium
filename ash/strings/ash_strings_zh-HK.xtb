@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">已擷取螢幕擷圖，並儲存至剪貼簿</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
+<translation id="1456407467406159627">由於螢幕上有機密內容，因此系統已停止錄影螢幕畫面。</translation>
 <translation id="1460620680449458626">音量校咗靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1475439723810528286">輕按任何一處即可擷取全螢幕畫面</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
 <translation id="2391579633712104609">180 度</translation>
+<translation id="240006516586367791">媒體控制項</translation>
 <translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
+<translation id="3147157020428159854">已停止錄影螢幕畫面</translation>
 <translation id="315116470104423982">流動數據</translation>
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多重登入功能時，最多只能有 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
@@ -291,6 +294,7 @@
 <translation id="380165613292957338">你好，有咩可以幫到你？</translation>
 <translation id="3826099427150913765">改用密碼</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
+<translation id="3846214748874656680">關閉全屏幕模式</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
@@ -655,7 +659,6 @@
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
-<translation id="7568637526529101738">按一下或長按右鍵，「Google 助理」即可顯示選取項目的定義或單位轉換等相關資料。</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
@@ -707,6 +710,7 @@
 <translation id="7995804128062002838">無法擷取螢幕畫面</translation>
 <translation id="8000066093800657092">沒有網絡</translation>
 <translation id="8004512796067398576">增加</translation>
+<translation id="8029247720646289474">熱點連線失敗</translation>
 <translation id="8029629653277878342">為安全起見，請輸入 PIN 或密碼</translation>
 <translation id="8030169304546394654">已中斷連線</translation>
 <translation id="8042893070933512245">開啟無障礙功能設定選單</translation>
@@ -742,7 +746,6 @@
 <translation id="8375916635258623388">此 <ph name="DEVICE_NAME" /> 和手機將會自動連接</translation>
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> 的選項選單</translation>
 <translation id="8394567579869570560">您的家長已鎖定此裝置</translation>
 <translation id="8412677897383510995">顯示螢幕設定</translation>
 <translation id="8425213833346101688">變更</translation>

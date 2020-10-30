@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Otkazano</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
+<translation id="1204296502688602597">Kašnjenje DNS-a</translation>
+<translation id="1290331692326790741">Slab signal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Mrežni prolaz može da se pinguje</translation>
 <translation id="1413240736185167732">Nije uspelo – filter je otkazao</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
+<translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
 <translation id="1734367976349034509">Ovim uređajem upravlja preduzeće</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1930797645656624981">Usluga metoda unosa za Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
+<translation id="2364498172489649528">Prošlo</translation>
 <translation id="2375079107209812402">Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
+<translation id="3083667275341675831">Dijagnostika povezivosti</translation>
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
+<translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
+<translation id="3310640316857623290">Kašnjenje DNS-a znatno premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="3369013195428705271">Želite li stvarno da obrišete svu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
 <translation id="3456078764689556234">Odštampanih stranica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
 <translation id="3515615323037921860">Zadaci štampanja</translation>
 <translation id="3527036260304016759">Nije uspelo – nepoznata greška</translation>
+<translation id="360565022852130722">WiFi mreža je obezbeđena slabim protokolom WEP 802.1x</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
 <translation id="38114475217616659">Obriši svu istoriju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
+<translation id="3941014780699102620">Razrešenje hosta nije uspelo</translation>
 <translation id="39823212440917567">Zadaci štampanja stariji od <ph name="NUMBER_OF_DAYS" /> dana se uklanjaju</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
+<translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
 <translation id="445059817448385655">Stara lozinka</translation>
+<translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
+<translation id="4548483925627140043">Signal nije pronađen</translation>
+<translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
+<translation id="4646949265910132906">Bezbedna WiFi veza</translation>
 <translation id="467510802200863975">Lozinke se ne podudaraju</translation>
 <translation id="4691278870498629773">Zaustavljeno – nedostaje posuda za odštampani materijal</translation>
+<translation id="469379815867856270">Jačina signala</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema više papira</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4985509611418653372">Pokreni</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="520299634122159966">Nema dostupnih skenera</translation>
 <translation id="5212543919916444558">Ne mogu da pronađem na ekranu ništa oko čega mogu da pomognem.
@@ -71,6 +90,8 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Odaberite novu</translation>
+<translation id="5372659122375744710">WiFi mreža nije bezbedna</translation>
+<translation id="5401938042319910061">Pokreni sve rutine</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
@@ -78,15 +99,21 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6048107060512778456">Nije uspelo – papir je zaglavljen</translation>
 <translation id="6058625436358447366">Da biste završili, unesite staru i novu lozinku</translation>
 <translation id="6106186594183574873">Da biste završili, unesite staru lozinku</translation>
+<translation id="6108689792487843350">Mrežni prolaz je nedostupan</translation>
 <translation id="6146993107019042706">Da biste završili, unesite novu lozinku</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Serveri za imena su pogrešnog formata</translation>
+<translation id="6325525973963619867">Neuspešno</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
+<translation id="6527081081771465939">Nepoznat bezbednosni protokol za WiFi</translation>
 <translation id="6564646048574748301">Nije uspelo – štampač nije dostupan</translation>
 <translation id="6620487321149975369">Zadaci štampanja će se pojaviti u istoriji ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>
+<translation id="6704062477274546131">DNS razrešavanje</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
+<translation id="714876143603641390">Povezivanje LAN-a</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
@@ -94,15 +121,22 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
+<translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8352772353338965963">Dodajte nalog za višestruko prijavljivanje. Svim prijavljenim nalozima se može pristupiti bez lozinke, pa ovu funkciju treba koristiti samo sa pouzdanim nalozima.</translation>
+<translation id="8364946094152050673">Prazni serveri za imena</translation>
+<translation id="8475690821716466388">WiFi mreža je obezbeđena slabim protokolom WEP PSK</translation>
+<translation id="8477551185774834963">Kašnjenje DNS-a u manjoj meri premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="8668052347555487755">Režim boja</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
+<translation id="8723108084122415655">Mreža koja nije podrazumevana premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8726019395068607495">Zaustavljeno – vrata su otvorena</translation>
 <translation id="8747900814994928677">Potvrdite promenu</translation>
+<translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>
 <translation id="8928727111548978589">Nije uspelo – nema više papira</translation>
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>

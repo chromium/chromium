@@ -65,6 +65,7 @@
 <translation id="158809615184981282">फ़ारोईस कीबोर्ड</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> पीबी</translation>
 <translation id="1620510694547887537">कैमरा</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फ़ाइलों को ऑफ़लाइन इस्तेमाल करने के लिए डाउनलोड किया जा रहा है</translation>
 <translation id="1646136617204068573">हंगरी कीबोर्ड</translation>
 <translation id="164729547906544836">तमिल कीबोर्ड (आईट्रान्स)</translation>
 <translation id="164969095109328410">Chrome डिवाइस</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">यूएस अंतर्राष्ट्रीय</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">मेढक</translation>
+<translation id="2572501073504669105">आप ऑफ़लाइन इस्तेमाल करने के लिए फ़ाइलें डाउनलोड कर सकते हैं.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> वीडियो</translation>
 <translation id="2620090360073999360">इस समय Google डिस्क तक नहीं पहुंचा जा सकता.</translation>
 <translation id="2638942478653899953">Google डिस्क तक नहीं पहुंचा जा सका. कृपया <ph name="BEGIN_LINK" />लॉग आउट करें<ph name="END_LINK" /> और वापस प्रवेश करें.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">फ़ाइल की जगह</translation>
 <translation id="2672394958563893062">एक गड़बड़ी हुई. शुरुआत से शुरू करने के लिए रिस्टार्ट पर क्लिक करें.</translation>
 <translation id="2676946222714718093">इस पर चलाया जा रहा है:</translation>
+<translation id="2735623501230989521">Parallels Desktop को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलें ऐक्सेस करने की अनुमति दें</translation>
 <translation id="2735698359135166290">रोमानियाई मानक कीबोर्ड</translation>
 <translation id="2771816809568414714">पनीर</translation>
 <translation id="2781645665747935084">बेल्जियाई</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint प्रस्तुतिकरण</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> केबी</translation>
+<translation id="4789067489790477934">Parallels Desktop को Google Drive में सेव की गई फ़ाइलें ऐक्सेस करने की अनुमति दें. बदलावों को आपके दूसरे डिवाइस में सिंक किया जाएगा.</translation>
 <translation id="4801956050125744859">दोनों रखें</translation>
 <translation id="4804827417948292437">एवोकैडो</translation>
 <translation id="4823651846660089135">डिवाइस केवल-पढ़ने के लिए है</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">छिपी हुई फ़ाइलें दिखाएं</translation>
 <translation id="7508545000531937079">स्लाइडशो</translation>
 <translation id="751507702149411736">बेलारूसी</translation>
+<translation id="7544830582642184299">Linux ऐप्लिकेशन को Google Drive में सेव की गई फ़ाइलें ऐक्सेस करने की अनुमति दें. बदलावों को आपके दूसरे डिवाइस में सिंक किया जाएगा.</translation>
 <translation id="7544853251252956727">शफ़ल करें</translation>
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">अलमारी से पिन करें</translation>
+<translation id="7553492409867692754">Linux ऐप्लिकेशन को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलें ऐक्सेस करने की अनुमति दें</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">बस एक सेकंड प्रतीक्षा करें</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> को ऑफ़लाइन इस्तेमाल करने के लिए डाउनलोड किया जा रहा है</translation>
 <translation id="7603724359189955920">ग्रिड</translation>
 <translation id="7627790789328695202">ओह, <ph name="FILE_NAME" /> पहले से मौजूद है. उसका नाम बदलें और फिर से प्रयास करें.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% पूरा हाे गया.</translation>

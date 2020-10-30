@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ಮುಚ್ಚಿದ ಶೀರ್ಷಿಕೆಗಳ ಮೆನುವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="1729654308190250600">ಖಾಲಿ-ಅಲ್ಲದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="1758486001363313524">ಇತರೆ...</translation>
+<translation id="1774577460079229490">ಪ್ರಸ್ತುತ <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">ಒಟ್ಟು ಸಮಯ: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ಟ್ರೀ ಗ್ರಿಡ್</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">ಮೌಲ್ಯವು <ph name="MINIMUM_DATE_OR_TIME" /> ಅಥವಾ ನಂತರದ್ದಾಗಿರಬೇಕು.</translation>
 <translation id="2759744352195237655">ಪಾಪ್ ಅಪ್ ಬಟನ್</translation>
 <translation id="2761667185364618470">ನೀವು ಮುಂದುವರೆಯಬೇಕಾದರೆ ದಯವಿಟ್ಟು ಈ ಬಾಕ್ಸ್ ಅನ್ನು ಪರೀಕ್ಷಿಸಿ.</translation>
+<translation id="2838616441696617235">ಹಂತ</translation>
 <translation id="2844350028562914727">ವಿವರಗಳು</translation>
 <translation id="2896972712917208084">ರೇಡಿಯೋ ಗುಂಪು</translation>
 <translation id="2908441821576996758">ದಯವಿಟ್ಟು ಅಲ್ಪ ವಿರಾಮದಿಂದ ಬೇರ್ಪಡಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳ ಪಟ್ಟಿಯನ್ನು ನಮೂದಿಸಿ.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">ಮೆನು ಬಾರ್‌</translation>
 <translation id="4293574643247337246">ಪುಟದ ಶಿರೋಲೇಖ</translation>
 <translation id="4360991593054037559">ಮಾನ್ಯವಾದ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. <ph name="VALID_VALUE_LOW" /> ಮತ್ತು <ph name="VALID_VALUE_HIGHER" /> ಎರಡು ಹತ್ತಿರದ ಮಾನ್ಯ ಮೌಲ್ಯಗಳಾಗಿವೆ.</translation>
+<translation id="4384249794467006333">ಈ ಚಿತ್ರವನ್ನು ಲೇಬಲ್ ಮಾಡಿಲ್ಲ. ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಲು, ಮೇಲಿನ ಬಲ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="4384583879834880242">ಪ್ರಶ್ನೋತ್ತರ</translation>
 <translation id="4444765639179266822">ಹೀಗೆ ಹೇಳುತ್ತಿರಬಹುದು: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ಪದಕೋಶ ಉಲ್ಲೇಖ</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
+<translation id="4576178047100686001">ಈ ಚಿತ್ರವನ್ನು ಲೇಬಲ್ ಮಾಡಿಲ್ಲ. ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಲು, ಮೇಲಿನ ಎಡ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="4597532268155981612">ಫಾರ್ಮ್</translation>
 <translation id="4661075872484491155">ಮರ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ಗ್ರಂಥಸೂಚಿ ನಮೂದು</translation>
 <translation id="4915360478455618802">ಸಮಯದ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="492244087561876220">ಕಾಮೆಂಟ್</translation>
+<translation id="4934662370368414994">ಐಟಂ</translation>
 <translation id="4950364064308314478">ಸ್ಥಳೀಯ ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">ವಾಲ್ಯೂಮ್ ಸ್ಲೈಡರ್</translation>
 <translation id="6015796118275082299">ವರ್ಷ</translation>
 <translation id="6023896073578205740">ಪಟ್ಟಿಯ ಬಾಕ್ಸ್</translation>
+<translation id="6131824478727057281">ಸ್ಥಳ</translation>
 <translation id="6150588977291308318">ಗ್ರಂಥಸೂಚಿ</translation>
 <translation id="6164829606128959761">ಮೀಟರ್</translation>
 <translation id="6166809985690652833">ನಂತರದ</translation>

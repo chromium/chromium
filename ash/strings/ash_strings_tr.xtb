@@ -56,6 +56,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1420527829902822813">Ekran görüntüsü alınıp panoya kaydedildi</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
+<translation id="1456407467406159627">Ekranınızda gizli içerik olduğundan ekran kaydetme durduruldu.</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1475439723810528286">Tam ekran görüntüsünü yakalamak için herhangi bir yere dokunun</translation>
@@ -150,6 +151,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
 <translation id="2390318262976603432">Yerel Ayarlar</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Medya denetimleri</translation>
 <translation id="2405664212338326887">Bağlı değil</translation>
 <translation id="2408955596600435184">PIN'inizi girin</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
@@ -220,6 +222,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Güncellemek için yeniden başlat</translation>
 <translation id="3139942575505304791">Çalışma Masası 1</translation>
+<translation id="3147157020428159854">Ekran kaydı durduruldu</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3151786313568798007">Yön</translation>
 <translation id="3153444934357957346">Çoklu oturum açmada en fazla <ph name="MULTI_PROFILE_USER_LIMIT" /> hesabınız olabilir.</translation>
@@ -291,6 +294,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="380165613292957338">Merhaba, nasıl yardımcı olabilirim?</translation>
 <translation id="3826099427150913765">Şifreye geç</translation>
 <translation id="383629559565718788">Klavye ayarlarını göster</translation>
+<translation id="3846214748874656680">Tam ekran modundan çık</translation>
 <translation id="3846575436967432996">Hiçbir ağ bilgisi yok</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlangıç</translation>
@@ -656,7 +660,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
-<translation id="7568637526529101738">Sağ tıkladığınızda veya uzun bastığınızda Asistan, yaptığınız seçimin tanımı veya birimin dönüşümü gibi bilgiler gösterir.</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
 <translation id="7590883480672980941">Giriş ayarları</translation>
@@ -708,6 +711,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7995804128062002838">Ekran görüntüsü alınamadı</translation>
 <translation id="8000066093800657092">Ağ yok</translation>
 <translation id="8004512796067398576">Artır</translation>
+<translation id="8029247720646289474">Hotspot bağlantısı kurulamadı</translation>
 <translation id="8029629653277878342">Daha fazla güvenlik için PIN veya şifre gerekli</translation>
 <translation id="8030169304546394654">Bağlı değil</translation>
 <translation id="8042893070933512245">Erişilebilirlik ayarları menüsünü aç</translation>
@@ -743,7 +747,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> ve telefonunuz otomatik olarak bağlanacaktır</translation>
 <translation id="8380784334203145311">İyi geceler,</translation>
 <translation id="8388750414311082622">Son masa kaldırılamaz.</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> seçenekler menüsü</translation>
 <translation id="8394567579869570560">Ebeveyniniz bu cihazı kilitledi</translation>
 <translation id="8412677897383510995">Ekran ayarlarını göster</translation>
 <translation id="8425213833346101688">Değiştir</translation>

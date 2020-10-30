@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1075811647922107217">Bladsygrootte</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
+<translation id="1204296502688602597">DNS-traagheid</translation>
+<translation id="1290331692326790741">Swak sein</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Deurgang kan gepieng word</translation>
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
 <translation id="1478594628797167447">Skandeerder</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1662989795263954667">Gestop – ink is op</translation>
+<translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
 <translation id="1734367976349034509">Hierdie toestel is onder ondernemingbestuur</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1930797645656624981">Chrome-bedryfstelsel se invoermetodediens</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
+<translation id="2364498172489649528">Geslaag</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
+<translation id="2391082728065870591">Stuur terugvoerverslag</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
+<translation id="3083667275341675831">Konnektiwiteitdiagnostiek</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
+<translation id="3188257591659621405">My lêers</translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
+<translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
 <translation id="3456078764689556234">Het bladsy <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> gedruk.</translation>
 <translation id="3459509316159669723">Druk tans</translation>
 <translation id="3515615323037921860">Druktake</translation>
 <translation id="3527036260304016759">Misluk – Onbekende fout</translation>
+<translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
 <translation id="38114475217616659">Vee alle geskiedenis uit</translation>
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
 <translation id="3838338534323494292">Nuwe wagwoord</translation>
 <translation id="3865414814144988605">Resolusie</translation>
+<translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
 <translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
+<translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos-kaartjie verval binnekort</translation>
 <translation id="445059817448385655">Ou wagwoord</translation>
+<translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
+<translation id="4548483925627140043">Kon nie sein kry nie</translation>
+<translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
+<translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
 <translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
 <translation id="4691278870498629773">Gestop – laai ontbreek</translation>
+<translation id="469379815867856270">Seinsterkte</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4985509611418653372">Laat loop</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="520299634122159966">Geen skandeerders is beskikbaar nie</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
@@ -71,6 +90,8 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Kies nou 'n nuwe een</translation>
+<translation id="5372659122375744710">Wi-fi-netwerk is nie veilig nie</translation>
+<translation id="5401938042319910061">Laat loop alle roetines</translation>
 <translation id="5457599981699367932">Blaai as Gas</translation>
 <translation id="54609108002486618">Bestuur</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
@@ -78,15 +99,21 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6048107060512778456">Misluk – Papierknoop</translation>
 <translation id="6058625436358447366">Voer jou ou en nuwe wagwoord in om dit te voltooi</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
+<translation id="6108689792487843350">Kan nie deurgang bereik nie</translation>
 <translation id="6146993107019042706">Voer jou nuwe wagwoord in om dit te voltooi</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Misvormige naambedieners</translation>
+<translation id="6325525973963619867">Misluk</translation>
 <translation id="636850387210749493">Onderneminginskrywing</translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>
 <translation id="6517239166834772319">Verken</translation>
+<translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
 <translation id="6564646048574748301">Misluk – Kon nie drukker bereik nie</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
 <translation id="6643016212128521049">Vee uit</translation>
+<translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
+<translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lêertipe</translation>
@@ -94,15 +121,22 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
+<translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
+<translation id="8364946094152050673">Leë naambedieners</translation>
+<translation id="8475690821716466388">Wi-fi-netwerk is met swak protokol WEP PSK beveilig</translation>
+<translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
 <translation id="8668052347555487755">Kleurmodus</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
+<translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>
 <translation id="8726019395068607495">Gestop – deur is oop</translation>
 <translation id="8747900814994928677">Bevestig verandering</translation>
+<translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>

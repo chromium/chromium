@@ -65,6 +65,7 @@
 <translation id="158809615184981282">מקלדת פארואזית</translation>
 <translation id="1589128298353575783">‎<ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">מצלמה</translation>
+<translation id="1646019627374511909">המערכת מגדירה <ph name="NUMBER_OF_ITEMS" /> קבצים כזמינים אופליין</translation>
 <translation id="1646136617204068573">מקלדת הונגרית</translation>
 <translation id="164729547906544836">‏מקלדת טמילית (itrans)</translation>
 <translation id="164969095109328410">‏מכשיר Chrome</translation>
@@ -116,7 +117,7 @@
 <translation id="2198315389084035571">סינית פשוטה</translation>
 <translation id="2208158072373999562">‏ארכיון Zip</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
-<translation id="2230062665678605299">לא ניתן ליצור את התיקיה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2230062665678605299">לא ניתן ליצור את התיקייה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">ההעברה הסתיימה.</translation>
 <translation id="2278988676849463018">מקלדת קנאדה (פונטית)</translation>
 <translation id="2287742181953707290">‏פורטוגזית עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">ארה"ב - בינלאומית</translation>
 <translation id="2562685439590298522">Google Docs</translation>
 <translation id="2563185590376525700">צפרדע</translation>
+<translation id="2572501073504669105">ניתן להפוך קבצים לזמינים אופליין כדי לאפשר אליהם גישה כשאין חיבור לאינטרנט.</translation>
 <translation id="2614589611416690597">קובץ וידאו בפורמט <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏לא ניתן להגיע אל Google Drive בשלב זה.</translation>
 <translation id="2638942478653899953">‏לא ניתן היה להגיע אל Google Drive‏. <ph name="BEGIN_LINK" />יש לצאת<ph name="END_LINK" /> ואז להתחבר שוב.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">מיקום הקובץ</translation>
 <translation id="2672394958563893062">אירעה שגיאה. לחץ כדי להתחיל מחדש.</translation>
 <translation id="2676946222714718093">מופעל ב-</translation>
+<translation id="2735623501230989521">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">מקלדת רומנית רגילה</translation>
 <translation id="2771816809568414714">גבינה</translation>
 <translation id="2781645665747935084">בלגית</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">אוניגירי</translation>
 <translation id="4784330909746505604">‏מצגת PowerPoint</translation>
 <translation id="4788401404269709922">‎<ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="4801956050125744859">שמור את שתיהן</translation>
 <translation id="4804827417948292437">אבוקדו</translation>
 <translation id="4823651846660089135">המכשיר מוגדר לקריאה בלבד</translation>
@@ -569,7 +573,7 @@
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6970230597523682626">בולגרית</translation>
 <translation id="6973630695168034713">תיקיות</translation>
-<translation id="6978611942794658017">‏קובץ זה מיועד עבור מחשב אישי המשתמש בתוכנת Windows. הוא אינו מתאים למכשירך שעובד עם מערכת הפעלה של Chrome. חפש יישום חלופי מתאים בחנות האינטרנט של Chrome.</translation>
+<translation id="6978611942794658017">‏קובץ זה מיועד עבור מחשב אישי המשתמש בתוכנת Windows. הוא אינו מתאים למכשיר שלך שעובד עם מערכת הפעלה של Chrome. יש לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> תיקיות נבחרו</translation>
@@ -610,11 +614,14 @@
 <translation id="7505167922889582512">הצג קבצים מוסתרים</translation>
 <translation id="7508545000531937079">מצגת שקופיות</translation>
 <translation id="751507702149411736">ביילורוסית</translation>
+<translation id="7544830582642184299">‏הענקת הרשאת גישה לאפליקציות Linux לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="7544853251252956727">ערבוב</translation>
 <translation id="7547811415869834682">הולנדית</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
+<translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">המתן מספר רגעים</translation>
+<translation id="7592775719802218421">בתהליך להפוך את <ph name="FILE_NAME" /> לזמין אופליין</translation>
 <translation id="7603724359189955920">רשתות</translation>
 <translation id="7627790789328695202">אופס, <ph name="FILE_NAME" /> כבר קיים. שנה את השם שלו ונסה שוב.</translation>
 <translation id="7628656427739290098">‏‎<ph name="PERCENT" />%‎ הושלמו.</translation>

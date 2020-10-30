@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ਬੰਦ ਸੁਰਖੀਆਂ ਵਾਲਾ ਮੀਨੂ ਲੁਕਾਓ</translation>
 <translation id="1729654308190250600">ਕਿਰਪਾ ਕਰਰਕੇ ਇੱਕ ਗ਼ੈਰ-ਖਾਲੀ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।</translation>
 <translation id="1758486001363313524">ਹੋਰ...</translation>
+<translation id="1774577460079229490">ਮੌਜੂਦਾ <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">ਕੁੱਲ ਸਮਾਂ: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ਟ੍ਰੀ ਗਰਿੱਡ</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">ਵੈਲਯੂ <ph name="MINIMUM_DATE_OR_TIME" /> ਜਾਂ ਇਸਤੋਂ ਬਾਅਦ ਦੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="2759744352195237655">ਪੌਪ-ਅੱਪ ਬਟਨ</translation>
 <translation id="2761667185364618470">ਜੇਕਰ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਬੌਕਸ ਵਿੱਚ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
+<translation id="2838616441696617235">ਪੜਾਅ</translation>
 <translation id="2844350028562914727">ਵੇਰਵੇ</translation>
 <translation id="2896972712917208084">ਰੇਡੀਓ ਸਮੂਹ</translation>
 <translation id="2908441821576996758">ਕਿਰਪਾ ਕਰਕੇ ਈਮੇਲ ਪਤਿਆਂ ਦੀ ਇੱਕ ਕਾਮਾ ਵੱਖ ਕੀਤੀ ਸੂਚੀ ਦਰਜ ਕਰੋ।</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">ਮੀਨੂ ਬਾਰ</translation>
 <translation id="4293574643247337246">ਪੰਨੇ ਦਾ ਸਿਰਲੇਖ</translation>
 <translation id="4360991593054037559">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਵੈਲਯੂ ਦਰਜ ਕਰੋ। ਦੋ ਲਗਭਗ ਵੈਲਯੂਜ <ph name="VALID_VALUE_LOW" /> ਅਤੇ <ph name="VALID_VALUE_HIGHER" /> ਹਨ।</translation>
+<translation id="4384249794467006333">ਇਹ ਚਿੱਤਰ ਲੇਬਲਬੱਧ ਨਹੀਂ ਹੈ। ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿਖਰ 'ਤੇ ਸੱਜੇ ਪਾਸੇ 'ਹੋਰ ਵਿਕਲਪ' ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4384583879834880242">ਸਵਾਲ-ਜਵਾਬ</translation>
 <translation id="4444765639179266822">ਲੱਗਦਾ ਹੈ ਕਿ ਇਹ ਕਿਹਾ ਜਾ ਰਿਹਾ ਹੈ: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ਸ਼ਬਦਾਵਲੀ ਦਾ ਹਵਾਲਾ</translation>
 <translation id="4522570452068850558">ਵੇਰਵੇ</translation>
+<translation id="4576178047100686001">ਇਹ ਚਿੱਤਰ ਲੇਬਲਬੱਧ ਨਹੀਂ ਹੈ। ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿਖਰ 'ਤੇ ਖੱਬੇ ਪਾਸੇ 'ਹੋਰ ਵਿਕਲਪ' ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4597532268155981612">ਫ਼ਾਰਮ</translation>
 <translation id="4661075872484491155">ਰੁੱਖ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ਪੁਸਤਕ ਮਾਲਾ ਦਾ ਇੰਦਰਾਜ਼</translation>
 <translation id="4915360478455618802">ਸਮਾਂ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
 <translation id="492244087561876220">ਟਿੱਪਣੀ</translation>
+<translation id="4934662370368414994">ਆਈਟਮ</translation>
 <translation id="4950364064308314478">ਸਥਾਨਕ ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ਚੁਣਿਆ ਗਿਆ</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">ਅਵਾਜ਼ ਸਲਾਈਡਰ</translation>
 <translation id="6015796118275082299">ਸਾਲ</translation>
 <translation id="6023896073578205740">ਲਿਸਟ ਬਾਕਸ</translation>
+<translation id="6131824478727057281">ਟਿਕਾਣਾ</translation>
 <translation id="6150588977291308318">ਪੁਸਤਕ ਮਾਲਾ</translation>
 <translation id="6164829606128959761">ਮੀਟਰ</translation>
 <translation id="6166809985690652833">ਅੰਤ-ਕਥਨ</translation>

@@ -2,8 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1018656279737460067">Annulé</translation>
+<translation id="1075811647922107217">Taille de page</translation>
 <translation id="1195447618553298278">Erreur inconnue</translation>
+<translation id="1204296502688602597">Latence avec le DNS</translation>
+<translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Pinguer la passerelle</translation>
 <translation id="1413240736185167732">Échec – Problème au niveau du filtre</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -12,6 +16,7 @@
 <translation id="1510238584712386396">Lanceur d'applications</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1662989795263954667">Tâche suspendue - À court d'encre</translation>
+<translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1734367976349034509">Cet appareil est géré par une entreprise</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
 <translation id="1930797645656624981">Service de mode de saisie Chrome OS</translation>
@@ -22,25 +27,31 @@
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
+<translation id="2364498172489649528">Réussi</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentatives restantes</translation>
+<translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentative restante}one{<ph name="ERROR_MESSAGE" /> {0} tentative restante}other{<ph name="ERROR_MESSAGE" /> {0} tentatives restantes}}</translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3091839911843451378">Échec – Imprimante à l'arrêt</translation>
+<translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront supprimées</translation>
 <translation id="3268178239013324452">Échec – Capot de l'imprimante ouvert</translation>
+<translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
 <translation id="3456078764689556234">Page imprimée : <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3515615323037921860">Tâches d'impression</translation>
 <translation id="3527036260304016759">Échec – Erreur inconnue</translation>
+<translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">Code incorrect.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3865414814144988605">Résolution</translation>
+<translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="39823212440917567">Les tâches d'impression de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>
 <translation id="4003384961948020559">Échec – Bac de sortie plein</translation>
@@ -49,18 +60,25 @@
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
+<translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Le ticket Kerberos arrive bientôt à expiration</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
+<translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
+<translation id="4548483925627140043">Signal introuvable</translation>
+<translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
+<translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="467510802200863975">Les mots de passe sont différents</translation>
 <translation id="4691278870498629773">Tâche suspendue - Bac manquant</translation>
+<translation id="469379815867856270">Force du signal</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4773299976671772492">Interrompu</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée pour <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4890353053343094602">Choisissez-en un nouveau immédiatement</translation>
 <translation id="4917889632206600977">Tâche suspendue - À court de papier</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4985509611418653372">Exécuter</translation>
 <translation id="5094480857972195099">Cet utilisateur est géré par <ph name="ENROLLMENT_DOMAIN" />, qui peut modifier ses paramètres et surveiller son activité à distance.</translation>
 <translation id="520299634122159966">Aucun scanner disponible</translation>
 <translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
@@ -70,6 +88,8 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
+<translation id="5372659122375744710">Réseau Wi-Fi non sécurisé</translation>
+<translation id="5401938042319910061">Exécuter toutes les routines</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
@@ -77,15 +97,21 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6048107060512778456">Échec – Bourrage papier</translation>
 <translation id="6058625436358447366">Pour terminer, saisissez votre ancien mot de passe et le nouveau</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
+<translation id="6108689792487843350">Passerelle injoignable</translation>
 <translation id="6146993107019042706">Pour terminer, saisissez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Serveurs de noms non valides</translation>
+<translation id="6325525973963619867">Échec</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="649050271426829538">Tâche suspendue - Bourrage papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
+<translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
 <translation id="6564646048574748301">Échec – Imprimante inaccessible</translation>
 <translation id="6620487321149975369">Les tâches d'impression seront incluses dans l'historique, sauf si vous les supprimez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
+<translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Type de fichier</translation>
@@ -93,15 +119,22 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7805768142964895445">État</translation>
+<translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8208861521865154048">Avantages</translation>
+<translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajoutez un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
+<translation id="8364946094152050673">Serveurs de noms vides</translation>
+<translation id="8475690821716466388">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP PSK</translation>
+<translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>
 <translation id="8668052347555487755">Mode couleur</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>
+<translation id="8723108084122415655">Seuil de latence dépassé pour le réseau non défini par défaut</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
 <translation id="8747900814994928677">Confirmer la modification</translation>
+<translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>
 <translation id="910415269708673980">Actualiser le ticket associé à <ph name="PRINCIPAL_NAME" /></translation>

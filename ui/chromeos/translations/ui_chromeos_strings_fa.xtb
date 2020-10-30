@@ -65,6 +65,7 @@
 <translation id="158809615184981282">صفحه‌کلید فاروئی</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> پتابایت</translation>
 <translation id="1620510694547887537">دوربین</translation>
+<translation id="1646019627374511909">تنظیم <ph name="NUMBER_OF_ITEMS" /> فایل برای دسترسی آفلاین</translation>
 <translation id="1646136617204068573">صفحه‌کلید مجارستانی</translation>
 <translation id="164729547906544836">صفحه‌کلید تامیل (نویسه‌گردانی هندی)</translation>
 <translation id="164969095109328410">‏دستگاه Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">بین‌المللی آمریکایی</translation>
 <translation id="2562685439590298522">اسناد</translation>
 <translation id="2563185590376525700">قورباغه</translation>
+<translation id="2572501073504669105">می‌توانید فایل‌ها را طوری تنظیم کنید که در حالت آفلاین دردسترس باشند تا هنگامی که اتصال اینترنت ندارید به آن‌ها دسترسی داشته باشید</translation>
 <translation id="2614589611416690597">ویدیوی <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏دسترسی به Google Drive در حال حاضر ممکن نیست.</translation>
 <translation id="2638942478653899953">‏دسترسی به Google Drive امکان‌پذیر نیست. لطفاً <ph name="BEGIN_LINK" />از سیستم خارج شوید<ph name="END_LINK" /> و دوباره وارد شوید.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">محل فایل</translation>
 <translation id="2672394958563893062">خطایی رخ داده است. برای شروع مجدد از ابتدا، کلیک کنید.</translation>
 <translation id="2676946222714718093">در حال پخش در</translation>
+<translation id="2735623501230989521">‏به Parallels Desktop اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشد</translation>
 <translation id="2735698359135166290">صفحه‌کلید استاندارد رومانیایی</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بلژیکی</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4784330909746505604">‏ارائه PowerPoint </translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> کیلوبایت</translation>
+<translation id="4789067489790477934">‏به Parallels Desktop اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشد. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="4801956050125744859">حفظ هر دو</translation>
 <translation id="4804827417948292437">آووکادو</translation>
 <translation id="4823651846660089135">دستگاه فقط خواندنی است</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">نمایش فایل‌های پنهان</translation>
 <translation id="7508545000531937079">نمایش اسلاید</translation>
 <translation id="751507702149411736">بلاروسی</translation>
+<translation id="7544830582642184299">‏به برنامه‌های Linux اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشند. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="7544853251252956727">درهم</translation>
 <translation id="7547811415869834682">هلند</translation>
 <translation id="7551643184018910560">پین به راه‌انداز</translation>
+<translation id="7553492409867692754">‏به برنامه‌های Linux اجازه دهید به فایل‌های پوشه <ph name="FOLDER_NAME" /> دسترسی داشته باشند</translation>
 <translation id="7576032389798113292">۶x۴</translation>
 <translation id="7589661784326793847">چند ثانیه صبر کنید</translation>
+<translation id="7592775719802218421">تنظیم <ph name="FILE_NAME" /> برای دسترسی آفلاین</translation>
 <translation id="7603724359189955920">شبکه‌ها</translation>
 <translation id="7627790789328695202">اوه، <ph name="FILE_NAME" /> از قبل وجود دارد. نام آن را تغییر دهید و دوباره امتحان کنید.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% کامل شد.</translation>

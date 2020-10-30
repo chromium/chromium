@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ซ่อนเมนูคำอธิบายภาพ</translation>
 <translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
 <translation id="1758486001363313524">อื่นๆ...</translation>
+<translation id="1774577460079229490"><ph name="TYPE" />ปัจจุบัน</translation>
 <translation id="1787192514241997742">เวลารวม: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">แผนผังต้นไม้</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">ค่าต้องเป็น <ph name="MINIMUM_DATE_OR_TIME" /> หรือหลังจากนั้น</translation>
 <translation id="2759744352195237655">ปุ่มป๊อปอัป</translation>
 <translation id="2761667185364618470">โปรดเลือกช่องนี้หากคุณต้องการดำเนินการต่อ</translation>
+<translation id="2838616441696617235">ขั้นตอน</translation>
 <translation id="2844350028562914727">รายละเอียด</translation>
 <translation id="2896972712917208084">กลุ่มตัวเลือก</translation>
 <translation id="2908441821576996758">โปรดป้อนรายการที่อยู่อีเมลโดยคั่นด้วยเครื่องหมายจุลภาค</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">แถบเมนู</translation>
 <translation id="4293574643247337246">ส่วนหัวของหน้า</translation>
 <translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
+<translation id="4384249794467006333">รูปภาพนี้ไม่มีป้ายกำกับ เปิดเมนู "ตัวเลือกอื่น" ที่ด้านขวาบนเพื่อดูคำอธิบายรูปภาพ</translation>
 <translation id="4384583879834880242">ถามและตอบ</translation>
 <translation id="4444765639179266822">ดูเหมือนจะพูดว่า <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">ข้อมูลอ้างอิงอภิธานศัพท์</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
+<translation id="4576178047100686001">รูปภาพนี้ไม่มีป้ายกำกับ เปิดเมนู "ตัวเลือกอื่น" ที่ด้านซ้ายบนเพื่อดูคำอธิบายรูปภาพ</translation>
 <translation id="4597532268155981612">ฟอร์ม</translation>
 <translation id="4661075872484491155">แผนผัง</translation>
 <translation id="4664250907885839816">ส่วนที่ต่อท้าย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">รายการบรรณานุกรม</translation>
 <translation id="4915360478455618802">แสดงเครื่องมือเลือกเวลา</translation>
 <translation id="492244087561876220">ความคิดเห็น</translation>
+<translation id="4934662370368414994">รายการ</translation>
 <translation id="4950364064308314478">แสดงเครื่องมือเลือกวันที่และเวลาท้องถิ่น</translation>
 <translation id="4971739861736909480">เลือก <ph name="ACCNAME" /> ไว้</translation>
 <translation id="4975562563186953947">เลือกไว้ <ph name="SELECTED_COUNT" /> รายการ</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">แถบเลื่อนปรับระดับเสียง</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6023896073578205740">ช่องรายการ</translation>
+<translation id="6131824478727057281">ตำแหน่ง</translation>
 <translation id="6150588977291308318">บรรณานุกรม</translation>
 <translation id="6164829606128959761">เมตร</translation>
 <translation id="6166809985690652833">คำแถลงท้ายเล่ม</translation>

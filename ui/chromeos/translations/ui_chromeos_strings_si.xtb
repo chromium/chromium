@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Faroese යතුරු පුවරුව</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
+<translation id="1646019627374511909">ගොනු <ph name="NUMBER_OF_ITEMS" />ක් නොබැඳිව ලබා ගත හැකි බවට පත් කරමින්</translation>
 <translation id="1646136617204068573">හන්ගේරියානු යතුරු පුවරුව</translation>
 <translation id="164729547906544836">දෙමළ යතුරු පුවරුව (itrans)</translation>
 <translation id="164969095109328410">Chrome උපාංගය</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US ජාත්‍යන්තර</translation>
 <translation id="2562685439590298522">ලේඛ</translation>
 <translation id="2563185590376525700">ගෙම්බා</translation>
+<translation id="2572501073504669105">ඔබට අන්තර්ජාල සම්බන්ධතාවක් නොමැති විට ප්‍රවේශය සඳහා ඔබට ගොනු නොබැඳි ලෙස ලබා ගත හැකි බවට පත් කළ හැකිය.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> වීඩියෝ</translation>
 <translation id="2620090360073999360">මේ අවස්ථාවේ Google Drive වෙත ලගාවිය නොහැක.</translation>
 <translation id="2638942478653899953">Google Drive වෙත ප්‍රවේශ විය නොහැක. <ph name="BEGIN_LINK" />ප්‍රවිෂ්ටයෙන් පිට වී<ph name="END_LINK" /> නැවතත් ප්‍රවිෂ්ට වන්න.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ගොනු ස්ථානය</translation>
 <translation id="2672394958563893062">දෝෂයක් සිදු විය. ආරම්භයේ සිට නැවත ආරම්භ කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="2676946222714718093">වාදනය වෙමින්</translation>
+<translation id="2735623501230989521">Parallels Desktop හට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසර දෙන්න</translation>
 <translation id="2735698359135166290">රුමේනියානු සම්මත යතුරු පුවරුව</translation>
 <translation id="2771816809568414714">චීස්</translation>
 <translation id="2781645665747935084">බෙල්ජියම</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ඔනිගිරි</translation>
 <translation id="4784330909746505604">PowerPoint සමර්පණය</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">Parallels Desktop හට ඔබගේ Google Drive තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න වෙනස් කිරීම් ඔබගේ අනෙකුත් උපාංගවලට සමමුහුර්ත කරනු ඇත.</translation>
 <translation id="4801956050125744859">දෙකම තබා ගන්න</translation>
 <translation id="4804827417948292437">අලිගැටපේර</translation>
 <translation id="4823651846660089135">උපාංගය කියවීමට පමණි</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">සැඟවුණු ගොනු පෙන්වන්න</translation>
 <translation id="7508545000531937079">ස්ලයිඩ දර්ශන</translation>
 <translation id="751507702149411736">බෙලෝරුසියානු</translation>
+<translation id="7544830582642184299">Linux යෙදුම්වලට ඔබගේ Google Drive තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න. වෙනස් කිරීම් ඔබගේ අනෙකුත් උපාංගවලට සමමුහුර්ත කරනු ඇත.</translation>
 <translation id="7544853251252956727">කලවම් කරන්න</translation>
 <translation id="7547811415869834682">ලංදේසි</translation>
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
+<translation id="7553492409867692754">Linux යෙදුම්වලට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">මොහොතක් රැඳී සිටින්න</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> නොබැඳිව ලබා ගත හැකි බවට පත් කරමින්</translation>
 <translation id="7603724359189955920">ජාලක</translation>
 <translation id="7627790789328695202">ආහ්, <ph name="FILE_NAME" /> දැනටමත් තිබේ. එය නැවත නම් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% සම්පූර්ණයි.</translation>

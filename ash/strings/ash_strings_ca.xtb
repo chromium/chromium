@@ -56,6 +56,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1420527829902822813">La captura de pantalla s'ha fet i s'ha desat al porta-retalls</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
+<translation id="1456407467406159627">La gravació de la pantalla s'ha aturat perquè s'hi mostra contingut confidencial.</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
 <translation id="1475439723810528286">Toca qualsevol lloc per capturar la pantalla completa</translation>
@@ -150,6 +151,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2390318262976603432">Configuració regional</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Controls multimèdia</translation>
 <translation id="2405664212338326887">No connectat</translation>
 <translation id="2408955596600435184">Introdueix el PIN</translation>
 <translation id="2412593942846481727">Hi ha una actualització disponible</translation>
@@ -220,6 +222,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
 <translation id="3139942575505304791">Escriptori 1</translation>
+<translation id="3147157020428159854">La gravació de pantalla s'ha aturat</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3151786313568798007">Orientació</translation>
 <translation id="3153444934357957346">Només pots tenir <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes com a màxim en un inici de sessió múltiple.</translation>
@@ -291,6 +294,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="380165613292957338">Hola, en què et puc ajudar?</translation>
 <translation id="3826099427150913765">Canvia a contrasenya</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
+<translation id="3846214748874656680">Surt de la pantalla completa</translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
@@ -655,7 +659,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
-<translation id="7568637526529101738">Si mantens el botó premut o fas clic amb el botó dret en un element, l'Assistent et mostrarà informació com ara la definició o la conversió d'unitats.</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuració de l'entrada</translation>
@@ -707,6 +710,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7995804128062002838">No s'ha pogut capturar la pantalla</translation>
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
 <translation id="8004512796067398576">Incrementa</translation>
+<translation id="8029247720646289474">La connexió al punt d'accés Wi‑Fi ha fallat</translation>
 <translation id="8029629653277878342">Cal introduir el PIN o la contrasenya per disposar de més seguretat</translation>
 <translation id="8030169304546394654">Desconnectat</translation>
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
@@ -742,7 +746,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> i el teu telèfon es connectaran automàticament</translation>
 <translation id="8380784334203145311">Bona nit,</translation>
 <translation id="8388750414311082622">L'últim escriptori no es pot suprimir.</translation>
-<translation id="8392451568018454956">Menú d'opcions per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">El teu pare o la teva mare han bloquejat aquest dispositiu</translation>
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
 <translation id="8425213833346101688">Canvia</translation>

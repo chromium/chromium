@@ -2,8 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1018656279737460067">منسوخ کردہ</translation>
+<translation id="1075811647922107217">صفحہ کا سائز</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
+<translation id="1204296502688602597">‏DNS تاخیر</translation>
+<translation id="1290331692326790741">کمزور سگنل</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
 <translation id="1478594628797167447">اسکینر</translation>
@@ -12,6 +16,7 @@
 <translation id="1510238584712386396">لانچر</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
+<translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
 <translation id="1734367976349034509">یہ آلہ انٹرپرائز کے زیرِ انتظام ہے</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1930797645656624981">‏Chrome OS اندراج کے طریقہ کی سروس</translation>
@@ -22,25 +27,33 @@
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
+<translation id="2364498172489649528">پاس ہو گیا</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
+<translation id="2391082728065870591">تاثرات کی رپورٹ بھیجیں</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} کوشش باقی ہے}other{<ph name="ERROR_MESSAGE" /> {0} کوششیں باقی ہیں}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
+<translation id="3083667275341675831">کنیکٹویٹی ڈائيگناسٹکس</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
+<translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
+<translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> میں سے <ph name="PRINTED_PAGES" /> پرنٹ کئے ہوئے صفحات۔</translation>
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
 <translation id="3515615323037921860">پرنٹ جابز</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
+<translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
 <translation id="38114475217616659">تمام سرگزشت صاف کریں</translation>
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
+<translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="4003384961948020559">ناکام ہو گیا - آؤٹ پٹ مکمل</translation>
@@ -49,18 +62,25 @@
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
+<translation id="4378373042927530923">نہیں چلا</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">‏Kerberos کی ٹکٹ کی میعاد جلد ہی ختم ہو جائے گی</translation>
 <translation id="445059817448385655">پرانا پاس ورڈ</translation>
+<translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4548483925627140043">سگنل نہیں ملا</translation>
+<translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
+<translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
 <translation id="4691278870498629773">رک گیا - ٹرے موجود نہیں ہے</translation>
+<translation id="469379815867856270">سگنل کی مضبوطی</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> پرنٹ جاب منسوخ کر دی گئی</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="4985509611418653372">چلائیں</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="520299634122159966">کوئی اسکینرز دستیاب نہیں ہے</translation>
 <translation id="5212543919916444558">مجھے آپ کی اسکرین پر ایسا کچھ نہیں ملا جس سے متعلق میں آپ کی مدد کر سکوں۔ مجھ سے کچھ بھی پوچھنے کے لیے مائیک کو تھپتھپانے کی کوشش کریں۔</translation>
@@ -69,6 +89,8 @@
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ابھی ایک نیا پاس ورڈ منتخب کریں</translation>
+<translation id="5372659122375744710">‏WiFi نیٹ ورک محفوظ نہیں ہے</translation>
+<translation id="5401938042319910061">تمام روٹینز چلائیں</translation>
 <translation id="5457599981699367932">مہمان کے بطور براؤز کریں</translation>
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
@@ -76,15 +98,21 @@
 <translation id="6048107060512778456">ناکام ہو گیا - پیپر جام</translation>
 <translation id="6058625436358447366">مکمل کرنے کے لئے اپنے پرانے اور نئے پاس ورڈز درج کریں</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
+<translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">نام سرورز غلط ہے</translation>
+<translation id="6325525973963619867">ناکام</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
 <translation id="6517239166834772319">دریافت</translation>
+<translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
+<translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
 <translation id="6747215703636344499">رک گیا - آؤٹ پٹ بھر گیا ہے</translation>
+<translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7162487448488904999">گیلری</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
@@ -92,15 +120,22 @@
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
 <translation id="7805768142964895445">صورتحال</translation>
+<translation id="7936303884198020182">کوئی نام سرور نہیں ملا</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8208861521865154048">فوائد</translation>
+<translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
+<translation id="8364946094152050673">نام سرورز خالی ہیں</translation>
+<translation id="8475690821716466388">‏WiFi نیٹ ورک کمزور پروٹوکول WEP PSK کے ساتھ محفوظ ہے</translation>
+<translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
 <translation id="8668052347555487755">رنگ کی وضع</translation>
 <translation id="871560550817059752">ناکام ہو گیا - سیاہی ختم ہو گئی</translation>
+<translation id="8723108084122415655">تاخیر کی حد کے اوپر غیر ڈیفالٹ نیٹ ورک</translation>
 <translation id="8726019395068607495">رک گیا - دروازہ کھلا ہے</translation>
 <translation id="8747900814994928677">تبدیلی کی توثیق کریں</translation>
+<translation id="8910721771319628100">تاخیر کی حد کے اوپر ڈیفالٹ نیٹ ورک</translation>
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>

@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">Annulleret</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1195447618553298278">Ukendt fejl.</translation>
+<translation id="1204296502688602597">DNS-forsinkelse</translation>
+<translation id="1290331692326790741">Svagt signal</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">Gatewayen kan pinges</translation>
 <translation id="1413240736185167732">Handlingen mislykkedes – Filterfejl</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">Appliste</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1662989795263954667">Stoppet – Mangler blæk</translation>
+<translation id="1706391837335750954">DNS-resolver er til stede</translation>
 <translation id="1734367976349034509">Denne enhed er virksomhedsadministreret</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1930797645656624981">Indtastningsmetodetjeneste for Chrome OS</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
+<translation id="2364498172489649528">Bestået</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
+<translation id="2391082728065870591">Send feedbackrapport</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="3008341117444806826">OPDATER</translation>
+<translation id="3083667275341675831">Diagnosticering af forbindelse</translation>
 <translation id="3091839911843451378">Handlingen mislykkedes – Stoppede</translation>
+<translation id="3188257591659621405">Mine filer</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
+<translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> ud af <ph name="TOTAL_PAGES" /> er blevet udskrevet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
 <translation id="3515615323037921860">Udskriftsjob</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
+<translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="38114475217616659">Ryd hele historikken</translation>
 <translation id="3820172043799983114">Ugyldig pinkode.</translation>
 <translation id="3838338534323494292">Ny adgangskode</translation>
 <translation id="3865414814144988605">Opløsning</translation>
+<translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
+<translation id="4378373042927530923">Kørte ikke</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
 <translation id="445059817448385655">Gammel adgangskode</translation>
+<translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
+<translation id="4548483925627140043">Der blev ikke fundet noget signal</translation>
+<translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
+<translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
 <translation id="4691278870498629773">Stoppet – Bakke mangler</translation>
+<translation id="469379815867856270">Signalstyrke</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4808449224298348341">Udskriftsjobbet <ph name="DOCUMENT_TITLE" /> blev annulleret</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="4985509611418653372">Kør</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og holde øje med brugeraktivitet via fjernadgang.</translation>
 <translation id="520299634122159966">Der er ingen tilgængelige scannere</translation>
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
@@ -70,6 +89,8 @@
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Vælg en ny adgangskode nu</translation>
+<translation id="5372659122375744710">Wi-Fi-netværket er ikke sikkert</translation>
+<translation id="5401938042319910061">Kør alle rutiner</translation>
 <translation id="5457599981699367932">Anvend som gæst</translation>
 <translation id="54609108002486618">Administreret</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
@@ -77,15 +98,21 @@
 <translation id="6048107060512778456">Handlingen mislykkedes – Papirstop</translation>
 <translation id="6058625436358447366">Angiv din gamle og nye adgangskode for at afslutte</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
+<translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">Ugyldige navneservere</translation>
+<translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
 <translation id="6517239166834772319">Udforsk</translation>
+<translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
 <translation id="6564646048574748301">Handlingen mislykkedes – Ingen forbindelse til printer</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Ryd</translation>
+<translation id="6704062477274546131">DNS-udførelse</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
+<translation id="714876143603641390">LAN-forbindelse</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
@@ -93,15 +120,22 @@
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8208861521865154048">Fordele</translation>
+<translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
+<translation id="8364946094152050673">Navneserverne er ikke angivet</translation>
+<translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
+<translation id="8477551185774834963">DNS-forsinkelsen er en smule højere end den tilladte grænse</translation>
 <translation id="8668052347555487755">Farvetilstand</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
+<translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>
 <translation id="8747900814994928677">Bekræft ændring</translation>
+<translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>

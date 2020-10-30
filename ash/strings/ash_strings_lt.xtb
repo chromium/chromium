@@ -56,6 +56,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1420527829902822813">Ekranas nukopijuotas ir kopija išsaugota iškarpinėje</translation>
 <translation id="1426410128494586442">Taip</translation>
 <translation id="1455242230282523554">Rodyti kalbos nustatymus</translation>
+<translation id="1456407467406159627">Ekrano įrašymas sustabdytas, nes ekrane rodomas konfidencialus turinys.</translation>
 <translation id="1460620680449458626">Garsumas nutildytas.</translation>
 <translation id="1467432559032391204">Kairė</translation>
 <translation id="1475439723810528286">Palieskite bet kur, kad užfiksuotumėte visą ekraną</translation>
@@ -150,6 +151,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2369165858548251131">„Labas“ kinų kalba</translation>
 <translation id="2390318262976603432">Lokalės nustatymai</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Medijos valdikliai</translation>
 <translation id="2405664212338326887">Neprijungta</translation>
 <translation id="2408955596600435184">Įveskite PIN kodą</translation>
 <translation id="2412593942846481727">Pasiekiamas naujinys</translation>
@@ -220,6 +222,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> („Bluetooth“)</translation>
 <translation id="3126069444801937830">Paleisti iš naujo, kad būtų atnaujinta</translation>
 <translation id="3139942575505304791">1 pultas</translation>
+<translation id="3147157020428159854">Ekrano įrašymas sustabdytas</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3151786313568798007">Orientacija</translation>
 <translation id="3153444934357957346">Naudodami kelių paskyrų funkciją, galite turėti iki <ph name="MULTI_PROFILE_USER_LIMIT" /> paskyr.</translation>
@@ -291,6 +294,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="380165613292957338">Sveiki, kuo galiu padėti?</translation>
 <translation id="3826099427150913765">Perjungti į slaptažodį</translation>
 <translation id="383629559565718788">Rodyti klaviatūros nustatymus</translation>
+<translation id="3846214748874656680">Išjungti viso ekrano režimą</translation>
 <translation id="3846575436967432996">Nėra tinklo informacijos</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="385300504083504382">Pradžia</translation>
@@ -655,7 +659,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7551643184018910560">Prisegti prie lentynos</translation>
 <translation id="7561982940498449837">Uždaryti meniu</translation>
 <translation id="7564874036684306347">Perkėlus langus į kitą darbalaukį gali pasireikšti nenumatyta elgsena. Vėlesni pranešimai, langai ir dialogų langai gali būti padalyti keliuose darbalaukiuose.</translation>
-<translation id="7568637526529101738">Spustelėjus dešiniuoju pelės klavišu ar ilgai paspaudus, Padėjėjas rodo informaciją, pvz., apibrėžtį ar matavimo vienetų konvertavimą, kad galėtumėte pasirinkti.</translation>
 <translation id="7569509451529460200">Brailio rašmenys ir „ChromeVox“ įgalinti</translation>
 <translation id="7579778809502851308">Ekrano fiksavimas</translation>
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
@@ -707,6 +710,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7995804128062002838">Nepavyko užfiksuoti ekrano</translation>
 <translation id="8000066093800657092">Tinklo nėra</translation>
 <translation id="8004512796067398576">Padidinti</translation>
+<translation id="8029247720646289474">Nepavyko prisijungti prie viešosios interneto prieigos taško</translation>
 <translation id="8029629653277878342">Norint užtikrinti patikimesnę apsaugą reikalingas PIN kodas arba slaptažodis</translation>
 <translation id="8030169304546394654">Atjungta</translation>
 <translation id="8042893070933512245">Atidaryti pritaikomumo nustatymų meniu</translation>
@@ -742,7 +746,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8375916635258623388">Šis „<ph name="DEVICE_NAME" />“ įrenginys ir telefonas bus susieti automatiškai</translation>
 <translation id="8380784334203145311">Labanakt,</translation>
 <translation id="8388750414311082622">Negalima pašalinti paskutinio pulto.</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> skirtų parinkčių meniu</translation>
 <translation id="8394567579869570560">Vienas iš tėvų užrakino šį įrenginį</translation>
 <translation id="8412677897383510995">Rodyti ekrano nustatymus</translation>
 <translation id="8425213833346101688">Keisti</translation>

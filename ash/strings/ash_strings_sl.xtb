@@ -56,6 +56,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1420527829902822813">Posnetek zaslona je bil ustvarjen in shranjen v odložišču</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
+<translation id="1456407467406159627">Snemanje zaslona se je ustavilo zaradi zaupne vsebine na zaslonu.</translation>
 <translation id="1460620680449458626">Glasnost je utišana.</translation>
 <translation id="1467432559032391204">V levo</translation>
 <translation id="1475439723810528286">Dotaknite se kjer koli za posnetek celotnega zaslona.</translation>
@@ -150,6 +151,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2369165858548251131">»Živijo« po kitajsko</translation>
 <translation id="2390318262976603432">Nastavitve jezika</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Kontrolniki predstavnosti</translation>
 <translation id="2405664212338326887">Ni povezano</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
@@ -220,6 +222,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Znova zaženite za posodobitev</translation>
 <translation id="3139942575505304791">Namizje 1</translation>
+<translation id="3147157020428159854">Snemanje zaslona je ustavljeno</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3151786313568798007">Usmerjenost</translation>
 <translation id="3153444934357957346">S prijavo z več računi lahko uporabljate največ toliko računov: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
@@ -291,6 +294,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="380165613292957338">Živijo. Kako lahko pomagam?</translation>
 <translation id="3826099427150913765">Preklopi na geslo</translation>
 <translation id="383629559565718788">Prikaz nastavitev tipkovnice</translation>
+<translation id="3846214748874656680">Zapri celozaslonski način</translation>
 <translation id="3846575436967432996">Ni podatkov o omrežju</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="385300504083504382">Začetek</translation>
@@ -655,7 +659,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
 <translation id="7561982940498449837">Zapri meni</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
-<translation id="7568637526529101738">Če kliknete z desnim gumbom ali pridržite, vam Pomočnik pokaže informacije, kot je definicija ali pretvorba enot za izbor.</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7579778809502851308">Zajemanje slike</translation>
 <translation id="7590883480672980941">Nastavitve vnosa</translation>
@@ -707,6 +710,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7995804128062002838">Slike zaslona ni bilo mogoče zajeti</translation>
 <translation id="8000066093800657092">Ni omrežja</translation>
 <translation id="8004512796067398576">Povečava</translation>
+<translation id="8029247720646289474">Povezava z dostopno točko ni uspela</translation>
 <translation id="8029629653277878342">Zaradi večje varnosti je obvezna koda PIN ali geslo</translation>
 <translation id="8030169304546394654">Ni povezave</translation>
 <translation id="8042893070933512245">Odpiranje menija z nastavitvami funkcij za ljudi s posebnimi potrebami</translation>
@@ -742,7 +746,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8375916635258623388">Ta naprava <ph name="DEVICE_NAME" /> in telefon se bosta samodejno povezala</translation>
 <translation id="8380784334203145311">Lahko noč,</translation>
 <translation id="8388750414311082622">Zadnjega namizja ni mogoče odstraniti.</translation>
-<translation id="8392451568018454956">Meni z možnostmi za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Tvoj starš je zaklenil to napravo</translation>
 <translation id="8412677897383510995">Prikaz nastavitev zaslona</translation>
 <translation id="8425213833346101688">Spremeni</translation>

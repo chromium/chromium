@@ -56,6 +56,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1420527829902822813">Pamja e ekranit u shkrep dhe u ruajt te kujtesa e fragmenteve</translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
+<translation id="1456407467406159627">Regjistrimi i ekranit ndaloi për shkak të përmbajtjes konfidenciale në ekranin tënd.</translation>
 <translation id="1460620680449458626">Volumi është i çaktivizuar.</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="1475439723810528286">Trokit diku për të regjistruar ekranin e plotë</translation>
@@ -150,6 +151,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
 <translation id="2390318262976603432">Cilësimet rajonale</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Kontrollet e medias</translation>
 <translation id="2405664212338326887">Nuk është i lidhur</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
@@ -220,6 +222,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Rifillo për të përditësuar</translation>
 <translation id="3139942575505304791">Tavolina e punës 1</translation>
+<translation id="3147157020428159854">Regjistrimi i ekranit ka ndaluar</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3151786313568798007">Orientimi</translation>
 <translation id="3153444934357957346">Mund të kesh vetëm deri në <ph name="MULTI_PROFILE_USER_LIMIT" /> llogari në identifikimin e shumëfishtë.</translation>
@@ -291,6 +294,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
+<translation id="3846214748874656680">Dil nga ekrani i plotë</translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="385300504083504382">Fillimi</translation>
@@ -655,7 +659,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
-<translation id="7568637526529101738">Me një klikim me butonin djathtas ose shtypje të gjatë, "Asistenti" shfaq informacione si p.sh. përkufizimi ose konvertimi i njësisë për zgjedhjen tënde.</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
@@ -707,6 +710,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7995804128062002838">Regjistrimi i ekranit dështoi</translation>
 <translation id="8000066093800657092">Nuk ka rrjet</translation>
 <translation id="8004512796067398576">Rritje</translation>
+<translation id="8029247720646289474">Lidhja me zonën e qasjes për internet dështoi</translation>
 <translation id="8029629653277878342">Kërkohet kodi PIN ose fjalëkalimi për më shumë siguri</translation>
 <translation id="8030169304546394654">I shkëputur</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
@@ -742,7 +746,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8375916635258623388">Kjo pajisje <ph name="DEVICE_NAME" /> dhe telefoni yt do të lidhen automatikisht</translation>
 <translation id="8380784334203145311">Natën e mirë,</translation>
 <translation id="8388750414311082622">Tavolina e fundit e punës nuk mund të hiqet.</translation>
-<translation id="8392451568018454956">Menyja e opsioneve për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Prindi yt e kyçi këtë pajisje</translation>
 <translation id="8412677897383510995">Shfaq cilësimet e ekranit</translation>
 <translation id="8425213833346101688">Ndrysho</translation>

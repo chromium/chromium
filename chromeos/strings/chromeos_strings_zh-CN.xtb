@@ -2,8 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1075811647922107217">页面大小</translation>
 <translation id="1195447618553298278">未知错误。</translation>
+<translation id="1204296502688602597">DNS 延迟时间</translation>
+<translation id="1290331692326790741">信号较弱</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1478594628797167447">扫描器</translation>
@@ -12,6 +16,7 @@
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
+<translation id="1706391837335750954">存在 DNS 解析器</translation>
 <translation id="1734367976349034509">此设备是受企业管理的设备</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1930797645656624981">Chrome 操作系统输入法服务</translation>
@@ -22,25 +27,33 @@
 <translation id="2161394479394250669">取消打印任务</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
+<translation id="2364498172489649528">通过</translation>
 <translation id="2375079107209812402">剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="3008341117444806826">刷新</translation>
+<translation id="3083667275341675831">网络连接诊断</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
+<translation id="3188257591659621405">我的文件</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
+<translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
 <translation id="3456078764689556234">已打印 <ph name="PRINTED_PAGES" /> 页（共 <ph name="TOTAL_PAGES" /> 页）。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3515615323037921860">打印任务</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
+<translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3749289110408117711">文件名</translation>
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
 <translation id="3838338534323494292">新密码</translation>
 <translation id="3865414814144988605">分辨率</translation>
+<translation id="3941014780699102620">未能解析主机</translation>
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> 管理此设备并可查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
@@ -49,18 +62,25 @@
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
+<translation id="4378373042927530923">未运行</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
 <translation id="445059817448385655">旧密码</translation>
+<translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4548483925627140043">找不到信号</translation>
+<translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
+<translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
 <translation id="4691278870498629773">已停止 - 缺少送纸盘</translation>
+<translation id="469379815867856270">信号强度</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="4985509611418653372">运行</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> 会管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="520299634122159966">无可用的扫描器</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
@@ -70,6 +90,8 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">请立即设置一个新密码</translation>
+<translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
+<translation id="5401938042319910061">运行所有例程</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">托管</translation>
 <translation id="5832805196449965646">添加用户</translation>
@@ -77,15 +99,21 @@
 <translation id="6048107060512778456">失败 - 卡纸了</translation>
 <translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
+<translation id="6108689792487843350">无法连接至网关</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">域名服务器格式不正确</translation>
+<translation id="6325525973963619867">失败</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
 <translation id="6517239166834772319">探索</translation>
+<translation id="6527081081771465939">未知的 Wi-Fi 安全协议</translation>
 <translation id="6564646048574748301">失败 - 无法连接到打印机</translation>
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
+<translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">文件类型</translation>
@@ -93,15 +121,22 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7805768142964895445">状态</translation>
+<translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8208861521865154048">福利</translation>
+<translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8352772353338965963">为多帐号登录添加帐号。用户无需使用密码即可访问所有已登录的帐号，因此您应仅通过受信任的帐号使用此功能。</translation>
+<translation id="8364946094152050673">未指定域名服务器</translation>
+<translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
+<translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
 <translation id="8668052347555487755">颜色模式</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
+<translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
 <translation id="8726019395068607495">已停止 - 机盖未关</translation>
 <translation id="8747900814994928677">确认更改</translation>
+<translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>

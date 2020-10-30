@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ဖာရိုဇ် ကီးဘုတ်</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
+<translation id="1646019627374511909">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="1646136617204068573">ဟန်ဂေရီ ကီးဘုတ်</translation>
 <translation id="164729547906544836">တမီးလ် ကီးဘုတ် (itrans)</translation>
 <translation id="164969095109328410">Chrome ကိရိယာ</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">စာရွက်များ</translation>
 <translation id="2563185590376525700">ဖား</translation>
+<translation id="2572501073504669105">အင်တာနက်ချိတ်ဆက်မှု မရှိသည့်အခါ ဖွင့်ကြည့်နိုင်ရန် ဖိုင်များကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ဗီဒီယို</translation>
 <translation id="2620090360073999360">ဒီတစ်ချီမှာ Google ဒရိုက်ဗ် လက်လှမ်း မမှီပါ။</translation>
 <translation id="2638942478653899953">Google Drive အားမချိတ်ဆက် နိုင်ပါ။ ကျေးဇူးပြု၍ <ph name="BEGIN_LINK" />ထွက်<ph name="END_LINK" /> ကာ ပြန်ဝင်ပါ။</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ဖိုင်တည်နေရာ</translation>
 <translation id="2672394958563893062">အမှား ကြုံခဲ့သည်။ အစမှ ပြန်လည်စတင်ရန် ကလစ်ပါ။</translation>
 <translation id="2676946222714718093">ဖွင့်ပြနေသည်က</translation>
+<translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်</translation>
 <translation id="2735698359135166290">ရူမေနီးယား ပုံမှန် ကီးဘုတ်</translation>
 <translation id="2771816809568414714">ဒိန်ခဲ</translation>
 <translation id="2781645665747935084">ဘယ်လ်ဂျီယံ</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">အိုနီဂီရိ ထမင်းဆုပ်</translation>
 <translation id="4784330909746505604">PowerPoint တင်ဆက်ပြသခြင်း</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">သင်၏ Google Drive ရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
 <translation id="4801956050125744859">နှစ်ခုစလုံးကို ထားရှိရန်</translation>
 <translation id="4804827417948292437">ထောပတ်သီး</translation>
 <translation id="4823651846660089135">စက်ပစ္စည်းကို ဖတ်ခွင့်သာရှိသည်</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">ဖျောက်ထားသော ဖိုင်များ ပြရန်</translation>
 <translation id="7508545000531937079">ဆလိုက်ရှိုး</translation>
 <translation id="751507702149411736">ဘယ်လာရုရှမ်း</translation>
+<translation id="7544830582642184299">သင်၏ Google Drive ရှိ ဖိုင်များကို Linux အက်ပ်များအား အသုံးပြုခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
 <translation id="7544853251252956727">ရောသမမွှေပါ</translation>
 <translation id="7547811415869834682">ဒတ်ချ</translation>
 <translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
+<translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Linux အား အသုံးပြုခွင့်ပေးမည်</translation>
 <translation id="7576032389798113292">၆x၄</translation>
 <translation id="7589661784326793847">ခဏလေး</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="7603724359189955920">မျဉ်းများ</translation>
 <translation id="7627790789328695202">အိုး၊ <ph name="FILE_NAME" /> ရှိပြီးဖြစ်သည်။ အမည်ပြန်ပေး၍ ထပ်မံ ကြိုးစားကြည့်ပါ။</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% ပြီးပြီ။</translation>

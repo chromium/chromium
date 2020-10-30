@@ -65,6 +65,7 @@
 <translation id="158809615184981282">แป้นพิมพ์ภาษาแฟโร</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
+<translation id="1646019627374511909">กำลังทำให้ไฟล์ <ph name="NUMBER_OF_ITEMS" /> ไฟล์ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="1646136617204068573">แป้นพิมพ์ภาษาฮังกาเรียน</translation>
 <translation id="164729547906544836">แป้นพิมพ์ภาษาทมิฬ (itrans)</translation>
 <translation id="164969095109328410">อุปกรณ์ Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">สหรัฐอเมริกาสากล</translation>
 <translation id="2562685439590298522">เอกสาร</translation>
 <translation id="2563185590376525700">กบ</translation>
+<translation id="2572501073504669105">คุณทำให้ไฟล์ใช้งานแบบออฟไลน์ได้เพื่อเข้าถึงเมื่อไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2614589611416690597">วิดีโอ <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">ไม่สามารถเข้าถึง Google ไดรฟ์ได้ในเวลานี้</translation>
 <translation id="2638942478653899953">ไม่สามารถเข้าถึง Google ไดรฟ์ โปรด<ph name="BEGIN_LINK" />ออกจากระบบ<ph name="END_LINK" /> และเข้าสู่ระบบใหม่อีกครั้ง</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ตำแหน่งที่ตั้งไฟล์</translation>
 <translation id="2672394958563893062">เกิดข้อผิดพลาด คลิกเพื่อเริ่มใหม่ตั้งแต่ต้น</translation>
 <translation id="2676946222714718093">กำลังเล่นบน</translation>
+<translation id="2735623501230989521">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2735698359135166290">แป้นพิมพ์มาตรฐานโรมาเนีย</translation>
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2781645665747935084">เบลเยียม</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ข้าวปั้น</translation>
 <translation id="4784330909746505604">งานนำเสนอ PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4789067489790477934">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="4801956050125744859">เก็บไว้ทั้งสองเวอร์ชัน</translation>
 <translation id="4804827417948292437">อะโวคาโด</translation>
 <translation id="4823651846660089135">อุปกรณ์เป็นแบบอ่านอย่างเดียว</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">แสดงไฟล์ที่ซ่อนไว้</translation>
 <translation id="7508545000531937079">แสดงภาพสไลด์</translation>
 <translation id="751507702149411736">เบลารุส</translation>
+<translation id="7544830582642184299">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="7544853251252956727">สุ่มเพลง</translation>
 <translation id="7547811415869834682">ดัตช์</translation>
 <translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
+<translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
+<translation id="7592775719802218421">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
 <translation id="7627790789328695202">อ๊ะ มี <ph name="FILE_NAME" /> อยู่แล้ว เปลี่ยนชื่อแล้วลองอีกครั้ง</translation>
 <translation id="7628656427739290098">เสร็จแล้ว <ph name="PERCENT" />%</translation>

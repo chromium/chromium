@@ -56,6 +56,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1420527829902822813">Nakuha ang screenshot at na-save ito sa clipboard</translation>
 <translation id="1426410128494586442">Oo</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
+<translation id="1456407467406159627">Huminto ang pag-record ng screen dahil kumpidensyal ang content sa iyong screen.</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
 <translation id="1475439723810528286">Mag-tap kahit saan para i-capture ang full screen</translation>
@@ -150,6 +151,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2369165858548251131">"Kumusta" sa Chinese</translation>
 <translation id="2390318262976603432">Mga Setting ng Lokalidad</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Mga kontrol ng media</translation>
 <translation id="2405664212338326887">Hindi nakakonekta</translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2412593942846481727">May available na update</translation>
@@ -220,6 +222,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">I-restart upang mag-update</translation>
 <translation id="3139942575505304791">Desk 1</translation>
+<translation id="3147157020428159854">Huminto ang pag-record ng screen</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
 <translation id="3151786313568798007">Oryentasyon</translation>
 <translation id="3153444934357957346">Maaari ka lang magkaroon ng hanggang <ph name="MULTI_PROFILE_USER_LIMIT" /> (na) account sa maraming pag-sign in.</translation>
@@ -291,6 +294,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="380165613292957338">Kumusta, ano ang maitutulong ko?</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
+<translation id="3846214748874656680">Lumabas sa fullscreen</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="385300504083504382">Simula</translation>
@@ -655,7 +659,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="7564874036684306347">Kapag inilipat ang mga window sa isa pang desktop, maaari itong magresulta sa hindi inaasahang gawi. Maaaring hatiin ang mga susunod na notification, window, at dialog sa pagitan ng mga desktop.</translation>
-<translation id="7568637526529101738">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpapakita ang Assistant ng impormasyon tulad ng kahulugan o conversion ng unit para sa iyong napili.</translation>
 <translation id="7569509451529460200">Na-enable ang Braille at ChromeVox</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
@@ -707,6 +710,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7995804128062002838">Hindi na-capture ang screen</translation>
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8004512796067398576">Taasan</translation>
+<translation id="8029247720646289474">Hindi nakakonekta sa hotspot</translation>
 <translation id="8029629653277878342">Kinakailangan ang PIN o password para sa higit pang seguridad</translation>
 <translation id="8030169304546394654">Naalis sa pagkakakonekta</translation>
 <translation id="8042893070933512245">Buksan ang menu ng mga setting ng accessibility</translation>
@@ -742,7 +746,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>
 <translation id="8380784334203145311">Magandang gabi,</translation>
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>
-<translation id="8392451568018454956">Menu ng mga pagpipilian para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
 <translation id="8412677897383510995">Ipakita ang mga setting ng display</translation>
 <translation id="8425213833346101688">Baguhin</translation>

@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Færøysk tastatur</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1646019627374511909">Gjør <ph name="NUMBER_OF_ITEMS" /> filer tilgjengelige uten nett</translation>
 <translation id="1646136617204068573">Ungarsk tastatur</translation>
 <translation id="164729547906544836">Tamilsk tastatur (itrans)</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">USA internasjonalt</translation>
 <translation id="2562685439590298522">Google Dokumenter</translation>
 <translation id="2563185590376525700">Frosk</translation>
+<translation id="2572501073504669105">Du kan gjøre filer tilgjengelige uten nett, slik at du kan bruke dem når du ikke har noen internettilkobling.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
 <translation id="2620090360073999360">Google Disk kan ikke nås for øyeblikket.</translation>
 <translation id="2638942478653899953">Google Disk kan ikke nås. <ph name="BEGIN_LINK" />Logg av<ph name="END_LINK" /> og på igjen.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Filplassering</translation>
 <translation id="2672394958563893062">Det oppsto en feil. Klikk for å starte på nytt fra begynnelsen.</translation>
 <translation id="2676946222714718093">Spilles av på</translation>
+<translation id="2735623501230989521">Gi Parallels Desktop tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Rumensk standardtastatur</translation>
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2781645665747935084">Belgisk</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-presentasjon</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Gi Parallels Desktop tilgang til filer i Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
 <translation id="4801956050125744859">Behold begge</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Enheten er skrivebeskyttet</translation>
@@ -609,11 +613,14 @@
 <translation id="7505167922889582512">Vis skjulte filer</translation>
 <translation id="7508545000531937079">Lysbildefremvisning</translation>
 <translation id="751507702149411736">Hviterussisk</translation>
+<translation id="7544830582642184299">Gi Linux-apper tilgang til filer på Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
 <translation id="7544853251252956727">Spill i tilfeldig rekkefølge</translation>
 <translation id="7547811415869834682">Nederlandsk</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
+<translation id="7553492409867692754">Gi Linux-apper tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Vent et øyeblikk</translation>
+<translation id="7592775719802218421">Gjør <ph name="FILE_NAME" /> tilgjengelig uten nett</translation>
 <translation id="7603724359189955920">Rutenett</translation>
 <translation id="7627790789328695202">Beklager, <ph name="FILE_NAME" /> finnes allerede. Gi den et nytt navn og prøv igjen.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % fullført.</translation>

@@ -4,7 +4,10 @@
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
 <translation id="1195447618553298278">알 수 없는 오류</translation>
+<translation id="1204296502688602597">DNS 지연 시간</translation>
+<translation id="1290331692326790741">신호 약함</translation>
 <translation id="1330426557709298164">JPG</translation>
+<translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1468664791493211953">혜택</translation>
 <translation id="1478594628797167447">스캐너</translation>
@@ -13,6 +16,7 @@
 <translation id="1510238584712386396">런처</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
+<translation id="1706391837335750954">DNS 리졸버 존재</translation>
 <translation id="1734367976349034509">기업에서 관리하는 기기입니다.</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1930797645656624981">Chrome OS 입력 방법 서비스</translation>
@@ -23,25 +27,33 @@
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
+<translation id="2364498172489649528">통과</translation>
 <translation id="2375079107209812402">남은 시도 <ph name="ATTEMPTS_LEFT" />회</translation>
+<translation id="2391082728065870591">의견 보고서 보내기</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0}회 더 시도할 수 있습니다.}other{<ph name="ERROR_MESSAGE" /> {0}회 더 시도할 수 있습니다.}}</translation>
+<translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">검색</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="3008341117444806826">새로고침</translation>
+<translation id="3083667275341675831">연결 진단</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
+<translation id="3188257591659621405">내 파일</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
+<translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="3459509316159669723">인쇄</translation>
 <translation id="3515615323037921860">인쇄 작업</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
+<translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3749289110408117711">파일 이름</translation>
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
 <translation id="3865414814144988605">해상도</translation>
+<translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
@@ -50,18 +62,25 @@
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
+<translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
 <translation id="445059817448385655">이전 비밀번호</translation>
+<translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="4548483925627140043">신호를 찾을 수 없습니다.</translation>
+<translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
+<translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
 <translation id="4691278870498629773">중지됨 - 배지대 없음</translation>
+<translation id="469379815867856270">신호 강도</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
 <translation id="4890353053343094602">지금 바로 새 비밀번호를 선택하세요.</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
 <translation id="4932733599132424254">날짜</translation>
+<translation id="4985509611418653372">실행</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />에서 이 사용자를 관리하고 원격으로 설정을 관리하며 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="520299634122159966">사용 가능한 스캐너 없음</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
@@ -71,6 +90,8 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">지금 새 비밀번호를 선택하세요.</translation>
+<translation id="5372659122375744710">Wi-Fi 네트워크가 안전하지 않습니다.</translation>
+<translation id="5401938042319910061">모든 루틴 실행</translation>
 <translation id="5457599981699367932">게스트로 로그인</translation>
 <translation id="54609108002486618">관리</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
@@ -78,15 +99,21 @@
 <translation id="6048107060512778456">실패 - 용지 걸림</translation>
 <translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
+<translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6191293864534840972">네임서버 형식이 잘못되었습니다.</translation>
+<translation id="6325525973963619867">실패</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
+<translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 방문 기록에 나타납니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
+<translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
+<translation id="714876143603641390">LAN 연결</translation>
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">파일 형식</translation>
@@ -94,15 +121,22 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7805768142964895445">상태</translation>
+<translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8208861521865154048">혜택</translation>
+<translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8294431847097064396">출처</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
+<translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>
+<translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
+<translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
 <translation id="8668052347555487755">색상 모드</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>
+<translation id="8723108084122415655">기본이 아닌 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>
 <translation id="8747900814994928677">변경사항 확인</translation>
+<translation id="8910721771319628100">기본 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8919837981463578619">실패 - 트레이 없음</translation>
 <translation id="8928727111548978589">실패 - 용지 없음</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> 티켓을 새로고침하세요.</translation>

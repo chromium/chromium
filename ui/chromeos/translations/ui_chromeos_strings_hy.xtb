@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Ֆարերյան ստեղնաշար</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ՊԲ</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ֆայլ շուտով հասանելի կդառնա անցանց ռեժիմում</translation>
 <translation id="1646136617204068573">Հունգարերենի ստեղնաշար</translation>
 <translation id="164729547906544836">Թամիլերենի ստեղնաշար (itrans)</translation>
 <translation id="164969095109328410">Chrome սարք</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">ԱՄՆ (միջազգային)</translation>
 <translation id="2562685439590298522">Փաստաթղթեր</translation>
 <translation id="2563185590376525700">Գորտ</translation>
+<translation id="2572501073504669105">Դուք կարող եք ներբեռնել ֆայլերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="2614589611416690597">Տեսանյութ (<ph name="VIDEO_TYPE" />)</translation>
 <translation id="2620090360073999360">Google Drive-ը մատչելի չէ այս պահին:</translation>
 <translation id="2638942478653899953">Google Drive-ն անհասանելի է: <ph name="BEGIN_LINK" />Դուրս գրվեք<ph name="END_LINK" /> և նորից մուտք գործեք:</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Ֆայլի տեղադրությունը</translation>
 <translation id="2672394958563893062">Սխալ է տեղի ունեցել: Սկզբից նվագարկելու համար վերագործարկեք:</translation>
 <translation id="2676946222714718093">Նվագարկվում է</translation>
+<translation id="2735623501230989521">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Parallels Desktop-ին</translation>
 <translation id="2735698359135166290">Ռումիներենի սովորական ստեղնաշար</translation>
 <translation id="2771816809568414714">Պանիր</translation>
 <translation id="2781645665747935084">Բելգիական</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Օնիգիրի</translation>
 <translation id="4784330909746505604">PowerPoint ներկայացում</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> ԿԲ</translation>
+<translation id="4789067489790477934">Հասանելի դարձրեք ձեր Google Drive-ի ֆայլերը Parallels Desktop-ին։ Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ։</translation>
 <translation id="4801956050125744859">Պահպանել երկուսն էլ</translation>
 <translation id="4804827417948292437">Ավոկադո</translation>
 <translation id="4823651846660089135">Սարքում կարելի է միայն կարդալու գործողություններ կատարել</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Ցուցադրել թաքցված ֆայլերը</translation>
 <translation id="7508545000531937079">Սլայդների ցուցադրում</translation>
 <translation id="751507702149411736">Բելառուսական</translation>
+<translation id="7544830582642184299">Հասանելի դարձրեք ձեր Google Drive-ի ֆայլերը Լինուքսին։ Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ։</translation>
 <translation id="7544853251252956727">Խառնել</translation>
 <translation id="7547811415869834682">Հոլանդական</translation>
 <translation id="7551643184018910560">Ամրացնել դարակին</translation>
+<translation id="7553492409867692754">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Լինուքսին</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Մեկ վայրկյան</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> ֆայլը ներբեռնվում է</translation>
 <translation id="7603724359189955920">Ցանց</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> անունով ֆայլ արդեն առկա է: Վերանվանեք այն և նորից փորձեք:</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />%-ով ավարտված է:</translation>

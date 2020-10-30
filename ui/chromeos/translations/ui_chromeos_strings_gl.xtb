@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Teclado feroés</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1646019627374511909">Activando acceso sen conexión a <ph name="NUMBER_OF_ITEMS" /> ficheiros</translation>
 <translation id="1646136617204068573">Teclado húngaro</translation>
 <translation id="164729547906544836">Teclado támil (itrans)</translation>
 <translation id="164969095109328410">Dispositivo de Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">Internacional de EUA</translation>
 <translation id="2562685439590298522">Documentos</translation>
 <translation id="2563185590376525700">Ra</translation>
+<translation id="2572501073504669105">Podes facer que os ficheiros estean dispoñibles sen conexión para poder acceder a eles aínda que non teñas Internet.</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Non se pode acceder a Google Drive neste momento.</translation>
 <translation id="2638942478653899953">Non se puido acceder a Google Drive. <ph name="BEGIN_LINK" />Pecha sesión<ph name="END_LINK" /> e volve iniciala.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Localización do ficheiro</translation>
 <translation id="2672394958563893062">Produciuse un erro. Fai clic para reiniciar desde o principio.</translation>
 <translation id="2676946222714718093">Reproducindo en</translation>
+<translation id="2735623501230989521">Concede permiso a Parallels Desktop para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="2735698359135166290">Teclado estándar romanés</translation>
 <translation id="2771816809568414714">Queixo</translation>
 <translation id="2781645665747935084">Belga</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentación de PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
+<translation id="4789067489790477934">Concede permiso a Parallels Desktop para acceder aos ficheiros de Google Drive. Os cambios sincronizaranse cos demais dispositivos.</translation>
 <translation id="4801956050125744859">Manter as dúas</translation>
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4823651846660089135">O dispositivo é de só lectura</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Mostrar ficheiros ocultos</translation>
 <translation id="7508545000531937079">Presentación de diapositivas</translation>
 <translation id="751507702149411736">Bielorruso</translation>
+<translation id="7544830582642184299">Concede permiso ás aplicacións de Linux para acceder aos ficheiros de Google Drive. Os cambios sincronizaranse cos demais dispositivos.</translation>
 <translation id="7544853251252956727">Reprodución aleatoria</translation>
 <translation id="7547811415869834682">Neerlandés</translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
+<translation id="7553492409867692754">Concede permiso ás aplicacións de Linux para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Espere só un segundo</translation>
+<translation id="7592775719802218421">Activando acceso sen conexión a <ph name="FILE_NAME" /></translation>
 <translation id="7603724359189955920">Cuadrícula</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> xa existe. Cámbialle o nome e téntao de novo.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % completado.</translation>

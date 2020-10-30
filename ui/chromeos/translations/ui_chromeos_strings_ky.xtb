@@ -65,6 +65,7 @@
 <translation id="158809615184981282">Фарерче баскычтоп</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Пб</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="1646136617204068573">Венгерче баскычтоп</translation>
 <translation id="164729547906544836">Тамил баскычтобу (itrans)</translation>
 <translation id="164969095109328410">Chrome түзмөгү</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">АКШ эл аралык</translation>
 <translation id="2562685439590298522">Документтер</translation>
 <translation id="2563185590376525700">Бака</translation>
+<translation id="2572501073504669105">Файлдарга оффлайн режиминде кирүү үчүн аларды жүктөп алсаңыз болот.</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> форматындагы видео</translation>
 <translation id="2620090360073999360">Учурда Google Drive'га жетүү мүмкүн эмес.</translation>
 <translation id="2638942478653899953">Google Drive жеткиликтүү эмес. <ph name="BEGIN_LINK" />Тутумдан чыгып<ph name="END_LINK" />, кайра кириңиз.</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">Файлдын жайгашкан жери</translation>
 <translation id="2672394958563893062">Ката кетти. Кайра башынан баштоо үчүн чыкылдатыңыз.</translation>
 <translation id="2676946222714718093">Төмөнкүдө ойнотулууда:</translation>
+<translation id="2735623501230989521">Parallels Desktop кызматына <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="2735698359135166290">Румынча стандарттык баскычтоп</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Белгийче</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">PowerPoint презентациясы</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> Кб</translation>
+<translation id="4789067489790477934">Parallels Desktop кызматына Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="4801956050125744859">Экөөнү тең калтыруу</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Түзмөк окуу үчүн гана уруксат берет</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">Жашыруун файлдарды көрсөтүү</translation>
 <translation id="7508545000531937079">Слайдшоу</translation>
 <translation id="751507702149411736">Беларусча</translation>
+<translation id="7544830582642184299">Linux колдонмолоруна Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="7544853251252956727">Аралаш</translation>
 <translation id="7547811415869834682">Голландча</translation>
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>
+<translation id="7553492409867692754">Linux колдонмолоруна <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Бир секунд күтө туруңуз</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="7603724359189955920">Торчолор</translation>
 <translation id="7627790789328695202">Ой, <ph name="FILE_NAME" /> мурунтан эле бар экен. Аталышын өзгөртүп, дагы бир жолу аракет кылып көрүңүз.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% бүттү.</translation>

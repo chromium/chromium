@@ -56,6 +56,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1420527829902822813">Screenshot acquisito e salvato negli appunti</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
+<translation id="1456407467406159627">La funzionalità Registrazione dello schermo si è interrotta a causa di contenuti riservati presenti sullo schermo.</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
 <translation id="1467432559032391204">Sinistra</translation>
 <translation id="1475439723810528286">Tocca un punto qualsiasi per acquisire l'intera schermata</translation>
@@ -150,6 +151,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2390318262976603432">Impostazioni internazionali</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Controlli multimediali</translation>
 <translation id="2405664212338326887">Non connessa</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
@@ -220,6 +222,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Riavvia per aggiornare</translation>
 <translation id="3139942575505304791">Scrivania 1</translation>
+<translation id="3147157020428159854">Registrazione dello schermo interrotta</translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3151786313568798007">Orientamento</translation>
 <translation id="3153444934357957346">Puoi avere massimo <ph name="MULTI_PROFILE_USER_LIMIT" /> account per l'accesso simultaneo.</translation>
@@ -292,6 +295,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="380165613292957338">Ciao, come posso aiutarti?</translation>
 <translation id="3826099427150913765">Passa alla password</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
+<translation id="3846214748874656680">Esci da schermo intero</translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="385300504083504382">Inizio</translation>
@@ -656,7 +660,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7551643184018910560">Fissa sullo shelf</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
-<translation id="7568637526529101738">Se fai clic con il pulsante destro del mouse o con una pressione prolungata, l'assistente ti mostra informazioni quali la definizione o la conversione di unità per gli elementi selezionati.</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
 <translation id="7579778809502851308">Acquisizione schermo</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
@@ -708,6 +711,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7995804128062002838">Impossibile acquisire schermo</translation>
 <translation id="8000066093800657092">Nessuna rete</translation>
 <translation id="8004512796067398576">Aumenta</translation>
+<translation id="8029247720646289474">Connessione all'hotspot non riuscita</translation>
 <translation id="8029629653277878342">PIN o password obbligatori per maggiore sicurezza</translation>
 <translation id="8030169304546394654">Disconnessa</translation>
 <translation id="8042893070933512245">Apri il menu Impostazioni di accessibilità</translation>
@@ -743,7 +747,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8375916635258623388">Questo dispositivo <ph name="DEVICE_NAME" /> e il telefono si connetteranno automaticamente</translation>
 <translation id="8380784334203145311">Buonanotte,</translation>
 <translation id="8388750414311082622">Impossibile rimuovere l'ultima scrivania.</translation>
-<translation id="8392451568018454956">Menu Opzioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Uno dei tuoi genitori ha bloccato questo dispositivo</translation>
 <translation id="8412677897383510995">Mostra impostazioni di visualizzazione</translation>
 <translation id="8425213833346101688">Cambia</translation>

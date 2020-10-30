@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">സബ്‌ടൈറ്റിൽ മെനു മറയ്ക്കുക</translation>
 <translation id="1729654308190250600">ശൂന്യമായിടാതെ, ഇമെയിൽ വിലാസം നൽകുക.</translation>
 <translation id="1758486001363313524">മറ്റുള്ളവ...</translation>
+<translation id="1774577460079229490">നിലവിലെ <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">ആകെ സമയം: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">അലേർട്ട്_ഡയലോഗ്</translation>
 <translation id="1821985195704844674">ട്രീ ഗ്രിഡ്</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">മൂല്യം <ph name="MINIMUM_DATE_OR_TIME" /> എന്നതോ അതിനുശേഷമുള്ള തീയതിയോ ആയിരിക്കണം.</translation>
 <translation id="2759744352195237655">പോപ്പ് അപ്പ് ബട്ടൺ</translation>
 <translation id="2761667185364618470">നിങ്ങള്‍ തുടരാന്‍ താല്‍പ്പര്യപ്പെടുന്നെങ്കില്‍ ഈ ബോക്സ് ദയവായി പരിശോധിക്കുക.</translation>
+<translation id="2838616441696617235">ഘട്ടം</translation>
 <translation id="2844350028562914727">വിശദാംശങ്ങൾ</translation>
 <translation id="2896972712917208084">റേഡിയോ ഗ്രൂപ്പ്</translation>
 <translation id="2908441821576996758">ഇമെയില്‍ വിലാസങ്ങളുടെ കോമയാല്‍ വേര്‍തിരിച്ച ഒരു പട്ടിക ദയവായി നല്‍കുക.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">മെനു ബാർ</translation>
 <translation id="4293574643247337246">പേജിന്റെ തലക്കെട്ട്</translation>
 <translation id="4360991593054037559">സാധുവായ മൂല്യം നൽകുക. സാധുവായ ഏറ്റവുമടുത്ത രണ്ട് മൂല്യങ്ങൾ <ph name="VALID_VALUE_LOW" />, <ph name="VALID_VALUE_HIGHER" /> എന്നിവയാണ്.</translation>
+<translation id="4384249794467006333">ഈ ചിത്രം ലേബൽ ചെയ്തിട്ടില്ല. ചിത്രത്തിന്റെ വിവരണങ്ങൾ ലഭിക്കാൻ മുകളിൽ ‌വലതുവശത്തെ 'കൂടുതൽ ഓപ്‌ഷനുകൾ' മെനു തുറക്കുക.</translation>
 <translation id="4384583879834880242">ചോദ്യോത്തരം</translation>
 <translation id="4444765639179266822">പറയാൻ ദൃശ്യമാകുന്നത്: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">പദസഞ്ചയ റെഫറൻസ്</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
+<translation id="4576178047100686001">ഈ ചിത്രം ലേബൽ ചെയ്തിട്ടില്ല. ചിത്രത്തിന്റെ വിവരണങ്ങൾ ലഭിക്കാൻ മുകളിൽ ഇടതുവശത്തെ 'കൂടുതൽ ഓപ്‌ഷനുകൾ' മെനു തുറക്കുക.</translation>
 <translation id="4597532268155981612">ഫോം</translation>
 <translation id="4661075872484491155">ട്രീ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">ഗ്രന്ഥസൂചി എൻട്രി</translation>
 <translation id="4915360478455618802">സമയ പിക്കർ കാണിക്കുക</translation>
 <translation id="492244087561876220">കമന്റ്</translation>
+<translation id="4934662370368414994">ഇനം</translation>
 <translation id="4950364064308314478">പ്രാദേശിക തീയതിയും സമയ പിക്കറും കാണിക്കുക</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> തിരഞ്ഞെടുത്തു</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">വോളിയം സ്ലൈഡർ</translation>
 <translation id="6015796118275082299">വര്‍ഷം</translation>
 <translation id="6023896073578205740">ലിസ്റ്റ് ബോക്‌സ്</translation>
+<translation id="6131824478727057281">ലൊക്കേഷന്‍</translation>
 <translation id="6150588977291308318">ഗ്രന്ഥസൂചി</translation>
 <translation id="6164829606128959761">മീറ്റർ</translation>
 <translation id="6166809985690652833">പിൻ കുറിപ്പ്</translation>
