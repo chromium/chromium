@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "cc/metrics/compositor_timing_history.h"
+#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/scheduler/scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,6 +80,7 @@ class FakeCompositorTimingHistory : public CompositorTimingHistory {
   base::TimeDelta prepare_tiles_duration_;
   base::TimeDelta activate_duration_;
   base::TimeDelta draw_duration_;
+  DroppedFrameCounter dropped_counter;
 };
 
 class TestScheduler : public Scheduler {

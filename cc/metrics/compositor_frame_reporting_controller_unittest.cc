@@ -13,6 +13,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/total_frame_counter.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,6 +62,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     test_tick_clock_.SetNowTicks(base::TimeTicks::Now());
     reporting_controller_.set_tick_clock(&test_tick_clock_);
     args_ = SimulateBeginFrameArgs(current_id_);
+    reporting_controller_.SetDroppedFrameCounter(&dropped_counter);
+    dropped_counter.set_total_counter(&total_frame_counter_);
   }
 
   // The following functions simulate the actions that would
@@ -200,6 +203,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   base::TimeTicks end_activation_time_;
   base::TimeTicks submit_time_;
   viz::FrameTokenGenerator next_token_;
+  DroppedFrameCounter dropped_counter;
+  TotalFrameCounter total_frame_counter_;
 };
 
 TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {
@@ -1308,9 +1313,6 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        NewMainUpdateIsNotPartialUpdate) {
-  DroppedFrameCounter dropped_counter;
-  reporting_controller_.SetDroppedFrameCounter(&dropped_counter);
-
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {});
@@ -1341,9 +1343,6 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromDisplayCompositorAreDropped) {
-  DroppedFrameCounter dropped_counter;
-  reporting_controller_.SetDroppedFrameCounter(&dropped_counter);
-
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
   EXPECT_EQ(1u, dropped_counter.total_frames());

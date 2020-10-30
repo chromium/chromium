@@ -2975,6 +2975,8 @@ void LayerTreeHostImpl::DidLoseLayerTreeFrameSink() {
   has_valid_layer_tree_frame_sink_ = false;
   client_->DidLoseLayerTreeFrameSinkOnImplThread();
   lag_tracking_manager_.Clear();
+
+  dropped_frame_counter_.ResetFrameSorter();
 }
 
 bool LayerTreeHostImpl::OnlyExpandTopControlsAtPageTop() const {

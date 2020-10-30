@@ -7,13 +7,11 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/containers/ring_buffer.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/frame_sorter.h"
 
 namespace cc {
-
 class TotalFrameCounter;
 struct UkmSmoothnessDataShared;
 
@@ -28,6 +26,7 @@ class CC_EXPORT DroppedFrameCounter {
   };
 
   DroppedFrameCounter();
+  ~DroppedFrameCounter();
 
   DroppedFrameCounter(const DroppedFrameCounter&) = delete;
   DroppedFrameCounter& operator=(const DroppedFrameCounter&) = delete;
@@ -47,20 +46,27 @@ class CC_EXPORT DroppedFrameCounter {
   void AddGoodFrame();
   void AddPartialFrame();
   void AddDroppedFrame();
-
-  void AddDroppedFrameAffectingSmoothness();
   void ReportFrames();
 
+  void OnBeginFrame(const viz::BeginFrameArgs& args);
+  void OnEndFrame(const viz::BeginFrameArgs& args, bool is_dropped);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
-
-  void Reset();
   void OnFcpReceived();
+
+  // Reset is used on navigation, which resets frame statistics as well as
+  // frame sorter.
+  void Reset();
+  // ResetFrameSorter is used when we need to keep track of frame statistics
+  // but not to track the frames prior to reset in frame sorter.
+  void ResetFrameSorter();
 
   void set_total_counter(TotalFrameCounter* total_counter) {
     total_counter_ = total_counter;
   }
 
  private:
+  void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
+
   RingBufferType ring_buffer_;
   size_t total_frames_ = 0;
   size_t total_partial_ = 0;
@@ -69,7 +75,7 @@ class CC_EXPORT DroppedFrameCounter {
   bool fcp_received_ = false;
 
   UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
-
+  FrameSorter frame_sorter_;
   TotalFrameCounter* total_counter_ = nullptr;
 };
 
