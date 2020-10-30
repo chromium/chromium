@@ -2919,6 +2919,68 @@ std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
   return nullptr;
 }
 
+#if !defined(OS_ANDROID)
+blink::mojom::PreferredColorScheme ToBlinkPreferredColorScheme(
+    ui::NativeTheme::PreferredColorScheme native_theme_scheme) {
+  switch (native_theme_scheme) {
+    case ui::NativeTheme::PreferredColorScheme::kDark:
+      return blink::mojom::PreferredColorScheme::kDark;
+    case ui::NativeTheme::PreferredColorScheme::kLight:
+      return blink::mojom::PreferredColorScheme::kLight;
+  }
+
+  NOTREACHED();
+}
+#endif  // !defined(OS_ANDROID)
+
+// Returns true if preferred color scheme is modified based on at least one of
+// the following -
+// |url| - Last committed url.
+// |web_contents| - For Android based on IsNightModeEnabled().
+// |native_theme| - For other platforms based on native theme scheme.
+bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
+                                const GURL& url,
+                                WebContents* web_contents,
+                                const ui::NativeTheme* native_theme) {
+  auto old_preferred_color_scheme = web_prefs->preferred_color_scheme;
+
+#if defined(OS_ANDROID)
+  auto* delegate = TabAndroid::FromWebContents(web_contents)
+                       ? static_cast<android::TabWebContentsDelegateAndroid*>(
+                             web_contents->GetDelegate())
+                       : nullptr;
+  if (delegate) {
+    web_prefs->preferred_color_scheme =
+        delegate->IsNightModeEnabled()
+            ? blink::mojom::PreferredColorScheme::kDark
+            : blink::mojom::PreferredColorScheme::kLight;
+  }
+#else
+  // Update based on native theme scheme.
+  web_prefs->preferred_color_scheme =
+      ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
+#endif  // defined(OS_ANDROID)
+
+  // Force a light preferred color scheme on certain URLs if kWebUIDarkMode is
+  // disabled; some of the UI is not yet correctly themed.
+  if (!base::FeatureList::IsEnabled(features::kWebUIDarkMode)) {
+    // Update based on last committed url.
+    bool force_light = url.SchemeIs(content::kChromeUIScheme);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (!force_light) {
+      force_light = url.SchemeIs(extensions::kExtensionScheme) &&
+                    url.host_piece() == extension_misc::kPdfExtensionId;
+    }
+#endif
+    if (force_light) {
+      web_prefs->preferred_color_scheme =
+          blink::mojom::PreferredColorScheme::kLight;
+    }
+  }
+
+  return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
+}
+
 }  // namespace
 
 base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
@@ -3135,26 +3197,6 @@ content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {
 #endif
 }
 
-bool UpdatePreferredColorSchemesBasedOnURLIfNeeded(WebPreferences* web_prefs,
-                                                   const GURL& url) {
-  // Force a light preferred color scheme on certain URLs if kWebUIDarkMode is
-  // disabled; some of the UI is not yet correctly themed.
-  if (base::FeatureList::IsEnabled(features::kWebUIDarkMode))
-    return false;
-  bool force_light = url.SchemeIs(content::kChromeUIScheme);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!force_light) {
-    force_light = url.SchemeIs(extensions::kExtensionScheme) &&
-                  url.host_piece() == extension_misc::kPdfExtensionId;
-  }
-#endif
-  auto old_preferred_color_scheme = web_prefs->preferred_color_scheme;
-  if (force_light)
-    web_prefs->preferred_color_scheme =
-        blink::mojom::PreferredColorScheme::kLight;
-  return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
-}
-
 void ChromeContentBrowserClient::OverrideWebkitPrefs(
     RenderViewHost* rvh,
     WebPreferences* web_prefs) {
@@ -3302,11 +3344,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
       web_prefs->picture_in_picture_enabled =
           delegate->IsPictureInPictureEnabled();
-
-      web_prefs->preferred_color_scheme =
-          delegate->IsNightModeEnabled()
-              ? blink::mojom::PreferredColorScheme::kDark
-              : blink::mojom::PreferredColorScheme::kLight;
     }
 #endif  // defined(OS_ANDROID)
 
@@ -3424,7 +3461,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     }
   }
 
-  auto* native_theme = GetWebTheme();
 #if !defined(OS_ANDROID)
   if (IsAutoplayAllowedByPolicy(contents, prefs)) {
     // If autoplay is allowed by policy then force the no user gesture required
@@ -3443,20 +3479,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
             ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
             : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
-
-  switch (native_theme->GetPreferredColorScheme()) {
-    case ui::NativeTheme::PreferredColorScheme::kDark:
-      web_prefs->preferred_color_scheme =
-          blink::mojom::PreferredColorScheme::kDark;
-      break;
-    case ui::NativeTheme::PreferredColorScheme::kLight:
-      web_prefs->preferred_color_scheme =
-          blink::mojom::PreferredColorScheme::kLight;
-      break;
-  }
 #endif  // !defined(OS_ANDROID)
 
-  switch (native_theme->GetPreferredContrast()) {
+  switch (GetWebTheme()->GetPreferredContrast()) {
     case ui::NativeTheme::PreferredContrast::kNoPreference:
       web_prefs->preferred_contrast =
           blink::mojom::PreferredContrast::kNoPreference;
@@ -3469,8 +3494,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       break;
   }
 
-  UpdatePreferredColorSchemesBasedOnURLIfNeeded(
-      web_prefs, rvh->GetSiteInstance()->GetSiteURL());
+  UpdatePreferredColorScheme(web_prefs, rvh->GetSiteInstance()->GetSiteURL(),
+                             contents, GetWebTheme());
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 
@@ -3496,8 +3521,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     WebPreferences* prefs) {
-  return UpdatePreferredColorSchemesBasedOnURLIfNeeded(
-      prefs, web_contents->GetLastCommittedURL());
+  return UpdatePreferredColorScheme(prefs, web_contents->GetLastCommittedURL(),
+                                    web_contents, GetWebTheme());
 }
 
 void ChromeContentBrowserClient::BrowserURLHandlerCreated(
