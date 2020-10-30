@@ -131,10 +131,6 @@ void BatchingMediaLog::AddLogRecordLocked(
         queued_media_events_.push_back(*event);
     }
 
-    // TODO(crbug.com/1141985): This shouldn't exceed 1024 events within a
-    // single second. Crash to help us track down what's going wrong.
-    CHECK_LE(queued_media_events_.size(), 1024u);
-
     if (ipc_send_pending_)
       return;
 
