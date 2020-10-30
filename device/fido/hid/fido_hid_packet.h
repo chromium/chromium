@@ -51,7 +51,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidPacket {
 // determine the type of message the packet corresponds to. Payload length
 // is the length of the entire message payload, and the data is only the portion
 // of the payload that will fit into the HidInitPacket.
-class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidInitPacket : public FidoHidPacket {
+class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidInitPacket final
+    : public FidoHidPacket {
  public:
   // Creates a packet from the serialized data of an initialization packet. As
   // this is the first packet, the payload length of the entire message will be
@@ -83,7 +84,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidInitPacket : public FidoHidPacket {
 // will be identical to the identifier in all other packets of the message. The
 // packet sequence will be the sequence number of this particular packet, from
 // 0x00 to 0x7f.
-class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidContinuationPacket
+class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidContinuationPacket final
     : public FidoHidPacket {
  public:
   // Creates a packet from the serialized data of a continuation packet. As an

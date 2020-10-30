@@ -29,7 +29,7 @@ namespace device {
 
 class FidoHidMessage;
 
-class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice : public FidoDevice {
+class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice final : public FidoDevice {
  public:
   FidoHidDevice(device::mojom::HidDeviceInfoPtr device_info,
                 device::mojom::HidManager* hid_manager);
