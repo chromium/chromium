@@ -24,7 +24,7 @@ Performance panel CPU throttling: No throttling
 
 Change to low-end mobile in device mode
 === THROTTLING STATE ===
-Network throttling - download: 51200 upload: 51200 latency: 2000
+Network throttling - download: 50000 upload: 50000 latency: 2000
 CPU throttling rate: 6
 Device mode throttling: Low-end mobile
 Network panel throttling: Slow 3G
@@ -35,7 +35,7 @@ Performance panel CPU throttling: 6× slowdown
 
 Change network to Fast 3G
 === THROTTLING STATE ===
-Network throttling - download: 188744 upload: 86400 latency: 562.5
+Network throttling - download: 180000 upload: 84375 latency: 562.5
 CPU throttling rate: 6
 Device mode throttling: Custom
 Network panel throttling: Fast 3G
@@ -46,7 +46,7 @@ Performance panel CPU throttling: 6× slowdown
 
 Change to mid-tier mobile in device mode
 === THROTTLING STATE ===
-Network throttling - download: 188744 upload: 86400 latency: 562.5
+Network throttling - download: 180000 upload: 84375 latency: 562.5
 CPU throttling rate: 4
 Device mode throttling: Mid-tier mobile
 Network panel throttling: Fast 3G
@@ -57,7 +57,7 @@ Performance panel CPU throttling: 4× slowdown
 
 Change CPU throttling to low-end mobile
 === THROTTLING STATE ===
-Network throttling - download: 188744 upload: 86400 latency: 562.5
+Network throttling - download: 180000 upload: 84375 latency: 562.5
 CPU throttling rate: 6
 Device mode throttling: Custom
 Network panel throttling: Fast 3G
@@ -68,7 +68,7 @@ Performance panel CPU throttling: 6× slowdown
 
 Change CPU throttling to mid-tier mobile
 === THROTTLING STATE ===
-Network throttling - download: 188744 upload: 86400 latency: 562.5
+Network throttling - download: 180000 upload: 84375 latency: 562.5
 CPU throttling rate: 4
 Device mode throttling: Mid-tier mobile
 Network panel throttling: Fast 3G

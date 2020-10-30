@@ -6058,7 +6058,6 @@ crbug.com/1107944 [ Mac ] http/tests/devtools/tracing/timeline-paint/timeline-pa
 
 # Temporarily disable tests to allow a fix in devtools frontend
 crbug.com/1011811 http/tests/devtools/modules-load-initial.js [ Pass Failure ]
-crbug.com/1035309 http/tests/devtools/throttling/mobile-throttling.js [ Pass Failure ]
 
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Pass Failure ]
 
