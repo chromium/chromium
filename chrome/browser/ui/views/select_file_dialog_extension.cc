@@ -402,7 +402,9 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   dialog_params.is_modal = (owner.window != nullptr);
   dialog_params.min_size = {kFileManagerMinimumWidth,
                             kFileManagerMinimumHeight};
-  dialog_params.title = file_manager::util::GetSelectFileDialogTitle(type);
+  dialog_params.title =
+      !title.empty() ? title
+                     : file_manager::util::GetSelectFileDialogTitle(type);
   if (base::FeatureList::IsEnabled(chromeos::features::kFilesNG)) {
     dialog_params.title_color = kFilePickerActiveTitleColor;
     dialog_params.title_inactive_color = kFilePickerInactiveTitleColor;
