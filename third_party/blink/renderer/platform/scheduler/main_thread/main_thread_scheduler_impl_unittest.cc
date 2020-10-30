@@ -442,11 +442,12 @@ class MainThreadSchedulerImplTest : public testing::Test {
     }
 
     default_task_runner_ =
-        scheduler_->DefaultTaskQueue()->GetTaskQueue()->task_runner();
+        scheduler_->DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
     compositor_task_runner_ =
-        scheduler_->CompositorTaskQueue()->GetTaskQueue()->task_runner();
+        scheduler_->CompositorTaskQueue()->GetTaskRunnerWithDefaultTaskType();
     idle_task_runner_ = scheduler_->IdleTaskRunner();
-    v8_task_runner_ = scheduler_->V8TaskQueue()->GetTaskQueue()->task_runner();
+    v8_task_runner_ =
+        scheduler_->V8TaskQueue()->GetTaskRunnerWithDefaultTaskType();
 
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
@@ -463,10 +464,9 @@ class MainThreadSchedulerImplTest : public testing::Test {
         main_frame_scheduler_->FrameTaskQueueControllerForTest()
             ->GetTaskQueue(
                 main_frame_scheduler_->LoadingControlTaskQueueTraits())
-            ->GetTaskQueue()
-            ->task_runner();
+            ->GetTaskRunnerWithDefaultTaskType();
     throttleable_task_runner_ =
-        throttleable_task_queue()->GetTaskQueue()->task_runner();
+        throttleable_task_queue()->GetTaskRunnerWithDefaultTaskType();
     find_in_page_task_runner_ = main_frame_scheduler_->GetTaskRunner(
         blink::TaskType::kInternalFindInPage);
     prioritised_local_frame_task_runner_ = main_frame_scheduler_->GetTaskRunner(
@@ -831,7 +831,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                         String::FromUTF8(task)));
           break;
         case 'L':
-          loading_task_queue()->GetTaskQueue()->task_runner()->PostTask(
+          loading_task_queue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
                                         String::FromUTF8(task)));
           break;
@@ -1112,7 +1112,7 @@ TEST_F(MainThreadSchedulerImplTest, TestDelayedEndIdlePeriodCanceled) {
 
   // Post a task which simulates running until after the previous end idle
   // period delayed task was scheduled for
-  scheduler_->DefaultTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  scheduler_->DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(NullTask));
   test_task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(300));
   EXPECT_EQ(1, run_count);  // We should still be in the new idle period.
@@ -3079,10 +3079,11 @@ TEST_F(MainThreadSchedulerImplTest, UnthrottledTaskRunner) {
       FROM_HERE,
       base::BindOnce(SlowCountingTask, &throttleable_count, test_task_runner_,
                      7, throttleable_task_runner_));
-  unthrottled_task_queue->GetTaskQueue()->task_runner()->PostTask(
+  unthrottled_task_queue->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
-      base::BindOnce(SlowCountingTask, &unthrottled_count, test_task_runner_, 7,
-                     unthrottled_task_queue->GetTaskQueue()->task_runner()));
+      base::BindOnce(
+          SlowCountingTask, &unthrottled_count, test_task_runner_, 7,
+          unthrottled_task_queue->GetTaskRunnerWithDefaultTaskType()));
   auto handle = scheduler_->PauseRenderer();
 
   for (int i = 0; i < 1000; i++) {
@@ -3297,7 +3298,7 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimeWithOneQueueWithoutVirtualTime) {
   int counter = 0;
 
   for (const auto& task_queue : task_queues) {
-    task_queue->GetTaskQueue()->task_runner()->PostTask(
+    task_queue->GetTaskRunnerWithDefaultTaskType()->PostTask(
         FROM_HERE, base::BindOnce([](int* counter) { ++*counter; }, &counter));
   }
 
@@ -3336,7 +3337,7 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
 
   throttleable_task_runner_->PostTask(FROM_HERE, base::BindOnce(NullTask));
 
-  loading_task_queue()->GetTaskQueue()->task_runner()->PostDelayedTask(
+  loading_task_queue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE, base::BindOnce(NullTask),
       base::TimeDelta::FromMilliseconds(10));
 
@@ -3582,7 +3583,7 @@ TEST_F(MainThreadSchedulerImplTest, NonWakingTaskQueue) {
   std::vector<std::pair<std::string, base::TimeTicks>> log;
   base::TimeTicks start = scheduler_->GetTickClock()->NowTicks();
 
-  scheduler_->DefaultTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  scheduler_->DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](std::vector<std::pair<std::string, base::TimeTicks>>* log,
@@ -3600,8 +3601,7 @@ TEST_F(MainThreadSchedulerImplTest, NonWakingTaskQueue) {
           &log, scheduler_->GetTickClock()),
       base::TimeDelta::FromSeconds(3));
   scheduler_->DefaultTaskQueue()
-      ->GetTaskQueue()
-      ->task_runner()
+      ->GetTaskRunnerWithDefaultTaskType()
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(

@@ -429,6 +429,15 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // need to expose the raw pointer to the queue.
   TaskQueue* GetTaskQueue() { return task_queue_.get(); }
 
+  // This method returns the default task runner with task type kTaskTypeNone
+  // and is mostly used for tests. For most use cases, you'll want a more
+  // specific task runner and should use the 'CreateTaskRunner' method and pass
+  // the desired task type.
+  const scoped_refptr<base::SingleThreadTaskRunner>&
+  GetTaskRunnerWithDefaultTaskType() {
+    return task_runner_;
+  }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -459,6 +468,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   scoped_refptr<TaskQueue> task_queue_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;

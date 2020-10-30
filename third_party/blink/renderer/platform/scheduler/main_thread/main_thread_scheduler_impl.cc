@@ -693,7 +693,7 @@ MainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::VirtualTimeControlTaskRunner() {
-  return virtual_time_control_task_queue_->GetTaskQueue()->task_runner();
+  return virtual_time_control_task_queue_->GetTaskRunnerWithDefaultTaskType();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -911,7 +911,7 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
     // hidden.
     base::TimeDelta end_idle_when_hidden_delay =
         base::TimeDelta::FromMilliseconds(kEndIdleWhenHiddenDelayMillis);
-    control_task_queue_->GetTaskQueue()->task_runner()->PostDelayedTask(
+    control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
         FROM_HERE, end_renderer_hidden_idle_period_closure_.GetCallback(),
         end_idle_when_hidden_delay);
     main_thread_only().renderer_hidden = true;
@@ -1254,7 +1254,7 @@ void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
       !notify_agent_strategy_task_posted_.IsSet() &&
       agent_scheduling_strategy_->ShouldNotifyOnInputEvent()) {
     notify_agent_strategy_task_posted_.SetWhileLocked(true);
-    control_task_queue_->GetTaskQueue()->task_runner()->PostTask(
+    control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostTask(
         FROM_HERE, notify_agent_strategy_on_input_event_closure_);
   }
 
@@ -1404,7 +1404,7 @@ void MainThreadSchedulerImpl::EnsureUrgentPolicyUpdatePostedOnMainThread(
   any_thread_lock_.AssertAcquired();
   if (!policy_may_need_update_.IsSet()) {
     policy_may_need_update_.SetWhileLocked(true);
-    control_task_queue_->GetTaskQueue()->task_runner()->PostTask(
+    control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostTask(
         from_here, update_policy_closure_);
   }
 }
@@ -2139,7 +2139,7 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
   // called) at any moment, including in the middle of allocating an object,
   // when state is not consistent. Posting a task to dispatch notifications
   // minimizes the amount of code that runs and sees an inconsistent state .
-  control_task_queue_->GetTaskQueue()->task_runner()->PostTask(
+  control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected,

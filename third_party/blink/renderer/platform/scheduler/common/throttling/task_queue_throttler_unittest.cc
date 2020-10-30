@@ -92,7 +92,7 @@ class TaskQueueThrottlerTest : public testing::Test {
             .SetCanBeThrottled(true));
     wake_up_budget_pool_->AddQueue(base::TimeTicks(),
                                    timer_queue_->GetTaskQueue());
-    timer_task_runner_ = timer_queue_->GetTaskQueue()->task_runner();
+    timer_task_runner_ = timer_queue_->GetTaskRunnerWithDefaultTaskType();
   }
 
   void TearDown() override {
@@ -816,7 +816,7 @@ TEST_P(TaskQueueThrottlerWithAutoAdvancingTimeTest,
   timer_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, &run_times, test_task_runner_));
-  second_queue->GetTaskQueue()->task_runner()->PostTask(
+  second_queue->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, &run_times, test_task_runner_));
 
@@ -1146,7 +1146,7 @@ TEST_P(TaskQueueThrottlerWithAutoAdvancingTimeTest,
   timer_task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&TestTask, &run_times, test_task_runner_),
       base::TimeDelta::FromMilliseconds(100));
-  second_queue->GetTaskQueue()->task_runner()->PostDelayedTask(
+  second_queue->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&TestTask, &run_times, test_task_runner_),
       base::TimeDelta::FromMilliseconds(200));
 
@@ -1204,13 +1204,13 @@ TEST_P(TaskQueueThrottlerWithAutoAdvancingTimeTest, TwoBudgetPools) {
   timer_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, &run_times, test_task_runner_));
-  second_queue->GetTaskQueue()->task_runner()->PostTask(
+  second_queue->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, &run_times, test_task_runner_));
   timer_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, &run_times, test_task_runner_));
-  second_queue->GetTaskQueue()->task_runner()->PostTask(
+  second_queue->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, &run_times, test_task_runner_));
 
@@ -1244,7 +1244,7 @@ void RunChainedTask(Deque<base::TimeDelta> task_durations,
   task_runner->AdvanceMockTickClock(task_durations.front());
   task_durations.pop_front();
 
-  queue->GetTaskQueue()->task_runner()->PostDelayedTask(
+  queue->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RunChainedTask, std::move(task_durations), queue,
                      task_runner, run_times, delay),
@@ -1373,7 +1373,7 @@ TEST_F(TaskQueueThrottlerTest,
   two_minutes_pool->AddQueue(base::TimeTicks(),
                              two_minutes_queue->GetTaskQueue());
   scoped_refptr<base::SingleThreadTaskRunner> two_minutes_task_runner =
-      two_minutes_queue->GetTaskQueue()->task_runner();
+      two_minutes_queue->GetTaskRunnerWithDefaultTaskType();
   task_queue_throttler_->IncreaseThrottleRefCount(
       two_minutes_queue->GetTaskQueue());
 
@@ -1446,7 +1446,7 @@ TEST_F(TaskQueueThrottlerTest,
   two_minutes_pool->AddQueue(base::TimeTicks(),
                              two_minutes_queue->GetTaskQueue());
   scoped_refptr<base::SingleThreadTaskRunner> two_minutes_task_runner =
-      two_minutes_queue->GetTaskQueue()->task_runner();
+      two_minutes_queue->GetTaskRunnerWithDefaultTaskType();
   task_queue_throttler_->IncreaseThrottleRefCount(
       two_minutes_queue->GetTaskQueue());
 
@@ -1526,7 +1526,7 @@ TEST_F(TaskQueueThrottlerTest,
   two_minutes_pool->AddQueue(base::TimeTicks(),
                              two_minutes_queue->GetTaskQueue());
   scoped_refptr<base::SingleThreadTaskRunner> two_minutes_task_runner =
-      two_minutes_queue->GetTaskQueue()->task_runner();
+      two_minutes_queue->GetTaskRunnerWithDefaultTaskType();
   task_queue_throttler_->IncreaseThrottleRefCount(
       two_minutes_queue->GetTaskQueue());
 
@@ -1634,7 +1634,7 @@ TEST_F(TaskQueueThrottlerTest,
           .SetCanBeThrottled(true));
   unaligned_pool->AddQueue(base::TimeTicks(), unaligned_queue->GetTaskQueue());
   scoped_refptr<base::SingleThreadTaskRunner> unaligned_task_runner =
-      unaligned_queue->GetTaskQueue()->task_runner();
+      unaligned_queue->GetTaskRunnerWithDefaultTaskType();
   task_queue_throttler_->IncreaseThrottleRefCount(
       unaligned_queue->GetTaskQueue());
 

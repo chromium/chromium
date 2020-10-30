@@ -280,8 +280,7 @@ class FrameSchedulerImplTest : public testing::Test {
           FrameSchedulerImpl::PausableTaskQueueTraits().SetPrioritisationType(
               prioritisation_type);
       GetTaskQueue(queue_traits)
-          ->GetTaskQueue()
-          ->task_runner()
+          ->GetTaskRunnerWithDefaultTaskType()
           ->PostTask(FROM_HERE,
                      base::BindOnce(&AppendToVectorTestTask, run_order,
                                     String::FromUTF8(task)));
@@ -721,15 +720,15 @@ TEST_F(FrameSchedulerImplTest, FrameVisible_CrossOrigin_LazyInit) {
 
 TEST_F(FrameSchedulerImplTest, PauseAndResume) {
   int counter = 0;
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  ThrottleableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  DeferrableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  PausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
   frame_scheduler_->SetPaused(true);
@@ -933,7 +932,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(FrameSchedulerImplTest, FreezeForegroundOnlyTasks) {
   int counter = 0;
-  ForegroundOnlyTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  ForegroundOnlyTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
   page_scheduler_->SetPageVisible(false);
@@ -952,15 +951,15 @@ TEST_F(FrameSchedulerImplTest, FreezeForegroundOnlyTasks) {
 TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
        PageFreezeAndUnfreezeFlagEnabled) {
   int counter = 0;
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  ThrottleableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  DeferrableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  PausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
   page_scheduler_->SetPageVisible(false);
@@ -982,15 +981,15 @@ TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
 TEST_F(FrameSchedulerImplStopNonTimersInBackgroundDisabledTest,
        PageFreezeAndUnfreezeFlagDisabled) {
   int counter = 0;
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  ThrottleableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  DeferrableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  PausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
   page_scheduler_->SetPageVisible(false);
@@ -1012,13 +1011,13 @@ TEST_F(FrameSchedulerImplStopNonTimersInBackgroundDisabledTest,
 TEST_F(FrameSchedulerImplTest, PagePostsCpuTasks) {
   EXPECT_TRUE(GetTaskTime().is_zero());
   EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                 base::TimeDelta::FromMilliseconds(10)));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetTaskTime().is_zero());
   EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                 base::TimeDelta::FromMilliseconds(100)));
   base::RunLoop().RunUntilIdle();
@@ -1052,7 +1051,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
     EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
 
     // Check the rest of the values after different types of commit.
-    UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+    UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
         FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                   base::TimeDelta::FromMilliseconds(60)));
     base::RunLoop().RunUntilIdle();
@@ -1061,7 +1060,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
 
     DidCommitProvisionalLoad(test_case.navigation_type);
 
-    UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+    UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
         FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                   base::TimeDelta::FromMilliseconds(60)));
     base::RunLoop().RunUntilIdle();
@@ -1072,24 +1071,24 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
 
 TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
   Vector<String> tasks;
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      LoadingTaskQueue()->GetTaskQueue()->GetName(), &tasks));
-  ThrottleableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      ThrottleableTaskQueue()->GetTaskQueue()->GetName(),
                      &tasks));
-  DeferrableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      DeferrableTaskQueue()->GetTaskQueue()->GetName(), &tasks));
-  PausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      PausableTaskQueue()->GetTaskQueue()->GetName(), &tasks));
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      UnpausableTaskQueue()->GetTaskQueue()->GetName(), &tasks));
@@ -1109,7 +1108,7 @@ TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
                   String(UnpausableTaskQueue()->GetTaskQueue()->GetName())));
 
   tasks.clear();
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      LoadingTaskQueue()->GetTaskQueue()->GetName(), &tasks));
@@ -1121,7 +1120,7 @@ TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
                          LoadingTaskQueue()->GetTaskQueue()->GetName())));
 
   tasks.clear();
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(&RecordQueueName,
                      LoadingTaskQueue()->GetTaskQueue()->GetName(), &tasks));
@@ -1143,15 +1142,15 @@ TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
 TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
        PageFreezeAndPageVisible) {
   int counter = 0;
-  LoadingTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  ThrottleableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  DeferrableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  PausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  UnpausableTaskQueue()->GetTaskQueue()->task_runner()->PostTask(
+  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
   page_scheduler_->SetPageVisible(false);

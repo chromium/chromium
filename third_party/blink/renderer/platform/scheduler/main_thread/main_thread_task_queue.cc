@@ -111,6 +111,7 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
   task_queue_ = base::MakeRefCounted<TaskQueue>(std::move(impl), spec);
+  task_runner_ = task_queue_->task_runner();
   if (task_queue_->HasImpl() && spec.should_notify_observers) {
     // TaskQueueImpl may be null for tests.
     // TODO(scheduler-dev): Consider mapping directly to
