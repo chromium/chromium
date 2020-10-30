@@ -73,8 +73,7 @@ void DeskNameView::CommitChanges(views::Widget* widget) {
 }
 
 void DeskNameView::SetTextAndElideIfNeeded(const base::string16& text) {
-  SetText(gfx::ElideText(text, GetFontList(),
-                         parent()->GetPreferredSize().width(),
+  SetText(gfx::ElideText(text, GetFontList(), GetContentsBounds().width(),
                          gfx::ELIDE_TAIL));
   full_text_ = text;
 }
