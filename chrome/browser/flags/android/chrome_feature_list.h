@@ -80,6 +80,7 @@ extern const base::Feature kHomepagePromoSyntheticPromoSeenTracking;
 extern const base::Feature kHomepageSettingsUIConversion;
 extern const base::Feature kHorizontalTabSwitcherAndroid;
 extern const base::Feature kImmersiveUiMode;
+extern const base::Feature kIncognitoScreenshot;
 extern const base::Feature kImprovedA2HS;
 extern const base::Feature kInlineUpdateFlow;
 extern const base::Feature kInstantStart;

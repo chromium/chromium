@@ -3649,8 +3649,8 @@ const FeatureEntry kFeatureEntries[] = {
          ::switches::kEnableExperimentalAccessibilityChromeVoxTutorial)},
     {"enable-magnifier-new-focus-following",
      flag_descriptions::kMagnifierNewFocusFollowingName,
-     flag_descriptions::kMagnifierNewFocusFollowingDescription,
-     kOsCrOS, FEATURE_VALUE_TYPE(features::kMagnifierNewFocusFollowing)},
+     flag_descriptions::kMagnifierNewFocusFollowingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kMagnifierNewFocusFollowing)},
 #endif  // OS_CHROMEOS
 #if defined(OS_MAC)
     {"enable-immersive-fullscreen-toolbar",
@@ -6687,6 +6687,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnablePasswordInfoBarAccountIndicationFooter)},
+
+    {"incognito-screenshot", flag_descriptions::kIncognitoScreenshotName,
+     flag_descriptions::kIncognitoScreenshotDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},
 #endif
     {"use-first-party-set", flag_descriptions::kUseFirstPartySetName,
      flag_descriptions::kUseFirstPartySetDescription, kOsAll,

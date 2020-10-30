@@ -2894,6 +2894,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "incognito-screenshot",
+    "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "infobar-overlay-ui",
     "owners": [ "sczs", "bling-flags" ],
     "expiry_milestone": 85
