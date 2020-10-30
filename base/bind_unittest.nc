@@ -79,7 +79,8 @@ struct NonEmptyFunctor {
   void operator()() const {}
 };
 
-#if defined(NCTEST_METHOD_ON_CONST_OBJECT)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
+#if defined(NCTEST_METHOD_ON_CONST_OBJECT)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
+
 // Method bound to const-object.
 //
 // Only const methods should be allowed to work with const objects.
@@ -116,8 +117,7 @@ void WontCompile() {
   no_ref_const_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_POINTER)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
-
+#elif defined(NCTEST_CONST_POINTER)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
 // Const argument used with non-const pointer parameter of same type.
 //
 // This is just a const-correctness check.
@@ -128,7 +128,7 @@ void WontCompile() {
   pointer_same_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_POINTER_SUBTYPE)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
+#elif defined(NCTEST_CONST_POINTER_SUBTYPE)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
 
 // Const argument used with non-const pointer parameter of super type.
 //
@@ -157,11 +157,9 @@ void WontCompile() {
   ref_arg_cb.Run(p);
 }
 
-#elif defined(NCTEST_DISALLOW_BIND_TO_NON_CONST_REF_PARAM)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
+#elif defined(NCTEST_DISALLOW_BIND_TO_NON_CONST_REF_PARAM)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
 
-// Binding functions with reference parameters, unsupported.
-//
-// See comment in NCTEST_DISALLOW_NON_CONST_REF_PARAM
+// Binding functions with reference parameters requires `std::ref()`.
 void WontCompile() {
   Parent p;
   RepeatingCallback<int()> ref_cb = BindRepeating(&UnwrapParentRef, p);
@@ -287,21 +285,21 @@ void WontCompile() {
   BindOnce(std::move(cb), 42);
 }
 
-#elif defined(NCTEST_BINDONCE_MOVEONLY_TYPE_BY_VALUE)  // [r"fatal error: static_assert failed due to requirement 'arg_is_storable || !std::is_constructible<std::__1::unique_ptr<int, std::__1::default_delete<int> >, std::__1::unique_ptr<int, std::__1::default_delete<int> > &&>::value' \"Bound argument |i| is move-only but will be bound by copy. Ensure |Arg| is mutable and bound using std::move\(\).\""]
+#elif defined(NCTEST_BINDONCE_MOVEONLY_TYPE_BY_VALUE)  // [r"static_assert failed.+?BindArgument<0>::BoundAs<.+?>::StoredAs<.+?>::kMoveOnlyTypeMustUseStdMove.+?Attempting to bind a move-only type\. Use std::move\(\) to transfer ownership to the created callback\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;
   BindOnce(&TakesMoveOnly, x);
 }
 
-#elif defined(NCTEST_BIND_MOVEONLY_TYPE_BY_VALUE)  // [r"Bound argument \|i\| is move-only but will be forwarded by copy\. Ensure \|Arg\| is bound using base::Passed\(\), not std::move\(\)."]
+#elif defined(NCTEST_BIND_MOVEONLY_TYPE_BY_VALUE)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kMoveOnlyTypeMustUseBasePassed.+?base::BindRepeating\(\) argument is a move-only type\. Use base::Passed\(\) instead of std::move\(\) to transfer ownership from the callback to the bound functor\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;
   BindRepeating(&TakesMoveOnly, x);
 }
 
-#elif defined(NCTEST_BIND_MOVEONLY_TYPE_WITH_STDMOVE)  // [r"Bound argument \|i\| is move-only but will be forwarded by copy\. Ensure \|Arg\| is bound using base::Passed\(\), not std::move\(\)."]
+#elif defined(NCTEST_BIND_MOVEONLY_TYPE_WITH_STDMOVE)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kMoveOnlyTypeMustUseBasePassed.+?base::BindRepeating\(\) argument is a move-only type\. Use base::Passed\(\) instead of std::move\(\) to transfer ownership from the callback to the bound functor\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;
@@ -328,6 +326,20 @@ void WontCompile() {
   const auto mutable_lambda = [&]() mutable {};
   BindLambdaForTesting(std::move(mutable_lambda));
 }
+
+#elif defined(NCTEST_BIND_UNCOPYABLE_AND_UNMOVABLE_TYPE)  // [r"static_assert failed.+?BindArgument<0>::BoundAs<.+?>::StoredAs<.+?>::kBindArgumentCanBeCaptured.+?Cannot capture argument: is the argument copyable or movable\?"]
+
+void WontCompile() {
+  struct UncopyableUnmovable {
+    UncopyableUnmovable() = default;
+    UncopyableUnmovable(const UncopyableUnmovable&) = delete;
+    UncopyableUnmovable& operator=(const UncopyableUnmovable&) = delete;
+  };
+
+  UncopyableUnmovable u;
+  BindOnce([] (const UncopyableUnmovable&) {}, u);
+}
+
 #endif
 
 }  // namespace base
