@@ -904,6 +904,9 @@ void ShapeResult::ApplySpacingImpl(
 
 void ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
                                int text_start_offset) {
+  // For simplicity, we apply spacing once only. If you want to do multiple
+  // time, please get rid of below |DCHECK()|.
+  DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
   ApplySpacingImpl(spacing, text_start_offset);
 }
@@ -1254,6 +1257,8 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
 #if DCHECK_IS_ON()
   unsigned target_num_characters_before = target->num_characters_;
 #endif
+
+  target->is_applied_spacing_ |= is_applied_spacing_;
 
   // When |target| is empty, its character indexes are the specified sub range
   // of |this|. Otherwise the character indexes are renumbered to be continuous.
