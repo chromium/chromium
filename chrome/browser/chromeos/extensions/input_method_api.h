@@ -369,6 +369,24 @@ class InputMethodPrivateResetFunction : public ExtensionFunction {
                              INPUTMETHODPRIVATE_RESET)
 };
 
+class InputMethodPrivateOnAutocorrectFunction : public ExtensionFunction {
+ public:
+  InputMethodPrivateOnAutocorrectFunction(
+      const InputMethodPrivateOnAutocorrectFunction&) = delete;
+  InputMethodPrivateOnAutocorrectFunction& operator=(
+      const InputMethodPrivateOnAutocorrectFunction&) = delete;
+  InputMethodPrivateOnAutocorrectFunction() = default;
+
+ protected:
+  ~InputMethodPrivateOnAutocorrectFunction() override = default;
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.onAutocorrect",
+                             INPUTMETHODPRIVATE_ONAUTOCORRECT)
+};
+
 class InputMethodAPI : public BrowserContextKeyedAPI,
                        public extensions::EventRouter::Observer {
  public:

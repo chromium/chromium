@@ -25207,6 +25207,7 @@ Called by update_extension_histograms.py.-->
   <int value="1524"
       label="FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
   <int value="1525" label="ACCESSIBILITY_PRIVATE_ISFEATUREENABLED"/>
+  <int value="1526" label="INPUTMETHODPRIVATE_ONAUTOCORRECT"/>
 </enum>
 
 <enum name="ExtensionIconState">

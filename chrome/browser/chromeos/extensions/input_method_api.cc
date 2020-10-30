@@ -19,6 +19,8 @@
 #include "chrome/browser/chromeos/extensions/dictionary_event_router.h"
 #include "chrome/browser/chromeos/extensions/ime_menu_event_router.h"
 #include "chrome/browser/chromeos/extensions/input_method_event_router.h"
+#include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
+#include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -79,6 +81,7 @@ namespace SetSelectionRange =
     extensions::api::input_method_private::SetSelectionRange;
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
+namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
 
 using chromeos::InputMethodEngineBase;
 
@@ -606,6 +609,24 @@ ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   engine->Reset();
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+InputMethodPrivateOnAutocorrectFunction::Run() {
+  std::unique_ptr<OnAutocorrect::Params> parent_params(
+      OnAutocorrect::Params::Create(*args_));
+  const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
+  std::string error;
+  chromeos::NativeInputMethodEngine* engine =
+      static_cast<chromeos::NativeInputMethodEngine*>(
+          GetEngineIfActive(Profile::FromBrowserContext(browser_context()),
+                            extension_id(), &error));
+  if (!engine)
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+
+  engine->OnAutocorrect(params.typed_word, params.corrected_word,
+                        params.start_index);
   return RespondNow(NoArguments());
 }
 

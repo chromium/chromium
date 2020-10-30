@@ -400,6 +400,17 @@ chrome.inputMethodPrivate.setAutocorrectRange = function(parameters, callback) {
 chrome.inputMethodPrivate.reset = function() {};
 
 /**
+ * Called after a word has been autocorrected to show some UI for autocorrect.
+ * @param{{
+ *  contextID: number,
+ *  typedWord: string,
+ *  correctedWord: string,
+ *  startIndex: number
+ * }} parameters
+ */
+chrome.inputMethodPrivate.onAutocorrect = function(parameters) {};
+
+/**
  * Fired when the input method is changed.
  * @type {!ChromeEvent}
  */
