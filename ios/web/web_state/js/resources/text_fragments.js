@@ -57,11 +57,14 @@ const utils = goog.require(
     if (scroll && marks.length > 0)
       utils.scrollElementIntoView(marks[0]);
 
-    for (const mark of marks) {
-      mark.addEventListener("click", () => {
-        utils.removeMarks(marks);
-      });
-    }
+    // Clean-up marks whenever the user taps somewhere on the page. Use capture
+    // to make sure the event listener is executed immediately and cannot be
+    // prevented by the event target (during bubble phase).
+    document.addEventListener("click", function removeMarksFunction() {
+      utils.removeMarks(marks);
+      document.removeEventListener("click", removeMarksFunction,
+                                   /*useCapture=*/true);
+    }, /*useCapture=*/true);
 
     __gCrWeb.message.invokeOnHost({
       command: 'textFragments.response',
