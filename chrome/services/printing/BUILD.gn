@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -16,12 +17,15 @@ source_set("lib") {
 
   deps = [
     "//components/crash/core/common:crash_key",
-    "//components/pwg_encoder",
     "//pdf",
     "//printing",
     "//printing/mojom",
     "//ui/gfx",
   ]
+
+  if (enable_print_preview) {
+    deps += [ "//components/pwg_encoder" ]
+  }
 
   public_deps = [
     "//base",
