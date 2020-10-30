@@ -1489,6 +1489,49 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   return damage_rect;
 }
 
+bool SurfaceAggregator::DeclareResourcesToProvider(
+    Surface* surface,
+    const std::vector<TransferableResource>& resource_list,
+    const CompositorRenderPassList& render_passes) {
+  // |provider_| may be null in tests.
+  if (!provider_)
+    return true;
+
+  int child_id = ChildIdForSurface(surface);
+
+  // Ref the resources in the surface, and let the provider know we've received
+  // new resources from the compositor frame.
+  surface->RefResources(resource_list);
+  provider_->ReceiveFromChild(child_id, resource_list);
+
+  // Figure out which resources are actually used in the render pass.
+  // Note that we first gather them in a vector, since ResourceIdSet (which we
+  // actually need) is a flat_set, which means bulk insertion we do at the end
+  // is more efficient.
+  std::vector<ResourceId> referenced_resources;
+  referenced_resources.reserve(resource_list.size());
+
+  const auto& child_to_parent_map = provider_->GetChildToParentMap(child_id);
+  for (const auto& render_pass : render_passes) {
+    for (auto* quad : render_pass->quad_list) {
+      for (ResourceId resource_id : quad->resources) {
+        // If we're using a resource which was not declared in the
+        // |resource_list| then this is an invalid frame, we can abort.
+        if (!child_to_parent_map.count(resource_id))
+          return false;
+        referenced_resources.push_back(resource_id);
+      }
+    }
+  }
+
+  // Declare the used resources to the provider. This will cause all resources
+  // that were received but not used in the render passes to be unreferenced in
+  // the surface, and returned to the child in the resource provider.
+  ResourceIdSet resource_set(std::move(referenced_resources));
+  provider_->DeclareUsedResourcesFromChild(child_id, resource_set);
+  return true;
+}
+
 gfx::Rect SurfaceAggregator::PrewalkSurface(
     Surface* surface,
     bool in_moved_pixel_rp,
@@ -1511,14 +1554,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
     return gfx::Rect();
 
   const CompositorFrame& frame = surface->GetActiveFrame();
-  int child_id = 0;
-  // TODO(jbauman): hack for unit tests that don't set up rp
-  if (provider_) {
-    child_id = ChildIdForSurface(surface);
-    surface->RefResources(frame.resource_list);
-    provider_->ReceiveFromChild(child_id, frame.resource_list);
-  }
-
   auto remapped_pass_id = pass_id_remapper_.Remap(
       frame.render_pass_list.back()->id, surface->surface_id());
   if (parent_pass_id)
@@ -1530,32 +1565,11 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   base::flat_map<CompositorRenderPassId, RenderPassMapEntry> render_pass_map =
       GenerateRenderPassMap(frame.render_pass_list, IsRootSurface(surface));
 
-  std::vector<ResourceId> referenced_resources;
-  referenced_resources.reserve(frame.resource_list.size());
-
-  bool invalid_frame = false;
-  if (provider_) {
-    const auto& child_to_parent_map = provider_->GetChildToParentMap(child_id);
-    for (const auto& render_pass : base::Reversed(frame.render_pass_list)) {
-      for (auto* quad : render_pass->quad_list) {
-        for (ResourceId resource_id : quad->resources) {
-          if (!child_to_parent_map.count(resource_id)) {
-            invalid_frame = true;
-            break;
-          }
-          referenced_resources.push_back(resource_id);
-        }
-      }
-    }
-  }
-
-  if (invalid_frame)
+  bool valid_frame = DeclareResourcesToProvider(surface, frame.resource_list,
+                                                frame.render_pass_list);
+  if (!valid_frame)
     return gfx::Rect();
   valid_surfaces_.insert(surface->surface_id());
-
-  ResourceIdSet resource_set(std::move(referenced_resources));
-  if (provider_)
-    provider_->DeclareUsedResourcesFromChild(child_id, resource_set);
 
   CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
   gfx::Rect full_damage = last_pass->output_rect;

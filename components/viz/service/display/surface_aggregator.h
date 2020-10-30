@@ -221,6 +221,16 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                            bool will_draw,
                            const gfx::Rect& damage_from_parent,
                            PrewalkResult* result);
+
+  // Declares all of the resources to the resource provider. Also declares
+  // resources that are used in the render_pass_list. Returns true if this seems
+  // to be a valid frame (all resources used in the render pass are present in
+  // the resource list).
+  bool DeclareResourcesToProvider(
+      Surface* surface,
+      const std::vector<TransferableResource>& resource_list,
+      const CompositorRenderPassList& render_pass_list);
+
   void CopyUndrawnSurfaces(PrewalkResult* prewalk);
   void CopyPasses(const CompositorFrame& frame, Surface* surface);
   void AddColorConversionPass();
