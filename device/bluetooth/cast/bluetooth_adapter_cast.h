@@ -86,6 +86,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterCast
       AdvertisementErrorCallback error_callback) override;
   void ResetAdvertising(base::OnceClosure callback,
                         AdvertisementErrorCallback error_callback) override;
+  void ConnectDevice(
+      const std::string& address,
+      const base::Optional<BluetoothDevice::AddressType>& address_type,
+      ConnectDeviceCallback callback,
+      ErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;

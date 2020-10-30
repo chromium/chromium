@@ -175,6 +175,15 @@ void BluetoothAdapterCast::SetAdvertisingInterval(
       .Run(BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
 }
 
+void BluetoothAdapterCast::ConnectDevice(
+    const std::string& address,
+    const base::Optional<BluetoothDevice::AddressType>& address_type,
+    ConnectDeviceCallback callback,
+    ErrorCallback error_callback) {
+  NOTIMPLEMENTED() << __func__ << " GATT server mode not supported";
+  std::move(error_callback).Run();
+}
+
 void BluetoothAdapterCast::ResetAdvertising(
     base::OnceClosure callback,
     AdvertisementErrorCallback error_callback) {
