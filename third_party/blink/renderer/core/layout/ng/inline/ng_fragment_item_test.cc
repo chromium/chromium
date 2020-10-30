@@ -34,12 +34,6 @@ class NGFragmentItemTest : public NGLayoutTest,
     return To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
   }
 
-  const NGFragmentItems* GetFragmentItemsByElementId(const char* id) {
-    const auto* block_flow =
-        To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-    return block_flow->FragmentItems();
-  }
-
   Vector<NGInlineCursorPosition> GetLines(NGInlineCursor* cursor) {
     Vector<NGInlineCursorPosition> lines;
     for (cursor->MoveToFirstLine(); *cursor; cursor->MoveToNextLine())

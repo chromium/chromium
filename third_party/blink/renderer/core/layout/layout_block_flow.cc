@@ -2479,13 +2479,6 @@ void LayoutBlockFlow::SetPaintFragment(
   NOT_DESTROYED();
 }
 
-const NGFragmentItems* LayoutBlockFlow::FragmentItems() const {
-  NOT_DESTROYED();
-  if (const NGPhysicalBoxFragment* box_fragment = CurrentFragment())
-    return box_fragment->Items();
-  return nullptr;
-}
-
 void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());

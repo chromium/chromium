@@ -20,6 +20,7 @@ class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 class NGConstraintSpace;
 class NGEarlyBreak;
+class NGFragmentItems;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalContainerFragment;
