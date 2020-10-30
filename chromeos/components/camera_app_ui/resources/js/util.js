@@ -369,7 +369,22 @@ export async function scalePicture(url, isVideo, width, height = undefined) {
   }
   await new Promise((resolve, reject) => {
     element.addEventListener(isVideo ? 'canplay' : 'load', resolve);
-    element.addEventListener('error', reject);
+    element.addEventListener('error', () => {
+      if (isVideo) {
+        let msg = 'Failed to load video';
+        /**
+         * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
+         * @type {?MediaError}
+         */
+        const err = element.error;
+        if (err !== null) {
+          msg += `: ${err.message}`;
+        }
+        reject(new Error(msg));
+      } else {
+        reject(new Error('Failed to load image'));
+      }
+    });
     element.src = url;
   });
   if (height === undefined) {
