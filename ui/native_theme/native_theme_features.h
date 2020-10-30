@@ -15,8 +15,6 @@ namespace features {
 NATIVE_THEME_EXPORT extern const base::Feature kOverlayScrollbar;
 NATIVE_THEME_EXPORT extern const base::Feature
     kOverlayScrollbarFlashAfterAnyScrollUpdate;
-NATIVE_THEME_EXPORT extern const base::Feature
-    kOverlayScrollbarFlashWhenMouseEnter;
 
 }  // namespace features
 

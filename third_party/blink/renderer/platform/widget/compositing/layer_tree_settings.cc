@@ -439,8 +439,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
         ui::kOverlayScrollbarThinningDuration;
     settings.scrollbar_flash_after_any_scroll_update =
         ui::OverlayScrollbarFlashAfterAnyScrollUpdate();
-    settings.scrollbar_flash_when_mouse_enter =
-        ui::OverlayScrollbarFlashWhenMouseEnter();
   }
 
   // If there's over 4GB of RAM, increase the working set size to 256MB for both

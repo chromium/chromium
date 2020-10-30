@@ -3654,11 +3654,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "overlay-scrollbars-flash-when-mouse-enter",
-    "owners": [ "chaopeng", "bokan", "input-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "overlay-strategies",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to

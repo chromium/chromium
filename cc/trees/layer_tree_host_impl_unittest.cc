@@ -5411,32 +5411,6 @@ TEST_P(LayerTreeHostImplTestMultiScrollable,
   EXPECT_FALSE(animation_task_.is_null());
 }
 
-TEST_P(LayerTreeHostImplTestMultiScrollable, ScrollbarFlashWhenMouseEnter) {
-  LayerTreeSettings settings = DefaultSettings();
-  settings.scrollbar_fade_delay = base::TimeDelta::FromMilliseconds(500);
-  settings.scrollbar_fade_duration = base::TimeDelta::FromMilliseconds(300);
-  settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
-  settings.scrollbar_flash_when_mouse_enter = true;
-
-  SetUpLayers(settings);
-
-  EXPECT_EQ(scrollbar_1_->Opacity(), 0);
-  EXPECT_EQ(scrollbar_2_->Opacity(), 0);
-
-  // Scroll should flash when mouse enter.
-  GetInputHandler().MouseMoveAt(gfx::Point(1, 1));
-
-  EXPECT_TRUE(scrollbar_1_->Opacity());
-  EXPECT_FALSE(scrollbar_2_->Opacity());
-  EXPECT_FALSE(animation_task_.is_null());
-
-  GetInputHandler().MouseMoveAt(gfx::Point(51, 51));
-
-  EXPECT_TRUE(scrollbar_1_->Opacity());
-  EXPECT_TRUE(scrollbar_2_->Opacity());
-  EXPECT_FALSE(animation_task_.is_null());
-}
-
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
   LayerTreeSettings settings = DefaultSettings();
   settings.scrollbar_fade_delay = base::TimeDelta::FromMilliseconds(500);

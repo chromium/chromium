@@ -1747,12 +1747,6 @@ const char kOverlayScrollbarsFlashAfterAnyScrollUpdateDescription[] =
     "Flash Overlay Scrollbars After any scroll update happends in page. You"
     " must also enable Overlay Scrollbars.";
 
-const char kOverlayScrollbarsFlashWhenMouseEnterName[] =
-    "Flash Overlay Scrollbars When Mouse Enter";
-const char kOverlayScrollbarsFlashWhenMouseEnterDescription[] =
-    "Flash Overlay Scrollbars When Mouse Enter a scrollable area. You must also"
-    " enable Overlay Scrollbars.";
-
 const char kOverlayStrategiesName[] = "Select HW overlay strategies";
 const char kOverlayStrategiesDescription[] =
     "Select strategies used to promote quads to HW overlays.";
