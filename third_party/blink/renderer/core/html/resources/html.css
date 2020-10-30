@@ -442,6 +442,7 @@ input::-webkit-textfield-decoration-container {
     align-items: center;
     -webkit-user-modify: read-only !important;
     content: none !important;
+    writing-mode: inherit !important;
     -internal-align-self-block: center;
 }
 
