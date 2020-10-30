@@ -16,6 +16,7 @@
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -211,6 +212,17 @@ void FillFrameData(base::trace_event::TracedValue* data,
       data->SetInteger("processId", static_cast<int>(process_handle.Pid()));
     }
   }
+}
+
+base::Optional<base::trace_event::MemoryDumpLevelOfDetail>
+StringToMemoryDumpLevelOfDetail(const std::string& str) {
+  if (str == Tracing::MemoryDumpLevelOfDetailEnum::Detailed)
+    return {base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+  if (str == Tracing::MemoryDumpLevelOfDetailEnum::Background)
+    return {base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
+  if (str == Tracing::MemoryDumpLevelOfDetailEnum::Light)
+    return {base::trace_event::MemoryDumpLevelOfDetail::LIGHT};
+  return {};
 }
 
 // We currently don't support concurrent tracing sessions, but are planning to.
@@ -926,9 +938,20 @@ void TracingHandler::OnCategoriesReceived(
 
 void TracingHandler::RequestMemoryDump(
     Maybe<bool> deterministic,
+    Maybe<std::string> level_of_detail,
     std::unique_ptr<RequestMemoryDumpCallback> callback) {
   if (!IsTracing()) {
     callback->sendFailure(Response::ServerError("Tracing is not started"));
+    return;
+  }
+
+  base::Optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
+      StringToMemoryDumpLevelOfDetail(level_of_detail.fromMaybe(
+          Tracing::MemoryDumpLevelOfDetailEnum::Detailed));
+
+  if (!memory_detail) {
+    callback->sendFailure(
+        Response::ServerError("Invalid levelOfDetail specified."));
     return;
   }
 
@@ -943,8 +966,7 @@ void TracingHandler::RequestMemoryDump(
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
           base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
-          base::trace_event::MemoryDumpLevelOfDetail::DETAILED, determinism,
-          std::move(on_memory_dump_finished));
+          *memory_detail, determinism, std::move(on_memory_dump_finished));
 }
 
 void TracingHandler::OnMemoryDumpFinished(
