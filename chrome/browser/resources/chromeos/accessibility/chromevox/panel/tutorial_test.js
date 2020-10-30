@@ -557,3 +557,46 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .replay();
   });
 });
+
+// Tests that tutorial nudges are restarted whenever the current range changes.
+TEST_F('ChromeVoxTutorialTest', 'RestartNudges', function() {
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    let restart = false;
+    // Swap in below function to track when nudges get restarted.
+    tutorial.restartNudges = () => {
+      restart = true;
+    };
+    const waitForRestartNudges = async () => {
+      return new Promise(resolve => {
+        let intervalId;
+        const nudgesRestarted = () => {
+          return restart;
+        };
+        if (nudgesRestarted()) {
+          resolve();
+        } else {
+          intervalId = setInterval(() => {
+            if (nudgesRestarted()) {
+              clearInterval(intervalId);
+              resolve();
+            }
+          }, 500);
+        }
+      });
+    };
+    restart = false;
+    CommandHandler.onCommand('nextObject');
+    await waitForRestartNudges();
+    // Show a lesson.
+    tutorial.curriculum = 'essential_keys';
+    tutorial.showLesson(0);
+    restart = false;
+    CommandHandler.onCommand('nextObject');
+    await waitForRestartNudges();
+    restart = false;
+    CommandHandler.onCommand('nextObject');
+    await waitForRestartNudges();
+  });
+});

@@ -474,7 +474,6 @@ Polymer({
       // Executes once all lessons have been added to the dom.
       this.show();
     });
-    this.$.tutorial.addEventListener('focus', this.onFocus.bind(this), true);
     this.addEventListener('startpractice', (evt) => {
       this.isPracticeAreaActive = true;
       this.startNudges(NudgeType.PRACTICE_AREA);
@@ -870,7 +869,6 @@ Polymer({
     }
   },
 
-  /** @private */
   restartNudges() {
     this.stopNudges();
     this.setNudgeInterval();
@@ -905,20 +903,6 @@ Polymer({
   requestFullyDescribe() {
     this.dispatchEvent(
         new CustomEvent('requestfullydescribe', {composed: true}));
-  },
-
-  /**
-   * @param {Event} evt
-   * @private
-   */
-  onFocus(evt) {
-    // Restart nudges whenever focus changes. Skip this for the practice area
-    // so nudges are given in regular intervals.
-    if (this.isPracticeAreaActive) {
-      return;
-    }
-
-    this.restartNudges();
   },
 
   /** @return {!TutorialLesson} */

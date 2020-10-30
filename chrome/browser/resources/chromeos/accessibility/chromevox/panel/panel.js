@@ -191,6 +191,10 @@ Panel = class {
 
     /** @private {boolean} */
     Panel.iTutorialReadyForTesting_ = false;
+
+    const background = chrome.extension.getBackgroundPage()['ChromeVoxState'];
+    Panel.observer_ = new Panel.PanelStateObserver();
+    background.addObserver(Panel.observer_);
   }
 
   /**
@@ -1332,6 +1336,22 @@ Panel = class {
 };
 
 /**
+ * An observer that reacts to ChromeVox range changes.
+ * @implements {ChromeVoxStateObserver}
+ */
+Panel.PanelStateObserver = class {
+  constructor() {}
+
+  onCurrentRangeChanged(range) {
+    if (Panel.mode_ === Panel.Mode.FULLSCREEN_I_TUTORIAL) {
+      if (Panel.iTutorial && Panel.iTutorial.restartNudges) {
+        Panel.iTutorial.restartNudges();
+      }
+    }
+  }
+};
+
+/**
  * @enum {string}
  */
 Panel.Mode = {
@@ -1371,6 +1391,11 @@ Panel.ACTION_TO_MSG_ID = {
  * @private {string}
  */
 Panel.lastMenu_ = '';
+
+/**
+ * @private {ChromeVoxStateObserver}
+ */
+Panel.observer_ = null;
 
 window.addEventListener('load', function() {
   Panel.init();
