@@ -36,6 +36,7 @@ Polymer({
     'setUIState',
     'setEnterpriseAndDeviceName',
     'setEolMessage',
+    'setIsUserDataPresent',
   ],
 
   properties: {
@@ -58,6 +59,8 @@ Polymer({
 
     eolAdminMessage_: {type: String, value: ''},
 
+    usersDataPresent_: {type: Boolean, value: false},
+
     /**
      * Estimated time left in seconds.
      */
@@ -71,6 +74,7 @@ Polymer({
     this.initializeLoginScreen('UpdateRequiredScreen', {
       resetAllowed: true,
     });
+    this.updateEolDeleteUsersDataMessage_();
   },
 
   /** Initial UI State for screen */
@@ -92,6 +96,7 @@ Polymer({
   /** Called after resources are updated. */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
+    this.updateEolDeleteUsersDataMessage_();
   },
 
   /** @param {string} domain Enterprise domain name */
@@ -160,6 +165,11 @@ Polymer({
     this.setUIStep(Object.values(UI_STATE)[ui_state]);
   },
 
+  /** @param {boolean} data_present */
+  setIsUserDataPresent(data_present) {
+    this.usersDataPresent_ = data_present;
+  },
+
   /**
    * @private
    */
@@ -209,4 +219,40 @@ Polymer({
   isEmpty_(eolAdminMessage) {
     return !eolAdminMessage || eolAdminMessage.trim().length == 0;
   },
+
+  /**
+   * @private
+   */
+  updateEolDeleteUsersDataMessage_() {
+    this.$$('#deleteUsersDataMessage').innerHTML = this.i18nAdvanced(
+        'eolDeleteUsersDataMessage',
+        {substitutions: [loadTimeData.getString('deviceType')], attrs: ['id']});
+    const linkElement = this.$$('#deleteDataLink');
+    linkElement.setAttribute('is', 'action-link');
+    linkElement.classList.add('oobe-local-link');
+    linkElement.addEventListener('click', () => this.showConfirmationDialog_());
+  },
+
+  /**
+   * @private
+   */
+  showConfirmationDialog_() {
+    this.$.confirmationDialog.showDialog();
+  },
+
+  /**
+   * @private
+   */
+  hideConfirmationDialog_() {
+    this.$.confirmationDialog.hideDialog();
+  },
+
+  /**
+   * @private
+   */
+  onDeleteUsersConfirmed_() {
+    this.userActed('confirm-delete-users');
+    this.hideConfirmationDialog_();
+  },
+
 });

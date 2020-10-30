@@ -3000,6 +3000,24 @@
   <message name="IDS_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE" desc="The title of the message on the update required dialog on the login screen showing return instructions from the device administrator as the device has reached its end of life.">
     Instructions from your device administrator:
   </message>
+  <message name="IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_MESSAGE" desc="The message on the update required dialog on the login screen to inform the user that the data for all users on this device can be deleted by clicking on the included link.">
+    To delete all data from this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, <ph name="BEGIN_LINK">&lt;a id="deleteDataLink"&gt;</ph>click here<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_UPDATE_REQUIRED_EOL_NO_USERS_DATA_MESSAGE" desc="The message on the update required dialog on the login screen to inform the user that the device has no user data.">
+    All files and local data for all users on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has been permanently deleted.
+  </message>
+  <message name="IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_POPUP_MESSAGE" desc="The message on the confirmational popup over the update required dialog on the login screen asking the user to confirm that all users data on this device should be deleted.">
+    All files and local data for all users on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will be permanently deleted.
+  </message>
+  <message name="IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_POPUP_TITLE" desc="The title of the confirmational pop on top the update required dialog on the login screen asking the user to confirm that all users data on this device should be deleted.">
+    Delete all data?
+  </message>
+  <message name="IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CONFIRM" desc="The label for the confirm button on the confirmational pop-up on top of update required dialog on the login screen.">
+    Delete
+  </message>
+  <message name="IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CANCEL" desc="The label for the cancel button on the confirmational pop-up on top of update required dialog on the login screen.">
+    Cancel
+  </message>
 
   <!-- Update Required Notification Strings-->
   <message name="IDS_UPDATE_REQUIRED_NETWORK_LIMITATION_TITLE_DAYS" desc="The title of the notification dialog informing the user that the device is not connected to a network suitable for downloading updates and an update is required within one or more days.">

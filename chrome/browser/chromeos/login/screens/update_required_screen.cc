@@ -26,6 +26,8 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace {
@@ -33,6 +35,7 @@ constexpr char kUserActionSelectNetworkButtonClicked[] = "select-network";
 constexpr char kUserActionUpdateButtonClicked[] = "update";
 constexpr char kUserActionAcceptUpdateOverCellular[] = "update-accept-cellular";
 constexpr char kUserActionRejectUpdateOverCellular[] = "update-reject-cellular";
+constexpr char kUserActionConfirmDeleteUsersData[] = "confirm-delete-users";
 
 // Delay before showing error message if captive portal is detected.
 // We wait for this delay to let captive portal to perform redirect and show
@@ -114,8 +117,11 @@ void UpdateRequiredScreen::OnGetEolInfo(
   if (chromeos::switches::IsAueReachedForUpdateRequiredForTest() ||
       (!info.eol_date.is_null() && info.eol_date <= clock_->Now())) {
     EnsureScreenIsShown();
-    if (view_)
+    if (view_) {
       view_->SetUIState(UpdateRequiredView::EOL_REACHED);
+      view_->SetIsUserDataPresent(
+          !user_manager::UserManager::Get()->GetUsers().empty());
+    }
   } else {
     // UI state does not change for EOL devices.
     // Subscribe to network state change notifications to adapt the UI as
@@ -165,6 +171,8 @@ void UpdateRequiredScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionRejectUpdateOverCellular) {
     version_updater_->RejectUpdateOverCellular();
     version_updater_->StartExitUpdate(VersionUpdater::Result::UPDATE_ERROR);
+  } else if (action_id == kUserActionConfirmDeleteUsersData) {
+    DeleteUsersData();
   } else {
     BaseScreen::OnUserAction(action_id);
   }
@@ -422,5 +430,23 @@ void UpdateRequiredScreen::OnErrorScreenHidden() {
   error_screen_->SetIsPersistentError(false /* is_persistent */);
   Show(context());
 }
+
+void UpdateRequiredScreen::DeleteUsersData() {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  // Make a copy of the list since we'll be removing users and the list would
+  // change underneath.
+  const user_manager::UserList user_list = user_manager->GetUsers();
+  for (user_manager::User* user : user_list) {
+    user_manager->RemoveUser(user->GetAccountId(), this /* delegate */);
+  }
+}
+
+void UpdateRequiredScreen::OnUserRemoved(const AccountId& account_id) {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (user_manager->GetUsers().empty())
+    view_->SetIsUserDataPresent(false);
+}
+
+void UpdateRequiredScreen::OnBeforeUserRemoved(const AccountId& account_id) {}
 
 }  // namespace chromeos

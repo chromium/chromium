@@ -66,6 +66,7 @@ class UpdateRequiredView {
   virtual void SetEnterpriseAndDeviceName(const std::string& enterpriseDomain,
                                           const base::string16& deviceName) = 0;
   virtual void SetEolMessage(const std::string& eolMessage) = 0;
+  virtual void SetIsUserDataPresent(bool deleted) = 0;
 };
 
 class UpdateRequiredScreenHandler : public UpdateRequiredView,
@@ -92,6 +93,7 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
   void SetEnterpriseAndDeviceName(const std::string& enterpriseDomain,
                                   const base::string16& deviceName) override;
   void SetEolMessage(const std::string& eolMessage) override;
+  void SetIsUserDataPresent(bool data_present) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

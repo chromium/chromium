@@ -122,7 +122,13 @@
         [[i18nDynamic(locale, 'eolTitle', deviceName)]]
       </h1>
       <div slot="subtitle">
-        [[i18nDynamic(locale, 'eolMessage', deviceName)]]
+        <div>[[i18nDynamic(locale, 'eolMessage', deviceName)]]</div>
+        <div id="deleteDataMessageContainer" hidden="[[!usersDataPresent_]]">
+          <span id="deleteUsersDataMessage"></span>
+        </div>
+        <div id="noUsersDataMessage" hidden="[[usersDataPresent_]]">
+          [[i18nDynamic(locale, 'eolNoUsersDataMessage', deviceName)]]
+        </div>
       </div>
       <div slot="footer" class="flex layout vertical">
         <div id="adminMessageContainer"
@@ -140,6 +146,22 @@
         </div>
       </div>
     </oobe-dialog>
+
+    <!-- Delete users data confirmation dialog (shown when EOL reached) -->
+    <oobe-help-dialog id="confirmationDialog"
+        title-key="eolDeleteUsersDataPopupTitle">
+      <div slot="content">
+        [[i18nDynamic(locale, 'eolDeleteUsersDataPopupMessage', deviceName)]]
+      </div>
+      <div slot="buttons">
+        <oobe-text-button id="cancelDelete" on-click="hideConfirmationDialog_"
+            text-key="eolDeleteUsersDataCancel">
+        </oobe-text-button>
+        <oobe-text-button inverse on-click="onDeleteUsersConfirmed_"
+            id="confirmDelete" text-key="eolDeleteUsersDataConfirm">
+        </oobe-text-button>
+      </div>
+    </oobe-help-dialog>
 
   </template>
 </dom-module>

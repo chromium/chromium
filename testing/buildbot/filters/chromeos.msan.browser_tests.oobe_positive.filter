@@ -125,6 +125,7 @@ SyncConsentTest.*
 SyncConsentTimezoneOverride.*
 SystemWebDialogOobeTest.*
 TermsOfServiceScreenTest.*
+UpdateRequiredScreenPolicyPresentTest.*
 UpdateRequiredScreenTest.*
 UpdateScreenTest.*
 UserCloudExternalDataManagerTest.*
