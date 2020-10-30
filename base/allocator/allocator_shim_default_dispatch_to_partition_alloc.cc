@@ -14,7 +14,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) && !defined(OS_APPLE)
 #include <malloc.h>
 #endif
 
@@ -263,7 +263,8 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
 
 #endif  // !defined(OS_APPLE)
 
-#if defined(OS_POSIX)
+// mallinfo is not a POSIX API and OS_APPLE doesn't support it.
+#if defined(OS_POSIX) && !defined(OS_APPLE)
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   base::SimplePartitionStatsDumper allocator_dumper;
   Allocator()->DumpStats("malloc", true, &allocator_dumper);
@@ -287,6 +288,6 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 
   return info;
 }
-#endif  // defined(OS_POSIX)
+#endif  // defined(OS_POSIX) && !defined(OS_APPLE)
 
 }  // extern "C"

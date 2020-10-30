@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) && !defined(OS_APPLE)
 #include <malloc.h>
 #include <stdlib.h>
 #endif
