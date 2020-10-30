@@ -14,7 +14,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
-#include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_storage_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
@@ -62,10 +61,6 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::StorageHandler>(profile,
                                                            html_source));
-
-  // We only need to register the mojo resources here because the rest are
-  // bundled or included in the grd.
-  RegisterNearbySharedMojoResources(html_source);
 
   int default_resource =
       base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)

@@ -1237,6 +1237,8 @@ var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      '//ui/webui/resources/js/assert.js',
+      '//ui/webui/resources/js/util.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
       BROWSER_SETTINGS_PATH + '../test_util.js',
       '../../nearby_share/shared/fake_nearby_share_settings.js',

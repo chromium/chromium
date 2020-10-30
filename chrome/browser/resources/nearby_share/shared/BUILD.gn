@@ -3,9 +3,71 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("./nearby_shared.gni")
+
+os_settings_dir = "$root_gen_dir/chrome/browser/resources/settings/chromeos"
+preprocess_v2_manifest = "preprocessed_v2_manifest.json"
+preprocess_v3_manifest = "preprocessed_v3_manifest.json"
+
+generate_grd("build_v2_grdp") {
+  grd_prefix = "nearby_share"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources_v2.grdp"
+  deps = [ ":preprocess_v2" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_v2_manifest" ]
+  resource_path_prefix = "shared"
+}
+
+generate_grd("build_v3_grdp") {
+  grd_prefix = "nearby_share"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources_v3.grdp"
+  deps = [ ":preprocess_v3" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_v3_manifest" ]
+  resource_path_prefix = "shared"
+}
+
+preprocess_grit("preprocess_v2") {
+  in_folder = "./"
+  out_folder = "$os_settings_dir/preprocess_v2/shared"
+  out_manifest = "$target_gen_dir/$preprocess_v2_manifest"
+  in_files = [
+    "nearby_contact_manager.html",
+    "nearby_contact_manager.js",
+    "nearby_contact_visibility.html",
+    "nearby_contact_visibility.js",
+    "nearby_onboarding_page.html",
+    "nearby_onboarding_page.js",
+    "nearby_page_template.html",
+    "nearby_page_template.js",
+    "nearby_share_settings.html",
+    "nearby_share_settings.js",
+    "nearby_share_settings_behavior.html",
+    "nearby_share_settings_behavior.js",
+    "nearby_shared_icons.html",
+    "nearby_visibility_page.html",
+    "nearby_visibility_page.js",
+  ]
+}
+
+preprocess_grit("preprocess_v3") {
+  deps = [ ":polymer3_elements" ]
+  in_folder = "$target_gen_dir"
+  out_folder = "$os_settings_dir/preprocess_v3/shared"
+  out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
+  in_files = [
+    "nearby_contact_manager.m.js",
+    "nearby_contact_visibility.m.js",
+    "nearby_onboarding_page.m.js",
+    "nearby_page_template.m.js",
+    "nearby_share_settings.m.js",
+    "nearby_share_settings_behavior.m.js",
+    "nearby_shared_icons.m.js",
+    "nearby_visibility_page.m.js",
+  ]
+}
 
 js_type_check("closure_compile") {
   deps = [

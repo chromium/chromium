@@ -3,9 +3,43 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
+
+preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
+preprocess_folder = "preprocessed"
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "nearby_share"
+  out_grd = "$target_gen_dir/${grd_prefix}_mojo_resources.grdp"
+  deps = [ ":preprocess_mojo" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_mojo_manifest" ]
+  resource_path_rewrites = [
+    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
+  ]
+}
+
+# Mojo files, for generating grdp
+preprocess_grit("preprocess_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_js",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js__generator",
+    "//chromeos/services/nearby/public/mojom:mojom_js",
+  ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
+  in_files = [
+    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js",
+    "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js",
+  ]
+}
 
 js_type_check("closure_compile") {
   is_polymer3 = true

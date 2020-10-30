@@ -353,6 +353,7 @@ polymer_modulizer("nearby_share_receive_dialog") {
   js_file = "nearby_share_receive_dialog.js"
   html_file = "nearby_share_receive_dialog.html"
   html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites =
       os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
   auto_imports =

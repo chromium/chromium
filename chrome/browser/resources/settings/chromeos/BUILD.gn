@@ -16,10 +16,8 @@ preprocess_folder_v2 = "preprocess_v2"
 preprocess_folder_v3 = "preprocess_v3"
 
 preprocess_v2_manifest = "preprocessed_v2_manifest.json"
-preprocess_nearby_v2_manifest = "preprocessed_nearby_v2_manifest.json"
 preprocess_v3_manifest = "preprocessed_manifest.json"
 preprocess_gen_v3_manifest = "preprocessed_gen_manifest.json"
-preprocess_nearby_v3_manifest = "preprocessed_nearby_v3_manifest.json"
 preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
@@ -67,8 +65,8 @@ if (optimize_webui) {
 
     deps = [
       ":preprocess_mojo_v2",
-      ":preprocess_nearby_v2",
       ":preprocess_v2",
+      "../../nearby_share/shared:preprocess_v2",
     ]
   }
 
@@ -89,9 +87,9 @@ if (optimize_webui) {
     deps = [
       ":preprocess_gen_v3",
       ":preprocess_mojo_v3",
-      ":preprocess_nearby_v3",
       ":preprocess_v3",
       "../../../../../ui/webui/resources:preprocess",
+      "../../nearby_share/shared:preprocess_v3",
     ]
     excludes = [
       "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js",
@@ -211,9 +209,14 @@ generate_grd("build_grd") {
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
     "images/icon_add_cellular.svg",
+    "../../nearby_share/shared/nearby_share_pulse_animation.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":preprocess_external_mojo" ]
+  deps = [
+    ":preprocess_external_mojo",
+    "../../nearby_share:build_mojo_grdp",
+  ]
+  grdp_files = [ "$root_gen_dir/chrome/browser/resources/nearby_share/nearby_share_mojo_resources.grdp" ]
   manifest_files = [ "$target_gen_dir/$preprocess_external_mojo_manifest" ]
   resource_path_rewrites = [
     "os_settings_v3.html|chromeos/os_settings_v3.html",
@@ -221,6 +224,7 @@ generate_grd("build_grd") {
     "ui/gfx/image/mojom/image.mojom-lite.js|app-management/image.mojom-lite.js",
     "chrome/browser/ui/webui/app_management/app_management.mojom-lite.js|app-management/app_management.mojom-lite.js",
     "components/services/app_service/public/mojom/types.mojom-lite.js|app-management/types.mojom-lite.js",
+    "../../nearby_share/shared/nearby_share_pulse_animation.json|nearby_share_pulse_animation.json",
   ]
 
   if (optimize_webui) {
@@ -244,15 +248,17 @@ generate_grd("build_grd") {
     deps += [
       ":preprocess_gen_v3",
       ":preprocess_mojo_v3",
-      ":preprocess_nearby_v2",
-      ":preprocess_nearby_v3",
       ":preprocess_v2",
       ":preprocess_v3",
+      "../../nearby_share/shared:build_v2_grdp",
+      "../../nearby_share/shared:build_v3_grdp",
+    ]
+    grdp_files += [
+      "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v2.grdp",
+      "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp",
     ]
     manifest_files += [
       "$target_gen_dir/$preprocess_gen_v3_manifest",
-      "$target_gen_dir/$preprocess_nearby_v2_manifest",
-      "$target_gen_dir/$preprocess_nearby_v3_manifest",
       "$target_gen_dir/$preprocess_v2_manifest",
       "$target_gen_dir/$preprocess_v3_manifest",
       "$target_gen_dir/$preprocess_mojo_manifest",
@@ -976,46 +982,6 @@ preprocess_grit("preprocess_v2") {
     "settings_page_css.html",
     "settings_shared_css.html",
     "settings_vars_css.html",
-  ]
-}
-
-preprocess_grit("preprocess_nearby_v2") {
-  in_folder = "../../nearby_share/"
-  out_folder = "$target_gen_dir/$preprocess_folder_v2"
-  out_manifest = "$target_gen_dir/$preprocess_nearby_v2_manifest"
-  in_files = [
-    "shared/nearby_contact_manager.html",
-    "shared/nearby_contact_manager.js",
-    "shared/nearby_contact_visibility.html",
-    "shared/nearby_contact_visibility.js",
-    "shared/nearby_onboarding_page.html",
-    "shared/nearby_onboarding_page.js",
-    "shared/nearby_page_template.html",
-    "shared/nearby_page_template.js",
-    "shared/nearby_share_settings.html",
-    "shared/nearby_share_settings.js",
-    "shared/nearby_share_settings_behavior.html",
-    "shared/nearby_share_settings_behavior.js",
-    "shared/nearby_shared_icons.html",
-    "shared/nearby_visibility_page.html",
-    "shared/nearby_visibility_page.js",
-  ]
-}
-
-preprocess_grit("preprocess_nearby_v3") {
-  deps = [ "//chrome/browser/resources/nearby_share/shared:polymer3_elements" ]
-  in_folder = get_path_info("../../nearby_share/", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocess_folder_v3"
-  out_manifest = "$target_gen_dir/$preprocess_nearby_v3_manifest"
-  in_files = [
-    "shared/nearby_contact_manager.m.js",
-    "shared/nearby_contact_visibility.m.js",
-    "shared/nearby_onboarding_page.m.js",
-    "shared/nearby_page_template.m.js",
-    "shared/nearby_share_settings.m.js",
-    "shared/nearby_share_settings_behavior.m.js",
-    "shared/nearby_shared_icons.m.js",
-    "shared/nearby_visibility_page.m.js",
   ]
 }
 
