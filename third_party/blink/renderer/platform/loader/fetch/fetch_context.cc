@@ -45,7 +45,7 @@ mojom::FetchCacheMode FetchContext::ResourceRequestCachePolicy(
 }
 
 void FetchContext::PrepareRequest(ResourceRequest&,
-                                  const FetchInitiatorInfo&,
+                                  ResourceLoaderOptions&,
                                   WebScopedVirtualTimePauser&,
                                   ResourceType) {}
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -78,7 +79,7 @@ class WorkerFetchContext final : public BaseFetchContext {
 
   // FetchContext implementation:
   void PrepareRequest(ResourceRequest&,
-                      const FetchInitiatorInfo&,
+                      ResourceLoaderOptions&,
                       WebScopedVirtualTimePauser&,
                       ResourceType) override;
   void AddAdditionalRequestHeaders(ResourceRequest&) override;

@@ -20,4 +20,7 @@ specific_include_rules = {
   "dev_tools_emulator.h": [
     "+ui/base/pointer/pointer_device.h",
   ],
+  "inspector_emulation_agent_test.cc": [
+    "+media/media_buildflags.h",
+  ],
 }

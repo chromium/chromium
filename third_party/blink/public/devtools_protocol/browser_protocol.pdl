@@ -3310,6 +3310,17 @@ domain Emulation
   # Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
   experimental event virtualTimeBudgetExpired
 
+  # Enum of image types that can be disabled.
+  experimental type DisabledImageType extends string
+    enum
+      avif
+      webp
+
+  experimental command setDisabledImageTypes
+    parameters
+      # Image types to disable.
+      array of DisabledImageType imageTypes
+
   # Allows overriding user agent with the given string.
   command setUserAgentOverride
     parameters

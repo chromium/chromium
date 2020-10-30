@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -130,7 +131,8 @@ class TokenPreloadScanner::StartTagScanner {
                   MediaValuesCached* media_values,
                   SubresourceIntegrity::IntegrityFeatures features,
                   TokenPreloadScanner::ScannerType scanner_type,
-                  bool priority_hints_origin_trial_enabled)
+                  bool priority_hints_origin_trial_enabled,
+                  const HashSet<String>* disabled_image_types)
       : tag_impl_(tag_impl),
         link_is_style_sheet_(false),
         link_is_preconnect_(false),
@@ -160,7 +162,8 @@ class TokenPreloadScanner::StartTagScanner {
             HTMLImageElement::LazyLoadDimensionType::kNotAbsolute),
         scanner_type_(scanner_type),
         priority_hints_origin_trial_enabled_(
-            priority_hints_origin_trial_enabled) {
+            priority_hints_origin_trial_enabled),
+        disabled_image_types_(disabled_image_types) {
     if (Match(tag_impl_, html_names::kImgTag) ||
         Match(tag_impl_, html_names::kSourceTag) ||
         Match(tag_impl_, html_names::kLinkTag)) {
@@ -499,7 +502,8 @@ class TokenPreloadScanner::StartTagScanner {
       // FIXME - Don't match media multiple times.
       matched_ &= MediaAttributeMatches(*media_values_, attribute_value);
     } else if (Match(attribute_name, html_names::kTypeAttr)) {
-      matched_ &= HTMLImageElement::SupportedImageType(attribute_value);
+      matched_ &= HTMLImageElement::SupportedImageType(attribute_value,
+                                                       disabled_image_types_);
     }
   }
 
@@ -632,8 +636,10 @@ class TokenPreloadScanner::StartTagScanner {
              MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
                  ContentType(type_attribute_value_).GetType());
     } else if (link_is_preload_) {
-      if (type == ResourceType::kImage)
-        return HTMLImageElement::SupportedImageType(type_attribute_value_);
+      if (type == ResourceType::kImage) {
+        return HTMLImageElement::SupportedImageType(type_attribute_value_,
+                                                    disabled_image_types_);
+      }
       if (type_attribute_value_.IsEmpty())
         return true;
       String type_from_attribute = ContentType(type_attribute_value_).GetType();
@@ -750,6 +756,7 @@ class TokenPreloadScanner::StartTagScanner {
   TokenPreloadScanner::ScannerType scanner_type_;
   // For explanation, see TokenPreloadScanner's declaration.
   bool priority_hints_origin_trial_enabled_;
+  const HashSet<String>* disabled_image_types_;
 };
 
 TokenPreloadScanner::TokenPreloadScanner(
@@ -985,7 +992,8 @@ void TokenPreloadScanner::ScanCommon(
 
       StartTagScanner scanner(
           tag_impl, media_values_, document_parameters_->integrity_features,
-          scanner_type_, priority_hints_origin_trial_enabled_);
+          scanner_type_, priority_hints_origin_trial_enabled_,
+          &document_parameters_->disabled_image_types);
       scanner.ProcessAttributes(token.Attributes());
       // TODO(yoav): ViewportWidth is currently racy and might be zero in some
       // cases, at least in tests. That problem will go away once
@@ -1098,6 +1106,8 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
+  probe::GetDisabledImageTypes(document->GetExecutionContext(),
+                               &disabled_image_types);
 }
 
 }  // namespace blink

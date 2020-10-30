@@ -66,8 +66,13 @@ class NullImageResourceInfo final
 
   bool IsAdResource() const override { return false; }
 
+  const HashSet<String>& GetUnsupportedImageMimeTypes() const override {
+    return unsupported_image_mime_types_;
+  }
+
   const KURL url_;
   const ResourceResponse response_;
+  const HashSet<String> unsupported_image_mime_types_;
 };
 
 }  // namespace
@@ -417,6 +422,16 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       // causes observers to repaint, which will force that chunk to decode.
       if (size_available_ == Image::kSizeUnavailable && !all_data_received)
         return UpdateImageResult::kNoDecodeError;
+
+      if (image_) {
+        // Filename extension is set by the image decoder based on the actual
+        // image content.
+        String file_extension = image_->FilenameExtension();
+        if (info_->GetUnsupportedImageMimeTypes().Contains("image/" +
+                                                           file_extension)) {
+          return UpdateImageResult::kShouldDecodeError;
+        }
+      }
 
       // As per spec, zero intrinsic size SVG is a valid image so do not
       // consider such an image as DecodeError.

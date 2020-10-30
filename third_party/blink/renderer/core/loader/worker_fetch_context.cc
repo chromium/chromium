@@ -203,11 +203,10 @@ void WorkerFetchContext::AddConsoleMessage(ConsoleMessage* message) const {
   return global_scope_->AddConsoleMessage(message);
 }
 
-void WorkerFetchContext::PrepareRequest(
-    ResourceRequest& request,
-    const FetchInitiatorInfo& initiator_info,
-    WebScopedVirtualTimePauser&,
-    ResourceType resource_type) {
+void WorkerFetchContext::PrepareRequest(ResourceRequest& request,
+                                        ResourceLoaderOptions& options,
+                                        WebScopedVirtualTimePauser&,
+                                        ResourceType resource_type) {
   String user_agent = global_scope_->UserAgent();
   probe::ApplyUserAgentOverride(Probe(), &user_agent);
   DCHECK(!user_agent.IsNull());
@@ -216,8 +215,7 @@ void WorkerFetchContext::PrepareRequest(
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);
 
-  probe::PrepareRequest(Probe(), nullptr, request, initiator_info,
-                        resource_type);
+  probe::PrepareRequest(Probe(), nullptr, request, options, resource_type);
 }
 
 void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {

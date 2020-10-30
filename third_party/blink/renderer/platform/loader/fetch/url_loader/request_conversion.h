@@ -7,11 +7,15 @@
 
 // This file consists of request conversion functions between blink and network.
 
+#include "third_party/blink/renderer/platform/platform_export.h"
+
 namespace network {
 struct ResourceRequest;
 }  // namespace network
 
 namespace blink {
+
+PLATFORM_EXPORT const char* ImageAcceptHeader();
 
 class ResourceRequestHead;
 class ResourceRequestBody;

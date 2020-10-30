@@ -803,7 +803,7 @@ bool ResourceLoader::WillFollowRedirect(
 
   WebScopedVirtualTimePauser unused_virtual_time_pauser;
   // TODO(yoichio): Have PrepareRequest use ResourceRequestHead.
-  Context().PrepareRequest(*new_request, resource_->Options().initiator_info,
+  Context().PrepareRequest(*new_request, resource_->MutableOptions(),
                            unused_virtual_time_pauser, resource_->GetType());
   DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {

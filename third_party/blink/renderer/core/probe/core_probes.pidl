@@ -91,7 +91,7 @@ interface CoreProbes {
   void ApplyUserAgentMetadataOverride(CoreProbeSink*, base::Optional<blink::UserAgentMetadata>* ua_metadata_override);
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const FetchInitiatorInfo&, ResourceRequestBlockedReason, ResourceType);
   void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
-  void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, const FetchInitiatorInfo&, ResourceType);
+  void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);
   void WillSendRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const FetchInitiatorInfo&, ResourceType);
   void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
   void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
@@ -184,4 +184,5 @@ interface CoreProbes {
   void DidMutateStyleSheet(Document*, CSSStyleSheet* style_sheet);
   void LocalFontsEnabled(ExecutionContext*, bool* result);
   void DidUpdateComputedStyle([Keep] Element*, const ComputedStyle* old_style, const ComputedStyle* new_style);
+  void GetDisabledImageTypes(ExecutionContext*, HashSet<String>* result);
 }

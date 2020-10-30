@@ -360,7 +360,7 @@ mojom::FetchCacheMode FrameFetchContext::ResourceRequestCachePolicy(
 
 void FrameFetchContext::PrepareRequest(
     ResourceRequest& request,
-    const FetchInitiatorInfo& initiator_info,
+    ResourceLoaderOptions& options,
     WebScopedVirtualTimePauser& virtual_time_pauser,
     ResourceType resource_type) {
   // TODO(yhirano): Clarify which statements are actually needed when
@@ -401,7 +401,7 @@ void FrameFetchContext::PrepareRequest(
         WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
   }
 
-  probe::PrepareRequest(Probe(), document_loader_, request, initiator_info,
+  probe::PrepareRequest(Probe(), document_loader_, request, options,
                         resource_type);
 
   // ServiceWorker hook ups.

@@ -58,6 +58,8 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
 
   virtual bool IsAdResource() const = 0;
 
+  virtual const HashSet<String>& GetUnsupportedImageMimeTypes() const = 0;
+
   void Trace(Visitor* visitor) const override {}
 };
 

@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
@@ -335,11 +336,16 @@ String HTMLImageElement::AltText() const {
   return FastGetAttribute(html_names::kTitleAttr);
 }
 
-bool HTMLImageElement::SupportedImageType(const String& type) {
+bool HTMLImageElement::SupportedImageType(
+    const String& type,
+    const HashSet<String>* disabled_image_types) {
   String trimmed_type = ContentType(type).GetType();
   // An empty type attribute is implicitly supported.
   if (trimmed_type.IsEmpty())
     return true;
+  if (disabled_image_types && disabled_image_types->Contains(trimmed_type)) {
+    return false;
+  }
   return MIMETypeRegistry::IsSupportedImagePrefixedMIMEType(trimmed_type);
 }
 
@@ -350,6 +356,8 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
   source_ = nullptr;
   if (!parent || !IsA<HTMLPictureElement>(*parent))
     return ImageCandidate();
+  HashSet<String> disabled_image_types;
+  probe::GetDisabledImageTypes(GetExecutionContext(), &disabled_image_types);
   for (Node* child = parent->firstChild(); child;
        child = child->nextSibling()) {
     if (child == this)
@@ -367,7 +375,7 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
     if (srcset.IsEmpty())
       continue;
     String type = source->FastGetAttribute(html_names::kTypeAttr);
-    if (!SupportedImageType(type))
+    if (!SupportedImageType(type, &disabled_image_types))
       continue;
 
     if (!source->MediaQueryMatches())

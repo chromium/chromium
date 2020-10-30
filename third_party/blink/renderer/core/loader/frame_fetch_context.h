@@ -86,7 +86,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceType,
       FetchParameters::DeferOption) const override;
   void PrepareRequest(ResourceRequest&,
-                      const FetchInitiatorInfo&,
+                      ResourceLoaderOptions&,
                       WebScopedVirtualTimePauser&,
                       ResourceType) override;
 

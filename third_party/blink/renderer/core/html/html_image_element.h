@@ -181,7 +181,8 @@ class CORE_EXPORT HTMLImageElement final
   void SetIsAdRelated() { is_ad_related_ = true; }
   bool IsAdRelated() const override { return is_ad_related_; }
 
-  static bool SupportedImageType(const String& type);
+  static bool SupportedImageType(const String& type,
+                                 const HashSet<String>* disabled_image_types);
 
  protected:
   // Controls how an image element appears in the layout. See:

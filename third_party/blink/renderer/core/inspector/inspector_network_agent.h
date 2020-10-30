@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace network {
@@ -97,7 +98,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                                  ResourceLoadPriority);
   void PrepareRequest(DocumentLoader*,
                       ResourceRequest&,
-                      const FetchInitiatorInfo&,
+                      ResourceLoaderOptions&,
                       ResourceType);
   void WillSendRequest(uint64_t identifier,
                        DocumentLoader*,

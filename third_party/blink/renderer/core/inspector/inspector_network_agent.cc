@@ -1127,13 +1127,12 @@ void InspectorNetworkAgent::SetDevToolsIds(
                                                       request.InspectorId()));
 }
 
-void InspectorNetworkAgent::PrepareRequest(
-    DocumentLoader* loader,
-    ResourceRequest& request,
-    const FetchInitiatorInfo& initiator_info,
-    ResourceType resource_type) {
+void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
+                                           ResourceRequest& request,
+                                           ResourceLoaderOptions& options,
+                                           ResourceType resource_type) {
   // Ignore the request initiated internally.
-  if (initiator_info.name == fetch_initiator_type_names::kInternal)
+  if (options.initiator_info.name == fetch_initiator_type_names::kInternal)
     return;
 
   if (!extra_request_headers_.IsEmpty()) {

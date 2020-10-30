@@ -135,6 +135,10 @@ class ImageResource::ImageResourceInfoImpl final
     return resource_->GetResourceRequest().IsAdResource();
   }
 
+  const HashSet<String>& GetUnsupportedImageMimeTypes() const override {
+    return resource_->Options().unsupported_image_mime_types;
+  }
+
   const Member<ImageResource> resource_;
 };
 

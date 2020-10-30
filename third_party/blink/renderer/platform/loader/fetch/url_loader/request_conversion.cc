@@ -35,10 +35,6 @@
 
 namespace blink {
 
-namespace {
-
-constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
-
 const char* ImageAcceptHeader() {
   static constexpr char kImageAcceptHeaderWithAvif[] =
       "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
@@ -52,6 +48,10 @@ const char* ImageAcceptHeader() {
 #endif
   return header;
 }
+
+namespace {
+
+constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
 
 // TODO(yhirano): Unify these with variables in
 // content/public/common/content_constants.h.
@@ -375,8 +375,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
                             kStylesheetAcceptHeader);
   } else if (resource_type == mojom::ResourceType::kImage ||
              resource_type == mojom::ResourceType::kFavicon) {
-    dest->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                            ImageAcceptHeader());
+    dest->headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
+                                     ImageAcceptHeader());
   } else {
     // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
     // manually set an accept header on an XHR.

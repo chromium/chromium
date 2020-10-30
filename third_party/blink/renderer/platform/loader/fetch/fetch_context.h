@@ -92,13 +92,13 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   // This internally dispatches WebLocalFrameClient::WillSendRequest and hooks
   // request interceptors like ServiceWorker and ApplicationCache.
-  // This may modify the request.
+  // This may modify the request and ResourceLoaderOptions.
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to
   // |virtual_time_pauser|.
   // This is called on initial and every redirect request.
   virtual void PrepareRequest(ResourceRequest&,
-                              const FetchInitiatorInfo&,
+                              ResourceLoaderOptions&,
                               WebScopedVirtualTimePauser& virtual_time_pauser,
                               ResourceType);
 

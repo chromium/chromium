@@ -119,6 +119,7 @@
         "ApplyUserAgentMetadataOverride",
         "FrameStartedLoading",
         "PrepareRequest",
+        "GetDisabledImageTypes",
       ]
     },
     InspectorLayerTreeAgent: {

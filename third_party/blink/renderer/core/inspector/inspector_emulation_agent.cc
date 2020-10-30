@@ -19,7 +19,9 @@
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
@@ -58,7 +60,8 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       virtual_time_task_starvation_count_(&agent_state_, /*default_value=*/0),
       wait_for_navigation_(&agent_state_, /*default_value=*/false),
       emulate_focus_(&agent_state_, /*default_value=*/false),
-      timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()) {}
+      timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
+      disabled_image_types_(&agent_state_, /*default_value=*/false) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -179,6 +182,7 @@ Response InspectorEmulationAgent::disable() {
   setCPUThrottlingRate(1);
   setFocusEmulationEnabled(false);
   setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
+  disabled_image_types_.Clear();
   return Response::Success();
 }
 
@@ -442,11 +446,24 @@ void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
   }
 }
 
-void InspectorEmulationAgent::PrepareRequest(
-    DocumentLoader* loader,
-    ResourceRequest& request,
-    const FetchInitiatorInfo& initiator_info,
-    ResourceType resource_type) {
+AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
+    const HashSet<String>& disabled_image_types) {
+  String header(ImageAcceptHeader());
+  for (String type : disabled_image_types) {
+    // The header string is expected to be like
+    // `image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8` and is
+    // expected to be always ending with `image/*,*/*;q=xxx`, therefore, to
+    // remove a type we replace `image/x,` with empty string. Only webp and avif
+    // types can be disabled.
+    header.Replace(String(type + ","), "");
+  }
+  return AtomicString(header);
+}
+
+void InspectorEmulationAgent::PrepareRequest(DocumentLoader* loader,
+                                             ResourceRequest& request,
+                                             ResourceLoaderOptions& options,
+                                             ResourceType resource_type) {
   if (!accept_language_override_.Get().IsEmpty() &&
       request.HttpHeaderField("Accept-Language").IsEmpty()) {
     request.SetHttpHeaderField(
@@ -454,6 +471,19 @@ void InspectorEmulationAgent::PrepareRequest(
         AtomicString(network_utils::GenerateAcceptLanguageHeader(
             accept_language_override_.Get())));
   }
+
+  if (resource_type != ResourceType::kImage || disabled_image_types_.IsEmpty())
+    return;
+
+  for (String type : disabled_image_types_.Keys()) {
+    options.unsupported_image_mime_types.insert(type);
+  }
+
+  request.SetHTTPAccept(
+      OverrideAcceptImageHeader(options.unsupported_image_mime_types));
+  // Bypassing caching to prevent the use of the previously loaded and cached
+  // images.
+  request.SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
 }
 
 Response InspectorEmulationAgent::setNavigatorOverrides(
@@ -625,6 +655,14 @@ Response InspectorEmulationAgent::setTimezoneOverride(
   return Response::Success();
 }
 
+void InspectorEmulationAgent::GetDisabledImageTypes(HashSet<String>* result) {
+  if (disabled_image_types_.IsEmpty())
+    return;
+
+  for (String type : disabled_image_types_.Keys())
+    result->insert(type);
+}
+
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
   if (!accept_language_override_.Get().IsEmpty())
     *accept_lang = accept_language_override_.Get();
@@ -662,6 +700,26 @@ Response InspectorEmulationAgent::AssertPage() {
 void InspectorEmulationAgent::Trace(Visitor* visitor) const {
   visitor->Trace(web_local_frame_);
   InspectorBaseAgent::Trace(visitor);
+}
+
+protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
+    std::unique_ptr<protocol::Array<protocol::Emulation::DisabledImageType>>
+        disabled_types) {
+  if (disabled_types->size() > 0 && !enabled_)
+    InnerEnable();
+  disabled_image_types_.Clear();
+  String prefix = "image/";
+  namespace DisabledImageTypeEnum = protocol::Emulation::DisabledImageTypeEnum;
+  for (protocol::Emulation::DisabledImageType type : *disabled_types) {
+    if (DisabledImageTypeEnum::Avif == type ||
+        DisabledImageTypeEnum::Webp == type) {
+      disabled_image_types_.Set(prefix + type, true);
+      continue;
+    }
+    disabled_image_types_.Clear();
+    return Response::InvalidParams("Invalid image type");
+  }
+  return Response::Success();
 }
 
 }  // namespace blink
