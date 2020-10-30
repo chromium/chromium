@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "net/base/idempotency.h"
 #include "net/base/request_priority.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
@@ -149,7 +150,8 @@ class CronetURLRequest {
                    bool traffic_stats_tag_set,
                    int32_t traffic_stats_tag,
                    bool traffic_stats_uid_set,
-                   int32_t traffic_stats_uid);
+                   int32_t traffic_stats_uid,
+                   net::Idempotency idempotency);
 
   // Methods called prior to Start are never called on network thread.
 
@@ -207,7 +209,8 @@ class CronetURLRequest {
                  bool traffic_stats_tag_set,
                  int32_t traffic_stats_tag,
                  bool traffic_stats_uid_set,
-                 int32_t traffic_stats_uid);
+                 int32_t traffic_stats_uid,
+                 net::Idempotency idempotency);
 
     // Invoked on the network thread.
     ~NetworkTasks() override;
@@ -285,6 +288,8 @@ class CronetURLRequest {
     const bool traffic_stats_uid_set_;
     // UID to be applied to URLRequest.
     const int32_t traffic_stats_uid_;
+    // Idempotency of the request.
+    const net::Idempotency idempotency_;
 
     scoped_refptr<net::IOBuffer> read_buffer_;
     std::unique_ptr<net::URLRequest> url_request_;
