@@ -44,6 +44,38 @@ constexpr int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
 static_assert(base::size(kTableSarWidth) == base::size(kTableSarHeight),
               "sar tables must have the same size");
 
+// Converts [|start|, |end|) range with |encrypted_ranges| into a vector of
+// SubsampleEntry. |encrypted_ranges| must be with in the range defined by
+// |start| and |end|.
+// It is OK to pass in empty |encrypted_ranges|; this will return a vector
+// with single SubsampleEntry with clear_bytes set to the size of the buffer.
+std::vector<SubsampleEntry> EncryptedRangesToSubsampleEntry(
+    const uint8_t* start,
+    const uint8_t* end,
+    const Ranges<const uint8_t*>& encrypted_ranges) {
+  std::vector<SubsampleEntry> subsamples(encrypted_ranges.size());
+  const uint8_t* cur = start;
+  for (size_t i = 0; i < encrypted_ranges.size(); ++i) {
+    const uint8_t* encrypted_start = encrypted_ranges.start(i);
+    DCHECK_GE(encrypted_start, cur)
+        << "Encrypted range started before the current buffer pointer.";
+    subsamples[i].clear_bytes = encrypted_start - cur;
+
+    const uint8_t* encrypted_end = encrypted_ranges.end(i);
+    subsamples[i].cypher_bytes = encrypted_end - encrypted_start;
+
+    cur = encrypted_end;
+    DCHECK_LE(cur, end) << "Encrypted range is outside the buffer range.";
+  }
+
+  // If there is more data in the buffer but not covered by encrypted_ranges,
+  // then it must be in the clear.
+  if (cur < end)
+    subsamples.emplace_back(end - cur, 0);
+
+  return subsamples;
+}
+
 void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
                                   int size_id,
                                   int matrix_id) {
@@ -278,6 +310,7 @@ void H265Parser::Reset() {
   stream_ = NULL;
   bytes_left_ = 0;
   encrypted_ranges_.clear();
+  previous_nalu_range_.clear();
 }
 
 void H265Parser::SetStream(const uint8_t* stream, off_t stream_size) {
@@ -294,6 +327,7 @@ void H265Parser::SetEncryptedStream(
 
   stream_ = stream;
   bytes_left_ = stream_size;
+  previous_nalu_range_.clear();
 
   encrypted_ranges_.clear();
   const uint8_t* start = stream;
@@ -435,6 +469,8 @@ H265Parser::Result H265Parser::AdvanceToNextNALU(H265NALU* nalu) {
            << " at: " << reinterpret_cast<const void*>(nalu->data)
            << " size: " << nalu->size;
 
+  previous_nalu_range_.clear();
+  previous_nalu_range_.Add(nalu->data, nalu->data + nalu->size);
   return kOk;
 }
 
@@ -1208,6 +1244,16 @@ VideoCodecProfile H265Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
       DVLOG(1) << "unknown video profile: " << profile_idc;
       return VIDEO_CODEC_PROFILE_UNKNOWN;
   }
+}
+
+std::vector<SubsampleEntry> H265Parser::GetCurrentSubsamples() {
+  DCHECK_EQ(previous_nalu_range_.size(), 1u)
+      << "This should only be called after a "
+         "successful call to AdvanceToNextNalu()";
+
+  auto intersection = encrypted_ranges_.IntersectionWith(previous_nalu_range_);
+  return EncryptedRangesToSubsampleEntry(
+      previous_nalu_range_.start(0), previous_nalu_range_.end(0), intersection);
 }
 
 H265Parser::Result H265Parser::ParseProfileTierLevel(

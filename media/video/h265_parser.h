@@ -482,6 +482,12 @@ class MEDIA_EXPORT H265Parser {
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
+  // The return value of this method changes for every successful call to
+  // AdvanceToNextNALU().
+  // This returns the subsample information for the last NALU that was output
+  // from AdvanceToNextNALU().
+  std::vector<SubsampleEntry> GetCurrentSubsamples();
+
  private:
   // Move the stream pointer to the beginning of the next NALU,
   // i.e. pointing at the next start code.
@@ -532,6 +538,10 @@ class MEDIA_EXPORT H265Parser {
 
   // Ranges of encrypted bytes in the buffer passed to SetEncryptedStream().
   Ranges<const uint8_t*> encrypted_ranges_;
+
+  // This contains the range of the previous NALU found in
+  // AdvanceToNextNalu(). Holds exactly one range.
+  Ranges<const uint8_t*> previous_nalu_range_;
 
   DISALLOW_COPY_AND_ASSIGN(H265Parser);
 };
