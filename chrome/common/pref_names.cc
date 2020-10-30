@@ -717,6 +717,12 @@ const char kForceMaximizeOnFirstRun[] = "ui.force_maximize_on_first_run";
 // properties like whether it's meant for corporate usage.
 const char kPlatformKeys[] = "platform_keys";
 
+// A boolean preference that will be registered in local_state prefs to track
+// migration of permissions on device-wide key pairs and will be registered in
+// Profile prefs to track migration of permissions on user-owned key pairs.
+const char kKeyPermissionsOneTimeMigrationDone[] =
+    "key_permissions_one_time_migration_done";
+
 // A boolean pref. If set to true, the Unified Desktop feature is made
 // available and turned on by default, which allows applications to span
 // multiple screens. Users may turn the feature off and on in the settings

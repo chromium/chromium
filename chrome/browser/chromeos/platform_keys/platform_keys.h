@@ -19,7 +19,7 @@ namespace platform_keys {
 enum class KeyType { kRsassaPkcs1V15, kEcdsa };
 
 // Supported key attribute types.
-enum class KeyAttributeType { kCertificateProvisioningId };
+enum class KeyAttributeType { kCertificateProvisioningId, kKeyPermissions };
 
 // Supported hash algorithms.
 enum HashAlgorithm {

@@ -115,7 +115,6 @@ void DidGetCertDbOnUiThread(base::Optional<TokenId> token_id,
                             NSSOperationState* state,
                             net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   if (!cert_db) {
     LOG(ERROR) << "Couldn't get NSSCertDatabase.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
@@ -1391,6 +1390,8 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeTypeForSoftoken(KeyAttributeType type) {
   switch (type) {
     case KeyAttributeType::kCertificateProvisioningId:
       return CKA_START_DATE;
+    case KeyAttributeType::kKeyPermissions:
+      return CKA_END_DATE;
   }
 }
 
@@ -1405,6 +1406,8 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeType(KeyAttributeType type,
   switch (type) {
     case KeyAttributeType::kCertificateProvisioningId:
       return pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId;
+    case KeyAttributeType::kKeyPermissions:
+      return pkcs11_custom_attributes::kCkaChromeOsKeyPermissions;
   }
 }
 
@@ -1426,11 +1429,9 @@ void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
   // This SECItem will point to data owned by |state| so it is not necessary to
   // use ScopedSECItem.
   SECItem attribute_value;
-
   attribute_value.data = reinterpret_cast<unsigned char*>(
       const_cast<char*>(state->attribute_value_.data()));
   attribute_value.len = state->attribute_value_.size();
-
   if (PK11_WriteRawAttribute(
           /*objType=*/PK11_TypePrivKey, private_key.get(),
           state->attribute_type_, &attribute_value) != SECSuccess) {

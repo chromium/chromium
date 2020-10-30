@@ -16,6 +16,7 @@
 #include "chrome/browser/availability/availability_prober.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/policy/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
@@ -667,6 +668,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   chromeos::NetworkThrottlingObserver::RegisterPrefs(registry);
   chromeos::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
+  chromeos::platform_keys::KeyPermissionsManagerImpl::RegisterLocalStatePrefs(
+      registry);
   chromeos::power::auto_screen_brightness::MetricsReporter::
       RegisterLocalStatePrefs(registry);
   chromeos::Preferences::RegisterPrefs(registry);

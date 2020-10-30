@@ -60,6 +60,7 @@ source_set("chromeos") {
     ":backdrop_wallpaper_proto",
     ":device_configuration_proto",
     ":device_policy_remover_generated",
+    ":key_permissions_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":user_activity_event_proto",
@@ -2029,6 +2030,9 @@ source_set("chromeos") {
     "platform_keys/key_permissions/extension_key_permissions_service.h",
     "platform_keys/key_permissions/extension_key_permissions_service_factory.cc",
     "platform_keys/key_permissions/extension_key_permissions_service_factory.h",
+    "platform_keys/key_permissions/key_permissions_manager.h",
+    "platform_keys/key_permissions/key_permissions_manager_impl.cc",
+    "platform_keys/key_permissions/key_permissions_manager_impl.h",
     "platform_keys/key_permissions/key_permissions_policy_handler.cc",
     "platform_keys/key_permissions/key_permissions_policy_handler.h",
     "platform_keys/key_permissions/key_permissions_pref_util.cc",
@@ -2039,6 +2043,8 @@ source_set("chromeos") {
     "platform_keys/key_permissions/key_permissions_service_factory.h",
     "platform_keys/key_permissions/key_permissions_service_impl.cc",
     "platform_keys/key_permissions/key_permissions_service_impl.h",
+    "platform_keys/key_permissions/user_private_token_kpm_service_factory.cc",
+    "platform_keys/key_permissions/user_private_token_kpm_service_factory.h",
     "platform_keys/platform_keys.cc",
     "platform_keys/platform_keys.h",
     "platform_keys/platform_keys_service.cc",
@@ -3138,6 +3144,10 @@ static_library("test_support") {
     "login/test/wizard_controller_screen_exit_waiter.h",
     "login/version_updater/mock_version_updater_delegate.cc",
     "login/version_updater/mock_version_updater_delegate.h",
+    "platform_keys/key_permissions/fake_user_private_token_kpm_service.cc",
+    "platform_keys/key_permissions/fake_user_private_token_kpm_service.h",
+    "platform_keys/key_permissions/mock_key_permissions_manager.cc",
+    "platform_keys/key_permissions/mock_key_permissions_manager.h",
     "platform_keys/key_permissions/mock_key_permissions_service.cc",
     "platform_keys/key_permissions/mock_key_permissions_service.h",
     "platform_keys/mock_platform_keys_service.cc",
@@ -4006,6 +4016,13 @@ proto_library("backdrop_wallpaper_proto") {
 proto_library("device_configuration_proto") {
   sources = [ "login/screens/recommend_apps/device_configuration.proto" ]
   generate_python = false
+}
+
+proto_library("key_permissions_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/chaps/key_permissions.proto" ]
+  generate_python = false
+
+  proto_out_dir = "chrome/browser/chromeos/platform_keys/key_permissions"
 }
 
 proto_library("print_job_info_proto") {

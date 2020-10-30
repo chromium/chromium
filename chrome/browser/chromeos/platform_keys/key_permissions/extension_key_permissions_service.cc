@@ -284,16 +284,6 @@ void ExtensionKeyPermissionsService::RegisterKeyForCorporateUsageWithLocations(
   matching_entry->sign_once = true;
   WriteToStateStore();
 
-  // Only register the key as corporate in the profile prefs if it is on the
-  // user slot. Keys on the system slot are implicitly corporate. We have still
-  // stored the sign_once permission, so the enrolling extension in the same
-  // profile can use the key for signing once in order to build a CSR even if it
-  // doesn't have permission to use corporate keys.
-  if (!IsKeyOnUserSlot(key_locations)) {
-    std::move(callback).Run(Status::kSuccess);
-    return;
-  }
-
   key_permissions_service_->SetCorporateKey(public_key_spki_der,
                                             std::move(callback));
 }

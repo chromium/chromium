@@ -8,6 +8,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/test/gmock_callback_support.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -18,6 +20,8 @@
 #include "extensions/browser/state_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
 
 namespace chromeos {
 namespace platform_keys {
@@ -117,15 +121,18 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     extensions_state_store_ = extension_system->state_store();
 
     platform_keys_service_ = std::make_unique<MockPlatformKeysService>();
+    key_permissions_manager_ = std::make_unique<MockKeyPermissionsManager>();
+
     key_permissions_service_ = std::make_unique<KeyPermissionsServiceImpl>(
         /*profile_is_managed=*/true, profile_->GetPrefs(), policy_service_,
-        extensions_state_store_, platform_keys_service_.get());
+        extensions_state_store_, platform_keys_service_.get(),
+        key_permissions_manager_.get());
   }
 
  protected:
   void SetKeyLocations(const std::string& public_key,
                        const std::vector<TokenId>& key_locations) {
-    ON_CALL(*platform_keys_service_, GetKeyLocations(public_key, testing::_))
+    ON_CALL(*platform_keys_service_, GetKeyLocations(public_key, _))
         .WillByDefault(testing::Invoke(
             [key_locations](const std::string& public_key_spki_der,
                             GetKeyLocationsCallback callback) {
@@ -143,6 +150,9 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
   }
 
   void SetCorporateKey(const std::string& public_key) {
+    EXPECT_CALL(*key_permissions_manager_, AllowKeyForUsage(_, _, _))
+        .Times(1)
+        .WillOnce(base::test::RunOnceCallback<0>(Status::kSuccess));
     SetCorporateKeyExecutionWaiter set_corporate_key_waiter;
     key_permissions_service_->SetCorporateKey(
         public_key, set_corporate_key_waiter.GetCallback());
@@ -157,8 +167,8 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
   extensions::StateStore* extensions_state_store_ = nullptr;
 
   std::unique_ptr<KeyPermissionsServiceImpl> key_permissions_service_;
-  std::unique_ptr<platform_keys::MockPlatformKeysService>
-      platform_keys_service_;
+  std::unique_ptr<MockPlatformKeysService> platform_keys_service_;
+  std::unique_ptr<MockKeyPermissionsManager> key_permissions_manager_;
 };
 
 TEST_F(KeyPermissionsServiceImplTest, SystemTokenKeyIsImplicitlyCorporate) {
