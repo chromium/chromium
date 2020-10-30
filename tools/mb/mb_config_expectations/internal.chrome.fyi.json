@@ -43,6 +43,7 @@
   },
   "lorenz-graph-dbg": {
     "gn_args": {
+      "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,

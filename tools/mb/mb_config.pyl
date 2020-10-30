@@ -694,7 +694,7 @@
       'chromeos-amd64-generic-lacros-internal-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-autofill-captured-sites-rel': 'release_bot',
       'linux-password-manager-captured-sites-rel': 'release_bot',
-      'lorenz-graph-dbg': 'android_debug_static_bot',
+      'lorenz-graph-dbg': 'android_debug_static_external_bot',
       'mac-autofill-captured-sites-rel': 'release_bot',
       'win-autofill-captured-sites-rel': 'release_bot',
       'win-celab-rel': 'official_celab_release_bot',
@@ -1256,6 +1256,10 @@
 
     'android_debug_static_bot': [
       'android', 'debug_static_bot',
+    ],
+
+    'android_debug_static_external_bot': [
+      'android', 'debug_static_bot', 'android_external'
     ],
 
     'android_debug_static_bot_arm64': [
@@ -2502,6 +2506,10 @@
     # which are not allowed to have proprietary codecs enabled.
     'android': {
       'mixins': ['android_without_codecs', 'chrome_with_codecs'],
+    },
+
+    'android_external': {
+      'gn_args': 'enable_chrome_android_internal=false',
     },
 
     # It's significantly faster to build without lint and errorprone.
