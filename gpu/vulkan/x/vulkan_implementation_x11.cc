@@ -103,9 +103,8 @@ bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
   if (use_swiftshader())
     return true;
   auto* connection = x11::Connection::Get();
-  auto* display = connection->display();
   return vkGetPhysicalDeviceXlibPresentationSupportKHR(
-      device, queue_family_index, display,
+      device, queue_family_index, connection->GetXlibDisplay(),
       static_cast<VisualID>(connection->default_root_visual().visual_id));
 }
 

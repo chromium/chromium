@@ -156,7 +156,7 @@ bool InitializeGLOneOffPlatformX11() {
       gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilX11::GetInstance());
       if (!GLSurfaceEGL::InitializeOneOff(
               EGLDisplayPlatform(reinterpret_cast<EGLNativeDisplayType>(
-                  x11::Connection::Get()->display())))) {
+                  x11::Connection::Get()->GetXlibDisplay().display())))) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return false;
       }

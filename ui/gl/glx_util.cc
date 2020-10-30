@@ -84,8 +84,8 @@ GLXFBConfig GetGlxFbConfigForXProtoFbConfig(x11::Connection* connection,
   int attrib_list[] = {GLX_FBCONFIG_ID, static_cast<int>(xproto_config), 0};
   int nitems = 0;
   GLXFBConfig* glx_configs =
-      glXChooseFBConfig(connection->display(), connection->DefaultScreenId(),
-                        attrib_list, &nitems);
+      glXChooseFBConfig(connection->GetXlibDisplay(),
+                        connection->DefaultScreenId(), attrib_list, &nitems);
   DCHECK_EQ(nitems, 1);
   DCHECK(glx_configs);
   GLXFBConfig glx_config = glx_configs[0];

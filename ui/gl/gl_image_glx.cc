@@ -37,8 +37,11 @@ GLImageGLX::GLImageGLX(const gfx::Size& size, gfx::BufferFormat format)
     : glx_pixmap_(0), size_(size), format_(format) {}
 
 GLImageGLX::~GLImageGLX() {
-  if (glx_pixmap_)
-    glXDestroyGLXPixmap(x11::Connection::Get()->display(), glx_pixmap_);
+  if (glx_pixmap_) {
+    glXDestroyGLXPixmap(
+        x11::Connection::Get()->GetXlibDisplay(x11::XlibDisplayType::kFlushing),
+        glx_pixmap_);
+  }
 }
 
 bool GLImageGLX::Initialize(x11::Pixmap pixmap) {
@@ -52,8 +55,9 @@ bool GLImageGLX::Initialize(x11::Pixmap pixmap) {
 
   int pixmap_attribs[] = {GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
                           GLX_TEXTURE_FORMAT_EXT, TextureFormat(format_), 0};
-  glx_pixmap_ = glXCreatePixmap(x11::Connection::Get()->display(), config,
-                                static_cast<::Pixmap>(pixmap), pixmap_attribs);
+  glx_pixmap_ = glXCreatePixmap(
+      x11::Connection::Get()->GetXlibDisplay(x11::XlibDisplayType::kSyncing),
+      config, static_cast<::Pixmap>(pixmap), pixmap_attribs);
   if (!glx_pixmap_) {
     DVLOG(0) << "glXCreatePixmap failed.";
     return false;
@@ -86,8 +90,9 @@ bool GLImageGLX::BindTexImage(unsigned target) {
   if (target != GL_TEXTURE_2D)
     return false;
 
-  glXBindTexImageEXT(x11::Connection::Get()->display(), glx_pixmap_,
-                     GLX_FRONT_LEFT_EXT, nullptr);
+  glXBindTexImageEXT(
+      x11::Connection::Get()->GetXlibDisplay(x11::XlibDisplayType::kFlushing),
+      glx_pixmap_, GLX_FRONT_LEFT_EXT, nullptr);
   return true;
 }
 
@@ -95,8 +100,9 @@ void GLImageGLX::ReleaseTexImage(unsigned target) {
   DCHECK_NE(0u, glx_pixmap_);
   DCHECK_EQ(static_cast<GLenum>(GL_TEXTURE_2D), target);
 
-  glXReleaseTexImageEXT(x11::Connection::Get()->display(), glx_pixmap_,
-                        GLX_FRONT_LEFT_EXT);
+  glXReleaseTexImageEXT(
+      x11::Connection::Get()->GetXlibDisplay(x11::XlibDisplayType::kFlushing),
+      glx_pixmap_, GLX_FRONT_LEFT_EXT);
 }
 
 bool GLImageGLX::CopyTexImage(unsigned target) {

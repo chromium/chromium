@@ -58,7 +58,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   // GLOzoneEGL:
   gl::EGLDisplayPlatform GetNativeDisplay() override {
     return gl::EGLDisplayPlatform(reinterpret_cast<EGLNativeDisplayType>(
-        x11::Connection::Get()->display()));
+        x11::Connection::Get()->GetXlibDisplay().display()));
   }
 
   bool LoadGLES2Bindings(gl::GLImplementation implementation) override {

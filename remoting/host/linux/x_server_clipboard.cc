@@ -84,7 +84,7 @@ void XServerClipboard::Init(x11::Connection* connection,
 
 void XServerClipboard::SetClipboard(const std::string& mime_type,
                                     const std::string& data) {
-  DCHECK(connection_->display());
+  DCHECK(connection_->Ready());
 
   if (clipboard_window_ == x11::Window::None)
     return;

@@ -4,7 +4,6 @@
 
 #include "ui/gfx/x/connection.h"
 
-#include <dlfcn.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -12,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string16.h"
@@ -25,20 +25,6 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
-
-// Some Xlib features are temporarily declared here.
-// TODO(https://crbug.com/1066670): remove these.
-extern "C" {
-enum XEventQueueOwner { XlibOwnsEventQueue = 0, XCBOwnsEventQueue };
-
-int XInitThreads(void);
-struct _XDisplay* XOpenDisplay(const char*);
-int XCloseDisplay(struct _XDisplay*);
-int XFlush(struct _XDisplay*);
-struct xcb_connection_t* XGetXCBConnection(struct _XDisplay* dpy);
-void XSetEventQueueOwner(struct _XDisplay* dpy, enum XEventQueueOwner owner);
-int (*XSynchronize(struct _XDisplay*, int))(struct _XDisplay*);
-}
 
 namespace x11 {
 
@@ -65,17 +51,6 @@ auto CompareSequenceIds(T t, U u) {
   return static_cast<SignedType>(t0 - u0);
 }
 
-XDisplay* OpenNewXDisplay(const std::string& address) {
-  if (!XInitThreads())
-    return nullptr;
-  std::string display_str =
-      address.empty()
-          ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                switches::kX11Display)
-          : address;
-  return XOpenDisplay(display_str.empty() ? nullptr : display_str.c_str());
-}
-
 base::ThreadLocalOwnedPointer<Connection>& GetConnectionTLS() {
   static base::NoDestructor<base::ThreadLocalOwnedPointer<Connection>> tls;
   return *tls;
@@ -88,20 +63,6 @@ void DefaultErrorHandler(const x11::Error* error, const char* request_name) {
 
 void DefaultIOErrorHandler() {
   LOG(ERROR) << "X connection error received.";
-}
-
-NO_SANITIZE("cfi-icall")
-void XlibSetErrorHandler(int (*handler)(void*, void*)) {
-  using Handler = int (*)(void*, void*);
-  using SetErrorHandlerType = int (*)(Handler);
-  auto* x_set_error_handler = reinterpret_cast<SetErrorHandlerType>(
-      dlsym(RTLD_DEFAULT, "XSetErrorHandler"));
-  x_set_error_handler(handler);
-}
-
-int XlibErrorHandler(void*, void*) {
-  LOG(WARNING) << "Xlib error received";
-  return 0;
 }
 
 class UnknownError : public Error {
@@ -153,18 +114,18 @@ void Connection::Set(std::unique_ptr<x11::Connection> connection) {
 
 Connection::Connection(const std::string& address)
     : XProto(this),
-      display_(OpenNewXDisplay(address)),
-      display_string_(address),
+      display_string_(
+          address.empty()
+              ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                    switches::kX11Display)
+              : address),
       error_handler_(base::BindRepeating(DefaultErrorHandler)),
       io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
-  char* host = nullptr;
-  int display = 0;
-  xcb_parse_display(address.c_str(), &host, &display, &default_screen_id_);
-  if (host)
-    free(host);
-  if (display_) {
-    XSetEventQueueOwner(display_, XCBOwnsEventQueue);
-
+  connection_ =
+      xcb_connect(display_string_.empty() ? nullptr : display_string_.c_str(),
+                  &default_screen_id_);
+  DCHECK(connection_);
+  if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
         xcb_get_setup(XcbConnection())));
     setup_ = Read<Setup>(&buf);
@@ -181,7 +142,17 @@ Connection::Connection(const std::string& address)
   }
 
   ExtensionManager::Init(this);
-  if (auto response = bigreq().Enable({}).Sync())
+  auto enable_bigreq = bigreq().Enable({});
+  // Xlib enables XKB on display creation, so we do that here to maintain
+  // compatibility.
+  xkb()
+      .UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
+      .OnResponse(base::BindOnce([](x11::Xkb::UseExtensionResponse response) {
+        if (!response || !response->supported)
+          DVLOG(1) << "Xkb extension not available.";
+      }));
+  Flush();
+  if (auto response = enable_bigreq.Sync())
     extended_max_request_length_ = response->maximum_request_length;
 
   const Format* formats[256];
@@ -198,31 +169,27 @@ Connection::Connection(const std::string& address)
   keyboard_state_ = CreateKeyboardState(this);
 
   InitErrorParsers();
-
-  // The default Xlib error handler calls exit(1), which we don't want.  This
-  // shouldn't happen in the browser process since only XProto requests are
-  // made, but in the GPU process, GLX can make Xlib requests, so setting an
-  // error handler is necessary.  Importantly, there's also an IO error handler,
-  // and Xlib always calls exit(1) with no way to change this behavior.
-  XlibSetErrorHandler(XlibErrorHandler);
 }
 
 Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   platform_event_source.reset();
-  if (display_)
-    XCloseDisplay(display_);
+  xcb_disconnect(connection_);
 }
 
 xcb_connection_t* Connection::XcbConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!display())
-    return nullptr;
-  auto* xcb_connection = XGetXCBConnection(display());
-  if (io_error_handler_ && xcb_connection_has_error(xcb_connection))
+  if (io_error_handler_ && xcb_connection_has_error(connection_))
     std::move(io_error_handler_).Run();
-  return xcb_connection;
+  return connection_;
+}
+
+XlibDisplayWrapper Connection::GetXlibDisplay(XlibDisplayType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!xlib_display_)
+    xlib_display_ = base::WrapUnique(new XlibDisplay(display_string_));
+  return XlibDisplayWrapper(xlib_display_->display_, type);
 }
 
 Connection::Request::Request(unsigned int sequence,
@@ -276,13 +243,12 @@ int Connection::DefaultScreenId() const {
 
 bool Connection::Ready() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return display_ && !xcb_connection_has_error(XGetXCBConnection(display_));
+  return !xcb_connection_has_error(connection_);
 }
 
 void Connection::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (display_)
-    XFlush(display_);
+  xcb_flush(connection_);
 }
 
 void Connection::Sync() {
@@ -297,7 +263,6 @@ void Connection::Sync() {
 
 void Connection::SynchronizeForTest(bool synchronous) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  XSynchronize(display(), synchronous);
   synchronous_ = synchronous;
   if (synchronous_)
     Sync();
@@ -362,7 +327,6 @@ void Connection::DetachFromSequence() {
 
 void Connection::Dispatch(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(display_);
 
   auto process_next_response = [&] {
     DCHECK(!requests_.empty());

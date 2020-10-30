@@ -52,12 +52,6 @@ void InitializeXkb(x11::Connection* connection) {
 
   auto& xkb = connection->xkb();
 
-  xkb.UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
-      .OnResponse(base::BindOnce([](x11::Xkb::UseExtensionResponse response) {
-        if (!response || !response->supported)
-          DVLOG(1) << "Xkb extension not available.";
-      }));
-
   // Ask the server not to send KeyRelease event when the user holds down a key.
   // crbug.com/138092
   xkb

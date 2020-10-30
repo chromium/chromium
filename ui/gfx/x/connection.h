@@ -13,6 +13,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/extension_manager.h"
+#include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
@@ -52,11 +53,15 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   Connection(const Connection&) = delete;
   Connection(Connection&&) = delete;
 
-  XDisplay* display() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return display_;
-  }
   xcb_connection_t* XcbConnection();
+
+  // Obtain an Xlib display that's connected to the same server as |this|.  This
+  // is meant to be used only for compatibility with components like GLX,
+  // Vulkan, and VAAPI.  The underlying socket is not shared, so synchronization
+  // with |this| may be necessary.  The |type| parameter can be used to achieve
+  // synchronization.  The returned wrapper should not be saved.
+  XlibDisplayWrapper GetXlibDisplay(
+      XlibDisplayType type = XlibDisplayType::kNormal);
 
   uint32_t extended_max_request_length() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -183,7 +188,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   std::unique_ptr<Error> ParseError(FutureBase::RawError error_bytes);
 
-  XDisplay* const display_;
+  xcb_connection_t* connection_ = nullptr;
+  std::unique_ptr<XlibDisplay> xlib_display_;
 
   bool synchronous_ = false;
   bool syncing_ = false;

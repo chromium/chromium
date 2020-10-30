@@ -12,6 +12,7 @@
 
 #if defined(USE_GLX)
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/glx.h"
 #endif
 
 #if defined(USE_EGL)
@@ -61,7 +62,8 @@ std::string DriverEGL::GetClientExtensions() {
 std::string DriverGLX::GetPlatformExtensions() {
   auto* connection = x11::Connection::Get();
   const int screen = connection ? connection->DefaultScreenId() : 0;
-  const char* str = glXQueryExtensionsString(connection->display(), screen);
+  const char* str =
+      glXQueryExtensionsString(connection->GetXlibDisplay(), screen);
   return str ? std::string(str) : "";
 }
 #endif

@@ -20,8 +20,6 @@
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
 
-typedef struct _XDisplay XDisplay;
-
 namespace x11 {
 
 class Connection;

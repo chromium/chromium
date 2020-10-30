@@ -87,11 +87,6 @@ component("xprotos") {
   ]
   public_deps = [ "//ui/gfx/x/keysyms" ]
   sources = get_target_outputs(":gen_xprotos") + [
-              "xproto_internal.h",
-              "xproto_internal.cc",
-              "xproto_types.h",
-              "xproto_types.cc",
-              "xproto_util.h",
               "connection.h",
               "connection.cc",
               "event.h",
@@ -104,6 +99,13 @@ component("xprotos") {
               "scoped_ignore_errors.cc",
               "x11_switches.cc",
               "x11_switches.h",
+              "xlib_support.h",
+              "xlib_support.cc",
+              "xproto_internal.h",
+              "xproto_internal.cc",
+              "xproto_types.h",
+              "xproto_types.cc",
+              "xproto_util.h",
             ]
   configs += [
     ":x11_private_config",

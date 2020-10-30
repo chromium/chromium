@@ -59,8 +59,9 @@ GLXContext CreateContextAttribs(x11::Connection* connection,
 
   attribs.push_back(0);
 
-  GLXContext context = glXCreateContextAttribsARB(connection->display(), config,
-                                                  share, true, attribs.data());
+  GLXContext context = glXCreateContextAttribsARB(
+      connection->GetXlibDisplay(x11::XlibDisplayType::kSyncing), config, share,
+      true, attribs.data());
 
   return context;
 }
@@ -79,7 +80,7 @@ GLXContext CreateHighestVersionContext(x11::Connection* connection,
   // asking for OpenGL ES contexts.
 
   std::string client_vendor =
-      glXGetClientString(connection->display(), GLX_VENDOR);
+      glXGetClientString(connection->GetXlibDisplay(), GLX_VENDOR);
   bool is_mesa = client_vendor.find("Mesa") != std::string::npos;
 
   struct ContextCreationInfo {
@@ -175,7 +176,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
   } else {
     DVLOG(1) << "GLX_ARB_create_context not supported.";
     context_ = glXCreateNewContext(
-        connection_->display(),
+        connection_->GetXlibDisplay(x11::XlibDisplayType::kSyncing),
         static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
         GLX_RGBA_TYPE, share_handle, true);
     if (!context_) {
@@ -190,7 +191,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
 
   DVLOG(1) << (compatible_surface->IsOffscreen() ? "Offscreen" : "Onscreen")
            << " context was "
-           << (glXIsDirect(connection_->display(),
+           << (glXIsDirect(connection_->GetXlibDisplay(),
                            static_cast<GLXContext>(context_))
                    ? "direct"
                    : "indirect")
@@ -201,8 +202,9 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
 
 void GLContextGLX::Destroy() {
   if (context_) {
-    glXDestroyContext(connection_->display(),
-                      static_cast<GLXContext>(context_));
+    glXDestroyContext(
+        connection_->GetXlibDisplay(x11::XlibDisplayType::kFlushing),
+        static_cast<GLXContext>(context_));
     context_ = nullptr;
   }
 }
@@ -215,7 +217,7 @@ bool GLContextGLX::MakeCurrentImpl(GLSurface* surface) {
   ScopedReleaseCurrent release_current;
   TRACE_EVENT0("gpu", "GLContextGLX::MakeCurrent");
   if (!glXMakeContextCurrent(
-          connection_->display(),
+          connection_->GetXlibDisplay(x11::XlibDisplayType::kFlushing),
           reinterpret_cast<GLXDrawable>(surface->GetHandle()),
           reinterpret_cast<GLXDrawable>(surface->GetHandle()),
           static_cast<GLXContext>(context_))) {
@@ -243,8 +245,11 @@ void GLContextGLX::ReleaseCurrent(GLSurface* surface) {
     return;
 
   SetCurrent(nullptr);
-  if (!glXMakeContextCurrent(connection_->display(), 0, 0, 0))
+  if (!glXMakeContextCurrent(
+          connection_->GetXlibDisplay(x11::XlibDisplayType::kFlushing), 0, 0,
+          nullptr)) {
     LOG(ERROR) << "glXMakeCurrent failed in ReleaseCurrent";
+  }
 }
 
 bool GLContextGLX::IsCurrent(GLSurface* surface) {
