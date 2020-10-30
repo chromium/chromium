@@ -371,12 +371,18 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
   views::View::SetVisible(GetEffectiveVisibility());
 }
 
-void TrayBackgroundView::UpdateAfterColorModeChange() {
-  UpdateBackground();
-  SchedulePaint();
-}
-
 void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
+
+void TrayBackgroundView::UpdateBackground() {
+  const int radius = ShelfConfig::Get()->control_border_radius();
+  gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
+  layer()->SetRoundedCornerRadius(rounded_corners);
+  layer()->SetIsFastRoundedCorner(true);
+  layer()->SetBackgroundBlur(
+      ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+  layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor());
+  layer()->SetClipRect(GetBackgroundBounds());
+}
 
 void TrayBackgroundView::OnImplicitAnimationsCompleted() {
   // If there is another animation in the queue, the reverse animation was
@@ -496,17 +502,6 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
   }
 
   return insets;
-}
-
-void TrayBackgroundView::UpdateBackground() {
-  const int radius = ShelfConfig::Get()->control_border_radius();
-  gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
-  layer()->SetRoundedCornerRadius(rounded_corners);
-  layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(
-      ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
-  layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor());
-  layer()->SetClipRect(GetBackgroundBounds());
 }
 
 bool TrayBackgroundView::GetEffectiveVisibility() {

@@ -76,9 +76,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Called whenever the status area's collapse state changes.
   virtual void UpdateAfterStatusAreaCollapseChange();
 
-  // Called whenever the system color mode changes.
-  virtual void UpdateAfterColorModeChange();
-
   // Called when the anchor (tray or bubble) may have moved or changed.
   virtual void AnchorUpdated() {}
 
@@ -100,6 +97,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Called by the bubble wrapper when a click event occurs outside the bubble.
   // May close the bubble.
   virtual void ClickedOutsideBubble() = 0;
+
+  // Updates the background layer.
+  virtual void UpdateBackground();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
@@ -174,9 +174,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Helper function that calculates background insets relative to local bounds.
   gfx::Insets GetBackgroundInsets() const;
-
-  // Updates the background layer.
-  virtual void UpdateBackground();
 
   // Returns the effective visibility of the tray item based on the current
   // state.

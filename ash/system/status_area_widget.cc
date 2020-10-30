@@ -187,7 +187,8 @@ void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
 
 void StatusAreaWidget::OnSessionStateChanged(
     session_manager::SessionState state) {
-  UpdateAfterColorModeChange();
+  for (TrayBackgroundView* tray_button : tray_buttons_)
+    tray_button->UpdateBackground();
 }
 
 void StatusAreaWidget::UpdateCollapseState() {
@@ -551,11 +552,6 @@ void StatusAreaWidget::OnScrollEvent(ui::ScrollEvent* event) {
   shelf_->ProcessScrollEvent(event);
   if (!event->handled())
     views::Widget::OnScrollEvent(event);
-}
-
-void StatusAreaWidget::UpdateAfterColorModeChange() {
-  for (TrayBackgroundView* tray_button : tray_buttons_)
-    tray_button->UpdateAfterColorModeChange();
 }
 
 void StatusAreaWidget::AddTrayButton(TrayBackgroundView* tray_button) {

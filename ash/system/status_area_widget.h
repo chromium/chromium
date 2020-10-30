@@ -208,9 +208,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Adds a new tray button to the status area.
   void AddTrayButton(TrayBackgroundView* tray_button);
 
-  // Update the colors used for the tray buttons.
-  void UpdateAfterColorModeChange();
-
   // Called when in the collapsed state to calculate and update the visibility
   // of each tray button.
   void CalculateButtonVisibilityForCollapsedState();
