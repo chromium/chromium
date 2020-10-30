@@ -32,6 +32,7 @@ source_set("profiler") {
     "//components/version_info:version_info",
     "//content/public/common",
     "//extensions/buildflags",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_android) {

@@ -5,12 +5,15 @@
 #ifndef CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
 #define CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
 
+#include <initializer_list>
 #include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/metrics/call_stack_profile_params.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class CommandLine;
@@ -53,50 +56,77 @@ class ThreadProfilerConfiguration {
   static ThreadProfilerConfiguration* Get();
 
  private:
-  // Configuration to use for this Chrome instance.
-  enum ProfileConfiguration {
-    // Chrome-wide configurations set in the browser process.
+  // The variation groups that represent the Chrome-wide profiling
+  // configurations.
+  enum VariationGroup {
+    // Disabled within the experiment.
     PROFILE_DISABLED,
-    PROFILE_DISABLED_MODULE_NOT_INSTALLED,
-    PROFILE_CONTROL,
-    PROFILE_ENABLED,
 
-    // Configuration set in the child processes, which receive their enable
-    // state on the command line from the browser process.
-    PROFILE_FROM_COMMAND_LINE
+    // Disabled because the required module is not installed, and outside the
+    // experiment.
+    PROFILE_DISABLED_MODULE_NOT_INSTALLED,
+
+    // Enabled within the experiment (and paired with equal-sized
+    // PROFILE_DISABLED group).
+    PROFILE_CONTROL,
+
+    // Enabled outside of the experiment.
+    PROFILE_ENABLED,
   };
+
+  // The configuration state for the browser process. If !has_value() profiling
+  // is disabled and no variations state is reported. Otherwise profiling is
+  // enabled based on the VariationGroup and the variation state is reported.
+  using BrowserProcessConfiguration = base::Optional<VariationGroup>;
+
+  // The configuration state in child processes.
+  enum ChildProcessConfiguration {
+    CHILD_PROCESS_PROFILE_DISABLED,
+    CHILD_PROCESS_PROFILE_ENABLED,
+  };
+
+  // The configuration state for the current process, browser or child.
+  using Configuration =
+      absl::variant<BrowserProcessConfiguration, ChildProcessConfiguration>;
 
   // Configuration variations, along with weights to use when randomly choosing
   // one of a set of variations.
   struct Variation {
-    ProfileConfiguration config;
+    VariationGroup group;
     int weight;
   };
 
-  // Randomly chooses a configuration from the weighted variations. Weights are
-  // expected to sum to 100 as a sanity check.
-  static ProfileConfiguration ChooseConfiguration(
-      const std::vector<Variation>& variations);
+  // True if the profiler is to be enabled for |variation_group|.
+  static bool EnableForVariationGroup(
+      base::Optional<VariationGroup> variation_group);
 
-  // Generates sampling profiler configurations for all processes.
-  static ProfileConfiguration GenerateConfiguration(
+  // Randomly chooses a variation from the weighted variations. Weights are
+  // expected to sum to 100 as a sanity check.
+  static VariationGroup ChooseVariationGroup(
+      std::initializer_list<Variation> variations);
+
+  // Generates a configuration for the browser process.
+  static BrowserProcessConfiguration GenerateBrowserProcessConfiguration(
+      const ThreadProfilerPlatformConfiguration& platform_configuration);
+
+  // Generates a configuration for a child process.
+  static ChildProcessConfiguration GenerateChildProcessConfiguration(
+      const base::CommandLine& command_line);
+
+  // Generates a configuration for the current process.
+  static Configuration GenerateConfiguration(
       metrics::CallStackProfileParams::Process process,
       const ThreadProfilerPlatformConfiguration& platform_configuration);
 
   // NOTE: all state in this class must be const and initialized at construction
   // time to ensure thread-safe access post-construction.
 
-  // The currently-executing process.
-  const metrics::CallStackProfileParams::Process current_process_;
-
   // Platform-dependent configuration upon which |configuration_| is based.
   const std::unique_ptr<ThreadProfilerPlatformConfiguration>
       platform_configuration_;
 
-  // In the browser process this represents the configuration to use across all
-  // Chrome processes. In the child processes it is always
-  // PROFILE_FROM_COMMAND_LINE.
-  const ProfileConfiguration configuration_;
+  // Represents the configuration to use in the current process.
+  const Configuration configuration_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadProfilerConfiguration);
 };
