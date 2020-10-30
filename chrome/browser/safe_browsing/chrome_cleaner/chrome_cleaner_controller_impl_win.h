@@ -67,6 +67,7 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   void ResetIdleState() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  bool HasObserver(Observer* observer) override;
   void OnReporterSequenceStarted() override;
   void OnReporterSequenceDone(SwReporterInvocationResult result) override;
   void RequestUserInitiatedScan(Profile* profile) override;

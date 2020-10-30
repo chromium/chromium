@@ -464,9 +464,15 @@ void SafetyCheckHandler::CheckExtensions() {
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void SafetyCheckHandler::CheckChromeCleaner() {
-  // Registering the observer immediately triggers a callback with the
-  // current state.
-  safe_browsing::ChromeCleanerController::GetInstance()->AddObserver(this);
+  if (safe_browsing::ChromeCleanerController::GetInstance()->HasObserver(
+          this)) {
+    // Observer already registered. Just fetch the current CCT status.
+    OnChromeCleanerCheckResult(fetchChromeCleanerStatus(timestamp_delegate_));
+  } else {
+    // Registering the observer immediately triggers a callback with the
+    // current state.
+    safe_browsing::ChromeCleanerController::GetInstance()->AddObserver(this);
+  }
 }
 #endif
 

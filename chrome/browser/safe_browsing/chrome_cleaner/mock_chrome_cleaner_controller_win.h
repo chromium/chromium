@@ -28,6 +28,7 @@ class MockChromeCleanerController
   MOCK_METHOD0(ResetIdleState, void());
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
+  MOCK_METHOD1(HasObserver, bool(Observer*));
   MOCK_METHOD0(OnReporterSequenceStarted, void());
   MOCK_METHOD1(OnReporterSequenceDone, void(SwReporterInvocationResult));
   MOCK_METHOD1(RequestUserInitiatedScan, void(Profile*));

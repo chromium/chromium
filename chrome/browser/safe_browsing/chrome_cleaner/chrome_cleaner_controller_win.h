@@ -134,6 +134,7 @@ class ChromeCleanerController {
   // by calling the corresponding |On*()| function.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+  virtual bool HasObserver(Observer* observer) = 0;
 
   // Invoked by the reporter runner, notifies the controller that a reporter
   // sequence started. If there is no pending cleaner action (currently on the

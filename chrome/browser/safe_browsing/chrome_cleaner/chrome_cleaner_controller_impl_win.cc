@@ -296,6 +296,11 @@ void ChromeCleanerControllerImpl::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+bool ChromeCleanerControllerImpl::HasObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return observer_list_.HasObserver(observer);
+}
+
 void ChromeCleanerControllerImpl::OnReporterSequenceStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
