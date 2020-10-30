@@ -148,14 +148,14 @@ public class PageViewObserver {
         boolean isSameDomain = newFqdn.equals(mLastFqdn);
         boolean isValidProtocol = URLUtil.isHttpUrl(newUrl) || URLUtil.isHttpsUrl(newUrl);
 
-        boolean didSuspend =
-                checkSuspendedTabState(mSuspensionTracker.isWebsiteSuspended(newFqdn), newFqdn);
+        boolean isSuspended = mSuspensionTracker.isWebsiteSuspended(newFqdn);
+        boolean didSuspend = checkSuspendedTabState(isSuspended, newFqdn);
 
         if (mLastFqdn != null && (didSuspend || !isSameDomain)) {
             reportStop();
         }
 
-        if (isValidProtocol && !didSuspend && !isSameDomain) {
+        if (isValidProtocol && !isSuspended && !isSameDomain) {
             mLastFqdn = newFqdn;
             mEventTracker.addWebsiteEvent(new WebsiteEvent(
                     System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.START));

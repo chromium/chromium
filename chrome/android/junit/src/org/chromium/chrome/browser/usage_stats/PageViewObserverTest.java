@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -216,6 +217,22 @@ public final class PageViewObserverTest {
         doReturn(true).when(mTab2).isHidden();
         didSelectTab(mTab2, TabSelectionType.FROM_USER);
         verify(mEventTracker, times(0)).addWebsiteEvent(argThat(isStartEvent(DIFFERENT_FQDN)));
+    }
+
+    @Test
+    public void switchToSuspendedTab_startNotReported() {
+        PageViewObserver observer = createPageViewObserver();
+        updateUrl(mTab, STARTING_URL);
+
+        doReturn(STARTING_URL).when(mTab).getUrlString();
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
+        observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
+        assertTrue(SuspendedTab.from(mTab).isShowing());
+        reset(mEventTracker);
+
+        onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
+        onShown(mTab, TabSelectionType.FROM_USER);
+        verify(mEventTracker, never()).addWebsiteEvent(argThat(isStartEvent(STARTING_FQDN)));
     }
 
     @Test
