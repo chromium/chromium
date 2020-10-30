@@ -5,6 +5,7 @@
 #include "content/browser/font_access/font_enumeration_cache.h"
 
 #include "base/feature_list.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"

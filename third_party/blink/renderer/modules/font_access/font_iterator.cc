@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/font_access/font_metadata.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace blink {
 
@@ -117,9 +118,10 @@ void FontIterator::DidGetEnumerationResponse(
 
   table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
   for (const auto& element : table.fonts()) {
-    auto entry = FontEnumerationEntry{String(element.postscript_name().c_str()),
-                                      String(element.full_name().c_str()),
-                                      String(element.family().c_str())};
+    auto entry = FontEnumerationEntry{
+        String::FromUTF8(element.postscript_name().c_str()),
+        String::FromUTF8(element.full_name().c_str()),
+        String::FromUTF8(element.family().c_str())};
     entries_.push_back(FontMetadata::Create(std::move(entry)));
   }
 

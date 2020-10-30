@@ -39,6 +39,10 @@ class CONTENT_EXPORT FontAccessManagerImpl
   // blink.mojom.FontAccessManager:
   void EnumerateLocalFonts(EnumerateLocalFontsCallback callback) override;
 
+  void SkipPrivacyChecksForTesting(bool skip) {
+    skip_privacy_checks_for_testing_ = skip;
+  }
+
  private:
   void DidRequestPermission(EnumerateLocalFontsCallback callback,
                             blink::mojom::PermissionStatus status);
@@ -46,6 +50,8 @@ class CONTENT_EXPORT FontAccessManagerImpl
   mojo::ReceiverSet<blink::mojom::FontAccessManager, BindingContext> receivers_;
   scoped_refptr<base::SequencedTaskRunner> ipc_task_runner_;
   scoped_refptr<base::TaskRunner> results_task_runner_;
+
+  bool skip_privacy_checks_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

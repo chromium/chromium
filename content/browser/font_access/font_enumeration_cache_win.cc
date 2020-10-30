@@ -50,14 +50,13 @@ base::Optional<std::string> GetLocalizedString(
 
 std::unique_ptr<content::FontEnumerationCacheWin::FamilyDataResult>
 ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
-                       uint32_t family_index) {
+                       uint32_t family_index,
+                       const std::string& locale) {
   auto family_result =
       std::make_unique<content::FontEnumerationCacheWin::FamilyDataResult>();
   family_result->fonts =
       std::vector<blink::FontEnumerationTable_FontMetadata>();
   family_result->exit_hresult = S_OK;
-
-  std::string locale = base::i18n::GetConfiguredLocale();
 
   Microsoft::WRL::ComPtr<IDWriteFontFamily> family;
   Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names;
@@ -253,6 +252,9 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
         outstanding_family_results_, 1, 5000, 50);
   }
 
+  std::string locale =
+      locale_override_.value_or(base::i18n::GetConfiguredLocale());
+
   for (UINT32 family_index = 0; family_index < outstanding_family_results_;
        ++family_index) {
     // Specify base::ThreadPolicy::MUST_USE_FOREGROUND because a priority
@@ -262,7 +264,8 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::ThreadPolicy::MUST_USE_FOREGROUND},
-        base::BindOnce(&ExtractNamesFromFamily, collection_, family_index),
+        base::BindOnce(&ExtractNamesFromFamily, collection_, family_index,
+                       locale),
         base::BindOnce(
             &FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded,
             // Safe because this is an initialized singleton.

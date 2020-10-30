@@ -7,6 +7,7 @@
 
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
@@ -47,6 +48,11 @@ class CONTENT_EXPORT FontEnumerationCache {
   // region is ready.
   bool IsFontEnumerationCacheReady();
 
+  // This will set an override for the system locale setting. Unfortunately,
+  // only the Windows platform is supported at this time.
+  void OverrideLocaleForTesting(const std::string& locale) {
+    locale_override_ = locale;
+  }
   void ResetStateForTesting();
 
  protected:
@@ -89,6 +95,8 @@ class CONTENT_EXPORT FontEnumerationCache {
       base::MakeRefCounted<base::DeferredSequencedTaskRunner>();
 
   FontEnumerationStatus status_ = FontEnumerationStatus::kOk;
+
+  base::Optional<std::string> locale_override_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 namespace content {
 
@@ -44,6 +45,12 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
+  if (skip_privacy_checks_for_testing_) {
+    DidRequestPermission(std::move(callback),
+                         blink::mojom::PermissionStatus::GRANTED);
+    return;
+  }
+
   const BindingContext& context = receivers_.current_context();
 
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(context.frame_id);

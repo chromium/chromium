@@ -7,11 +7,11 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,51 +27,6 @@
 using blink::mojom::FontEnumerationStatus;
 
 namespace content {
-
-namespace {
-
-using PermissionCallback =
-    base::OnceCallback<void(blink::mojom::PermissionStatus)>;
-
-class TestPermissionManager : public MockPermissionManager {
- public:
-  TestPermissionManager() = default;
-  ~TestPermissionManager() override = default;
-
-  int RequestPermission(PermissionType permissions,
-                        RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        PermissionCallback callback) override {
-    EXPECT_EQ(permissions, PermissionType::FONT_ACCESS);
-    EXPECT_TRUE(user_gesture);
-    request_callback_.Run(std::move(callback));
-    return 0;
-  }
-
-  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) override {
-    return permission_status_for_frame_;
-  }
-
-  void SetRequestCallback(
-      base::RepeatingCallback<void(PermissionCallback)> request_callback) {
-    request_callback_ = std::move(request_callback);
-  }
-
-  void SetPermissionStatusForFrame(blink::mojom::PermissionStatus status) {
-    permission_status_for_frame_ = status;
-  }
-
- private:
-  base::RepeatingCallback<void(PermissionCallback)> request_callback_;
-  blink::mojom::PermissionStatus permission_status_for_frame_ =
-      blink::mojom::PermissionStatus::ASK;
-};
-
-}  // namespace
 
 class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
  public:
@@ -101,21 +56,21 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
     TestBrowserContext* browser_context =
         static_cast<TestBrowserContext*>(main_rfh()->GetBrowserContext());
     browser_context->SetPermissionControllerDelegate(
-        std::make_unique<TestPermissionManager>());
+        std::make_unique<TestFontAccessPermissionManager>());
     permission_controller_ =
         std::make_unique<PermissionControllerImpl>(browser_context);
   }
 
   void TearDown() override { RenderViewHostImplTestHarness::TearDown(); }
 
-  TestPermissionManager* test_permission_manager() {
-    return static_cast<TestPermissionManager*>(
+  TestFontAccessPermissionManager* test_permission_manager() {
+    return static_cast<TestFontAccessPermissionManager*>(
         main_rfh()->GetBrowserContext()->GetPermissionControllerDelegate());
   }
 
   void AutoGrantPermission() {
-    test_permission_manager()->SetRequestCallback(
-        base::BindRepeating([](PermissionCallback callback) {
+    test_permission_manager()->SetRequestCallback(base::BindRepeating(
+        [](TestFontAccessPermissionManager::PermissionCallback callback) {
           std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
         }));
     test_permission_manager()->SetPermissionStatusForFrame(
@@ -123,8 +78,8 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   }
 
   void AutoDenyPermission() {
-    test_permission_manager()->SetRequestCallback(
-        base::BindRepeating([](PermissionCallback callback) {
+    test_permission_manager()->SetRequestCallback(base::BindRepeating(
+        [](TestFontAccessPermissionManager::PermissionCallback callback) {
           std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
         }));
     test_permission_manager()->SetPermissionStatusForFrame(
@@ -134,8 +89,8 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   void AskGrantPermission() {
     test_permission_manager()->SetPermissionStatusForFrame(
         blink::mojom::PermissionStatus::ASK);
-    test_permission_manager()->SetRequestCallback(
-        base::BindRepeating([](PermissionCallback callback) {
+    test_permission_manager()->SetRequestCallback(base::BindRepeating(
+        [](TestFontAccessPermissionManager::PermissionCallback callback) {
           std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
         }));
   }
@@ -143,8 +98,8 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   void AskDenyPermission() {
     test_permission_manager()->SetPermissionStatusForFrame(
         blink::mojom::PermissionStatus::ASK);
-    test_permission_manager()->SetRequestCallback(
-        base::BindRepeating([](PermissionCallback callback) {
+    test_permission_manager()->SetRequestCallback(base::BindRepeating(
+        [](TestFontAccessPermissionManager::PermissionCallback callback) {
           std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
         }));
   }
