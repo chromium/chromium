@@ -4,6 +4,7 @@
 
 """Tests for base_device_trigger.py."""
 
+import argparse
 import unittest
 
 import base_test_triggerer
@@ -55,6 +56,17 @@ class UnitTest(unittest.TestCase):
     for args, ex in invalid_args:
       self.assertRaises(ex, base_test_triggerer._convert_to_go_swarming_args,
                         args)
+
+  def test_arg_parser(self):
+    # Added for https://crbug.com/1143224
+    parser = argparse.ArgumentParser()
+    base_test_triggerer.BaseTestTriggerer.add_use_swarming_go_arg(parser)
+    swarming_args = ['--server', 'x.apphost.com', '--dimension', 'os', 'Linux']
+    args, _ = parser.parse_known_args(swarming_args)
+    self.assertFalse(args.use_swarming_go)
+
+    args, _ = parser.parse_known_args(swarming_args + ['--use-swarming-go'])
+    self.assertTrue(args.use_swarming_go)
 
 if __name__ == '__main__':
     unittest.main()

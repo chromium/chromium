@@ -75,6 +75,7 @@ def parse_args(triggerer):
     additional_args = triggerer.modify_args(
         additional_args, 0, args.shard_index, args.shards, args.dump_json)
   else:
+    base_test_triggerer.BaseTestTriggerer.add_use_swarming_go_arg(parser)
     args, additional_args = parser.parse_known_args()
 
   if additional_args[0] != 'trigger':
@@ -128,6 +129,8 @@ def main():
   ])
   new_args += additional_args[1:]
 
+  if args.use_swarming_go:
+    return triggerer.run_swarming_go(new_args, True)
   return triggerer.run_swarming(new_args, True)
 
 
