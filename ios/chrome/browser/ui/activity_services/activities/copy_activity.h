@@ -7,13 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-class GURL;
+@class ShareToData;
 
 // Activity that copies the URL to the pasteboard.
 @interface CopyActivity : UIActivity
 
-// Initializes the copy activity with the given |URL| to be copied.
-- (instancetype)initWithURL:(const GURL&)URL;
+// Initializes the copy activity with the |data| object holding the URL and,
+// potentially, additional text to be copied.
+- (instancetype)initWithData:(ShareToData*)data;
 
 @end
 

@@ -132,12 +132,15 @@ TEST_F(ShareToDataBuilderTest, TestReturnsNilWhenClosing) {
 TEST_F(ShareToDataBuilderTest, ShareToDataForURL) {
   GURL testURL = GURL("http://www.testurl.com/");
   NSString* testTitle = @"Some Title";
+  NSString* additionalText = @"Foo, Bar!";
 
-  ShareToData* data = activity_services::ShareToDataForURL(testURL, testTitle);
+  ShareToData* data =
+      activity_services::ShareToDataForURL(testURL, testTitle, additionalText);
 
   EXPECT_EQ(testURL, data.shareURL);
   EXPECT_EQ(testURL, data.visibleURL);
   EXPECT_EQ(testTitle, data.title);
+  EXPECT_EQ(additionalText, data.additionalText);
   EXPECT_TRUE(data.isOriginalTitle);
   EXPECT_FALSE(data.isPagePrintable);
   EXPECT_FALSE(data.isPageSearchable);

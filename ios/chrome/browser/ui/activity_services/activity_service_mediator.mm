@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_source.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_text_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
@@ -72,21 +73,28 @@
   return self;
 }
 
-- (NSArray<ChromeActivityURLSource*>*)activityItemsForData:(ShareToData*)data {
-  // The provider object ChromeActivityURLSource supports the public.url UTType
-  // for Share Extensions (e.g. Facebook, Twitter).
+- (NSArray<id<ChromeActivityItemSource>>*)activityItemsForData:
+    (ShareToData*)data {
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+
+  if (data.additionalText) {
+    [items addObject:[[ChromeActivityTextSource alloc]
+                         initWithText:data.additionalText]];
+  }
+
   ChromeActivityURLSource* activityURLSource =
       [[ChromeActivityURLSource alloc] initWithShareURL:data.shareNSURL
                                                 subject:data.title];
   activityURLSource.thumbnailGenerator = data.thumbnailGenerator;
-  return @[ activityURLSource ];
+  [items addObject:activityURLSource];
+
+  return items;
 }
 
 - (NSArray*)applicationActivitiesForData:(ShareToData*)data {
   NSMutableArray* applicationActivities = [NSMutableArray array];
 
-  [applicationActivities
-      addObject:[[CopyActivity alloc] initWithURL:data.shareURL]];
+  [applicationActivities addObject:[[CopyActivity alloc] initWithData:data]];
 
   if (data.shareURL.SchemeIsHTTPOrHTTPS()) {
     SendTabToSelfActivity* sendTabToSelfActivity =
