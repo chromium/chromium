@@ -116,7 +116,8 @@ StringToCookieSameSite(const std::string& same_site,
                        CookieSameSiteString* samesite_string = nullptr);
 
 NET_EXPORT void RecordCookieSameSiteAttributeValueHistogram(
-    CookieSameSiteString value);
+    CookieSameSiteString value,
+    bool is_cookie_same_party = false);
 
 }  // namespace net
 

@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_constants.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -97,8 +98,13 @@ CookieSameSite StringToCookieSameSite(const std::string& same_site,
   return samesite;
 }
 
-void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value) {
+void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value,
+                                                 bool is_cookie_same_party) {
   UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteAttributeValue", value);
+  if (is_cookie_same_party) {
+    base::UmaHistogramEnumeration(
+        "Cookie.SamePartyCookieSameSiteAttributeValue", value);
+  }
 }
 
 }  // namespace net
