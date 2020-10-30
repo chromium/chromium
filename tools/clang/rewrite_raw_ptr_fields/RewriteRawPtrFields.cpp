@@ -906,7 +906,7 @@ int main(int argc, const char* argv[]) {
       fieldDecl(
           allOf(hasType(supported_pointer_types_matcher),
                 unless(anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-                             isInThirdPartyLocation(),
+                             isInThirdPartyLocation(), isInGeneratedLocation(),
                              isInLocationListedInFilterFile(&paths_to_exclude),
                              isFieldDeclListedInFilterFile(&fields_to_exclude),
                              implicit_field_decl_matcher))))
@@ -1088,15 +1088,6 @@ int main(int argc, const char* argv[]) {
                     hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
   FilteredExprWriter global_destructor_writer(&output_helper, "global-scope");
   match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
-
-  // Matches rewritable fields in generated code - see the testcase in
-  // tests/gen-generated-code-test.cc
-  auto field_in_generated_code_matcher =
-      fieldDecl(allOf(field_decl_matcher, isInGeneratedLocation()));
-  FilteredExprWriter field_in_generated_code_writer(&output_helper,
-                                                    "generated-code");
-  match_finder.addMatcher(field_in_generated_code_matcher,
-                          &field_in_generated_code_writer);
 
   // Matches CXXRecordDecls with a deleted operator new - e.g.
   // StructWithNoOperatorNew below:
