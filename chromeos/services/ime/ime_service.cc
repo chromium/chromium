@@ -19,6 +19,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/decoder_engine.h"
+#include "chromeos/services/ime/decoder/system_engine.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 
 namespace chromeos {
@@ -37,9 +38,16 @@ enum SimpleDownloadError {
 ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  input_engine_ = chromeos::features::IsImeSandboxEnabled()
-                      ? std::make_unique<DecoderEngine>(this)
-                      : std::make_unique<InputEngine>();
+  if (chromeos::features::IsImeSandboxEnabled()) {
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kSystemLatinPhysicalTyping)) {
+      input_engine_ = std::make_unique<SystemEngine>(this);
+    } else {
+      input_engine_ = std::make_unique<DecoderEngine>(this);
+    }
+  } else {
+    input_engine_ = std::make_unique<InputEngine>();
+  }
 }
 
 ImeService::~ImeService() = default;

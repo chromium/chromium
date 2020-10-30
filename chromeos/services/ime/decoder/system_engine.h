@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_IME_DECODER_DECODER_ENGINE_H_
-#define CHROMEOS_SERVICES_IME_DECODER_DECODER_ENGINE_H_
+#ifndef CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
+#define CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
 #include "base/scoped_native_library.h"
 #include "chromeos/services/ime/input_engine.h"
@@ -13,13 +13,17 @@
 namespace chromeos {
 namespace ime {
 
-// An enhanced implementation of the basic InputEngine which allows the input
-// engine to call a customized transliteration library (aka decoder) to provide
-// a premium typing experience.
-class DecoderEngine : public InputEngine {
+// Only used in tests to set a fake `ImeEngineMainEntry`.
+void FakeEngineMainEntryForTesting(ImeEngineMainEntry* main_entry);
+
+// An enhanced implementation of the basic InputEngine that uses a built-in
+// shared library for handling key events.
+class SystemEngine : public InputEngine {
  public:
-  explicit DecoderEngine(ImeCrosPlatform* platform);
-  ~DecoderEngine() override;
+  explicit SystemEngine(ImeCrosPlatform* platform);
+  SystemEngine(const SystemEngine&) = delete;
+  SystemEngine& operator=(const SystemEngine&) = delete;
+  ~SystemEngine() override;
 
   // InputEngine overrides:
   bool BindRequest(const std::string& ime_spec,
@@ -29,16 +33,16 @@ class DecoderEngine : public InputEngine {
 
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
-  void OnInputMethodChanged(const std::string& engine_id) override {}
-  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override {}
-  void OnBlur() override {}
+  void OnInputMethodChanged(const std::string& engine_id) override;
+  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;
+  void OnBlur() override;
   void OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                  OnKeyEventCallback callback) override {}
+                  OnKeyEventCallback callback) override;
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,
-      mojom::SelectionRangePtr selection_range) override {}
-  void OnCompositionCanceled() override {}
+      mojom::SelectionRangePtr selection_range) override;
+  void OnCompositionCanceled() override;
 
  private:
   // Try to load the decoding functions from some decoder shared library.
@@ -47,6 +51,10 @@ class DecoderEngine : public InputEngine {
 
   // Returns whether the decoder shared library supports this ime_spec.
   bool IsImeSupportedByDecoder(const std::string& ime_spec);
+
+  // Called when there's a reply from the shared library.
+  // Deserializes |message| and converts it into Mojo calls to the receiver.
+  void OnReply(const std::vector<uint8_t>& message);
 
   // Shared library handle of the implementation for input logic with decoders.
   base::ScopedNativeLibrary library_;
@@ -57,10 +65,13 @@ class DecoderEngine : public InputEngine {
 
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 
-  DISALLOW_COPY_AND_ASSIGN(DecoderEngine);
+  // Sequence ID for protobuf messages sent from the engine.
+  uint64_t current_seq_id_ = 0;
+
+  std::map<uint64_t, OnKeyEventCallback> pending_key_event_callbacks_;
 };
 
 }  // namespace ime
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_IME_DECODER_DECODER_ENGINE_H_
+#endif  // CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_

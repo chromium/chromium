@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/ime/decoder/decoder_engine.h"
+#include "chromeos/services/ime/decoder/system_engine.h"
 
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -72,7 +72,7 @@ class StubInputChannel : public mojom::InputChannel {
 };
 
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.
-class DecoderEngineTest : public testing::Test {
+class SystemEngineTest : public testing::Test {
  protected:
   void SetUp() final {
     FakeEngineMainEntryForTesting(&mock_main_entry_);
@@ -91,8 +91,8 @@ class DecoderEngineTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DecoderEngineTest, BindRequestBindsInterfaces) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, BindRequestBindsInterfaces) {
+  SystemEngine engine(/*platform=*/nullptr);
 
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
@@ -104,8 +104,8 @@ TEST_F(DecoderEngineTest, BindRequestBindsInterfaces) {
   EXPECT_TRUE(receiver.is_bound());
 }
 
-TEST_F(DecoderEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
+  SystemEngine engine(/*platform=*/nullptr);
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
   mojo::Remote<mojom::InputChannel> client;
@@ -121,8 +121,8 @@ TEST_F(DecoderEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
   client.FlushForTesting();
 }
 
-TEST_F(DecoderEngineTest, OnFocusSendsMessageToSharedLib) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
+  SystemEngine engine(/*platform=*/nullptr);
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
   mojo::Remote<mojom::InputChannel> client;
@@ -143,8 +143,8 @@ TEST_F(DecoderEngineTest, OnFocusSendsMessageToSharedLib) {
   client.FlushForTesting();
 }
 
-TEST_F(DecoderEngineTest, OnBlurSendsMessageToSharedLib) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
+  SystemEngine engine(/*platform=*/nullptr);
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
   mojo::Remote<mojom::InputChannel> client;
@@ -159,8 +159,8 @@ TEST_F(DecoderEngineTest, OnBlurSendsMessageToSharedLib) {
   client.FlushForTesting();
 }
 
-TEST_F(DecoderEngineTest, OnKeyEventRepliesWithCallback) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
+  SystemEngine engine(/*platform=*/nullptr);
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
   mojo::Remote<mojom::InputChannel> client;
@@ -195,8 +195,8 @@ TEST_F(DecoderEngineTest, OnKeyEventRepliesWithCallback) {
   EXPECT_TRUE(consumed_by_test);
 }
 
-TEST_F(DecoderEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
+  SystemEngine engine(/*platform=*/nullptr);
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
   mojo::Remote<mojom::InputChannel> client;
@@ -213,8 +213,8 @@ TEST_F(DecoderEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   client.FlushForTesting();
 }
 
-TEST_F(DecoderEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
-  DecoderEngine engine(/*platform=*/nullptr);
+TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
+  SystemEngine engine(/*platform=*/nullptr);
   StubInputChannel stub_channel;
   mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
   mojo::Remote<mojom::InputChannel> client;
