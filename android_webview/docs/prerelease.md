@@ -45,7 +45,7 @@ version of WebView around.
 
 Steps depend on your version of Android:
 
-### Android 10 (Q)
+### Android 10 and later (Q, R, etc.)
 
 Pre-release channels must be downloaded and installed as separate apps, but only
 one must be chosen to provide the system's WebView implementation at any given
@@ -53,7 +53,8 @@ time.
 
 *** note
 WebView pre-release channels are independent of Chrome in Android 10 and later.
-Chrome can no longer be used as a WebView implementation in Android 10.
+Chrome can no longer be used as a WebView implementation in Android 10 and
+later.
 ***
 
 1. Download a pre-release channel of WebView from the play store, available here:
