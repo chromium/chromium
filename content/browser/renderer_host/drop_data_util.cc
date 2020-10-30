@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/public/common/drop_data.h"
@@ -80,14 +82,25 @@ blink::mojom::DragDataPtr DropDataToDragData(
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
 
-  return blink::mojom::DragData::New(std::move(items),
-                                     base::UTF16ToUTF8(drop_data.filesystem_id),
-                                     drop_data.referrer_policy);
+  return blink::mojom::DragData::New(
+      std::move(items),
+      // While this shouldn't be a problem in production code, as the
+      // real file_system_id should never be empty if used in browser to
+      // renderer messages, some tests use this function to test renderer to
+      // browser messages, in which case the field is unused and this will hit
+      // a DCHECK.
+      drop_data.filesystem_id.empty()
+          ? base::nullopt
+          : base::Optional<std::string>(
+                base::UTF16ToUTF8(drop_data.filesystem_id)),
+      drop_data.referrer_policy);
 }
 
 DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
-  DropData result;
+  // This field should be empty when dragging from the renderer.
+  DCHECK(!drag_data.file_system_id);
 
+  DropData result;
   for (const blink::mojom::DragItemPtr& item : drag_data.items) {
     switch (item->which()) {
       case blink::mojom::DragItemDataView::Tag::STRING: {
@@ -137,10 +150,13 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
       case blink::mojom::DragItemDataView::Tag::FILE_SYSTEM_FILE: {
         const blink::mojom::DragItemFileSystemFilePtr& file_system_file_item =
             item->get_file_system_file();
+        // This field should be empty when dragging from the renderer.
+        DCHECK(!file_system_file_item->file_system_id);
+
         DropData::FileSystemFileInfo info;
         info.url = file_system_file_item->url;
         info.size = file_system_file_item->size;
-        info.filesystem_id = file_system_file_item->file_system_id;
+        info.filesystem_id = std::string();
         result.file_system_files.push_back(std::move(info));
         break;
       }
