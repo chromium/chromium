@@ -2891,6 +2891,7 @@ TEST_P(PaintLayerTest,
 }
 
 TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
+  USE_NON_OVERLAY_SCROLLBARS();
   SetBodyInnerHTML(R"HTML(
     <style>
       :root {
@@ -2898,6 +2899,7 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
         background:blue;
         transform: rotate(30deg);
         transform-style: preserve-3d;
+        overflow-x: hidden;
       }
       #perspective {
         perspective:100px;
@@ -2910,6 +2912,7 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
     <div id="perspective">
       <div id="threedee"></div>
     </div>
+    <div style="height:1000px"></div>
   )HTML");
   GetDocument().GetPage()->SetPageScaleFactor(2);
   UpdateAllLifecyclePhasesForTest();
@@ -2921,12 +2924,13 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
   EXPECT_EQ(result.InnerNode(), GetDocument().documentElement());
   EXPECT_EQ(result.GetScrollbar(), nullptr);
 
-  if (GetDocument().GetPage()->GetScrollbarTheme().AllowsHitTest()) {
-    const HitTestLocation location_scrollbar(IntPoint(790, 300));
-    HitTestResult result_scrollbar;
-    EXPECT_EQ(result_scrollbar.InnerNode(), &GetDocument());
-    EXPECT_NE(result_scrollbar.GetScrollbar(), nullptr);
-  }
+  const HitTestLocation location_scrollbar(IntPoint(790, 300));
+  HitTestResult result_scrollbar;
+  GetLayoutView().HitTestNoLifecycleUpdate(location_scrollbar,
+                                           result_scrollbar);
+  EXPECT_EQ(result_scrollbar.InnerNode(), GetDocument().documentElement());
+  EXPECT_NE(result_scrollbar.GetScrollbar(), nullptr);
+  EXPECT_EQ(result_scrollbar.LocalPoint(), location_scrollbar.Point());
 }
 
 TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {

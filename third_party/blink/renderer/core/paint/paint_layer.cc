@@ -1957,7 +1957,7 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
 
   // For the global root scroller, hit test the layout viewport scrollbars
   // first, as they are visually presented on top of the content.
-  if (GetLayoutObject().IsGlobalRootScroller()) {
+  if (layout_object.IsGlobalRootScroller()) {
     // There are a number of early outs below that don't apply to the the
     // global root scroller.
     DCHECK(!Transform());
@@ -1966,7 +1966,10 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
     if (scrollable_area_) {
       IntPoint point = scrollable_area_->ConvertFromRootFrameToVisualViewport(
           RoundedIntPoint(recursion_data.location.Point()));
-      if (scrollable_area_->HitTestOverflowControls(result, point))
+
+      DCHECK(GetLayoutBox());
+      if (GetLayoutBox()->HitTestOverflowControl(result, HitTestLocation(point),
+                                                 PhysicalOffset()))
         return this;
     }
   }
