@@ -388,6 +388,10 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static root(node) {
+    if (node.modal) {
+      return true;
+    }
+
     switch (node.role) {
       case Role.WINDOW:
         return true;
@@ -417,7 +421,7 @@ AutomationPredicate = class {
             (node.parent.root.role === Role.DESKTOP &&
              node.parent.role === Role.WEB_VIEW);
       default:
-        return !!node.modal;
+        return false;
     }
   }
 

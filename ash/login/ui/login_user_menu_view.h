@@ -11,6 +11,7 @@
 #include "base/strings/string16.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/focus/focus_search.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,7 +20,8 @@ struct LoginUserInfo;
 class RemoveUserButton;
 
 class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
-                                     public views::ButtonListener {
+                                     public views::ButtonListener,
+                                     public views::FocusTraversable {
  public:
   class TestApi {
    public:
@@ -57,6 +59,13 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   void RequestFocus() override;
   bool HasFocus() const override;
   const char* GetClassName() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  views::FocusTraversable* GetPaneFocusTraversable() override;
+
+  // views::FocusTraversable:
+  views::FocusSearch* GetFocusSearch() override;
+  views::FocusTraversable* GetFocusTraversableParent() override;
+  views::View* GetFocusTraversableParentView() override;
 
  private:
   LoginButton* bubble_opener_ = nullptr;
@@ -69,6 +78,8 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   views::Label* management_disclosure_label_ = nullptr;
 
   base::string16 warning_message_;
+
+  std::unique_ptr<views::FocusSearch> focus_search_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginUserMenuView);
 };

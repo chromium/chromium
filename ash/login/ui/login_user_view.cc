@@ -611,7 +611,7 @@ void LoginUserView::UpdateCurrentUserState() {
   tap_button_->SetAccessibleName(accessible_name);
   if (dropdown_) {
     dropdown_->SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_POD_MENU_BUTTON_ACCESSIBLE_NAME, email));
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME, email));
   }
 
   user_image_->UpdateForUser(current_user_);

@@ -40,18 +40,43 @@ constexpr int kUserMenuRemoveUserButtonIdForTest = 1;
 // Font size delta from normal for the username headline.
 constexpr int kUserMenuFontSizeDeltaUsername = 2;
 
+// Traps the focus so it does not move from the |trapped_focus| view.
+class TrappedFocusSearch : public views::FocusSearch {
+ public:
+  explicit TrappedFocusSearch(views::View* trapped_focus)
+      : FocusSearch(trapped_focus->parent(), true, true),
+        trapped_focus_(trapped_focus) {}
+  TrappedFocusSearch(const TrappedFocusSearch&) = delete;
+  TrappedFocusSearch& operator=(const TrappedFocusSearch&) = delete;
+  ~TrappedFocusSearch() override = default;
+
+  // views::FocusSearch:
+  views::View* FindNextFocusableView(
+      views::View* starting_view,
+      views::FocusSearch::SearchDirection search_direction,
+      views::FocusSearch::TraversalDirection traversal_direction,
+      views::FocusSearch::StartingViewPolicy check_starting_view,
+      views::FocusSearch::AnchoredDialogPolicy can_go_into_anchored_dialog,
+      views::FocusTraversable** focus_traversable,
+      views::View** focus_traversable_view) override {
+    return trapped_focus_;
+  }
+
+ private:
+  views::View* const trapped_focus_;
+};
+
 }  // namespace
 
 // A button that holds a child view.
 class RemoveUserButton : public SystemLabelButton {
  public:
   RemoveUserButton(views::ButtonListener* listener, LoginUserMenuView* bubble)
-      : SystemLabelButton(
-            listener,
-            l10n_util::GetStringUTF16(
-                IDS_ASH_LOGIN_POD_MENU_REMOVE_ITEM_ACCESSIBLE_NAME),
-            SystemLabelButton::DisplayType::DEFAULT,
-            /*multiline*/ true),
+      : SystemLabelButton(listener,
+                          l10n_util::GetStringUTF16(
+                              IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME),
+                          SystemLabelButton::DisplayType::DEFAULT,
+                          /*multiline*/ true),
         bubble_(bubble) {}
 
   ~RemoveUserButton() override = default;
@@ -63,8 +88,7 @@ class RemoveUserButton : public SystemLabelButton {
       return;
     }
 
-    if (event->key_code() == ui::VKEY_ESCAPE ||
-        event->key_code() == ui::VKEY_TAB) {
+    if (event->key_code() == ui::VKEY_ESCAPE) {
       bubble_->Hide();
       // We explicitly move focus back to the dropdown button so the Tab
       // traversal works correctly.
@@ -113,6 +137,8 @@ LoginUserMenuView::LoginUserMenuView(
       bubble_opener_(bubble_opener),
       on_remove_user_warning_shown_(on_remove_user_warning_shown),
       on_remove_user_requested_(on_remove_user_requested) {
+  set_notify_alert_on_show(false);
+
   const base::string16& email =
       base::UTF8ToUTF16(user.basic_user_info.display_email);
   bool is_owner = user.is_device_owner;
@@ -190,6 +216,9 @@ LoginUserMenuView::LoginUserMenuView(
     remove_user_button_ = new RemoveUserButton(this, this);
     remove_user_button_->SetID(kUserMenuRemoveUserButtonIdForTest);
     AddChildView(remove_user_button_);
+
+    // Traps the focus on the remove user button.
+    focus_search_ = std::make_unique<TrappedFocusSearch>(remove_user_button_);
   }
 
   set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
@@ -261,4 +290,30 @@ bool LoginUserMenuView::HasFocus() const {
 const char* LoginUserMenuView::GetClassName() const {
   return "LoginUserMenuView";
 }
+
+void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
+  node_data->SetDescription(l10n_util::GetStringUTF16(
+      IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+}
+
+views::FocusTraversable* LoginUserMenuView::GetPaneFocusTraversable() {
+  return this;
+}
+
+views::FocusSearch* LoginUserMenuView::GetFocusSearch() {
+  return focus_search_.get();
+}
+
+views::FocusTraversable* LoginUserMenuView::GetFocusTraversableParent() {
+  return nullptr;
+}
+
+views::View* LoginUserMenuView::GetFocusTraversableParentView() {
+  return nullptr;
+}
+
 }  // namespace ash

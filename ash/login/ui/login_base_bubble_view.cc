@@ -157,8 +157,10 @@ void LoginBaseBubbleView::Show() {
   ScheduleAnimation(true /*visible*/);
 
   // Tell ChromeVox to read bubble contents.
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                           true /*send_native_event*/);
+  if (notify_a11y_alert_on_show_) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                             true /*send_native_event*/);
+  }
 }
 
 void LoginBaseBubbleView::Hide() {

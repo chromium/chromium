@@ -76,6 +76,10 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   // Return area where bubble could be shown in.
   gfx::Rect GetBoundsAvailableToShowBubble() const;
 
+  void set_notify_alert_on_show(bool notify_alert_on_show) {
+    notify_a11y_alert_on_show_ = notify_alert_on_show;
+  }
+
  private:
   // Create a layer for this view if doesn't exist.
   void EnsureLayer();
@@ -100,6 +104,9 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   PositioningStrategy positioning_strategy_ = PositioningStrategy::kShowBelow;
   int horizontal_padding_ = 0;
   int vertical_padding_ = 0;
+
+  // Whether or not to read an alert when the bubble is shown.
+  bool notify_a11y_alert_on_show_ = true;
 };
 
 }  // namespace ash
