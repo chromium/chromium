@@ -137,6 +137,15 @@ GlobalData& GetGlobalData() {
   return *global_data;
 }
 
+void ResetGlobalData() {
+  GlobalData& global_data = GetGlobalData();
+  global_data.current_transaction.reset();
+  global_data.pending_make_credential_callback.reset();
+  global_data.pending_get_assertion_callback.reset();
+  global_data.usb_callback.reset();
+  global_data.last_event.reset();
+}
+
 // AndroidBLEAdvert wraps a Java |BLEAdvert| object so that
 // |authenticator::Platform| can hold it.
 class AndroidBLEAdvert
@@ -208,6 +217,13 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         ToJavaArrayOfByteArray(env_, params->allowed_cred_ids));
   }
 
+  void OnCompleted(bool success) override {
+    Java_CableAuthenticator_onComplete(env_, cable_authenticator_);
+    // ResetGlobalData will delete the |Transaction|, which will delete this
+    // object. Thus nothing else can be done after this call.
+    ResetGlobalData();
+  }
+
   std::unique_ptr<BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, device::cablev2::kAdvertSize> payload)
       override {
@@ -223,23 +239,6 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   const ScopedJavaGlobalRef<jobject> cable_authenticator_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-void ResetGlobalData() {
-  GlobalData& global_data = GetGlobalData();
-  global_data.current_transaction.reset();
-  global_data.pending_make_credential_callback.reset();
-  global_data.pending_get_assertion_callback.reset();
-  global_data.usb_callback.reset();
-  global_data.last_event.reset();
-}
-
-// TransactionComplete is called by |authenticator::Platform| whenever a
-// transaction has completed.
-void TransactionComplete(JNIEnv* env,
-                         ScopedJavaGlobalRef<jobject> cable_authenticator) {
-  ResetGlobalData();
-  Java_CableAuthenticator_onComplete(env, cable_authenticator);
-}
 
 // USBTransport wraps the Java |USBHandler| object so that
 // |authenticator::Platform| can use it as a transport.
@@ -355,9 +354,7 @@ static void JNI_CableAuthenticator_StartUSB(
       device::cablev2::authenticator::TransactWithPlaintextTransport(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),
           std::unique_ptr<device::cablev2::authenticator::Transport>(
-              transport.release()),
-          base::BindOnce(&TransactionComplete, env,
-                         ScopedJavaGlobalRef<jobject>(cable_authenticator)));
+              transport.release()));
 }
 
 static jboolean JNI_CableAuthenticator_StartQR(
@@ -380,9 +377,7 @@ static jboolean JNI_CableAuthenticator_StartQR(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),
           global_data.network_context, global_data.root_secret,
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
-          decoded_qr->peer_identity, global_data.registration->contact_id(),
-          base::BindOnce(&TransactionComplete, env,
-                         ScopedJavaGlobalRef<jobject>(cable_authenticator)));
+          decoded_qr->peer_identity, global_data.registration->contact_id());
 
   return true;
 }
@@ -400,9 +395,7 @@ static void JNI_CableAuthenticator_StartFCM(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),
           global_data.network_context, global_data.root_secret,
           event.routing_id, event.tunnel_id, event.pairing_id,
-          event.client_nonce,
-          base::BindOnce(&TransactionComplete, env,
-                         ScopedJavaGlobalRef<jobject>(cable_authenticator)));
+          event.client_nonce);
 }
 
 static void JNI_CableAuthenticator_Stop(JNIEnv* env) {

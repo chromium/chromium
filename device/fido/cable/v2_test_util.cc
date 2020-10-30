@@ -378,6 +378,8 @@ class TestPlatform : public authenticator::Platform {
     NOTREACHED();
   }
 
+  void OnCompleted(bool success) override {}
+
   std::unique_ptr<authenticator::Platform::BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(

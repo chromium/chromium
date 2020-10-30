@@ -82,6 +82,11 @@ class Platform {
 
   virtual void GetAssertion(std::unique_ptr<GetAssertionParams> params) = 0;
 
+  // OnCompleted is called when the transaction has completed. Note that calling
+  // this may result in the |Transaction| that owns this |Platform| being
+  // deleted.
+  virtual void OnCompleted(bool success) = 0;
+
   virtual std::unique_ptr<BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) = 0;
 };
@@ -112,8 +117,7 @@ class Transaction {
 // caBLEv2 transaction.
 std::unique_ptr<Transaction> TransactWithPlaintextTransport(
     std::unique_ptr<Platform> platform,
-    std::unique_ptr<Transport> transport,
-    Transaction::CompleteCallback complete_callback);
+    std::unique_ptr<Transport> transport);
 
 // TransactFromQRCode starts a network-based transaction based on the decoded
 // contents of a QR code.
@@ -125,8 +129,7 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     // TODO: name this constant.
     base::span<const uint8_t, 16> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity,
-    base::Optional<std::vector<uint8_t>> contact_id,
-    Transaction::CompleteCallback complete_callback);
+    base::Optional<std::vector<uint8_t>> contact_id);
 
 // TransactFromQRCode starts a network-based transaction based on the decoded
 // contents of a cloud message.
@@ -137,8 +140,7 @@ std::unique_ptr<Transaction> TransactFromFCM(
     std::array<uint8_t, kRoutingIdSize> routing_id,
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
     base::span<const uint8_t> pairing_id,
-    base::span<const uint8_t, kClientNonceSize> client_nonce,
-    Transaction::CompleteCallback complete_callback);
+    base::span<const uint8_t, kClientNonceSize> client_nonce);
 
 }  // namespace authenticator
 }  // namespace cablev2

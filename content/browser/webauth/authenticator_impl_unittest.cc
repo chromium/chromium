@@ -6116,7 +6116,7 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
                                                           &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/base::nullopt, base::DoNothing());
+          /*contact_id=*/base::nullopt);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 0u);
@@ -6140,7 +6140,7 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
                                                           &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/std::vector<uint8_t>({1, 2, 3}), base::DoNothing());
+          /*contact_id=*/std::vector<uint8_t>({1, 2, 3}));
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 1u);
@@ -6170,7 +6170,7 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
             device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
                                                             &virtual_device_),
             network_context_.get(), root_secret_, routing_id, tunnel_id,
-            pairing_id, client_nonce, base::DoNothing());
+            pairing_id, client_nonce);
       });
 
   AuthenticatorEnvironmentImpl::GetInstance()
