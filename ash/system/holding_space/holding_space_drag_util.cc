@@ -10,6 +10,8 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "base/containers/adapters.h"
@@ -210,9 +212,12 @@ class DragImageItemChipView : public DragImageItemView {
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);
 
-    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL,
-                       /*use_unified_theme=*/false)
+    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)
         .SetupLabel(label);
+
+    ScopedLightModeAsDefault scoped_light_mode;
+    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 };
 
