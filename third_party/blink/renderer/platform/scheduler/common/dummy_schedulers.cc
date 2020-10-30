@@ -25,6 +25,9 @@ class DummyFrameScheduler : public FrameScheduler {
       : page_scheduler_(page_scheduler) {}
   ~DummyFrameScheduler() override {}
 
+  DummyFrameScheduler(const DummyFrameScheduler&) = delete;
+  DummyFrameScheduler& operator=(const DummyFrameScheduler&) = delete;
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {
     DCHECK(WTF::IsMainThread());
     return base::ThreadTaskRunnerHandle::Get();
@@ -88,14 +91,16 @@ class DummyFrameScheduler : public FrameScheduler {
  private:
   PageScheduler* page_scheduler_;
   base::WeakPtrFactory<FrameScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DummyFrameScheduler);
 };
 
 class DummyAgentGroupScheduler : public AgentGroupScheduler {
  public:
   DummyAgentGroupScheduler() = default;
   ~DummyAgentGroupScheduler() override = default;
+
+  DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
+  DummyAgentGroupScheduler& operator=(const DummyAgentGroupScheduler&) = delete;
+
   AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override {
@@ -104,9 +109,6 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
     return base::ThreadTaskRunnerHandle::Get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyAgentGroupScheduler);
 };
 
 class DummyPageScheduler : public PageScheduler {
@@ -114,6 +116,9 @@ class DummyPageScheduler : public PageScheduler {
   DummyPageScheduler()
       : agent_group_scheduler_(std::make_unique<DummyAgentGroupScheduler>()) {}
   ~DummyPageScheduler() override = default;
+
+  DummyPageScheduler(const DummyPageScheduler&) = delete;
+  DummyPageScheduler& operator=(const DummyPageScheduler&) = delete;
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
@@ -156,7 +161,6 @@ class DummyPageScheduler : public PageScheduler {
 
  private:
   std::unique_ptr<DummyAgentGroupScheduler> agent_group_scheduler_;
-  DISALLOW_COPY_AND_ASSIGN(DummyPageScheduler);
 };
 
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
@@ -164,6 +168,9 @@ class SimpleThread : public Thread {
  public:
   explicit SimpleThread(ThreadScheduler* scheduler) : scheduler_(scheduler) {}
   ~SimpleThread() override {}
+
+  SimpleThread(const SimpleThread&) = delete;
+  SimpleThread& operator=(const SimpleThread&) = delete;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override {
     return base::ThreadTaskRunnerHandle::Get();
@@ -175,8 +182,6 @@ class SimpleThread : public Thread {
 
  private:
   ThreadScheduler* scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleThread);
 };
 
 class DummyThreadScheduler : public ThreadScheduler {
