@@ -191,7 +191,6 @@ void RootWindowDeskSwitchAnimator::TakeEndingDeskScreenshot() {
 
 void RootWindowDeskSwitchAnimator::StartAnimation() {
   DCHECK(starting_desk_screenshot_taken_);
-  DCHECK(ending_desk_screenshot_taken_);
   DCHECK(!animation_finished_);
 
   // Set a transform so that the ending desk will be visible.
@@ -322,9 +321,22 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
 }
 
 void RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
-  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
-  CHECK(starting_desk_screenshot_taken_);
-  CHECK(ending_desk_screenshot_taken_);
+  // If the starting screenshot has not finished, just let our delegate know
+  // that the desk animation is finished (and |this| will soon be deleted), and
+  // go back to the starting desk.
+  if (!starting_desk_screenshot_taken_) {
+    animation_finished_ = true;
+    ending_desk_index_ = starting_desk_index_;
+    delegate_->OnDeskSwitchAnimationFinished();
+    return;
+  }
+
+  // If the ending desk screenshot has not finished,
+  // GetIndexOfMostVisibleDeskScreenshot will still return a valid desk index
+  // that we can animate to, but we need to make sure the ending desk screenshot
+  // callback does not get called.
+  if (!ending_desk_screenshot_taken_)
+    weak_ptr_factory_.InvalidateWeakPtrs();
 
   ending_desk_index_ = GetIndexOfMostVisibleDeskScreenshot();
   StartAnimation();

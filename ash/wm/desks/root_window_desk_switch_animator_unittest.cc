@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "base/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -444,6 +445,23 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
       Shell::GetPrimaryRootWindow()->bounds(),
       GetTargetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(1),
                              animation_layer));
+}
+
+// Test that there is no crash if we end swiping before the desk animation
+// screenshots are finished taking. Regression test for
+// https://crbug.com/1134390.
+TEST_F(RootWindowDeskSwitchAnimatorTest,
+       EndSwipeAnimationBeforeScreenshotTaken) {
+  InitAnimator(0, 1);
+  animator()->TakeStartingDeskScreenshot();
+  animator()->EndSwipeAnimation();
+
+  // Reinitialize the animator as each animator only supports one
+  // EndSwipeAnimation during its lifetime.
+  InitAnimator(0, 1);
+  TakeStartingDeskScreenshotAndWait();
+  animator()->TakeEndingDeskScreenshot();
+  animator()->EndSwipeAnimation();
 }
 
 }  // namespace ash
