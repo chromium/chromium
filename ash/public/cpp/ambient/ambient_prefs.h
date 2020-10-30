@@ -21,6 +21,17 @@ ASH_PUBLIC_EXPORT extern const char kAmbientModeEnabled[];
 // |Ash.AmbientMode.PhotoSource|. Not displayed to the user in settings.
 ASH_PUBLIC_EXPORT extern const char kAmbientModePhotoSourcePref[];
 
+// Integer pref for the number of seconds to wait before starting Ambient mode
+// on lock screen. Not displayed to the user in settings.
+ASH_PUBLIC_EXPORT extern const char
+    kAmbientModeLockScreenInactivityTimeoutSeconds[];
+
+// Integer pref for the number of seconds to wait before locking the screen in
+// the background after Ambient mode has started. Not displayed to the user in
+// settings.
+ASH_PUBLIC_EXPORT extern const char
+    kAmbientModeLockScreenBackgroundTimeoutSeconds[];
+
 }  // namespace prefs
 }  // namespace ambient
 }  // namespace ash

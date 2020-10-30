@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -27,12 +28,24 @@ enum class AmbientUiMode {
   kMaxValue = kInSessionUi,
 };
 
+// The default time before starting Ambient mode on lock screen.
+constexpr base::TimeDelta kLockScreenInactivityTimeout =
+    base::TimeDelta::FromSeconds(7);
+
+// The default time to lock screen in the background after Ambient mode begins.
+constexpr base::TimeDelta kLockScreenBackgroundTimeout =
+    base::TimeDelta::FromSeconds(5);
+
 // A checked observer which receives notification of changes to the Ambient Mode
 // UI model.
 class ASH_PUBLIC_EXPORT AmbientUiModelObserver : public base::CheckedObserver {
  public:
   // Invoked when the Ambient Mode UI visibility changed.
-  virtual void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) = 0;
+  virtual void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) {}
+
+  virtual void OnLockScreenInactivityTimeoutChanged(base::TimeDelta timeout) {}
+
+  virtual void OnBackgroundLockScreenTimeoutChanged(base::TimeDelta timeout) {}
 };
 
 // Models the Ambient Mode UI.
@@ -53,10 +66,34 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
 
   AmbientUiVisibility ui_visibility() const { return ui_visibility_; }
 
+  void SetLockScreenInactivityTimeout(base::TimeDelta timeout);
+
+  base::TimeDelta lock_screen_inactivity_timeout() const {
+    return lock_screen_inactivity_timeout_;
+  }
+
+  void SetBackgroundLockScreenTimeout(base::TimeDelta timeout);
+
+  base::TimeDelta background_lock_screen_timeout() const {
+    return background_lock_screen_timeout_;
+  }
+
  private:
   void NotifyAmbientUiVisibilityChanged();
 
+  void NotifyLockScreenInactivityTimeoutChanged();
+
+  void NotifyBackgroundLockScreenTimeoutChanged();
+
   AmbientUiVisibility ui_visibility_ = AmbientUiVisibility::kClosed;
+
+  // The delay to show ambient mode after lock screen is activated.
+  base::TimeDelta lock_screen_inactivity_timeout_ =
+      kLockScreenInactivityTimeout;
+
+  // The delay between ambient mode starts and enabling lock screen.
+  base::TimeDelta background_lock_screen_timeout_ =
+      kLockScreenBackgroundTimeout;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };

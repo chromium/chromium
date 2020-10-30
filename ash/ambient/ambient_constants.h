@@ -32,9 +32,6 @@ constexpr base::TimeDelta kBackupPhotoRefreshDelay =
 constexpr base::TimeDelta kWeatherRefreshInterval =
     base::TimeDelta::FromMinutes(5);
 
-// The delay between ambient mode starts and enabling lock screen.
-constexpr base::TimeDelta kLockScreenDelay = base::TimeDelta::FromSeconds(5);
-
 // The batch size of topics to fetch in one request.
 constexpr int kTopicsBatchSize = 100;
 

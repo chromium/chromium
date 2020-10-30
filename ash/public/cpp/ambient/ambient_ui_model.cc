@@ -44,9 +44,39 @@ void AmbientUiModel::SetUiVisibility(AmbientUiVisibility visibility) {
   NotifyAmbientUiVisibilityChanged();
 }
 
+void AmbientUiModel::SetLockScreenInactivityTimeout(base::TimeDelta timeout) {
+  if (timeout == lock_screen_inactivity_timeout_)
+    return;
+
+  lock_screen_inactivity_timeout_ = timeout;
+  NotifyLockScreenInactivityTimeoutChanged();
+}
+
+void AmbientUiModel::SetBackgroundLockScreenTimeout(base::TimeDelta timeout) {
+  if (timeout == background_lock_screen_timeout_)
+    return;
+
+  background_lock_screen_timeout_ = timeout;
+  NotifyBackgroundLockScreenTimeoutChanged();
+}
+
 void AmbientUiModel::NotifyAmbientUiVisibilityChanged() {
   for (auto& observer : observers_)
     observer.OnAmbientUiVisibilityChanged(ui_visibility_);
+}
+
+void AmbientUiModel::NotifyLockScreenInactivityTimeoutChanged() {
+  for (auto& observer : observers_) {
+    observer.OnLockScreenInactivityTimeoutChanged(
+        lock_screen_inactivity_timeout_);
+  }
+}
+
+void AmbientUiModel::NotifyBackgroundLockScreenTimeoutChanged() {
+  for (auto& observer : observers_) {
+    observer.OnBackgroundLockScreenTimeoutChanged(
+        background_lock_screen_timeout_);
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, AmbientUiMode mode) {

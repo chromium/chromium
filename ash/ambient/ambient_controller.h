@@ -52,9 +52,6 @@ class ASH_EXPORT AmbientController
       public device::mojom::FingerprintObserver,
       public ui::UserActivityObserver {
  public:
-  static constexpr base::TimeDelta kAutoShowWaitTimeInterval =
-      base::TimeDelta::FromSeconds(7);
-
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit AmbientController(
@@ -67,6 +64,7 @@ class ASH_EXPORT AmbientController
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
   void OnFirstSessionStarted() override;
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -159,8 +157,9 @@ class ASH_EXPORT AmbientController
 
   void CloseWidget(bool immediately);
 
-  // Invoked when the |kAmbientModeEnabled| pref state changed.
-  void OnEnabledStateChanged();
+  // Invoked when the Ambient mode prefs state changes.
+  void OnLockScreenInactivityTimeoutPrefChanged();
+  void OnLockScreenBackgroundTimeoutPrefChanged();
 
   AmbientContainerView* get_container_view_for_testing() {
     return container_view_;

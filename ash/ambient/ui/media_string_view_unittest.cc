@@ -370,7 +370,7 @@ TEST_F(MediaStringViewTest, DoNotShowOnLockScreenIfPrefIsDisabled) {
   pref->SetBoolean(prefs::kLockScreenMediaControlsEnabled, false);
   // Simulates Ambient Mode shown on lock-screen.
   LockScreen();
-  FastForwardToInactivity();
+  FastForwardToLockScreenTimeout();
   FastForwardTiny();
 
   // Simulates active and playing media session.

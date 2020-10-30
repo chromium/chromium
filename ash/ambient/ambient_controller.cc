@@ -38,6 +38,7 @@
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -108,13 +109,17 @@ bool IsUiHidden(AmbientUiVisibility visibility) {
   return visibility == AmbientUiVisibility::kHidden;
 }
 
+PrefService* GetPrimaryUserPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
 bool IsAmbientModeEnabled() {
   if (!AmbientClient::Get()->IsAmbientModeAllowed())
     return false;
 
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  return prefs && prefs->GetBoolean(ambient::prefs::kAmbientModeEnabled);
+  auto* pref_service = GetPrimaryUserPrefService();
+  return pref_service &&
+         pref_service->GetBoolean(ambient::prefs::kAmbientModeEnabled);
 }
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
@@ -141,6 +146,20 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterIntegerPref(
         ash::ambient::prefs::kAmbientModePhotoSourcePref,
         static_cast<int>(ash::ambient::AmbientModePhotoSource::kUnset));
+
+    // Used to control the number of seconds of inactivity on lock screen before
+    // showing Ambient mode. This pref is not displayed to the user. Registered
+    // as integer rather than TimeDelta to work with prefs_util.
+    registry->RegisterIntegerPref(
+        ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+        kLockScreenInactivityTimeout.InSeconds());
+
+    // Used to control the number of seconds to lock the session after starting
+    // Ambient mode. This pref is not displayed to the user. Registered as
+    // integer rather than TimeDelta to work with prefs_util.
+    registry->RegisterIntegerPref(
+        ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+        kLockScreenBackgroundTimeout.InSeconds());
   }
 }
 
@@ -242,7 +261,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
           // Start timer to show ambient mode.
           inactivity_timer_.Start(
-              FROM_HERE, kAutoShowWaitTimeInterval,
+              FROM_HERE, ambient_ui_model_.lock_screen_inactivity_timeout(),
               base::BindOnce(&AmbientController::OnAutoShowTimeOut,
                              weak_ptr_factory_.GetWeakPtr()));
         }
@@ -316,6 +335,31 @@ void AmbientController::OnLockStateChanged(bool locked) {
 void AmbientController::OnFirstSessionStarted() {
   if (IsAmbientModeEnabled())
     ambient_photo_controller_.ScheduleFetchBackupImages();
+}
+
+void AmbientController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  if (!IsAmbientModeEnabled() || GetPrimaryUserPrefService() != pref_service)
+    return;
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+      base::BindRepeating(
+          &AmbientController::OnLockScreenInactivityTimeoutPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+      base::BindRepeating(
+          &AmbientController::OnLockScreenBackgroundTimeoutPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  // Trigger the callbacks manually the first time to init AmbientUiModel.
+  OnLockScreenInactivityTimeoutPrefChanged();
+  OnLockScreenBackgroundTimeoutPrefChanged();
 }
 
 void AmbientController::OnPowerStatusChanged() {
@@ -484,9 +528,9 @@ void AmbientController::AcquireWakeLock() {
     if (!session_controller->IsScreenLocked() &&
         !delayed_lock_timer_.IsRunning()) {
       delayed_lock_timer_.Start(
-          FROM_HERE, kLockScreenDelay, base::BindOnce([]() {
-            Shell::Get()->session_controller()->LockScreen();
-          }));
+          FROM_HERE, ambient_ui_model_.background_lock_screen_timeout(),
+          base::BindOnce(
+              []() { Shell::Get()->session_controller()->LockScreen(); }));
     }
   }
 }
@@ -511,6 +555,26 @@ void AmbientController::CloseWidget(bool immediately) {
     container_view_->GetWidget()->Close();
 
   container_view_ = nullptr;
+}
+
+void AmbientController::OnLockScreenInactivityTimeoutPrefChanged() {
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!pref_service)
+    return;
+
+  ambient_ui_model_.SetLockScreenInactivityTimeout(
+      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+          ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds)));
+}
+
+void AmbientController::OnLockScreenBackgroundTimeoutPrefChanged() {
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!pref_service)
+    return;
+
+  ambient_ui_model_.SetBackgroundLockScreenTimeout(
+      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+          ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds)));
 }
 
 void AmbientController::RequestAccessToken(
@@ -602,5 +666,4 @@ void AmbientController::set_backend_controller_for_testing(
   ambient_backend_controller_ = std::move(backend_controller);
 }
 
-constexpr base::TimeDelta AmbientController::kAutoShowWaitTimeInterval;
 }  // namespace ash

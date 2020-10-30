@@ -523,6 +523,14 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Ambient Mode.
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  // The following two prefs are not displayed to the user but are configurable
+  // to speed up automated testing of Ambient mode.
+  (*s_allowlist)
+      [ash::ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds] =
+          settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)
+      [ash::ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds] =
+          settings_api::PrefType::PREF_TYPE_NUMBER;
 
   // Google Assistant.
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantConsentStatus] =

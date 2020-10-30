@@ -17,6 +17,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -274,13 +275,17 @@ MediaStringView* AmbientAshTestBase::GetMediaStringView() {
       container_view()->GetViewByID(AmbientViewID::kAmbientMediaStringView));
 }
 
-void AmbientAshTestBase::FastForwardToInactivity() {
-  task_environment()->FastForwardBy(
-      kFastForwardFactor * AmbientController::kAutoShowWaitTimeInterval);
+void AmbientAshTestBase::FastForwardToLockScreenTimeout() {
+  task_environment()->FastForwardBy(kFastForwardFactor *
+                                    ambient_controller()
+                                        ->ambient_ui_model()
+                                        ->lock_screen_inactivity_timeout());
 }
 
 void AmbientAshTestBase::FastForwardToNextImage() {
-  task_environment()->FastForwardBy(kFastForwardFactor * kPhotoRefreshInterval);
+  task_environment()->FastForwardBy(
+      kFastForwardFactor *
+      ambient_controller()->GetAmbientBackendModel()->photo_refresh_interval_);
 }
 
 void AmbientAshTestBase::FastForwardTiny() {
@@ -290,12 +295,17 @@ void AmbientAshTestBase::FastForwardTiny() {
 }
 
 void AmbientAshTestBase::FastForwardToLockScreen() {
-  task_environment()->FastForwardBy(kFastForwardFactor * kLockScreenDelay);
+  task_environment()->FastForwardBy(kFastForwardFactor *
+                                    ambient_controller()
+                                        ->ambient_ui_model()
+                                        ->background_lock_screen_timeout());
 }
 
 void AmbientAshTestBase::FastForwardHalfLockScreenDelay() {
   task_environment()->FastForwardBy(0.5 * kFastForwardFactor *
-                                    kLockScreenDelay);
+                                    ambient_controller()
+                                        ->ambient_ui_model()
+                                        ->background_lock_screen_timeout());
 }
 
 void AmbientAshTestBase::SetPowerStateCharging() {
