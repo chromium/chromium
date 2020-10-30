@@ -10758,6 +10758,47 @@ TEST_F(HttpCacheTest, SplitCache) {
   EXPECT_FALSE(response.was_cached);
 }
 
+TEST_F(HttpCacheTest, SplitCacheEnabledByDefault) {
+  HttpCache::ClearGlobalsForTesting();
+  HttpCache::SplitCacheFeatureEnableByDefault();
+  EXPECT_TRUE(HttpCache::IsSplitCacheEnabled());
+
+  MockHttpCache cache;
+  HttpResponseInfo response;
+
+  url::Origin origin_a = url::Origin::Create(GURL("http://a.com"));
+  url::Origin origin_b = url::Origin::Create(GURL("http://b.com"));
+  MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
+  net::NetworkIsolationKey key_a(origin_a, origin_a);
+  trans_info.network_isolation_key = key_a;
+  RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
+                                trans_info, &response);
+  EXPECT_FALSE(response.was_cached);
+
+  // Subsequent requests with the same NIK and different NIK will be a cache hit
+  // and miss respectively.
+  RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
+                                trans_info, &response);
+  EXPECT_TRUE(response.was_cached);
+
+  net::NetworkIsolationKey key_b(origin_b, origin_b);
+  trans_info.network_isolation_key = key_b;
+  RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
+                                trans_info, &response);
+  EXPECT_FALSE(response.was_cached);
+}
+
+TEST_F(HttpCacheTest, SplitCacheEnabledByDefaultButOverridden) {
+  HttpCache::ClearGlobalsForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      net::features::kSplitCacheByNetworkIsolationKey);
+
+  // Enabling it here should have no effect as it is already overridden.
+  HttpCache::SplitCacheFeatureEnableByDefault();
+  EXPECT_FALSE(HttpCache::IsSplitCacheEnabled());
+}
+
 TEST_F(HttpCacheTest, SplitCacheUsesRegistrableDomain) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

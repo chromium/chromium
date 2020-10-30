@@ -1831,8 +1831,7 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
   // invalidate in the cache.
   if (!(effective_load_flags_ & LOAD_DISABLE_CACHE) && method_ == "POST" &&
       NonErrorResponse(new_response_->headers->response_code()) &&
-      (!base::FeatureList::IsEnabled(
-           net::features::kSplitCacheByNetworkIsolationKey) ||
+      (!HttpCache::IsSplitCacheEnabled() ||
        request_->network_isolation_key.IsFullyPopulated())) {
     cache_->DoomMainEntryForUrl(request_->url, request_->network_isolation_key);
   }
@@ -2441,8 +2440,7 @@ bool HttpCache::Transaction::ShouldPassThrough() {
   // again. Also, if the request does not have a top frame origin, bypass the
   // cache otherwise resources from different pages could share a cached entry
   // in such cases.
-  else if (base::FeatureList::IsEnabled(
-               features::kSplitCacheByNetworkIsolationKey) &&
+  else if (HttpCache::IsSplitCacheEnabled() &&
            request_->network_isolation_key.IsTransient()) {
     cacheable = false;
   } else if (method_ == "GET" || method_ == "HEAD") {

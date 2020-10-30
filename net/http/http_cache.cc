@@ -11,6 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
@@ -55,6 +56,15 @@
 #endif
 
 namespace net {
+
+namespace {
+// True if any HTTP cache has been initialized.
+bool g_init_cache = false;
+
+// True if split cache is enabled by default. Must be set before any HTTP cache
+// has been initialized.
+bool g_enable_split_cache = false;
+}  // namespace
 
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
 const char HttpCache::kDoubleKeySeparator[] = " ";
@@ -245,7 +255,9 @@ HttpCache::HttpCache(HttpNetworkSession* session,
                      bool is_main_cache)
     : HttpCache(std::make_unique<HttpNetworkLayer>(session),
                 std::move(backend_factory),
-                is_main_cache) {}
+                is_main_cache) {
+  g_init_cache = true;
+}
 
 HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
                      std::unique_ptr<BackendFactory> backend_factory,
@@ -259,6 +271,7 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
       mode_(NORMAL),
       network_layer_(std::move(network_layer)),
       clock_(base::DefaultClock::GetInstance()) {
+  g_init_cache = true;
   HttpNetworkSession* session = network_layer_->GetSession();
   // Session may be NULL in unittests.
   // TODO(mmenke): Seems like tests could be changed to provide a session,
@@ -455,6 +468,29 @@ std::string HttpCache::GenerateCacheKeyForTest(const HttpRequestInfo* request) {
   return GenerateCacheKey(request);
 }
 
+// static
+void HttpCache::SplitCacheFeatureEnableByDefault() {
+  CHECK(!g_enable_split_cache && !g_init_cache);
+  if (!base::FeatureList::GetInstance()->IsFeatureOverridden(
+          "SplitCacheByNetworkIsolationKey")) {
+    g_enable_split_cache = true;
+  }
+}
+
+// static
+bool HttpCache::IsSplitCacheEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kSplitCacheByNetworkIsolationKey) ||
+         g_enable_split_cache;
+}
+
+// static
+void HttpCache::ClearGlobalsForTesting() {
+  // Reset these so that unit tests can work.
+  g_init_cache = false;
+  g_enable_split_cache = false;
+}
+
 //-----------------------------------------------------------------------------
 
 net::Error HttpCache::CreateAndSetWorkItem(ActiveEntry** entry,
@@ -532,8 +568,7 @@ int HttpCache::GetBackendForTransaction(Transaction* transaction) {
 std::string HttpCache::GenerateCacheKey(const HttpRequestInfo* request) {
   std::string isolation_key;
 
-  if (base::FeatureList::IsEnabled(
-          features::kSplitCacheByNetworkIsolationKey)) {
+  if (IsSplitCacheEnabled()) {
     // Prepend the key with |kDoubleKeyPrefix| = "_dk_" to mark it as
     // double-keyed (and makes it an invalid url so that it doesn't get
     // confused with a single-keyed entry). Separate the origin and url

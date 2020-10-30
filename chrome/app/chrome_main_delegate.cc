@@ -65,6 +65,7 @@
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "net/http/http_cache.h"
 #include "net/url_request/url_request.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -586,6 +587,11 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
   bool is_browser_process = process_type.empty();
+
+  // Enable Split cache by default here and not in content/ so as to not
+  // impact non-Chrome embedders like WebView, Cronet etc. This only enables
+  // it if not already overridden by command line, field trial etc.
+  net::HttpCache::SplitCacheFeatureEnableByDefault();
 
 #if defined(OS_ANDROID)
   // For child processes, this requires allowlisting of the sched_setaffinity()

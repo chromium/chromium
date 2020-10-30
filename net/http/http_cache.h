@@ -272,6 +272,18 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Function to generate cache key for testing.
   static std::string GenerateCacheKeyForTest(const HttpRequestInfo* request);
 
+  // Enable split cache feature if not already overridden in the feature list.
+  // Should only be invoked during process initialization before the HTTP
+  // cache is initialized.
+  static void SplitCacheFeatureEnableByDefault();
+
+  // Returns true if split cache is enabled either by default or by other means
+  // like command line or field trials.
+  static bool IsSplitCacheEnabled();
+
+  // Resets g_init_cache and g_enable_split_cache for tests.
+  static void ClearGlobalsForTesting();
+
  private:
   // Types --------------------------------------------------------------------
 
