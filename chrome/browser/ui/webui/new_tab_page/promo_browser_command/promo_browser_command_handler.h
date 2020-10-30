@@ -31,6 +31,9 @@ class PromoBrowserCommandHandler
   ~PromoBrowserCommandHandler() override;
 
   // promo_browser_command::mojom::CommandHandler:
+  void CanShowPromoWithCommand(
+      promo_browser_command::mojom::Command command_id,
+      CanShowPromoWithCommandCallback callback) override;
   void ExecuteCommand(promo_browser_command::mojom::Command command_id,
                       promo_browser_command::mojom::ClickInfoPtr click_info,
                       ExecuteCommandCallback callback) override;

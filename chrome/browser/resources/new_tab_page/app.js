@@ -744,6 +744,34 @@ class AppElement extends PolymerElement {
   }
 
   /**
+   * Sends the command received from the given source and origin to the browser.
+   * Relays the browser response to whether or not a promo containing the given
+   * command can be shown back to the source promo frame. |commandSource| and
+   * |commandOrigin| are used only to send the response back to the source promo
+   * frame and should not be used for anything else.
+   * @param {Object} messageData Data received from the source promo frame.
+   * @param {Window} commandSource Source promo frame.
+   * @param {string} commandOrigin Origin of the source promo frame.
+   * @private
+   */
+  canShowPromoWithBrowserCommand_(messageData, commandSource, commandOrigin) {
+    // Make sure we don't send unsupported commands to the browser.
+    /** @type {!promoBrowserCommand.mojom.Command} */
+    const commandId = Object.values(promoBrowserCommand.mojom.Command)
+                          .includes(messageData.commandId) ?
+        messageData.commandId :
+        promoBrowserCommand.mojom.Command.kUnknownCommand;
+
+    PromoBrowserCommandProxy.getInstance()
+        .handler.canShowPromoWithCommand(commandId)
+        .then(({canShow}) => {
+          const response = {messageType: messageData.messageType};
+          response[messageData.commandId] = canShow;
+          commandSource.postMessage(response, commandOrigin);
+        });
+  }
+
+  /**
    * Sends the command and the accompanying mouse click info received from the
    * promo of the given source and origin to the browser. Relays the execution
    * status response back to the source promo frame. |commandSource| and
@@ -815,6 +843,8 @@ class AppElement extends PolymerElement {
     } else if (data.messageType === 'deactivate') {
       this.$.oneGoogleBarOverlayBackdrop.toggleAttribute('show', false);
       $$(this, '#oneGoogleBar').style.zIndex = '0';
+    } else if (data.messageType === 'can-show-promo-with-browser-command') {
+      this.canShowPromoWithBrowserCommand_(data, event.source, event.origin);
     } else if (data.messageType === 'execute-browser-command') {
       this.executePromoBrowserCommand_(
           /** @type {!CommandData} */ (data.data), event.source, event.origin);

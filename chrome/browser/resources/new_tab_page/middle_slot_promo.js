@@ -28,6 +28,7 @@ class MiddleSlotPromoElement extends PolymerElement {
       /** @type {boolean} */
       hidden: {
         type: Boolean,
+        value: true,
         reflectToAttribute: true,
       },
 
@@ -36,6 +37,18 @@ class MiddleSlotPromoElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesEnabled'),
         reflectToAttribute: true,
+      },
+
+      /**
+       * The list of browser commands to run, if any. Used to decide whether the
+       * promo can be shown.
+       * @type {!Array<number>}
+       * @private
+       */
+      /** @private */
+      commandIds_: {
+        type: Object,
+        value: () => [],
       },
     };
   }
@@ -80,9 +93,13 @@ class MiddleSlotPromoElement extends PolymerElement {
             this.$.container.appendChild(el);
           }
         });
-        this.pageHandler_.onPromoRendered(
-            BrowserProxy.getInstance().now(), promo.logUrl || null);
-        this.hidden = false;
+        this.maybeShowPromo_().then(canShow => {
+          if (canShow) {
+            this.pageHandler_.onPromoRendered(
+                BrowserProxy.getInstance().now(), promo.logUrl || null);
+            this.hidden = false;
+          }
+        });
       }
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
@@ -100,17 +117,20 @@ class MiddleSlotPromoElement extends PolymerElement {
       return null;
     }
     const el = /** @type {!HTMLAnchorElement} */ (document.createElement('a'));
+    let commandId = null;
     if (!commandIdMatch) {
       el.href = target.url;
+    } else {
+      commandId = +commandIdMatch[1];
+      // Make sure we don't send unsupported commands to the browser.
+      if (!Object.values(promoBrowserCommand.mojom.Command)
+               .includes(commandId)) {
+        commandId = promoBrowserCommand.mojom.Command.kUnknownCommand;
+      }
+      this.commandIds_.push(commandId);
     }
     const onClick = event => {
-      if (commandIdMatch) {
-        let commandId = +commandIdMatch[1];
-        // Make sure we don't send unsupported commands to the browser.
-        if (!Object.values(promoBrowserCommand.mojom.Command)
-                 .includes(commandId)) {
-          commandId = promoBrowserCommand.mojom.Command.kUnknownCommand;
-        }
+      if (commandId !== null) {
         PromoBrowserCommandProxy.getInstance().handler.executeCommand(
             commandId, {
               middleButton: event.button === 1,
@@ -127,6 +147,18 @@ class MiddleSlotPromoElement extends PolymerElement {
     el.addEventListener('auxclick', onClick);
     el.addEventListener('click', onClick);
     return el;
+  }
+
+  /**
+   * @return {!Promise<boolean>} Whether or not the promo can be shown by
+   * checking all command IDs seen in the promo.
+   * @private
+   */
+  async maybeShowPromo_() {
+    const {handler} = PromoBrowserCommandProxy.getInstance();
+    const promises = this.commandIds_.map(
+        commandId => handler.canShowPromoWithCommand(commandId));
+    return (await Promise.all(promises)).every(({canShow}) => canShow);
   }
 }
 

@@ -15,6 +15,9 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -38,6 +41,31 @@ PromoBrowserCommandHandler::PromoBrowserCommandHandler(
 }
 
 PromoBrowserCommandHandler::~PromoBrowserCommandHandler() = default;
+
+void PromoBrowserCommandHandler::CanShowPromoWithCommand(
+    promo_browser_command::mojom::Command command_id,
+    CanShowPromoWithCommandCallback callback) {
+  bool can_show = false;
+  switch (static_cast<Command>(command_id)) {
+    case Command::kUnknownCommand:
+      // Nothing to do.
+      break;
+    case Command::kOpenSafetyCheck:
+      can_show = true;
+      break;
+    case Command::kOpenSafeBrowsingEnhancedProtectionSettings: {
+      bool managed = safe_browsing::SafeBrowsingPolicyHandler::
+          IsSafeBrowsingProtectionLevelSetByPolicy(profile_->GetPrefs());
+      bool already_enabled =
+          safe_browsing::IsEnhancedProtectionEnabled(*(profile_->GetPrefs()));
+      can_show = !managed && !already_enabled;
+    } break;
+    default:
+      NOTREACHED() << "Unspecified behavior for command " << command_id;
+      break;
+  }
+  std::move(callback).Run(can_show);
+}
 
 void PromoBrowserCommandHandler::ExecuteCommand(
     Command command_id,

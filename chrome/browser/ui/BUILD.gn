@@ -1525,6 +1525,7 @@ static_library("ui") {
       "//components/printing/browser",
       "//components/profile_metrics",
       "//components/reading_list/features:flags",
+      "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/safety_check",
       "//components/search_provider_logos",
       "//components/services/app_service/public/cpp:app_update",
