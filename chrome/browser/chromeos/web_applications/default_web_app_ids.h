@@ -8,59 +8,64 @@
 namespace chromeos {
 namespace default_web_apps {
 
-// Generated as web_app::GenerateAppIdFromURL(GURL("https://tv.youtube.com/")).
-constexpr char kYoutubeTVAppId[] = "kiemjbkkegajmpbobdfngbmjccjhnofh";
+// The URLs used to generate the app IDs MUST match the start_url field of the
+// manifest served by the PWA.
 
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL("https://www.showtime.com/")).
-constexpr char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
-
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL("https://canvas.apps.chrome/")).
-constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
-
-// Generated as web_app::GenerateAppIdFromURL(GURL("chrome://help-app/")).
-constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
-
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL(
-// "chrome://camera-app/src/views/main.html")).
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://camera-app/src/views/main.html"))
 constexpr char kCameraAppId[] = "lokiojgebppilomhkceogdnchlbpcoaj";
 
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL(
-// "https://google.com/chromebook/whatsnew/embedded/")).
-constexpr char kReleaseNotesAppId[] = "lddhblppcjmenljhdleiahjighahdcje";
+// Generated as: // web_app::GenerateAppIdFromURL(GURL(
+//     "https://canvas.apps.chrome/"))
+constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
-// Generated as web_app::GenerateAppIdFromURL(GURL("chrome://settings/")).
-constexpr char kSettingsAppId[] = "inogagmajamaleonmanpkpkkigmklfad";
-
-// Generated as web_app::GenerateAppIdFromURL(GURL("chrome://os-settings/")).
-constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
-
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL("chrome://test-system-app/pwa.html")).
-constexpr char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
-
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL("https://news.google.com/?lfhs=2")).
-constexpr char kGoogleNewsAppId[] = "kfgapjallbhpciobgmlhlhokknljkgho";
-
-// Generated as
-// web_app::GenerateAppIdFromURL(
-//     GURL("https://www.google.com/maps/_/sw/tt-install.html")).
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://www.google.com/maps/_/sw/tt-install.html"))
 constexpr char kGoogleMapsAppId[] = "mnhkaebcjjhencmpkapnbdaogjamfbcj";
 
-// Generated as web_app::GenerateAppIdFromURL(GURL("chrome://media-app/")).
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://news.google.com/?lfhs=2"))
+constexpr char kGoogleNewsAppId[] = "kfgapjallbhpciobgmlhlhokknljkgho";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://help-app/"))
+constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://media-app/"))
 constexpr char kMediaAppId[] = "jhdjimmaggjajfjphpljagpgkidjilnj";
 
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL("https://music.youtube.com/?source=pwa")).
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://test-system-app/pwa.html"))
+constexpr char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://os-settings/"))
+constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://google.com/chromebook/whatsnew/embedded/"))
+constexpr char kReleaseNotesAppId[] = "lddhblppcjmenljhdleiahjighahdcje";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://settings/"))
+constexpr char kSettingsAppId[] = "inogagmajamaleonmanpkpkkigmklfad";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://www.showtime.com/"))
+constexpr char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://stadia.google.com/?lfhs=2"))
+constexpr char kStadiaAppId[] = "pnkcfpnngfokcnnijgkllghjlhkailce";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://music.youtube.com/?source=pwa"))
 constexpr char kYoutubeMusicAppId[] = "cinhimbnkkaeohfgghhklpknlkffjgod";
 
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL("https://stadia.google.com/?lfhs=2")).
-constexpr char kStadiaAppId[] = "pnkcfpnngfokcnnijgkllghjlhkailce";
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://tv.youtube.com/"))
+constexpr char kYoutubeTVAppId[] = "kiemjbkkegajmpbobdfngbmjccjhnofh";
 
 }  // namespace default_web_apps
 }  // namespace chromeos
