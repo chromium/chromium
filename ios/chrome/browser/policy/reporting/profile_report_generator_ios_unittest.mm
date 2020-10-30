@@ -8,10 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-namespace em = enterprise_management;
-
 #import <Foundation/Foundation.h>
 
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind_test_util.h"
@@ -30,6 +29,8 @@ namespace em = enterprise_management;
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+namespace em = enterprise_management;
 
 namespace enterprise_reporting {
 

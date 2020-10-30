@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "policy_unittest.mm",
     "reporting/browser_report_generator_ios_unittest.mm",
     "reporting/profile_report_generator_ios_unittest.mm",
+    "reporting/report_generator_ios_unittest.mm",
   ]
   deps = [
     ":policy",
