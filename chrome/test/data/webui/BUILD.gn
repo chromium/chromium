@@ -26,7 +26,7 @@ if (include_js_tests) {
       "history/history_focus_test.js",
       "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_v3_interactive_ui_tests.js",
-      "tab_search_merge/tab_search_interactive_ui_tests.js",
+      "tab_search/tab_search_interactive_ui_tests.js",
     ]
 
     gen_include_files = [
@@ -97,7 +97,7 @@ if (include_js_tests) {
       "settings/a11y/v3_a11y_browsertest.js",
       "settings/cr_settings_v3_browsertest.js",
       "settings/settings_idle_load_v3_browsertest.js",
-      "tab_search_merge/tab_search_browsertest.js",
+      "tab_search/tab_search_browsertest.js",
       "text_defaults_browsertest.js",
       "webui_resource_async_browsertest.js",
     ]
@@ -480,7 +480,7 @@ group("closure_compile") {
     "read_later:closure_compile",
     "settings:closure_compile",
     "signin:closure_compile",
-    "tab_search_merge:closure_compile",
+    "tab_search:closure_compile",
     "tab_strip:closure_compile",
 
     # TODO(crbug.com/1000989): Add page specific targets here.

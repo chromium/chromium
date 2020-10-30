@@ -13,7 +13,7 @@
   <release seq="1">
     <includes>
       <include name="IDR_APP_JS"
-               file="${root_gen_dir}/chrome/browser/resources/tab_search_merge/app.js"
+               file="${root_gen_dir}/chrome/browser/resources/tab_search/app.js"
                type="BINDATA"
                use_base_dir="false" />
       <include name="IDR_FUSE_JS"
@@ -29,7 +29,7 @@
                file="tab_search_api_proxy.js"
                type="BINDATA" />
       <include name="IDR_TAB_SEARCH_ITEM_JS"
-               file="${root_gen_dir}/chrome/browser/resources/tab_search_merge/tab_search_item.js"
+               file="${root_gen_dir}/chrome/browser/resources/tab_search/tab_search_item.js"
                type="BINDATA"
                use_base_dir="false"/>
       <include name="IDR_TAB_SEARCH_MOJO_LITE_JS"
@@ -40,7 +40,7 @@
                file="tab_search_page.html"
                type="BINDATA" />
       <include name="IDR_TAB_SEARCH_SEARCH_FIELD_JS"
-               file="${root_gen_dir}/chrome/browser/resources/tab_search_merge/tab_search_search_field.js"
+               file="${root_gen_dir}/chrome/browser/resources/tab_search/tab_search_search_field.js"
                type="BINDATA"
                use_base_dir="false" />
     </includes>

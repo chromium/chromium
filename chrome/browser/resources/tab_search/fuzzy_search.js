@@ -90,7 +90,7 @@ function exactSearch(searchText, records, options) {
 
   // Perform an exact match search with range discovery.
   const exactMatches = [];
-  for (let tab of records) {
+  for (const tab of records) {
     const titleHighlightRanges = getRanges(tab.tab.title, searchText);
     const hostnameHighlightRanges = getRanges(tab.hostname, searchText);
     if (!titleHighlightRanges.length && !hostnameHighlightRanges.length) {
@@ -117,7 +117,7 @@ function exactSearch(searchText, records, options) {
   const itemsMatchingWordStart = [];
   const others = [];
   const wordStartRegexp = new RegExp(`\\b${quoteString(searchText)}`, 'i');
-  for (let {tab} of exactMatches) {
+  for (const {tab} of exactMatches) {
     // Find matches that occur at the beginning of the string.
     if (hasMatchStringStart(tab)) {
       itemsMatchingStringStart.push(tab);
@@ -167,7 +167,7 @@ function hasRegexMatch(tab, regexp) {
  */
 function getRanges(target, searchText) {
   const escapedText = quoteString(searchText);
-  let ranges = [];
+  const ranges = [];
   let match = null;
   for (const re = new RegExp(escapedText, 'gi'); match = re.exec(target);) {
     ranges.push({

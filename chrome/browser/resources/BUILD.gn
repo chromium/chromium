@@ -52,7 +52,7 @@ if (enable_js_type_check) {
         "settings:closure_compile",
         "settings:closure_compile_module",
         "signin:closure_compile",
-        "tab_search_merge:closure_compile",
+        "tab_search:closure_compile",
         "usb_internals:closure_compile",
         "user_manager:closure_compile",
         "web_app_internals:closure_compile",
@@ -225,9 +225,9 @@ if (!is_android) {
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
-    source = "tab_search_merge/tab_search_resources.grd"
+    source = "tab_search/tab_search_resources.grd"
     deps = [
-      "//chrome/browser/resources/tab_search_merge:web_components",
+      "//chrome/browser/resources/tab_search:web_components",
       "//chrome/browser/ui/webui/tab_search:mojo_bindings_js",
     ]
     defines = chrome_grit_defines

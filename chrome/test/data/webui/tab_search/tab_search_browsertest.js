@@ -36,7 +36,7 @@ class TabSearchBrowserTest extends PolymerTest {
 var TabSearchAppTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search/test_loader.html?module=tab_search_merge/tab_search_app_test.js';
+    return 'chrome://tab-search/test_loader.html?module=tab_search/tab_search_app_test.js';
   }
 };
 
@@ -48,7 +48,7 @@ TEST_F('TabSearchAppTest', 'All', function() {
 var FuzzySearchTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search/test_loader.html?module=tab_search_merge/fuzzy_search_test.js';
+    return 'chrome://tab-search/test_loader.html?module=tab_search/fuzzy_search_test.js';
   }
 };
 
@@ -60,7 +60,7 @@ TEST_F('FuzzySearchTest', 'All', function() {
 var TabSearchItemTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search/test_loader.html?module=tab_search_merge/tab_search_item_test.js';
+    return 'chrome://tab-search/test_loader.html?module=tab_search/tab_search_item_test.js';
   }
 };
 

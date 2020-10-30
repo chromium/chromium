@@ -24,7 +24,7 @@
 
 namespace {
 constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/tab_search_merge/";
+    "@out_folder@/gen/chrome/browser/resources/tab_search/";
 }
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
