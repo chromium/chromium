@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import argparse
+import logging
 import os
 import re
 import shutil
@@ -290,6 +291,7 @@ def _OptimizeWithR8(options,
     try:
       stderr_filter = dex.CreateStderrFilter(
           options.show_desugar_default_interface_warnings)
+      logging.debug('Running R8')
       build_utils.CheckOutput(cmd,
                               print_stdout=print_stdout,
                               stderr_filter=stderr_filter,
@@ -303,6 +305,7 @@ def _OptimizeWithR8(options,
 
     base_has_imported_lib = False
     if options.desugar_jdk_libs_json:
+      logging.debug('Running L8')
       existing_files = build_utils.FindInDirectory(base_dex_context.staging_dir)
       jdk_dex_output = os.path.join(base_dex_context.staging_dir,
                                     'classes%d.dex' % (len(existing_files) + 1))
@@ -313,6 +316,7 @@ def _OptimizeWithR8(options,
           options.desugared_library_keep_rule_output, jdk_dex_output,
           options.warnings_as_errors)
 
+    logging.debug('Collecting ouputs')
     base_dex_context.CreateOutput(base_has_imported_lib,
                                   options.desugared_library_keep_rule_output)
     for feature in feature_contexts:
@@ -417,20 +421,10 @@ def _MaybeWriteStampAndDepFile(options, inputs):
 
 
 def main():
+  build_utils.InitLogging('PROGUARD_DEBUG')
   options = _ParseOptions()
 
-  libraries = []
-  for p in options.classpath:
-    # TODO(bjoyce): Remove filter once old android support libraries are gone.
-    # Fix for having Library class extend program class dependency problem.
-    if 'com_android_support' in p or 'android_support_test' in p:
-      continue
-    # If a jar is part of input no need to include it as library jar.
-    if p not in libraries and p not in options.input_paths:
-      libraries.append(p)
-
-  _VerifyNoEmbeddedConfigs(options.input_paths + libraries)
-
+  logging.debug('Preparing configs')
   proguard_configs = options.proguard_configs
 
   # ProGuard configs that are derived from flags.
@@ -449,10 +443,21 @@ def main():
                                inputs=options.proguard_configs)
       return
 
+  logging.debug('Looking for embedded configs')
+  libraries = []
+  for p in options.classpath:
+    # TODO(bjoyce): Remove filter once old android support libraries are gone.
+    # Fix for having Library class extend program class dependency problem.
+    if 'com_android_support' in p or 'android_support_test' in p:
+      continue
+    # If a jar is part of input no need to include it as library jar.
+    if p not in libraries and p not in options.input_paths:
+      libraries.append(p)
+  _VerifyNoEmbeddedConfigs(options.input_paths + libraries)
+
   _OptimizeWithR8(options, proguard_configs, libraries, dynamic_config_data,
                   print_stdout)
 
-  # After ProGuard / R8 has run:
   for output in options.extra_mapping_output_paths:
     shutil.copy(options.mapping_output, output)
 
