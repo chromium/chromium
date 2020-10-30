@@ -16,6 +16,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
@@ -57,7 +58,6 @@ constexpr float kRippleCircleInitRadiusDip = 40.f;
 constexpr float kRippleCircleStartRadiusDip = 1.f;
 constexpr float kRippleCircleRadiusDip = 77.f;
 constexpr float kRippleCircleBurstRadiusDip = 96.f;
-constexpr SkColor kRippleColor = SK_ColorWHITE;
 constexpr int kRippleExpandDurationMs = 400;
 constexpr int kRippleOpacityDurationMs = 100;
 constexpr int kRippleOpacityRetractDurationMs = 200;
@@ -67,11 +67,12 @@ constexpr int kHideDurationMs = 200;
 
 }  // namespace
 
-
 AssistantOverlay::AssistantOverlay(HomeButton* host_view)
     : ripple_layer_(std::make_unique<ui::Layer>()),
       host_view_(host_view),
-      circle_layer_delegate_(kRippleColor, kRippleCircleInitRadiusDip) {
+      circle_layer_delegate_(
+          AshColorProvider::Get()->GetRippleAttributes().base_color,
+          kRippleCircleInitRadiusDip) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetName("AssistantOverlay:ROOT_LAYER");
   layer()->SetMasksToBounds(false);
