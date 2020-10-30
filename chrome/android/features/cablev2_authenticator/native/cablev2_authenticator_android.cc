@@ -175,46 +175,37 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   }
 
   // Platform:
-  void MakeCredential(
-      const std::string& origin,
-      const std::string& rp_id,
-      base::span<const uint8_t> challenge,
-      base::span<const uint8_t> user_id,
-      base::span<const int> algorithms,
-      base::span<const std::vector<uint8_t>> excluded_cred_ids,
-      bool resident_key_required,
-      device::cablev2::authenticator::Platform::MakeCredentialCallback callback)
-      override {
+  void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_make_credential_callback);
-    global_data.pending_make_credential_callback = std::move(callback);
+    global_data.pending_make_credential_callback = std::move(params->callback);
 
     Java_CableAuthenticator_makeCredential(
-        env_, cable_authenticator_, ConvertUTF8ToJavaString(env_, origin),
-        ConvertUTF8ToJavaString(env_, rp_id), ToJavaByteArray(env_, challenge),
-        ToJavaByteArray(env_, user_id), ToJavaIntArray(env_, algorithms),
-        ToJavaArrayOfByteArray(env_, excluded_cred_ids), resident_key_required);
+        env_, cable_authenticator_,
+        ConvertUTF8ToJavaString(env_, params->origin),
+        ConvertUTF8ToJavaString(env_, params->rp_id),
+        ToJavaByteArray(env_, params->challenge),
+        ToJavaByteArray(env_, params->user_id),
+        ToJavaIntArray(env_, params->algorithms),
+        ToJavaArrayOfByteArray(env_, params->excluded_cred_ids),
+        params->resident_key_required);
   }
 
-  void GetAssertion(
-      const std::string& origin,
-      const std::string& rp_id,
-      base::span<const uint8_t> challenge,
-      base::span<const std::vector<uint8_t>> allowed_cred_ids,
-      device::cablev2::authenticator::Platform::GetAssertionCallback callback)
-      override {
+  void GetAssertion(std::unique_ptr<GetAssertionParams> params) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_get_assertion_callback);
-    global_data.pending_get_assertion_callback = std::move(callback);
+    global_data.pending_get_assertion_callback = std::move(params->callback);
 
     Java_CableAuthenticator_getAssertion(
-        env_, cable_authenticator_, ConvertUTF8ToJavaString(env_, origin),
-        ConvertUTF8ToJavaString(env_, rp_id), ToJavaByteArray(env_, challenge),
-        ToJavaArrayOfByteArray(env_, allowed_cred_ids));
+        env_, cable_authenticator_,
+        ConvertUTF8ToJavaString(env_, params->origin),
+        ConvertUTF8ToJavaString(env_, params->rp_id),
+        ToJavaByteArray(env_, params->challenge),
+        ToJavaArrayOfByteArray(env_, params->allowed_cred_ids));
   }
 
   std::unique_ptr<BLEAdvert> SendBLEAdvert(

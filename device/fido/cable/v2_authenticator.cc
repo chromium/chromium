@@ -549,7 +549,15 @@ class CTAP2Processor : public Transaction {
           return base::nullopt;
         }
 
-        std::vector<int> algorithms;
+        auto params = std::make_unique<Platform::MakeCredentialParams>();
+        params->origin = *make_cred_request.origin;
+        params->rp_id = *make_cred_request.rp_id;
+        params->challenge = *make_cred_request.challenge;
+        params->user_id = *make_cred_request.user_id;
+        params->callback =
+            base::BindOnce(&CTAP2Processor::OnMakeCredentialResponse,
+                           weak_factory_.GetWeakPtr());
+
         if (!device::cbor_extract::ForEachPublicKeyEntry(
                 *make_cred_request.cred_params, cbor::Value("alg"),
                 base::BindRepeating(
@@ -567,11 +575,10 @@ class CTAP2Processor : public Transaction {
                       out->push_back(static_cast<int>(alg));
                       return true;
                     },
-                    base::Unretained(&algorithms)))) {
+                    base::Unretained(&params->algorithms)))) {
           return base::nullopt;
         }
 
-        std::vector<std::vector<uint8_t>> excluded_credential_ids;
         if (make_cred_request.excluded_credentials &&
             !device::cbor_extract::ForEachPublicKeyEntry(
                 *make_cred_request.excluded_credentials, cbor::Value("id"),
@@ -584,19 +591,13 @@ class CTAP2Processor : public Transaction {
                       out->push_back(value.GetBytestring());
                       return true;
                     },
-                    base::Unretained(&excluded_credential_ids)))) {
+                    base::Unretained(&params->excluded_cred_ids)))) {
           return base::nullopt;
         }
 
         // TODO: plumb the rk flag through once GmsCore supports resident
         // keys. This will require support for optional maps in |Extract|.
-        platform_->MakeCredential(
-            *make_cred_request.origin, *make_cred_request.rp_id,
-            *make_cred_request.challenge, *make_cred_request.user_id,
-            algorithms, excluded_credential_ids,
-            /*resident_key_required=*/false,
-            base::BindOnce(&CTAP2Processor::OnMakeCredentialResponse,
-                           weak_factory_.GetWeakPtr()));
+        platform_->MakeCredential(std::move(params));
         return std::vector<uint8_t>();
       }
 
@@ -606,6 +607,7 @@ class CTAP2Processor : public Transaction {
           FIDO_LOG(ERROR) << "Invalid makeCredential payload";
           return base::nullopt;
         }
+
         GetAssertionRequest get_assertion_request;
         if (!device::cbor_extract::Extract<GetAssertionRequest>(
                 &get_assertion_request, kGetAssertionParseSteps,
@@ -614,7 +616,14 @@ class CTAP2Processor : public Transaction {
           return base::nullopt;
         }
 
-        std::vector<std::vector<uint8_t>> allowed_credential_ids;
+        auto params = std::make_unique<Platform::GetAssertionParams>();
+        params->origin = *get_assertion_request.origin;
+        params->rp_id = *get_assertion_request.rp_id;
+        params->challenge = *get_assertion_request.challenge;
+        params->callback =
+            base::BindOnce(&CTAP2Processor::OnGetAssertionResponse,
+                           weak_factory_.GetWeakPtr());
+
         if (get_assertion_request.allowed_credentials &&
             !device::cbor_extract::ForEachPublicKeyEntry(
                 *get_assertion_request.allowed_credentials, cbor::Value("id"),
@@ -627,16 +636,11 @@ class CTAP2Processor : public Transaction {
                       out->push_back(value.GetBytestring());
                       return true;
                     },
-                    base::Unretained(&allowed_credential_ids)))) {
+                    base::Unretained(&params->allowed_cred_ids)))) {
           return base::nullopt;
         }
 
-        platform_->GetAssertion(
-            *get_assertion_request.origin, *get_assertion_request.rp_id,
-            *get_assertion_request.challenge, allowed_credential_ids,
-            base::BindOnce(&CTAP2Processor::OnGetAssertionResponse,
-                           weak_factory_.GetWeakPtr()));
-
+        platform_->GetAssertion(std::move(params));
         return std::vector<uint8_t>();
       }
 
@@ -819,6 +823,10 @@ class PairingDataGenerator {
 }  // namespace
 
 Platform::BLEAdvert::~BLEAdvert() = default;
+Platform::MakeCredentialParams::MakeCredentialParams() = default;
+Platform::MakeCredentialParams::~MakeCredentialParams() = default;
+Platform::GetAssertionParams::GetAssertionParams() = default;
+Platform::GetAssertionParams::~GetAssertionParams() = default;
 Platform::~Platform() = default;
 Transport::~Transport() = default;
 Transaction::~Transaction() = default;

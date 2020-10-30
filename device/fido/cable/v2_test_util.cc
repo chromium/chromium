@@ -337,35 +337,29 @@ class TestPlatform : public authenticator::Platform {
   TestPlatform(Discovery* discovery, device::VirtualCtap2Device* ctap2_device)
       : discovery_(discovery), ctap2_device_(ctap2_device) {}
 
-  void MakeCredential(const std::string& origin,
-                      const std::string& rp_id,
-                      base::span<const uint8_t> challenge,
-                      base::span<const uint8_t> user_id,
-                      base::span<const int> algorithms,
-                      base::span<const std::vector<uint8_t>> excluded_cred_ids,
-                      bool resident_key_required,
-                      MakeCredentialCallback callback) override {
+  void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
     std::string challenge_b64;
     base::Base64UrlEncode(
-        base::StringPiece(reinterpret_cast<const char*>(challenge.data()),
-                          challenge.size()),
+        base::StringPiece(
+            reinterpret_cast<const char*>(params->challenge.data()),
+            params->challenge.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &challenge_b64);
 
     std::string client_data_json = base::StringPrintf(
         R"({"type": "webauthn.create", "challenge": "%s", "origin": "%s",
               "androidPackageName": "com.chrome.unittest"})",
-        challenge_b64.c_str(), origin.c_str());
+        challenge_b64.c_str(), params->origin.c_str());
     std::vector<device::PublicKeyCredentialParams::CredentialInfo> cred_infos;
-    for (const auto& algo : algorithms) {
+    for (const auto& algo : params->algorithms) {
       device::PublicKeyCredentialParams::CredentialInfo cred_info;
       cred_info.algorithm = algo;
       cred_infos.push_back(cred_info);
     }
 
     device::CtapMakeCredentialRequest request(
-        client_data_json, device::PublicKeyCredentialRpEntity(rp_id),
+        client_data_json, device::PublicKeyCredentialRpEntity(params->rp_id),
         device::PublicKeyCredentialUserEntity(
-            device::fido_parsing_utils::Materialize(user_id),
+            device::fido_parsing_utils::Materialize(params->user_id),
             /*name=*/base::nullopt, /*display_name=*/base::nullopt,
             /*icon_url=*/base::nullopt),
         device::PublicKeyCredentialParams(std::move(cred_infos)));
@@ -377,14 +371,10 @@ class TestPlatform : public authenticator::Platform {
         ToCTAP2Command(std::move(request_cbor)),
         base::BindOnce(&TestPlatform::OnMakeCredentialResult,
                        weak_factory_.GetWeakPtr(), std::move(client_data_json),
-                       std::move(callback)));
+                       std::move(params->callback)));
   }
 
-  void GetAssertion(const std::string& origin,
-                    const std::string& rp_id,
-                    base::span<const uint8_t> challenge,
-                    base::span<const std::vector<uint8_t>> allowed_cred_ids,
-                    GetAssertionCallback callback) override {
+  void GetAssertion(std::unique_ptr<GetAssertionParams> params) override {
     NOTREACHED();
   }
 
