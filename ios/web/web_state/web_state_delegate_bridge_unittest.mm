@@ -134,8 +134,8 @@ TEST_F(WebStateDelegateBridgeTest, HandleContextMenu) {
 TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningDialog) {
   EXPECT_FALSE([delegate_ repostFormWarningRequested]);
   EXPECT_FALSE([delegate_ webState]);
-  base::Callback<void(bool)> callback;
-  bridge_->ShowRepostFormWarningDialog(&test_web_state_, callback);
+  base::OnceCallback<void(bool)> callback;
+  bridge_->ShowRepostFormWarningDialog(&test_web_state_, std::move(callback));
   EXPECT_TRUE([delegate_ repostFormWarningRequested]);
   EXPECT_EQ(&test_web_state_, [delegate_ webState]);
 }
@@ -165,9 +165,9 @@ TEST_F(WebStateDelegateBridgeTest, OnAuthRequired) {
   EXPECT_FALSE([delegate_ webState]);
   NSURLProtectionSpace* protection_space = [[NSURLProtectionSpace alloc] init];
   NSURLCredential* credential = [[NSURLCredential alloc] init];
-  WebStateDelegate::AuthCallback callback;
+  WebStateDelegate::AuthCallback callback = base::DoNothing();
   bridge_->OnAuthRequired(&test_web_state_, protection_space, credential,
-                          callback);
+                          std::move(callback));
   EXPECT_TRUE([delegate_ authenticationRequested]);
   EXPECT_EQ(&test_web_state_, [delegate_ webState]);
 }

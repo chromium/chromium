@@ -31,7 +31,7 @@ TestAuthenticationRequest::TestAuthenticationRequest() {}
 TestAuthenticationRequest::~TestAuthenticationRequest() = default;
 
 TestAuthenticationRequest::TestAuthenticationRequest(
-    const TestAuthenticationRequest&) = default;
+    TestAuthenticationRequest&&) = default;
 
 TestWebStateDelegate::TestWebStateDelegate() {}
 
@@ -113,12 +113,12 @@ void TestWebStateDelegate::OnAuthRequired(
     WebState* source,
     NSURLProtectionSpace* protection_space,
     NSURLCredential* credential,
-    const AuthCallback& callback) {
+    AuthCallback callback) {
   last_authentication_request_ = std::make_unique<TestAuthenticationRequest>();
   last_authentication_request_->web_state = source;
   last_authentication_request_->protection_space = protection_space;
   last_authentication_request_->credential = credential;
-  last_authentication_request_->auth_callback = callback;
+  last_authentication_request_->auth_callback = std::move(callback);
 }
 
 bool TestWebStateDelegate::ShouldPreviewLink(WebState* source,

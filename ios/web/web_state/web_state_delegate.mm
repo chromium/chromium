@@ -51,8 +51,8 @@ JavaScriptDialogPresenter* WebStateDelegate::GetJavaScriptDialogPresenter(
 void WebStateDelegate::OnAuthRequired(WebState* source,
                                       NSURLProtectionSpace* protection_space,
                                       NSURLCredential* proposed_credential,
-                                      const AuthCallback& callback) {
-  callback.Run(nil, nil);
+                                      AuthCallback callback) {
+  std::move(callback).Run(nil, nil);
 }
 
 bool WebStateDelegate::ShouldPreviewLink(WebState* source,

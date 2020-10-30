@@ -68,12 +68,12 @@ class WebStateDelegate {
   // |protection_space|, and is unable to respond using cached credentials.
   // Clients must call |callback| even if they want to cancel authentication
   // (in which case |username| or |password| should be nil).
-  typedef base::Callback<void(NSString* username, NSString* password)>
+  typedef base::OnceCallback<void(NSString* username, NSString* password)>
       AuthCallback;
   virtual void OnAuthRequired(WebState* source,
                               NSURLProtectionSpace* protection_space,
                               NSURLCredential* proposed_credential,
-                              const AuthCallback& callback) = 0;
+                              AuthCallback callback) = 0;
 
   // Determines whether the given link with |link_url| should show a preview on
   // force touch.

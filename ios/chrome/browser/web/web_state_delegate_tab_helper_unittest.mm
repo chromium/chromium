@@ -52,10 +52,10 @@ TEST_F(WebStateDelegateTabHelperTest, OnAuthRequired) {
                                    password:@""
                                 persistence:NSURLCredentialPersistenceNone];
   web::WebStateDelegate::AuthCallback callback =
-      base::BindRepeating(^(NSString* user, NSString* password){
+      base::BindOnce(^(NSString* user, NSString* password){
       });
   delegate()->OnAuthRequired(web_state(), protection_space, credential,
-                             callback);
+                             std::move(callback));
 
   // Verify that an HTTP auth overlay request has been created for the WebState.
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(

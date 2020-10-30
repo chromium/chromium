@@ -411,7 +411,7 @@ NSURLSession* DownloadTaskImpl::CreateSession(NSString* identifier,
 }
 
 void DownloadTaskImpl::GetCookies(
-    base::Callback<void(NSArray<NSHTTPCookie*>*)> callback) {
+    base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   scoped_refptr<net::URLRequestContextGetter> context_getter(
       web_state_->GetBrowserState()->GetRequestContext());
@@ -419,23 +419,23 @@ void DownloadTaskImpl::GetCookies(
   // net::URLRequestContextGetter must be used in the IO thread.
   base::PostTask(FROM_HERE, {WebThread::IO},
                  base::BindOnce(&DownloadTaskImpl::GetCookiesFromContextGetter,
-                                context_getter, callback));
+                                context_getter, std::move(callback)));
 }
 
 void DownloadTaskImpl::GetCookiesFromContextGetter(
     scoped_refptr<net::URLRequestContextGetter> context_getter,
-    base::Callback<void(NSArray<NSHTTPCookie*>*)> callback) {
+    base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
   DCHECK_CURRENTLY_ON(WebThread::IO);
   context_getter->GetURLRequestContext()->cookie_store()->GetAllCookiesAsync(
       base::BindOnce(
-          [](base::Callback<void(NSArray<NSHTTPCookie*>*)> callback,
+          [](base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback,
              const net::CookieList& cookie_list) {
             NSArray<NSHTTPCookie*>* cookies =
                 SystemCookiesFromCanonicalCookieList(cookie_list);
             base::PostTask(FROM_HERE, {WebThread::UI},
-                           base::BindOnce(callback, cookies));
+                           base::BindOnce(std::move(callback), cookies));
           },
-          callback));
+          std::move(callback)));
 }
 
 void DownloadTaskImpl::StartWithCookies(NSArray<NSHTTPCookie*>* cookies) {

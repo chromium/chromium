@@ -58,7 +58,7 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
       LogManager::Create(
           autofill::WebViewAutofillLogRouterFactory::GetForBrowserState(
               browser_state),
-          base::Closure()));
+          base::RepeatingClosure()));
 }
 
 WebViewAutofillClientIOS::WebViewAutofillClientIOS(

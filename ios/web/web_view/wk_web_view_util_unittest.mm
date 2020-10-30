@@ -81,7 +81,7 @@ TEST_F(WKWebViewUtilTest, IOS14EnsureCallbackIsCalledWithData) {
     __block bool callback_called = false;
     __block NSData* callback_data = nil;
 
-    CreateFullPagePdf(web_view_mock, base::Bind(^(NSData* data) {
+    CreateFullPagePdf(web_view_mock, base::BindOnce(^(NSData* data) {
                         callback_called = true;
                         callback_data = [data copy];
                       }));
@@ -119,7 +119,7 @@ TEST_F(WKWebViewUtilTest, IOS14EnsureCallbackIsCalledWithNil) {
     __block bool callback_called = false;
     __block NSData* callback_data = nil;
 
-    CreateFullPagePdf(web_view_mock, base::Bind(^(NSData* data) {
+    CreateFullPagePdf(web_view_mock, base::BindOnce(^(NSData* data) {
                         callback_called = true;
                         callback_data = [data copy];
                       }));
@@ -146,7 +146,7 @@ TEST_F(WKWebViewUtilTest, IOS13EnsureCallbackIsCalled) {
   __block bool callback_called = false;
   __block NSData* callback_data = nil;
 
-  CreateFullPagePdf(web_view, base::Bind(^(NSData* data) {
+  CreateFullPagePdf(web_view, base::BindOnce(^(NSData* data) {
                       callback_called = true;
                       callback_data = [data copy];
                     }));
@@ -165,7 +165,7 @@ TEST_F(WKWebViewUtilTest, NULLWebView) {
   __block bool callback_called = false;
   __block NSData* callback_data = nil;
 
-  CreateFullPagePdf(nil, base::Bind(^(NSData* data) {
+  CreateFullPagePdf(nil, base::BindOnce(^(NSData* data) {
                       callback_called = true;
                       callback_data = [data copy];
                     }));

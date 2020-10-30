@@ -28,12 +28,12 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
     HTTPAuthOverlayResponseInfo* auth_info =
         response->GetInfo<HTTPAuthOverlayResponseInfo>();
     if (auth_info) {
-      callback.Run(base::SysUTF8ToNSString(auth_info->username()),
-                   base::SysUTF8ToNSString(auth_info->password()));
+      std::move(callback).Run(base::SysUTF8ToNSString(auth_info->username()),
+                              base::SysUTF8ToNSString(auth_info->password()));
       return;
     }
   }
-  callback.Run(nil, nil);
+  std::move(callback).Run(nil, nil);
 }
 }  // namespace
 
@@ -54,8 +54,7 @@ void WebStateDelegateTabHelper::OnAuthRequired(
     web::WebState* source,
     NSURLProtectionSpace* protection_space,
     NSURLCredential* proposed_credential,
-    const web::WebStateDelegate::AuthCallback& callback) {
-  AuthCallback local_callback(callback);
+    web::WebStateDelegate::AuthCallback callback) {
   std::string message = base::SysNSStringToUTF8(
       nsurlprotectionspace_util::MessageForHTTPAuth(protection_space));
   std::string default_username;
@@ -66,7 +65,7 @@ void WebStateDelegateTabHelper::OnAuthRequired(
           nsurlprotectionspace_util::RequesterOrigin(protection_space), message,
           default_username);
   request->GetCallbackManager()->AddCompletionCallback(
-      base::BindOnce(&OnHTTPAuthOverlayFinished, callback));
+      base::BindOnce(&OnHTTPAuthOverlayFinished, std::move(callback)));
   OverlayRequestQueue::FromWebState(source, OverlayModality::kWebContentArea)
       ->AddRequest(std::move(request));
 }

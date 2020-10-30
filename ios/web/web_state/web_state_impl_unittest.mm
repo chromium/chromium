@@ -497,8 +497,8 @@ TEST_F(WebStateImplTest, DelegateTest) {
 
   // Test that ShowRepostFormWarningDialog() is called.
   EXPECT_FALSE(delegate.last_repost_form_request());
-  base::Callback<void(bool)> repost_callback;
-  web_state_->ShowRepostFormWarningDialog(repost_callback);
+  base::OnceCallback<void(bool)> repost_callback;
+  web_state_->ShowRepostFormWarningDialog(std::move(repost_callback));
   ASSERT_TRUE(delegate.last_repost_form_request());
   EXPECT_EQ(delegate.last_repost_form_request()->web_state, web_state_.get());
 
@@ -528,7 +528,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
   NSURLProtectionSpace* protection_space = [[NSURLProtectionSpace alloc] init];
   NSURLCredential* credential = [[NSURLCredential alloc] init];
   WebStateDelegate::AuthCallback callback;
-  web_state_->OnAuthRequired(protection_space, credential, callback);
+  web_state_->OnAuthRequired(protection_space, credential, std::move(callback));
   ASSERT_TRUE(delegate.last_authentication_request());
   EXPECT_EQ(delegate.last_authentication_request()->web_state,
             web_state_.get());

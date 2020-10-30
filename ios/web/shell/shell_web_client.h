@@ -30,14 +30,13 @@ class ShellWebClient : public WebClient {
   void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) override;
-  void AllowCertificateError(
-      WebState* web_state,
-      int cert_error,
-      const net::SSLInfo& ssl_info,
-      const GURL& request_url,
-      bool overridable,
-      int64_t navigation_id,
-      const base::Callback<void(bool)>& callback) override;
+  void AllowCertificateError(WebState* web_state,
+                             int cert_error,
+                             const net::SSLInfo& ssl_info,
+                             const GURL& request_url,
+                             bool overridable,
+                             int64_t navigation_id,
+                             base::OnceCallback<void(bool)> callback) override;
 
   ShellBrowserState* browser_state() const;
 

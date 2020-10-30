@@ -386,8 +386,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^extensions/renderer/',
   '^google_apis/drive/',
   '^ios/chrome/',
-  '^ios/web/',
-  '^ios/web_view/',
   '^media/blink/',
   '^media/cast/',
   '^media/cdm/',

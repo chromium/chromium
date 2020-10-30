@@ -154,14 +154,13 @@ class WebClient {
   // indicates which navigation triggered the certificate error. The embedder
   // can call the |callback| asynchronously (an argument of true means that
   // |cert_error| should be ignored and web// should load the page).
-  virtual void AllowCertificateError(
-      WebState* web_state,
-      int cert_error,
-      const net::SSLInfo& ssl_info,
-      const GURL& request_url,
-      bool overridable,
-      int64_t navigation_id,
-      const base::Callback<void(bool)>& callback);
+  virtual void AllowCertificateError(WebState* web_state,
+                                     int cert_error,
+                                     const net::SSLInfo& ssl_info,
+                                     const GURL& request_url,
+                                     bool overridable,
+                                     int64_t navigation_id,
+                                     base::OnceCallback<void(bool)> callback);
 
   // Allows the embedder to specify legacy TLS enforcement on a per-host basis,
   // for example to allow users to bypass interstitial warnings on affected

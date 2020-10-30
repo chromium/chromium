@@ -87,15 +87,16 @@ void TestWebClient::AllowCertificateError(
     const GURL& request_url,
     bool overridable,
     int64_t navigation_id,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   last_cert_error_code_ = cert_error;
   last_cert_error_ssl_info_ = ssl_info;
   last_cert_error_request_url_ = request_url;
   last_cert_error_overridable_ = overridable;
 
   // Embedder should consult the user, so reply is asynchronous.
-  base::PostTask(FROM_HERE, {WebThread::UI},
-                 base::BindOnce(callback, allow_certificate_errors_));
+  base::PostTask(
+      FROM_HERE, {WebThread::UI},
+      base::BindOnce(std::move(callback), allow_certificate_errors_));
 }
 
 void TestWebClient::SetAllowCertificateErrors(bool flag) {

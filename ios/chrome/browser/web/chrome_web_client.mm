@@ -299,15 +299,15 @@ void ChromeWebClient::AllowCertificateError(
     const GURL& request_url,
     bool overridable,
     int64_t navigation_id,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   base::OnceCallback<void(NSString*)> null_callback;
   // TODO(crbug.com/760873): IOSSSLErrorHandler will present an interstitial
   // for the user to decide if it is safe to proceed.
   // Handle the case of web_state not presenting UI to users like prerender tabs
   // or web_state used to fetch offline content in Reading List.
-  IOSSSLErrorHandler::HandleSSLError(web_state, cert_error, info, request_url,
-                                     overridable, navigation_id, callback,
-                                     std::move(null_callback));
+  IOSSSLErrorHandler::HandleSSLError(
+      web_state, cert_error, info, request_url, overridable, navigation_id,
+      std::move(callback), std::move(null_callback));
 }
 
 bool ChromeWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,

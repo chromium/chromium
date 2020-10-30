@@ -90,23 +90,27 @@ void ShellWebClient::AllowCertificateError(
     const GURL&,
     bool overridable,
     int64_t /*navigation_id*/,
-    const base::Callback<void(bool)>& callback) {
-  base::Callback<void(bool)> block_callback(callback);
+    base::OnceCallback<void(bool)> callback) {
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:@"Your connection is not private"
                        message:nil
                 preferredStyle:UIAlertControllerStyleActionSheet];
+
+  __block base::OnceCallback<void(bool)> local_callback = std::move(callback);
+  void (^callback_block)(bool result) = ^(bool result) {
+    std::move(local_callback).Run(result);
+  };
   [alert addAction:[UIAlertAction actionWithTitle:@"Go Back"
                                             style:UIAlertActionStyleCancel
                                           handler:^(UIAlertAction*) {
-                                            block_callback.Run(false);
+                                            callback_block(false);
                                           }]];
 
   if (overridable) {
     [alert addAction:[UIAlertAction actionWithTitle:@"Continue"
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction*) {
-                                              block_callback.Run(true);
+                                              callback_block(true);
                                             }]];
   }
   [[UIApplication sharedApplication].keyWindow.rootViewController

@@ -48,7 +48,7 @@ struct TestRepostFormRequest {
 // Encapsulates parameters passed to OnAuthRequired.
 struct TestAuthenticationRequest {
   TestAuthenticationRequest();
-  TestAuthenticationRequest(const TestAuthenticationRequest&);
+  TestAuthenticationRequest(TestAuthenticationRequest&&);
   ~TestAuthenticationRequest();
   WebState* web_state = nullptr;
   NSURLProtectionSpace* protection_space;
@@ -88,7 +88,7 @@ class TestWebStateDelegate : public WebStateDelegate {
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      const AuthCallback& callback) override;
+                      AuthCallback callback) override;
   bool ShouldPreviewLink(WebState* source, const GURL& link_url) override;
   UIViewController* GetPreviewingViewController(WebState* source,
                                                 const GURL& link_url) override;

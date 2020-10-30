@@ -3519,11 +3519,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                                    NSString* password))handler {
   DCHECK(handler);
   web::WebStateDelegate::AuthCallback callback =
-      base::BindRepeating(^(NSString* user, NSString* password) {
+      base::BindOnce(^(NSString* user, NSString* password) {
         handler(user, password);
       });
   WebStateDelegateTabHelper::FromWebState(webState)->OnAuthRequired(
-      webState, protectionSpace, proposedCredential, callback);
+      webState, protectionSpace, proposedCredential, std::move(callback));
 }
 
 - (BOOL)webState:(web::WebState*)webState

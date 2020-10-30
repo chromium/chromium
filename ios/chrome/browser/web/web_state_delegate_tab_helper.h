@@ -24,11 +24,10 @@ class WebStateDelegateTabHelper
   // web::WebStateDelegate:
   web::JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       web::WebState* source) override;
-  void OnAuthRequired(
-      web::WebState* source,
-      NSURLProtectionSpace* protection_space,
-      NSURLCredential* proposed_credential,
-      const web::WebStateDelegate::AuthCallback& callback) override;
+  void OnAuthRequired(web::WebState* source,
+                      NSURLProtectionSpace* protection_space,
+                      NSURLCredential* proposed_credential,
+                      web::WebStateDelegate::AuthCallback callback) override;
 
  private:
   explicit WebStateDelegateTabHelper(web::WebState* web_state);

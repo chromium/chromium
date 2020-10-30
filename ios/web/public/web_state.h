@@ -323,7 +323,7 @@ class WebState : public base::SupportsUserData {
   using ScriptCommandCallback =
       base::RepeatingCallback<ScriptCommandCallbackSignature>;
   using ScriptCommandSubscription =
-      base::CallbackList<ScriptCommandCallbackSignature>::Subscription;
+      base::RepeatingCallbackList<ScriptCommandCallbackSignature>::Subscription;
   // Registers |callback| for JS message whose 'command' matches
   // |command_prefix|. The returned ScriptCommandSubscription should be stored
   // by the caller. When the description object is destroyed, it will unregister

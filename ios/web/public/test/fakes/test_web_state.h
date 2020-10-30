@@ -164,7 +164,7 @@ class TestWebState : public WebState {
   UIView* view_;
   CRWWebViewProxyType web_view_proxy_;
   NSData* last_loaded_data_;
-  base::CallbackList<ScriptCommandCallbackSignature> callback_list_;
+  base::RepeatingCallbackList<ScriptCommandCallbackSignature> callback_list_;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true>::Unchecked observers_;

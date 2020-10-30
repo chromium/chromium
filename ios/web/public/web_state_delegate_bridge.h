@@ -136,7 +136,7 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      const AuthCallback& callback) override;
+                      AuthCallback callback) override;
   bool ShouldPreviewLink(WebState* web_state, const GURL& link_url) override;
   UIViewController* GetPreviewingViewController(WebState* source,
                                                 const GURL& link_url) override;
