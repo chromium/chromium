@@ -60,7 +60,7 @@ class FakeBrowserWindow : public TestBrowserWindow {
     // Create a new params with window set.
     Browser::CreateParams params = input;
     params.window = window;
-    auto browser = std::make_unique<Browser>(params);
+    auto browser = std::unique_ptr<Browser>(Browser::Create(params));
     window->browser_ = browser.get();
     window->Activate();
     return browser;

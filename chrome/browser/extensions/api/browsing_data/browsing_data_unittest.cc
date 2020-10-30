@@ -57,7 +57,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
-    browser_ = std::make_unique<Browser>(params);
+    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
     remover_ = content::BrowserContext::GetBrowsingDataRemover(profile());
     remover_->SetEmbedderDelegate(&delegate_);

@@ -129,7 +129,7 @@ class FamilyUserChromeActivityMetricsTest
         std::make_unique<TestBrowserWindowAura>(std::move(window));
     params.window = browser_window_.get();
 
-    return std::make_unique<Browser>(params);
+    return std::unique_ptr<Browser>(Browser::Create(params));
   }
 
   PrefService* pref_service() { return profile()->GetPrefs(); }

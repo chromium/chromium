@@ -70,7 +70,7 @@ class ExtensionMessageBubbleBridgeUnitTest
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
-    browser_ = std::make_unique<Browser>(params);
+    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactory(browser()->profile(),

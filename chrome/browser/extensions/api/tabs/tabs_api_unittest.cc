@@ -500,7 +500,7 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = window2;
-  std::unique_ptr<Browser> browser2 = std::make_unique<Browser>(params);
+  std::unique_ptr<Browser> browser2(Browser::Create(params));
   BrowserList::SetLastActive(browser2.get());
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
 
@@ -671,7 +671,7 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = window2;
-  std::unique_ptr<Browser> browser2 = std::make_unique<Browser>(params);
+  std::unique_ptr<Browser> browser2(Browser::Create(params));
 
   constexpr int kNumTabs2 = 3;
   for (int i = 0; i < kNumTabs2; ++i) {

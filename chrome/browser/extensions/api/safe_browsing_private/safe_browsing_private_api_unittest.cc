@@ -90,7 +90,7 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_ = std::make_unique<Browser>(params);
+  browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
   // Initialize Safe Browsing service.
   safe_browsing::TestSafeBrowsingServiceFactory sb_service_factory;

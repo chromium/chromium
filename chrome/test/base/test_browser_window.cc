@@ -19,7 +19,7 @@ std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
   TestBrowserWindow* window = new TestBrowserWindow;
   new TestBrowserWindowOwner(window);
   params.window = window;
-  return std::make_unique<Browser>(params);
+  return std::unique_ptr<Browser>(Browser::Create(params));
 }
 
 // TestBrowserWindow::TestLocationBar -----------------------------------------

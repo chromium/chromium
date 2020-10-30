@@ -290,10 +290,6 @@ class Browser : public TabStripModelObserver,
   // caller is expected to take the ownership of the created Browser instance.
   static Browser* Create(const CreateParams& params);
 
-  // DEPRECATED in favor of Create().
-  // TODO(tbarzic): Make the constructor non-public once browser construction
-  // instances are replaced with Create(). https://crbug.com/916859.
-  explicit Browser(const CreateParams& params);
   ~Browser() override;
 
   // Set overrides for the initial window bounds and maximized state.
@@ -737,6 +733,8 @@ class Browser : public TabStripModelObserver,
     // screen. Only used on Mac.
     BOOKMARK_BAR_STATE_CHANGE_TOOLBAR_OPTION_CHANGE,
   };
+
+  explicit Browser(const CreateParams& params);
 
   // Overridden from content::WebContentsDelegate:
   content::WebContents* OpenURLFromTab(

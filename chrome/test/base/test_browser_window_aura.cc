@@ -131,7 +131,7 @@ std::unique_ptr<Browser> TestBrowserWindowViews::CreateBrowser(
     const Browser::CreateParams& params) {
   Browser::CreateParams params_copy = params;
   params_copy.window = this;
-  std::unique_ptr<Browser> browser = std::make_unique<Browser>(params_copy);
+  std::unique_ptr<Browser> browser(Browser::Create(params_copy));
   browser_ = browser.get();
   return browser;
 }

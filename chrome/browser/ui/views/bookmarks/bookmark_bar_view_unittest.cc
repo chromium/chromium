@@ -58,7 +58,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
 
     Browser::CreateParams params(profile(), true);
     params.window = &browser_window_;
-    browser_ = std::make_unique<Browser>(params);
+    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
   }
 
   virtual BookmarkBarView* bookmark_bar_view() = 0;

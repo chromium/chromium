@@ -196,7 +196,7 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
     params.type = browser_type;
   }
   params.window = browser_window;
-  return std::make_unique<Browser>(params);
+  return std::unique_ptr<Browser>(Browser::Create(params));
 }
 
 #if defined(OS_CHROMEOS)
