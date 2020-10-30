@@ -377,6 +377,10 @@ int NonClientFrameViewAsh::NonClientTopBorderHeight() const {
   return header_view_->GetPreferredHeight();
 }
 
+int NonClientFrameViewAsh::NonClientTopBorderPreferredHeight() const {
+  return header_view_->GetPreferredHeight();
+}
+
 const views::View* NonClientFrameViewAsh::GetAvatarIconViewForTest() const {
   return header_view_->avatar_icon();
 }

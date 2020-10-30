@@ -317,6 +317,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void EnsurePendingScale();
   float GetClientToDpPendingScale() const;
 
+  gfx::Rect GetClientBoundsForWindowBoundsAndWindowState(
+      const gfx::Rect& window_bounds,
+      chromeos::WindowStateType window_state) const;
+
   GeometryChangedCallback geometry_changed_callback_;
 
   int top_inset_height_ = 0;

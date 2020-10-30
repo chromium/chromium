@@ -99,6 +99,10 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   // Height from top of window to top of client area.
   int NonClientTopBorderHeight() const;
 
+  // Expected height from top of window to top of client area when non client
+  // view is visible.
+  int NonClientTopBorderPreferredHeight() const;
+
   const views::View* GetAvatarIconViewForTest() const;
 
   SkColor GetActiveFrameColorForTest() const;

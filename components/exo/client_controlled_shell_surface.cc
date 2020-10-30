@@ -35,6 +35,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -53,6 +54,7 @@
 #include "ui/compositor/compositor_lock.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -663,21 +665,10 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
 
   // Sends the client bounds, which matches the geometry
   // when frame is enabled.
-  ash::NonClientFrameViewAsh* frame_view = GetFrameView();
+  const gfx::Rect client_bounds = GetClientBoundsForWindowBoundsAndWindowState(
+      window_bounds, requested_state);
 
-  // The client's geometry uses fullscreen in client controlled,
-  // (but the surface is placed under the frame), so just use
-  // the window bounds instead for maximixed state.
-  // Snapped window states in tablet mode do not include the caption height.
-  const bool becoming_snapped =
-      requested_state == chromeos::WindowStateType::kLeftSnapped ||
-      requested_state == chromeos::WindowStateType::kRightSnapped;
-  const bool is_tablet_mode = WMHelper::GetInstance()->InTabletMode();
-  gfx::Rect client_bounds =
-      widget_->IsMaximized() || (becoming_snapped && is_tablet_mode)
-          ? window_bounds
-          : frame_view->GetClientBoundsForWindowBounds(window_bounds);
-  gfx::Size current_size = frame_view->GetBoundsForClientView().size();
+  gfx::Size current_size = GetFrameView()->GetBoundsForClientView().size();
   bool is_resize = client_bounds.size() != current_size &&
                    !widget_->IsMaximized() && !widget_->IsFullscreen();
 
@@ -1411,6 +1402,39 @@ float ClientControlledShellSurface::GetClientToDpPendingScale() const {
   // To work around this, we use pending_scale_ to calculate bounds in DP
   // instead of GetClientToDpScale().
   return use_default_scale_cancellation_ ? 1.f : 1.f / pending_scale_;
+}
+
+gfx::Rect
+ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
+    const gfx::Rect& window_bounds,
+    chromeos::WindowStateType window_state) const {
+  // The client's geometry uses fullscreen in client controlled,
+  // (but the surface is placed under the frame), so just use
+  // the window bounds instead for maximixed state.
+  // Snapped window states in tablet mode do not include the caption height.
+  const bool is_snapped =
+      window_state == chromeos::WindowStateType::kLeftSnapped ||
+      window_state == chromeos::WindowStateType::kRightSnapped;
+  const bool is_maximized =
+      window_state == chromeos::WindowStateType::kMaximized;
+  const display::TabletState tablet_state =
+      chromeos::TabletState::Get()->state();
+  const bool is_tablet_mode = WMHelper::GetInstance()->InTabletMode();
+
+  if (is_maximized || (is_snapped && is_tablet_mode))
+    return window_bounds;
+
+  gfx::Rect client_bounds =
+      GetFrameView()->GetClientBoundsForWindowBounds(window_bounds);
+
+  if (is_snapped && tablet_state == display::TabletState::kExitingTabletMode) {
+    // Until the next commit, the frame view is in immersive mode, and the above
+    // GetClientBoundsForWindowBounds doesn't return bounds taking the caption
+    // height into account.
+    client_bounds.Inset(0, GetFrameView()->NonClientTopBorderPreferredHeight(),
+                        0, 0);
+  }
+  return client_bounds;
 }
 
 // static

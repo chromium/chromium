@@ -2613,4 +2613,72 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
   EXPECT_GE(bounds_change_count(), 1);
 }
 
+TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
+  UpdateDisplay("800x600");
+
+  gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+
+  // Clear insets so that it won't affects the bounds.
+  shell_surface->SetSystemUiVisibility(true);
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  ash::Shell::Get()->display_manager()->UpdateWorkAreaOfDisplay(
+      display_id, gfx::Insets(0, 0, 0, 0));
+
+  gfx::Rect requested_bounds;
+  shell_surface->set_bounds_changed_callback(base::BindRepeating(
+      [](gfx::Rect* dst, WindowStateType current_state,
+         WindowStateType requested_state, int64_t display_id,
+         const gfx::Rect& bounds, bool is_resize,
+         int bounds_change) { *dst = bounds; },
+      base::Unretained(&requested_bounds)));
+
+  surface->Attach(buffer.get());
+  surface->Commit();
+  views::Widget* widget = shell_surface->GetWidget();
+  aura::Window* window = widget->GetNativeWindow();
+
+  // Normal state -> Snap.
+  shell_surface->SetGeometry(gfx::Rect(50, 100, 200, 300));
+  surface->SetFrame(SurfaceFrameType::NORMAL);
+  surface->Commit();
+  EXPECT_EQ(gfx::Rect(50, 68, 200, 332), widget->GetWindowBoundsInScreen());
+
+  ash::WMEvent event(ash::WM_EVENT_SNAP_LEFT);
+  ash::WindowState::Get(window)->OnWMEvent(&event);
+  EXPECT_EQ(gfx::Rect(0, 32, 400, 568), requested_bounds);
+
+  // Maximized -> Snap.
+  shell_surface->SetMaximized();
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 800, 568));
+  surface->Commit();
+  EXPECT_TRUE(widget->IsMaximized());
+
+  ash::WindowState::Get(window)->OnWMEvent(&event);
+  EXPECT_EQ(gfx::Rect(0, 32, 400, 568), requested_bounds);
+  shell_surface->SetSnappedToLeft();
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 400, 568));
+  surface->Commit();
+
+  // Clamshell mode -> tablet mode. The bounds start from top-left corner.
+  EnableTabletMode(true);
+  EXPECT_EQ(gfx::Rect(0, 0, 396, 564), requested_bounds);
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 396, 568));
+  surface->SetFrame(SurfaceFrameType::AUTOHIDE);
+  surface->Commit();
+
+  // Tablet mode -> clamshell mode. Top caption height should be reserved.
+  EnableTabletMode(false);
+  EXPECT_EQ(gfx::Rect(0, 32, 396, 568), requested_bounds);
+
+  // Clean up state.
+  shell_surface->SetSnappedToLeft();
+  surface->Commit();
+}
+
 }  // namespace exo
