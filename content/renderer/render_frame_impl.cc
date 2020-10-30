@@ -60,7 +60,6 @@
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/navigation_params_utils.h"
-#include "content/common/page_messages.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/common/unfreezable_frame_messages.h"
@@ -2215,16 +2214,6 @@ bool RenderFrameImpl::Send(IPC::Message* message) {
 }
 
 bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
-  // Page IPCs are routed via the main frame (both local and remote) and then
-  // forwarded to the RenderView. See comment in
-  // RenderFrameHostManager::SendPageMessage() for more information.
-  if ((IPC_MESSAGE_CLASS(msg) == PageMsgStart)) {
-    if (render_view())
-      return render_view()->OnMessageReceived(msg);
-
-    return false;
-  }
-
   // We may get here while detaching, when the WebFrame has been deleted.  Do
   // not process any messages in this state.
   if (!frame_)

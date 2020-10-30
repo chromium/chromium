@@ -3975,6 +3975,12 @@ void WebViewImpl::UpdateRendererPreferences(
 #endif  // defined(USE_X11) || defined(USE_OZONE)
 }
 
+void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,
+                                            int32_t history_length) {
+  DCHECK(web_view_client_);
+  web_view_client_->OnSetHistoryOffsetAndLength(history_offset, history_length);
+}
+
 void WebViewImpl::SetWebPreferences(
     const web_pref::WebPreferences& preferences) {
   UpdateWebPreferences(preferences);

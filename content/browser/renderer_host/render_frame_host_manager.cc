@@ -46,7 +46,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params_utils.h"
-#include "content/common/page_messages.h"
 #include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -3267,38 +3266,6 @@ RenderFrameHostManager::GetOpenerFrameToken(SiteInstance* instance) {
   return frame_tree_node_->opener()
       ->render_manager()
       ->GetFrameTokenForSiteInstance(instance);
-}
-
-void RenderFrameHostManager::SendPageMessage(IPC::Message* msg,
-                                             SiteInstance* instance_to_skip) {
-  DCHECK(IPC_MESSAGE_CLASS(*msg) == PageMsgStart);
-
-  // We should always deliver page messages through the main frame. This is done
-  // because at the time, we wanted to avoid routing messages to swapped-out
-  // RenderViews. The idea was that we might introduce a separate RenderPage
-  // interface.
-  //
-  // TODO(dcheng): Now that RenderView and RenderWidget are increasingly
-  // separated, it might be possible/desirable to just route to the view.
-  DCHECK(!frame_tree_node_->parent());
-
-  if ((IPC_MESSAGE_CLASS(*msg) != PageMsgStart) || frame_tree_node_->parent()) {
-    delete msg;
-    return;
-  }
-
-  auto callback = base::BindRepeating(
-      [](IPC::Message* msg, RenderViewHostImpl* render_view_host) {
-        IPC::Message* copy = new IPC::Message(*msg);
-        copy->set_routing_id(render_view_host->GetRoutingID());
-        render_view_host->Send(copy);
-      },
-      msg);
-
-  ExecutePageBroadcastMethod(std::move(callback), instance_to_skip);
-
-  // Delete |msg| so that |msg| doesn't leak.
-  delete msg;
 }
 
 void RenderFrameHostManager::ExecutePageBroadcastMethod(

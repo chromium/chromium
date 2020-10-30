@@ -1991,8 +1991,7 @@ RenderThreadImpl::UnfreezableMessageFilter::UnfreezableMessageFilter(
 // Called on the I/O thread.
 bool RenderThreadImpl::UnfreezableMessageFilter::OnMessageReceived(
     const IPC::Message& message) {
-  if ((IPC_MESSAGE_CLASS(message) == UnfreezableFrameMsgStart) ||
-      (IPC_MESSAGE_CLASS(message) == PageMsgStart)) {
+  if ((IPC_MESSAGE_CLASS(message) == UnfreezableFrameMsgStart)) {
     auto task_runner = GetUnfreezableTaskRunner(message.routing_id());
     if (task_runner) {
       return task_runner->PostTask(

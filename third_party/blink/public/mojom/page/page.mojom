@@ -64,4 +64,7 @@ interface PageBroadcast {
 
   // Updates renderer preferences.
   UpdateRendererPreferences(blink.mojom.RendererPreferences preferences);
+
+  // Set history offset and length.
+  SetHistoryOffsetAndLength(int32 offset, int32 length);
 };

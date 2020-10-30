@@ -16,7 +16,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/input_messages.h"
-#include "content/common/page_messages.h"
 #include "content/common/unfreezable_frame_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -417,16 +416,6 @@ std::string RenderFrameProxy::unique_name() const {
 }
 
 bool RenderFrameProxy::OnMessageReceived(const IPC::Message& msg) {
-  // Page IPCs are routed via the main frame (both local and remote) and then
-  // forwarded to the RenderView. See comment in
-  // RenderFrameHostManager::SendPageMessage() for more information.
-  if ((IPC_MESSAGE_CLASS(msg) == PageMsgStart)) {
-    if (render_view())
-      return render_view()->OnMessageReceived(msg);
-
-    return false;
-  }
-
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderFrameProxy, msg)
     IPC_MESSAGE_HANDLER(UnfreezableFrameMsg_DeleteProxy, OnDeleteProxy)

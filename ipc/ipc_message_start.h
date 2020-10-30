@@ -14,7 +14,6 @@
 enum IPCMessageStart {
   AutomationMsgStart = 0,
   FrameMsgStart,
-  PageMsgStart,
   TestMsgStart,
   WorkerMsgStart,
   NaClMsgStart,

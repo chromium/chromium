@@ -125,7 +125,6 @@ source_set("common") {
     "navigation_params_mojom_traits.h",
     "navigation_params_utils.h",
     "origin_util.cc",
-    "page_messages.h",
     "pepper_file_util.cc",
     "pepper_file_util.h",
     "pepper_plugin_list.cc",

@@ -12,7 +12,6 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "content/child/webthemeengine_impl_default.h"
-#include "content/common/page_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -333,26 +332,7 @@ void RenderViewImpl::SendFrameStateUpdates() {
 // IPC::Listener -------------------------------------------------------------
 
 bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
-  WebFrame* main_frame = GetWebView() ? GetWebView()->MainFrame() : nullptr;
-  if (main_frame) {
-    GURL active_url;
-    if (main_frame->IsWebLocalFrame())
-      active_url = main_frame->ToWebLocalFrame()->GetDocument().Url();
-    GetContentClient()->SetActiveURL(
-        active_url, main_frame->Top()->GetSecurityOrigin().ToString().Utf8());
-  }
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderViewImpl, message)
-    // Page messages.
-    IPC_MESSAGE_HANDLER(PageMsg_SetHistoryOffsetAndLength,
-                        OnSetHistoryOffsetAndLength)
-
-    // Adding a new message? Add platform independent ones first, then put the
-    // platform specific ones at the end.
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
+  return false;
 }
 
 // blink::WebViewClient ------------------------------------------------------

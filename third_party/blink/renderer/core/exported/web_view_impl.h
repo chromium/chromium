@@ -240,6 +240,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(
       const RendererPreferences& preferences) override;
+  void SetHistoryOffsetAndLength(int32_t history_offset,
+                                 int32_t history_length) override;
 
   void DispatchPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);

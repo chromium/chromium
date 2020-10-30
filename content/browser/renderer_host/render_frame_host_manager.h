@@ -449,12 +449,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Returns the number of RenderFrameProxyHosts for this frame.
   size_t GetProxyCount();
 
-  // Sends an IPC message to every process in the FrameTree. This should only be
-  // called in the top-level RenderFrameHostManager.  |instance_to_skip|, if
-  // not null, specifies the SiteInstance to which the message should not be
-  // sent.
-  void SendPageMessage(IPC::Message* msg, SiteInstance* instance_to_skip);
-
   // Executes a PageBroadcast Mojo method to every RenderView in the FrameTree.
   // This should only be called in the top-level RenderFrameHostManager.
   // The |callback| is called synchronously and the |instance_to_skip| won't

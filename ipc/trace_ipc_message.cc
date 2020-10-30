@@ -25,9 +25,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case FrameMsgStart:
       message_class = ChromeLegacyIpc::CLASS_FRAME;
       break;
-    case PageMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_PAGE;
-      break;
     case TestMsgStart:
       message_class = ChromeLegacyIpc::CLASS_TEST;
       break;

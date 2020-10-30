@@ -103,7 +103,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
-#include "content/common/page_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -1293,11 +1292,6 @@ int WebContentsImpl::SendToAllFramesIncludingPending(IPC::Message* message) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::SentToAllFramesIncludingPending");
   return SendToAllFramesImpl(frame_tree_, /*include_pending=*/true, message);
-}
-
-void WebContentsImpl::SendPageMessage(IPC::Message* msg) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendPageMessage");
-  frame_tree_.root()->render_manager()->SendPageMessage(msg, nullptr);
 }
 
 void WebContentsImpl::ExecutePageBroadcastMethod(
@@ -4261,8 +4255,12 @@ void WebContentsImpl::SetHistoryOffsetAndLength(int history_offset,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetHistoryOffsetAndLength",
                         "history_offset", history_offset, "history_length",
                         history_length);
-  SendPageMessage(new PageMsg_SetHistoryOffsetAndLength(
-      MSG_ROUTING_NONE, history_offset, history_length));
+  ExecutePageBroadcastMethod(base::BindRepeating(
+      [](int history_offset, int history_length, RenderViewHostImpl* rvh) {
+        if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
+          broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
+      },
+      history_offset, history_length));
 }
 
 void WebContentsImpl::SetHistoryOffsetAndLengthForView(
@@ -4272,8 +4270,9 @@ void WebContentsImpl::SetHistoryOffsetAndLengthForView(
   OPTIONAL_TRACE_EVENT2(
       "content", "WebContentsImpl::SetHistoryOffsetAndLengthForView",
       "history_offset", history_offset, "history_length", history_length);
-  render_view_host->Send(new PageMsg_SetHistoryOffsetAndLength(
-      render_view_host->GetRoutingID(), history_offset, history_length));
+  if (auto& broadcast = static_cast<RenderViewHostImpl*>(render_view_host)
+                            ->GetAssociatedPageBroadcast())
+    broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
 }
 
 void WebContentsImpl::ReloadFocusedFrame() {

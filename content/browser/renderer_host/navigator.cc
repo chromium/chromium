@@ -32,7 +32,6 @@
 #include "content/common/inter_process_time_ticks_converter.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
-#include "content/common/page_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
@@ -370,9 +369,14 @@ void Navigator::DidNavigate(
   if (old_entry_count != controller_->GetEntryCount() ||
       details.previous_entry_index !=
           controller_->GetLastCommittedEntryIndex()) {
-    frame_tree->root()->render_manager()->SendPageMessage(
-        new PageMsg_SetHistoryOffsetAndLength(
-            MSG_ROUTING_NONE, controller_->GetLastCommittedEntryIndex(),
+    frame_tree->root()->render_manager()->ExecutePageBroadcastMethod(
+        base::BindRepeating(
+            [](int history_offset, int history_count, RenderViewHostImpl* rvh) {
+              if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
+                broadcast->SetHistoryOffsetAndLength(history_offset,
+                                                     history_count);
+            },
+            controller_->GetLastCommittedEntryIndex(),
             controller_->GetEntryCount()),
         site_instance);
   }

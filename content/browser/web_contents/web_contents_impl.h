@@ -1573,9 +1573,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       int process_id,
       int main_frame_widget_route_id);
 
-  // Sends a Page message IPC.
-  void SendPageMessage(IPC::Message* msg);
-
   // Execute a PageBroadcast Mojo method.
   void ExecutePageBroadcastMethod(PageBroadcastMethodCallback callback);
 
