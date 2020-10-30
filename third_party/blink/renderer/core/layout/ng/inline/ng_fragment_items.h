@@ -78,8 +78,8 @@ class CORE_EXPORT NGFragmentItems {
       const NGPhysicalBoxFragment& container) const;
 
   // Mark items dirty when |child| is removed from the tree.
-  void DirtyLinesFromChangedChild(const LayoutBlockFlow& container,
-                                  const LayoutObject* child) const;
+  static void DirtyLinesFromChangedChild(const LayoutObject& child,
+                                         const LayoutBlockFlow& container);
 
   // Mark items dirty from |LayoutObject::NeedsLayout| flags.
   void DirtyLinesFromNeedsLayout(const LayoutBlockFlow* block_flow) const;
@@ -98,9 +98,11 @@ class CORE_EXPORT NGFragmentItems {
   const NGFragmentItem* ItemsData() const { return items_; }
 
   static bool CanReuseAll(NGInlineCursor* cursor);
-  bool TryDirtyFirstLineFor(const LayoutObject& layout_object) const;
-  bool TryDirtyLastLineFor(const LayoutBlockFlow& container,
-                           const LayoutObject& layout_object) const;
+  static bool TryDirtyFirstLineFor(const LayoutObject& layout_object,
+                                   const LayoutBlockFlow& container);
+  static bool TryDirtyLastLineFor(const LayoutObject& layout_object,
+                                  const LayoutBlockFlow& container);
+  static void DirtyFirstItem(const LayoutBlockFlow& container);
 
   String text_content_;
   String first_line_text_content_;

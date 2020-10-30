@@ -283,12 +283,9 @@ void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
   // We need to dirty line box fragments only if the child is once laid out in
   // LayoutNG inline formatting context. New objects are handled in
   // NGInlineNode::MarkLineBoxesDirty().
-  if (child->IsInLayoutNGInlineFormattingContext()) {
-    if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-      if (const NGFragmentItems* items = Base::FragmentItems())
-        items->DirtyLinesFromChangedChild(*this, child);
-    }
-  }
+  if (child->IsInLayoutNGInlineFormattingContext() &&
+      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
+    NGFragmentItems::DirtyLinesFromChangedChild(*child, *this);
 }
 
 template <typename Base>

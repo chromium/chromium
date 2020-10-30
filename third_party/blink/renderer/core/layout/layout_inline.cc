@@ -1680,10 +1680,8 @@ void LayoutInline::DirtyLinesFromChangedChild(
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())) {
-      if (const LayoutBlockFlow* container = FragmentItemsContainer()) {
-        if (const NGFragmentItems* items = container->FragmentItems())
-          items->DirtyLinesFromChangedChild(*container, child);
-      }
+      if (const LayoutBlockFlow* container = FragmentItemsContainer())
+        NGFragmentItems::DirtyLinesFromChangedChild(*child, *container);
       return;
     }
     SetAncestorLineBoxDirty();
