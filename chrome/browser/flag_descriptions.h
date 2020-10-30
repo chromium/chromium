@@ -1089,9 +1089,6 @@ extern const char kPrintServerScalingDescription[];
 extern const char kPrivacyAdvisorName[];
 extern const char kPrivacyAdvisorDescription[];
 
-extern const char kPrivacyElevatedAndroidName[];
-extern const char kPrivacyElevatedAndroidDescription[];
-
 extern const char kPrivacyReorderedAndroidName[];
 extern const char kPrivacyReorderedAndroidDescription[];
 

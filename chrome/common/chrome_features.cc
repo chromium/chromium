@@ -648,9 +648,6 @@ const base::Feature kPrivacyAdvisor{"PrivacyAdvisor",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
-const base::Feature kPrivacyElevatedAndroid{"PrivacyElevatedAndroid",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPrivacyReorderedAndroid{"PrivacyReorderedAndroid",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

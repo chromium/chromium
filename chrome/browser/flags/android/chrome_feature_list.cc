@@ -91,7 +91,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kNetworkServiceInProcess,
     &features::kOverscrollHistoryNavigation,
     &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,
-    &features::kPrivacyElevatedAndroid,
     &features::kPrivacyReorderedAndroid,
     &features::kPrioritizeBootstrapTasks,
     &features::kQuietNotificationPrompts,

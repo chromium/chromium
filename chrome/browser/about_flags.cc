@@ -5513,10 +5513,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
-    {"privacy-elevated-android", flag_descriptions::kPrivacyElevatedAndroidName,
-     flag_descriptions::kPrivacyElevatedAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kPrivacyElevatedAndroid)},
-
     {"privacy-reordered-android",
      flag_descriptions::kPrivacyReorderedAndroidName,
      flag_descriptions::kPrivacyReorderedAndroidDescription, kOsAndroid,

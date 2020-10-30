@@ -427,9 +427,6 @@ extern const base::Feature kPrivacyAdvisor;
 
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kPrivacyElevatedAndroid;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacyReorderedAndroid;
 #endif
 

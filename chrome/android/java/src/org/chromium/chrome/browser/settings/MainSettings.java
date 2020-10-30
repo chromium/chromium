@@ -160,20 +160,6 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private void createPreferences() {
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
-        // If the flag for elevating the privacy is enabled, put the "Privacy"
-        // into the reserved space in the Basics section and move the "Homepage"
-        // down to Advanced to where "Privacy" was. See (crbug.com/1099233) for
-        // more context.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_ELEVATED_ANDROID)) {
-            Preference privacyPreference = findPreference(PREF_PRIVACY);
-            Preference homepagePreference = findPreference(PREF_HOMEPAGE);
-            getPreferenceScreen().removePreference(privacyPreference);
-            getPreferenceScreen().removePreference(homepagePreference);
-            privacyPreference.setOrder(PRIVACY_ORDER_ELEVATED);
-            homepagePreference.setOrder(PRIVACY_ORDER_DEFAULT);
-            getPreferenceScreen().addPreference(privacyPreference);
-            getPreferenceScreen().addPreference(homepagePreference);
-        }
 
         // If the flag for adding a "Security" section is enabled, the "Privacy" section will be
         // renamed to a "Privacy and security" section and the "Security" section will be added

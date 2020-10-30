@@ -5634,21 +5634,6 @@
             ]
         }
     ],
-    "PrivacyElevatedAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacyElevatedAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProactivelySwapBrowsingInstance": [
         {
             "platforms": [

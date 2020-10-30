@@ -1871,12 +1871,6 @@ const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";
 
-const char kPrivacyElevatedAndroidName[] =
-    "Elevate Privacy in Settings on Android";
-const char kPrivacyElevatedAndroidDescription[] =
-    "Moves the Privacy section up to Basics and moves the Homepage one to "
-    " Advanced.";
-
 const char kPrivacyReorderedAndroidName[] =
     "Reorder settings in Privacy on Android";
 const char kPrivacyReorderedAndroidDescription[] =
