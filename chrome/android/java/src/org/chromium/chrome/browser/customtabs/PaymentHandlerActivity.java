@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.display.DisplayUtil;
 
 /**
@@ -56,7 +57,8 @@ public class PaymentHandlerActivity extends CustomTabActivity {
         // Notify the window is closing so as to abort invoking payment app early.
         if (!mHaveNotifiedServiceWorker && mWebContents != null) {
             mHaveNotifiedServiceWorker = true;
-            ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mWebContents);
+            ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(
+                    mWebContents, PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
         }
 
         super.handleFinishAndClose();

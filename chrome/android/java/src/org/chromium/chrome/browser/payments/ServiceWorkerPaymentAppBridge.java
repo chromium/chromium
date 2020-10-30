@@ -112,7 +112,8 @@ public class ServiceWorkerPaymentAppBridge {
                 WebContents paymentRequestWebContents = tab.getWebContents();
                 if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(
                             paymentRequestWebContents)) {
-                    onClosingPaymentAppWindowForInsecureNavigation(paymentRequestWebContents);
+                    onClosingPaymentAppWindow(paymentRequestWebContents,
+                            PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
                 }
             }
 
@@ -122,33 +123,25 @@ public class ServiceWorkerPaymentAppBridge {
                 WebContents paymentRequestWebContents = tab.getWebContents();
                 if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(
                             paymentRequestWebContents)) {
-                    onClosingPaymentAppWindowForInsecureNavigation(paymentRequestWebContents);
+                    onClosingPaymentAppWindow(paymentRequestWebContents,
+                            PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
                 }
             }
         });
     }
 
     /**
-     * Notify closing the opened payment app window for insecure navigation.
-     *
-     * @param paymentRequestWebContents The web contents in the opened window.
-     */
-    public static void onClosingPaymentAppWindowForInsecureNavigation(
-            WebContents paymentRequestWebContents) {
-        if (paymentRequestWebContents.isDestroyed()) return;
-        ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(paymentRequestWebContents,
-                PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
-    }
-
-    /**
      * Notify closing the opened payment app window.
      *
      * @param paymentRequestWebContents The web contents in the opened window. Can be null.
+     * @param responseType The type of response for payment event, used to decide the user-visible
+     *         error message, defined in {@link PaymentEventResponseType}.
      */
-    public static void onClosingPaymentAppWindow(@Nullable WebContents paymentRequestWebContents) {
+    public static void onClosingPaymentAppWindow(
+            @Nullable WebContents paymentRequestWebContents, int responseType) {
         if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
         ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(
-                paymentRequestWebContents, PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
+                paymentRequestWebContents, responseType);
     }
 
     /**
@@ -159,7 +152,6 @@ public class ServiceWorkerPaymentAppBridge {
      */
     public static void onOpeningPaymentAppWindow(
             WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents) {
-        if (paymentHandlerWebContents == null || paymentHandlerWebContents.isDestroyed()) return;
         if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
         ServiceWorkerPaymentAppBridgeJni.get().onOpeningPaymentAppWindow(
                 /*paymentRequestWebContents=*/paymentRequestWebContents,

@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
@@ -205,16 +206,20 @@ import java.lang.annotation.RetentionPolicy;
 
         switch (mCloseReason) {
             case CloseReason.INSECURE_NAVIGATION:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindowForInsecureNavigation(
-                        mPaymentRequestWebContents);
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
                 break;
             case CloseReason.USER:
-                // Intentional fallthrough.
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
+                break;
             case CloseReason.FAIL_LOAD:
-                // Intentional fallthrough.
-                // TODO(crbug.com/1017926): Respond to service worker with the net error.
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME);
+                break;
             case CloseReason.ACTIVITY_DIED:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents);
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents,
+                        PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED);
                 break;
             case CloseReason.OTHERS:
                 // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
