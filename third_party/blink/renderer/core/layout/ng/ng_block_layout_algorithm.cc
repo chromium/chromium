@@ -608,7 +608,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
   if (Node().ChildLayoutBlockedByDisplayLock())
     child_iterator = NGBlockChildIterator(NGBlockNode(nullptr), nullptr);
 
-  NGLayoutInputNode ruby_text_child(nullptr);
+  NGBlockNode ruby_text_child(nullptr);
   NGBlockNode placeholder_child(nullptr);
   for (auto entry = child_iterator.NextChild();
        NGLayoutInputNode child = entry.node;
@@ -652,7 +652,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
       }
       break;
     } else if (IsRubyText(child)) {
-      ruby_text_child = child;
+      ruby_text_child = To<NGBlockNode>(child);
     } else if (child.IsTextControlPlaceholder()) {
       placeholder_child = To<NGBlockNode>(child);
     } else {
@@ -712,7 +712,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
   }
 
   if (ruby_text_child)
-    LayoutRubyText(&ruby_text_child);
+    HandleRubyText(ruby_text_child);
   if (placeholder_child)
     HandleTextControlPlaceholder(placeholder_child, previous_inflow_position);
 
@@ -2868,32 +2868,30 @@ bool NGBlockLayoutAlgorithm::IsRubyText(const NGLayoutInputNode& child) const {
   return Node().IsRubyRun() && child.IsRubyText();
 }
 
-void NGBlockLayoutAlgorithm::LayoutRubyText(
-    NGLayoutInputNode* ruby_text_child) {
+void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   DCHECK(Node().IsRubyRun());
 
   scoped_refptr<const NGBlockBreakToken> break_token;
   if (const auto* token = BreakToken()) {
     for (const auto* child_token : token->ChildBreakTokens()) {
-      if (child_token->InputNode() == *ruby_text_child) {
+      if (child_token->InputNode() == ruby_text_child) {
         break_token = To<NGBlockBreakToken>(child_token);
         break;
       }
     }
   }
 
-  const ComputedStyle& rt_style = ruby_text_child->Style();
+  const ComputedStyle& rt_style = ruby_text_child.Style();
   NGConstraintSpaceBuilder builder(ConstraintSpace(), rt_style.GetWritingMode(),
                                    true);
-  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), *ruby_text_child, &builder);
+  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), ruby_text_child, &builder);
   if (!IsParallelWritingMode(Style().GetWritingMode(),
                              rt_style.GetWritingMode()))
     builder.SetIsShrinkToFit(rt_style.LogicalWidth().IsAuto());
   builder.SetAvailableSize(ChildAvailableSize());
 
   scoped_refptr<const NGLayoutResult> result =
-      To<NGBlockNode>(*ruby_text_child)
-          .Layout(builder.ToConstraintSpace(), break_token.get());
+      ruby_text_child.Layout(builder.ToConstraintSpace(), break_token.get());
 
   LayoutUnit ruby_text_box_top;
   const NGPhysicalBoxFragment& ruby_text_fragment =

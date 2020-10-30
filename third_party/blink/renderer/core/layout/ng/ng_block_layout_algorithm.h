@@ -344,7 +344,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   // Layout |ruby_text_child| content, and decide the location of
   // |ruby_text_child|. This is called only if IsRubyText() returns true.
-  void LayoutRubyText(NGLayoutInputNode* ruby_text_child);
+  void HandleRubyText(NGBlockNode ruby_text_child);
 
   // Layout |placeholder| content, and decide the location of |placeholder|.
   // This is called only if |this| is a text control.
