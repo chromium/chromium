@@ -800,15 +800,39 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
   ClientStatus GetElementRect(const Selector& selector, RectF* rect_output) {
     base::RunLoop run_loop;
     ClientStatus result;
-    web_controller_->GetElementRect(
-        selector, base::BindOnce(&WebControllerBrowserTest::OnGetElementRect,
-                                 base::Unretained(this), run_loop.QuitClosure(),
-                                 &result, rect_output));
+
+    web_controller_->FindElement(
+        selector, /* strict= */ true,
+        base::BindOnce(&WebControllerBrowserTest::GetElementRectElementCallback,
+                       base::Unretained(this), run_loop.QuitClosure(), &result,
+                       rect_output));
+
     run_loop.Run();
     return result;
   }
 
-  void OnGetElementRect(base::OnceClosure done_callback,
+  void GetElementRectElementCallback(
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      RectF* rect_output,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    if (!element_status.ok()) {
+      *result_output = element_status;
+      std::move(done_callback).Run();
+      return;
+    }
+
+    ASSERT_TRUE(element_result != nullptr);
+    web_controller_->GetElementRect(
+        *element_result,
+        base::BindOnce(&WebControllerBrowserTest::OnGetElementRect,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback), result_output, rect_output));
+  }
+
+  void OnGetElementRect(std::unique_ptr<ElementFinder::Result> element,
+                        base::OnceClosure done_callback,
                         ClientStatus* result_output,
                         RectF* rect_output,
                         const ClientStatus& rect_status,

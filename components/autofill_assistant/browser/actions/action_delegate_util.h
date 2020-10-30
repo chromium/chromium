@@ -12,6 +12,19 @@
 
 namespace autofill_assistant {
 namespace action_delegate_util {
+namespace {
+
+template <typename R>
+void RetainElementAndExecuteGetCallback(
+    std::unique_ptr<ElementFinder::Result> element,
+    base::OnceCallback<void(const ClientStatus&, const R&)> callback,
+    const ClientStatus& status,
+    const R& result) {
+  DCHECK(element != nullptr);
+  std::move(callback).Run(status, result);
+}
+
+}  // namespace
 
 using ElementActionCallback =
     base::OnceCallback<void(const ElementFinder::Result&,
@@ -45,11 +58,23 @@ void TakeElementAndPerform(ElementActionCallback perform,
 // element and the |done| callback as arguments, while retaining the element.
 // If the initial status is not ok, execute the |done| callback with the default
 // value immediately.
+template <typename R>
 void TakeElementAndGetProperty(
-    ElementActionGetCallback<std::string> perform_and_get,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)> done,
+    ElementActionGetCallback<R> perform_and_get,
+    base::OnceCallback<void(const ClientStatus&, const R&)> done,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element);
+    std::unique_ptr<ElementFinder::Result> element_result) {
+  if (!element_status.ok()) {
+    VLOG(1) << __func__ << " Failed to find element.";
+    std::move(done).Run(element_status, R());
+    return;
+  }
+
+  std::move(perform_and_get)
+      .Run(*element_result,
+           base::BindOnce(&RetainElementAndExecuteGetCallback<R>,
+                          std::move(element_result), std::move(done)));
+}
 
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
                 const ElementFinder::Result& element,

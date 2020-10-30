@@ -131,7 +131,7 @@ void GetElementStatusAction::OnWaitForElement(
   delegate_->FindElement(
       selector_,
       base::BindOnce(
-          &action_delegate_util::TakeElementAndGetProperty,
+          &action_delegate_util::TakeElementAndGetProperty<std::string>,
           base::BindOnce(&ActionDelegate::GetStringAttribute,
                          delegate_->GetWeakPtr(), attribute_list),
           base::BindOnce(&GetElementStatusAction::OnGetStringAttribute,

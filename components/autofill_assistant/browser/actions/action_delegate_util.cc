@@ -72,34 +72,6 @@ void FindElementAndPerformImpl(
       base::BindOnce(&OnFindElement, std::move(perform), std::move(done)));
 }
 
-template <typename R>
-void RetainElementAndExecuteGetCallback(
-    std::unique_ptr<ElementFinder::Result> element,
-    base::OnceCallback<void(const ClientStatus&, const R&)> callback,
-    const ClientStatus& status,
-    const R& result) {
-  DCHECK(element != nullptr);
-  std::move(callback).Run(status, result);
-}
-
-template <typename R>
-void TakeElementAndGetPropertyImpl(
-    ElementActionGetCallback<R> perform_and_get,
-    base::OnceCallback<void(const ClientStatus&, const R&)> done,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__ << " Failed to find element.";
-    std::move(done).Run(element_status, R());
-    return;
-  }
-
-  std::move(perform_and_get)
-      .Run(*element_result,
-           base::BindOnce(&RetainElementAndExecuteGetCallback<R>,
-                          std::move(element_result), std::move(done)));
-}
-
 }  // namespace
 
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
@@ -123,16 +95,6 @@ void TakeElementAndPerform(ElementActionCallback perform,
                            std::unique_ptr<ElementFinder::Result> element) {
   OnFindElement(std::move(perform), std::move(done), element_status,
                 std::move(element));
-}
-
-void TakeElementAndGetProperty(
-    ElementActionGetCallback<std::string> perform_and_get,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)> done,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  TakeElementAndGetPropertyImpl<std::string>(std::move(perform_and_get),
-                                             std::move(done), element_status,
-                                             std::move(element));
 }
 
 void ClickOrTapElement(const ActionDelegate* delegate,

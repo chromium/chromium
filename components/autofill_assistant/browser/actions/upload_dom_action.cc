@@ -47,11 +47,13 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
   }
 
   delegate_->FindElement(
-      selector, base::BindOnce(&action_delegate_util::TakeElementAndGetProperty,
-                               base::BindOnce(&ActionDelegate::GetOuterHtml,
-                                              delegate_->GetWeakPtr()),
-                               base::BindOnce(&UploadDomAction::OnGetOuterHtml,
-                                              weak_ptr_factory_.GetWeakPtr())));
+      selector,
+      base::BindOnce(
+          &action_delegate_util::TakeElementAndGetProperty<std::string>,
+          base::BindOnce(&ActionDelegate::GetOuterHtml,
+                         delegate_->GetWeakPtr()),
+          base::BindOnce(&UploadDomAction::OnGetOuterHtml,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void UploadDomAction::OnGetOuterHtml(const ClientStatus& status,

@@ -107,12 +107,12 @@ class MockWebController : public WebController {
                         callback));
 
   void GetElementRect(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       ElementRectGetter::ElementRectCallback callback) override {
-    OnGetElementRect(selector, callback);
+    OnGetElementRect(element, callback);
   }
   MOCK_METHOD2(OnGetElementRect,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     ElementRectGetter::ElementRectCallback& callback));
 
   void WaitForWindowHeightChange(

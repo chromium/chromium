@@ -65,15 +65,16 @@ void BatchElementChecker::Run(WebController* web_controller) {
   for (auto& entry : get_field_value_callbacks_) {
     web_controller->FindElement(
         entry.first, /* strict= */ true,
-        base::BindOnce(&action_delegate_util::TakeElementAndGetProperty,
-                       base::BindOnce(&WebController::GetFieldValue,
-                                      web_controller->GetWeakPtr()),
-                       base::BindOnce(&BatchElementChecker::OnFieldValueChecked,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      // Guaranteed to exist for the lifetime of
-                                      // this instance, because the map isn't
-                                      // modified after Run has been called.
-                                      base::Unretained(&entry.second))));
+        base::BindOnce(
+            &action_delegate_util::TakeElementAndGetProperty<std::string>,
+            base::BindOnce(&WebController::GetFieldValue,
+                           web_controller->GetWeakPtr()),
+            base::BindOnce(&BatchElementChecker::OnFieldValueChecked,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           // Guaranteed to exist for the lifetime of
+                           // this instance, because the map isn't
+                           // modified after Run has been called.
+                           base::Unretained(&entry.second))));
   }
 
   // The extra +1 of pending_check_count and this check happening last

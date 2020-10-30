@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
@@ -128,10 +129,15 @@ void ElementArea::Update() {
 
   for (auto& rectangle : rectangles_) {
     for (auto& position : rectangle.positions) {
-      delegate_->GetWebController()->GetElementRect(
-          position.selector,
-          base::BindOnce(&ElementArea::OnGetElementRect,
-                         weak_ptr_factory_.GetWeakPtr(), position.selector));
+      delegate_->GetWebController()->FindElement(
+          position.selector, /* strict= */ true,
+          base::BindOnce(
+              &action_delegate_util::TakeElementAndGetProperty<RectF>,
+              base::BindOnce(&WebController::GetElementRect,
+                             delegate_->GetWebController()->GetWeakPtr()),
+              base::BindOnce(&ElementArea::OnGetElementRect,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             position.selector)));
     }
   }
 }

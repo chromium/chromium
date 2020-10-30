@@ -1317,28 +1317,15 @@ void WebController::OnGetVisualViewport(
 }
 
 void WebController::GetElementRect(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     ElementRectGetter::ElementRectCallback callback) {
-  FindElement(
-      selector, /* strict_mode= */ true,
-      base::BindOnce(&WebController::OnFindElementForRect,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnFindElementForRect(
-    ElementRectGetter::ElementRectCallback callback,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!element_status.ok()) {
-    std::move(callback).Run(element_status, RectF());
-    return;
-  }
   std::unique_ptr<ElementRectGetter> getter =
       std::make_unique<ElementRectGetter>(devtools_client_.get());
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(
-      std::move(element_result),
+      // TODO(b/172041811): Ownership of element.
+      std::make_unique<ElementFinder::Result>(element),
       base::BindOnce(&WebController::OnGetElementRect,
                      weak_ptr_factory_.GetWeakPtr(), ptr, std::move(callback)));
 }

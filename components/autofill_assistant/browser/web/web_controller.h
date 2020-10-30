@@ -215,14 +215,14 @@ class WebController {
   virtual void GetVisualViewport(
       base::OnceCallback<void(const ClientStatus&, const RectF&)> callback);
 
-  // Gets the position of the element identified by the selector.
+  // Gets the position of the |element|.
   //
   // If unsuccessful, the callback gets the failure status with an empty rect.
   //
   // If successful, the callback gets a success status with a set of
   // (left, top, right, bottom) coordinates rect, expressed in absolute CSS
   // coordinates.
-  virtual void GetElementRect(const Selector& selector,
+  virtual void GetElementRect(const ElementFinder::Result& element,
                               ElementRectGetter::ElementRectCallback callback);
 
   // Calls the callback once the main document window has been resized.
@@ -378,9 +378,6 @@ class WebController {
       size_t index,
       int delay_in_milli,
       base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnFindElementForRect(ElementRectGetter::ElementRectCallback callback,
-                            const ClientStatus& status,
-                            std::unique_ptr<ElementFinder::Result> result);
   void OnGetElementRect(ElementRectGetter* getter_to_release,
                         ElementRectGetter::ElementRectCallback callback,
                         const ClientStatus& rect_status,
