@@ -44,6 +44,45 @@ interface CameraUsageOwnershipMonitor {
   OnCameraUsageOwnershipChanged(bool has_usage) => ();
 };
 
+// The window states that we care about.
+enum WindowStateType {
+  MINIMIZED = 0,
+  MAXIMIZED = 1,
+  FULLSCREEN = 2,
+  REGULAR = 3,  // None of the above.
+};
+
+// Interface for monitoring window state.
+interface WindowStateMonitor {
+  // Updates when the window state is changed.
+  OnWindowStateChanged(WindowStateType state);
+};
+
+// Interface for window controlling.
+interface WindowStateController {
+  // Adds |monitor| for window state changes.
+  AddMonitor(pending_remote<WindowStateMonitor> monitor)
+      => (WindowStateType state);
+
+  // Gets current |state| of the window.
+  GetWindowState() => (WindowStateType state);
+
+  // Minimize the window.
+  Minimize() => ();
+
+  // Restore the window.
+  Restore() => ();
+
+  // Maximize the window.
+  Maximize() => ();
+
+  // Fullscreen the window.
+  Fullscreen() => ();
+
+  // Focus the window.
+  Focus() => ();
+};
+
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -99,4 +138,8 @@ interface CameraAppHelper {
   // Sets the monitor to monitor the camera usage ownership changed.
   SetCameraUsageMonitor(
       pending_remote<CameraUsageOwnershipMonitor> usage_monitor) => ();
+
+  // Gets the controller to control and monitor the window state of app.
+  GetWindowStateController()
+      => (pending_remote<WindowStateController> controller);
 };

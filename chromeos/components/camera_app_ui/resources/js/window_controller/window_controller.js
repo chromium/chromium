@@ -40,6 +40,12 @@ function changeWindowState(predicate, getEventTarget, changeState) {
  */
 export class ChromeWindowController {
   /** @override */
+  async bind(remoteController) {
+    // We control the window uses Chrome AppWindow API directly for platform
+    // app. There is no need to bind to the implementation through Mojo.
+  }
+
+  /** @override */
   async minimize() {
     changeWindowState(
         (w) => w.isMinimized(), (w) => w.onMinimized, (w) => w.minimize());

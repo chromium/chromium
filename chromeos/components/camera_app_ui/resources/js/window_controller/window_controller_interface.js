@@ -8,6 +8,14 @@
  */
 export class WindowController {
   /**
+   * Binds the controller remote from Mojo interface.
+   * @param {!chromeosCamera.mojom.WindowStateControllerRemote} remoteController
+   * @return {!Promise}
+   * @abstract
+   */
+  async bind(remoteController) {}
+
+  /**
    * Minimizes the window.
    * @return {!Promise}
    * @abstract

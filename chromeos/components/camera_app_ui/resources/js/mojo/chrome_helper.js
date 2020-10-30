@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {windowController} from '../window_controller/window_controller.js';
+
 /**
  * The singleton instance of ChromeHelper. Initialized by the first
  * invocation of getInstance().
@@ -103,8 +105,12 @@ export class ChromeHelper {
             await releaseUsage();
           }
         });
+
     await this.remote_.setCameraUsageMonitor(
         usageCallbackRouter.$.bindNewPipeAndPassRemote());
+
+    const {controller} = await this.remote_.getWindowStateController();
+    await windowController.bind(controller);
   }
 
   /**

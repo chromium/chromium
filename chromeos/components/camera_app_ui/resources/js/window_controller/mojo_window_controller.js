@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NotImplementedError} from '../type.js';
+import {assertInstanceof} from '../chrome_util.js';
 
 // eslint-disable-next-line no-unused-vars
 import {WindowController} from './window_controller_interface.js';
@@ -15,43 +15,84 @@ export class MojoWindowController {
   /**
    * @public
    */
-  constructor() {}
+  constructor() {
+    /**
+     * The remote controller from Mojo interface.
+     * @type {?chromeosCamera.mojom.WindowStateControllerRemote}
+     */
+    this.windowStateController_ = null;
+
+    /**
+     * Current window state.
+     * @type {?chromeosCamera.mojom.WindowStateType}
+     */
+    this.windowState_ = null;
+  }
+
+  /** @override */
+  async bind(remoteController) {
+    this.windowStateController_ = remoteController;
+
+    const windowMonitorCallbackRouter =
+        new chromeosCamera.mojom.WindowStateMonitorCallbackRouter();
+    windowMonitorCallbackRouter.onWindowStateChanged.addListener((state) => {
+      this.windowState_ = state;
+    });
+    const {state} = await this.windowStateController_.addMonitor(
+        windowMonitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    this.windowState_ = state;
+  }
 
   /** @override */
   async minimize() {
-    throw new NotImplementedError();
+    assertInstanceof(
+        this.windowStateController_,
+        chromeosCamera.mojom.WindowStateControllerRemote)
+        .minimize();
   }
 
   /** @override */
   async maximize() {
-    throw new NotImplementedError();
+    assertInstanceof(
+        this.windowStateController_,
+        chromeosCamera.mojom.WindowStateControllerRemote)
+        .maximize();
   }
 
   /** @override */
   async restore() {
-    throw new NotImplementedError();
+    assertInstanceof(
+        this.windowStateController_,
+        chromeosCamera.mojom.WindowStateControllerRemote)
+        .restore();
   }
 
   /** @override */
   async fullscreen() {
-    throw new NotImplementedError();
+    assertInstanceof(
+        this.windowStateController_,
+        chromeosCamera.mojom.WindowStateControllerRemote)
+        .fullscreen();
   }
 
   /** @override */
   async focus() {
-    throw new NotImplementedError();
+    assertInstanceof(
+        this.windowStateController_,
+        chromeosCamera.mojom.WindowStateControllerRemote)
+        .focus();
   }
 
   /** @override */
   isMinimized() {
-    // TODO(980846): Implement the minimization monitor.
-    return false;
+    return this.windowState_ === chromeosCamera.mojom.WindowStateType.MINIMIZED;
   }
 
   /** @override */
   isFullscreenOrMaximized() {
-    // TODO(980846): Implement the fullscreen monitor.
-    return false;
+    return this.windowState_ ===
+        chromeosCamera.mojom.WindowStateType.FULLSCREEN ||
+        this.windowState_ === chromeosCamera.mojom.WindowStateType.MAXIMIZED;
   }
 
   /** @override */

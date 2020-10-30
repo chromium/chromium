@@ -89,7 +89,7 @@ void CameraAppHelperImpl::StopPerfEventTrace(const std::string& event) {
 void CameraAppHelperImpl::SetTabletMonitor(
     mojo::PendingRemote<TabletModeMonitor> monitor,
     SetTabletMonitorCallback callback) {
-  tablet_monitor_ = mojo::Remote<TabletModeMonitor>(std::move(monitor));
+  tablet_mode_monitor_ = mojo::Remote<TabletModeMonitor>(std::move(monitor));
   std::move(callback).Run(ash::TabletMode::Get()->InTabletMode());
 }
 
@@ -144,14 +144,30 @@ void CameraAppHelperImpl::SetCameraUsageMonitor(
       window_, std::move(usage_monitor), std::move(callback));
 }
 
+void CameraAppHelperImpl::GetWindowStateController(
+    GetWindowStateControllerCallback callback) {
+  DCHECK_NE(camera_app_ui_, nullptr);
+
+  if (!window_state_controller_) {
+    window_state_controller_ =
+        std::make_unique<chromeos::CameraAppWindowStateController>(
+            views::Widget::GetWidgetForNativeWindow(window_));
+  }
+  mojo::PendingRemote<chromeos_camera::mojom::WindowStateController>
+      controller_remote;
+  window_state_controller_->AddReceiver(
+      controller_remote.InitWithNewPipeAndPassReceiver());
+  std::move(callback).Run(std::move(controller_remote));
+}
+
 void CameraAppHelperImpl::OnTabletModeStarted() {
-  if (tablet_monitor_.is_bound())
-    tablet_monitor_->Update(true);
+  if (tablet_mode_monitor_.is_bound())
+    tablet_mode_monitor_->Update(true);
 }
 
 void CameraAppHelperImpl::OnTabletModeEnded() {
-  if (tablet_monitor_.is_bound())
-    tablet_monitor_->Update(false);
+  if (tablet_mode_monitor_.is_bound())
+    tablet_mode_monitor_->Update(false);
 }
 
 void CameraAppHelperImpl::OnScreenStateChanged(ash::ScreenState screen_state) {

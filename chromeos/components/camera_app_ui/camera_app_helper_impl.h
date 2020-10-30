@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
+#include "chromeos/components/camera_app_ui/camera_app_window_state_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
@@ -62,6 +63,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   void SetCameraUsageMonitor(
       mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
       SetCameraUsageMonitorCallback callback) override;
+  void GetWindowStateController(
+      GetWindowStateControllerCallback callback) override;
 
  private:
   void CheckExternalScreenState();
@@ -89,11 +92,14 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
 
   aura::Window* window_;
 
-  mojo::Remote<TabletModeMonitor> tablet_monitor_;
+  mojo::Remote<TabletModeMonitor> tablet_mode_monitor_;
   mojo::Remote<ScreenStateMonitor> screen_state_monitor_;
   mojo::Remote<ExternalScreenMonitor> external_screen_monitor_;
 
   mojo::Receiver<chromeos_camera::mojom::CameraAppHelper> receiver_{this};
+
+  std::unique_ptr<chromeos::CameraAppWindowStateController>
+      window_state_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraAppHelperImpl);
 };
