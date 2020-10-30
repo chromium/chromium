@@ -73,6 +73,12 @@ const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
 const char kEduCoexistenceToSVersion[] =
     "family_link_user.edu_coexistence_tos_version";
 
+// A dictionary pref that associates the secondary edu accounts gaia id string
+// with the corresponding accepted Edu Coexistence Terms of Service version
+// number.
+const char kEduCoexistenceToSAcceptedVersion[] =
+    "family_link_user.edu_coexistence_tos_accepted_version";
+
 // A dictionary of info for Quirks Client/Server interaction, mostly last server
 // request times, keyed to display product_id's.
 const char kQuirksClientLastServerCheck[] = "quirks_client.last_server_check";

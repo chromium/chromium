@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -113,6 +114,17 @@ std::string GetDeviceIdForActiveUserProfile() {
   return policy->device_id();
 }
 
+void UpdateEduCoexistenceTokenForAccount(
+    Profile* profile,
+    const std::string& edu_account_gaia_id,
+    const std::string& terms_of_service_version_number) {
+  DictionaryPrefUpdate update(
+      profile->GetPrefs(), chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
+  base::DictionaryValue* dict = update.Get();
+
+  dict->SetStringPath(edu_account_gaia_id, terms_of_service_version_number);
+}
+
 }  // namespace
 
 EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
@@ -188,7 +200,9 @@ void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
 
   AllowJavascript();
 
-  // TODO(yilkal): Record |terms_of_service_version_number_| in user preference.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  UpdateEduCoexistenceTokenForAccount(profile, account_info.gaia,
+                                      terms_of_service_version_number_);
 
   // Otherwise, notify the ui that account addition was successful!!
   ResolveJavascriptCallback(base::Value(account_added_callback_),

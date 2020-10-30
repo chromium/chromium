@@ -10,7 +10,10 @@
 #include "base/bind_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -19,6 +22,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
@@ -32,6 +37,16 @@ namespace chromeos {
 namespace {
 
 constexpr char kResponseCallback[] = "cr.webUIResponse";
+
+std::string GetAcceptedTosVersionForAccount(const std::string& user_gaia_id) {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+
+  const base::Value* accepted_values =
+      prefs->Get(chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
+
+  const std::string* entry = accepted_values->FindStringKey(user_gaia_id);
+  return entry ? *entry : std::string();
+}
 
 }  // namespace
 
@@ -126,14 +141,15 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
                        HandleConsentLogged) {
   std::unique_ptr<EduCoexistenceLoginHandler> handler = SetUpHandler();
-  constexpr char consentLoggedCallback[] = "consent-logged-callback";
+  constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
+  constexpr char kAcceptedTosVersion[] = "12345678";
 
   base::ListValue call_args;
   call_args.Append(FakeGaiaMixin::kFakeUserEmail);
-  call_args.Append("12345678");
+  call_args.Append(kAcceptedTosVersion);
 
   base::ListValue list_args;
-  list_args.Append(consentLoggedCallback);
+  list_args.Append(kConsentLoggedCallback);
   list_args.Append(std::move(call_args));
 
   web_ui()->HandleReceivedMessage("consentLogged", &list_args);
@@ -150,13 +166,18 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   // Simulate account added.
   CoreAccountInfo account;
   account.email = FakeGaiaMixin::kFakeUserEmail;
+  account.gaia = FakeGaiaMixin::kFakeUserGaiaId;
   handler->OnRefreshTokenUpdatedForAccount(account);
+
+  const std::string& accepted_tos =
+      GetAcceptedTosVersionForAccount(FakeGaiaMixin::kFakeUserGaiaId);
+  EXPECT_EQ(accepted_tos, std::string(kAcceptedTosVersion));
 
   EXPECT_EQ(web_ui()->call_data().size(), 1u);
   const content::TestWebUI::CallData& second_call = *web_ui()->call_data()[0];
 
   // TODO(yilkal): verify the exact the call arguments.
-  VerifyJavascriptCallResolved(second_call, consentLoggedCallback,
+  VerifyJavascriptCallResolved(second_call, kConsentLoggedCallback,
                                kResponseCallback);
 }
 
