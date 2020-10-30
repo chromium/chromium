@@ -21,6 +21,14 @@ TextFragmentLinkOpenSource GetLinkSource(const GURL& referrer) {
 
 }  // namespace
 
+void LogLinkGenerationErrorReason(LinkGenerationError reason) {
+  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error", reason);
+}
+
+void LogLinkGenerationStatus(bool link_generated) {
+  base::UmaHistogramBoolean("SharedHighlights.LinkGenerated", link_generated);
+}
+
 void LogTextFragmentAmbiguousMatch(bool ambiguous_match) {
   base::UmaHistogramBoolean("TextFragmentAnchor.AmbiguousMatch",
                             ambiguous_match);
@@ -48,17 +56,14 @@ void LogTextFragmentSelectorCount(int count) {
 }
 
 void LogGenerateErrorTabHidden() {
-  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error",
-                                LinkGenerationError::kTabHidden);
+  LogLinkGenerationErrorReason(LinkGenerationError::kTabHidden);
 }
 
 void LogGenerateErrorOmniboxNavigation() {
-  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error",
-                                LinkGenerationError::kOmniboxNavigation);
+  LogLinkGenerationErrorReason(LinkGenerationError::kOmniboxNavigation);
 }
 
 void LogGenerateErrorTabCrash() {
-  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error",
-                                LinkGenerationError::kTabCrash);
+  LogLinkGenerationErrorReason(LinkGenerationError::kTabCrash);
 }
 }  // namespace shared_highlighting

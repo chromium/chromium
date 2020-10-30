@@ -67,6 +67,51 @@ TEST(SharedHighlightingMetricsTest, LogTextFragmentSelectorCount) {
   histogram_tester.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 2);
 }
 
+TEST(SharedHighlightingMetricsTest, LogLinkGenerationStatus) {
+  base::HistogramTester histogram_tester;
+
+  LogLinkGenerationStatus(true);
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
+                                      1);
+
+  LogLinkGenerationStatus(false);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated", false,
+                                     1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated", 2);
+}
+
+TEST(SharedHighlightingMetricsTest, LogLinkGenerationErrorReason) {
+  base::HistogramTester histogram_tester;
+
+  LogLinkGenerationErrorReason(LinkGenerationError::kIncorrectSelector);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kIncorrectSelector,
+                                     1);
+
+  LogLinkGenerationErrorReason(LinkGenerationError::kEmptySelection);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kEmptySelection, 1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 2);
+}
+
+TEST(SharedHighlightingMetricsTest, LogAndroidLinkGenerationErrorReason) {
+  base::HistogramTester histogram_tester;
+
+  LogGenerateErrorTabHidden();
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kTabHidden, 1);
+
+  LogGenerateErrorOmniboxNavigation();
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kOmniboxNavigation,
+                                     1);
+
+  LogGenerateErrorTabCrash();
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kTabCrash, 1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 3);
+}
+
 }  // namespace
 
 }  // namespace shared_highlighting

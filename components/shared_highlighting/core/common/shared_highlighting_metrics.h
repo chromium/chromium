@@ -38,6 +38,12 @@ enum class TextFragmentLinkOpenSource {
   kMaxValue = kSearchEngine,
 };
 
+// Records the reason why the link generation failed.
+void LogLinkGenerationErrorReason(LinkGenerationError reason);
+
+// Records whether the link generation attempt was successful or not.
+void LogLinkGenerationStatus(bool link_generated);
+
 // Records whether an individual text fragment could not be scrolled to because
 // there was an |ambiguous_match| (generally because more than one matching
 // passage was found).
