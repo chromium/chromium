@@ -272,6 +272,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureOpenTime"
+    units="seconds" expires_after="2021-09-01">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    contextual nudge and the opening the clipboard history menu. The sum over
+    this histogram will also be used to measure the conversion rate between
+    showing the nudge and the clipboard history feature being opened.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureUseTime"
+    units="seconds" expires_after="2021-09-01">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    contextual nudge and the user pasting with the clipboard history feature.
+    The sum over this histogram will also be used to measure the conversion rate
+    between showing the nudge and the clipboard history feature being used.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextualNudge.ShownCount"
+    enum="BooleanHit" expires_after="2021-09-01">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times the clipboard history contextual nudge has been shown.
+    This number will be used as the baseline against the sum of the
+    NudgeToFeatureUseTime and NudgeToFeatureOpenTime.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Ash.ContextualNudgeDismissContext"
     enum="ContextualNudgeDismissContext" expires_after="M86">
 <!-- Name completed by histogram_suffixes name="ContextualNudgesNames" -->

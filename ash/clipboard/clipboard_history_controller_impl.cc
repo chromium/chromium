@@ -11,6 +11,7 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -191,10 +192,19 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
           clipboard_history_.get())),
       accelerator_target_(std::make_unique<AcceleratorTarget>(this)),
       menu_delegate_(std::make_unique<MenuDelegate>(this)),
-      nudge_controller_(std::make_unique<ClipboardNudgeController>(
-          clipboard_history_.get())) {}
+      nudge_controller_(
+          std::make_unique<ClipboardNudgeController>(clipboard_history_.get(),
+                                                     this)) {}
 
 ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() = default;
+
+void ClipboardHistoryControllerImpl::AddObserver(Observer* observer) const {
+  observers_.AddObserver(observer);
+}
+
+void ClipboardHistoryControllerImpl::RemoveObserver(Observer* observer) const {
+  observers_.RemoveObserver(observer);
+}
 
 bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
   return context_menu_ && context_menu_->IsRunning();
@@ -240,6 +250,8 @@ void ClipboardHistoryControllerImpl::ShowMenu(
   // history menu shows.
   context_menu_->SelectMenuItemWithCommandId(
       ClipboardHistoryUtil::kFirstItemCommandId);
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryMenuShown();
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
@@ -249,11 +261,15 @@ bool ClipboardHistoryControllerImpl::CanShowMenu() const {
 
 void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
   DCHECK(IsMenuShowing());
+
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
   // If no menu item is currently selected, we'll fallback to the first item.
   menu_delegate_->ExecuteCommand(
       command.value_or(ClipboardHistoryUtil::kFirstItemCommandId), event_flags);
+
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryPasted();
 }
 
 void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,

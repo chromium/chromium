@@ -10,9 +10,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 
 namespace views {
 enum class MenuAnchorPosition;
@@ -27,18 +27,30 @@ namespace ash {
 class ClipboardHistory;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
+class ClipboardNudgeController;
 
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
 class ASH_EXPORT ClipboardHistoryControllerImpl
     : public ClipboardHistoryController {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the clipboard history menu is shown.
+    virtual void OnClipboardHistoryMenuShown() = 0;
+    // Called when the user pastes from the clipboard history menu.
+    virtual void OnClipboardHistoryPasted() = 0;
+  };
+
   ClipboardHistoryControllerImpl();
   ClipboardHistoryControllerImpl(const ClipboardHistoryControllerImpl&) =
       delete;
   ClipboardHistoryControllerImpl& operator=(
       const ClipboardHistoryControllerImpl&) = delete;
   ~ClipboardHistoryControllerImpl() override;
+
+  void AddObserver(Observer* observer) const;
+  void RemoveObserver(Observer* observer) const;
 
   // Returns if the contextual menu is currently showing.
   bool IsMenuShowing() const;
@@ -97,6 +109,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Called when the contextual menu is closed.
   void OnMenuClosed();
+
+  // Mutable to allow adding/removing from |observers_| through a const
+  // ClipboardHistoryControllerImpl.
+  mutable base::ObserverList<Observer> observers_;
 
   // The menu being shown.
   std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;

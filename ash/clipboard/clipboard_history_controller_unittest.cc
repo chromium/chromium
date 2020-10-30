@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/clipboard/clipboard_history.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

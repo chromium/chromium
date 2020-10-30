@@ -11,6 +11,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/util/values/values_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -25,14 +27,21 @@ namespace {
 constexpr char kShownCount[] = "shown_count";
 constexpr char kLastTimeShown[] = "last_time_shown";
 
+// The maximum number of 1 second buckets used to record the time between
+// showing the nudge and recording the feature being opened/used.
+constexpr int kBucketCount = 61;
+
 }  // namespace
 
 namespace ash {
 
 ClipboardNudgeController::ClipboardNudgeController(
-    ClipboardHistory* clipboard_history)
-    : clipboard_history_(clipboard_history) {
+    ClipboardHistory* clipboard_history,
+    ClipboardHistoryControllerImpl* clipboard_history_controller)
+    : clipboard_history_(clipboard_history),
+      clipboard_history_controller_(clipboard_history_controller) {
   clipboard_history_->AddObserver(this);
+  clipboard_history_controller_->AddObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
   if (chromeos::features::IsClipboardHistoryNudgeSessionResetEnabled())
     Shell::Get()->session_controller()->AddObserver(this);
@@ -40,6 +49,7 @@ ClipboardNudgeController::ClipboardNudgeController(
 
 ClipboardNudgeController::~ClipboardNudgeController() {
   clipboard_history_->RemoveObserver(this);
+  clipboard_history_controller_->RemoveObserver(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
   if (chromeos::features::IsClipboardHistoryNudgeSessionResetEnabled())
     Shell::Get()->session_controller()->RemoveObserver(this);
@@ -119,6 +129,13 @@ void ClipboardNudgeController::ShowNudge() {
   hide_nudge_timer_.Start(FROM_HERE, kNudgeShowTime,
                           base::BindOnce(&ClipboardNudgeController::HideNudge,
                                          weak_ptr_factory_.GetWeakPtr()));
+  last_shown_time_ = GetTime();
+
+  // Tracks the number of times the ClipboardHistory nudge is shown.
+  // This allows us to understand the conversion rate of showing a nudge to
+  // a user opening and then using the clipboard history feature.
+  base::UmaHistogramExactLinear(
+      "Ash.ClipboardHistory.ContextualNudge.ShownCount", 1, 1);
 }
 
 void ClipboardNudgeController::HideNudge() {
@@ -134,6 +151,30 @@ void ClipboardNudgeController::HandleNudgeShown() {
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, shown_count + 1);
   update->SetPath(kLastTimeShown, util::TimeToValue(GetTime()));
+}
+
+void ClipboardNudgeController::OnClipboardHistoryMenuShown() {
+  if (last_shown_time_.is_null())
+    return;
+  base::TimeDelta time_since_shown = GetTime() - last_shown_time_;
+
+  // Tracks the amount of time between showing the user a nudge and the user
+  // opening the ClipboardHistory menu.
+  base::UmaHistogramExactLinear(
+      "Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureOpenTime",
+      time_since_shown.InSeconds(), kBucketCount);
+}
+
+void ClipboardNudgeController::OnClipboardHistoryPasted() {
+  if (last_shown_time_.is_null())
+    return;
+  base::TimeDelta time_since_shown = GetTime() - last_shown_time_;
+
+  // Tracks the amount of time between showing the user a nudge and the user
+  // using the ClipboardHistory feature.
+  base::UmaHistogramExactLinear(
+      "Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureUseTime",
+      time_since_shown.InSeconds(), kBucketCount);
 }
 
 void ClipboardNudgeController::OverrideClockForTesting(

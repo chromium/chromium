@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -31,11 +32,15 @@ enum class ClipboardState {
   kShouldShowNudge = 4,
 };
 
-class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
-                                            public ui::ClipboardObserver,
-                                            public SessionObserver {
+class ASH_EXPORT ClipboardNudgeController
+    : public ClipboardHistory::Observer,
+      public ui::ClipboardObserver,
+      public SessionObserver,
+      public ClipboardHistoryControllerImpl::Observer {
  public:
-  ClipboardNudgeController(ClipboardHistory* clipboard_history);
+  ClipboardNudgeController(
+      ClipboardHistory* clipboard_history,
+      ClipboardHistoryControllerImpl* clipboard_history_controller);
   ClipboardNudgeController(const ClipboardNudgeController&) = delete;
   ClipboardNudgeController& operator=(const ClipboardNudgeController&) = delete;
   ~ClipboardNudgeController() override;
@@ -54,6 +59,10 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
 
   // Resets nudge state and show nudge timer.
   void HandleNudgeShown();
+
+  // ClipboardHistoryControllerImpl:
+  void OnClipboardHistoryMenuShown() override;
+  void OnClipboardHistoryPasted() override;
 
   // Test methods for overriding and resetting the clock used by GetTime.
   void OverrideClockForTesting(base::Clock* test_clock);
@@ -78,8 +87,14 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
   // Hides the nudge widget.
   void HideNudge();
 
+  // Time the nudge was last shown.
+  base::Time last_shown_time_;
+
   // Owned by ClipboardHistoryController.
   const ClipboardHistory* clipboard_history_;
+
+  // Owned by ash/Shell.
+  const ClipboardHistoryControllerImpl* const clipboard_history_controller_;
 
   // Current clipboard state.
   ClipboardState clipboard_state_ = ClipboardState::kInit;
