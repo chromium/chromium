@@ -1187,11 +1187,11 @@
   </message>
 
   <!-- Crostini -->
-  <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">
-    Developers
+  <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section.">
+    Linux (Beta)
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting. This contains settings for a Linux container running in a virtual machine for use by software developers.">
-    Linux development environment
+  <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting.">
+    Linux
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS" desc="Label for managing shared folders in Crostini.">
     Manage shared folders
