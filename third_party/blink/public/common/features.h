@@ -317,6 +317,7 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kLogUnexpectedIPCPostedToBackForwardCachedDocuments;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableUrlHandlers;
+BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableProtocolHandlers;
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcLibvpxEncodeNV12;
 }  // namespace features
 }  // namespace blink

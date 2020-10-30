@@ -320,6 +320,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      blink::features::kCompositingOptimizations},
     {wf::EnableConversionMeasurementInfraSupport,
      features::kConversionMeasurement},
+    {wf::EnableParseUrlProtocolHandler,
+     blink::features::kWebAppEnableProtocolHandlers},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

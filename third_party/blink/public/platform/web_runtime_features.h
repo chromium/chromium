@@ -258,6 +258,8 @@ class WebRuntimeFeatures {
 
   BLINK_PLATFORM_EXPORT static void EnableCompositingOptimizations(bool);
 
+  BLINK_PLATFORM_EXPORT static void EnableParseUrlProtocolHandler(bool);
+
  private:
   WebRuntimeFeatures();
 };

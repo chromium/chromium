@@ -739,4 +739,8 @@ void WebRuntimeFeatures::EnableConversionMeasurementInfraSupport(bool enable) {
   RuntimeEnabledFeatures::SetConversionMeasurementInfraSupportEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableParseUrlProtocolHandler(bool enable) {
+  RuntimeEnabledFeatures::SetParseUrlProtocolHandlerEnabled(enable);
+}
+
 }  // namespace blink

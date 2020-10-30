@@ -783,6 +783,13 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
 const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Protocol handling feature in web apps. Controls parsing of
+// "protocol_handlers" field in web app manifests. See explainer for more
+// information:
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
+const base::Feature kWebAppEnableProtocolHandlers{
+    "WebAppEnableProtocolHandlers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled NV12 frames on a GPU will be forwarded to libvpx encoders
 // without conversion to I420.
 const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
