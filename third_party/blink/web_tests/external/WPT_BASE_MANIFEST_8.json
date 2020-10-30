@@ -91413,6 +91413,19 @@
        {}
       ]
      ],
+     "placeholder-excluded-properties.html": [
+      "dc5718164ce23a6cb35ba85644e6bc5f2f0dcc69",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/placeholder-excluded-properties-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "placeholder-input-number.html": [
       "a557f1091ec29dd90cd4290cf96ac4752b04ff3f",
       [
@@ -194999,6 +195012,10 @@
        "17d69f306d77411f2ef0a7dab682b119c5b59e50",
        []
       ],
+      "placeholder-excluded-properties-ref.html": [
+       "0e573cb3d6cbac837c9e10552e360aa713fee60b",
+       []
+      ],
       "selection-contenteditable-011-ref.html": [
        "0677a4b6b39f26aa4b3acc7480240b9d061e4929",
        []
@@ -249957,7 +249974,7 @@
         []
        ],
        "firefox_android.py": [
-        "bea0d9f4ee33ab051b00cba5b8a4afc017c37501",
+        "b219079de3df793ba5c74de8706d4c9ad0526194",
         []
        ],
        "ie.py": [
