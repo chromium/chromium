@@ -48,8 +48,8 @@ class SVGSVGElement final : public SVGGraphicsElement,
  public:
   explicit SVGSVGElement(Document&);
 
-  float IntrinsicWidth() const;
-  float IntrinsicHeight() const;
+  base::Optional<float> IntrinsicWidth() const;
+  base::Optional<float> IntrinsicHeight() const;
   FloatSize CurrentViewportSize() const;
   FloatRect CurrentViewBoxRect() const;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const;
@@ -98,9 +98,6 @@ class SVGSVGElement final : public SVGGraphicsElement,
   void SetupInitialView(const String& fragment_identifier,
                         Element* anchor_node);
   bool ZoomAndPanEnabled() const;
-
-  bool HasIntrinsicWidth() const;
-  bool HasIntrinsicHeight() const;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }

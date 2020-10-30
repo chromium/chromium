@@ -62,12 +62,8 @@ LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
   auto* svg = To<SVGSVGElement>(node);
   DCHECK(svg);
 
-  LayoutSize intrinsic_size(svg->IntrinsicWidth(), svg->IntrinsicHeight());
-  if (!svg->HasIntrinsicWidth())
-    intrinsic_size.SetWidth(LayoutUnit(kDefaultWidth));
-  if (!svg->HasIntrinsicHeight())
-    intrinsic_size.SetHeight(LayoutUnit(kDefaultHeight));
-  SetIntrinsicSize(intrinsic_size);
+  SetIntrinsicSize(LayoutSize(svg->IntrinsicWidth().value_or(kDefaultWidth),
+                              svg->IntrinsicHeight().value_or(kDefaultHeight)));
 }
 
 LayoutSVGRoot::~LayoutSVGRoot() = default;
@@ -80,10 +76,12 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
 
+  base::Optional<float> intrinsic_width = svg->IntrinsicWidth();
+  base::Optional<float> intrinsic_height = svg->IntrinsicHeight();
   intrinsic_sizing_info.size =
-      FloatSize(svg->IntrinsicWidth(), svg->IntrinsicHeight());
-  intrinsic_sizing_info.has_width = svg->HasIntrinsicWidth();
-  intrinsic_sizing_info.has_height = svg->HasIntrinsicHeight();
+      FloatSize(intrinsic_width.value_or(0), intrinsic_height.value_or(0));
+  intrinsic_sizing_info.has_width = intrinsic_width.has_value();
+  intrinsic_sizing_info.has_height = intrinsic_height.has_value();
 
   if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;

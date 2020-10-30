@@ -593,15 +593,10 @@ FloatRect SVGSVGElement::CurrentViewBoxRect() const {
 
   // If no viewBox is specified but non-relative width/height values, then we
   // should always synthesize a viewBox if we're embedded through a SVGImage.
-  FloatSize synthesized_view_box_size(IntrinsicWidth(), IntrinsicHeight());
-  if (!HasIntrinsicWidth())
-    synthesized_view_box_size.SetWidth(
-        width()->CurrentValue()->ScaleByPercentage(
-            CurrentViewportSize().Width()));
-  if (!HasIntrinsicHeight())
-    synthesized_view_box_size.SetHeight(
-        height()->CurrentValue()->ScaleByPercentage(
-            CurrentViewportSize().Height()));
+  SVGLengthContext length_context(this);
+  FloatSize synthesized_view_box_size(
+      width()->CurrentValue()->Value(length_context),
+      height()->CurrentValue()->Value(length_context));
   return FloatRect(FloatPoint(), synthesized_view_box_size);
 }
 
@@ -637,34 +632,26 @@ FloatSize SVGSVGElement::CurrentViewportSize() const {
   return viewport_rect.Size();
 }
 
-bool SVGSVGElement::HasIntrinsicWidth() const {
+base::Optional<float> SVGSVGElement::IntrinsicWidth() const {
+  const SVGLength& width_attr = *width()->CurrentValue();
   // TODO(crbug.com/979895): This is the result of a refactoring, which might
   // have revealed an existing bug that we are not handling math functions
   // involving percentages correctly. Fix it if necessary.
-  return !width()->CurrentValue()->IsPercentage();
+  if (width_attr.IsPercentage())
+    return base::nullopt;
+  SVGLengthContext length_context(this);
+  return width_attr.Value(length_context);
 }
 
-bool SVGSVGElement::HasIntrinsicHeight() const {
+base::Optional<float> SVGSVGElement::IntrinsicHeight() const {
+  const SVGLength& height_attr = *height()->CurrentValue();
   // TODO(crbug.com/979895): This is the result of a refactoring, which might
   // have revealed an existing bug that we are not handling math functions
   // involving percentages correctly. Fix it if necessary.
-  return !height()->CurrentValue()->IsPercentage();
-}
-
-float SVGSVGElement::IntrinsicWidth() const {
-  if (!HasIntrinsicWidth())
-    return 0;
-
+  if (height_attr.IsPercentage())
+    return base::nullopt;
   SVGLengthContext length_context(this);
-  return width()->CurrentValue()->Value(length_context);
-}
-
-float SVGSVGElement::IntrinsicHeight() const {
-  if (!HasIntrinsicHeight())
-    return 0;
-
-  SVGLengthContext length_context(this);
-  return height()->CurrentValue()->Value(length_context);
+  return height_attr.Value(length_context);
 }
 
 AffineTransform SVGSVGElement::ViewBoxToViewTransform(
