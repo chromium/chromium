@@ -286,6 +286,8 @@ struct CpuInfo {
   CpuArchitectureEnum architecture;
   // Information about the device's physical CPUs.
   array<PhysicalCpuInfo> physical_cpus;
+  // Information about the CPU temperature channels.
+  array<CpuTemperatureChannel> temperature_channels;
 };
 
 // Information related to a particular physical CPU.
@@ -323,6 +325,14 @@ struct CpuCStateInfo {
   string name;
   // Time spent in the state since the last reboot, in microseconds.
   uint64 time_in_state_since_last_boot_us;
+};
+
+// Information about a single CPU temperature channel.
+struct CpuTemperatureChannel {
+  // Temperature channel label, if found on the device.
+  string? label;
+  // CPU temperature in Celsius.
+  int32 temperature_celsius;
 };
 
 // Timezone probe result. Can either be populated with the TimezoneInfo or an

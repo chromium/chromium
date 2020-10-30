@@ -159,6 +159,8 @@ constexpr char kFakeVersionReleaseChannel[] = "stable-channel";
 // CPU test values:
 constexpr uint32_t kFakeNumTotalThreads = 8;
 constexpr char kFakeModelName[] = "fake_cpu_model_name";
+constexpr int32_t kFakeCpuTemperature = -189;
+constexpr char kFakeCpuTemperatureLabel[] = "Fake CPU temperature";
 constexpr cros_healthd::CpuArchitectureEnum kFakeMojoArchitecture =
     cros_healthd::CpuArchitectureEnum::kX86_64;
 constexpr em::CpuInfo::Architecture kFakeProtoArchitecture =
@@ -551,9 +553,17 @@ std::vector<cros_healthd::PhysicalCpuInfoPtr> CreatePhysicalCpu() {
   return physical_cpus;
 }
 
+std::vector<cros_healthd::CpuTemperatureChannelPtr> CreateTemperatureChannel() {
+  std::vector<cros_healthd::CpuTemperatureChannelPtr> cpu_temps;
+  cpu_temps.push_back(cros_healthd::CpuTemperatureChannel::New(
+      kFakeCpuTemperatureLabel, kFakeCpuTemperature));
+  return cpu_temps;
+}
+
 cros_healthd::CpuResultPtr CreateCpuResult() {
   return cros_healthd::CpuResult::NewCpuInfo(cros_healthd::CpuInfo::New(
-      kFakeNumTotalThreads, kFakeMojoArchitecture, CreatePhysicalCpu()));
+      kFakeNumTotalThreads, kFakeMojoArchitecture, CreatePhysicalCpu(),
+      CreateTemperatureChannel()));
 }
 
 cros_healthd::TimezoneResultPtr CreateTimezoneResult() {
