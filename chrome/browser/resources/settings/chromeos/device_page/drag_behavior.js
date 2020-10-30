@@ -131,7 +131,7 @@ const DragBehavior = {
    * @private
    */
   onMouseDown_(e) {
-    if (e.button != 0 || !e.target.getAttribute('draggable')) {
+    if (e.button !== 0 || !e.target.getAttribute('draggable')) {
       return true;
     }
     e.preventDefault();
@@ -155,7 +155,7 @@ const DragBehavior = {
    * @private
    */
   onTouchStart_(e) {
-    if (e.touches.length != 1) {
+    if (e.touches.length !== 1) {
       return false;
     }
 
@@ -172,7 +172,7 @@ const DragBehavior = {
    * @private
    */
   onTouchMove_(e) {
-    if (e.touches.length != 1) {
+    if (e.touches.length !== 1) {
       return true;
     }
 

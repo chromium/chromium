@@ -120,7 +120,7 @@ Polymer({
    */
   computeIsSmartLockEnabled_() {
     return !!this.pageContentData &&
-        this.getFeatureState(settings.MultiDeviceFeature.SMART_LOCK) ==
+        this.getFeatureState(settings.MultiDeviceFeature.SMART_LOCK) ===
         settings.MultiDeviceFeatureState.ENABLED_BY_USER;
   },
 
@@ -155,7 +155,8 @@ Polymer({
    */
   onSmartLockSignInEnabledChanged_() {
     const radioGroup = this.$$('cr-radio-group');
-    const enabled = radioGroup.selected == settings.SmartLockSignInEnabledState.ENABLED;
+    const enabled =
+        radioGroup.selected === settings.SmartLockSignInEnabledState.ENABLED;
 
     if (!enabled) {
       // No authentication check is required to disable.

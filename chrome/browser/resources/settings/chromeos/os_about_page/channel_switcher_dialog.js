@@ -97,7 +97,7 @@ Polymer({
   updateButtons_(changeChannel, changeChannelAndPowerwash) {
     if (changeChannel || changeChannelAndPowerwash) {
       // Ensure that at most one button is visible at any given time.
-      assert(changeChannel != changeChannelAndPowerwash);
+      assert(changeChannel !== changeChannelAndPowerwash);
     }
 
     this.shouldShowButtons_ = {
@@ -111,7 +111,7 @@ Polymer({
     const selectedChannel = this.$$('cr-radio-group').selected;
 
     // Selected channel is the same as the target channel so only show 'cancel'.
-    if (selectedChannel == this.targetChannel_) {
+    if (selectedChannel === this.targetChannel_) {
       this.shouldShowButtons_ = null;
       this.$.warningSelector.select(WarningMessage.NONE);
       return;
@@ -119,7 +119,7 @@ Polymer({
 
     // Selected channel is the same as the current channel, allow the user to
     // change without warnings.
-    if (selectedChannel == this.currentChannel_) {
+    if (selectedChannel === this.currentChannel_) {
       this.updateButtons_(true, false);
       this.$.warningSelector.select(WarningMessage.NONE);
       return;
@@ -137,7 +137,7 @@ Polymer({
         this.updateButtons_(false, true);
       }
     } else {
-      if (selectedChannel == BrowserChannel.DEV) {
+      if (selectedChannel === BrowserChannel.DEV) {
         // Dev channel selected, warn the user.
         this.$.warningSelector.select(WarningMessage.UNSTABLE);
       } else {

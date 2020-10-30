@@ -98,29 +98,29 @@ Polymer({
     const deviceState = this.deviceState;
     if (deviceState) {
       // Type specific scanning or initialization states.
-      if (deviceState.type == mojom.NetworkType.kCellular) {
+      if (deviceState.type === mojom.NetworkType.kCellular) {
         if (deviceState.scanning) {
           return this.i18n('internetMobileSearching');
         }
-        if (deviceState.deviceState == mojom.DeviceStateType.kUninitialized) {
+        if (deviceState.deviceState === mojom.DeviceStateType.kUninitialized) {
           return this.i18n('internetDeviceInitializing');
         }
-        if (deviceState.deviceState == mojom.DeviceStateType.kDisabling) {
+        if (deviceState.deviceState === mojom.DeviceStateType.kDisabling) {
           return this.i18n('internetDeviceDisabling');
         }
-      } else if (deviceState.type == mojom.NetworkType.kTether) {
-        if (deviceState.deviceState == mojom.DeviceStateType.kUninitialized) {
+      } else if (deviceState.type === mojom.NetworkType.kTether) {
+        if (deviceState.deviceState === mojom.DeviceStateType.kUninitialized) {
           return this.i18n('tetherEnableBluetooth');
         }
       }
       // Enabled or enabling states.
-      if (deviceState.deviceState == mojom.DeviceStateType.kEnabled) {
+      if (deviceState.deviceState === mojom.DeviceStateType.kEnabled) {
         if (this.networkStateList.length > 0) {
           return this.i18n('networkListItemNotConnected');
         }
         return this.i18n('networkListItemNoNetwork');
       }
-      if (deviceState.deviceState == mojom.DeviceStateType.kEnabling) {
+      if (deviceState.deviceState === mojom.DeviceStateType.kEnabling) {
         return this.i18n('internetDeviceEnabling');
       }
     }
@@ -144,15 +144,15 @@ Polymer({
       // Ethernet networks always have the display name 'Ethernet' so we use the
       // state text 'Connected' to avoid repeating the label in the sublabel.
       // See http://crbug.com/989907 for details.
-      return networkState.type == mojom.NetworkType.kEthernet ?
+      return networkState.type === mojom.NetworkType.kEthernet ?
           this.i18n('networkListItemConnected') :
           name;
     }
-    if (connectionState == mojom.ConnectionStateType.kConnecting) {
+    if (connectionState === mojom.ConnectionStateType.kConnecting) {
       return name ? this.i18n('networkListItemConnectingTo', name) :
                     this.i18n('networkListItemConnecting');
     }
-    if (networkState.type == mojom.NetworkType.kCellular && deviceState &&
+    if (networkState.type === mojom.NetworkType.kCellular && deviceState &&
         deviceState.scanning) {
       return this.i18n('internetMobileSearching');
     }
@@ -193,7 +193,7 @@ Polymer({
    * @private
    */
   showSimInfo_(deviceState) {
-    if (!deviceState || deviceState.type != mojom.NetworkType.kCellular) {
+    if (!deviceState || deviceState.type !== mojom.NetworkType.kCellular) {
       return false;
     }
     return this.simLockedOrAbsent_(deviceState);
@@ -215,7 +215,7 @@ Polymer({
       return false;
     }
     const simLockType = deviceState.simLockStatus.lockType;
-    return simLockType == 'sim-pin' || simLockType == 'sim-puk';
+    return simLockType === 'sim-pin' || simLockType === 'sim-puk';
   },
 
   /**
@@ -229,8 +229,8 @@ Polymer({
    */
   deviceIsEnabled_(deviceState) {
     return !!deviceState &&
-        (deviceState.type == mojom.NetworkType.kVPN ||
-         deviceState.deviceState == mojom.DeviceStateType.kEnabled);
+        (deviceState.type === mojom.NetworkType.kVPN ||
+         deviceState.deviceState === mojom.DeviceStateType.kEnabled);
   },
 
   /**
@@ -249,9 +249,9 @@ Polymer({
       case mojom.NetworkType.kTether:
         return true;
       case mojom.NetworkType.kWiFi:
-        return deviceState.deviceState != mojom.DeviceStateType.kUninitialized;
+        return deviceState.deviceState !== mojom.DeviceStateType.kUninitialized;
       case mojom.NetworkType.kCellular:
-        return deviceState.deviceState !=
+        return deviceState.deviceState !==
             mojom.DeviceStateType.kUninitialized &&
             !this.simLockedOrAbsent_(deviceState);
     }
@@ -266,7 +266,7 @@ Polymer({
    */
   enableToggleIsEnabled_(deviceState) {
     return this.enableToggleIsVisible_(deviceState) &&
-        deviceState.deviceState != mojom.DeviceStateType.kProhibited &&
+        deviceState.deviceState !== mojom.DeviceStateType.kProhibited &&
         !OncMojo.deviceStateIsIntermediate(deviceState.deviceState);
   },
 
@@ -300,7 +300,7 @@ Polymer({
     // device. This announces details about enabling bluetooth.
     if (this.enableToggleIsVisible_(deviceState) &&
         deviceState.type === mojom.NetworkType.kTether &&
-        deviceState.deviceState == mojom.DeviceStateType.kUninitialized) {
+        deviceState.deviceState === mojom.DeviceStateType.kUninitialized) {
       return 'networkState';
     }
     return '';
@@ -372,7 +372,7 @@ Polymer({
    * @private
    */
   shouldShowDetails_(activeNetworkState, deviceState, networkStateList) {
-    if (!!deviceState && deviceState.type == mojom.NetworkType.kVPN) {
+    if (!!deviceState && deviceState.type === mojom.NetworkType.kVPN) {
       return this.anyVpnExists_(deviceState, networkStateList);
     }
 
@@ -391,8 +391,8 @@ Polymer({
       return false;
     }
     const type = deviceState.type;
-    if (type == mojom.NetworkType.kTether ||
-        (type == mojom.NetworkType.kCellular && this.tetherDeviceState)) {
+    if (type === mojom.NetworkType.kTether ||
+        (type === mojom.NetworkType.kCellular && this.tetherDeviceState)) {
       // The "Mobile data" subpage should always be shown if Tether is
       // available, even if there are currently no associated networks.
       return true;
@@ -403,7 +403,7 @@ Polymer({
     }
 
     let minlen;
-    if (type == mojom.NetworkType.kWiFi) {
+    if (type === mojom.NetworkType.kWiFi) {
       // WiFi subpage includes 'Known Networks' so always show, even if the
       // technology is still enabling / scanning, or none are visible.
       minlen = 0;
@@ -527,8 +527,8 @@ Polymer({
     // The shared Cellular/Tether subpage is referred to as "Mobile".
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
-    if (type == mojom.NetworkType.kCellular ||
-        type == mojom.NetworkType.kTether) {
+    if (type === mojom.NetworkType.kCellular ||
+        type === mojom.NetworkType.kTether) {
       type = mojom.NetworkType.kMobile;
     }
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));

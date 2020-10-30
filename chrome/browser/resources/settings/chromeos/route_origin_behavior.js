@@ -59,7 +59,7 @@ cr.define('settings', function() {
       }
       const focusSelector = this.focusConfig_.get(oldRoute.path);
 
-      if (this.route_ != newRoute || !focusSelector) {
+      if (this.route_ !== newRoute || !focusSelector) {
         return;
       }
 

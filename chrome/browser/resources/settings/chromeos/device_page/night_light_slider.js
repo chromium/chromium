@@ -91,7 +91,7 @@ Polymer({
 
   /** @override */
   attached() {
-    this.isRTL_ = window.getComputedStyle(this).direction == 'rtl';
+    this.isRTL_ = window.getComputedStyle(this).direction === 'rtl';
 
     this.$.sliderContainer.addEventListener('contextmenu', function(e) {
       // Prevent the context menu from interfering with dragging the knobs using
@@ -116,7 +116,7 @@ Polymer({
   prefsAvailable() {
     return ['custom_start_time', 'custom_end_time']
         .map(key => `prefs.ash.night_light.${key}.value`)
-        .every(path => this.get(path) != undefined);
+        .every(path => this.get(path) !== undefined);
   },
 
   /** @private */
@@ -192,7 +192,8 @@ Polymer({
    */
   blurAnyFocusedKnob_() {
     const activeElement = this.shadowRoot.activeElement;
-    if (activeElement == this.$.startKnob || activeElement == this.$.endKnob) {
+    if (activeElement === this.$.startKnob ||
+        activeElement === this.$.endKnob) {
       activeElement.blur();
     }
   },
@@ -207,12 +208,12 @@ Polymer({
 
     // Only handle start or end knobs. Use the "knob-inner" divs just to display
     // the knobs.
-    if (event.target == this.$.startKnob ||
-        event.target == this.$.startKnob.firstElementChild) {
+    if (event.target === this.$.startKnob ||
+        event.target === this.$.startKnob.firstElementChild) {
       this.dragObject_ = this.$.startKnob;
     } else if (
-        event.target == this.$.endKnob ||
-        event.target == this.$.endKnob.firstElementChild) {
+        event.target === this.$.endKnob ||
+        event.target === this.$.endKnob.firstElementChild) {
       this.dragObject_ = this.$.endKnob;
     } else {
       return;
@@ -347,7 +348,7 @@ Polymer({
    */
   updateKnobs_() {
     if (!this.isReady_ || !this.prefsAvailable() ||
-        this.$.sliderBar.offsetWidth == 0) {
+        this.$.sliderBar.offsetWidth === 0) {
       return;
     }
     const startOffsetMinutes = /** @type {number} */ (
@@ -372,7 +373,7 @@ Polymer({
         TOTAL_MINUTES_PER_DAY;
     let ratio = offsetAfter6pm / TOTAL_MINUTES_PER_DAY;
 
-    if (ratio == 0) {
+    if (ratio === 0) {
       // If the ratio is 0, then there are two possibilities:
       // - The knob time is 6:00 PM on the left side of the slider.
       // - The knob time is 6:00 PM on the right side of the slider.
@@ -455,7 +456,7 @@ Polymer({
    * @private
    */
   getOtherKnobPrefValue_(prefPath) {
-    if (prefPath == 'ash.night_light.custom_start_time') {
+    if (prefPath === 'ash.night_light.custom_start_time') {
       return /** @type {number} */ (
           this.getPref('ash.night_light.custom_end_time').value);
     }
@@ -514,11 +515,11 @@ Polymer({
    * @private
    */
   getPrefPath_(knob) {
-    if (knob == this.$.startKnob) {
+    if (knob === this.$.startKnob) {
       return 'ash.night_light.custom_start_time';
     }
 
-    if (knob == this.$.endKnob) {
+    if (knob === this.$.endKnob) {
       return 'ash.night_light.custom_end_time';
     }
 
@@ -551,7 +552,8 @@ Polymer({
    */
   isEitherKnobFocused_() {
     const activeElement = this.shadowRoot.activeElement;
-    return activeElement == this.$.startKnob || activeElement == this.$.endKnob;
+    return activeElement === this.$.startKnob ||
+        activeElement === this.$.endKnob;
   },
 
   /**
@@ -601,7 +603,7 @@ Polymer({
       return;
     }
 
-    if (this._rippleContainer != knob) {
+    if (this._rippleContainer !== knob) {
       this.removeRipple_();
       knob.focus();
     }
@@ -639,14 +641,14 @@ Polymer({
    */
   onKeyDown_(event) {
     const activeElement = this.shadowRoot.activeElement;
-    if (event.key == 'Tab') {
-      if (event.shiftKey && this.$.endKnob == activeElement) {
+    if (event.key === 'Tab') {
+      if (event.shiftKey && this.$.endKnob === activeElement) {
         event.preventDefault();
         this.handleKnobEvent_(event, this.$.startKnob);
         return;
       }
 
-      if (!event.shiftKey && this.$.startKnob == activeElement) {
+      if (!event.shiftKey && this.$.startKnob === activeElement) {
         event.preventDefault();
         this.handleKnobEvent_(event, this.$.endKnob);
       }

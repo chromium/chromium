@@ -261,7 +261,7 @@ Polymer({
     // Disable remove if there is no other component IME (pre-installed
     // system IMES) enabled.
     return !this.languages.inputMethods.enabled.some(
-        inputMethod => inputMethod.id != targetInputMethod.id &&
+        inputMethod => inputMethod.id !== targetInputMethod.id &&
             this.languageHelper.isComponentIme(inputMethod));
   },
 

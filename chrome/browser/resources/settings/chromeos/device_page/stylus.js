@@ -113,7 +113,7 @@ Polymer({
    */
   supportsLockScreen_() {
     return !!this.selectedApp_ &&
-        this.selectedApp_.lockScreenSupport !=
+        this.selectedApp_.lockScreenSupport !==
         settings.NoteAppLockScreenSupport.NOT_SUPPORTED;
   },
 
@@ -124,7 +124,7 @@ Polymer({
    */
   disallowedOnLockScreenByPolicy_() {
     return !!this.selectedApp_ &&
-        this.selectedApp_.lockScreenSupport ==
+        this.selectedApp_.lockScreenSupport ===
         settings.NoteAppLockScreenSupport.NOT_ALLOWED_BY_POLICY;
   },
 
@@ -135,7 +135,7 @@ Polymer({
    */
   lockScreenSupportEnabled_() {
     return !!this.selectedApp_ &&
-        this.selectedApp_.lockScreenSupport ==
+        this.selectedApp_.lockScreenSupport ===
         settings.NoteAppLockScreenSupport.ENABLED;
   },
 
@@ -162,7 +162,7 @@ Polymer({
    */
   findApp_(id) {
     return this.appChoices_.find(function(app) {
-      return app.value == id;
+      return app.value === id;
     }) ||
         null;
   },
@@ -174,15 +174,15 @@ Polymer({
    */
   toggleLockScreenSupport_() {
     assert(this.selectedApp_);
-    if (this.selectedApp_.lockScreenSupport !=
+    if (this.selectedApp_.lockScreenSupport !==
             settings.NoteAppLockScreenSupport.ENABLED &&
-        this.selectedApp_.lockScreenSupport !=
+        this.selectedApp_.lockScreenSupport !==
             settings.NoteAppLockScreenSupport.SUPPORTED) {
       return;
     }
 
     this.browserProxy_.setPreferredNoteTakingAppEnabledOnLockScreen(
-        this.selectedApp_.lockScreenSupport ==
+        this.selectedApp_.lockScreenSupport ===
         settings.NoteAppLockScreenSupport.SUPPORTED);
     settings.recordSettingChange();
   },
@@ -217,7 +217,7 @@ Polymer({
    * @private
    */
   showNoApps_(apps, waitingForAndroid) {
-    return apps.length == 0 && !waitingForAndroid;
+    return apps.length === 0 && !waitingForAndroid;
   },
 
   /**

@@ -164,7 +164,8 @@ Polymer({
    */
   setActivePrinter_(item) {
     this.activePrinterListEntryIndex_ = this.nearbyPrinters.findIndex(
-        printer => printer.printerInfo.printerId == item.printerInfo.printerId);
+        printer =>
+            printer.printerInfo.printerId === item.printerInfo.printerId);
 
     this.activePrinter =
         this.get(['nearbyPrinters', this.activePrinterListEntryIndex_])

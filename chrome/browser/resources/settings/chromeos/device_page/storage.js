@@ -117,7 +117,7 @@ cr.define('settings', function() {
       settings.RouteOriginBehaviorImpl.currentRouteChanged.call(
           this, newRoute, oldRoute);
 
-      if (settings.Router.getInstance().getCurrentRoute() !=
+      if (settings.Router.getInstance().getCurrentRoute() !==
           settings.routes.STORAGE) {
         return;
       }
@@ -272,9 +272,9 @@ cr.define('settings', function() {
      */
     startPeriodicUpdate_() {
       // We update the storage usage every 5 seconds.
-      if (this.updateTimerId_ == -1) {
+      if (this.updateTimerId_ === -1) {
         this.updateTimerId_ = window.setInterval(() => {
-          if (settings.Router.getInstance().getCurrentRoute() !=
+          if (settings.Router.getInstance().getCurrentRoute() !==
               settings.routes.STORAGE) {
             this.stopPeriodicUpdate_();
             return;
@@ -289,7 +289,7 @@ cr.define('settings', function() {
      * @private
      */
     stopPeriodicUpdate_() {
-      if (this.updateTimerId_ != -1) {
+      if (this.updateTimerId_ !== -1) {
         window.clearInterval(this.updateTimerId_);
         this.updateTimerId_ = -1;
       }
@@ -302,7 +302,7 @@ cr.define('settings', function() {
      * @private
      */
     isSpaceLow_(spaceState) {
-      return spaceState == settings.StorageSpaceState.LOW;
+      return spaceState === settings.StorageSpaceState.LOW;
     },
 
     /**
@@ -312,7 +312,7 @@ cr.define('settings', function() {
      * @private
      */
     isSpaceCriticallyLow_(spaceState) {
-      return spaceState == settings.StorageSpaceState.CRITICALLY_LOW;
+      return spaceState === settings.StorageSpaceState.CRITICALLY_LOW;
     },
 
     /**

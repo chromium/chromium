@@ -124,7 +124,7 @@ Polymer({
   onInput_() {
     const input = this.$.addUserInput.value;
     this.isEmail_ = NAME_ONLY_REGEX.test(input) || EMAIL_REGEX.test(input);
-    this.isEmpty_ = input.length == 0;
+    this.isEmpty_ = input.length === 0;
 
     if (!this.isEmail_ && !this.isEmpty_) {
       this.errorCode_ = UserAddError.INVALID_EMAIL;
@@ -139,7 +139,7 @@ Polymer({
    * @return {boolean}
    */
   shouldShowError_() {
-    return this.errorCode_ != UserAddError.NO_ERROR;
+    return this.errorCode_ !== UserAddError.NO_ERROR;
   },
 
   /**
@@ -147,7 +147,7 @@ Polymer({
    * @return {string}
    */
   getErrorString_(errorCode_) {
-    if (errorCode_ == UserAddError.USER_EXISTS) {
+    if (errorCode_ === UserAddError.USER_EXISTS) {
       return this.i18n('userExistsError');
     }
     // TODO errorString for UserAddError.INVALID_EMAIL crbug/1007481

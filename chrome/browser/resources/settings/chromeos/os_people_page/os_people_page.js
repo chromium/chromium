@@ -314,7 +314,7 @@ Polymer({
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    if (settings.Router.getInstance().getCurrentRoute() ==
+    if (settings.Router.getInstance().getCurrentRoute() ===
         settings.routes.OS_SIGN_OUT) {
       // If the sync status has not been fetched yet, optimistically display
       // the sign-out dialog. There is another check when the sync status is
@@ -403,7 +403,7 @@ Polymer({
     // The user might not have any GAIA accounts (e.g. guest mode or Active
     // Directory). In these cases the profile row is hidden, so there's nothing
     // to do.
-    if (accounts.length == 0) {
+    if (accounts.length === 0) {
       return;
     }
     this.profileName_ = accounts[0].fullName;
@@ -447,7 +447,7 @@ Polymer({
     this.showSignoutDialog_ = false;
     cr.ui.focusWithoutInk(assert(this.$$('#disconnectButton')));
 
-    if (settings.Router.getInstance().getCurrentRoute() ==
+    if (settings.Router.getInstance().getCurrentRoute() ===
         settings.routes.OS_SIGN_OUT) {
       settings.Router.getInstance().navigateToPreviousRoute();
     }

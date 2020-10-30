@@ -57,7 +57,7 @@ Polymer({
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `id${index}`;
@@ -68,7 +68,7 @@ Polymer({
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
         node.id = `id${index}`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -81,16 +81,17 @@ Polymer({
     const anchorTags = tempEl.getElementsByTagName('a');
     // In the event the provided localizedString contains only text nodes,
     // populate the contents with the provided localizedString.
-    if (anchorTags.length == 0) {
+    if (anchorTags.length === 0) {
       return localizedString;
     }
 
-    assert(anchorTags.length == 1,
+    assert(
+        anchorTags.length === 1,
         'settings-localized-link should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
 
-    if (linkUrl != '') {
+    if (linkUrl !== '') {
       anchorTag.href = linkUrl;
       anchorTag.target = '_blank';
     }

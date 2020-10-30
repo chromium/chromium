@@ -92,7 +92,7 @@ cr.define('settings.printing', function() {
     /** @param {PrintersListWithDeltasCallback} listener */
     removeOnSavedPrintersChangedListener(listener) {
       this.onSavedPrintersChangedListeners_ =
-          this.onSavedPrintersChangedListeners_.filter(lis => lis != listener);
+          this.onSavedPrintersChangedListeners_.filter(lis => lis !== listener);
     }
 
     /** @param {PrintersListCallback} listener */
@@ -103,7 +103,8 @@ cr.define('settings.printing', function() {
     /** @param {PrintersListCallback} listener */
     removeOnNearbyPrintersChangedListener(listener) {
       this.onNearbyPrintersChangedListeners_ =
-          this.onNearbyPrintersChangedListeners_.filter(lis => lis != listener);
+          this.onNearbyPrintersChangedListeners_.filter(
+              lis => lis !== listener);
     }
 
     /**
@@ -173,7 +174,7 @@ cr.define('settings.printing', function() {
       // found printers.
       const newPrinters = foundPrinters.printerList.filter(p1 => {
         return !this.printServerPrinters.some(
-            p2 => p2.printerInfo.printerId == p1.printerId);
+            p2 => p2.printerInfo.printerId === p1.printerId);
       });
 
       for (const printer of newPrinters) {

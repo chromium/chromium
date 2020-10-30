@@ -80,7 +80,7 @@ Polymer({
         this.getPref('generated.resolve_timezone_by_geolocation_method_short');
     // Make sure current value is in the list, even if it is not
     // user-selectable.
-    if (pref.value == settings.TimeZoneAutoDetectMethod.DISABLED) {
+    if (pref.value === settings.TimeZoneAutoDetectMethod.DISABLED) {
       // If disabled by policy, show the 'Automatic timezone disabled' label.
       // Otherwise, just show the default string, since the control will be
       // disabled as well.
@@ -95,7 +95,7 @@ Polymer({
       name: loadTimeData.getString('setTimeZoneAutomaticallyIpOnlyDefault')
     });
 
-    if (pref.value ==
+    if (pref.value ===
         settings.TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS) {
       result.push({
         value: settings.TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS,

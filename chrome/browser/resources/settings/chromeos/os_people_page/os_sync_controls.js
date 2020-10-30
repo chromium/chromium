@@ -127,11 +127,11 @@ Polymer({
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
-    if (newRoute == settings.routes.OS_SYNC) {
+    if (newRoute === settings.routes.OS_SYNC) {
       this.browserProxy_.didNavigateToOsSyncPage();
       this.attemptDeepLink();
     }
-    if (oldRoute == settings.routes.OS_SYNC) {
+    if (oldRoute === settings.routes.OS_SYNC) {
       this.browserProxy_.didNavigateAwayFromOsSyncPage();
     }
   },
@@ -191,7 +191,7 @@ Polymer({
     if (this.syncStatus.hasUnrecoverableError) {
       return 'sync-problem';
     }
-    if (this.syncStatus.statusAction == settings.StatusAction.REAUTHENTICATE) {
+    if (this.syncStatus.statusAction === settings.StatusAction.REAUTHENTICATE) {
       return 'sync-paused';
     }
     return 'sync-problem';

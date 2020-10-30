@@ -127,7 +127,7 @@ cr.define('settings', function() {
           const fingerprintLocation =
               loadTimeData.getInteger('fingerprintReaderLocation');
           const isTabletPowerButton =
-              FingerprintLocation.TABLET_POWER_BUTTON == fingerprintLocation;
+              FingerprintLocation.TABLET_POWER_BUTTON === fingerprintLocation;
           return isTabletPowerButton;
         },
         readOnly: true,
@@ -166,7 +166,7 @@ cr.define('settings', function() {
 
       // Note: Reset resets |step_| back to the default, so handle anything that
       // checks |step_| before resetting.
-      if (this.step_ != FingerprintSetupStep.READY) {
+      if (this.step_ !== FingerprintSetupStep.READY) {
         this.browserProxy_.cancelCurrentEnroll();
       }
 
@@ -175,7 +175,7 @@ cr.define('settings', function() {
 
     /** private */
     clearSensorMessageTimeout_() {
-      if (this.tapSensorMessageTimeoutId_ != 0) {
+      if (this.tapSensorMessageTimeoutId_ !== 0) {
         clearTimeout(this.tapSensorMessageTimeoutId_);
         this.tapSensorMessageTimeoutId_ = 0;
       }
@@ -294,7 +294,7 @@ cr.define('settings', function() {
      * @private
      */
     getCloseButtonText_(step) {
-      if (step == FingerprintSetupStep.READY) {
+      if (step === FingerprintSetupStep.READY) {
         return this.i18n('done');
       }
 
@@ -306,7 +306,7 @@ cr.define('settings', function() {
      * @private
      */
     getCloseButtonClass_(step) {
-      if (step == FingerprintSetupStep.READY) {
+      if (step === FingerprintSetupStep.READY) {
         return 'action-button';
       }
 
@@ -319,7 +319,7 @@ cr.define('settings', function() {
      * @private
      */
     hideAddAnother_(step, allowAddAnotherFinger) {
-      return step != FingerprintSetupStep.READY || !allowAddAnotherFinger;
+      return step !== FingerprintSetupStep.READY || !allowAddAnotherFinger;
     },
 
     /**
@@ -340,7 +340,7 @@ cr.define('settings', function() {
      * @private
      */
     showScannerLocation_() {
-      return this.step_ == FingerprintSetupStep.LOCATE_SCANNER;
+      return this.step_ === FingerprintSetupStep.LOCATE_SCANNER;
     },
 
     /**
@@ -348,8 +348,8 @@ cr.define('settings', function() {
      * @private
      */
     showArc_() {
-      return this.step_ == FingerprintSetupStep.MOVE_FINGER ||
-          this.step_ == FingerprintSetupStep.READY;
+      return this.step_ === FingerprintSetupStep.MOVE_FINGER ||
+          this.step_ === FingerprintSetupStep.READY;
     },
 
     /**

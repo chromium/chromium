@@ -104,7 +104,7 @@ Polymer({
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
-    if (newRoute != settings.routes.FINGERPRINT) {
+    if (newRoute !== settings.routes.FINGERPRINT) {
       if (this.browserProxy_) {
         this.browserProxy_.endCurrentAuthentication();
       }
@@ -112,7 +112,7 @@ Polymer({
       return;
     }
 
-    if (oldRoute == settings.routes.LOCK_SCREEN) {
+    if (oldRoute === settings.routes.LOCK_SCREEN) {
       // Start fingerprint authentication when going from LOCK_SCREEN to
       // FINGERPRINT page.
       this.browserProxy_.startAuthentication();
@@ -226,7 +226,7 @@ Polymer({
    */
   onScreenLocked_(screenIsLocked) {
     if (!screenIsLocked &&
-        settings.Router.getInstance().getCurrentRoute() ==
+        settings.Router.getInstance().getCurrentRoute() ===
             settings.routes.FINGERPRINT) {
       this.onSetupFingerprintDialogClose_();
     }

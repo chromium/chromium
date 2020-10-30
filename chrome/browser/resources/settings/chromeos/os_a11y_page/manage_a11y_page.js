@@ -508,7 +508,7 @@ Polymer({
   onA11yCursorColorChange_() {
     // Custom cursor color is enabled when the color is not set to black.
     const a11yCursorColorOn =
-        this.get('prefs.settings.a11y.cursor_color.value') !=
+        this.get('prefs.settings.a11y.cursor_color.value') !==
         DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);

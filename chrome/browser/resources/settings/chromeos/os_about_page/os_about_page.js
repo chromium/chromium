@@ -220,7 +220,7 @@ Polymer({
     });
 
     if (settings.Router.getInstance().getQueryParameters().get(
-            'checkForUpdate') == 'true') {
+            'checkForUpdate') === 'true') {
       this.onCheckUpdatesClick_();
     }
   },
@@ -271,9 +271,9 @@ Polymer({
    * @private
    */
   onUpdateStatusChanged_(event) {
-    if (event.status == UpdateStatus.CHECKING) {
+    if (event.status === UpdateStatus.CHECKING) {
       this.hasCheckedForUpdates_ = true;
-    } else if (event.status == UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
+    } else if (event.status === UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
       this.showUpdateWarningDialog_ = true;
       this.updateInfo_ = {version: event.version, size: event.size};
     }
@@ -310,7 +310,7 @@ Polymer({
   updateShowUpdateStatus_() {
     // Do not show the "updated" status if we haven't checked yet or the update
     // warning dialog is shown to user.
-    if (this.currentUpdateStatusEvent_.status == UpdateStatus.UPDATED &&
+    if (this.currentUpdateStatusEvent_.status === UpdateStatus.UPDATED &&
         (!this.hasCheckedForUpdates_ || this.showUpdateWarningDialog_)) {
       this.showUpdateStatus_ = false;
       return;
@@ -323,7 +323,7 @@ Polymer({
     }
 
     this.showUpdateStatus_ =
-        this.currentUpdateStatusEvent_.status != UpdateStatus.DISABLED;
+        this.currentUpdateStatusEvent_.status !== UpdateStatus.DISABLED;
   },
 
   /**
@@ -357,7 +357,7 @@ Polymer({
    * @private
    */
   shouldShowLearnMoreLink_() {
-    return this.currentUpdateStatusEvent_.status == UpdateStatus.FAILED;
+    return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
   },
 
 
@@ -371,7 +371,7 @@ Polymer({
       case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
         return this.i18nAdvanced('aboutUpgradeCheckStarted');
       case UpdateStatus.NEARLY_UPDATED:
-        if (this.currentChannel_ != this.targetChannel_) {
+        if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeSuccessChannelSwitch');
         }
         if (this.currentUpdateStatusEvent_.rollback) {
@@ -381,10 +381,10 @@ Polymer({
       case UpdateStatus.UPDATED:
         return this.i18nAdvanced('aboutUpgradeUpToDate');
       case UpdateStatus.UPDATING:
-        assert(typeof this.currentUpdateStatusEvent_.progress == 'number');
+        assert(typeof this.currentUpdateStatusEvent_.progress === 'number');
         const progressPercent = this.currentUpdateStatusEvent_.progress + '%';
 
-        if (this.currentChannel_ != this.targetChannel_) {
+        if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
             substitutions: [
               this.i18nAdvanced(settings.browserChannelToI18nId(
@@ -476,7 +476,7 @@ Polymer({
    * @private
    */
   checkStatus_(status) {
-    return this.currentUpdateStatusEvent_.status == status;
+    return this.currentUpdateStatusEvent_.status === status;
   },
 
   /** @private */

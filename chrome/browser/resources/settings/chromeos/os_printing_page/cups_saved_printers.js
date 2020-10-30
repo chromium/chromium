@@ -156,7 +156,8 @@ Polymer({
   onOpenActionMenu_(e) {
     const item = /** @type {!PrinterListEntry} */ (e.detail.item);
     this.activePrinterListEntryIndex_ = this.savedPrinters.findIndex(
-        printer => printer.printerInfo.printerId == item.printerInfo.printerId);
+        printer =>
+            printer.printerInfo.printerId === item.printerInfo.printerId);
     this.activePrinter =
         this.get(['savedPrinters', this.activePrinterListEntryIndex_])
             .printerInfo;
@@ -245,7 +246,7 @@ Polymer({
     const currArr = this.newPrinters_.slice();
     for (const printer of removedPrinters) {
       const newPrinterRemovedIdx = currArr.findIndex(
-          p => p.printerInfo.printerId == printer.printerInfo.printerId);
+          p => p.printerInfo.printerId === printer.printerInfo.printerId);
       // If the removed printer is a recently added printer, remove it from
       // |currArr|.
       if (newPrinterRemovedIdx > -1) {
@@ -303,7 +304,7 @@ Polymer({
     // We have newly added printers, move them to the top of the list.
     for (const printer of this.newPrinters_) {
       const idx = printerArr.findIndex(
-          p => p.printerInfo.printerId == printer.printerInfo.printerId);
+          p => p.printerInfo.printerId === printer.printerInfo.printerId);
       if (idx > -1) {
         moveEntryInPrinters(printerArr, idx, toIndex);
       }

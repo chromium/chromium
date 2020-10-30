@@ -25,7 +25,7 @@ Polymer({
 
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `id${index}`;

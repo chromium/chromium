@@ -248,7 +248,7 @@ Polymer({
    * @private
    */
   isSelected_(display, selectedDisplay) {
-    return display.id == selectedDisplay.id;
+    return display.id === selectedDisplay.id;
   },
 
   /**
@@ -284,7 +284,7 @@ Polymer({
         this.browserProxy_.highlightDisplay(id);
       }
       // Make sure the dragged display is also selected.
-      if (id != this.selectedDisplay.id) {
+      if (id !== this.selectedDisplay.id) {
         this.fire('select-display', id);
       }
 
@@ -315,7 +315,7 @@ Polymer({
         this.lastDragCoordinates_.y = newBounds.top;
 
         // Only call dragDisplayDelta() when there is a change in position.
-        if (deltaX != 0 || deltaY != 0) {
+        if (deltaX !== 0 || deltaY !== 0) {
           this.browserProxy_.dragDisplayDelta(
               id, Math.round(deltaX), Math.round(deltaY));
         }

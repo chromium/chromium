@@ -108,8 +108,8 @@ Polymer({
     }
     networks.forEach(network => {
       const index = this.activeNetworkStates_.findIndex(
-          state => state.guid == network.guid);
-      if (index != -1) {
+          state => state.guid === network.guid);
+      if (index !== -1) {
         this.set(['activeNetworkStates_', index], network);
       }
     });
@@ -206,7 +206,7 @@ Polymer({
       if (!activeNetworkStatesByType.has(type)) {
         activeNetworkStatesByType.set(type, networkState);
         if (!firstConnectedNetwork &&
-            networkState.type != mojom.NetworkType.kVPN &&
+            networkState.type !== mojom.NetworkType.kVPN &&
             OncMojo.connectionStateIsConnected(networkState.connectionState)) {
           firstConnectedNetwork = networkState;
         }
@@ -238,7 +238,7 @@ Polymer({
       // If both 'Tether' and 'Cellular' technologies exist, merge the network
       // lists and do not add an active network for 'Tether' so that there is
       // only one 'Mobile data' section / subpage.
-      if (type == mojom.NetworkType.kTether &&
+      if (type === mojom.NetworkType.kTether &&
           newDeviceStates[mojom.NetworkType.kCellular]) {
         newNetworkStateLists[mojom.NetworkType.kCellular] =
             newNetworkStateLists[mojom.NetworkType.kCellular].concat(
@@ -250,8 +250,8 @@ Polymer({
       // types are enabled but no Cellular network exists (edge case).
       const networkState =
           this.getActiveStateForType_(activeNetworkStatesByType, type);
-      if (networkState.source == mojom.OncSource.kNone &&
-          device.deviceState == mojom.DeviceStateType.kProhibited) {
+      if (networkState.source === mojom.OncSource.kNone &&
+          device.deviceState === mojom.DeviceStateType.kProhibited) {
         // Prohibited technologies are enforced by the device policy.
         networkState.source =
             chromeos.networkConfig.mojom.OncSource.kDevicePolicy;
@@ -279,7 +279,7 @@ Polymer({
    */
   getActiveStateForType_(activeStatesByType, type) {
     let activeState = activeStatesByType.get(type);
-    if (!activeState && type == mojom.NetworkType.kCellular) {
+    if (!activeState && type === mojom.NetworkType.kCellular) {
       activeState = activeStatesByType.get(mojom.NetworkType.kTether);
     }
     return activeState || OncMojo.getDefaultNetworkState(type);

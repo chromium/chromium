@@ -142,7 +142,7 @@ Polymer({
     if (oldRoute && oldRoute.isSubpage()) {
       // If the new route isn't the same expanded section, reset
       // hasExpandedSection_ for the next transition.
-      if (!newRoute.isSubpage() || newRoute.section != oldRoute.section) {
+      if (!newRoute.isSubpage() || newRoute.section !== oldRoute.section) {
         this.hasExpandedSection_ = false;
       }
     } else {

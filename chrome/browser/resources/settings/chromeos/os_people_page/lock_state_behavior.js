@@ -117,7 +117,7 @@ let cachedHasPinLogin = undefined;
         // user wishes to set a pin, they will have to click the set pin button.
         // See https://crbug.com/1054327 for details.
         if (activeModesChanged && !this.hasPin &&
-            this.selectedUnlockType == LockScreenUnlockType.PIN_PASSWORD) {
+            this.selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD) {
           return;
         }
         this.hasPin = false;

@@ -67,7 +67,7 @@ Polymer({
    */
   computeStorageListHeader_(externalStorages) {
     return this.i18n(
-        !externalStorages || externalStorages.length == 0 ?
+        !externalStorages || externalStorages.length === 0 ?
             'storageExternalStorageEmptyListHeader' :
             'storageExternalStorageListHeader');
   },

@@ -53,7 +53,7 @@ Polymer({
   ready() {
     chrome.settingsPrivate.onPrefsChanged.addListener(prefs => {
       prefs.forEach(function(pref) {
-        if (pref.key == 'cros.accounts.users') {
+        if (pref.key === 'cros.accounts.users') {
           this.usersPrivate_.getUsers(
               (/** !Array<!chrome.usersPrivate.User> */ users) => {
                 this.setUsers_(users);
@@ -65,7 +65,7 @@ Polymer({
 
   /** @protected */
   currentRouteChanged() {
-    if (settings.Router.getInstance().getCurrentRoute() ==
+    if (settings.Router.getInstance().getCurrentRoute() ===
         settings.routes.ACCOUNTS) {
       this.usersPrivate_.getUsers(
           (/** !Array<!chrome.usersPrivate.User> */ users) => {
@@ -90,7 +90,7 @@ Polymer({
   setUsers_(users) {
     this.users_ = users;
     this.users_.sort(function(a, b) {
-      if (a.isOwner != b.isOwner) {
+      if (a.isOwner !== b.isOwner) {
         return b.isOwner ? 1 : -1;
       } else {
         return -1;
@@ -133,7 +133,7 @@ Polymer({
    * @private
    */
   shouldShowEmail_(user) {
-    return !user.isSupervised && user.name != user.displayEmail;
+    return !user.isSupervised && user.name !== user.displayEmail;
   },
 
   /**

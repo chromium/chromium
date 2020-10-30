@@ -179,7 +179,7 @@ Polymer({
    * @protected
    */
   currentRouteChanged(route) {
-    if (route != settings.routes.CUPS_PRINTERS) {
+    if (route !== settings.routes.CUPS_PRINTERS) {
       if (this.onPrintersChangedListener_) {
         cr.removeWebUIListener(
             /** @type {WebUIListener} */ (this.onPrintersChangedListener_));
@@ -207,7 +207,7 @@ Polymer({
       // Note: Check for kOnline rather than using
       // OncMojo.connectionStateIsConnected() since the latter could return true
       // for networks without connectivity (e.g., captive portals).
-      return network.connectionState ==
+      return network.connectionState ===
           chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
     });
   },
@@ -351,20 +351,20 @@ Polymer({
 
   /** @private */
   getSavedPrintersAriaLabel_() {
-    const printerLabel = this.savedPrinterCount_ == 0 ?
+    const printerLabel = this.savedPrinterCount_ === 0 ?
         'savedPrintersCountNone' :
-        this.savedPrinterCount_ == 1 ? 'savedPrintersCountOne' :
-                                       'savedPrintersCountMany';
+        this.savedPrinterCount_ === 1 ? 'savedPrintersCountOne' :
+                                        'savedPrintersCountMany';
 
     return loadTimeData.getStringF(printerLabel, this.savedPrinterCount_);
   },
 
   /** @private */
   getNearbyPrintersAriaLabel_() {
-    const printerLabel = this.nearbyPrinterCount_ == 0 ?
+    const printerLabel = this.nearbyPrinterCount_ === 0 ?
         'nearbyPrintersCountNone' :
-        this.nearbyPrinterCount_ == 1 ? 'nearbyPrintersCountOne' :
-                                        'nearbyPrintersCountMany';
+        this.nearbyPrinterCount_ === 1 ? 'nearbyPrintersCountOne' :
+                                         'nearbyPrintersCountMany';
 
     return loadTimeData.getStringF(printerLabel, this.nearbyPrinterCount_);
   },

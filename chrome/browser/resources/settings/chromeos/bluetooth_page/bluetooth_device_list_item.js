@@ -38,7 +38,7 @@ Polymer({
    * @private
    */
   ignoreEnterKey_(event) {
-    if (event.key == 'Enter') {
+    if (event.key === 'Enter') {
       event.stopPropagation();
     }
   },
@@ -65,7 +65,7 @@ Polymer({
    * @private
    */
   onKeyDown_(e) {
-    if (e.key == 'Enter' || e.key == ' ') {
+    if (e.key === 'Enter' || e.key === ' ') {
       this.tryConnect_();
       e.preventDefault();
     }

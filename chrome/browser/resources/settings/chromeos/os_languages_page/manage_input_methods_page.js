@@ -91,7 +91,7 @@ Polymer({
 
     // Can be removed as long as there is another component IME.
     return this.languages.inputMethods.enabled.some(function(inputMethod) {
-      return inputMethod != targetInputMethod &&
+      return inputMethod !== targetInputMethod &&
           this.languageHelper.isComponentIme(inputMethod);
     }, this);
   },
@@ -128,7 +128,7 @@ Polymer({
       const languageFamilyCodes = [languageState.language.code];
       for (let j = i + 1; j < this.languages.enabled.length; j++) {
         const otherCode = this.languages.enabled[j].language.code;
-        if (this.languageHelper.getLanguageCodeWithoutRegion(otherCode) ==
+        if (this.languageHelper.getLanguageCodeWithoutRegion(otherCode) ===
             baseLanguageCode) {
           languageFamilyCodes.push(this.languages.enabled[j].language.code);
         }

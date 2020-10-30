@@ -123,7 +123,7 @@ Polymer({
   /** @private */
   onSubpageTap_(event) {
     // We do not open the subpage if the click was on a link.
-    if (event.target && event.target.tagName == 'A') {
+    if (event.target && event.target.tagName === 'A') {
       event.stopPropagation();
       return;
     }

@@ -102,7 +102,7 @@ Polymer({
         this.languageHelper.getLanguage(uiLanguage).displayName;
     const inputMethod =
         this.languages.inputMethods.enabled.find(function(inputMethod) {
-          return inputMethod.id == id;
+          return inputMethod.id === id;
         });
     const inputMethodDisplayName = inputMethod ? inputMethod.displayName : '';
     // It is OK to use string concatenation here because it is just joining a 2

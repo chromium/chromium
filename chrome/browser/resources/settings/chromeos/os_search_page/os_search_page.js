@@ -122,7 +122,8 @@ Polymer({
    * @private
    */
   isDefaultSearchControlledByPolicy_(pref) {
-    return pref.controlledBy == chrome.settingsPrivate.ControlledBy.USER_POLICY;
+    return pref.controlledBy ===
+        chrome.settingsPrivate.ControlledBy.USER_POLICY;
   },
 
   /**
@@ -131,6 +132,6 @@ Polymer({
    * @private
    */
   isDefaultSearchEngineEnforced_(pref) {
-    return pref.enforcement == chrome.settingsPrivate.Enforcement.ENFORCED;
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 });

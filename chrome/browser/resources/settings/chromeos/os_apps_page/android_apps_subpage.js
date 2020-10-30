@@ -72,7 +72,7 @@ Polymer({
   /** @private */
   onPlayStoreEnabledChanged_(enabled) {
     if (!enabled &&
-        settings.Router.getInstance().getCurrentRoute() ==
+        settings.Router.getInstance().getCurrentRoute() ===
             settings.routes.ANDROID_APPS_DETAILS) {
       settings.Router.getInstance().navigateToPreviousRoute();
     }
@@ -91,7 +91,7 @@ Polymer({
    * @private
    */
   allowRemove_() {
-    return this.prefs.arc.enabled.enforcement !=
+    return this.prefs.arc.enabled.enforcement !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 
@@ -134,7 +134,7 @@ Polymer({
    */
   onManageAndroidAppsTap_(event) {
     // |event.detail| is the click count. Keyboard events will have 0 clicks.
-    const isKeyboardAction = event.detail == 0;
+    const isKeyboardAction = event.detail === 0;
     settings.AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
         isKeyboardAction);
   },

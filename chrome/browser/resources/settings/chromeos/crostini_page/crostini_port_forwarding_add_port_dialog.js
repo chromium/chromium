@@ -120,9 +120,9 @@ Polymer({
       return PortState.INVALID;
     }
     if (this.allPorts.find(
-            portSetting =>
-                portSetting.port_number == this.$.portNumberInput.value &&
-                portSetting.protocol_type == this.inputProtocolIndex_)) {
+            portSetting => portSetting.port_number ===
+                    Number(this.$.portNumberInput.value) &&
+                portSetting.protocol_type === this.inputProtocolIndex_)) {
       return PortState.DUPLICATE;
     }
     return PortState.VALID;
@@ -146,7 +146,7 @@ Polymer({
   /** @private */
   onAddTap_: function() {
     this.portState_ = this.computePortState_();
-    if (!this.portState_ == PortState.VALID) {
+    if (this.portState_ !== PortState.VALID) {
       return;
     }
     const portNumber = +this.$.portNumberInput.value;
@@ -170,7 +170,7 @@ Polymer({
 
   /** @private */
   onPortStateChanged_: function() {
-    if (this.portState_ == PortState.VALID) {
+    if (this.portState_ === PortState.VALID) {
       this.$.portNumberInput.invalid = false;
       this.$.continue.disabled = false;
       return;

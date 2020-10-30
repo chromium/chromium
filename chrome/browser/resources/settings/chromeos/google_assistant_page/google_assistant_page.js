@@ -42,11 +42,8 @@ Polymer({
   is: 'settings-google-assistant-page',
 
   behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    PrefsBehavior,
-    settings.RouteObserverBehavior,
-    WebUIListenerBehavior
+    DeepLinkingBehavior, I18nBehavior, PrefsBehavior,
+    settings.RouteObserverBehavior, WebUIListenerBehavior
   ],
 
   properties: {
@@ -220,7 +217,7 @@ Polymer({
    * @private
    */
   isDspHotwordStateMatch_(state) {
-    return state == this.dspHotwordState_;
+    return state === this.dspHotwordState_;
   },
 
   /** @private */
@@ -239,7 +236,7 @@ Polymer({
     const hotwordEnabled =
         this.getPref('settings.voice_interaction.hotword.enabled');
 
-    this.hotwordEnforced_ = hotwordEnabled.enforcement ==
+    this.hotwordEnforced_ = hotwordEnabled.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED;
 
     this.quickAnswersAvailable_ =

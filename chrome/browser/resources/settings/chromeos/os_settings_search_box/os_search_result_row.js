@@ -25,7 +25,7 @@ cr.define('settings', function() {
 
     for (let i = string1.length - 1; i >= 0; i--) {
       for (let j = string2.length - 1; j >= 0; j--) {
-        if (string1[i] != string2[j]) {
+        if (string1[i] !== string2[j]) {
           continue;
         }
         dp[i][j] = dp[i + 1][j + 1] + 1;
@@ -497,7 +497,7 @@ cr.define('settings', function() {
       }
 
       if (this.resultText_.match(/\s/) ||
-          this.resultText_.toLocaleLowerCase() !=
+          this.resultText_.toLocaleLowerCase() !==
               this.resultText_.toLocaleUpperCase()) {
         // If the result text includes blankspaces (as they commonly will in
         // languages like Arabic and Hindi), or if the result text includes
@@ -590,7 +590,7 @@ cr.define('settings', function() {
           'Supplied path does not map to an existing route.');
 
       const paramsString = `search=${encodeURIComponent(this.searchQuery)}` +
-          (pathAndOptParams.length == 2 ? `&${pathAndOptParams[1]}` : ``);
+          (pathAndOptParams.length === 2 ? `&${pathAndOptParams[1]}` : ``);
       const params = new URLSearchParams(paramsString);
       settings.Router.getInstance().navigateTo(route, params);
       this.fire('navigated-to-result-route');

@@ -50,7 +50,7 @@ Polymer({
    */
   currentRouteChanged(newRoute, oldRoute) {
     // Does not apply to this page.
-    if (newRoute != settings.routes.OS_RESET) {
+    if (newRoute !== settings.routes.OS_RESET) {
       return;
     }
 

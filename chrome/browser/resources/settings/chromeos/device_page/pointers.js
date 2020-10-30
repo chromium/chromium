@@ -204,7 +204,7 @@ Polymer({
       return;
     }
 
-    if (event.path[0].tagName == 'A') {
+    if (event.path[0].tagName === 'A') {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }

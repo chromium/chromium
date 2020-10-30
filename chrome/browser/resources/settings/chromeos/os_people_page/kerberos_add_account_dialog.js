@@ -199,7 +199,7 @@ Polymer({
           this.inProgress_ = false;
 
           // Success case. Close dialog.
-          if (error == settings.KerberosErrorType.kNone) {
+          if (error === settings.KerberosErrorType.kNone) {
             this.accountWasRefreshed = this.presetAccount != null;
             this.$.addDialog.close();
             return;
@@ -243,7 +243,7 @@ Polymer({
       this.inProgress_ = false;
 
       // Success case. Close dialog.
-      if (result.error == settings.KerberosErrorType.kNone) {
+      if (result.error === settings.KerberosErrorType.kNone) {
         this.showAdvancedConfig_ = false;
         this.config_ = this.editableConfig_;
         this.configErrorText_ = '';
@@ -321,11 +321,11 @@ Polymer({
    */
   updateConfigErrorMessage_(result) {
     // There should be an error at this point.
-    assert(result.error != settings.KerberosErrorType.kNone);
+    assert(result.error !== settings.KerberosErrorType.kNone);
 
     // Only handle kBadConfig here. Display generic error otherwise. Should only
     // occur if something is wrong with D-Bus, but nothing user-induced.
-    if (result.error != settings.KerberosErrorType.kBadConfig) {
+    if (result.error !== settings.KerberosErrorType.kBadConfig) {
       this.configErrorText_ =
           this.i18n('kerberosErrorGeneral', result.error.toString());
       return;
@@ -334,13 +334,13 @@ Polymer({
     let errorLine = '';
 
     // Don't fall for the classical blunder 0 == false.
-    if (result.errorInfo.lineIndex != undefined) {
+    if (result.errorInfo.lineIndex !== undefined) {
       const textArea = this.$$('#config').shadowRoot.querySelector('#input');
       errorLine = this.selectAndScrollTo_(textArea, result.errorInfo.lineIndex);
     }
 
     // If kBadConfig, the error code should be set.
-    assert(result.errorInfo.code != settings.KerberosConfigErrorCode.kNone);
+    assert(result.errorInfo.code !== settings.KerberosConfigErrorCode.kNone);
     this.configErrorText_ =
         this.getConfigErrorString_(result.errorInfo.code, errorLine);
   },

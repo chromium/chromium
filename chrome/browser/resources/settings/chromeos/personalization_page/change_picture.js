@@ -137,7 +137,7 @@ Polymer({
 
   /** @protected */
   currentRouteChanged(newRoute) {
-    if (newRoute == settings.routes.CHANGE_PICTURE) {
+    if (newRoute === settings.routes.CHANGE_PICTURE) {
       this.browserProxy_.initialize();
       this.browserProxy_.requestSelectedImage();
       this.pictureList_.setFocus();
@@ -338,7 +338,7 @@ Polymer({
    */
   isAuthorCreditShown_(selectedItem) {
     return !!selectedItem &&
-        (selectedItem.dataset.type == CrPicture.SelectionTypes.DEFAULT ||
+        (selectedItem.dataset.type === CrPicture.SelectionTypes.DEFAULT ||
          (selectedItem.dataset.imageIndex !== undefined &&
           selectedItem.dataset.imageIndex >= 0));
   },

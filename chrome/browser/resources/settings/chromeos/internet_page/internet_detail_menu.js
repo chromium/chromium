@@ -35,7 +35,7 @@ Polymer({
    */
   currentRouteChanged(route, oldRoute) {
     this.showDotsButton_ = false;
-    if (route != settings.routes.NETWORK_DETAIL ||
+    if (route !== settings.routes.NETWORK_DETAIL ||
         !loadTimeData.getBoolean('updatedCellularActivationUi')) {
       return;
     }
@@ -55,7 +55,7 @@ Polymer({
     networkConfig.getNetworkState(guid).then(response => {
       // TODO(crbug.com/1093185): Add check for specifically eSIM when cellular
       // has an EID property.
-      this.showDotsButton_ = response.result.type ==
+      this.showDotsButton_ = response.result.type ===
           chromeos.networkConfig.mojom.NetworkType.kCellular;
     });
   },

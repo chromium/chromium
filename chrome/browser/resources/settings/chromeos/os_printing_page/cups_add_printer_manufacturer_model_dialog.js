@@ -143,7 +143,7 @@ Polymer({
     // Reset model if manufacturer is changed.
     this.set('activePrinter.ppdModel', '');
     this.modelList = [];
-    if (manufacturer && manufacturer.length != 0) {
+    if (manufacturer && manufacturer.length !== 0) {
       settings.CupsPrintersBrowserProxyImpl.getInstance()
           .getCupsPrinterModelsList(manufacturer)
           .then(this.modelListChanged_.bind(this));
@@ -186,7 +186,7 @@ Polymer({
       return;
     }
     this.manufacturerList = manufacturersInfo.manufacturers;
-    if (this.activePrinter.ppdManufacturer.length != 0) {
+    if (this.activePrinter.ppdManufacturer.length !== 0) {
       settings.CupsPrintersBrowserProxyImpl.getInstance()
           .getCupsPrinterModelsList(this.activePrinter.ppdManufacturer)
           .then(this.modelListChanged_.bind(this));

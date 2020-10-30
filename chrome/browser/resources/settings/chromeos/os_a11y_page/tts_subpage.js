@@ -257,7 +257,7 @@ Polymer({
       // locale of the device.
       result[voice.languageCode].preferred =
           result[voice.languageCode].preferred ||
-          preferredLangs.indexOf(voice.fullLanguageCode) != -1;
+          preferredLangs.indexOf(voice.fullLanguageCode) !== -1;
       languageCodeMap[voice.fullLanguageCode] = voice.languageCode;
     });
     this.updateLangToVoicePrefs_(result);
@@ -327,7 +327,7 @@ Polymer({
    * @private
    */
   hasOneLanguage_(lang) {
-    return lang['voices'].length == 1;
+    return lang['voices'].length === 1;
   },
 
   /**
@@ -352,7 +352,7 @@ Polymer({
    * @private
    */
   updateLangToVoicePrefs_(langToVoices) {
-    if (langToVoices.length == 0) {
+    if (langToVoices.length === 0) {
       return;
     }
     const allCodes = new Set(
@@ -397,7 +397,7 @@ Polymer({
    * @private
    */
   setDefaultPreviewVoiceForLocale_(allVoices, languageCodeMap) {
-    if (!allVoices || allVoices.length == 0) {
+    if (!allVoices || allVoices.length === 0) {
       return;
     }
 
@@ -414,7 +414,7 @@ Polymer({
     this.langBrowserProxy_.getProspectiveUILanguage().then(
         prospectiveUILanguage => {
           let result;
-          if (prospectiveUILanguage && prospectiveUILanguage != '' &&
+          if (prospectiveUILanguage && prospectiveUILanguage !== '' &&
               languageCodeMap[prospectiveUILanguage]) {
             const code = languageCodeMap[prospectiveUILanguage];
             // First try the pref value.

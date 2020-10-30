@@ -63,7 +63,7 @@ Polymer({
    * @private
    */
   onKeydown_(e) {
-    if (e.key == 'Escape') {
+    if (e.key === 'Escape') {
       this.onCancelButtonClick_();
     }
   },

@@ -185,7 +185,7 @@ Polymer({
    */
   currentRouteChanged(newRoute, oldRoute) {
     // Does not apply to this page.
-    if (newRoute != settings.routes.BLUETOOTH) {
+    if (newRoute !== settings.routes.BLUETOOTH) {
       return;
     }
 
@@ -274,7 +274,7 @@ Polymer({
   /** @private */
   bluetoothToggleStateChanged_() {
     if (!this.adapterState_ || !this.isToggleEnabled_() ||
-        this.bluetoothToggleState_ == this.adapterState_.powered) {
+        this.bluetoothToggleState_ === this.adapterState_.powered) {
       return;
     }
     this.stateChangeInProgress_ = true;
@@ -285,7 +285,7 @@ Polymer({
           this.stateChangeInProgress_ = false;
 
           const error = chrome.runtime.lastError;
-          if (error && error != 'Error setting adapter properties: powered') {
+          if (error && error !== 'Error setting adapter properties: powered') {
             console.error('Error enabling bluetooth: ' + error.message);
             return;
           }

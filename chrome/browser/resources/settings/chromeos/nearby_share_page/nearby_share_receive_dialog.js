@@ -114,7 +114,7 @@ Polymer({
    * @param {boolean} inHighVisibility
    */
   onHighVisibilityChanged(inHighVisibility) {
-    if (inHighVisibility == false) {
+    if (inHighVisibility === false) {
       // TODO(crbug/1134745): Exiting high visibility can happen for multiple
       // reasons (timeout, user cancel, etc). During a receive transfer, it
       // happens before we start connecting (because we need to stop
@@ -149,7 +149,7 @@ Polymer({
    * @private
    */
   onSettingsChanged_(change) {
-    if (change.path != 'settings.enabled') {
+    if (change.path !== 'settings.enabled') {
       return;
     }
 

@@ -245,7 +245,7 @@ Polymer({
    */
   currentSpeed_() {
     const speed = this.getPref(PREFIX + 'auto_scan.speed_ms').value;
-    if (typeof speed != 'number') {
+    if (typeof speed !== 'number') {
       return '';
     }
     return this.scanSpeedStringInSec_(speed);

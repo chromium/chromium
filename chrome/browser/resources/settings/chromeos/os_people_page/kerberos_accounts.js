@@ -89,7 +89,7 @@ Polymer({
       const queryParams = settings.Router.getInstance().getQueryParameters();
       const reauthPrincipal = queryParams.get('kerberos_reauth');
       const reauthAccount = this.accounts_.find(account => {
-        return account.principalName == reauthPrincipal;
+        return account.principalName === reauthPrincipal;
       });
       if (reauthAccount) {
         this.selectedAccount_ = reauthAccount;
@@ -192,7 +192,7 @@ Polymer({
         .removeAccount(
             /** @type {!settings.KerberosAccount} */ (this.selectedAccount_))
         .then(error => {
-          if (error == settings.KerberosErrorType.kNone) {
+          if (error === settings.KerberosErrorType.kNone) {
             this.showToast_('kerberosAccountsAccountRemovedTip');
           } else {
             console.error('Unexpected error removing account: ' + error);

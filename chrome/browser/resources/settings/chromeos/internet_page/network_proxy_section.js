@@ -43,7 +43,7 @@ Polymer({
 
   /** @protected settings.RouteObserverBehavior */
   currentRouteChanged(newRoute) {
-    if (newRoute == settings.routes.NETWORK_DETAIL) {
+    if (newRoute === settings.routes.NETWORK_DETAIL) {
       /** @type {NetworkProxyElement} */ (this.$$('network-proxy')).reset();
     }
   },
@@ -60,8 +60,8 @@ Polymer({
    */
   isShared_() {
     const mojom = chromeos.networkConfig.mojom;
-    return this.managedProperties.source == mojom.OncSource.kDevice ||
-        this.managedProperties.source == mojom.OncSource.kDevicePolicy;
+    return this.managedProperties.source === mojom.OncSource.kDevice ||
+        this.managedProperties.source === mojom.OncSource.kDevicePolicy;
   },
 
   /**

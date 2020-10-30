@@ -263,7 +263,7 @@ Polymer({
   /** @private */
   onCrostiniEnabledChanged_(enabled) {
     if (!enabled &&
-        settings.Router.getInstance().getCurrentRoute() ==
+        settings.Router.getInstance().getCurrentRoute() ===
             settings.routes.CROSTINI_DETAILS) {
       settings.Router.getInstance().navigateToPreviousRoute();
     }

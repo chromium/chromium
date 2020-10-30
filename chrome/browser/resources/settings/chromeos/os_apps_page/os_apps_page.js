@@ -142,7 +142,7 @@ Polymer({
    * @private
    */
   isEnforced_(pref) {
-    return pref.enforcement == chrome.settingsPrivate.Enforcement.ENFORCED;
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 
   /** @private */
@@ -159,7 +159,7 @@ Polymer({
    */
   onManageAndroidAppsTap_(event) {
     // |event.detail| is the click count. Keyboard events will have 0 clicks.
-    const isKeyboardAction = event.detail == 0;
+    const isKeyboardAction = event.detail === 0;
     settings.AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
         isKeyboardAction);
   },

@@ -173,7 +173,7 @@ cr.define('settings.printing', function() {
    * @return {number}
    */
   /* #export */ function sortPrinters(first, second) {
-    if (first.printerType == second.printerType) {
+    if (first.printerType === second.printerType) {
       return settings.printing.alphabeticalSort(
           first.printerInfo, second.printerInfo);
     }
@@ -196,7 +196,7 @@ cr.define('settings.printing', function() {
    * @return {boolean}
    */
   function arePrinterIdsEqual(first, second) {
-    return first.printerInfo.printerId == second.printerInfo.printerId;
+    return first.printerInfo.printerId === second.printerInfo.printerId;
   }
 
   /**
@@ -208,7 +208,7 @@ cr.define('settings.printing', function() {
   /* #export */ function findDifference(firstArr, secondArr) {
     return firstArr.filter(p1 => {
       return !secondArr.some(
-          p2 => p2.printerInfo.printerId == p1.printerInfo.printerId);
+          p2 => p2.printerInfo.printerId === p1.printerInfo.printerId);
     });
   }
 

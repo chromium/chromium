@@ -88,7 +88,7 @@ Polymer({
    */
   onActiveNetworksChanged(networks) {
     const guid = this.activeNetworkState_.guid;
-    if (!networks.find(network => network.guid == guid)) {
+    if (!networks.find(network => network.guid === guid)) {
       return;
     }
     this.networkConfig_.getNetworkState(guid).then(response => {
@@ -121,7 +121,7 @@ Polymer({
       const kTether = chromeos.networkConfig.mojom.NetworkType.kTether;
       const deviceStates = response.result;
       const deviceState =
-          deviceStates.find(deviceState => deviceState.type == kTether);
+          deviceStates.find(deviceState => deviceState.type === kTether);
       this.deviceState_ = deviceState || {
         deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
         managedNetworkAvailable: false,

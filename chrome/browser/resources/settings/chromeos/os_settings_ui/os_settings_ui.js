@@ -266,7 +266,7 @@ cr.define('settings', function() {
      * @param {!settings.Route} oldRoute
      */
     currentRouteChanged(newRoute, oldRoute) {
-      if (oldRoute && newRoute != oldRoute) {
+      if (oldRoute && newRoute !== oldRoute) {
         // Search triggers route changes and currentRouteChanged() is called
         // in attached() state which is extraneous for this metric.
         settings.recordNavigation();
@@ -291,7 +291,7 @@ cr.define('settings', function() {
           settings.Router.getInstance().getQueryParameters().get('search') ||
           '';
 
-      if (urlSearchQuery == this.lastSearchQuery_) {
+      if (urlSearchQuery === this.lastSearchQuery_) {
         return;
       }
 
@@ -319,7 +319,7 @@ cr.define('settings', function() {
 
       // If the search was initiated by directly entering a search URL, need to
       // sync the URL parameter to the textbox.
-      if (urlSearchQuery != searchField.getValue()) {
+      if (urlSearchQuery !== searchField.getValue()) {
         // Setting the search box value without triggering a 'search-changed'
         // event, to prevent an unnecessary duplicate entry in |window.history|.
         searchField.setValue(urlSearchQuery, true /* noEvent */);

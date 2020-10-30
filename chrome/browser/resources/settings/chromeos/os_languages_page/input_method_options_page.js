@@ -62,7 +62,7 @@ Polymer({
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    if (route != settings.routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {
+    if (route !== settings.routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {
       this.id_ = '';
       this.parentNode.pageTitle = '';
       this.optionSections_ = [];

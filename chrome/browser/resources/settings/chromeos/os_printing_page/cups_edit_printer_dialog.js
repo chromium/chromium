@@ -190,7 +190,7 @@ Polymer({
    * @private
    */
   printerPathChanged_(change) {
-    if (change.path != 'pendingPrinter_.printerName') {
+    if (change.path !== 'pendingPrinter_.printerName') {
       this.needsReconfigured_ = true;
     }
   },
@@ -336,7 +336,7 @@ Polymer({
     // Reset model if manufacturer is changed.
     this.set('pendingPrinter_.ppdModel', '');
     this.modelList = [];
-    if (!!manufacturer && manufacturer.length != 0) {
+    if (!!manufacturer && manufacturer.length !== 0) {
       settings.CupsPrintersBrowserProxyImpl.getInstance()
           .getCupsPrinterModelsList(manufacturer)
           .then(this.modelListChanged_.bind(this));
@@ -388,7 +388,7 @@ Polymer({
       return;
     }
     this.manufacturerList = manufacturersInfo.manufacturers;
-    if (this.pendingPrinter_.ppdManufacturer.length != 0) {
+    if (this.pendingPrinter_.ppdManufacturer.length !== 0) {
       settings.CupsPrintersBrowserProxyImpl.getInstance()
           .getCupsPrinterModelsList(this.pendingPrinter_.ppdManufacturer)
           .then(this.modelListChanged_.bind(this));

@@ -134,7 +134,7 @@ Polymer({
    */
   infoFailed_(result) {
     this.addPrinterInProgress_ = false;
-    if (result == PrinterSetupResult.PRINTER_UNREACHABLE) {
+    if (result === PrinterSetupResult.PRINTER_UNREACHABLE) {
       this.$.printerAddressInput.invalid = true;
       return;
     }
@@ -146,8 +146,8 @@ Polymer({
   addPressed_() {
     this.addPrinterInProgress_ = true;
 
-    if (this.newPrinter.printerProtocol == 'ipp' ||
-        this.newPrinter.printerProtocol == 'ipps') {
+    if (this.newPrinter.printerProtocol === 'ipp' ||
+        this.newPrinter.printerProtocol === 'ipps') {
       settings.CupsPrintersBrowserProxyImpl.getInstance()
           .getPrinterInfo(this.newPrinter)
           .then(this.onPrinterFound_.bind(this), this.infoFailed_.bind(this));
@@ -195,7 +195,7 @@ Polymer({
    * @private
    */
   onKeypress_(event) {
-    if (event.key != 'Enter') {
+    if (event.key !== 'Enter') {
       return;
     }
     event.stopPropagation();

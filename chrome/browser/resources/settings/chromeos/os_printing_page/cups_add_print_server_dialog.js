@@ -62,7 +62,7 @@ Polymer({
    */
   onPrintServerAddedFailed_: function(addPrintServerError) {
     this.inProgress_ = false;
-    if (addPrintServerError == PrintServerResult.INCORRECT_URL) {
+    if (addPrintServerError === PrintServerResult.INCORRECT_URL) {
       this.$$('#printServerAddressInput').invalid = true;
       return;
     }
@@ -76,7 +76,7 @@ Polymer({
    * @private
    */
   onKeypress_: function(event) {
-    if (event.key != 'Enter') {
+    if (event.key !== 'Enter') {
       return;
     }
     event.stopPropagation();

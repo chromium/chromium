@@ -219,7 +219,7 @@ Polymer({
     // Check that the properties have explicitly been set to false.
     if (this.hasMouse_ === false && this.hasPointingStick_ === false &&
         this.hasTouchpad_ === false &&
-        settings.Router.getInstance().getCurrentRoute() ==
+        settings.Router.getInstance().getCurrentRoute() ===
             settings.routes.POINTERS) {
       settings.Router.getInstance().navigateTo(settings.routes.DEVICE);
     }
