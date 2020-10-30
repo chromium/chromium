@@ -707,6 +707,12 @@
     "args": [ "--disable-features=OutOfBlinkCSPEE" ]
   },
   {
+    "prefix": "policy-container",
+    "bases": [ "external/wpt/referrer-policy",
+               "fast/dom/DOMImplementation" ],
+    "args": [ "--enable-features=PolicyContainer" ]
+  },
+  {
     "prefix": "subresource-web-bundles-disabled",
     "bases": [ "http/tests/loading/wbn/origin-trial/" ],
     "args": [ "--disable-blink-features=SubresourceWebBundles" ]

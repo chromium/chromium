@@ -34,6 +34,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -362,6 +363,11 @@ String LocalDOMWindow::OutgoingReferrer() const {
 
 network::mojom::ReferrerPolicy LocalDOMWindow::GetReferrerPolicy() const {
   network::mojom::ReferrerPolicy policy = ExecutionContext::GetReferrerPolicy();
+
+  // PolicyContainer took care already of policy inheritance.
+  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
+    return policy;
+  }
   // For srcdoc documents without their own policy, walk up the frame
   // tree to find the document that is either not a srcdoc or doesn't
   // have its own policy. This algorithm is defined in

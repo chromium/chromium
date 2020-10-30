@@ -36,7 +36,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -1663,11 +1662,25 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   }
   frame_->DomWindow()->SetAddressSpace(ip_address_space_);
 
+  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
+    // SVG image documents go throught this but don't have a PolicyContainer, so
+    // ignore them.
+    if (frame_->GetPolicyContainer()) {
+      frame_->DomWindow()->SetReferrerPolicy(
+          frame_->GetPolicyContainer()->GetReferrerPolicy(), false);
+    }
+  }
   String referrer_policy_header =
       response_.HttpHeaderField(http_names::kReferrerPolicy);
   if (!referrer_policy_header.IsNull()) {
     CountUse(WebFeature::kReferrerPolicyHeader);
     frame_->DomWindow()->ParseAndSetReferrerPolicy(referrer_policy_header);
+    if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
+      if (frame_->GetPolicyContainer()) {
+        frame_->GetPolicyContainer()->UpdateReferrerPolicy(
+            frame_->DomWindow()->GetReferrerPolicy());
+      }
+    }
   }
 }
 
