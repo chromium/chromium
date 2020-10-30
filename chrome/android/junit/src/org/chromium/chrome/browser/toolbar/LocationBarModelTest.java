@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
@@ -19,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
@@ -48,6 +52,8 @@ public class LocationBarModelTest {
 
     @Mock
     private Profile mNonPrimaryOTRProfileMock;
+    @Mock
+    private LocationBarDataProvider.Observer mLocationBarDataObserver;
 
     @Before
     public void setUp() {
@@ -124,5 +130,23 @@ public class LocationBarModelTest {
         LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
+    }
+
+    @Test
+    @MediumTest
+    public void testObserversNotified_titleChange() {
+        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        regularLocationBarModel.addObserver(mLocationBarDataObserver);
+        verify(mLocationBarDataObserver, never()).onTitleChanged();
+
+        regularLocationBarModel.notifyTitleChanged();
+        verify(mLocationBarDataObserver).onTitleChanged();
+
+        regularLocationBarModel.setTab(mRegularTabMock, false);
+        verify(mLocationBarDataObserver, times(2)).onTitleChanged();
+
+        regularLocationBarModel.removeObserver(mLocationBarDataObserver);
+        regularLocationBarModel.notifyTitleChanged();
+        verify(mLocationBarDataObserver, times(2)).onTitleChanged();
     }
 }

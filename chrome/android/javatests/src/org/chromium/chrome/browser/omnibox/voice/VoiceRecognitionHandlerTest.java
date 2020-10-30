@@ -211,6 +211,12 @@ public class VoiceRecognitionHandlerTest {
         }
 
         @Override
+        public void addObserver(Observer observer) {}
+
+        @Override
+        public void removeObserver(Observer observer) {}
+
+        @Override
         public String getCurrentUrl() {
             return null;
         }

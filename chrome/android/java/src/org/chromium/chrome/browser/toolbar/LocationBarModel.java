@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -64,6 +65,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mShouldShowOmniboxInOverviewMode;
 
     private long mNativeLocationBarModelAndroid;
+    private ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
+            new ObserverList<>();
 
     /**
      * Default constructor for this class.
@@ -110,6 +113,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mTab = tab;
         mIsIncognito = isIncognito;
         updateUsingBrandColor();
+        notifyTitleChanged();
     }
 
     @Override
@@ -123,6 +127,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // TAB_CLOSED events to remove this tab.  Otherwise there is a chance we use this tab after
         // {@link ChromeTab#destroy()} is called.
         return mTab != null && mTab.isInitialized();
+    }
+
+    @Override
+    public void addObserver(LocationBarDataProvider.Observer observer) {
+        mLocationBarDataObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(LocationBarDataProvider.Observer observer) {
+        mLocationBarDataObservers.removeObserver(observer);
     }
 
     @Override
@@ -252,6 +266,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         String title = getTab().getTitle();
         return TextUtils.isEmpty(title) ? title : title.trim();
+    }
+
+    public void notifyTitleChanged() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onTitleChanged();
+        }
     }
 
     @Override

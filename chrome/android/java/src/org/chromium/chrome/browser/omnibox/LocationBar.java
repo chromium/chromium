@@ -39,9 +39,6 @@ public interface LocationBar extends Destroyable {
      */
     void setUrlToPageUrl();
 
-    /** Sets the displayed title to the page title. */
-    void setTitleToPageTitle();
-
     /**
      * Sets whether the location bar should have a layout showing a title.
      *

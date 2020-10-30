@@ -58,8 +58,8 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
@@ -158,6 +158,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private String mFirstUrl;
 
     private CustomTabLocationBar mLocationBar;
+    private LocationBarModel mLocationBarModel;
 
     private Runnable mTitleAnimationStarter = new Runnable() {
         @Override
@@ -246,13 +247,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /**
-     *
-     * @param locationBarDataProvider {@link ToolbarDataProvider} to be used for accessing Toolbar
+     * Creates and returns a CustomTab-specific LocationBar. This also retains a reference to the
+     * passed LocationBarModel.
+     * @param locationBarModel {@link LocationBarModel} to be used for accessing LocationBar
      *         state.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
-    public LocationBar createLocationBar(LocationBarDataProvider locationBarDataProvider) {
-        mLocationBar = new CustomTabLocationBar(locationBarDataProvider);
+    public LocationBar createLocationBar(LocationBarModel locationBarModel) {
+        mLocationBarModel = locationBarModel;
+        mLocationBar = new CustomTabLocationBar(locationBarModel);
         mUrlCoordinator.setDelegate(mLocationBar);
         mLocationBar.updateVisualsForState();
         return mLocationBar;
@@ -358,7 +361,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onNavigatedToDifferentPage() {
         super.onNavigatedToDifferentPage();
-        mLocationBar.setTitleToPageTitle();
+        mLocationBarModel.notifyTitleChanged();
         if (mState == STATE_TITLE_ONLY) {
             if (TextUtils.isEmpty(mFirstUrl)) {
                 mFirstUrl = getToolbarDataProvider().getTab().getUrlString();
@@ -513,7 +516,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mLocationBar.setTitleToPageTitle();
+        mLocationBarModel.notifyTitleChanged();
         mLocationBar.setUrlToPageUrl();
     }
 
@@ -624,11 +627,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Custom tab-specific implementation of the LocationBar interface.
      */
-    private class CustomTabLocationBar implements LocationBar, UrlBar.UrlBarDelegate {
+    private class CustomTabLocationBar
+            implements LocationBar, UrlBar.UrlBarDelegate, LocationBarDataProvider.Observer {
         private LocationBarDataProvider mLocationBarDataProvider;
 
         public CustomTabLocationBar(LocationBarDataProvider locationBarDataProvider) {
             mLocationBarDataProvider = locationBarDataProvider;
+            mLocationBarDataProvider.addObserver(this);
         }
 
         public void onNativeLibraryReady() {
@@ -676,7 +681,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public void setTitleToPageTitle() {
+        public void onTitleChanged() {
             String title = mLocationBarDataProvider.getTitle();
             if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)) {
                 mTitleBar.setText("");
@@ -710,7 +715,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             String url = publisherUrl != null ? publisherUrl : tab.getUrlString().trim();
             if (mState == STATE_TITLE_ONLY) {
                 if (!TextUtils.isEmpty(mLocationBarDataProvider.getTitle())) {
-                    setTitleToPageTitle();
+                    onTitleChanged();
                 }
             }
 
@@ -829,7 +834,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+            if (mLocationBarDataProvider != null) {
+                mLocationBarDataProvider.removeObserver(this);
+                mLocationBarDataProvider = null;
+            }
+        }
 
         @Override
         public void showUrlBarCursorWithoutFocusAnimations() {}

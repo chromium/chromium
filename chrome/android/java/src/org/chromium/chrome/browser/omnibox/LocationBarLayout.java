@@ -732,8 +732,6 @@ public class LocationBarLayout
         return mStatusCoordinator.getSecurityIconView();
     }
 
-    public void setTitleToPageTitle() {}
-
     public void setShowTitle(boolean showTitle) {}
 
     @Override

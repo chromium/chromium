@@ -23,6 +23,24 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 // TODO(crbug.com/1142887): Refine split between LocationBar properties and sub-component
 // properties, e.g. security state, which is only used by the status icon.
 public interface LocationBarDataProvider {
+    /**
+     * Observer interface for consumers who wish to subscribe to updates of LocationBarData.
+     * Since LocationBarDataProvider data is typically calculated lazily, individual observer
+     * methods don't directly supply the updated value. Instead, the expectation is that the
+     * consumer will query the data it cares about.
+     */
+    interface Observer {
+        void onTitleChanged();
+        // TODO(https://crbug.com/1139481): Add methods for other LocationBarDataProvider
+        // data, e.g. url, NTP, and security state.
+    }
+
+    /** Adds an observer of changes to LocationBarDataProvider's data. */
+    void addObserver(Observer observer);
+
+    /** Removes an observer of changes to LocationBarDataProvider's data. */
+    void removeObserver(Observer observer);
+
     /** Returns The url for the currently active page.*/
     @NonNull
     String getCurrentUrl();

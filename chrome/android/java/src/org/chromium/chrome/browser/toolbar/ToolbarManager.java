@@ -454,7 +454,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onTitleUpdated(Tab tab) {
-                mLocationBar.setTitleToPageTitle();
+                mLocationBarModel.notifyTitleChanged();
             }
 
             @Override

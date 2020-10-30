@@ -100,6 +100,12 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
+    public void addObserver(Observer observer) {}
+
+    @Override
+    public void removeObserver(Observer observer) {}
+
+    @Override
     public String getCurrentUrl() {
         return SearchWidgetProvider.getDefaultSearchEngineUrl();
     }

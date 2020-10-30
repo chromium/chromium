@@ -150,11 +150,6 @@ public final class LocationBarCoordinator
     }
 
     @Override
-    public void setTitleToPageTitle() {
-        mLocationBarLayout.setTitleToPageTitle();
-    }
-
-    @Override
     public void setShowTitle(boolean showTitle) {
         mLocationBarLayout.setShowTitle(showTitle);
     }
