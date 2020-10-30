@@ -9,6 +9,9 @@
 namespace switches {
 
 // Makes Content Shell use the given path for its data directory.
+// NOTE: If changing this value, change the corresponding Java-side value in
+// ContentShellBrowserTestActivity.java#getUserDataDirectoryCommandLineSwitch()
+// to match.
 const char kContentShellDataPath[] = "data-path";
 
 // The directory breakpad should store minidumps in.

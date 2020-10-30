@@ -27,6 +27,12 @@ public abstract class NativeBrowserTestActivity extends FragmentActivity {
         for (String flag : NativeBrowserTest.BROWSER_TESTS_FLAGS) {
             appendCommandLineFlags(flag);
         }
+
+        String userDataDirSwitch = getUserDataDirectoryCommandLineSwitch();
+        if (!userDataDirSwitch.isEmpty()) {
+            String userDataDirFlag = "--" + userDataDirSwitch + "=" + getPrivateDataDirectory();
+            appendCommandLineFlags(userDataDirFlag);
+        }
     }
 
     @Override
@@ -54,6 +60,21 @@ public abstract class NativeBrowserTestActivity extends FragmentActivity {
 
     /** Returns the test suite's private data directory. */
     protected abstract File getPrivateDataDirectory();
+
+    /**
+     * Returns the command line switch used to specify the user data directory.
+     *
+     *  The default implementation returns an empty string, which means no user
+     *  data directory.
+     *  If this method returns a non-empty value, the user data directory will be overridden to be
+     *  the private data directory, which is cleared at the beginning of each test run.
+     *  NOTE: The switch should not start with "--".
+     *  TODO(crbug.com/617734): Solve this problem holistically for Java and C++ at the level of
+     *  DIR_ANDROID_APP_DATA and eliminate the need for this solution.
+     */
+    protected String getUserDataDirectoryCommandLineSwitch() {
+        return "";
+    }
 
     /** Initializes the browser process.
      *
