@@ -4,15 +4,20 @@
 
 package org.chromium.components.messages;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 
 /**
  * View representing the message banner.
@@ -24,6 +29,7 @@ public class MessageBannerView extends LinearLayout {
     private TextView mPrimaryButton;
     private ImageView mSecondaryButton;
     private View mDivider;
+    private SwipeGestureListener mSwipeGestureDetector;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -69,5 +75,18 @@ public class MessageBannerView extends LinearLayout {
 
     void setSecondaryIconContentDescription(String description) {
         mSecondaryButton.setContentDescription(description);
+    }
+
+    void setSwipeHandler(SwipeHandler handler) {
+        mSwipeGestureDetector = new SwipeGestureListener(getContext(), handler);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mSwipeGestureDetector != null) {
+            return mSwipeGestureDetector.onTouchEvent(event) || super.onTouchEvent(event);
+        }
+        return super.onTouchEvent(event);
     }
 }
