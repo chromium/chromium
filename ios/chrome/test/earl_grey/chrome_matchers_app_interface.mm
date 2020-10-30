@@ -666,6 +666,10 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return nil;
 }
 
++ (id<GREYMatcher>)openNewWindowMenuButton {
+  return grey_accessibilityID(kToolsMenuNewWindowId);
+}
+
 + (id<GREYMatcher>)readingListMenuButton {
   return grey_accessibilityID(kToolsMenuReadingListId);
 }

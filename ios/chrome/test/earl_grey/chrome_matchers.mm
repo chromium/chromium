@@ -379,6 +379,10 @@ id<GREYMatcher> PaymentRequestPickerSearchBar() {
   return [ChromeMatchersAppInterface paymentRequestPickerSearchBar];
 }
 
+id<GREYMatcher> OpenNewWindowMenuButton() {
+  return [ChromeMatchersAppInterface openNewWindowMenuButton];
+}
+
 id<GREYMatcher> ReadingListMenuButton() {
   return [ChromeMatchersAppInterface readingListMenuButton];
 }

@@ -52,9 +52,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tear down called once per test.
 - (void)tearDown {
-  [super tearDown];
+  // No-op if only one window presents.
+  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
+                      [self appConfigurationForTestCase]];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
+  [super tearDown];
 }
 
 #pragma mark - BookmarksEntriesTestCase Tests
@@ -205,15 +208,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
     EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
   }
 
-  if (!IsMultipleScenesSupported()) {
-    EARL_GREY_TEST_DISABLED(@"Multiple scenes can't be opened.");
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
 
+  [BookmarkEarlGrey clearBookmarksPositionCache];
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  [ChromeEarlGrey waitForBrowserCount:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
 
   // Open a bookmark in a new window (through a long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
@@ -224,10 +228,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           GetFirstUrl().GetContent())]
       assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForBrowserCount:2];
-
-  [ChromeEarlGrey closeCurrentTab];
-  [ChromeEarlGrey waitForBrowserCount:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
+                      [self appConfigurationForTestCase]];
 }
 
 // Verify Edit Text functionality on single URL selection.
