@@ -34,11 +34,11 @@ public class MessageContainer extends FrameLayout {
     }
 
     /**
-     * Hide the given message view, which is being shown inside the container.
+     * Remove the given message view, which is being shown inside the container.
      * @param view The message which should be removed.
      */
     void removeMessage(View view) {
-        if (getChildCount() == 0) {
+        if (indexOfChild(view) < 0) {
             throw new IllegalStateException("The given view is not being shown.");
         }
         removeAllViews();

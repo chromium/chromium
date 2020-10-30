@@ -6,13 +6,15 @@ package org.chromium.components.messages;
 
 import android.view.LayoutInflater;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinator to show / hide a banner message on given container and delegate events.
  */
 public class SingleActionMessage implements MessageStateHandler {
+    private MessageBannerCoordinator mMessageBanner;
     private MessageBannerView mView;
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
@@ -32,12 +34,13 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void show() {
-        if (mView == null) {
+        if (mMessageBanner == null) {
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
-            PropertyModelChangeProcessor.create(mModel, mView, MessageBannerViewBinder::bind);
+            mMessageBanner = new MessageBannerCoordinator(mView, mModel, mContainer.getContext());
         }
         mContainer.addMessage(mView);
+        mMessageBanner.show(() -> {});
     }
 
     /**
@@ -45,7 +48,7 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void hide() {
-        mContainer.removeMessage(mView);
+        mMessageBanner.hide(() -> mContainer.removeMessage(mView));
     }
 
     /**
@@ -55,5 +58,15 @@ public class SingleActionMessage implements MessageStateHandler {
     public void dismiss() {
         Runnable onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.run();
+    }
+
+    @VisibleForTesting
+    void setMessageBannerForTesting(MessageBannerCoordinator messageBanner) {
+        mMessageBanner = messageBanner;
+    }
+
+    @VisibleForTesting
+    void setViewForTesting(MessageBannerView view) {
+        mView = view;
     }
 }

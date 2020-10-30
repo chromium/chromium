@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.menu_button;
+package org.chromium.ui.modelutil;
 
 import android.animation.ObjectAnimator;
 import android.util.Property;
 
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 
 /**
  * Static factory class that creates Animators for MVC properties by providing implementations of
  * android.util.Property that mutate a given property in a given model.
  */
-class PropertyModelAnimatorFactory {
+public class PropertyModelAnimatorFactory {
     /**
      * Builds an Animator for the given model, key, and target value.
      * @param model PropertyModel object to write changes to the given key to.
@@ -23,7 +22,7 @@ class PropertyModelAnimatorFactory {
      * @return An Animator that when run, will animate the property from its current value to the
      *         given target.
      */
-    static ObjectAnimator ofFloat(
+    public static ObjectAnimator ofFloat(
             PropertyModel model, WritableFloatPropertyKey key, float targetValue) {
         PropertyModelFloatProp customProperty = new PropertyModelFloatProp(key);
         return ObjectAnimator.ofFloat(model, customProperty, targetValue);
@@ -48,6 +47,6 @@ class PropertyModelAnimatorFactory {
         }
     }
 
-    // TODO(https://crbug.com/1086676, pnoland): Extract this from toolbar.menu_button and implement
-    // factory methods for other types, e.g. int and aRGB.
+    // TODO(https://crbug.com/1086676, pnoland): Implement factory methods for other types, e.g. int
+    // and aRGB.
 }

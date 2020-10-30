@@ -5,8 +5,12 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
+# TODO(sinansahin): Decide which classes should stay in the public target, and
+# probably move MessageBanner* classes to internal/.
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/messages/MessageBannerCoordinator.java",
+    "java/src/org/chromium/components/messages/MessageBannerMediator.java",
     "java/src/org/chromium/components/messages/MessageBannerProperties.java",
     "java/src/org/chromium/components/messages/MessageBannerView.java",
     "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
@@ -21,6 +25,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//components/browser_ui/banners/android:java",
+    "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -78,6 +83,7 @@ android_library("javatests") {
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
   ]

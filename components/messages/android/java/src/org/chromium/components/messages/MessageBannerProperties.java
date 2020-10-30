@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -32,11 +33,15 @@ public class MessageBannerProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_DISMISSED =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, SECONDARY_ICON, SECONDARY_ICON_CONTENT_DESCRIPTION};
+    // TRANSLATION_Y and ALPHA should only be accessed by the message banner component.
+    static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
+    static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
+            PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, ICON, SECONDARY_ICON,
+            SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_Y, ALPHA};
 
     public static final PropertyKey[] SINGLE_ACTION_MESSAGE_KEYS =
             new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, ON_DISMISSED};
+                    DESCRIPTION, ICON, ON_DISMISSED, TRANSLATION_Y, ALPHA};
 }

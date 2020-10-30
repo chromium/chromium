@@ -1575,7 +1575,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonMediator.java",
   "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonProperties.java",
   "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonViewBinder.java",
-  "java/src/org/chromium/chrome/browser/toolbar/menu_button/PropertyModelAnimatorFactory.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinator.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchCoordinator.java",
