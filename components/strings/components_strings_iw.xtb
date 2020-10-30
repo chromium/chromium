@@ -1366,7 +1366,7 @@ Del</translation>
 <translation id="6427730057873428458">כנף בקיפול</translation>
 <translation id="6428450836711225518">אימות מספר הטלפון שלך</translation>
 <translation id="6433490469411711332">עריכת הפרטים ליצירת קשר</translation>
-<translation id="6433595998831338502"><ph name="HOST_NAME" /> סירב להתחבר.</translation>
+<translation id="6433595998831338502">לא ניתן היה להתחבר אל <ph name="HOST_NAME" />.</translation>
 <translation id="6434309073475700221">מחק</translation>
 <translation id="6440503408713884761">המערכת מתעלמת מהפריט</translation>
 <translation id="6443406338865242315">אילו תוספות ויישומי פלאגין התקנת.</translation>

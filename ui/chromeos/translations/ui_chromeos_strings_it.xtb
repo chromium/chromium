@@ -150,7 +150,7 @@
 <translation id="255937426064304553">Internazionale USA</translation>
 <translation id="2562685439590298522">Documenti</translation>
 <translation id="2563185590376525700">Rana</translation>
-<translation id="2572501073504669105">Puoi rendere accessibili i file per l'accesso offline quando non hai una connessione a Internet.</translation>
+<translation id="2572501073504669105">Puoi rendere disponibili i file per l'accesso offline quando non hai una connessione a Internet.</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Al momento non è possibile raggiungere Google Drive.</translation>
 <translation id="2638942478653899953">Impossibile raggiungere Google Drive. <ph name="BEGIN_LINK" />Esci<ph name="END_LINK" /> e accedi di nuovo.</translation>
@@ -612,11 +612,11 @@
 <translation id="7505167922889582512">Mostra file nascosti</translation>
 <translation id="7508545000531937079">Slideshow</translation>
 <translation id="751507702149411736">Bielorusso</translation>
-<translation id="7544830582642184299">Concedi a Linux l'autorizzazione per accedere ai file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
+<translation id="7544830582642184299">Concedi alle app Linux l'autorizzazione per accedere ai file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="7544853251252956727">Riproduzione casuale</translation>
 <translation id="7547811415869834682">Olandese</translation>
 <translation id="7551643184018910560">Fissa sullo shelf</translation>
-<translation id="7553492409867692754">Concedi a Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
+<translation id="7553492409867692754">Concedi alle app Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
 <translation id="7592775719802218421">Preparazione per la visualizzazione offline del file <ph name="FILE_NAME" />…</translation>

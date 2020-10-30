@@ -126,6 +126,7 @@
 <translation id="1136712381129578788">ઘણી બધી વખત ખોટો પિન દાખલ કર્યો હતો એટલા માટે સુરક્ષા કોડ લૉક કરેલો છે. તે અનલૉક કરવા માટે તેને કાઢી નાખો અને ફરી શામેલ કરો.</translation>
 <translation id="1137589305610962734">અસ્થાયી ડેટા</translation>
 <translation id="1137673463384776352"><ph name="APP" />માં લિંક ખોલો</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવું નોટિફિકેશન}one{# નવું નોટિફિકેશન}other{# નવા નોટિફિકેશન}}</translation>
 <translation id="1139343347646843679">Linuxની ગોઠવણી કરતી વખતે ભૂલ આવી હતી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="1140351953533677694">તમારા Bluetooth અને સીરિયલ ડિવાઇસને ઍક્સેસ કરો</translation>
 <translation id="114036956334641753">ઑડિયો અને કૅપ્શન</translation>
@@ -1670,6 +1671,7 @@
 <translation id="291056154577034373">વાંચ્યા વગરના</translation>
 <translation id="2910718431259223434">કંઈક ખોટું થયું. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">સાઇટને કૂકી ડેટા સાચવવા અને વાંચવાની મંજૂરી આપો (ભલામણ કરેલ)</translation>
+<translation id="2915016304249900997">તમે જ્યારે સ્ક્રીન શેર કરશો, ત્યારે વિગતો છુપાવવામાં આવશે</translation>
 <translation id="2915102088417824677">પ્રવૃત્તિ લૉગ જુઓ</translation>
 <translation id="2915873080513663243">ઑટો સ્કેન</translation>
 <translation id="2916073183900451334">વેબપેજ પર ટૅબને દબાવવાથી લિંકની સાથે ફોર્મ ફીલ્ડ હાઇલાઇટ થાય છે</translation>
@@ -2441,6 +2443,7 @@
 <translation id="3819257035322786455">બેકઅપ</translation>
 <translation id="3819261658055281761">સિસ્ટમ આ ડિવાઇસ માટે એક લાંબા ગાળાનું API ઍક્સેસ ટોકન સ્ટોર કરવામાં નિષ્ફળ થઈ.</translation>
 <translation id="3819800052061700452">&amp;પૂર્ણ સ્ક્રીન</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{બતાવો}one{બધું બતાવો}other{બધું બતાવો}}</translation>
 <translation id="3820749202859700794">SECG એલિપ્ટિક કર્વ secp521r1 (ઉર્ફ NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન મંજૂર કરવામાં આવ્યું છે}one{# એક્સ્ટેંશન મંજૂર કરવામાં આવ્યું છે}other{# એક્સ્ટેંશન મંજૂર કરવામાં આવ્યા છે}}</translation>
 <translation id="3822559385185038546">આ પ્રૉક્સી તમારા એડમિન દ્વારા લાગુ કરવામાં આવે છે</translation>
@@ -2831,6 +2834,7 @@
 <translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="428565720843367874">એન્ટી-વાયરસ સૉફ્ટવેર આ ફાઇલ સ્કેન કરતી વખતે અનપેક્ષિત રીતે નિષ્ફળ થયું.</translation>
 <translation id="4287099557599763816">સ્ક્રીન રીડર</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{બતાવો}one{બધું બતાવો}other{બધું બતાવો}}</translation>
 <translation id="4289372044984810120">તમારા એકાઉન્ટ અહીં મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4295072614469448764">ઍપ તમારા ટર્મિનલમાં ઉપલબ્ધ છે. ત્યાં તમારા લૉન્ચરમાં આઇકન પણ હોઈ શકે છે.</translation>
@@ -6139,6 +6143,7 @@ USB ડિવાઇસ</translation>
 <translation id="820568752112382238">સૌથી વધુ મુલાકાત લેવાયેલી સાઇટ</translation>
 <translation id="8206745257863499010">બ્લુસી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવું નોટિફિકેશન}one{# નવું નોટિફિકેશન}other{# નવા નોટિફિકેશન}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ડાઉનલોડ ચાલુ છે}one{ડાઉનલોડ ચાલુ છે}other{ડાઉનલોડ ચાલુ છે}}</translation>
 <translation id="8213449224684199188">ફોટો મોડ પર સ્વિચ કર્યું</translation>
 <translation id="8213577208796878755">એક અન્ય ઉપલબ્ધ ઉપકરણ.</translation>

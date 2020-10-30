@@ -153,6 +153,9 @@
 
       Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut contourner le processus.</translation>
 <translation id="1252536192437793850">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un port série</translation>
+<translation id="125655429495551011">Si cette règle est définie sur une chaîne, celle-ci correspond au nom d'hôte de l'appareil lors de la requête DHCP. La chaîne peut contenir les variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> et <ph name="LOCATION_PLACEHOLDER" /> qui devront être remplacées par les valeurs sur l'appareil avant qu'elle ne soit utilisée comme nom d'hôte. Le résultat de ce remplacement doit former un nom d'hôte valide conformément à la norme RFC 1035, section 3.1.
+
+      Si cette règle n'est pas configurée ou que la valeur après remplacement ne forme pas un nom d'hôte valide, aucun nom d'hôte n'est alors défini dans la requête DHCP.</translation>
 <translation id="1257550411839719984">Définir le répertoire de téléchargement par défaut</translation>
 <translation id="1265053460044691532">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion</translation>
 <translation id="127264587838521316">Autorise les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /></translation>
@@ -165,6 +168,9 @@
 <translation id="1297182715641689552">Utiliser un script de proxy .pac</translation>
 <translation id="1297961932043741908">Définir la quantité maximale (en mégaoctets) de mémoire qu'une instance de Chrome peut utiliser.</translation>
 <translation id="1304973015437969093">Identifiants d'extension ou d'application et URL de mise à jour à installer en arrière-plan</translation>
+<translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
+
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'itinérance des données n'est pas disponible.</translation>
 <translation id="1307454923744766368">Origines ou modèles de nom d'hôte non soumis aux restrictions
       applicables aux origines non sécurisées</translation>
 <translation id="1309465583050255779">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> vous permet de spécifier le nom du moteur de recherche par défaut.
@@ -365,6 +371,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="159946228300522107">Si cette règle est définie sur "True", Chrome agrandit la première fenêtre affichée à la première exécution.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, Chrome peut agrandir la première fenêtre, selon la taille de l'écran.</translation>
+<translation id="1600340610556453828">Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> désactive le Wi-Fi. Toutefois, les utilisateurs peuvent modifier ce paramètre.
+
+      Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent activer ou désactiver le Wi-Fi.</translation>
 <translation id="1606917441621112087">Si cette règle est définie sur "True", la visionneuse de PDF interne est désactivée dans <ph name="PRODUCT_NAME" />, les fichiers PDF sont téléchargés, et l'utilisateur peut les ouvrir avec l'application par défaut.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les fichiers PDF sont ouverts par le plug-in PDF, à moins que l'utilisateur le désactive.</translation>
@@ -2237,6 +2246,16 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent transférer des fichiers vers Google Drive même s'ils sont connectés à un réseau mobile.</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4261820385751181068">Paramètres régionaux de l'écran de connexion de l'appareil</translation>
+<translation id="4272533771695747453">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
+      Lorsque ce paramètre est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme.
+      Lorsque ce paramètre n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
+
+      Il est prévu que cette règle soit supprimée dans la version 81 de <ph name="PRODUCT_OS_NAME" />, car l'ancien outil de vérification des certificats sur <ph name="PRODUCT_OS_NAME" /> le sera également.
+
+      Il est prévu que cette règle soit supprimée dans la version 83 de <ph name="PRODUCT_NAME" /> pour Linux, car l'ancien outil de vérification des certificats sur Linux le sera également.
+
+      Il est prévu que cette règle soit supprimée dans la version 91 de <ph name="PRODUCT_NAME" /> pour Mac OS X, car l'ancien outil de vérification des certificats sur Mac OS X le sera également.
+      </translation>
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -2418,6 +2437,9 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4649395978608361979">Destinations des imprimantes locales</translation>
 <translation id="4650759511838826572">Désactiver les schémas de protocole d'URL</translation>
 <translation id="465099050592230505">URL de boutique en ligne d'entreprise (abandonné)</translation>
+<translation id="4653465451589191309">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent gérer (déconnecter ou modifier) les connexions VPN. Si la connexion VPN est créée à l'aide d'une application VPN, l'interface utilisateur dans cette application n'est pas affectée. Ainsi, les utilisateurs peuvent quand même utiliser l'application pour modifier la connexion VPN. Utilisez cette règle avec la fonctionnalité VPN toujours activée, ce qui permet à l'administrateur d'établir une connexion VPN lors du démarrage d'un appareil.
+
+      Si cette règle est désactivée, les interfaces utilisateur <ph name="PRODUCT_OS_NAME" /> qui permettraient à l'utilisateur de déconnecter ou de modifier les connexions VPN sont également désactivées.</translation>
 <translation id="4656856690225958260">Cette règle étant obsolète, veuillez utiliser la règle <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> à la place.
 
       Si celle-ci est activée, la fonctionnalité de navigation privée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à cette fonctionnalité ne vérifie pas non plus les téléchargements hébergés sur ces domaines. De même, le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
@@ -2475,6 +2497,15 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4725528134735324213">Activer Android Backup Service</translation>
 <translation id="4725801978265372736">Exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
 <translation id="4733471537137819387">Stratégies liées à l'authentification HTTP intégrée</translation>
+<translation id="4739707008209949995">Permet à l'administrateur de modifier l'adresse MAC (Media Access Control, contrôle d'accès au support) lors de la connexion d'un appareil à la station d'accueil. Lorsqu'une station d'accueil est connectée à certains modèles d'appareils, l'adresse MAC de l'appareil est utilisée, par défaut, pour identifier l'appareil sur Ethernet.
+
+      Si l'option "DeviceDockMacAddress" est sélectionnée ou que la règle n'est pas configurée, l'adresse MAC de la station d'accueil définie pour l'appareil est utilisée.
+
+      Si l'option "DeviceNicMacAddress" est sélectionnée, l'adresse MAC de la carte d'interface réseau de l'appareil est utilisée.
+
+      Si l'option "DockNicMacAddress" est sélectionnée, l'adresse MAC de la carte d'interface réseau de la station d'accueil est utilisée.
+
+      Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
 <translation id="4752880493649142945">Certificat client pour se connecter à RemoteAccessHostTokenValidationUrl</translation>
 <translation id="4757053978738874325">Active la fonctionnalité d'accessibilité d'audio mono.
@@ -2674,6 +2705,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", le modèle de chaque processeur ainsi que son architecture et la cadence maximale de son horloge sont transmis.</translation>
+<translation id="5119324103901618897">Permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à accéder à un appareil USB à l'aide des identifiants du produit et du fournisseur indiqués. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "<ph name="DEVICES_FIELD_NAME" />" et un champ "<ph name="URLS_FIELD_NAME" />". Chaque élément du champ "<ph name="DEVICES_FIELD_NAME" />" peut contenir à son tour un champ "<ph name="VENDOR_ID_FIELD_NAME" />" et un champ "<ph name="PRODUCT_ID_FIELD_NAME" />". Si vous ne renseignez pas le champ "<ph name="VENDOR_ID_FIELD_NAME" />", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "<ph name="PRODUCT_ID_FIELD_NAME" />", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "<ph name="PRODUCT_ID_FIELD_NAME" />", mais pas de champ "<ph name="VENDOR_ID_FIELD_NAME" />" n'est pas valide.
+
+      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "<ph name="URLS_FIELD_NAME" />" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule afin d'indiquer l'URL de requête et l'URL d'intégration, respectivement. Si une seule URL est spécifiée, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL ne sont pas valides, la règle est ignorée.
+
+      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
+
+      Les formats d'URL de cette règle ne doivent pas entrer en conflit avec ceux qui ont été définis dans la règle <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur les règles <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
 <translation id="5141670636904227950">Activer la loupe plein écran sur l'écran de connexion</translation>
 <translation id="5142301680741828703">Toujours rendre les formats d'URL suivants dans <ph name="PRODUCT_FRAME_NAME" /></translation>
@@ -2846,6 +2884,16 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5306186200045823863">Faire confiance à l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
+<translation id="5315324986365616322">Si cette règle est activée, la transition rapide est utilisée lorsque le point d'accès sans fil accepte cette fonctionnalité. Cette règle s'applique à l'ensemble des utilisateurs et des interfaces de l'appareil.
+
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, la transition rapide n'est pas utilisée.
+
+      Remarque : Pour utiliser la transition rapide, activez également la propriété ONC par réseau.</translation>
+<translation id="5315367501385698459">Permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à se connecter à un appareil USB à l'aide des identifiants du produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "<ph name="DEVICES_FIELD_NAME" />" et un champ "<ph name="URLS_FIELD_NAME" />". Chaque élément du champ "<ph name="DEVICES_FIELD_NAME" />" peut contenir à son tour un champ "<ph name="VENDOR_ID_FIELD_NAME" />" et un champ "<ph name="PRODUCT_ID_FIELD_NAME" />". Si vous ne renseignez pas le champ "<ph name="VENDOR_ID_FIELD_NAME" />", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "<ph name="PRODUCT_ID_FIELD_NAME" />", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "<ph name="PRODUCT_ID_FIELD_NAME" />", mais pas de champ "<ph name="VENDOR_ID_FIELD_NAME" />" n'est pas valide.
+
+      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "<ph name="URLS_FIELD_NAME" />" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule afin d'indiquer l'URL de requête et l'URL d'intégration, respectivement. Si une seule URL est spécifiée, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL ne sont pas valides, la règle est ignorée.
+
+      Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="5318185076587284965">Autoriser l'hôte d'accès à distance à utiliser des serveurs de relais</translation>
 <translation id="5323128137188992869">Permet de caster du contenu sur l'appareil avec <ph name="PRODUCT_NAME" />.
 
@@ -3310,6 +3358,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="588135807064822874">Activer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="5882345429632338713">Délai avant le lancement du navigateur secondaire (en millisecondes)</translation>
 <translation id="5883015257301027298">Paramètre de cookies par défaut</translation>
+<translation id="5883754873839596178">Permet de spécifier le nombre maximal de connexions simultanées au serveur proxy. Toutefois, certains serveurs proxy ne peuvent pas gérer de nombreuses connexions simultanées par client. Pour résoudre ce problème, il suffit de diminuer la valeur de cette règle, laquelle doit être supérieure à 6 et inférieure à 100. Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes. Toute diminution de la valeur par défaut est effectuée à vos propres risques.
+
+      Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.</translation>
 <translation id="5887414688706570295">Configure le préfixe TalkGadget utilisé par les hôtes d'accès à distance et empêche les utilisateurs de le modifier.
 
           S'il est défini, ce préfixe est ajouté au nom TalkGadget de base afin de créer un nom de domaine TalkGadget complet. Le nom de domaine TalkGadget de base est ".talkgadget.google.com".
@@ -3336,6 +3387,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Les utilisateurs peuvent activer ou désactiver les services de localisation Google après la configuration initiale.</translation>
 <translation id="591088232153082363">Recharge intelligente basée sur le modèle d'utilisation de la batterie.</translation>
+<translation id="5915023683182228340">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisation du protocole QUIC est autorisée dans <ph name="PRODUCT_NAME" />.
+
+      Si cette règle est désactivée, l'utilisation du protocole QUIC est autorisée.</translation>
 <translation id="5921713479449475707">Autoriser les téléchargements de mise à jour automatique via HTTP</translation>
 <translation id="5929855945144989709">Autoriser les appareils à exécuter des machines virtuelles sur Chrome OS</translation>
 <translation id="5932767795525445337">Ces règles peuvent également être utilisées pour épingler des applications Android.</translation>
@@ -3599,6 +3653,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6338982178236723271">Transmettre les informations système</translation>
 <translation id="6342187235303612558">Empêcher les utilisateurs d'importer ou de télécharger des fichiers qui ne sont actuellement pas acceptés dans le cadre de la Protection contre la perte de données ou d'une analyse pour détecter d'éventuels logiciels malveillants.</translation>
 <translation id="6353890097388312479">Si la règle est définie sur "All (0)" (Tous (0)) ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier les paramètres de confiance de tous les certificats CA, importer des certificats et supprimer ceux qu'ils ont importés via le gestionnaire de certificats. Si elle est définie sur "UserOnly (1)" (UtilisateurUniquement (1)), les utilisateurs ne peuvent gérer que les certificats qu'ils ont importés, et ils ne sont pas autorisés à modifier les paramètres de confiance des certificats intégrés. Si cette règle est définie sur "None (2)" (Aucun (2)), les utilisateurs peuvent uniquement consulter les certificats CA (sans pouvoir les gérer).</translation>
+<translation id="6362856770865555544">Si cette règle est activée ou qu'elle n'est pas configurée, l'optimisation WPAD (Web Proxy Auto-Discovery, découverte automatique du proxy) est activée dans <ph name="PRODUCT_NAME" />.
+
+      Si cette règle est désactivée, l'optimisation WPAD l'est également, et le temps de réponse des serveurs WPAD basés sur le DNS est alors plus long dans <ph name="PRODUCT_NAME" />.
+
+      Que cette règle soit configurée ou non, les utilisateurs ne peuvent pas modifier le paramètre d'optimisation WPAD.</translation>
 <translation id="6366574325767783825">Si cette règle est définie sur "True" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte la diffusion de contenus Web en tant que Signed HTTP Exchanges.
 
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
@@ -3783,6 +3842,7 @@ Si vous sélectionnez les options suivantes :
       Remarque : Pour les instances Windows® qui ne sont pas associées à un domaine <ph name="MS_AD_NAME" />, l'installation d'office est limitée aux applications et aux extensions répertoriées sur le Chrome Web Store.</translation>
 <translation id="6598235178374410284">Avatar de l'utilisateur</translation>
 <translation id="6603004149426829878">Toujours transmettre les signaux de localisation disponibles au serveur tout en mettant à jour le fuseau horaire</translation>
+<translation id="6604049565198492174">Si cette règle est activée, la configuration réseau est appliquée par utilisateur pour chaque appareil <ph name="PRODUCT_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="660567106648774919">Cette règle est obsolète (veuillez utiliser la règle <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> à la place).
 
       Par défaut, les conditions d'utilisation sont affichées la première fois que des onglets personnalisés Chrome sont exécutés. Si cette règle est désactivée, la boîte de dialogue des conditions d'utilisation ne s'affiche ni à la première exécution, ni lors des suivantes. Si cette règle est activée ou qu'elle n'est pas configurée, la boîte de dialogue des conditions d'utilisation s'affiche à la première exécution. Notez également les points suivants :
@@ -4143,6 +4203,11 @@ Si vous sélectionnez les options suivantes :
 
       Pour en savoir plus sur les contextes sécurisés, consultez la page https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7033985774616781500">Désactiver la caméra, les paramètres du navigateur et de l'OS, et la numérisation</translation>
+<translation id="703672323011778742">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Si cette règle est définie sur "1", vous pouvez déterminer si tous les sites Web peuvent ou non exécuter automatiquement le plug-in <ph name="FLASH_PLUGIN_NAME" />. Si cette règle est définie sur "2", ce plug-in est refusé pour tous les sites Web. Vous pouvez autoriser l'exécution du plug-in <ph name="FLASH_PLUGIN_NAME" />, mais pour le lancer, l'utilisateur doit cliquer sur l'espace réservé.
+
+      Si cette règle n'est pas configurée, la règle <ph name="BLOCK_PLUGINS_POLICY_NAME" /> est utilisée. Toutefois, les utilisateurs peuvent modifier ce paramètre.
+
+      Remarque : La lecture automatique ne concerne que les domaines clairement indiqués dans la règle <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Pour l'activer pour tous les sites, ajoutez http://* et https://* à cette liste.</translation>
 <translation id="7037812781389976160">Permet de contrôler la position de l'étagère pour <ph name="PRODUCT_OS_NAME" />.
 
       Si cette règle est définie sur "Bas", l'étagère est placée au bas de l'écran.
@@ -4469,6 +4534,9 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
        Si cette règle est désactivée ou qu'elle n'est pas configurée, les images tierces ne sont pas autorisées à afficher une commande d'authentification.
 
       Cette règle est habituellement désactivée pour protéger les utilisateurs contre l'hameçonnage.</translation>
+<translation id="7407441173422042771">Permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
+
+      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, la prédiction réseau est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421483919690710988">Définir la taille du cache du disque de support en octets</translation>
 <translation id="7424751532654212117">Liste des exceptions à la liste des plug-ins désactivés</translation>
@@ -4477,6 +4545,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle n'est pas configurée, ou si elle est définie sur "False", <ph name="TLS_FALSE_START" /> est activé. Si elle est définie sur "True", <ph name="TLS_FALSE_START" /> est désactivé.</translation>
 <translation id="7433714841194914373">Activer la recherche instantanée</translation>
 <translation id="7434202861148928348">Configurer les noms de domaines requis pour les clients d'accès à distance</translation>
+<translation id="7443356543619955157">Si cette règle est activée, la configuration réseau est appliquée à tous les utilisateurs d'un appareil <ph name="PRODUCT_OS_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="7448430478749155471">Activer la fonctionnalité Sélectionner pour prononcer sur l'écran de connexion</translation>
 <translation id="7458437477941640506">Ne rétablissez pas la version cible si elle est antérieure à la version de l'OS. Les mises à jour seront également désactivées.</translation>
 <translation id="7459601923199346224">Configure les règles au niveau de l'utilisateur et de l'appareil dans le cadre de la gestion des certificats.</translation>
@@ -4553,6 +4622,9 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si la valeur est GAIA, la connexion s'effectue suivant le flux d'authentification GAIA normale.
 
       Si la valeur est SAML_INTERSTITIAL, un écran interstitiel s'affiche lors de la connexion et invite l'utilisateur à poursuivre l'authentification via le fournisseur d'identité SAML du domaine d'inscription de l'appareil, ou à revenir au flux de connexion GAIA normal.</translation>
+<translation id="7554382342294940216">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> ignore tout proxy pour l'authentification du portail captif. Ces pages Web d'authentification (à partir de la page de connexion au portail captif jusqu'à ce que Chrome détecte une connexion Internet réussie) s'ouvrent dans une fenêtre distincte, sans tenir compte de l'ensemble des règles et des restrictions en place pour l'utilisateur actuel. Cette règle ne s'applique que si un proxy est configuré (par une règle, une extension ou l'utilisateur dans chrome://settings).
+
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, toutes les pages d'authentification du portail captif sont affichées dans un nouvel onglet (normal) du navigateur, en utilisant les paramètres proxy de l'utilisateur actuel.</translation>
 <translation id="755951849901630953">Active la mise à jour de tous les composants de <ph name="PRODUCT_NAME" /> si cette règle n'est pas configurée ou si elle est définie sur "True".
 
       Si cette règle est définie sur "False", la mise à jour des composants est désactivée. Toutefois, certains composants échappent à cette règle : les mises à jour des composants sans code exécutable, qui n'affectent pas de façon significative le comportement du navigateur ou qui sont essentiels à la sécurité du navigateur ne seront pas désactivées.
@@ -5443,6 +5515,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
           Notez que les formats que vous répertoriez ici sont traités comme des domaines et non des URL. Vous ne devez donc pas spécifier de schéma ni de port.</translation>
 <translation id="8892286064305622118">Espace disque libre requis pour <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8904721489610046109">Permet d'activer ou de désactiver la limitation de bande passante réseau, ce qui signifie que le système est limité aux débits d'importation et de téléchargement fournis (en kbit/s). Cette règle s'applique à l'ensemble des utilisateurs et des interfaces de l'appareil.</translation>
 <translation id="8906768759089290519">Activer le mode invité</translation>
 <translation id="8908294717014659003">Vous permet de définir si les sites Web sont autorisés à accéder aux périphériques de capture multimédia. L'accès aux périphériques de capture multimédia peut être autorisé par défaut, ou l'utilisateur doit confirmer son autorisation chaque fois qu'un site Web souhaite accéder à ceux-ci.
 

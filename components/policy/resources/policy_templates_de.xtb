@@ -153,6 +153,9 @@
 
       Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.</translation>
 <translation id="1252536192437793850">Websites erlauben, den Nutzer um Zugriff auf einen seriellen Port zu bitten</translation>
+<translation id="125655429495551011">Wird für die Richtlinie ein String festgelegt, wird er während der DHCP-Anfrage als Gerätehostname verwendet. Die Variablen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> und <ph name="LOCATION_PLACEHOLDER" /> des Strings können durch Werte auf dem Gerät ersetzt werden, bevor der String als Hostname verwendet wird. Das Ergebnis muss ein gültiger Hostname gemäß RFC 1035, Abschnitt 3.1 sein.
+
+      Wenn die Richtlinie nicht konfiguriert oder der Wert nach dem Ersetzen kein gültiger Hostname ist, wird in der DHCP-Anfrage kein Hostname festgelegt.</translation>
 <translation id="1257550411839719984">Standard-Downloadverzeichnis festlegen</translation>
 <translation id="1265053460044691532">Zeit beschränken, für die sich ein über SAML authentifizierter Nutzer offline anmelden kann</translation>
 <translation id="127264587838521316">Mit dieser Richtlinie werden Anfragen für die Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> aktiviert</translation>
@@ -165,6 +168,9 @@
 <translation id="1297182715641689552">PAC-Proxy-Skript verwenden</translation>
 <translation id="1297961932043741908">Festlegen, wie viel Megabyte Arbeitsspeicher eine einzelne Instanz von Chrome nutzen darf.</translation>
 <translation id="1304973015437969093">Ohne Nutzereingriff zu installierende Erweiterungs-/App-IDs und Aktualisierungs-URLs</translation>
+<translation id="1305400589435476516">Wenn die Richtlinie aktiviert ist, wird Daten-Roaming für das Gerät zugelassen.
+
+      Ist sie deaktiviert oder nicht konfiguriert, ist Daten-Roaming nicht verfügbar.</translation>
 <translation id="1307454923744766368">Quellen oder Hostnamenmuster, für die Einschränkungen für
       unsichere Quellen nicht gelten sollen</translation>
 <translation id="1309465583050255779">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" />" den Namen des Standardsuchanbieters an.
@@ -355,6 +361,9 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="159946228300522107">Wenn für diese Richtlinie "True" festgelegt ist, maximiert Chrome beim ersten Start das erste angezeigte Fenster.
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, kann das erste Fenster von Chrome maximiert werden. Das richtet sich nach der Displaygröße.</translation>
+<translation id="1600340610556453828">Wenn die Richtlinie deaktiviert ist, deaktiviert <ph name="PRODUCT_OS_NAME" /> das WLAN und Nutzer können dies nicht ändern.
+
+      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer das WLAN aktivieren und deaktivieren.</translation>
 <translation id="1606917441621112087">Wenn die Richtlinie auf "True" gesetzt ist, wird der interne PDF Viewer in <ph name="PRODUCT_NAME" /> ausgeschaltet und PDF-Dateien werden als Download behandelt. Nutzer können sie dann mit der Standardanwendung öffnen.
 
       Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht vom Nutzer deaktiviert wird.</translation>
@@ -2210,6 +2219,16 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Dateien auch über die Mobilfunkverbindung in Drive hochladen.</translation>
 <translation id="4250680216510889253">Nein</translation>
 <translation id="4261820385751181068">Sprache der Anmeldeseite</translation>
+<translation id="4272533771695747453">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
+      Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mit der von der Plattform stammenden Legacy-Zertifikatsprüfung.
+      Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.
+
+      Diese Richtlinie wird voraussichtlich in Version 81 von <ph name="PRODUCT_OS_NAME" /> entfernt, wenn auch die Legacy-Zertifikatsprüfung in <ph name="PRODUCT_OS_NAME" /> voraussichtlich nicht mehr unterstützt wird.
+
+      Außerdem wird sie voraussichtlich in Version 83 von <ph name="PRODUCT_NAME" /> für Linux entfernt, wenn auch die Legacy-Zertifikatsprüfung unter Linux voraussichtlich nicht mehr unterstützt wird.
+
+      Voraussichtlich wird sie auch in Version 91 von <ph name="PRODUCT_NAME" /> für Mac OS X entfernt, wenn die Legacy-Zertifikatsprüfung unter Mac OS X voraussichtlich nicht mehr unterstützt wird.
+      </translation>
 <translation id="4274691295133617461">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Lesezugriff auf Dateien und Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten. Ist sie auf "2" gesetzt, wird der Zugriff verweigert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -2391,6 +2410,9 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4649395978608361979">Lokale Druckziele</translation>
 <translation id="4650759511838826572">URL-Protokollschemas deaktivieren</translation>
 <translation id="465099050592230505">Unternehmens-Web-Store-URL (veraltet)</translation>
+<translation id="4653465451589191309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer VPN-Verbindungen verwalten, d. h. trennen oder ändern. Wenn die VPN-Verbindung innerhalb einer VPN-App erstellt wird, hat diese Richtlinie keine Auswirkungen auf die Benutzeroberfläche der App. So können Nutzer die App auch weiterhin zum Ändern der VPN-Verbindung verwenden. Diese Richtlinie soll gemeinsam mit der Funktion „Durchgehend aktives VPN“ verwendet werden, mit der der Administrator festlegen kann, ob beim Start eines Geräts eine VPN-Verbindung hergestellt werden soll.
+
+      Wenn diese Richtlinie deaktiviert ist, werden die Benutzeroberflächen in <ph name="PRODUCT_OS_NAME" /> deaktiviert, mit denen Nutzer VPN-Verbindungen trennen oder ändern.</translation>
 <translation id="4656856690225958260">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />".
 
       Wenn die Richtlinie aktiviert ist, vertraut Safe Browsing den Domains, die Sie festlegen. Es findet keine Prüfung auf gefährliche Ressourcen wie Phishing, Malware oder unerwünschte Software statt. Es findet keine Prüfung von in diesen Domains gehosteten Downloads durch den Downloadschutzdienst statt. Eine Wiederverwendung von Passwörtern wird nicht durch den Passwortschutzdienst geprüft.
@@ -2448,6 +2470,15 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4725528134735324213">Android Backup Service aktivieren</translation>
 <translation id="4725801978265372736">Verlangen, dass der Name des lokalen Nutzers und des Host-Inhabers des Remotezugriffs übereinstimmen</translation>
 <translation id="4733471537137819387">Strategien im Hinblick auf die integrierte HTTP-Authentifizierung</translation>
+<translation id="4739707008209949995">Wenn die Richtlinie konfiguriert ist, kann der Administrator beim Verbinden eines Geräts mit dem Dock die MAC (Media Access Control)-Adresse ändern. Beim Verbinden bestimmter Gerätemodelle mit einem Dock wird standardmäßig die MAC-Adresse des Geräts zur Identifikation des Geräts im Ethernet-Netzwerk verwendet.
+
+      Wenn „DeviceDockMacAddress“ ausgewählt ist oder die Richtlinie nicht festgelegt wurde, wird die eingetragene Dock-MAC-Adresse des Geräts verwendet.
+
+      Ist „DeviceNicMacAddress“ festgelegt, dann wird die MAC-Adresse der NIC (Netzwerkkarte) des Geräts verwendet.
+
+      Ist „DockNicMacAddress“ ausgewählt, dann wird die MAC-Adresse der Dock-NIC verwendet.
+
+      Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="4742973303930120836">Druckmodus mit Hintergrundgrafiken einschränken</translation>
 <translation id="4752880493649142945">Clientzertifikat zur Herstellung einer Verbindung zu RemoteAccessHostTokenValidationUrl</translation>
 <translation id="4757053978738874325">Mit dieser Richtlinie wird die Bedienungshilfe "Mono-Audio" aktiviert.
@@ -2650,6 +2681,13 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 
       Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, werden keine Informationen ausgegeben.
       Wenn sie auf "true" gesetzt wird, werden der Modellname, die Architektur und die maximale Taktung aller CPUs ausgegeben.</translation>
+<translation id="5119324103901618897">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ angegeben sein. Jeder Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ kann ein Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ und „<ph name="PRODUCT_ID_FIELD_NAME" />“ haben. Bei Weglassen des Felds „<ph name="VENDOR_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „<ph name="PRODUCT_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die ein Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ ohne das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ hat, ist ungültig.
+
+      Im USB-Berechtigungsmodell werden die anfragende und die einbettende URL verwendet, um der anfragenden URL die Berechtigung für den Zugriff auf das USB-Gerät zu erteilen. Wird die anfragende Website in einen iFrame geladen, kann die anfragende von der einbettenden URL abweichen. Deshalb darf das Feld „<ph name="URLS_FIELD_NAME" />“ bis zu zwei durch ein Komma voneinander getrennte URL-Strings enthalten: die anfragende URL und die einbettende URL. Falls nur eine einzige URL angegeben ist, wird der Zugriff auf die entsprechenden USB-Geräte gewährt, wenn unabhängig vom Einbettungsstatus die URL der anfragenden Website mit dieser URL übereinstimmt. Die URLs müssen gültig sein, da die Richtlinie andernfalls ignoriert wird.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
+
+      URL-Muster in dieser Richtlinie dürfen nicht im Widerspruch zu den über <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> konfigurierten URLs stehen. Andernfalls hat diese Richtlinie Vorrang vor <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
 <translation id="5141670636904227950">Standardtyp für die Lupe festlegen, die auf der Anmeldeseite aktiviert ist</translation>
 <translation id="5142301680741828703">Folgende URL-Muster immer in <ph name="PRODUCT_FRAME_NAME" /> darstellen</translation>
@@ -2822,6 +2860,16 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 <translation id="5306186200045823863">Der veralteten Symantec-PKI vertrauen</translation>
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5311275381462687162">Einstellung für das alte Standardverhalten des "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Cookies</translation>
+<translation id="5315324986365616322">Wenn die Richtlinie aktiviert ist, wird „Fast Transition“ verwendet, wenn dies vom WLAN-Zugangspunkt unterstützt wird. Sie gilt für alle Nutzer und alle Oberflächen auf diesem Gerät.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird „Fast Transition“ nicht verwendet.
+
+      Hinweis: Damit „Fast Transition“ verwendet werden kann, muss auch die netzwerkeigene ONC-Property aktiviert sein.</translation>
+<translation id="5315367501385698459">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs auf dem Anmeldebildschirm gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ angegeben sein. Jeder Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ kann ein Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ und „<ph name="PRODUCT_ID_FIELD_NAME" />“ haben. Bei Weglassen des Felds „<ph name="VENDOR_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „<ph name="PRODUCT_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die ein Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ ohne das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ hat, ist ungültig.
+
+      Im USB-Berechtigungsmodell werden die anfragende und die einbettende URL verwendet, um der anfragenden URL die Berechtigung für den Zugriff auf das USB-Gerät zu erteilen. Wird die anfragende Website in einen iFrame geladen, kann die anfragende von der einbettenden URL abweichen. Deshalb darf das Feld „<ph name="URLS_FIELD_NAME" />“ bis zu zwei durch ein Komma voneinander getrennte URL-Strings enthalten: die anfragende URL und die einbettende URL. Falls nur eine einzige URL angegeben ist, wird der Zugriff auf die entsprechenden USB-Geräte gewährt, wenn unabhängig vom Einbettungsstatus die URL der anfragenden Website mit dieser URL übereinstimmt. Die URLs müssen gültig sein, da die Richtlinie andernfalls ignoriert wird.
+
+      Ist diese Richtlinie nicht konfiguriert, kommt für alle Websites der globale Standardwert zum Einsatz (kein automatischer Zugriff).</translation>
 <translation id="5318185076587284965">Verwendung von Relayservern durch den Host für den Remotezugriff gestatten</translation>
 <translation id="5323128137188992869">Hiermit wird das Streamen von Inhalten an das Gerät über <ph name="PRODUCT_NAME" /> erlaubt.
 
@@ -3284,6 +3332,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="588135807064822874">"Zum Suchen tippen" aktivieren</translation>
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
 <translation id="5883015257301027298">Standardeinstellungen für Cookies</translation>
+<translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn Sie einen Wert unter dem Standardwert festlegen, geschieht dies auf eigenes Risiko.
+
+      Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 32 zum Einsatz.</translation>
 <translation id="5887414688706570295">Konfiguriert das TalkGadget-Präfix, das von Remotezugriff-Hosts verwendet wird, und verhindert, dass dieses von Nutzern geändert werden kann.
 
           Wenn dieses Präfix angegeben wird, wird es dem TalkGadget-Basisnamen vorangestellt, um einen vollständigen Domainnamen für das TalkGadget zu erstellen. Der Basisname der TalkGadget-Domain lautet ".talkgadget.google.com".
@@ -3310,6 +3361,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel aktivieren oder deaktivieren.</translation>
 <translation id="591088232153082363">Lädt den Akku basierend auf der Akkunutzung intelligent auf.</translation>
+<translation id="5915023683182228340">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ermöglicht sie die Nutzung des QUIC-Protokolls in <ph name="PRODUCT_NAME" />.
+
+      Wenn die Richtlinie deaktiviert ist, ist die Nutzung des QUIC-Protokolls nicht möglich.</translation>
 <translation id="5921713479449475707">Downloads automatischer Updates über HTTP zulassen</translation>
 <translation id="5929855945144989709">Geräten die Ausführung von virtuellen Maschinen unter Chrome OS erlauben</translation>
 <translation id="5932767795525445337">Diese Richtlinie kann auch verwendet werden, um Android-Apps anzupinnen.</translation>
@@ -3577,6 +3631,11 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="6338982178236723271">Systeminformationen melden</translation>
 <translation id="6342187235303612558">Nutzer am Hoch- oder Herunterladen von Dateien hindern, bei denen der Schutz vor Datenverlust oder der Malware-Scan nicht unterstützt wird.</translation>
 <translation id="6353890097388312479">Wenn die Richtlinie auf „Alle“ (0) gesetzt oder nicht konfiguriert ist, können Nutzer Vertrauenseinstellungen für alle CA-Zertifikate bearbeiten, von Nutzern importierte Zertifikate entfernen und Zertifikate mit dem Zertifikat-Manager importieren. Wenn die Richtlinie auf „Nur Nutzer“ (1) gesetzt ist, können Nutzer zwar von Nutzern importierte Zertifikate verwalten, aber die Vertrauenseinstellungen integrierter Zertifikate nicht ändern. Ist sie auf „Keine“ (2) gesetzt, können Nutzer CA-Zertifikate ansehen, aber nicht verwalten.</translation>
+<translation id="6362856770865555544">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die WPAD (Web Proxy Auto-Discovery)-Optimierung in <ph name="PRODUCT_NAME" /> aktiviert.
+
+      Ist sie deaktiviert, ist die WPAD-Optimierung deaktiviert, sodass <ph name="PRODUCT_NAME" /> länger auf DNS-basierte WPAD-Server warten muss.
+
+      Unabhängig davon, ob die Richtlinie konfiguriert ist, kann die WPAD-Optimierung nicht von Nutzern geändert werden.</translation>
 <translation id="6366574325767783825">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, werden von <ph name="PRODUCT_NAME" /> Webinhalte akzeptiert, die als Signed HTTP Exchanges implementiert sind.
 
       Wenn die Richtlinie auf "False" gesetzt ist, werden die Signed HTTP Exchanges nicht geladen.</translation>
@@ -3761,6 +3820,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
       Hinweis: Bei Windows-Instanzen, die nicht Teil einer <ph name="MS_AD_NAME" />-Domain sind, bleibt die erzwungene Installation auf die im Chrome Web Store aufgeführten Apps und Erweiterungen beschränkt.</translation>
 <translation id="6598235178374410284">Nutzer-Avatarbild</translation>
 <translation id="6603004149426829878">Beim Auflösen der Zeitzone immer verfügbare Standortsignale an den Server senden</translation>
+<translation id="6604049565198492174">Wenn die Richtlinie aktiviert ist, ermöglicht sie, Netzwerkkonfigurationen auf <ph name="PRODUCT_NAME" />-Geräten für einzelne Nutzer zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="660567106648774919">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
       Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
@@ -4128,6 +4188,11 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
       Weitere Informationen zu sicheren Kontexten finden Sie unter https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7033985774616781500">Deaktiviert die Kamera, Browser- und Betriebssystemeinstellungen sowie Scanfunktionen</translation>
+<translation id="703672323011778742">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn die Richtlinie auf „1“ gesetzt ist, können Sie festlegen, ob das Plug-in <ph name="FLASH_PLUGIN_NAME" /> auf allen Websites automatisch ausgeführt werden soll. Wenn die Richtlinie auf „2“ gesetzt ist, wird dieses Plug-in auf allen Websites blockiert. Mit „Click-to-Play“ wird erlaubt, dass das Plug-in <ph name="FLASH_PLUGIN_NAME" /> ausgeführt wird, der Nutzer muss jedoch den Platzhalter anklicken, um die Ausführung zu starten.
+
+      Ist diese Richtlinie nicht konfiguriert, wird <ph name="BLOCK_PLUGINS_POLICY_NAME" /> verwendet und Nutzer können diese Einstellung ändern.
+
+      Hinweis: Die automatische Wiedergabe ist nur für Domains aktiviert, die in der Richtlinie <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> angegeben sind. Wenn Sie die automatische Wiedergabe für alle Websites aktivieren möchten, fügen Sie „http://*“ und „https://*“ zu dieser Liste hinzu.</translation>
 <translation id="7037812781389976160">Hiermit kann die Position der Ablage von <ph name="PRODUCT_OS_NAME" /> bestimmt werden.
 
       Wenn diese Richtlinie auf "Unten" gesetzt ist, wird die Ablage unten auf dem Bildschirm angezeigt.
@@ -4451,6 +4516,9 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
        Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann in Bildern von Drittanbietern keine Authentifizierungsaufforderung angezeigt werden.
 
       Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</translation>
+<translation id="7407441173422042771">Mit dieser Richtlinie wird die Netzwerkvorhersage bei <ph name="PRODUCT_NAME" /> gesteuert. Hiermit werden der DNS-Vorabruf, die TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, wird die Netzwerkvorhersage aktiviert, aber sie kann von Nutzern nicht geändert werden.</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
 <translation id="7421483919690710988">Cache-Größe für Mediendatenträger in Byte festlegen</translation>
 <translation id="7424751532654212117">Liste der Ausnahmen von der Liste der deaktivierten Plug-ins</translation>
@@ -4459,6 +4527,7 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
       Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, wird die Funktion "<ph name="TLS_FALSE_START" />" aktiviert. Ist "true" festgelegt, wird die Funktion "<ph name="TLS_FALSE_START" />" deaktiviert.</translation>
 <translation id="7433714841194914373">Google Instant aktivieren</translation>
 <translation id="7434202861148928348">Erforderliche Domainnamen für Remotezugriff-Clients konfigurieren</translation>
+<translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="7458437477941640506">Führen Sie kein Rollback auf die Zielversion durch, wenn die Version des Betriebssystems neuer als die der Zielversion ist. Aktualisierungen sind ebenfalls deaktiviert.</translation>
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
@@ -4533,6 +4602,9 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
       Wenn sie auf GAIA festgelegt wird, erfolgt der Log-in über den normalen GAIA-Authentifizierungsvorgang.
 
       Wenn sie auf SAML_INTERSTITIAL festgelegt wird, erscheint beim Log-in ein Interstitialbildschirm, über den der Nutzer die Authentifizierung über den SAML-IdP der Registrierungsdomain, in dem sich das Gerät befindet, durchführen oder zum normalen GAIA-Log-in-Vorgang zurückkehren kann.</translation>
+<translation id="7554382342294940216">Wenn diese Richtlinie aktiviert ist, ermöglicht sie <ph name="PRODUCT_OS_NAME" />, zur Captive-Portal-Authentifizierung alle Proxys zu umgehen. Diese Authentifizierungswebseiten – also alle Webseiten ab der Captive Portal-Anmeldeseite, bis Chrome eine funktionierende Internetverbindung erkennt – werden in einem separaten Fenster geöffnet, wobei alle Richtlinieneinstellungen und -beschränkungen für den aktuellen Nutzer ignoriert werden. Diese Richtlinie kommt nur dann zum Einsatz, wenn ein Proxy konfiguriert ist, zum Beispiel über eine Richtlinie, eine Erweiterung oder vom Nutzer unter chrome://settings.
+
+      Wenn Sie diese Einstellung deaktivieren oder nicht konfigurieren, werden alle Seiten der Captive-Portal-Authentifizierung auf einem regulären neuen Browsertab angezeigt und es kommen die Proxy-Einstellungen des aktuellen Nutzers zum Einsatz.</translation>
 <translation id="755951849901630953">Hiermit werden Komponentenupdates für alle Komponenten in <ph name="PRODUCT_NAME" /> aktiviert, sofern diese nicht festgelegt sind oder auf "true" gesetzt wurden.
 
       Wurde "false" festgelegt, sind Komponentenupdates deaktiviert. Für einige Komponenten gelten diese Richtlinien aber nicht: Updates von Komponenten, die keinen ausführbaren Code enthalten, das Browserverhalten nicht maßgeblich verändern oder die Sicherheit nicht gefährden, werden nicht deaktiviert.
@@ -5414,6 +5486,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
           Beachten Sie, dass die Muster, die Sie hier eintragen, als Domains und nicht als URLs behandelt werden. Geben Sie deshalb kein Schema und keinen Port an.</translation>
 <translation id="8892286064305622118">Erforderlicher freier Speicherplatz für <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8904721489610046109">Wenn die Richtlinie aktiviert ist, wird die Netzwerkdrosselung eingeschaltet. Das bedeutet, dass das System gedrosselt wird, damit die angegebenen Upload- und Downloadwerte in kbit/s eingehalten werden. Sie gilt für alle Nutzer und alle Oberflächen auf diesem Gerät.</translation>
 <translation id="8906768759089290519">Gastmodus aktivieren</translation>
 <translation id="8908294717014659003">Hier können Sie festlegen, ob Websites der Zugriff auf Medienaufnahmegeräte erlaubt werden soll. Der Zugriff auf Medienaufnahmegeräte kann standardmäßig zugelassen werden oder Sie können einstellen, dass der Nutzer jedes Mal gefragt wird, wenn eine Website auf Medienaufnahmegeräte zugreifen möchte.
 

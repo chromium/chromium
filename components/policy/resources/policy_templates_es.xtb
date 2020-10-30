@@ -5025,9 +5025,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="8133152694354699657">Si se le asigna el valor True a esta política o no se le asigna ningún valor, Tocar para buscar estará disponible para los usuarios y podrán decidir cuándo activar o desactivar la función.
 
       Si se le asigna el valor False, Tocar para buscar se desactivará por completo.</translation>
-<translation id="8136906469922284163">Si se asigna el valor "Verdadero" a esta política, las páginas podrán mostrar ventanas emergentes mientras se descargan.
+<translation id="8136906469922284163">Si se asigna el valor Verdadero a esta política, las páginas podrán mostrar ventanas emergentes mientras se descargan.
 
-      Si se le asigna el valor "Falso" o no se le asigna ningún valor, las páginas no podrán mostrar ventanas emergentes mientras se descargan.
+      Si se le asigna el valor Falso o no se le asigna ningún valor, las páginas no podrán mostrar ventanas emergentes mientras se descargan.
 
       Esta política se retiró en la versión 88 de Chrome y se ignorará si se establece.
 

@@ -242,6 +242,7 @@
 <translation id="1264337193001759725">Wenn Sie Netzwerk-UI-Protokolle anzeigen möchten, gehen Sie zu: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Zielsprache:</translation>
 <translation id="126768002343224824">16-fach</translation>
+<translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1272293450992660632">Die PIN-Werte stimmen nicht überein.</translation>
 <translation id="1272978324304772054">Dieses Nutzerkonto gehört nicht zu der Domain, in der das Gerät angemeldet ist. Wenn Sie sich in einer anderen Domain anmelden möchten, müssen Sie zunächst eine Gerätewiederherstellung durchführen.</translation>
@@ -1018,6 +1019,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="216169395504480358">WLAN hinzufügen...</translation>
 <translation id="2162155940152307086">Die Synchronisierung wird gestartet, sobald Sie die Synchronisierungseinstellungen verlassen</translation>
 <translation id="2162838847352058695">Websites daran hindern, mehrere Dateien automatisch herunterzuladen</translation>
+<translation id="2163004395084716754">Unbekannte Taste. Drücken Sie zum Beenden eine beliebige Taste.</translation>
 <translation id="2163470535490402084">Stellen Sie eine Internetverbindung her, um sich auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
 <translation id="2165421703844373933">Mit "Ok Google" können Sie auf Ihren Assistant zugreifen. Damit der Akku geschont wird, sollten Sie die Option "An (empfohlen)" auswählen. So reagiert Ihr Assistant nur, wenn Ihr Gerät an eine Stromquelle angeschlossen ist oder auflädt.</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
@@ -1607,6 +1609,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2839032553903800133">Benachrichtigungen blockiert</translation>
 <translation id="2841013758207633010">Zeit</translation>
 <translation id="2841837950101800123">Anbieter</translation>
+<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome hat auf Ihrem Computer keine bekannte schädliche Software gefunden. Zuletzt geprüft: vor 1 Tag.}other{Chrome hat auf Ihrem Computer keine bekannte schädliche Software gefunden. Zuletzt geprüft: vor {NUM_DAYS} Tagen.}}</translation>
 <translation id="2844169650293029770">USB-C-Gerät (Port vorne links)</translation>
 <translation id="2844809857160214557">Druckaufträge ansehen und verwalten</translation>
 <translation id="2845382757467349449">Lesezeichenleiste immer anzeigen</translation>
@@ -1702,6 +1705,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="29488703364906173">Der schnelle, einfache und sichere Browser, entwickelt für das moderne Web</translation>
 <translation id="2949289451367477459">Standort verwenden: Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbezogener Dienste verwenden. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Anmelden</translation>
+<translation id="2950809080616865502">Dialogfeld öffnen, um einen Schalter zuzuweisen</translation>
 <translation id="2956070239128776395">In Gruppe verschachtelter Abschnitt: <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Websites nicht erlauben, Dateien oder Ordner auf meinem Gerät zu bearbeiten</translation>
 <translation id="2958721676848865875">Erweiterung packen: Warnung</translation>
@@ -1865,10 +1869,12 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3154429428035006212">Seit über einem Monat offline</translation>
 <translation id="3155072594963189910">Websites daran hindern, Dateien und Ordner auf meinem Gerät zu bearbeiten</translation>
 <translation id="3156531245809797194">Melden Sie sich bitte an, wenn Sie Chrome verwenden möchten</translation>
+<translation id="315738237743207937">Captive Portal erkannt</translation>
 <translation id="3157931365184549694">Wiederherstellen</translation>
 <translation id="3158033540161634471">Fingerabdruck einrichten</translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="3159978855457658359">Gerätename bearbeiten</translation>
+<translation id="3160194132051443473">„<ph name="CURRENTKEY" />“ wurde bereits zugewiesen. Drücken Sie zum Entfernen der Zuweisung und Beenden noch einmal „<ph name="CURRENTKEY" />“.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwaregestützt)</translation>
 <translation id="3161522574479303604">Alle Sprachen</translation>
 <translation id="3162853326462195145">Konto einer Bildungseinrichtung</translation>
@@ -3449,6 +3455,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Die Rechtschreibprüfung wird für die ausgewählten Sprachen nicht unterstützt</translation>
 <translation id="5052499409147950210">Website bearbeiten</translation>
+<translation id="5053688703815372443">Keine Schalter zugewiesen</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="5057403786441168405">Hier können Sie Ihre angemeldeten Konten verwalten. Websites, Apps und Erweiterungen in Chrome und Google Play können diese Konten verwenden, um Ihnen – je nach den jeweiligen Berechtigungen – personalisierte Inhalte anzuzeigen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Anmeldung beschränken</translation>
@@ -3511,6 +3518,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
 <translation id="5127881134400491887">Netzwerkverbindungen verwalten</translation>
 <translation id="512903556749061217">angeschlossen</translation>
+<translation id="5131369589475698152">Tasten stimmen nicht überein. „<ph name="UNEXPECTEDKEY" />“ wurde gedrückt. Davor wurde „<ph name="CURRENTKEY" />“ gedrückt. Drücken Sie zum Beenden eine beliebige Taste.</translation>
 <translation id="5131591206283983824">Antippen und Ziehen für Touchpad</translation>
 <translation id="5133483819862530305">Sonnenuntergang bis -aufgang</translation>
 <translation id="5135085122826131075">Mit "Ok Google" können Sie auf Ihren Assistant zugreifen.</translation>
@@ -4036,6 +4044,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5754152670305761216">Dürfen geschützte Inhalte abspielen</translation>
 <translation id="5756163054456765343">H&amp;ilfe</translation>
 <translation id="5759728514498647443">Dokumente, die Sie über <ph name="APP_NAME" /> zum Druck senden, können von <ph name="APP_NAME" /> gelesen werden.</translation>
+<translation id="5760715441271661976">Portal-Status</translation>
 <translation id="5763751966069581670">Keine USB-Geräte gefunden</translation>
 <translation id="5764483294734785780">Audio &amp;speichern unter...</translation>
 <translation id="57646104491463491">Änderungsdatum</translation>
@@ -4646,6 +4655,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6463795194797719782">B&amp;earbeiten</translation>
 <translation id="6465841119675156448">Ohne Internet</translation>
 <translation id="6466988389784393586">&amp;Alle Lesezeichen öffnen</translation>
+<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome hat auf Ihrem Computer keine bekannte schädliche Software gefunden. Zuletzt geprüft: vor 1 Stunde.}other{Chrome hat auf Ihrem Computer keine bekannte schädliche Software gefunden. Zuletzt geprüft: vor {NUM_HOURS} Stunden.}}</translation>
 <translation id="6467304607960172345">Vollbildvideos optimieren</translation>
 <translation id="6468485451923838994">Schriftarten</translation>
 <translation id="6469557521904094793">Mobilfunknetz einschalten</translation>
@@ -4798,6 +4808,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659213950629089752">Diese Seite wurde mit der Erweiterung "<ph name="NAME" />" gezoomt.</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="666099631117081440">Druckserver</translation>
 <translation id="6664237456442406323">Ihr Computer wurde mit einer ungültigen Hardware-ID konfiguriert. Daher kann Chrome OS keine aktuellen Sicherheitsupdates installieren und Ihr Computer ist <ph name="BEGIN_BOLD" />möglicherweise anfällig für schädliche Angriffe<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Beim Öffnen Ihres Profils ist ein Fehler aufgetreten. Melden Sie sich bitte ab und dann wieder an.</translation>
 <translation id="6670142487971298264">Die App "<ph name="APP_NAME" />" ist jetzt verfügbar</translation>
@@ -4900,6 +4911,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6790820461102226165">Person hinzufügen...</translation>
 <translation id="6792072150955115067"><ph name="APP_NAME" /> möchte die Inhalte Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen. Wählen Sie aus, was geteilt werden soll.</translation>
 <translation id="6793604637258913070">Textcursor hervorheben, wenn er erscheint oder sich bewegt</translation>
+<translation id="6793723358811598107">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücken Sie zum Beenden eine beliebige Taste.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppla, ein Fehler ist aufgetreten.</translation>
 <translation id="6798578729981748444">Schließen Sie alle Firefox-Fenster, um den Import abzuschließen.</translation>
@@ -6124,6 +6136,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8190193592390505034">Verbindung zu <ph name="PROVIDER_NAME" /> wird hergestellt.</translation>
 <translation id="8191230140820435481">Apps, Erweiterungen und Designs verwalten</translation>
 <translation id="8195027750202970175">Dateigröße</translation>
+<translation id="8198045463750397705">Drücken Sie einen Schalter, um ihn zuzuweisen.</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> Apps werden installiert</translation>
 <translation id="8199300056570174101">Netzwerk(dienst) und Geräteeigenschaften</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
@@ -6611,6 +6624,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8774379074441005279">Wiederherstellung bestätigen</translation>
 <translation id="8774934320277480003">Oberer Rand</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
+<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome hat auf Ihrem Computer keine bekannte schädliche Software gefunden. Zuletzt geprüft: vor 1 Minute.}other{Chrome hat auf Ihrem Computer keine bekannte schädliche Software gefunden. Zuletzt geprüft: vor {NUM_MINS} Minuten.}}</translation>
 <translation id="8777628254805677039">Root-Passwort</translation>
 <translation id="8780123805589053431">Bildbeschreibungen von Google verwenden</translation>
 <translation id="8780443667474968681">Die Sprachsuche wurde deaktiviert.</translation>
@@ -6651,6 +6665,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8814319344131658221">Für welche Sprachen die Rechtschreibprüfung verfügbar ist, hängt von Ihren Spracheinstellungen ab</translation>
 <translation id="8814644416678422095">Festplatte</translation>
 <translation id="8814687660896548945">Das Archiv wird geprüft. Bitte warten...</translation>
+<translation id="8814987898367958792">Drücken Sie zum Bestätigen Ihrer Auswahl und Beenden noch einmal „<ph name="CURRENTKEY" />“.</translation>
 <translation id="881782782501875829">Portnummer hinzufügen</translation>
 <translation id="881799181680267069">Andere ausblenden</translation>
 <translation id="8818152010000655963">Hintergrund</translation>
@@ -6920,6 +6935,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9121814364785106365">In angepinntem Tab öffnen</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> pausiert</translation>
 <translation id="9124003689441359348">Hier werden gespeicherte Passwörter angezeigt</translation>
+<translation id="9125387974662074614">Benachrichtigen, wenn Chrome die Suche nach schädlicher Software beendet hat</translation>
 <translation id="9126149354162942022">Cursorfarbe</translation>
 <translation id="9128317794749765148">Einrichtung nicht abgeschlossen</translation>
 <translation id="9128335130883257666">Einstellungen für <ph name="INPUT_METHOD_NAME" /> aufrufen</translation>

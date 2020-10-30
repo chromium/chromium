@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">Untertitelmenü ausblenden</translation>
 <translation id="1729654308190250600">Geben Sie eine E-Mail-Adresse ein.</translation>
 <translation id="1758486001363313524">Andere...</translation>
+<translation id="1774577460079229490">aktuelle(s/r) <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">Gesamtzeit: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">Baumraster</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">Verwenden Sie <ph name="MINIMUM_DATE_OR_TIME" /> oder einen späteren Wert.</translation>
 <translation id="2759744352195237655">Pop-up-Schaltfläche</translation>
 <translation id="2761667185364618470">Klicken Sie dieses Kästchen an, wenn Sie fortfahren möchten.</translation>
+<translation id="2838616441696617235">Schritt</translation>
 <translation id="2844350028562914727">Details</translation>
 <translation id="2896972712917208084">Optionsfeldgruppe</translation>
 <translation id="2908441821576996758">Geben Sie eine durch Kommas getrennte Liste der E-Mail-Adressen ein.</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">Menüleiste</translation>
 <translation id="4293574643247337246">Kopfzeile</translation>
 <translation id="4360991593054037559">Geben Sie einen gültigen Wert ein. Die zwei nächstliegenden gültigen Werte sind <ph name="VALID_VALUE_LOW" /> und <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4384249794467006333">Dieses Bild hat kein Label. Öffnen Sie oben rechts das Menü „Weitere Optionen“, um Bildbeschreibungen zu verwenden.</translation>
 <translation id="4384583879834880242">Fragen und Antworten</translation>
 <translation id="4444765639179266822">Es sieht aus wie: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">Glossarreferenz</translation>
 <translation id="4522570452068850558">Details</translation>
+<translation id="4576178047100686001">Dieses Bild hat kein Label. Öffnen Sie oben links das Menü „Weitere Optionen“, um Bildbeschreibungen zu verwenden.</translation>
 <translation id="4597532268155981612">Formular</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Nach dem <ph name="ATSIGN" />-Zeichen darf das Zeichen "<ph name="INVALIDCHARACTER" />" nicht verwendet werden.</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">Bibliografieeintrag</translation>
 <translation id="4915360478455618802">Uhrzeitauswahl anzeigen</translation>
 <translation id="492244087561876220">Kommentar</translation>
+<translation id="4934662370368414994">Element</translation>
 <translation id="4950364064308314478">Lokale Datums- und Uhrzeitauswahl anzeigen</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ausgewählt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ausgewählt</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">Schieberegler für die Lautstärke</translation>
 <translation id="6015796118275082299">Jahr</translation>
 <translation id="6023896073578205740">Listenfeld</translation>
+<translation id="6131824478727057281">Standort</translation>
 <translation id="6150588977291308318">Bibliografie</translation>
 <translation id="6164829606128959761">Messinstrument</translation>
 <translation id="6166809985690652833">Nachwort</translation>
