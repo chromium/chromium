@@ -474,11 +474,9 @@ void HTMLPortalElement::RemovedFrom(ContainerNode& node) {
 }
 
 void HTMLPortalElement::DefaultEventHandler(Event& event) {
-  // Support the new behavior whereby clicking (or equivalent operations via
-  // keyboard and other input modalities) a portal element causes it to activate
-  // unless prevented.
-  if (RuntimeEnabledFeatures::PortalsDefaultActivationEnabled() &&
-      event.type() == event_type_names::kDOMActivate) {
+  // Clicking (or equivalent operations via keyboard and other input modalities)
+  // a portal element causes it to activate unless prevented.
+  if (event.type() == event_type_names::kDOMActivate) {
     ActivateDefault();
     event.SetDefaultHandled();
   }

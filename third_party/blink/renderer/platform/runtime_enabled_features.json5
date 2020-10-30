@@ -1545,10 +1545,6 @@
       origin_trial_feature_name: "Portals",
     },
     {
-      name: "PortalsDefaultActivation",
-      status: "test",
-    },
-    {
       name: "PreciseMemoryInfo",
     },
     // Prefer not using composited scrolling. Composited scrolling will still
