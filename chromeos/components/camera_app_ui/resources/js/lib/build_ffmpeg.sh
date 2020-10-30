@@ -49,6 +49,7 @@ do_configure() {
     --enable-avformat
     --enable-ffmpeg
     --enable-swresample
+    --enable-protocol=file
     --enable-protocol=pipe
     --enable-demuxer=matroska
     --enable-muxer=mov
