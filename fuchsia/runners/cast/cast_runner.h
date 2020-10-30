@@ -52,9 +52,11 @@ class CastRunner : public fuchsia::sys::Runner,
                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                           controller_request) final;
 
-  // Returns a fuchsia.web.FrameHost interface to the main web.Context used to
-  // host non-isolated Cast applications.
-  fuchsia::web::FrameHost* main_context_frame_host() const;
+  // Enables the special component that provides the fuchsia.web.FrameHost API,
+  // hosted using the same WebEngine instance as the main web.Context.
+  void set_enable_frame_host_component() {
+    enable_frame_host_component_ = true;
+  }
 
   // Disables use of the VULKAN feature when creating Contexts. Must be set
   // before calling StartComponent().
@@ -122,6 +124,9 @@ class CastRunner : public fuchsia::sys::Runner,
   base::flat_set<std::unique_ptr<PendingCastComponent>,
                  base::UniquePtrComparator>
       pending_components_;
+
+  // True if this Runner should offer the fuchsia.web.FrameHost component.
+  bool enable_frame_host_component_ = false;
 
   // List of HTTP headers to exempt from CORS checks.
   std::vector<std::vector<uint8_t>> cors_exempt_headers_;

@@ -60,6 +60,8 @@ constexpr char kTestServerRoot[] = "fuchsia/runners/cast/testdata";
 constexpr char kDummyAgentUrl[] =
     "fuchsia-pkg://fuchsia.com/dummy_agent#meta/dummy_agent.cmx";
 
+constexpr char kEnableFrameHostComponent[] = "enable-frame-host-component";
+
 class FakeUrlRequestRewriteRulesProvider
     : public chromium::cast::UrlRequestRewriteRulesProvider {
  public:
@@ -199,10 +201,16 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
   base::OnceClosure on_delete_;
 };
 
+enum CastRunnerFeatures {
+  kCastRunnerFeaturesNone = 0,
+  kCastRunnerFeaturesHeadless = 1,
+  kCastRunnerFeaturesVulkan = 1 << 1,
+  kCastRunnerFeaturesFrameHost = 1 << 2
+};
+
 sys::ServiceDirectory StartCastRunner(
     fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_host_directory,
-    bool enable_headless,
-    bool enable_vulkan,
+    CastRunnerFeatures runner_features,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         component_controller_request) {
   fuchsia::sys::LaunchInfo launch_info;
@@ -218,10 +226,14 @@ sys::ServiceDirectory StartCastRunner(
   ZX_CHECK(status == ZX_OK, status);
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII("enable-logging", "stderr");
-  if (enable_headless)
+
+  if (runner_features & kCastRunnerFeaturesHeadless)
     command_line.AppendSwitch(kForceHeadlessForTestsSwitch);
-  if (!enable_vulkan)
+  if (!(runner_features & kCastRunnerFeaturesVulkan))
     command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
+  if (runner_features & kCastRunnerFeaturesFrameHost)
+    command_line.AppendSwitch(kEnableFrameHostComponent);
+
   launch_info.arguments.emplace(std::vector<std::string>(
       command_line.argv().begin() + 1, command_line.argv().end()));
 
@@ -249,8 +261,8 @@ sys::ServiceDirectory StartCastRunner(
 class CastRunnerIntegrationTest : public testing::Test {
  public:
   CastRunnerIntegrationTest()
-      : CastRunnerIntegrationTest(/*enable_headless=*/false,
-                                  /*enable_vulkan=*/false) {}
+      : CastRunnerIntegrationTest(kCastRunnerFeaturesNone) {}
+
   CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
   CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
       delete;
@@ -261,7 +273,7 @@ class CastRunnerIntegrationTest : public testing::Test {
   }
 
  protected:
-  explicit CastRunnerIntegrationTest(bool enable_headless, bool enable_vulkan)
+  explicit CastRunnerIntegrationTest(CastRunnerFeatures runner_features)
       : app_config_manager_binding_(&component_services_,
                                     &app_config_manager_) {
     StartAndPublishWebEngine();
@@ -272,8 +284,8 @@ class CastRunnerIntegrationTest : public testing::Test {
         ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
         incoming_services.NewRequest().TakeChannel());
     sys::ServiceDirectory cast_runner_services =
-        StartCastRunner(std::move(incoming_services), enable_headless,
-                        enable_vulkan, cast_runner_controller_.NewRequest());
+        StartCastRunner(std::move(incoming_services), runner_features,
+                        cast_runner_controller_.NewRequest());
 
     // Connect to the CastRunner's fuchsia.sys.Runner interface.
     cast_runner_ = cast_runner_services.Connect<fuchsia::sys::Runner>();
@@ -465,10 +477,12 @@ class CastRunnerIntegrationTest : public testing::Test {
   void ShutdownComponent() {
     DCHECK(component_controller_);
 
-    base::RunLoop run_loop;
-    component_state_->set_on_delete(run_loop.QuitClosure());
-    component_controller_.Unbind();
-    run_loop.Run();
+    if (component_state_) {
+      base::RunLoop run_loop;
+      component_state_->set_on_delete(run_loop.QuitClosure());
+      component_controller_.Unbind();
+      run_loop.Run();
+    }
 
     component_controller_ = nullptr;
   }
@@ -887,8 +901,7 @@ TEST_F(CastRunnerIntegrationTest, CameraAccessAfterComponentShutdown) {
 class HeadlessCastRunnerIntegrationTest : public CastRunnerIntegrationTest {
  public:
   HeadlessCastRunnerIntegrationTest()
-      : CastRunnerIntegrationTest(/*enable_headless=*/true,
-                                  /*enable_vulkan=*/false) {}
+      : CastRunnerIntegrationTest(kCastRunnerFeaturesHeadless) {}
 };
 
 // A basic integration test ensuring a basic cast request launches the right
@@ -1053,6 +1066,34 @@ TEST_F(CastRunnerIntegrationTest,
   EXPECT_EQ(ExecuteJavaScript("document.title"), "absent");
 }
 
+class CastRunnerFrameHostIntegrationTest : public CastRunnerIntegrationTest {
+ public:
+  CastRunnerFrameHostIntegrationTest()
+      : CastRunnerIntegrationTest(kCastRunnerFeaturesFrameHost) {}
+};
+
+// Verifies that the CastRunner offers a fuchsia.web.FrameHost service.
+// TODO(crbug.com/1144102): Clean up config-data vs command-line flags handling
+// and add a not-enabled test here.
+TEST_F(CastRunnerFrameHostIntegrationTest, FrameHostComponent) {
+  constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
+  StartCastComponent(kFrameHostComponentName);
+
+  // Connect to the fuchsia.web.FrameHost service and create a Frame.
+  auto frame_host =
+      component_services_client_->Connect<fuchsia::web::FrameHost>();
+  fuchsia::web::FramePtr frame;
+  frame_host->CreateFrameWithParams(fuchsia::web::CreateFrameParams(),
+                                    frame.NewRequest());
+
+  // Verify that a response is received for a LoadUrl() request to the frame.
+  fuchsia::web::NavigationControllerPtr controller;
+  frame->GetNavigationController(controller.NewRequest());
+  const GURL url = test_server_.GetURL(kBlankAppUrl);
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
+}
+
 #if defined(ARCH_CPU_ARM_FAMILY)
 // TODO(crbug.com/1058247): Support Vulkan in tests on ARM64.
 #define MAYBE_VulkanCastRunnerIntegrationTest \
@@ -1064,8 +1105,7 @@ TEST_F(CastRunnerIntegrationTest,
 class MAYBE_VulkanCastRunnerIntegrationTest : public CastRunnerIntegrationTest {
  public:
   MAYBE_VulkanCastRunnerIntegrationTest()
-      : CastRunnerIntegrationTest(/*enable_headless=*/false,
-                                  /*enable_vulkan=*/true) {}
+      : CastRunnerIntegrationTest(kCastRunnerFeaturesVulkan) {}
 };
 
 TEST_F(MAYBE_VulkanCastRunnerIntegrationTest,

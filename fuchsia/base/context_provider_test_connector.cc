@@ -36,7 +36,7 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
 
   if (!is_for_logging_test) {
     // Clone stderr from the current process to WebEngine and ask it to
-    // redirects all logs to stderr.
+    // redirect all logs to stderr.
     launch_info.err = fuchsia::sys::FileDescriptor::New();
     launch_info.err->type0 = PA_FD;
     zx_status_t status = fdio_fd_clone(

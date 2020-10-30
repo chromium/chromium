@@ -43,7 +43,7 @@ class BASE_EXPORT StartupContext {
   const sys::ServiceDirectory* svc() const {
     return component_context_->svc().get();
   }
-  const sys::OutgoingDirectory* outgoing() const {
+  sys::OutgoingDirectory* outgoing() const {
     return component_context_->outgoing().get();
   }
 

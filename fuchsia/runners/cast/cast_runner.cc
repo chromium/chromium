@@ -70,6 +70,48 @@ bool IsPermissionGrantedInAppConfig(
 // Ephemeral remote debugging port used by child contexts.
 const uint16_t kEphemeralRemoteDebuggingPort = 0;
 
+// TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
+// used to route fuchsia.web.FrameHost capabilities cleanly.
+class FrameHostComponent : public fuchsia::sys::ComponentController {
+ public:
+  // Creates a FrameHostComponent with lifetime managed by |controller_request|.
+  static void Start(fuchsia::sys::StartupInfo startup_info,
+                    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                        controller_request,
+                    fuchsia::web::FrameHost* frame_host_impl) {
+    new FrameHostComponent(std::move(startup_info),
+                           std::move(controller_request), frame_host_impl);
+  }
+
+ private:
+  FrameHostComponent(fuchsia::sys::StartupInfo startup_info,
+                     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                         controller_request,
+                     fuchsia::web::FrameHost* frame_host_impl)
+      : startup_context_(std::move(startup_info)),
+        frame_host_binding_(startup_context_.outgoing(), frame_host_impl) {
+    startup_context_.ServeOutgoingDirectory();
+    binding_.Bind(std::move(controller_request));
+    binding_.set_error_handler([this](zx_status_t) { Kill(); });
+  }
+  ~FrameHostComponent() final = default;
+
+  // fuchsia::sys::ComponentController interface.
+  void Kill() final { delete this; }
+  void Detach() final {
+    binding_.Close(ZX_ERR_NOT_SUPPORTED);
+    delete this;
+  }
+
+  base::fuchsia::StartupContext startup_context_;
+  const base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>
+      frame_host_binding_;
+  fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
+};
+
+// Application URL for the pseudo-component providing fuchsia.web.FrameHost.
+constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
+
 }  // namespace
 
 CastRunner::CastRunner(bool is_headless)
@@ -123,14 +165,20 @@ void CastRunner::StartComponent(
     return;
   }
 
+  // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
+  // used to route fuchsia.web.FrameHost capabilities cleanly.
+  if (enable_frame_host_component_ &&
+      (cast_url.spec() == kFrameHostComponentName)) {
+    FrameHostComponent::Start(std::move(startup_info),
+                              std::move(controller_request),
+                              main_context_.get());
+    return;
+  }
+
   pending_components_.emplace(std::make_unique<PendingCastComponent>(
       this,
       std::make_unique<base::fuchsia::StartupContext>(std::move(startup_info)),
       std::move(controller_request), cast_url.GetContent()));
-}
-
-fuchsia::web::FrameHost* CastRunner::main_context_frame_host() const {
-  return main_context_.get();
 }
 
 void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
@@ -367,10 +415,17 @@ void CastRunner::OnCameraServiceRequest(
 
 void CastRunner::OnMetricsRecorderServiceRequest(
     fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request) {
-  // TODO(https://crbug.com/1065707): Remove this hack once Runners are using
+  // TODO(crbug.com/1120914): Allow for the FrameHostComponent being created
+  // before any Cast components are launched in the |main_context_|.
+  WebComponent* any_component = main_context_->GetAnyComponent();
+  if (!any_component) {
+    LOG(WARNING) << "Ignoring MetricsRecorder request.";
+    return;
+  }
+
+  // TODO(crbug.com/1065707): Remove this hack once Runners are using
   // Component Framework v2.
-  CastComponent* component =
-      reinterpret_cast<CastComponent*>(main_context_->GetAnyComponent());
+  CastComponent* component = reinterpret_cast<CastComponent*>(any_component);
   DCHECK(component);
 
   component->startup_context()->svc()->Connect(std::move(request));

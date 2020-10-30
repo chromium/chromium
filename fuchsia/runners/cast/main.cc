@@ -28,29 +28,17 @@ constexpr char kCrashProductName[] = "FuchsiaCastRunner";
 constexpr char kComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx";
 
-bool IsHeadless() {
-  constexpr char kHeadlessConfigKey[] = "headless";
+// Config-data key for launching Cast content without using Scenic.
+constexpr char kHeadlessConfigKey[] = "headless";
 
-  // In tests headless mode can be enabled with a command-line flag.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kForceHeadlessForTestsSwitch)) {
-    return true;
-  }
+// Config-data key to enable the fuchsia.web.FrameHost provider component.
+constexpr char kFrameHostConfigKey[] = "enable-frame-host-component";
 
+// Returns the value of |config_key| or false if it is not set.
+bool GetConfigBool(base::StringPiece config_key) {
   const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
   if (config)
-    return config->FindBoolPath(kHeadlessConfigKey).value_or(false);
-
-  return false;
-}
-
-bool AllowMainContextSharing() {
-  constexpr char kAllowMainContextSharing[] = "enable-main-context-sharing";
-
-  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
-  if (config)
-    return config->FindBoolPath(kAllowMainContextSharing).value_or(false);
-
+    return config->FindBoolPath(config_key).value_or(false);
   return false;
 }
 
@@ -63,8 +51,9 @@ int main(int argc, char** argv) {
                                                    kCrashProductName);
 
   base::CommandLine::Init(argc, argv);
-  CHECK(cr_fuchsia::InitLoggingFromCommandLine(
-      *base::CommandLine::ForCurrentProcess()))
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  CHECK(cr_fuchsia::InitLoggingFromCommandLine(*command_line))
       << "Failed to initialize logging.";
 
   cr_fuchsia::RegisterFuchsiaDirScheme();
@@ -73,22 +62,23 @@ int main(int argc, char** argv) {
       base::ComponentContextForProcess()->outgoing().get();
 
   // Publish the fuchsia.web.Runner implementation for Cast applications.
-  CastRunner runner(IsHeadless());
+  const bool enable_headless =
+      command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
+      GetConfigBool(kHeadlessConfigKey);
+  CastRunner runner(enable_headless);
   base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       outgoing_directory, &runner);
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kDisableVulkanForTestsSwitch)) {
+  if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST
   }
 
-  // Optionally publish the fuchsia.web.FrameHost service, to allow the Cast
-  // application web.Context to be shared by other components.
-  base::Optional<base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>>
-      frame_host_binding;
-  if (AllowMainContextSharing()) {
-    frame_host_binding.emplace(outgoing_directory,
-                               runner.main_context_frame_host());
+  // Optionally enable a pseudo-component providing the fuchsia.web.FrameHost
+  // service, to allow the Cast application web.Context to be shared by other
+  // components.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kFrameHostConfigKey) ||
+      GetConfigBool(kFrameHostConfigKey)) {
+    runner.set_enable_frame_host_component();
   }
 
   outgoing_directory->ServeFromStartupInfo();
