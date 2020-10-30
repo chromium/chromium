@@ -9,13 +9,14 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "components/cast/cast_component_export.h"
 
 namespace cast_api_bindings {
 
 // HTML5 MessagePort abstraction; allows usage of the platform MessagePort type
 // without exposing details of the message format, paired port creation, or
 // transfer of ports.
-class MessagePort {
+class CAST_COMPONENT_EXPORT MessagePort {
  public:
   // Implemented by receivers of messages from the MessagePort class.
   class Receiver {

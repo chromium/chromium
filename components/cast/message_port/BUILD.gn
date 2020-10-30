@@ -5,32 +5,57 @@
 import("//build/config/features.gni")
 
 source_set("message_port") {
+  if (is_fuchsia) {
+    public_deps = [ ":message_port_fuchsia" ]
+  } else if (is_chromecast) {
+    public_deps = [ ":message_port_cast" ]
+  }
+}
+
+source_set("public") {
   sources = [
     "message_port.cc",
     "message_port.h",
   ]
+
   deps = [
     "//base",
     "//components/cast:export",
   ]
+
   defines = [ "CAST_COMPONENT_IMPLEMENTATION" ]
 
-  if (is_fuchsia) {
-    sources += [
-      "message_port_fuchsia.cc",
-      "message_port_fuchsia.h",
-    ]
+  visibility = [ ":*" ]
+}
+
+if (is_fuchsia) {
+  source_set("message_port_fuchsia") {
+    public = [ "message_port_fuchsia.h" ]
+
+    sources = [ "message_port_fuchsia.cc" ]
+
     public_deps = [
+      ":public",
       "//fuchsia:cast_fidl",
       "//fuchsia/base",
     ]
-  } else if (is_chromecast) {
-    sources += [
-      "message_port_cast.cc",
-      "message_port_cast.h",
-    ]
-    deps += [ "//third_party/blink/public/common" ]
+
+    deps = [ "//base" ]
   }
+}
+
+source_set("message_port_cast") {
+  public = [ "message_port_cast.h" ]
+
+  sources = [ "message_port_cast.cc" ]
+
+  public_deps = [ ":public" ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//third_party/blink/public/common",
+  ]
 }
 
 source_set("test_message_port_receiver") {

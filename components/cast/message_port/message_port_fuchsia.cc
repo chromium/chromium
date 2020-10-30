@@ -196,6 +196,15 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
 }  // namespace
 
 // static
+void MessagePort::CreatePair(std::unique_ptr<MessagePort>* client,
+                             std::unique_ptr<MessagePort>* server) {
+  fidl::InterfaceHandle<fuchsia::web::MessagePort> port0;
+  fidl::InterfaceRequest<fuchsia::web::MessagePort> port1 = port0.NewRequest();
+  *client = MessagePortFuchsia::Create(std::move(port0));
+  *server = MessagePortFuchsia::Create(std::move(port1));
+}
+
+// static
 std::unique_ptr<MessagePort> MessagePortFuchsia::Create(
     fidl::InterfaceHandle<::fuchsia::web::MessagePort> handle) {
   return std::make_unique<MessagePortFuchsiaClient>(std::move(handle));
@@ -212,15 +221,6 @@ MessagePortFuchsia* MessagePortFuchsia::FromMessagePort(MessagePort* port) {
   // This is safe because there is one MessagePort implementation per platform
   // and this is called internally to the implementation.
   return static_cast<MessagePortFuchsia*>(port);
-}
-
-// static
-void MessagePort::CreatePair(std::unique_ptr<MessagePort>* client,
-                             std::unique_ptr<MessagePort>* server) {
-  fidl::InterfaceHandle<fuchsia::web::MessagePort> port0;
-  fidl::InterfaceRequest<fuchsia::web::MessagePort> port1 = port0.NewRequest();
-  *client = MessagePortFuchsia::Create(std::move(port0));
-  *server = MessagePortFuchsia::Create(std::move(port1));
 }
 
 // static
