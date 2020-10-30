@@ -7,8 +7,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "url/gurl.h"
 
@@ -41,4 +43,8 @@ void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "imageAnnotation",
       base::FeatureList::IsEnabled(chromeos::features::kMediaAppAnnotation));
+
+  version_info::Channel channel = chrome::GetChannel();
+  source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
+                                      channel != version_info::Channel::STABLE);
 }

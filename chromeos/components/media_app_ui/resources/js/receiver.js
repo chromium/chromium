@@ -316,7 +316,8 @@ window.addEventListener('DOMContentLoaded', () => {
   // TODO(crbug/1138798): Reorder .js deps so this can be done at load time.
   // Note: go/bbsrc/flags.ts processes this, `window.features` variable.
   /** @type{{features: Object<string, boolean>}} */ (window).features = {
-    imageAnnotation: loadTimeData.getBoolean('imageAnnotation')
+    imageAnnotation: loadTimeData.getBoolean('imageAnnotation'),
+    flagsMenu: loadTimeData.getBoolean('flagsMenu'),
   };
 
   const app = getApp();
