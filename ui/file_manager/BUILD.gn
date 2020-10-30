@@ -95,6 +95,7 @@ preprocess_grit("preprocess_generated") {
   in_files = [
     "base/js/app_util.m.js",
     "base/js/volume_manager_types.m.js",
+    "base/js/mediasession_types.m.js",
   ]
 
   deps = [ "//ui/file_manager/base/js:modulize" ]

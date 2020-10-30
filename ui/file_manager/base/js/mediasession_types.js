@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+/**
  * @see https://wicg.github.io/mediasession/#enumdef-mediasessionplaybackstate
  * @enum {string}
  */
@@ -11,3 +16,6 @@ const MediaSessionPlaybackState = {
   PAUSED: 'paused',
   PLAYING: 'playing'
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {MediaSessionPlaybackState};

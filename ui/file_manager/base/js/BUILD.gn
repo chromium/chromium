@@ -16,6 +16,7 @@ group("closure_compile") {
     ":closure_compile_module",
     ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
+    ":test_support_type_check_jsmodules",
   ]
 }
 
@@ -40,6 +41,15 @@ js_type_check("test_support_type_check") {
   deps = [
     ":mock_chrome",
     ":test_error_reporting",
+  ]
+}
+
+js_type_check("test_support_type_check_jsmodules") {
+  uses_js_modules = true
+  testonly = true
+  deps = [
+    ":mock_chrome.m",
+    ":test_error_reporting.m",
   ]
 }
 
@@ -76,6 +86,13 @@ js_library("mock_chrome") {
   testonly = true
 }
 
+js_library("mock_chrome.m") {
+  testonly = true
+  sources = [ "$root_gen_dir/ui/file_manager/base/js/mock_chrome.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("test_error_reporting") {
   testonly = true
   deps = [
@@ -83,6 +100,14 @@ js_library("test_error_reporting") {
     # webui_resource_test transitively.
     "//ui/webui/resources/js:webui_resource_test",
   ]
+}
+
+js_library("test_error_reporting.m") {
+  testonly = true
+  sources =
+      [ "$root_gen_dir/ui/file_manager/base/js/test_error_reporting.m.js" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("volume_manager_types") {
@@ -123,9 +148,18 @@ js_test_gen_html("js_test_gen_html") {
 js_library("mediasession_types") {
 }
 
+js_library("mediasession_types.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/base/js/mediasession_types.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_modulizer("modulize") {
   input_files = [
     "app_util.js",
     "volume_manager_types.js",
+    "mock_chrome.js",
+    "mediasession_types.js",
+    "test_error_reporting.js",
   ]
 }

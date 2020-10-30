@@ -6,7 +6,7 @@
  * Asserts that promise gets rejected.
  * @param {Promise} promise
  */
-async function assertRejected(promise) {
+/* #export */ async function assertRejected(promise) {
   let triggeredError = false;
   try {
     await promise;
@@ -26,7 +26,7 @@ async function assertRejected(promise) {
  * @param {function(boolean)} callback Callback function. True is passed if the
  *     test failed.
  */
-function reportPromise(promise, callback) {
+/* #export */ function reportPromise(promise, callback) {
   promise.then(
       () => {
         callback(/* error */ false);
@@ -43,11 +43,11 @@ function reportPromise(promise, callback) {
  * @return {!Promise} A promise which is fulfilled when the testFunction
  *     becomes true.
  */
-function waitUntil(testFunction) {
+/* #export */ function waitUntil(testFunction) {
   const INTERVAL_FOR_WAIT_UNTIL = 100;  // ms
 
   return new Promise((resolve) => {
-    let tryTestFunction = () => {
+    const tryTestFunction = () => {
       if (testFunction()) {
         resolve();
       } else {

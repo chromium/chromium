@@ -6,7 +6,7 @@
  * Installs a mock object to replace window.chrome in a unit test.
  * @param {Object} mockChrome
  */
-function installMockChrome(mockChrome) {
+/* #export */ function installMockChrome(mockChrome) {
   /** @suppress {const|checkTypes} */
   chrome = mockChrome;
 }
@@ -14,7 +14,7 @@ function installMockChrome(mockChrome) {
 /**
  * Mocks chrome.commandLinePrivate.
  */
-class MockCommandLinePrivate {
+/* #export */ class MockCommandLinePrivate {
   constructor() {
     this.flags_ = {};
     if (!chrome) {
@@ -44,7 +44,7 @@ class MockCommandLinePrivate {
 /**
  * Stubs the chrome.storage API.
  */
-class MockChromeStorageAPI {
+/* #export */ class MockChromeStorageAPI {
   constructor() {
     /** @type {Object<?>} */
     this.state = {};
@@ -68,8 +68,8 @@ class MockChromeStorageAPI {
    * @private
    */
   get_(keys, callback) {
-    var keys = keys instanceof Array ? keys : [keys];
-    var result = {};
+    keys = keys instanceof Array ? keys : [keys];
+    const result = {};
     keys.forEach((key) => {
       if (key in this.state) {
         result[key] = this.state[key];
@@ -84,7 +84,7 @@ class MockChromeStorageAPI {
    * @private
    */
   set_(values, opt_callback) {
-    for (var key in values) {
+    for (const key in values) {
       this.state[key] = values[key];
     }
     if (opt_callback) {
