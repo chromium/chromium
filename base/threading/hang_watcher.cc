@@ -419,10 +419,11 @@ base::TimeTicks HangWatcher::WatchStateSnapShot::GetHighestDeadline() const {
 
 HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
     const HangWatchStates& watch_states,
-    base::TimeTicks snapshot_time,
-    base::TimeTicks deadline_ignore_threshold)
-    : snapshot_time_(snapshot_time) {
+    base::TimeTicks deadline_ignore_threshold) {
+  const base::TimeTicks now = base::TimeTicks::Now();
   bool all_threads_marked = true;
+  bool found_deadline_before_ignore_threshold = false;
+
   // Copy hung thread information.
   for (const auto& watch_state : watch_states) {
     uint64_t flags;
@@ -430,12 +431,18 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
     std::tie(flags, deadline) = watch_state->GetFlagsAndDeadline();
 
     if (deadline <= deadline_ignore_threshold) {
-      hung_watch_state_copies_.clear();
-      return;
+      found_deadline_before_ignore_threshold = true;
+    }
+
+    if (internal::HangWatchDeadline::IsFlagSet(
+            internal::HangWatchDeadline::Flag::
+                kIgnoreCurrentHangWatchScopeEnabled,
+            flags)) {
+      continue;
     }
 
     // Only copy hung threads.
-    if (deadline <= snapshot_time) {
+    if (deadline <= now) {
       // Attempt to mark the thread as needing to stay within its current
       // HangWatchScopeEnabled until capture is complete.
       bool thread_marked = watch_state->SetShouldBlockOnHang(flags, deadline);
@@ -454,11 +461,17 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
     }
   }
 
-  // If some threads could not be marked for blocking then this snapshot is not
+  // Two cases can invalidate this snapshot and prevent the capture of the hang.
+  //
+  // 1. Some threads could not be marked for blocking so this snapshot isn't
   // actionable since marked threads could be hung because of unmarked ones.
   // If only the marked threads were captured the information would be
   // incomplete.
-  if (!all_threads_marked) {
+  //
+  // 2. Any of the threads have a deadline before |deadline_ignore_threshold|.
+  // If any thread is ignored it reduces the confidence in the whole state and
+  // it's better to avoid capturing misleading data.
+  if (!all_threads_marked || found_deadline_before_ignore_threshold) {
     hung_watch_state_copies_.clear();
     return;
   }
@@ -507,8 +520,7 @@ bool HangWatcher::WatchStateSnapShot::IsActionable() const {
 
 HangWatcher::WatchStateSnapShot HangWatcher::GrabWatchStateSnapshotForTesting()
     const {
-  WatchStateSnapShot snapshot(watch_states_, base::TimeTicks::Now(),
-                              deadline_ignore_threshold_);
+  WatchStateSnapShot snapshot(watch_states_, deadline_ignore_threshold_);
   return snapshot;
 }
 
@@ -521,40 +533,18 @@ void HangWatcher::Monitor() {
   if (watch_states_.empty())
     return;
 
-  const base::TimeTicks now = base::TimeTicks::Now();
+  WatchStateSnapShot watch_state_snapshot(watch_states_,
+                                          deadline_ignore_threshold_);
 
-  // See if any thread hung. We're holding |watch_state_lock_| so threads
-  // can't register or unregister but their deadline still can change
-  // atomically. This is fine. Detecting a hang is generally best effort and
-  // if a thread resumes from hang in the time it takes to move on to
-  // capturing then its ID will be absent from the crash keys.
-  bool any_thread_hung = ranges::any_of(
-      watch_states_,
-      [this, now](const std::unique_ptr<internal::HangWatchState>& state) {
-        uint64_t flags;
-        base::TimeTicks deadline;
-        std::tie(flags, deadline) = state->GetFlagsAndDeadline();
-        return !internal::HangWatchDeadline::IsFlagSet(
-                   internal::HangWatchDeadline::Flag::
-                       kIgnoreCurrentHangWatchScopeEnabled,
-                   flags) &&
-               deadline > deadline_ignore_threshold_ && deadline < now;
-      });
-
-  // If at least a thread is hung we need to capture.
-  if (any_thread_hung)
-    CaptureHang(now);
+  if (watch_state_snapshot.IsActionable()) {
+    DoDumpWithoutCrashing(watch_state_snapshot);
+  }
 }
 
-void HangWatcher::CaptureHang(base::TimeTicks capture_time) {
+void HangWatcher::DoDumpWithoutCrashing(
+    const WatchStateSnapShot& watch_state_snapshot) {
   capture_in_progress_.store(true, std::memory_order_relaxed);
   base::AutoLock scope_lock(capture_lock_);
-
-  WatchStateSnapShot watch_state_snapshot(watch_states_, capture_time,
-                                          deadline_ignore_threshold_);
-  if (!watch_state_snapshot.IsActionable()) {
-    return;
-  }
 
 #if not defined(OS_NACL)
   const std::string list_of_hung_thread_ids =

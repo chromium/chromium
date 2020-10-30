@@ -167,16 +167,14 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
     monitor_event_.Reset();
   }
 
-  void MonitorHangsAndJoinThread() {
+  void MonitorHangs() {
     // HangWatcher::Monitor() should not be set which would mean a call to
     // HangWatcher::Monitor() happened and was unacounted for.
-    ASSERT_FALSE(monitor_event_.IsSignaled());
+    // ASSERT_FALSE(monitor_event_.IsSignaled());
 
     // Triger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
     monitor_event_.Wait();
-
-    JoinThread();
   }
 
   // Used to unblock the monitored thread. Signaled from the test main thread.
@@ -454,15 +452,43 @@ TEST_F(HangWatcherBlockingThreadTest, Hang) {
   // Simulate hang.
   task_environment_.FastForwardBy(kHangTime);
 
-  MonitorHangsAndJoinThread();
+  // First monitoring catches and records the hang.
+  MonitorHangs();
   ASSERT_TRUE(hang_event_.IsSignaled());
+
+  JoinThread();
+}
+
+TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
+  StartBlockedThread();
+
+  // Simulate hang.
+  task_environment_.FastForwardBy(kHangTime);
+
+  // First monitoring catches and records the hang.
+  MonitorHangs();
+  ASSERT_TRUE(hang_event_.IsSignaled());
+
+  // Reset to attempt capture again.
+  hang_event_.Reset();
+  monitor_event_.Reset();
+
+  // Second monitoring does not record because a hang that was already recorded
+  // is still live.
+  MonitorHangs();
+  ASSERT_FALSE(hang_event_.IsSignaled());
+
+  JoinThread();
 }
 
 TEST_F(HangWatcherBlockingThreadTest, NoHang) {
   StartBlockedThread();
 
-  MonitorHangsAndJoinThread();
+  // No hang to catch so nothing is recorded.
+  MonitorHangs();
   ASSERT_FALSE(hang_event_.IsSignaled());
+
+  JoinThread();
 }
 
 namespace {

@@ -258,7 +258,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     // on |watch_states|. If any deadline in |watch_states| is before
     // |deadline_ignore_threshold|, the snapshot is empty.
     WatchStateSnapShot(const HangWatchStates& watch_states,
-                       base::TimeTicks snapshot_time,
                        base::TimeTicks deadline_ignore_threshold);
     WatchStateSnapShot(const WatchStateSnapShot& other);
     ~WatchStateSnapShot();
@@ -277,7 +276,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     bool IsActionable() const;
 
    private:
-    base::TimeTicks snapshot_time_;
     std::vector<WatchStateCopy> hung_watch_state_copies_;
   };
 
@@ -292,8 +290,9 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // invokes the appropriate closure if so.
   void Monitor() LOCKS_EXCLUDED(watch_state_lock_);
 
-  // Record the hang and perform the necessary housekeeping before and after.
-  void CaptureHang(base::TimeTicks capture_time)
+  // Record the hang crash dump and perform the necessary housekeeping before
+  // and after.
+  void DoDumpWithoutCrashing(const WatchStateSnapShot& watch_state_snapshot)
       EXCLUSIVE_LOCKS_REQUIRED(watch_state_lock_) LOCKS_EXCLUDED(capture_lock_);
 
   // Stop all monitoring and join the HangWatcher thread.
