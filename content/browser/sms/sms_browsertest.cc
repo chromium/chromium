@@ -885,6 +885,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
+  base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
   GURL url = GetTestUrl(nullptr, "simple_page.html");
@@ -914,7 +915,10 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
 
   ukm_loop.Run();
 
+  content::FetchHistogramsFromChildProcesses();
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
+  ExpectTimingUKM("TimeUserCancelMs");
+  histogram_tester.ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
 }
 
 // Disabled test: https://crbug.com/1134455

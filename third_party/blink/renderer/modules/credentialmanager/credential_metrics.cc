@@ -38,6 +38,21 @@ void RecordSmsSuccessTime(base::TimeDelta duration,
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSuccess", duration);
 }
 
+void RecordSmsUserCancelTime(base::TimeDelta duration,
+                             ukm::SourceId source_id,
+                             ukm::UkmRecorder* ukm_recorder) {
+  DCHECK_NE(source_id, ukm::kInvalidSourceId);
+  DCHECK(ukm_recorder);
+
+  ukm::builders::SMSReceiver builder(source_id);
+  // Uses exponential bucketing for datapoints reflecting user activity.
+  builder.SetTimeUserCancelMs(
+      ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
+  builder.Record(ukm_recorder);
+
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeUserCancel", duration);
+}
+
 void RecordSmsCancelTime(base::TimeDelta duration) {
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeCancel", duration);
 }

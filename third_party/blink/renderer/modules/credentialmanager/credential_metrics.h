@@ -35,6 +35,11 @@ void RecordSmsSuccessTime(base::TimeDelta duration,
 // Records the time from when the API is called to when the user dismisses the
 // infobar to abort SMS retrieval. This uses the same histogram as WebOTPService
 // API to provide continuity with previous iterations of the API.
+void RecordSmsUserCancelTime(base::TimeDelta duration,
+                             ukm::SourceId source_id,
+                             ukm::UkmRecorder* ukm_recorder);
+// Records the time from when the API is called to when the request is cancelled
+// by the service due to duplicated requests or lack of delegate.
 void RecordSmsCancelTime(base::TimeDelta duration);
 
 }  // namespace blink

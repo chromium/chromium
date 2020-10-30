@@ -11734,6 +11734,12 @@ be describing additional metrics about the same event.
       the SMS verification flow.
     </summary>
   </metric>
+  <metric name="TimeUserCancelMs">
+    <summary>
+      Records the duration from when the API is called to when the user presses
+      &quot;Deny&quot; to terminate the SMS verification flow.
+    </summary>
+  </metric>
 </event>
 
 <event name="SSL.MixedContentShown">

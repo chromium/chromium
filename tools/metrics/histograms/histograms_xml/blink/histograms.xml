@@ -1719,8 +1719,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>yigu@chromium.org</owner>
   <owner>web-identity@google.com</owner>
   <summary>
-    Records the duration from when the API is called to when the user presses
-    the cancel button to abort SMS retrieval.
+    Records the duration from when the API is called to when the request is
+    cancelled by the service due to duplicated requests or lack of delegate.
   </summary>
 </histogram>
 
@@ -1782,6 +1782,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the duration from when the API is called to when the user
     successfully receives the SMS and presses continue to pass the incoming SMS
     to the site and proceed with the SMS verification flow.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Sms.Receive.TimeUserCancel" units="ms"
+    expires_after="M92">
+  <owner>goto@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
+  <summary>
+    Records the duration from when the API is called to when the user
+    successfully receives the SMS and presses &quot;Deny&quot; to terminate the
+    SMS verification flow.
   </summary>
 </histogram>
 

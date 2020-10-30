@@ -593,6 +593,8 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
     return;
   } else if (status == mojom::blink::SmsStatus::kUserCancelled) {
     RecordSmsOutcome(WebOTPServiceOutcome::kUserCancelled, source_id, recorder);
+    RecordSmsUserCancelTime(base::TimeTicks::Now() - start_time, source_id,
+                            recorder);
     // Similar to kTimeout, the promise is not rejected here.
     return;
   }
