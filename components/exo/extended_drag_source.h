@@ -87,6 +87,8 @@ class ExtendedDragSource : public DataSourceObserver,
  private:
   class DraggedWindowHolder;
 
+  void MaybeLockCursor();
+  void UnlockCursor();
   void StartDrag(aura::Window* toplevel,
                  const gfx::PointF& pointer_location_in_screen);
   void OnDraggedWindowVisibilityChanging(bool visible);
@@ -100,6 +102,7 @@ class ExtendedDragSource : public DataSourceObserver,
   DataSource* source_ = nullptr;
   gfx::PointF pointer_location_;
   ui::mojom::DragEventSource drag_event_source_;
+  bool cursor_locked_ = false;
 
   std::unique_ptr<DraggedWindowHolder> dragged_window_holder_;
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker> event_blocker_;

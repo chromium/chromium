@@ -159,6 +159,8 @@ void ExtendedDragSource::OnToplevelWindowDragStarted(
     ui::mojom::DragEventSource source) {
   pointer_location_ = start_location;
   drag_event_source_ = source;
+  MaybeLockCursor();
+
   if (dragged_window_holder_ && dragged_window_holder_->toplevel_window())
     StartDrag(dragged_window_holder_->toplevel_window(), start_location);
 }
@@ -197,6 +199,20 @@ void ExtendedDragSource::OnDataSourceDestroying(DataSource* source) {
   DCHECK_EQ(source, source_);
   source_->RemoveObserver(this);
   source_ = nullptr;
+}
+
+void ExtendedDragSource::MaybeLockCursor() {
+  if (delegate_->ShouldLockCursor()) {
+    ash::Shell::Get()->cursor_manager()->LockCursor();
+    cursor_locked_ = true;
+  }
+}
+
+void ExtendedDragSource::UnlockCursor() {
+  if (cursor_locked_) {
+    ash::Shell::Get()->cursor_manager()->UnlockCursor();
+    cursor_locked_ = false;
+  }
 }
 
 void ExtendedDragSource::StartDrag(aura::Window* toplevel,
@@ -252,6 +268,7 @@ gfx::Point ExtendedDragSource::CalculateOrigin(aura::Window* target) const {
 void ExtendedDragSource::Cleanup() {
   event_blocker_.reset();
   dragged_window_holder_.reset();
+  UnlockCursor();
 }
 
 aura::Window* ExtendedDragSource::GetDraggedWindowForTesting() {
