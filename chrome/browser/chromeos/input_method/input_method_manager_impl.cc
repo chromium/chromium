@@ -130,7 +130,7 @@ bool IsShuttingDown() {
 
 InputMethodManagerImpl::StateImpl::StateImpl(InputMethodManagerImpl* manager,
                                              Profile* profile)
-    : profile(profile), manager_(manager), menu_activated(false) {}
+    : profile(profile), manager_(manager) {}
 
 InputMethodManagerImpl::StateImpl::~StateImpl() = default;
 
@@ -139,15 +139,16 @@ void InputMethodManagerImpl::StateImpl::InitFrom(const StateImpl& other) {
   current_input_method = other.current_input_method;
 
   active_input_method_ids = other.active_input_method_ids;
+  allowed_keyboard_layout_input_method_ids =
+      other.allowed_keyboard_layout_input_method_ids;
 
   pending_input_method_id = other.pending_input_method_id;
 
   enabled_extension_imes = other.enabled_extension_imes;
   extra_input_methods = other.extra_input_methods;
   menu_activated = other.menu_activated;
-  allowed_keyboard_layout_input_method_ids =
-      other.allowed_keyboard_layout_input_method_ids;
   input_view_url = other.input_view_url;
+  input_view_url_overridden = other.input_view_url_overridden;
   ui_style_ = other.ui_style_;
 }
 
@@ -172,6 +173,14 @@ std::string InputMethodManagerImpl::StateImpl::Dump() const {
     os << " '" << active_input_method_id << "',";
   }
   os << "\n";
+  os << "allowed_keyboard_layout_input_method_ids (size="
+     << allowed_keyboard_layout_input_method_ids.size() << "):";
+  for (const auto& allowed_keyboard_layout_input_method_id :
+       allowed_keyboard_layout_input_method_ids) {
+    os << " '" << allowed_keyboard_layout_input_method_id << "',";
+  }
+  os << "\n";
+  os << "pending_input_method_id: '" << pending_input_method_id << "'\n";
   os << "enabled_extension_imes (size=" << enabled_extension_imes.size()
      << "):";
   for (const auto& enabled_extension_ime : enabled_extension_imes) {
@@ -182,8 +191,9 @@ std::string InputMethodManagerImpl::StateImpl::Dump() const {
   for (const auto& entry : extra_input_methods) {
     os << " '" << entry.first << "' => '" << entry.second.id() << "',\n";
   }
-  os << "pending_input_method_id: '" << pending_input_method_id << "'\n";
+  os << "menu_activated: '" << menu_activated << "'\n";
   os << "input_view_url: '" << input_view_url << "'\n";
+  os << "input_view_url_overridden: '" << input_view_url_overridden << "'\n";
   os << "ui_style_: '" << static_cast<int>(ui_style_) << "'\n";
 
   return os.str();

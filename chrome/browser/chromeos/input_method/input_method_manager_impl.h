@@ -160,7 +160,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     InputMethodManagerImpl* const manager_;
 
     // True if the opt-in IME menu is activated.
-    bool menu_activated;
+    bool menu_activated = false;
 
    protected:
     friend base::RefCounted<chromeos::input_method::InputMethodManager::State>;
@@ -189,6 +189,9 @@ class InputMethodManagerImpl : public InputMethodManager,
         InputMethodManager::UIStyle::kNormal;
 
     std::unique_ptr<ImeServiceConnector> ime_service_connector_;
+
+    // Do not forget to update StateImpl::InitFrom(const StateImpl& other) and
+    // StateImpl::Dump() when adding new data members!!!
   };
 
   // Constructs an InputMethodManager instance. The client is responsible for
