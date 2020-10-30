@@ -8,7 +8,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
-#import "ios/web/navigation/text_fragments_utils.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"

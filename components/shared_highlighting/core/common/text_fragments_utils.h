@@ -7,11 +7,25 @@
 
 #include <vector>
 
+#include "base/values.h"
 #include "url/gurl.h"
 
 namespace shared_highlighting {
 
 class TextFragment;
+
+// This file contains helper functions relating to Text Fragments, which are
+// appended to the reference fragment in the URL and instruct the user agent
+// to highlight a given snippet of text and the page and scroll it into view.
+// See also: https://wicg.github.io/scroll-to-text-fragment/
+
+// Checks the fragment portion of the URL for Text Fragments. Returns zero or
+// more dictionaries containing the parsed parameters used by the fragment-
+// finding algorithm, as defined in the spec.J
+base::Value ParseTextFragments(const GURL& url);
+
+// Extracts the text fragments, if any, from a ref string.
+std::vector<std::string> ExtractTextFragments(std::string ref_string);
 
 // Appends a set of text |fragments| with the correct format to the given
 // |base_url|. Returns an empty GURL if |base_url| is invalid.

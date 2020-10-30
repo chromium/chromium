@@ -8,8 +8,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "ios/web/common/features.h"
-#import "ios/web/navigation/text_fragments_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -73,8 +73,8 @@ const double kMaxSelectorCount = 200.0;
     return;
   }
 
-  base::Value parsedFragments =
-      web::ParseTextFragments(self.webStateImpl->GetLastCommittedURL());
+  base::Value parsedFragments = shared_highlighting::ParseTextFragments(
+      self.webStateImpl->GetLastCommittedURL());
 
   if (parsedFragments.type() == base::Value::Type::NONE) {
     return;

@@ -5,11 +5,44 @@
 #include "components/shared_highlighting/core/common/text_fragments_utils.h"
 
 #include "components/shared_highlighting/core/common/text_fragment.h"
+#include "components/shared_highlighting/core/common/text_fragments_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace shared_highlighting {
 namespace {
+
+TEST(TextFragmentsUtilsTest, ParseTextFragments) {
+  GURL url_with_fragment(
+      "https://www.example.com/#idFrag:~:text=text%201&text=text%202");
+  base::Value result = ParseTextFragments(url_with_fragment);
+  ASSERT_EQ(2u, result.GetList().size());
+  EXPECT_EQ("text 1",
+            result.GetList()[0].FindKey(kFragmentTextStartKey)->GetString());
+  EXPECT_EQ("text 2",
+            result.GetList()[1].FindKey(kFragmentTextStartKey)->GetString());
+
+  GURL url_no_fragment("www.example.com");
+  base::Value empty_result = ParseTextFragments(url_no_fragment);
+  EXPECT_TRUE(empty_result.is_none());
+}
+
+TEST(TextFragmentsUtilsTest, ExtractTextFragments) {
+  std::vector<std::string> expected = {"test1", "test2", "test3"};
+  // Ensure presence/absence of a trailing & doesn't break anything
+  EXPECT_EQ(expected,
+            ExtractTextFragments("#id:~:text=test1&text=test2&text=test3"));
+  EXPECT_EQ(expected,
+            ExtractTextFragments("#id:~:text=test1&text=test2&text=test3&"));
+
+  // Test that empty tokens (&& or &text=&) are discarded
+  EXPECT_EQ(expected, ExtractTextFragments(
+                          "#id:~:text=test1&&text=test2&text=&text=test3"));
+
+  expected.clear();
+  EXPECT_EQ(expected, ExtractTextFragments("#idButNoTextFragmentsHere"));
+  EXPECT_EQ(expected, ExtractTextFragments(""));
+}
 
 TEST(TextFragmentsUtilsTest, AppendFragmentDirectivesOneFragment) {
   GURL base_url("https://www.chromium.org");
