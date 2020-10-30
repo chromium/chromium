@@ -161,7 +161,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
   if (!dummy_initialized_) {
     // Create a new Window and Atom that will be used for the property change.
     dummy_window_ = connection_->GenerateId<x11::Window>();
-    connection_->CreateWindow({
+    connection_->CreateWindow(x11::CreateWindowRequest{
         .wid = dummy_window_,
         .parent = connection_->default_root(),
         .width = 1,
@@ -184,7 +184,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
 
   // Make a no-op property change on |dummy_window_|.
   std::vector<uint8_t> data{0};
-  connection_->ChangeProperty({
+  connection_->ChangeProperty(x11::ChangePropertyRequest{
       .window = static_cast<x11::Window>(dummy_window_),
       .property = dummy_atom_,
       .type = x11::Atom::STRING,

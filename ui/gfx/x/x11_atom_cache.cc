@@ -257,7 +257,8 @@ X11AtomCache::X11AtomCache() : connection_(x11::Connection::Get()) {
   std::vector<x11::Future<x11::InternAtomReply>> requests;
   requests.reserve(kCacheCount);
   for (const char* name : kAtomsToCache)
-    requests.push_back(connection_->InternAtom({.name = name}));
+    requests.push_back(
+        connection_->InternAtom(x11::InternAtomRequest{.name = name}));
   for (size_t i = 0; i < kCacheCount; ++i) {
     if (auto response = requests[i].Sync())
       cached_atoms_[kAtomsToCache[i]] = static_cast<x11::Atom>(response->atom);
@@ -272,7 +273,9 @@ x11::Atom X11AtomCache::GetAtom(const std::string& name) const {
     return it->second;
 
   x11::Atom atom = x11::Atom::None;
-  if (auto response = connection_->InternAtom({.name = name}).Sync()) {
+  if (auto response =
+          connection_->InternAtom(x11::InternAtomRequest{.name = name})
+              .Sync()) {
     atom = static_cast<x11::Atom>(response->atom);
     cached_atoms_.emplace(name, atom);
   } else {

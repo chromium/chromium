@@ -19,9 +19,9 @@ void SetEventMask(x11::Window window, x11::EventMask new_mask) {
   // change_attributes request may give a BadWindow error.  In this case, just
   // ignore the error.
   connection
-      ->ChangeWindowAttributes(
-          {.window = window,
-           .event_mask = static_cast<x11::EventMask>(new_mask)})
+      ->ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
+          .window = window,
+          .event_mask = static_cast<x11::EventMask>(new_mask)})
       .IgnoreError();
 }
 
