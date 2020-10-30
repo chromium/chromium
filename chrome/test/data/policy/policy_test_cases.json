@@ -918,14 +918,7 @@
   },
 
   "DisabledPlugins.1": {
-    "note": "This policy is deprecated. This test tests its migration path.",
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "DisabledPlugins": [ "*PDF*" ] },
-        "prefs": { "plugins.always_open_pdf_externally": {} }
-      }
-    ]
+    "note": "This policy is deprecated. This test tests its migration path."
   },
 
   "EnabledPlugins.0": {
@@ -933,19 +926,11 @@
   },
 
   "EnabledPlugins.1": {
-    "note": "This policy is deprecated. This test tests its migration path.",
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "EnabledPlugins": ["*PDF*"] },
-        "prefs": { "plugins.always_open_pdf_externally": {} }
-      }
-    ]
+    "note": "This policy is deprecated. This test tests its migration path."
   },
 
   "DisabledPluginsExceptions": {
-    "note": "This policy is deprecated it doesn't map to a pref value anymore.",
-    "os": ["win", "linux", "mac", "chromeos"]
+    "note": "This policy is deprecated it doesn't map to a pref value anymore."
   },
 
   "AlwaysOpenPdfExternally": {

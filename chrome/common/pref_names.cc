@@ -1109,16 +1109,6 @@ const char kPluginsLastInternalDirectory[] = "plugins.last_internal_directory";
 // List pref containing information (dictionaries) on plugins.
 const char kPluginsPluginsList[] = "plugins.plugins_list";
 
-// List pref containing names of plugins that are disabled by policy.
-const char kPluginsDisabledPlugins[] = "plugins.plugins_disabled";
-
-// List pref containing exceptions to the list of plugins disabled by policy.
-const char kPluginsDisabledPluginsExceptions[] =
-    "plugins.plugins_disabled_exceptions";
-
-// List pref containing names of plugins that are enabled by policy.
-const char kPluginsEnabledPlugins[] = "plugins.plugins_enabled";
-
 // Whether Chrome should use its internal PDF viewer or not.
 const char kPluginsAlwaysOpenPdfExternally[] =
     "plugins.always_open_pdf_externally";

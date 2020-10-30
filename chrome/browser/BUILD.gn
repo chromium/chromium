@@ -5850,8 +5850,6 @@ static_library("browser") {
       "plugins/plugin_metadata.h",
       "plugins/plugin_observer.cc",
       "plugins/plugin_observer.h",
-      "plugins/plugin_policy_handler.cc",
-      "plugins/plugin_policy_handler.h",
       "plugins/plugin_prefs.cc",
       "plugins/plugin_prefs.h",
       "plugins/plugin_prefs_factory.cc",

@@ -228,26 +228,26 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     <dl>
       <dt>Windows (Windows clients):</dt>
       <dd>
-        Software\Policies\Chromium\DisabledPlugins\0 = "Java"
-        Software\Policies\Chromium\DisabledPlugins\1 = "Shockwave Flash"
+        Software\Policies\Chromium\URLAllowlist\0 = "www.example.com"
+        Software\Policies\Chromium\URLAllowlist\1 = "www.google.com"
       </dd>
       <dt>Windows (Chromium OS clients):</dt>
       <dd>
-        Software\Policies\ChromiumOS\DisabledPlugins\0 = "Java"
-        Software\Policies\ChromiumOS\DisabledPlugins\1 = "Shockwave Flash"
+        Software\Policies\ChromiumOS\URLAllowlist\0 = "www.example.com"
+        Software\Policies\ChromiumOS\URLAllowlist\1 = "www.google.com"
       </dd>
       <dt>Android/Linux:</dt>
       <dd>
         [
-          "Java",
-          "Shockwave Flash"
+          "www.example.com",
+          "www.google.com"
         ]
       </dd>
       <dt>Mac:</dt>
       <dd>
         <array>
-          <string>Java</string>
-          <string>Shockwave Flash</string>
+          <string>www.example.com</string>
+          <string>www.google.com</string>
         </array>
       </dd>
     </dl>
