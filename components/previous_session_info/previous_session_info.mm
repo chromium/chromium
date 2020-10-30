@@ -96,6 +96,10 @@ NSString* const kPreviousSessionInfoLowPowerMode =
 //   version of the application.
 NSString* const kPreviousSessionInfoMultiWindowEnabled =
     @"PreviousSessionInfoMultiWindowEnabled";
+// - A (boolean) describing whether the last session received
+// ApplicationWillTerminate Notification.
+NSString* const kPreviousSessionInfoAppWillTerminate =
+    @"PreviousSessionInfoAppWillTerminate";
 }  // namespace
 
 namespace previous_session_info_constants {
@@ -143,6 +147,7 @@ NSString* const kPreviousSessionInfoMemoryFootprint =
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 @property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
 @property(nonatomic, assign) NSInteger memoryFootprint;
+@property(nonatomic, assign) BOOL applicationWillTerminateWasReceived;
 @end
 
 @implementation PreviousSessionInfo {
@@ -237,6 +242,9 @@ static PreviousSessionInfo* gSharedInstance = nil;
     gSharedInstance.memoryFootprint =
         [defaults integerForKey:previous_session_info_constants::
                                     kPreviousSessionInfoMemoryFootprint];
+
+    gSharedInstance.applicationWillTerminateWasReceived =
+        [defaults boolForKey:kPreviousSessionInfoAppWillTerminate];
   }
   return gSharedInstance;
 }
@@ -273,6 +281,9 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [defaults
       removeObjectForKey:previous_session_info_constants::
                              kDidSeeMemoryWarningShortlyBeforeTerminating];
+
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kPreviousSessionInfoAppWillTerminate];
 
   [defaults setObject:[NSDate date] forKey:kPreviousSessionInfoStartTime];
 
@@ -331,6 +342,12 @@ static PreviousSessionInfo* gSharedInstance = nil;
       addObserver:self
          selector:@selector(updateStoredThermalState)
              name:NSProcessInfoThermalStateDidChangeNotification
+           object:nil];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(applicationWillTerminate)
+             name:UIApplicationWillTerminateNotification
            object:nil];
 
   [self resumeRecordingCurrentSession];
@@ -458,6 +475,13 @@ static PreviousSessionInfo* gSharedInstance = nil;
           forKey:kPreviousSessionInfoThermalState];
 
   [self updateSessionEndTime];
+}
+
+- (void)applicationWillTerminate {
+  [NSUserDefaults.standardUserDefaults
+      setBool:YES
+       forKey:kPreviousSessionInfoAppWillTerminate];
+  [NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (void)updateMemoryFootprint {

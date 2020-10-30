@@ -400,6 +400,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Stability.iOS.UTE.MobileSessionAppWillTerminateReceived"
+    enum="AppWillTerminateReceived" expires_after="2021-04-29">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Recorded when app starts after Unexplained Termination Event (UTE) or
+    Explained Termination Event (XTE). UTEs/XTEs can happen when app did not
+    finish writing prefs. This histogram should help to understand if prefs did
+    not get written during normal app termination sequence when
+    ApplicationWillTerminate notification was called.
+  </summary>
+</histogram>
+
 <histogram name="Stability.iOS.UTE.MobileSessionOOMShutdownHint"
     enum="OOMShutdownHint" expires_after="2021-06-22">
   <owner>eugenebut@chromium.org</owner>

@@ -139,6 +139,10 @@ enum class DeviceBatteryState {
 // Memory footprint in bytes of the browser process.
 @property(nonatomic, readonly) NSInteger memoryFootprint;
 
+// YES if ApplicationWillTerminate notification was posted for the previous
+// session.
+@property(nonatomic, readonly) BOOL applicationWillTerminateWasReceived;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).

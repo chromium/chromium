@@ -3148,6 +3148,21 @@ Unknown properties are collapsed to zero. -->
       label="Shortcut install, menu showed 'Install' (failure mode)"/>
 </enum>
 
+<enum name="AppWillTerminateReceived">
+  <int value="0" label="WasNotReceivedForXte">
+    ApplicationWillTerminate notification was not received for this XTE.
+  </int>
+  <int value="1" label="WasNotReceivedForUte">
+    ApplicationWillTerminate notification was not received for this UTE.
+  </int>
+  <int value="2" label="WasReceivedForXte">
+    ApplicationWillTerminate notification was received for this XTE.
+  </int>
+  <int value="3" label="WasReceivedForUte">
+    ApplicationWillTerminate notification was received for this UTE.
+  </int>
+</enum>
+
 <enum name="AppWindowDragEndWindowState">
   <int value="0" label="Maximized or Fullscreen"/>
   <int value="1" label="In Overview"/>
