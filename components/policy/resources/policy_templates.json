@@ -14609,7 +14609,7 @@
       'name': 'DeviceDockMacAddressSource',
       'owners': ['lamzin@google.com'],
       'caption': '''Device MAC address source when docked''',
-      'desc': '''Setting the policy lets the administrator change the MAC (media access control) address when connecting a device to the dock. When a dock is connected to some device models, by default, the device's MAC address helps identify the device on Ethernet.
+      'desc': '''Setting the policy lets the administrator change the MAC (media access control) address when connecting a device to the dock. When a dock is connected to some device models, by default, the device's designated dock's MAC address helps identify the device on Ethernet.
 
       If 'DeviceDockMacAddress' is selected or the policy is left unset, the device's designated dock MAC address will be used.
 
