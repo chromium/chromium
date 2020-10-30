@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/read_later/read_later_bubble_view.h"
+#include "chrome/browser/ui/views/read_later/read_later_button.h"
 
 #include <string>
 
@@ -14,14 +14,13 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/read_later/read_later_button.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
 
-class ReadLaterBubbleViewBrowserTest : public DialogBrowserTest {
+class ReadLaterButtonBrowserTest : public DialogBrowserTest {
  public:
-  ReadLaterBubbleViewBrowserTest() {
+  ReadLaterButtonBrowserTest() {
     feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
   }
 
@@ -41,7 +40,6 @@ class ReadLaterBubbleViewBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     ASSERT_TRUE(browser()->bookmark_bar_state() == BookmarkBar::SHOW);
     ClickReadLaterButton();
-    ASSERT_TRUE(GetReadLaterButton(browser())->read_later_bubble_for_testing());
   }
 
   void ClickReadLaterButton() {
@@ -52,7 +50,7 @@ class ReadLaterBubbleViewBrowserTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(ReadLaterBubbleViewBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(ReadLaterButtonBrowserTest);
 };
 
 // TODO(1115950): Flaky on Windows.
@@ -61,6 +59,6 @@ class ReadLaterBubbleViewBrowserTest : public DialogBrowserTest {
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
 #endif
-IN_PROC_BROWSER_TEST_F(ReadLaterBubbleViewBrowserTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(ReadLaterButtonBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }

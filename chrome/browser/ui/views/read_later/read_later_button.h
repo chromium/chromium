@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 
+#include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 
 class Browser;
-class ReadLaterBubbleView;
+class WebUIBubbleDialogView;
 
 // Button in the bookmarks bar that provides access to the corresponding
 // read later menu.
@@ -24,18 +26,17 @@ class ReadLaterButton : public ToolbarButton {
   const char* GetClassName() const override;
   void UpdateIcon() override;
 
-  base::WeakPtr<ReadLaterBubbleView> read_later_bubble_for_testing() {
-    return read_later_bubble_;
-  }
-
  private:
   int GetIconSize() const;
 
   void ButtonPressed();
 
-  base::WeakPtr<ReadLaterBubbleView> read_later_bubble_;
-
   Browser* const browser_;
+
+  // TODO(pbos): Figure out a better way to handle this.
+  WebUIBubbleDialogView* read_later_side_panel_bubble_ = nullptr;
+
+  std::unique_ptr<WebUIBubbleManager<ReadLaterUI>> webui_bubble_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
