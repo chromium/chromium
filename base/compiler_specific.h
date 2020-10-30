@@ -11,6 +11,19 @@
 #error "Only clang-cl is supported on Windows, see https://crbug.com/988071"
 #endif
 
+// This is a wrapper around `__has_cpp_attribute`, which can be used to test for
+// the presence of an attribute. In case the compiler does not support this
+// macro it will simply evaluate to 0.
+//
+// References:
+// https://wg21.link/sd6#testing-for-the-presence-of-an-attribute-__has_cpp_attribute
+// https://wg21.link/cpp.cond#:__has_cpp_attribute
+#if defined(__has_cpp_attribute)
+#define HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
+#else
+#define HAS_CPP_ATTRIBUTE(x) 0
+#endif
+
 // Annotate a variable indicating it's ok if the variable is not used.
 // (Typically used to silence a compiler warning when the assignment
 // is important for some other reason.)
@@ -97,6 +110,20 @@
 #define WARN_UNUSED_RESULT __attribute__((warn_unused_result))
 #else
 #define WARN_UNUSED_RESULT
+#endif
+
+// In case the compiler supports it NO_UNIQUE_ADDRESS evaluates to the C++20
+// attribute [[no_unique_address]]. This allows annotating data members so that
+// they need not have an address distinct from all other non-static data members
+// of its class.
+//
+// References:
+// * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
+// * https://wg21.link/dcl.attr.nouniqueaddr
+#if HAS_CPP_ATTRIBUTE(no_unique_address)
+#define NO_UNIQUE_ADDRESS [[no_unique_address]]
+#else
+#define NO_UNIQUE_ADDRESS
 #endif
 
 // Tell the compiler a function is using a printf-style format string.
