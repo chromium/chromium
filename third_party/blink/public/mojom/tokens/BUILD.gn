@@ -84,8 +84,11 @@ mojom_component("tokens") {
           cpp = "::blink::V8ContextToken"
         },
       ]
-      traits_headers =
-          [ "//third_party/blink/public/common/tokens/tokens_mojom_traits.h" ]
+      traits_headers = [
+        "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",
+        "//third_party/blink/public/common/tokens/tokens_mojom_traits.h",
+      ]
+      traits_public_deps = [ ":tokens_traits" ]
     },
   ]
 
@@ -103,4 +106,26 @@ mojom_component("tokens") {
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 
   generate_java = true
+}
+
+source_set("tokens_traits_headers") {
+  configs += [ "//third_party/blink/common:blink_common_implementation" ]
+
+  sources = [
+    "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",
+    "//third_party/blink/public/common/tokens/tokens_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":tokens_shared",
+    "//third_party/blink/public/common/tokens:tokens_headers",
+  ]
+}
+
+component("tokens_traits") {
+  configs += [ "//third_party/blink/common:blink_common_implementation" ]
+
+  sources = [ "//third_party/blink/common/tokens/tokens_mojom_traits.cc" ]
+
+  public_deps = [ ":tokens_traits_headers" ]
 }
