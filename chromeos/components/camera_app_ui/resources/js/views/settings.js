@@ -67,21 +67,47 @@ export class BaseSettings extends View {
         element.addEventListener('click', handler);
       }
     });
+
+    /**
+     * The default focus element when focus on view is reset.
+     * @const {!HTMLElement}
+     * @private
+     */
+    this.defaultFocus_ =
+        dom.getFrom(this.rootElement_, '[tabindex]', HTMLElement);
+
+    /**
+     * The DOM element to be focused when the focus on view is reset by calling
+     * |focus()|.
+     * @type {!HTMLElement}
+     * @private
+     */
+    this.focusElement_ = this.defaultFocus_;
   }
 
   /**
    * @override
    */
   focus() {
-    this.rootElement_.querySelector('[tabindex]').focus();
+    this.focusElement_.focus();
+  }
+
+  /**
+   * @override
+   */
+  leaving() {
+    this.focusElement_ = this.defaultFocus_;
+    return super.leaving();
   }
 
   /**
    * Opens sub-settings.
+   * @param {!HTMLElement} opener The DOM element triggering the open.
    * @param {!ViewName} name Name of settings view.
    * @private
    */
-  openSubSettings(name) {
+  openSubSettings(opener, name) {
+    this.focusElement_ = opener;
     // Dismiss primary-settings if sub-settings was dismissed by background
     // click.
     nav.open(name).then((cond) => cond && cond['bkgnd'] && this.leave(cond));
@@ -96,12 +122,15 @@ export class PrimarySettings extends BaseSettings {
    * @public
    */
   constructor() {
+    const openHandler = (openerId, viewName) => {
+      const opener = dom.get(`#${openerId}`, HTMLElement);
+      return {[openerId]: () => this.openSubSettings(opener, viewName)};
+    };
     super(ViewName.SETTINGS, {
-      'settings-gridtype': () => this.openSubSettings(ViewName.GRID_SETTINGS),
-      'settings-timerdur': () => this.openSubSettings(ViewName.TIMER_SETTINGS),
-      'settings-resolution': () =>
-          this.openSubSettings(ViewName.RESOLUTION_SETTINGS),
-      'settings-expert': () => this.openSubSettings(ViewName.EXPERT_SETTINGS),
+      ...openHandler('settings-gridtype', ViewName.GRID_SETTINGS),
+      ...openHandler('settings-timerdur', ViewName.TIMER_SETTINGS),
+      ...openHandler('settings-resolution', ViewName.RESOLUTION_SETTINGS),
+      ...openHandler('settings-expert', ViewName.EXPERT_SETTINGS),
       'settings-feedback': () => {
         // Prevent setting view overlapping preview when sending app window
         // feedback screenshot b/155938542.
@@ -570,7 +599,7 @@ export class ResolutionSettings extends BaseSettings {
         resolItem, this.photoResMenu_, this.photoOptTextTempl_,
         (r) => this.photoPreferrer_.changePreferredResolution(deviceId, r),
         photo.resols, photo.prefResol);
-    this.openSubSettings(ViewName.PHOTO_RESOLUTION_SETTINGS);
+    this.openSubSettings(resolItem, ViewName.PHOTO_RESOLUTION_SETTINGS);
   }
 
   /**
@@ -586,7 +615,7 @@ export class ResolutionSettings extends BaseSettings {
         resolItem, this.videoResMenu_, this.videoOptTextTempl_,
         (r) => this.videoPreferrer_.changePreferredResolution(deviceId, r),
         video.resols, video.prefResol);
-    this.openSubSettings(ViewName.VIDEO_RESOLUTION_SETTINGS);
+    this.openSubSettings(resolItem, ViewName.VIDEO_RESOLUTION_SETTINGS);
   }
 
   /**
