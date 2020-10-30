@@ -44,28 +44,6 @@ constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kUTF8[] = "utf8";
 constexpr char kUTF16[] = "utf16";
 
-class RefCountedString16 : public base::RefCountedMemory {
- public:
-  static scoped_refptr<RefCountedString16> TakeString(
-      base::string16&& to_destroy) {
-    scoped_refptr<RefCountedString16> self(new RefCountedString16);
-    to_destroy.swap(self->data_);
-    return self;
-  }
-
-  // Overridden from base::RefCountedMemory:
-  const unsigned char* front() const override {
-    return reinterpret_cast<const unsigned char*>(data_.data());
-  }
-  size_t size() const override { return data_.size() * sizeof(base::char16); }
-
- protected:
-  ~RefCountedString16() override {}
-
- private:
-  base::string16 data_;
-};
-
 void WriteFileDescriptorOnWorkerThread(
     base::ScopedFD fd,
     scoped_refptr<base::RefCountedMemory> memory) {
@@ -259,7 +237,7 @@ void DataOffer::SetDropData(FileHelper* file_helper,
   base::string16 url_list_string;
   if (GetUrlListFromDataFile(file_helper, data, &url_list_string)) {
     data_.emplace(uri_list_mime_type,
-                  RefCountedString16::TakeString(std::move(url_list_string)));
+                  base::RefCountedString16::TakeString(&url_list_string));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -374,7 +352,7 @@ void DataOffer::OnPickledUrlsResolved(const std::string& mime_type,
     url_list_string += base::UTF8ToUTF16(url.spec());
   }
   const auto ref_counted_memory =
-      RefCountedString16::TakeString(std::move(url_list_string));
+      base::RefCountedString16::TakeString(&url_list_string);
   data_.emplace(mime_type, ref_counted_memory);
 
   // Process pending receive requests for this mime type, if there are any.

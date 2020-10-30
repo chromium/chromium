@@ -83,6 +83,26 @@ size_t RefCountedString::size() const {
   return data_.size();
 }
 
+RefCountedString16::RefCountedString16() = default;
+
+RefCountedString16::~RefCountedString16() = default;
+
+// static
+scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
+    string16* to_destroy) {
+  auto self = MakeRefCounted<RefCountedString16>();
+  to_destroy->swap(self->data_);
+  return self;
+}
+
+const unsigned char* RefCountedString16::front() const {
+  return reinterpret_cast<const unsigned char*>(data_.data());
+}
+
+size_t RefCountedString16::size() const {
+  return data_.size() * sizeof(char16);
+}
+
 RefCountedSharedMemoryMapping::RefCountedSharedMemoryMapping(
     ReadOnlySharedMemoryMapping mapping)
     : mapping_(std::move(mapping)), size_(mapping_.size()) {
