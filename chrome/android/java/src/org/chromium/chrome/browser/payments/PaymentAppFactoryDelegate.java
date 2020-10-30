@@ -24,13 +24,6 @@ public interface PaymentAppFactoryDelegate {
     default void onCanMakePaymentCalculated(boolean canMakePayment) {}
 
     /**
-     * Called when the autofill payment app creator is available.
-     *
-     * @param creator The object that can create payment apps from Autofill cards.
-     */
-    default void onAutofillPaymentAppCreatorAvailable(AutofillPaymentAppCreator creator) {}
-
-    /**
      * Called when a payment app factory has created a payment app.
      *
      * @param paymentApp A payment app.
