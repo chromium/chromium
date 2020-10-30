@@ -1193,8 +1193,7 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.h
 crbug.com/1140307 accessibility/inline-text-textarea.html [ Failure ]
 
 ### Textfield NG
-crbug.com/1040826 external/wpt/css/css-pseudo/first-line-and-placeholder.html [ Failure ]
-crbug.com/1040826 fast/events/mouse-relative-position.html [ Failure ]
+crbug.com/1143621 external/wpt/css/css-pseudo/first-line-and-placeholder.html [ Failure ]
 crbug.com/1040826 fast/forms/input-in-table-cell-no-value.html [ Failure ]
 crbug.com/1040826 fast/forms/placeholder-position.html [ Failure ]
 crbug.com/1040826 [ Linux ] fast/forms/text/input-placeholder-paint-order.html [ Failure ]
