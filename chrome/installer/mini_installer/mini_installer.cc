@@ -744,7 +744,8 @@ bool CreateWorkDir(const wchar_t* base_path,
 // Creates and returns a temporary directory in |work_dir| that can be used to
 // extract mini_installer payload. |work_dir| ends with a path separator.
 // |used_fallback| is set to true if the %TMP% directory was used rather than
-// the directory containing |module|.
+// the directory containing |module|. Returns true if |work_dir| is available
+// for use, or false in case of error (indicated by |exit_code|).
 bool GetWorkDir(HMODULE module,
                 PathString* work_dir,
                 bool* used_fallback,
@@ -758,8 +759,13 @@ bool GetWorkDir(HMODULE module,
   }
 
   // Failing that, try to create one in the TMP directory.
-  return GetTempDir(&base_path, exit_code) &&
-         CreateWorkDir(base_path.get(), work_dir, exit_code);
+  if (GetTempDir(&base_path, exit_code) &&
+      CreateWorkDir(base_path.get(), work_dir, exit_code)) {
+    *used_fallback = true;
+    return true;
+  }
+
+  return false;
 }
 
 ProcessExitResult WMain(HMODULE module) {
