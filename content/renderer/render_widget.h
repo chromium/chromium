@@ -64,7 +64,6 @@ class WebPagePopup;
 }  // namespace blink
 
 namespace content {
-class AgentSchedulingGroup;
 class CompositorDependencies;
 class RenderFrameImpl;
 class RenderFrameProxy;
@@ -89,22 +88,16 @@ class RenderWidgetDelegate;
 // RenderWidget is used to route input and graphical output between the browser
 // and the renderer.
 class CONTENT_EXPORT RenderWidget
-    : public IPC::Listener,
-      public IPC::Sender,
-      public blink::WebPagePopupClient {  // Is-a WebWidgetClient also
+    : public blink::WebPagePopupClient {  // Is-a WebWidgetClient also
  public:
-  RenderWidget(AgentSchedulingGroup& agent_scheduling_group,
-               int32_t widget_routing_id,
-               CompositorDependencies* compositor_deps);
+  explicit RenderWidget(CompositorDependencies* compositor_deps);
 
   ~RenderWidget() override;
 
   // Convenience type for creation method taken by InstallCreateForFrameHook().
   // The method signature matches the RenderWidget constructor.
   using CreateRenderWidgetFunction =
-      std::unique_ptr<RenderWidget> (*)(AgentSchedulingGroup&,
-                                        int32_t routing_id,
-                                        CompositorDependencies*);
+      std::unique_ptr<RenderWidget> (*)(CompositorDependencies*);
   // Overrides the implementation of CreateForFrame() function below. Used by
   // web tests to return a partial fake of RenderWidget.
   static void InstallCreateForFrameHook(
@@ -114,8 +107,6 @@ class CONTENT_EXPORT RenderWidget
   // Testing infrastructure, such as test_runner, can override this function
   // by calling InstallCreateForFrameHook().
   static std::unique_ptr<RenderWidget> CreateForFrame(
-      AgentSchedulingGroup& agent_scheduling_group,
-      int32_t widget_routing_id,
       CompositorDependencies* compositor_deps);
 
   // Creates a RenderWidget for a popup. This is separate from CreateForFrame()
@@ -125,8 +116,6 @@ class CONTENT_EXPORT RenderWidget
   // object can request its own destruction via
   // blink::mojom::PopupWidgetHost::RequestClose().
   static RenderWidget* CreateForPopup(
-      AgentSchedulingGroup& agent_scheduling_group,
-      int32_t widget_routing_id,
       CompositorDependencies* compositor_deps);
 
   // Initialize a new RenderWidget for a popup. The |show_callback| is called
@@ -154,27 +143,11 @@ class CONTENT_EXPORT RenderWidget
   // passed into this object to asynchronously delete itself.
   void CloseForFrame(std::unique_ptr<RenderWidget> widget);
 
-  int32_t routing_id() const { return routing_id_; }
-
   CompositorDependencies* compositor_deps() const { return compositor_deps_; }
 
   // This can return nullptr while the RenderWidget is closing. When for_frame()
   // is true, the widget returned is a blink::WebFrameWidget.
   blink::WebWidget* GetWebWidget() const { return webwidget_; }
-
-  // A main frame RenderWidget is destroyed and recreated using the same routing
-  // id. So messages en route to a destroyed RenderWidget may end up being
-  // received by a provisional RenderWidget, even though we don't normally
-  // communicate with a RenderWidget for a provisional frame. This can be used
-  // to avoid that race condition of acting on IPC messages meant for a
-  // destroyed RenderWidget.
-  bool IsForProvisionalFrame() const;
-
-  // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& msg) override;
-
-  // IPC::Sender
-  bool Send(IPC::Message* msg) override;
 
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
@@ -226,13 +199,6 @@ class CONTENT_EXPORT RenderWidget
   // (via delegate_) and subframes (via for_child_local_root_frame_).
   bool for_frame() const { return delegate_ || for_child_local_root_frame_; }
 
-  // The `AgentSchedulingGroup` this widget is associated with.
-  AgentSchedulingGroup& agent_scheduling_group_;
-
-  // Routing ID that allows us to communicate to the parent browser process
-  // RenderWidgetHost.
-  const int32_t routing_id_;
-
   // Dependencies for initializing a compositor, including flags for optional
   // features.
   CompositorDependencies* const compositor_deps_;
@@ -253,9 +219,6 @@ class CONTENT_EXPORT RenderWidget
   // True once Close() is called, during the self-destruction process, and to
   // verify destruction always goes through Close().
   bool closing_ = false;
-
-  // The time spent in input handlers this frame. Used to throttle input acks.
-  base::TimeDelta total_input_handling_time_this_frame_;
 
   // Whether this widget is for a child local root frame. This excludes widgets
   // that are not for a frame (eg popups) and excludes the widget for the main

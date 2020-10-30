@@ -59,11 +59,8 @@ RenderViewImpl* CreateWebViewTestProxy(
 }
 
 std::unique_ptr<RenderWidget> CreateWebWidgetTestProxy(
-    AgentSchedulingGroup& agent_scheduling_group,
-    int32_t routing_id,
     CompositorDependencies* compositor_deps) {
-  return std::make_unique<WebWidgetTestProxy>(agent_scheduling_group,
-                                              routing_id, compositor_deps);
+  return std::make_unique<WebWidgetTestProxy>(compositor_deps);
 }
 
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {

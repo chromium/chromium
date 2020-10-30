@@ -13,27 +13,15 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/ukm_manager.h"
-#include "content/renderer/agent_scheduling_group.h"
-#include "content/renderer/pepper/pepper_plugin_instance_impl.h"
-#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_widget.h"
-#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-
-using blink::WebNavigationPolicy;
-using blink::WebString;
 
 namespace content {
 
@@ -53,33 +41,21 @@ void RenderWidget::InstallCreateForFrameHook(
 }
 
 std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
-    AgentSchedulingGroup& agent_scheduling_group,
-    int32_t widget_routing_id,
     CompositorDependencies* compositor_deps) {
   if (g_create_render_widget_for_frame) {
-    return g_create_render_widget_for_frame(agent_scheduling_group,
-                                            widget_routing_id, compositor_deps);
+    return g_create_render_widget_for_frame(compositor_deps);
   }
 
-  return std::make_unique<RenderWidget>(agent_scheduling_group,
-                                        widget_routing_id, compositor_deps);
+  return std::make_unique<RenderWidget>(compositor_deps);
 }
 
 RenderWidget* RenderWidget::CreateForPopup(
-    AgentSchedulingGroup& agent_scheduling_group,
-    int32_t widget_routing_id,
     CompositorDependencies* compositor_deps) {
-  return new RenderWidget(agent_scheduling_group, widget_routing_id,
-                          compositor_deps);
+  return new RenderWidget(compositor_deps);
 }
 
-RenderWidget::RenderWidget(AgentSchedulingGroup& agent_scheduling_group,
-                           int32_t widget_routing_id,
-                           CompositorDependencies* compositor_deps)
-    : agent_scheduling_group_(agent_scheduling_group),
-      routing_id_(widget_routing_id),
-      compositor_deps_(compositor_deps) {
-  DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
+RenderWidget::RenderWidget(CompositorDependencies* compositor_deps)
+    : compositor_deps_(compositor_deps) {
   DCHECK(RenderThread::IsMainThread());
   DCHECK(compositor_deps_);
 }
@@ -120,10 +96,7 @@ void RenderWidget::CloseForFrame(std::unique_ptr<RenderWidget> widget) {
 
 void RenderWidget::Initialize(blink::WebWidget* web_widget,
                               const blink::ScreenInfo& screen_info) {
-  DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(web_widget);
-
-  agent_scheduling_group_.AddRoute(routing_id_, this);
 
   webwidget_ = web_widget;
   if (auto* scheduler_state = GetWebWidget()->RendererWidgetSchedulingState())
@@ -138,23 +111,6 @@ void RenderWidget::Initialize(blink::WebWidget* web_widget,
   // metrics.
   if (!web_widget->IsHidden())
     web_widget->SetCompositorVisible(true);
-}
-
-bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
-bool RenderWidget::Send(IPC::Message* message) {
-  // Provisional frames don't send IPCs until they are swapped in/committed.
-  CHECK(!IsForProvisionalFrame());
-  // Don't send any messages during shutdown.
-  DCHECK(!closing_);
-
-  // If given a messsage without a routing ID, then assign our routing ID.
-  if (message->routing_id() == MSG_ROUTING_NONE)
-    message->set_routing_id(routing_id_);
-
-  return agent_scheduling_group_.Send(message);
 }
 
 void RenderWidget::BrowserClosedIpcChannelForPopupWidget() {
@@ -204,11 +160,6 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
 
   closing_ = true;
 
-  // Browser correspondence is no longer needed at this point.
-  if (routing_id_ != MSG_ROUTING_NONE) {
-    agent_scheduling_group_.RemoveRoute(routing_id_);
-  }
-
   webwidget_->Close(compositor_deps_->GetCleanupTaskRunner());
   webwidget_ = nullptr;
 
@@ -223,17 +174,6 @@ blink::WebFrameWidget* RenderWidget::GetFrameWidget() const {
   if (!for_frame())
     return nullptr;
   return static_cast<blink::WebFrameWidget*>(webwidget_);
-}
-
-bool RenderWidget::IsForProvisionalFrame() const {
-  if (!for_frame())
-    return false;
-  // No widget here means the main frame is remote and there is no
-  // provisional frame at the moment.
-  if (!webwidget_)
-    return false;
-  auto* frame_widget = static_cast<blink::WebFrameWidget*>(webwidget_);
-  return frame_widget->LocalRoot()->IsProvisional();
 }
 
 void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {

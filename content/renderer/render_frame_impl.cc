@@ -1590,7 +1590,6 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     render_frame->frame_->SetCommittedFirstRealLoad();
 
   std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-      agent_scheduling_group, params->main_frame_widget_routing_id,
       compositor_deps);
 
   // Non-owning pointer that is self-referencing and destroyed by calling
@@ -1763,8 +1762,8 @@ void RenderFrameImpl::CreateFrame(
     // TODO(crbug.com/419087): Can we merge this code with
     // RenderFrameImpl::CreateMainFrame()?
 
-    std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-        agent_scheduling_group, widget_params->routing_id, compositor_deps);
+    std::unique_ptr<RenderWidget> render_widget =
+        RenderWidget::CreateForFrame(compositor_deps);
 
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1814,8 +1813,8 @@ void RenderFrameImpl::CreateFrame(
     // Makes a new RenderWidget for the child local root. It provides the
     // local root with a new compositing, painting, and input coordinate
     // space/context.
-    std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-        agent_scheduling_group, widget_params->routing_id, compositor_deps);
+    std::unique_ptr<RenderWidget> render_widget =
+        RenderWidget::CreateForFrame(compositor_deps);
 
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). We use the new RenderWidget as the client for this
