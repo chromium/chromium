@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 var TestRunner = class {
-  constructor(testBaseURL, targetBaseURL, log, completeTest, fetch) {
+  constructor(testBaseURL, targetBaseURL, log, completeTest, fetch, params) {
     this._dumpInspectorProtocolMessages = false;
     this._testBaseURL = testBaseURL;
     this._targetBaseURL = targetBaseURL;
     this._log = log;
     this._completeTest = completeTest;
     this._fetch = fetch;
+    this._params = params;
     this._browserSession = new TestRunner.Session(this, '');
   }
 
@@ -33,6 +34,10 @@ var TestRunner = class {
     if (typeof item === 'object')
       return this._logObject(item, title, stabilizeNames);
     this._log.call(null, item);
+  }
+
+  params(name) {
+    return name ? this._params.get(name) : this._params;
   }
 
   _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames) {
@@ -544,7 +549,7 @@ window.addEventListener('load', () => {
   var targetBaseURL = targetPageURL.substring(0, targetPageURL.lastIndexOf('/') + 1);
 
   DevToolsAPI._fetch(testScriptURL).then(testScript => {
-    var testRunner = new TestRunner(testBaseURL, targetBaseURL, DevToolsAPI._log, DevToolsAPI._completeTest, DevToolsAPI._fetch);
+    var testRunner = new TestRunner(testBaseURL, targetBaseURL, DevToolsAPI._log, DevToolsAPI._completeTest, DevToolsAPI._fetch, params);
     var testFunction = eval(`${testScript}\n//# sourceURL=${testScriptURL}`);
     if (params.get('debug')) {
       var dispatch = DevToolsAPI.dispatchMessage;

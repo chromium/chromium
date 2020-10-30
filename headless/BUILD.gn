@@ -638,7 +638,11 @@ test("headless_browsertests") {
 
   # TODO(https://crbug.com/1107396): These tests flakily timeout on fuchsia.
   if (!is_fuchsia) {
-    sources += [ "test/headless_protocol_browsertest.cc" ]
+    sources += [
+      "test/headless_compositor_browsertest.cc",
+      "test/headless_protocol_browsertest.cc",
+      "test/headless_protocol_browsertest.h",
+    ]
   }
 
   data = [
