@@ -28,7 +28,12 @@ enum class CrxInstallErrorType {
 
 // Extended error code that may help explain the error type.
 // Do not change the order of the entries or remove entries in this list.
-// Don't forget to update enums.xml when adding new entries.
+// 1) Don't forget to update enums.xml when adding new entries.
+// 2) Don't forget to update device_management_backend.proto (name:
+// ExtensionInstallReportLogEvent::CrxInstallErrorDetail) when adding new
+// entries.
+// 3) Don't forget to update ConvertCrxInstallErrorDetailToProto method in
+// ExtensionInstallEventLogCollector.
 enum class CrxInstallErrorDetail {
   NONE,                                     // 0
   CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED,  // 1

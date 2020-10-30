@@ -51,6 +51,7 @@ constexpr char kInstallCreationStage[] = "installCreationStage";
 constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
 constexpr char kUnpackerFailureReason[] = "unpackerFailureReason";
 constexpr char kManifestInvalidError[] = "manifestInvalidError";
+constexpr char kCrxInstallErrorDetail[] = "crxInstallErrorDetail";
 
 void ConvertToValueAndVerify(const em::ExtensionInstallReportLogEvent& event,
                              const std::vector<std::string>& keys) {
@@ -98,6 +99,25 @@ TEST_F(ExtensionInstallEventLogUtilTest, FailureReasonEvent) {
   ConvertToValueAndVerify(
       event_, {kEventType, kFailureReason, kIsMisconfigurationFailure,
                kExtensionType, kStatefulTotal, kStatefulFree});
+}
+
+// Verifies that an event reporting extension installation failure after
+// unpacking is successfully parsed.
+TEST_F(ExtensionInstallEventLogUtilTest, CrxInstallErrorEvent) {
+  event_.set_event_type(
+      em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED);
+  event_.set_failure_reason(
+      em::ExtensionInstallReportLogEvent::CRX_INSTALL_ERROR_OTHER);
+  event_.set_crx_install_error_detail(
+      em::ExtensionInstallReportLogEvent::UNEXPECTED_ID);
+  event_.set_is_misconfiguration_failure(false);
+  event_.set_extension_type(em::Extension_ExtensionType_TYPE_EXTENSION);
+  event_.set_stateful_total(kDiskSpaceTotalBytes);
+  event_.set_stateful_free(kDiskSpaceFreeBytes);
+  ConvertToValueAndVerify(
+      event_, {kEventType, kFailureReason, kCrxInstallErrorDetail,
+               kIsMisconfigurationFailure, kExtensionType, kStatefulTotal,
+               kStatefulFree});
 }
 
 // Verifies that an event reporting extension unpack failure is successfully

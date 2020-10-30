@@ -233,9 +233,8 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
 // session. In this case no event is generated. This happens for example when
 // all extensions are installed in context of the same user session.
 TEST_F(ExtensionInstallEventLogCollectorTest, NoEventsByDefault) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
   collector.reset();
 
   EXPECT_EQ(0, delegate()->add_count());
@@ -255,9 +254,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginLogout) {
   fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
 
@@ -326,9 +324,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
 }
 
 TEST_F(ExtensionInstallEventLogCollectorTest, SuspendResume) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
@@ -373,9 +370,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ConnectivityChanges) {
                                   false /* browser_restart */,
                                   false /* is_child */);
 
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
 
@@ -420,9 +416,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ConnectivityChanges) {
 
 TEST_F(ExtensionInstallEventLogCollectorTest,
        ExtensionInstallFailedWithoutMisconfiguration) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   // One extension failed.
   install_stage_tracker()->ReportInfoOnNoUpdatesFailure(kExtensionId1,
@@ -441,9 +436,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
 
 TEST_F(ExtensionInstallEventLogCollectorTest,
        ExtensionInstallFailedWithMisconfiguration) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   // One extension failed.
   install_stage_tracker()->ReportInfoOnNoUpdatesFailure(kExtensionId1, "");
@@ -459,29 +453,58 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
   EXPECT_TRUE(delegate()->last_request().event.is_misconfiguration_failure());
 }
 
-// Simulate failure after unpacking, so extension type should be reported.
-TEST_F(ExtensionInstallEventLogCollectorTest, ExtensionInstallFailedWithType) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+// Verifies that a new event is created when the extension installation fails
+// due to invalid ID supplied in the force list policy.
+TEST_F(ExtensionInstallEventLogCollectorTest, ExtensionInstallFailed) {
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
+  extensions::InstallStageTracker* tracker =
+      extensions::InstallStageTracker::Get(profile());
 
+  // One extension failed.
+  tracker->ReportFailure(
+      kExtensionId1,
+      extensions::InstallStageTracker::FailureReason::INVALID_ID);
+
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->last_request().event.event_type());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INVALID_ID,
+            delegate()->last_request().event.failure_reason());
+  EXPECT_FALSE(delegate()->last_request().event.is_misconfiguration_failure());
+}
+
+// Verifies that a new event is created when the extension installation fails
+// due to crx install error. as failure occurs due during crx installation, crx
+// install error and event type should be reported.
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWithCrxError) {
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
   extensions::InstallStageTracker* tracker =
       extensions::InstallStageTracker::Get(profile());
 
   // One extension failed.
   tracker->ReportExtensionType(kExtensionId1,
                                extensions::Manifest::TYPE_LEGACY_PACKAGED_APP);
-  tracker->ReportFailure(kExtensionId1,
-                         extensions::InstallStageTracker::FailureReason::
-                             CRX_INSTALL_ERROR_DECLINED);
+  tracker->ReportCrxInstallError(
+      kExtensionId1,
+      extensions::InstallStageTracker::FailureReason::
+          CRX_INSTALL_ERROR_DECLINED,
+      extensions::CrxInstallErrorDetail::KIOSK_MODE_ONLY);
+
   ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
                                            0 /*expected_add_all_count*/));
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
             delegate()->last_request().event.event_type());
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::CRX_INSTALL_ERROR_DECLINED,
             delegate()->last_request().event.failure_reason());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::KIOSK_MODE_ONLY,
+            delegate()->last_request().event.crx_install_error_detail());
   EXPECT_EQ(em::Extension::TYPE_LEGACY_PACKAGED_APP,
             delegate()->last_request().event.extension_type());
+  EXPECT_TRUE(delegate()->last_request().event.is_misconfiguration_failure());
 }
 
 // Verifies that a new event is created when the extension failed to unpack.
@@ -532,10 +555,11 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
             delegate()->last_request().event.manifest_invalid_error());
 }
 
+// Verifies that a new event is created when an extension is successfully
+// installed.
 TEST_F(ExtensionInstallEventLogCollectorTest, InstallExtension) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   // One extension installation succeeded.
   auto ext = extensions::ExtensionBuilder(kExtensionName1)
@@ -553,9 +577,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, InstallExtension) {
 // Verifies that a new event is created when the installation stage is changed
 // during the installation process.
 TEST_F(ExtensionInstallEventLogCollectorTest, InstallationStageChanged) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   // One extension installation succeeded.
   auto ext = extensions::ExtensionBuilder(kExtensionName1)
@@ -578,9 +601,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, InstallationStageChanged) {
 // Verifies that a new event is created when the downloading stage is changed
 // during the downloading process.
 TEST_F(ExtensionInstallEventLogCollectorTest, DownloadingStageChanged) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   auto ext = extensions::ExtensionBuilder(kExtensionName1)
                  .SetID(kExtensionId1)
@@ -616,9 +638,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, DownloadingStageChanged) {
 // Verifies that a new event is created when the install creation stage is
 // changed.
 TEST_F(ExtensionInstallEventLogCollectorTest, InstallCreationStageChanged) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   auto ext = extensions::ExtensionBuilder(kExtensionName1)
                  .SetID(kExtensionId1)
@@ -656,9 +677,8 @@ TEST_F(ExtensionInstallEventLogCollectorTest, InstallCreationStageChanged) {
 // Verifies that a new event is created when the cache status is retrieved
 // during the extension downloading process.
 TEST_F(ExtensionInstallEventLogCollectorTest, DownloadCacheStatusRetrieved) {
-  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
-      std::make_unique<ExtensionInstallEventLogCollector>(
-          registry(), delegate(), profile());
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
 
   auto ext = extensions::ExtensionBuilder(kExtensionName1)
                  .SetID(kExtensionId1)

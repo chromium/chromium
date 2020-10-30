@@ -379,6 +379,73 @@ ConvertUnpackerFailureReasonToProto(
   }
 }
 
+// Helper function to convert extensions::CrxInstallErrorDetail to the
+// ExtensionInstallReportLogEvent::CrxInstallErrorDetail proto.
+em::ExtensionInstallReportLogEvent_CrxInstallErrorDetail
+ConvertCrxInstallErrorDetailToProto(
+    extensions::CrxInstallErrorDetail error_detail) {
+  using Error = extensions::CrxInstallErrorDetail;
+  switch (error_detail) {
+    case Error::NONE:
+      return em::ExtensionInstallReportLogEvent::
+          CRX_INSTALL_ERROR_DETAIL_UNKNOWN;
+    case Error::CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED:
+      return em::ExtensionInstallReportLogEvent::
+          CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED;
+    case Error::UNEXPECTED_ID:
+      return em::ExtensionInstallReportLogEvent::UNEXPECTED_ID;
+    case Error::UNEXPECTED_VERSION:
+      return em::ExtensionInstallReportLogEvent::UNEXPECTED_VERSION;
+    case Error::MISMATCHED_VERSION:
+      return em::ExtensionInstallReportLogEvent::MISMATCHED_VERSION;
+    case Error::MANIFEST_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_ERROR_MANIFEST_INVALID;
+    case Error::INSTALL_NOT_ENABLED:
+      return em::ExtensionInstallReportLogEvent::INSTALL_NOT_ENABLED;
+    case Error::OFFSTORE_INSTALL_DISALLOWED:
+      return em::ExtensionInstallReportLogEvent::OFFSTORE_INSTALL_DISALLOWED;
+    case Error::INCORRECT_APP_CONTENT_TYPE:
+      return em::ExtensionInstallReportLogEvent::INCORRECT_APP_CONTENT_TYPE;
+    case Error::NOT_INSTALLED_FROM_GALLERY:
+      return em::ExtensionInstallReportLogEvent::NOT_INSTALLED_FROM_GALLERY;
+    case Error::INCORRECT_INSTALL_HOST:
+      return em::ExtensionInstallReportLogEvent::INCORRECT_INSTALL_HOST;
+    case Error::DEPENDENCY_NOT_SHARED_MODULE:
+      return em::ExtensionInstallReportLogEvent::DEPENDENCY_NOT_SHARED_MODULE;
+    case Error::DEPENDENCY_OLD_VERSION:
+      return em::ExtensionInstallReportLogEvent::DEPENDENCY_OLD_VERSION;
+    case Error::DEPENDENCY_NOT_ALLOWLISTED:
+      return em::ExtensionInstallReportLogEvent::DEPENDENCY_NOT_ALLOWLISTED;
+    case Error::UNSUPPORTED_REQUIREMENTS:
+      return em::ExtensionInstallReportLogEvent::UNSUPPORTED_REQUIREMENTS;
+    case Error::EXTENSION_IS_BLOCKLISTED:
+      return em::ExtensionInstallReportLogEvent::EXTENSION_IS_BLOCKLISTED;
+    case Error::DISALLOWED_BY_POLICY:
+      return em::ExtensionInstallReportLogEvent::DISALLOWED_BY_POLICY;
+    case Error::KIOSK_MODE_ONLY:
+      return em::ExtensionInstallReportLogEvent::KIOSK_MODE_ONLY;
+    case Error::OVERLAPPING_WEB_EXTENT:
+      return em::ExtensionInstallReportLogEvent::OVERLAPPING_WEB_EXTENT;
+    case Error::CANT_DOWNGRADE_VERSION:
+      return em::ExtensionInstallReportLogEvent::CANT_DOWNGRADE_VERSION;
+    case Error::MOVE_DIRECTORY_TO_PROFILE_FAILED:
+      return em::ExtensionInstallReportLogEvent::
+          MOVE_DIRECTORY_TO_PROFILE_FAILED;
+    case Error::CANT_LOAD_EXTENSION:
+      return em::ExtensionInstallReportLogEvent::CANT_LOAD_EXTENSION;
+    case Error::USER_CANCELED:
+      return em::ExtensionInstallReportLogEvent::USER_CANCELED;
+    case Error::USER_ABORTED:
+      return em::ExtensionInstallReportLogEvent::USER_ABORTED;
+    case Error::UPDATE_NON_EXISTING_EXTENSION:
+      return em::ExtensionInstallReportLogEvent::UPDATE_NON_EXISTING_EXTENSION;
+    default:
+      NOTREACHED();
+      return em::ExtensionInstallReportLogEvent::
+          CRX_INSTALL_ERROR_DETAIL_UNKNOWN;
+  }
+}
+
 // Helper function to convert extensions::ManifestInvalidError to the
 // ExtensionInstallReportLogEvent::ManifestInvalidError proto.
 em::ExtensionInstallReportLogEvent_ManifestInvalidError
@@ -508,6 +575,8 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
       extensions::InstallStageTracker::Get(profile_);
   extensions::InstallStageTracker::InstallationData data =
       install_stage_tracker->Get(extension_id);
+  // Extension type is only reported if extension installation failed after the
+  // unpacking stage.
   if (data.extension_type) {
     event->set_extension_type(enterprise_reporting::ConvertExtensionTypeToProto(
         data.extension_type.value()));
@@ -521,6 +590,13 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
   if (data.manifest_invalid_error) {
     event->set_manifest_invalid_error(ConvertManifestInvalidErrorToProto(
         data.manifest_invalid_error.value()));
+  }
+
+  // Crx install error detail is only reported if extension installation failed
+  // after the unpacking stage.
+  if (data.install_error_detail) {
+    event->set_crx_install_error_detail(
+        ConvertCrxInstallErrorDetailToProto(data.install_error_detail.value()));
   }
   extensions::ForceInstalledTracker* force_installed_tracker =
       extensions::ExtensionSystem::Get(profile_)

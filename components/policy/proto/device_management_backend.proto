@@ -3083,7 +3083,39 @@ message ExtensionInstallReportLogEvent {
     INVALID_VERSION = 12;
     BAD_UPDATE_SPECIFICATION = 13;
     BAD_APP_STATUS = 14;
-  };
+  }
+
+  // Extended error code if the extension installation failed due to CRX install
+  // error. See extensions::CrxInstallErrorDetail for more details.
+  // extensions::CrxInstallErrorDetail is the main enum and this is a
+  // copy used for reporting purposes.
+  enum CrxInstallErrorDetail {
+    CRX_INSTALL_ERROR_DETAIL_UNKNOWN = 0;
+    CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED = 1;
+    UNEXPECTED_ID = 2;
+    UNEXPECTED_VERSION = 3;
+    MISMATCHED_VERSION = 4;
+    CRX_ERROR_MANIFEST_INVALID = 5;
+    INSTALL_NOT_ENABLED = 6;
+    OFFSTORE_INSTALL_DISALLOWED = 7;
+    INCORRECT_APP_CONTENT_TYPE = 8;
+    NOT_INSTALLED_FROM_GALLERY = 9;
+    INCORRECT_INSTALL_HOST = 10;
+    DEPENDENCY_NOT_SHARED_MODULE = 11;
+    DEPENDENCY_OLD_VERSION = 12;
+    DEPENDENCY_NOT_ALLOWLISTED = 13;
+    UNSUPPORTED_REQUIREMENTS = 14;
+    EXTENSION_IS_BLOCKLISTED = 15;
+    DISALLOWED_BY_POLICY = 16;
+    KIOSK_MODE_ONLY = 17;
+    OVERLAPPING_WEB_EXTENT = 18;
+    CANT_DOWNGRADE_VERSION = 19;
+    MOVE_DIRECTORY_TO_PROFILE_FAILED = 20;
+    CANT_LOAD_EXTENSION = 21;
+    USER_CANCELED = 22;
+    USER_ABORTED = 23;
+    UPDATE_NON_EXISTING_EXTENSION = 24;
+  }
 
   // Timestamp, in microseconds since epoch. Set for all log
   // events.
@@ -3139,6 +3171,10 @@ message ExtensionInstallReportLogEvent {
   // Detailed reason why extension failed due to failure reason
   // MANIFEST_INVALID.
   optional ManifestInvalidError manifest_invalid_error = 17;
+
+  // Extended error code if the extension installation failed due to CRX install
+  // error.
+  optional CrxInstallErrorDetail crx_install_error_detail = 18;
 }
 
 // A single entry in the push-install log for an app.
