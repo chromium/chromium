@@ -62,7 +62,7 @@ class NGFragmentItemTest : public NGLayoutTest,
     LayoutBlockFlow* block_flow = GetLayoutBlockFlowByElementId(id);
     const NGPhysicalBoxFragment* fragment = block_flow->GetPhysicalFragment(0);
     const NGFragmentItems* items = fragment->Items();
-    items->DirtyLinesFromNeedsLayout(block_flow);
+    NGFragmentItems::DirtyLinesFromNeedsLayout(*block_flow);
     const NGFragmentItem* end_reusable_item =
         items->EndOfReusableItems(*fragment);
 

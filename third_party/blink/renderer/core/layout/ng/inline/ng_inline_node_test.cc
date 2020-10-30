@@ -141,16 +141,23 @@ class NGInlineNodeTest : public NGLayoutTest {
     return end_offsets;
   }
 
-  void TestAnyItemsAreDirty(LayoutBlockFlow* block_flow, bool expected) {
-    const NGFragmentItems* items = block_flow->FragmentItems();
-    items->DirtyLinesFromNeedsLayout(block_flow);
-    // Check |NGFragmentItem::IsDirty| directly without using
-    // |EndOfReusableItems|. This is different from the line cache logic, but
-    // some items may not be reusable even if |!IsDirty()|.
-    const bool is_any_items_dirty =
-        std::any_of(items->Items().begin(), items->Items().end(),
-                    [](const NGFragmentItem& item) { return item.IsDirty(); });
-    EXPECT_EQ(is_any_items_dirty, expected);
+  void TestAnyItemsAreDirty(const LayoutBlockFlow& block_flow, bool expected) {
+    NGFragmentItems::DirtyLinesFromNeedsLayout(block_flow);
+    for (const NGPhysicalBoxFragment& fragment :
+         block_flow.PhysicalFragments()) {
+      if (const NGFragmentItems* items = fragment.Items()) {
+        // Check |NGFragmentItem::IsDirty| directly without using
+        // |EndOfReusableItems|. This is different from the line cache logic,
+        // but some items may not be reusable even if |!IsDirty()|.
+        for (const NGFragmentItem& item : items->Items()) {
+          if (item.IsDirty()) {
+            EXPECT_TRUE(expected);
+            return;
+          }
+        }
+      }
+    }
+    EXPECT_FALSE(expected);
   }
 
   scoped_refptr<const ComputedStyle> style_;
@@ -686,7 +693,7 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
 
   if (data.is_line_dirty &&
       RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    TestAnyItemsAreDirty(To<LayoutBlockFlow>(container->GetLayoutObject()),
+    TestAnyItemsAreDirty(*To<LayoutBlockFlow>(container->GetLayoutObject()),
                          *data.is_line_dirty);
   }
 

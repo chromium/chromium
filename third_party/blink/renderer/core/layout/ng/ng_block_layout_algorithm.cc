@@ -992,7 +992,9 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   DCHECK(previous_items);
 
   // Find reusable lines. Fail if no items are reusable.
-  previous_items->DirtyLinesFromNeedsLayout(inline_node.GetLayoutBlockFlow());
+  // TODO(kojii): |DirtyLinesFromNeedsLayout| is needed only once for a
+  // |LayoutBlockFlow|, not for every fragment.
+  NGFragmentItems::DirtyLinesFromNeedsLayout(*inline_node.GetLayoutBlockFlow());
   const NGFragmentItem* end_item =
       previous_items->EndOfReusableItems(previous_fragment);
   DCHECK(end_item);

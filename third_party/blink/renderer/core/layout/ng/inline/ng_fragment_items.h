@@ -82,7 +82,7 @@ class CORE_EXPORT NGFragmentItems {
                                          const LayoutBlockFlow& container);
 
   // Mark items dirty from |LayoutObject::NeedsLayout| flags.
-  void DirtyLinesFromNeedsLayout(const LayoutBlockFlow* block_flow) const;
+  static void DirtyLinesFromNeedsLayout(const LayoutBlockFlow& block_flow);
 
   // The byte size of this instance.
   constexpr static wtf_size_t ByteSizeFor(wtf_size_t count) {

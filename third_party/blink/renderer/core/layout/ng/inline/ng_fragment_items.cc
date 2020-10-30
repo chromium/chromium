@@ -333,19 +333,25 @@ void NGFragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
   }
 }
 
+// static
 void NGFragmentItems::DirtyLinesFromNeedsLayout(
-    const LayoutBlockFlow* container) const {
-  DCHECK_EQ(this, container->FragmentItems());
+    const LayoutBlockFlow& container) {
+  DCHECK(std::any_of(container.PhysicalFragments().begin(),
+                     container.PhysicalFragments().end(),
+                     [](const NGPhysicalBoxFragment& fragment) {
+                       return fragment.HasItems();
+                     }));
+
   // Mark dirty for the first top-level child that has |NeedsLayout|.
   //
   // TODO(kojii): We could mark first descendant to increase reuse
   // opportunities. Doing this complicates the logic, especially when culled
   // inline is involved, and common case is to append to large IFC. Choose
   // simpler logic and faster to check over more reuse opportunities.
-  for (LayoutObject* child = container->FirstChild(); child;
+  for (LayoutObject* child = container.FirstChild(); child;
        child = child->NextSibling()) {
     if (child->NeedsLayout()) {
-      DirtyLinesFromChangedChild(*child, *container);
+      DirtyLinesFromChangedChild(*child, container);
       return;
     }
   }
