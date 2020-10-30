@@ -50,6 +50,16 @@ export const TutorialLesson = Polymer({
     // Observed properties.
 
     activeLessonNum: {type: Number, observer: 'setVisibility'},
+
+    titleHint: {
+      type: String,
+      value: 'Press Search + left/right arrow to navigate the lesson'
+    },
+
+    practiceTitleHint: {
+      type: String,
+      value: 'Press Search + left/right arrow to navigate the practice area'
+    }
   },
 
   /** @override */
@@ -152,7 +162,7 @@ export const TutorialLesson = Polymer({
   startPractice() {
     this.notifyStartPractice();
     this.$.practice.showModal();
-    this.$.practiceTitle.focus();
+    this.$.practiceInstructions.focus();
   },
 
   /** @private */

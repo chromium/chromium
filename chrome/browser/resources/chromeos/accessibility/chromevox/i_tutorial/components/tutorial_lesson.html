@@ -94,7 +94,10 @@ a {
 
 <div id="container" hidden>
   <template is="dom-if" if="[[ title ]]">
-    <h1 id="title" tabindex="-1">[[ getMsg(title) ]]</h1>
+    <h1 id="title" tabindex="-1" aria-describedby="titleHint">
+      [[ getMsg(title) ]]
+    </h1>
+    <div id="titleHint" hidden>[[ titleHint ]]</div>
   </template>
   <div id="content">
     <template id="contentTemplate" is="dom-repeat" items="[[ content ]]"
@@ -108,7 +111,7 @@ a {
       [[ practiceTitle ]]
     </div>
     <div id="practiceBody" class="body" slot="body" tabindex="-1">
-      <p id="practiceInstructions">[[ practiceInstructions ]]</p>
+      <p id="practiceInstructions" tabindex="-1">[[ practiceInstructions ]]</p>
       <div id="separator"></div>
       <div id="practiceContent"></div>
     </div>

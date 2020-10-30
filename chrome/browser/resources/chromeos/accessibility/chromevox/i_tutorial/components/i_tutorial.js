@@ -114,10 +114,11 @@ Polymer({
 
     // Labels and text content.
 
-    chooseYourExperience: {
+    mainMenuHeader: {
       type: String,
-      value: 'Choose your tutorial experience',
+      value: 'ChromeVox tutorial',
     },
+
     quickOrientation: {type: String, value: 'Quick orientation'},
 
     essentialKeys: {type: String, value: 'Essential keys'},
@@ -143,6 +144,16 @@ Polymer({
     lessonMenu: {type: String, value: 'All lessons'},
 
     exitTutorial: {type: String, value: 'Exit tutorial'},
+
+    mainMenuHeaderHint: {
+      type: String,
+      value: 'Press Search + left/right arrow to browse topics'
+    },
+
+    lessonMenuHeaderHint: {
+      type: String,
+      value: `Press Search + left/right arrow to browse lessons for this topic`
+    },
 
     lessonData: {
       type: Array,

@@ -90,7 +90,10 @@ h1 {
 
 <div id="mainMenu"
     hidden$="[[ shouldHideMainMenu(activeScreen) ]]">
-  <h1 id="mainMenuHeader" tabindex="-1">[[ chooseYourExperience ]]</h1>
+  <h1 id="mainMenuHeader" tabindex="-1" aria-describedby="mainMenuHeaderHint">
+    [[ mainMenuHeader ]]
+  </h1>
+  <div id="mainMenuHeaderHint" hidden>[[ mainMenuHeaderHint ]]</div>
   <div id="mainMenuButtons">
     <cr-button id="quickOrientationButton" on-click="chooseCurriculum">
       [[ quickOrientation ]]
@@ -116,7 +119,10 @@ h1 {
 <div id="lessonMenu"
     hidden$="[[ shouldHideLessonMenu(activeScreen) ]]">
   <h1 id="lessonMenuHeader"
-      tabindex="-1">[[ computeLessonMenuHeader(curriculum) ]]</h1>
+      tabindex="-1" aria-describedby="lessonMenuHeaderHint">
+    [[ computeLessonMenuHeader(curriculum) ]]
+  </h1>
+  <div id="lessonMenuHeaderHint" hidden>[[ lessonMenuHeaderHint ]]</div>
   <div id="lessonShortcuts"></div>
 </div>
 
