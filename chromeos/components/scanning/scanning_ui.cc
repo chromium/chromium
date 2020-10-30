@@ -92,6 +92,8 @@ ScanningUI::ScanningUI(
 
   html_source->AddResourcePath("scanning.mojom-lite.js",
                                IDR_SCANNING_MOJO_LITE_JS);
+  html_source->AddResourcePath("file_path.mojom-lite.js",
+                               IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS);
 
   AddScanningAppStrings(html_source.get());
 

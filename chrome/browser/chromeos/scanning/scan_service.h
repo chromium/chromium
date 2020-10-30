@@ -30,7 +30,9 @@ class LorgnetteScannerManager;
 // scanner capabilities, and perform scans.
 class ScanService : public scanning::mojom::ScanService, public KeyedService {
  public:
-  explicit ScanService(LorgnetteScannerManager* lorgnette_scanner_manager);
+  ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
+              base::FilePath my_files_path,
+              base::FilePath google_drive_path);
   ~ScanService() override;
 
   ScanService(const ScanService&) = delete;
@@ -48,8 +50,11 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   void BindInterface(
       mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver);
 
-  // Sets the root directory to use when saving scanned images for tests.
-  void SetRootDirForTesting(const base::FilePath& root_dir);
+  // Sets |google_drive_path_| for tests.
+  void SetGoogleDrivePathForTesting(const base::FilePath& google_drive_path);
+
+  // Sets |my_files_path_| for tests.
+  void SetMyFilesPathForTesting(const base::FilePath& my_files_path);
 
  private:
   // KeyedService:
@@ -66,14 +71,22 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
       const base::Optional<lorgnette::ScannerCapabilities>& capabilities);
 
   // Processes each |scanned_image| received after calling
-  // LorgnetteScannerManager::Scan(). |file_type| specifies the file type to use
-  // when saving scanned images.
-  void OnPageReceived(const scanning::mojom::FileType file_type,
+  // LorgnetteScannerManager::Scan(). |scan_to_path| is where images will be
+  // saved, and |file_type| specifies the file type to use when saving scanned
+  // images.
+  void OnPageReceived(const base::FilePath& scan_to_path,
+                      const scanning::mojom::FileType file_type,
                       std::string scanned_image,
                       uint32_t page_number);
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
   void OnScanCompleted(ScanCallback callback, bool success);
+
+  // TODO(jschettler): Replace this with a generic helper function when one is
+  // available.
+  // Determines whether the service supports saving scanned images to
+  // |file_path|.
+  bool FilePathSupported(const base::FilePath& file_path);
 
   // Returns the scanner name corresponding to the given |scanner_id| or an
   // empty string if the name cannot be found.
@@ -90,9 +103,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Unowned. Used to get scanner information and perform scans.
   LorgnetteScannerManager* lorgnette_scanner_manager_;
 
-  // The root directory where scanned images are saved. Allows tests to set a
-  // different root.
-  base::FilePath root_dir_ = base::FilePath("/");
+  // The paths to the user's My files and Google Drive directories. Used to
+  // determine if a selected file path is supported.
+  base::FilePath my_files_path_;
+  base::FilePath google_drive_path_;
 
   // Indicates whether there was a failure to save scanned images.
   bool save_failed_;

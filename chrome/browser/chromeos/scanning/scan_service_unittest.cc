@@ -28,8 +28,8 @@ namespace {
 
 namespace mojo_ipc = scanning::mojom;
 
-// Relative path where scanned images are saved, relative to the root directory.
-constexpr char kMyFilesPath[] = "home/chronos/user/MyFiles";
+// Path to the user's "My files" folder.
+constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 
 // Scanner names used for tests.
 constexpr char kFirstTestScannerName[] = "Test Scanner 1";
@@ -68,15 +68,8 @@ class ScanServiceTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(base::CreateDirectory(saved_image_dir()));
-    scan_service_.SetRootDirForTesting(temp_dir_.GetPath());
     scan_service_.BindInterface(
         scan_service_remote_.BindNewPipeAndPassReceiver());
-  }
-
-  // Path to the directory that scanned images are saved in.
-  base::FilePath saved_image_dir() {
-    return temp_dir_.GetPath().Append(kMyFilesPath);
   }
 
   // Gets scanners by calling ScanService::GetScanners() via the mojo::Remote.
@@ -109,13 +102,14 @@ class ScanServiceTest : public testing::Test {
   }
 
  protected:
+  base::ScopedTempDir temp_dir_;
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
+  ScanService scan_service_{&fake_lorgnette_scanner_manager_, base::FilePath(),
+                            base::FilePath()};
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir temp_dir_;
-  ScanService scan_service_{&fake_lorgnette_scanner_manager_};
   mojo::Remote<mojo_ipc::ScanService> scan_service_remote_;
 };
 
@@ -199,6 +193,24 @@ TEST_F(ScanServiceTest, ScanWithBadScannerId) {
       Scan(base::UnguessableToken::Create(), mojo_ipc::ScanSettings::New()));
 }
 
+// Test that attempting to scan with an unsupported file path fails.
+// Specifically, use a file path with directory navigation (e.g. "..") to verify
+// it can't be used to save scanned images to an unsupported path.
+TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  const base::FilePath my_files_path(kMyFilesPath);
+  scan_service_.SetMyFilesPathForTesting(my_files_path);
+  mojo_ipc::ScanSettings settings;
+  settings.scan_to_path = my_files_path.Append("../../../var/log");
+  settings.file_type = mojo_ipc::FileType::kPng;
+  EXPECT_FALSE(Scan(scanners[0]->id, settings.Clone()));
+}
+
 // Test that a scan can be performed successfully.
 TEST_F(ScanServiceTest, Scan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
@@ -210,14 +222,16 @@ TEST_F(ScanServiceTest, Scan) {
   base::Time::Exploded scan_time;
   // Since we're using mock time, this is deterministic.
   base::Time::Now().LocalExplode(&scan_time);
-  base::FilePath saved_scan_path = saved_image_dir().Append(
+  base::FilePath saved_scan_path = temp_dir_.GetPath().Append(
       base::StringPrintf("scan_%02d%02d%02d-%02d%02d%02d_1.png", scan_time.year,
                          scan_time.month, scan_time.day_of_month,
                          scan_time.hour, scan_time.minute, scan_time.second));
   EXPECT_FALSE(base::PathExists(saved_scan_path));
 
   // Saving scanned images is currently only supported for the PNG file type.
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
   mojo_ipc::ScanSettings settings;
+  settings.scan_to_path = temp_dir_.GetPath();
   settings.file_type = mojo_ipc::FileType::kPng;
   EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
   EXPECT_TRUE(base::PathExists(saved_scan_path));

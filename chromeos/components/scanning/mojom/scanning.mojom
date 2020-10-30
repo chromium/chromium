@@ -4,6 +4,7 @@
 
 module chromeos.scanning.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
@@ -68,6 +69,8 @@ struct ScannerCapabilities {
 struct ScanSettings {
   // The SANE name of the ScanSource from which to scan.
   string source_name;
+  // The location to save scanned images to.
+  mojo_base.mojom.FilePath scan_to_path;
   // The file type to use when saving scanned images.
   FileType file_type;
   // The color mode with which to scan.

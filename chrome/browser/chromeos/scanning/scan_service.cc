@@ -22,13 +22,17 @@ namespace {
 
 namespace mojo_ipc = scanning::mojom;
 
-// Path to the user's "My files" folder, relative to the root directory.
-constexpr char kMyFilesPath[] = "home/chronos/user/MyFiles";
+// Path to the user's "My files" folder.
+constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 
 }  // namespace
 
-ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager)
-    : lorgnette_scanner_manager_(lorgnette_scanner_manager) {
+ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
+                         base::FilePath my_files_path,
+                         base::FilePath google_drive_path)
+    : lorgnette_scanner_manager_(lorgnette_scanner_manager),
+      my_files_path_(std::move(my_files_path)),
+      google_drive_path_(std::move(google_drive_path)) {
   DCHECK(lorgnette_scanner_manager_);
 }
 
@@ -57,8 +61,10 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
                        mojo_ipc::ScanSettingsPtr settings,
                        ScanCallback callback) {
   const std::string scanner_name = GetScannerName(scanner_id);
-  if (scanner_name.empty())
+  if (scanner_name.empty() || !FilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
+    return;
+  }
 
   base::Time::Now().LocalExplode(&start_time_);
   save_failed_ = false;
@@ -66,7 +72,8 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
       base::NullCallback(),
       base::BindRepeating(&ScanService::OnPageReceived,
-                          weak_ptr_factory_.GetWeakPtr(), settings->file_type),
+                          weak_ptr_factory_.GetWeakPtr(),
+                          settings->scan_to_path, settings->file_type),
       base::BindOnce(&ScanService::OnScanCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -76,8 +83,14 @@ void ScanService::BindInterface(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-void ScanService::SetRootDirForTesting(const base::FilePath& root_dir) {
-  root_dir_ = root_dir;
+void ScanService::SetGoogleDrivePathForTesting(
+    const base::FilePath& google_drive_path) {
+  google_drive_path_ = google_drive_path;
+}
+
+void ScanService::SetMyFilesPathForTesting(
+    const base::FilePath& my_files_path) {
+  my_files_path_ = my_files_path;
 }
 
 void ScanService::Shutdown() {
@@ -115,7 +128,8 @@ void ScanService::OnScannerCapabilitiesReceived(
       mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(capabilities.value()));
 }
 
-void ScanService::OnPageReceived(const mojo_ipc::FileType file_type,
+void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
+                                 const mojo_ipc::FileType file_type,
                                  std::string scanned_image,
                                  uint32_t page_number) {
   // TODO(jschettler): Add support for converting the scanned image to other
@@ -131,7 +145,7 @@ void ScanService::OnPageReceived(const mojo_ipc::FileType file_type,
       "scan_%02d%02d%02d-%02d%02d%02d_%d.png", start_time_.year,
       start_time_.month, start_time_.day_of_month, start_time_.hour,
       start_time_.minute, start_time_.second, page_number + 1);
-  const auto file_path = root_dir_.Append(kMyFilesPath).Append(filename);
+  const auto file_path = scan_to_path.Append(filename);
   if (!base::WriteFile(file_path, scanned_image)) {
     LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
     save_failed_ = true;
@@ -140,6 +154,20 @@ void ScanService::OnPageReceived(const mojo_ipc::FileType file_type,
 
 void ScanService::OnScanCompleted(ScanCallback callback, bool success) {
   std::move(callback).Run(success && !save_failed_);
+}
+
+bool ScanService::FilePathSupported(const base::FilePath& file_path) {
+  // TODO(jschettler): Remove this check once the path is selected by the user.
+  if (file_path == base::FilePath(kMyFilesPath))
+    return true;
+
+  if (!file_path.ReferencesParent() &&
+      (file_path == my_files_path_ || my_files_path_.IsParent(file_path) ||
+       google_drive_path_.IsParent(file_path))) {
+    return true;
+  }
+
+  return false;
 }
 
 std::string ScanService::GetScannerName(

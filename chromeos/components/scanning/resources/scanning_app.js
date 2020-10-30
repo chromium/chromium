@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
 import './page_size_select.js';
@@ -224,9 +225,11 @@ Polymer({
     this.scanButtonDisabled_ = true;
 
     // TODO(jschettler): Use the selected file type when ScanService supports
-    // it. Use the selected page size when the corresponding dropdown is added.
+    // it. Use the selected scan-to path when the corresponding dropdown is
+    // added.
     const settings = {
       'sourceName': this.selectedSource,
+      'scanToPath': {'path': '/home/chronos/user/MyFiles'},
       'fileType': chromeos.scanning.mojom.FileType.kPng,
       'colorMode': colorModeFromString(this.selectedColorMode),
       'pageSize': pageSizeFromString(this.selectedPageSize),
