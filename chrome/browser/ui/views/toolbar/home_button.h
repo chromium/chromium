@@ -35,6 +35,8 @@ class HomeButton : public ToolbarButton {
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, HomeButton, ToolbarButton)
-END_VIEW_BUILDER(/* no export */, HomeButton)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, HomeButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_HOME_BUTTON_H_

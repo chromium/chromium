@@ -74,8 +74,10 @@ VIEW_BUILDER_PROPERTY(int, MinimumCrossAxisSize)
 VIEW_BUILDER_PROPERTY(int, BetweenChildSpacing)
 VIEW_BUILDER_PROPERTY(int, CollapseMarginsSpacing)
 VIEW_BUILDER_PROPERTY(int, DefaultFlex)
-END_VIEW_BUILDER(VIEWS_EXPORT, BoxLayoutView)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, BoxLayoutView)
 
 #endif  // UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_

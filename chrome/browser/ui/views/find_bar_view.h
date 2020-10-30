@@ -125,6 +125,8 @@ class FindBarView : public views::BoxLayoutView,
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)
 VIEW_BUILDER_PROPERTY(FindBarHost*, Host)
-END_VIEW_BUILDER(/* no export */, FindBarView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, FindBarView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FIND_BAR_VIEW_H_

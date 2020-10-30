@@ -86,8 +86,10 @@ VIEW_BUILDER_PROPERTY(bool, Prominent)
 VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(float, CornerRadius)
 VIEW_BUILDER_PROPERTY(base::Optional<gfx::Insets>, CustomPadding)
-END_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_MD_TEXT_BUTTON_H_

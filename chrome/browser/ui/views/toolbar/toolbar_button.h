@@ -291,6 +291,8 @@ class ToolbarButton : public views::LabelButton,
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton, views::LabelButton)
 VIEW_BUILDER_PROPERTY(base::Optional<gfx::Insets>, LayoutInsets)
-END_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_BUTTON_H_

@@ -88,8 +88,10 @@ VIEW_BUILDER_PROPERTY(bool, CollapseMargins)
 VIEW_BUILDER_PROPERTY(bool, IncludeHostInsetsInLayout)
 VIEW_BUILDER_PROPERTY(bool, IgnoreDefaultMainAxisMargins)
 VIEW_BUILDER_PROPERTY(FlexAllocationOrder, FlexAllocationOrder)
-END_VIEW_BUILDER(VIEWS_EXPORT, FlexLayoutView)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, FlexLayoutView)
 
 #endif  // UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_

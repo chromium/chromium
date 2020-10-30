@@ -391,8 +391,10 @@ VIEW_BUILDER_PROPERTY(bool, RequestFocusOnPress)
 VIEW_BUILDER_PROPERTY(Button::ButtonState, State)
 VIEW_BUILDER_PROPERTY(base::string16, TooltipText)
 VIEW_BUILDER_PROPERTY(int, TriggerableEventFlags)
-END_VIEW_BUILDER(VIEWS_EXPORT, Button)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Button)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_BUTTON_H_

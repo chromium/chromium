@@ -2085,8 +2085,10 @@ VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
 VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
 VIEW_BUILDER_PROPERTY(bool, Visible)
 VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
-END_VIEW_BUILDER(VIEWS_EXPORT, View)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 #endif  // UI_VIEWS_VIEW_H_

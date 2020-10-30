@@ -118,7 +118,9 @@ class FindBarMatchCountLabel : public views::Label {
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel, views::Label)
-END_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel)
 
 BEGIN_METADATA(FindBarMatchCountLabel, views::Label)
 END_METADATA

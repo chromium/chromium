@@ -253,8 +253,10 @@ VIEW_BUILDER_PROPERTY(int, InkDropLargeCornerRadius)
 VIEW_BUILDER_PROPERTY(InkDropHostView::InkDropMode, InkDropMode)
 VIEW_BUILDER_PROPERTY(int, InkDropSmallCornerRadius)
 VIEW_BUILDER_PROPERTY(float, InkDropVisibleOpacity)
-END_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView)
 
 #endif  // UI_VIEWS_ANIMATION_INK_DROP_HOST_VIEW_H_

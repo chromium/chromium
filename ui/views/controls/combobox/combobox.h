@@ -238,8 +238,10 @@ VIEW_BUILDER_PROPERTY(bool, Invalid)
 VIEW_BUILDER_PROPERTY(bool, SizeToLargestLabel)
 VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
 VIEW_BUILDER_PROPERTY(base::string16, TooltipTextAndAccessibleName)
-END_VIEW_BUILDER(VIEWS_EXPORT, Combobox)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Combobox)
 
 #endif  // UI_VIEWS_CONTROLS_COMBOBOX_COMBOBOX_H_

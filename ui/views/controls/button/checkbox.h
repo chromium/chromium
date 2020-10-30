@@ -93,8 +93,10 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Checkbox, LabelButton)
 VIEW_BUILDER_PROPERTY(bool, Checked)
 VIEW_BUILDER_PROPERTY(bool, MultiLine)
-END_VIEW_BUILDER(VIEWS_EXPORT, Checkbox)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Checkbox)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_CHECKBOX_H_

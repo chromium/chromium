@@ -46,8 +46,10 @@ class VIEWS_EXPORT Separator : public View {
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)
 VIEW_BUILDER_PROPERTY(SkColor, Color)
 VIEW_BUILDER_PROPERTY(int, PreferredHeight)
-END_VIEW_BUILDER(VIEWS_EXPORT, Separator)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Separator)
 
 #endif  // UI_VIEWS_CONTROLS_SEPARATOR_H_

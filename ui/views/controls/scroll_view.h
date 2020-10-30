@@ -338,7 +338,7 @@ VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BackgroundColor)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, VerticalScrollBar)
 VIEW_BUILDER_PROPERTY(bool, HasFocusIndicator)
-END_VIEW_BUILDER(VIEWS_EXPORT, ScrollView)
+END_VIEW_BUILDER
 
 // VariableRowHeightScrollHelper is intended for views that contain rows of
 // varying height. To use a VariableRowHeightScrollHelper create one supplying
@@ -413,5 +413,7 @@ class FixedRowHeightScrollHelper : public VariableRowHeightScrollHelper {
 };
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ScrollView)
 
 #endif  // UI_VIEWS_CONTROLS_SCROLL_VIEW_H_

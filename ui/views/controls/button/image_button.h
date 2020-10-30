@@ -114,7 +114,7 @@ VIEW_BUILDER_PROPERTY(ImageButton::HorizontalAlignment,
                       ImageHorizontalAlignment)
 VIEW_BUILDER_PROPERTY(ImageButton::VerticalAlignment, ImageVerticalAlignment)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinimumImageSize)
-END_VIEW_BUILDER(VIEWS_EXPORT, ImageButton)
+END_VIEW_BUILDER
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -179,8 +179,11 @@ BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ToggleImageButton, ImageButton)
 VIEW_BUILDER_PROPERTY(bool, Toggled)
 VIEW_BUILDER_PROPERTY(base::string16, ToggledTooltipText)
 VIEW_BUILDER_PROPERTY(base::string16, ToggledAccessibleName)
-END_VIEW_BUILDER(VIEWS_EXPORT, ToggleImageButton)
+END_VIEW_BUILDER
 
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ImageButton)
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ToggleImageButton)
 
 #endif  // UI_VIEWS_CONTROLS_BUTTON_IMAGE_BUTTON_H_
