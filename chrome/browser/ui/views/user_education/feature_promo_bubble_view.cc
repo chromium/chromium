@@ -144,7 +144,9 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
   }
 
   const base::string16 body_text =
-      l10n_util::GetStringUTF16(params.body_string_specifier);
+      params.body_string_specifier != -1
+          ? l10n_util::GetStringUTF16(params.body_string_specifier)
+          : params.body_text_raw;
 
   // Feature promos are purely informational. We can skip reading the UI
   // elements inside the bubble and just have the information announced when the

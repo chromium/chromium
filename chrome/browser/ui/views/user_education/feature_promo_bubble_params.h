@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -26,6 +27,15 @@ struct FeaturePromoBubbleParams {
 
   // The main promo text. Must be set to a valid string specifier.
   int body_string_specifier = -1;
+
+  // If |body_string_specifier| is not set, this will be used instead.
+  // Only use if your string has placeholders that need to be filled in
+  // dynamically.
+  //
+  // TODO(crbug.com/1143971): enable filling placeholders in
+  // |body_string_specifier| with context-specific information then
+  // remove this.
+  base::string16 body_text_raw;
 
   // Title shown larger at top of bubble. Optional.
   base::Optional<int> title_string_specifier;
