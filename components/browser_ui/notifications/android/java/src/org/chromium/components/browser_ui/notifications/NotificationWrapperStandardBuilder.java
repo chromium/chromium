@@ -282,8 +282,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
-    public NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions,
-            PendingIntent intent, boolean showCancelButton) {
+    public NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions) {
         Notification.MediaStyle style = new Notification.MediaStyle();
         style.setMediaSession(((MediaSession) session.getMediaSession()).getSessionToken());
         style.setShowActionsInCompactView(actions);

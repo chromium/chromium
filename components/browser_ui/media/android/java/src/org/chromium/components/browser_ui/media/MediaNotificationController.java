@@ -754,8 +754,7 @@ public class MediaNotificationController {
 
         // Only apply MediaStyle when NotificationInfo supports play/pause.
         if (mMediaNotificationInfo.supportsPlayPause()) {
-            builder.setMediaStyle(mMediaSession, computeCompactViewActionIndices(bigViewActions),
-                    createPendingIntent(ACTION_CANCEL), true);
+            builder.setMediaStyle(mMediaSession, computeCompactViewActionIndices(bigViewActions));
         }
     }
 

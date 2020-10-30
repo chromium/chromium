@@ -255,14 +255,11 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
-    public NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions,
-            PendingIntent intent, boolean showCancelButton) {
+    public NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions) {
         androidx.media.app.NotificationCompat.MediaStyle style =
                 new androidx.media.app.NotificationCompat.MediaStyle();
         style.setMediaSession(session.getSessionToken());
         style.setShowActionsInCompactView(actions);
-        style.setCancelButtonIntent(intent);
-        style.setShowCancelButton(showCancelButton);
         mBuilder.setStyle(style);
         return this;
     }

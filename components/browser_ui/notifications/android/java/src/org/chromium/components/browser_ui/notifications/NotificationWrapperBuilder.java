@@ -104,8 +104,7 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setStyle(Notification.BigTextStyle bigTextStyle);
 
-    NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions,
-            PendingIntent intent, boolean showCancelButton);
+    NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions);
 
     NotificationWrapperBuilder setCategory(String category);
 
