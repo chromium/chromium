@@ -54,6 +54,9 @@ class WebState;
 // Tell location bar has taken focus.
 - (void)locationBarDidBecomeFirstResponder;
 
+// Constrains the named layout guide for the Discover header menu button.
+- (void)constrainDiscoverHeaderMenuButtonNamedGuide;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COORDINATOR_H_

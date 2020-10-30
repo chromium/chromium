@@ -38,6 +38,9 @@ class ChromeBrowserState;
 // Notifies the presenter that the tools menu has been displayed.
 - (void)toolsMenuDisplayed;
 
+// Presents a bubble associated with the Discover feed header's menu button.
+- (void)presentDiscoverFeedHeaderTipBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

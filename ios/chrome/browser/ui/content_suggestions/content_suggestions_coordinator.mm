@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -109,6 +110,7 @@
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 @property(nonatomic, strong) NTPHomeMediator* NTPMediator;
 @property(nonatomic, strong) UIViewController* discoverFeedViewController;
+@property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 // Redefined as readwrite.
@@ -337,6 +339,14 @@
   return self.suggestionsViewController;
 }
 
+- (void)constrainDiscoverHeaderMenuButtonNamedGuide {
+  NamedGuide* menuButtonGuide =
+      [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
+                           view:self.discoverFeedHeaderMenuButton];
+
+  menuButtonGuide.constrainedView = self.discoverFeedHeaderMenuButton;
+}
+
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)promoShown {
@@ -344,6 +354,10 @@
       [self.contentSuggestionsMediator notificationPromo];
   notificationPromo->HandleViewed();
   [self.headerController setPromoCanShow:notificationPromo->CanShow()];
+}
+
+- (void)discoverHeaderMenuButtonShown:(UIView*)menuButton {
+  _discoverFeedHeaderMenuButton = menuButton;
 }
 
 #pragma mark - OverscrollActionsControllerDelegate
@@ -428,7 +442,7 @@
 
 #pragma mark - DiscoverFeedMenuCommands
 
-- (void)openDiscoverFeedMenu:(UIView*)menuButton {
+- (void)openDiscoverFeedMenu {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
 
@@ -437,8 +451,8 @@
                          browser:self.browser
                            title:nil
                          message:nil
-                            rect:menuButton.frame
-                            view:menuButton.superview];
+                            rect:self.discoverFeedHeaderMenuButton.frame
+                            view:self.discoverFeedHeaderMenuButton.superview];
   __weak ContentSuggestionsCoordinator* weakSelf = self;
 
   if ([self.contentSuggestionsVisible value]) {

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -175,12 +174,9 @@ const CGFloat kFeedCardIPhoneWidth = 375;
   } else {
     [self setHeaderForFeedVisible:visible animate:NO];
   }
+  // TODO(crbug.com/1131571)(adamta@): Check if still necessary to layout
+  // content view.
   [self.contentView layoutIfNeeded];
-  NamedGuide* menuButtonGuide =
-      [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
-                           view:self.menuButton];
-
-  menuButtonGuide.constrainedView = self.menuButton;
   self.discoverFeedVisible = [NSNumber numberWithBool:visible];
 }
 

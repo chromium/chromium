@@ -148,6 +148,41 @@ const CGFloat kBubblePresentationDelay = 1;
   }
 }
 
+- (void)presentDiscoverFeedHeaderTipBubble {
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
+
+  NamedGuide* guide = [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
+                                           view:self.rootViewController.view];
+  DCHECK(guide);
+  UIView* menuButton = guide.constrainedView;
+  // Checks "canPresentBubble" after checking that the NTP with feed is visible.
+  // This ensures that the feature tracker doesn't trigger the IPH event if the
+  // bubble isn't shown, which would prevent it from ever being shown again.
+  if (!menuButton || ![self canPresentBubble]) {
+    return;
+  }
+  CGPoint discoverFeedHeaderAnchor =
+      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
+  discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 2;
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the new tab tip, then end early to prevent the potential reassignment
+  // of the existing |tabTipBubblePresenter| to nil.
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHDiscoverFeedHeaderFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTrailing
+                         text:text
+        voiceOverAnnouncement:nil
+                  anchorPoint:discoverFeedHeaderAnchor];
+  if (!presenter)
+    return;
+
+  self.discoverFeedHeaderMenuTipBubblePresenter = presenter;
+}
+
 #pragma mark - Private
 
 - (void)presentBubbles {
@@ -163,7 +198,6 @@ const CGFloat kBubblePresentationDelay = 1;
   // The bottom toolbar and Discover feed header menu don't use the
   // isUserEngaged, so don't check if the user is engaged here.
   [self presentBottomToolbarTipBubble];
-  [self presentDiscoverFeedHeaderTipBubble];
 }
 
 - (void)presentLongPressBubble {
@@ -256,42 +290,6 @@ presentBubbleForFeature:(const base::Feature&)feature
   self.bottomToolbarTipBubblePresenter = presenter;
   feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
       ->NotifyEvent(feature_engagement::events::kBottomToolbarOpened);
-}
-
-// Presents a bubble associated with the Discover feed header's menu button.
-- (void)presentDiscoverFeedHeaderTipBubble {
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  NSString* text =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
-
-  NamedGuide* guide = [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
-                                           view:self.rootViewController.view];
-  DCHECK(guide);
-  UIView* menuButton = guide.constrainedView;
-  // Checks "canPresentBubble" after checking that the NTP with feed is visible.
-  // This ensures that the feature tracker doesn't trigger the IPH event if the
-  // bubble isn't shown, which would prevent it from ever being shown again.
-  if (!menuButton || ![self canPresentBubble]) {
-    return;
-  }
-  CGPoint discoverFeedHeaderAnchor =
-      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
-  discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 2;
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the new tab tip, then end early to prevent the potential reassignment
-  // of the existing |tabTipBubblePresenter| to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHDiscoverFeedHeaderFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentTrailing
-                         text:text
-        voiceOverAnnouncement:nil
-                  anchorPoint:discoverFeedHeaderAnchor];
-  if (!presenter)
-    return;
-
-  self.discoverFeedHeaderMenuTipBubblePresenter = presenter;
 }
 
 // Optionally presents a bubble associated with the new tab tip in-product help
