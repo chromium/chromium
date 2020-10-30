@@ -26,7 +26,7 @@ FontEnumerationCache* FontEnumerationCache::GetInstance() {
 
 void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
     scoped_refptr<base::TaskRunner> task_runner,
-    blink::mojom::FontAccessManager::EnumerateLocalFontsCallback callback) {
+    CacheTaskCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
 
   callbacks_task_runner_->PostTask(
@@ -56,7 +56,7 @@ void FontEnumerationCache::ResetStateForTesting() {
   enumeration_cache_memory_ = base::MappedReadOnlyRegion();
   enumeration_cache_built_.UnsafeResetForTesting();
   enumeration_cache_build_started_.UnsafeResetForTesting();
-  status_ = FontEnumerationStatus::kOk;
+  status_ = blink::mojom::FontEnumerationStatus::kOk;
 }
 
 base::ReadOnlySharedMemoryRegion FontEnumerationCache::DuplicateMemoryRegion() {
@@ -66,8 +66,8 @@ base::ReadOnlySharedMemoryRegion FontEnumerationCache::DuplicateMemoryRegion() {
 
 FontEnumerationCache::CallbackOnTaskRunner::CallbackOnTaskRunner(
     scoped_refptr<base::TaskRunner> runner,
-    blink::mojom::FontAccessManager::EnumerateLocalFontsCallback callback)
-    : task_runner(std::move(runner)), mojo_callback(std::move(callback)) {}
+    CacheTaskCallback callback)
+    : task_runner(std::move(runner)), callback(std::move(callback)) {}
 
 FontEnumerationCache::CallbackOnTaskRunner::CallbackOnTaskRunner(
     CallbackOnTaskRunner&& other) = default;
@@ -79,8 +79,8 @@ void FontEnumerationCache::RunPendingCallback(
   DCHECK(callbacks_task_runner_->RunsTasksInCurrentSequence());
 
   pending_callback.task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(pending_callback.mojo_callback),
-                                status_, DuplicateMemoryRegion()));
+      FROM_HERE, base::BindOnce(std::move(pending_callback.callback), status_,
+                                DuplicateMemoryRegion()));
 }
 
 void FontEnumerationCache::StartCallbacksTaskQueue() {
