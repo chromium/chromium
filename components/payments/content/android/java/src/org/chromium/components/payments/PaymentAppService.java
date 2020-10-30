@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import androidx.annotation.VisibleForTesting;
-
-import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryParams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,15 +28,6 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         return sInstance;
     }
 
-    // TODO(crbug.com/1142846): remove this method after we change to use getInstance() to add
-    // GooglePayPaymentFactory.
-    @VisibleForTesting
-    public static PaymentAppService getInstanceWithoutFactoryForTest() {
-        if (sInstance == null) sInstance = new PaymentAppService();
-        return sInstance;
-    }
-
-    /** Prevent instantiation. */
     private PaymentAppService() {}
 
     // TODO(crbug.com/1142846): Remove this method after tests and clank switch to use
