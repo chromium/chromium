@@ -583,14 +583,18 @@ public class RootUiCoordinator
             mButtonDataProviders = Arrays.asList(mIdentityDiscController, shareButtonController);
             mToolbarManager = new ToolbarManager(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getFullscreenManager(), toolbarContainer,
-                    mActivity.getCompositorViewHolder().getInvalidator(), urlFocusChangedCallback,
+                    mActivity.getCompositorViewHolder(), urlFocusChangedCallback,
                     mTabThemeColorProvider, mTabObscuringHandler, mShareDelegateSupplier,
                     mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
                     mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
                     mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
                     mOverviewModeBehaviorSupplier, mAppMenuSupplier, shouldShowMenuUpdateBadge(),
                     mTabModelSelectorSupplier, mStartSurfaceSupplier, mOmniboxFocusStateSupplier,
-                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier);
+                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
+                    mActivity.getWindowAndroid(), mActivity::isInOverviewMode,
+                    mActivity.isCustomTab(), mActivity.getModalDialogManagerSupplier(),
+                    mActivity.getNightModeStateProvider(), mActivity.getStatusBarColorController(),
+                    /* appMenuDelegate= */ mActivity);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

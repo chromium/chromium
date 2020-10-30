@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider.SYNTHETIC_TRIAL_POSTFIX;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,7 +87,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      * Handle any initialization that occurs once native has been loaded.
      */
     @Override
-    public void initializeWithNative(ChromeActivity activity,
+    public void initializeWithNative(Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController) {
         if (UmaSessionStats.isMetricsServiceAvailable()) {
             UmaSessionStats.registerSyntheticFieldTrial(
@@ -94,9 +95,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                     "Downloaded_Enabled");
         }
         assert activity instanceof ChromeTabbedActivity;
-        mActivity = activity;
-        TabModelSelector tabModelSelector = activity.getTabModelSelector();
-        TabContentManager tabContentManager = activity.getTabContentManager();
+        mActivity = (ChromeActivity) activity;
+        TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
+        TabContentManager tabContentManager = mActivity.getTabContentManager();
 
         boolean actionOnAllRelatedTabs = TabUiFeatureUtilities.isConditionalTabStripEnabled();
         mTabStripCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.STRIP,
@@ -115,24 +116,25 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         TabGridDialogMediator.DialogController dialogController = null;
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled() && mScrimCoordinator != null) {
             mTabGridDialogCoordinator = new TabGridDialogCoordinator(mContext, tabModelSelector,
-                    tabContentManager, activity, activity.findViewById(R.id.coordinator), null,
-                    null, null, mActivity.getShareDelegateSupplier(), mScrimCoordinator);
+                    tabContentManager, /* tabCreatorManager= */ mActivity,
+                    activity.findViewById(R.id.coordinator), null, null, null,
+                    mActivity.getShareDelegateSupplier(), mScrimCoordinator);
             mTabGridDialogCoordinator.initWithNative(mContext, tabModelSelector, tabContentManager,
                     mTabStripCoordinator.getTabGroupTitleEditor());
             dialogController = mTabGridDialogCoordinator.getDialogController();
         }
 
         mMediator = new TabGroupUiMediator(activity, visibilityController, this, mModel,
-                tabModelSelector, activity,
-                ((ChromeTabbedActivity) activity).getOverviewModeBehaviorSupplier(),
-                mThemeColorProvider, dialogController, activity.getLifecycleDispatcher(), activity,
+                tabModelSelector, /* tabCreatorManager= */ mActivity,
+                mActivity.getOverviewModeBehaviorSupplier(), mThemeColorProvider, dialogController,
+                mActivity.getLifecycleDispatcher(), /* snackbarManageable= */ mActivity,
                 mOmniboxFocusStateSupplier);
 
         TabGroupUtils.startObservingForCreationIPH();
 
         if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) return;
 
-        mActivityLifecycleDispatcher = activity.getLifecycleDispatcher();
+        mActivityLifecycleDispatcher = mActivity.getLifecycleDispatcher();
         mActivityLifecycleDispatcher.register(this);
 
         // TODO(meiliang): Potential leak if the observer is added after restoreCompleted. Fix it.

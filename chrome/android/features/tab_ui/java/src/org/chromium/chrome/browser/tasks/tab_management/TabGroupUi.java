@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
+
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 
 /**
@@ -19,7 +20,7 @@ public interface TabGroupUi {
      */
     boolean onBackPressed();
 
-    void initializeWithNative(ChromeActivity activity,
+    void initializeWithNative(Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController);
 
     /**

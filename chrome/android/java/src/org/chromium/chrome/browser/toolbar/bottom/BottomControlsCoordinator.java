@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -125,7 +125,7 @@ public class BottomControlsCoordinator {
      * dependencies.
      * <p>
      * Calling this must occur after the native library have completely loaded.
-     * @param chromeActivity ChromeActivity instance to use.
+     * @param activity Activity instance to use.
      * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
      * @param layoutManager A {@link LayoutManager} to attach overlays to.
      * @param tabSwitcherListener An {@link OnClickListener} that is triggered when the
@@ -139,7 +139,7 @@ public class BottomControlsCoordinator {
      * @param topToolbarRoot The root {@link ViewGroup} of the top toolbar.
      * @param closeAllTabsAction The runnable that closes all tabs in the current tab model.
      */
-    public void initializeWithNative(ChromeActivity chromeActivity, ResourceManager resourceManager,
+    public void initializeWithNative(Activity activity, ResourceManager resourceManager,
             LayoutManager layoutManager, OnClickListener tabSwitcherListener,
             OnClickListener newTabClickListener, WindowAndroid windowAndroid,
             TabCountProvider tabCountProvider, IncognitoStateProvider incognitoStateProvider,
@@ -149,7 +149,7 @@ public class BottomControlsCoordinator {
         mMediator.setWindowAndroid(windowAndroid);
 
         if (mTabGroupUi != null) {
-            mTabGroupUi.initializeWithNative(chromeActivity, mMediator::setBottomControlsVisible);
+            mTabGroupUi.initializeWithNative(activity, mMediator::setBottomControlsVisible);
         }
     }
 
