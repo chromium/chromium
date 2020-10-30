@@ -34,7 +34,6 @@
 namespace blink {
 
 class DocumentMarker;
-class GraphicsContext;
 class TextMarkerBase;
 
 class CORE_EXPORT InlineTextBox : public InlineBox {
@@ -135,7 +134,7 @@ class CORE_EXPORT InlineTextBox : public InlineBox {
       bool include_newline_space_width = true) const;
   void SelectionStartEnd(int& s_pos, int& e_pos) const;
 
-  virtual void PaintDocumentMarker(GraphicsContext&,
+  virtual void PaintDocumentMarker(const PaintInfo&,
                                    const PhysicalOffset& box_origin,
                                    const DocumentMarker&,
                                    const ComputedStyle&,

@@ -592,14 +592,14 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
       case DocumentMarker::kSpelling:
         if (marker_paint_phase == DocumentMarkerPaintPhase::kBackground)
           continue;
-        inline_text_box_.PaintDocumentMarker(paint_info.context, box_origin,
-                                             marker, style, font, false);
+        inline_text_box_.PaintDocumentMarker(paint_info, box_origin, marker,
+                                             style, font, false);
         break;
       case DocumentMarker::kGrammar:
         if (marker_paint_phase == DocumentMarkerPaintPhase::kBackground)
           continue;
-        inline_text_box_.PaintDocumentMarker(paint_info.context, box_origin,
-                                             marker, style, font, true);
+        inline_text_box_.PaintDocumentMarker(paint_info, box_origin, marker,
+                                             style, font, true);
         break;
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kTextMatch:
@@ -635,7 +635,7 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
   }
 }
 
-void InlineTextBoxPainter::PaintDocumentMarker(GraphicsContext& context,
+void InlineTextBoxPainter::PaintDocumentMarker(const PaintInfo& paint_info,
                                                const PhysicalOffset& box_origin,
                                                const DocumentMarker& marker,
                                                const ComputedStyle& style,
@@ -684,7 +684,7 @@ void InlineTextBoxPainter::PaintDocumentMarker(GraphicsContext& context,
     width = LayoutUnit(marker_rect.Width());
   }
   DocumentMarkerPainter::PaintDocumentMarker(
-      context, box_origin, style, marker.GetType(),
+      paint_info, box_origin, style, marker.GetType(),
       PhysicalRect(start, LayoutUnit(), width,
                    inline_text_box_.LogicalHeight()));
 }
@@ -789,8 +789,9 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
     Color text_color,
     LayoutTextCombine* combined_text) {
   auto layout_item = inline_text_box_.GetLineLayoutItem();
-  Color c = HighlightPaintingUtils::SelectionBackgroundColor(
-      layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode());
+  Color c = HighlightPaintingUtils::HighlightBackgroundColor(
+      layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode(),
+      kPseudoIdSelection);
   if (!c.Alpha())
     return PhysicalRect();
 
@@ -863,10 +864,9 @@ void InlineTextBoxPainter::PaintTextMarkerForeground(
 
   const TextPaintStyle text_style =
       DocumentMarkerPainter::ComputeTextPaintStyleFrom(
-          style, marker,
-          inline_text_box_.GetLineLayoutItem()
-              .GetDocument()
-              .InForcedColorsMode());
+          inline_text_box_.GetLineLayoutItem().GetDocument(),
+          inline_text_box_.GetLineLayoutItem().GetNode(), style, marker,
+          paint_info);
   if (text_style.current_color == Color::kTransparent)
     return;
 

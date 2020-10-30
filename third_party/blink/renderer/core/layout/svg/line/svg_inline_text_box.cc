@@ -230,7 +230,7 @@ bool SVGInlineTextBox::MapStartEndPositionsIntoFragmentCoordinates(
   return start_position < end_position;
 }
 
-void SVGInlineTextBox::PaintDocumentMarker(GraphicsContext&,
+void SVGInlineTextBox::PaintDocumentMarker(const PaintInfo&,
                                            const PhysicalOffset&,
                                            const DocumentMarker&,
                                            const ComputedStyle&,

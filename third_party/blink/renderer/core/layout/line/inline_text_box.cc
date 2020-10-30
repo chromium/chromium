@@ -508,14 +508,14 @@ void InlineTextBox::SelectionStartEnd(int& s_pos, int& e_pos) const {
   e_pos = std::min(static_cast<int>(status.end) - start_, (int)len_);
 }
 
-void InlineTextBox::PaintDocumentMarker(GraphicsContext& pt,
+void InlineTextBox::PaintDocumentMarker(const PaintInfo& paint_info,
                                         const PhysicalOffset& box_origin,
                                         const DocumentMarker& marker,
                                         const ComputedStyle& style,
                                         const Font& font,
                                         bool grammar) const {
-  InlineTextBoxPainter(*this).PaintDocumentMarker(pt, box_origin, marker, style,
-                                                  font, grammar);
+  InlineTextBoxPainter(*this).PaintDocumentMarker(paint_info, box_origin,
+                                                  marker, style, font, grammar);
 }
 
 void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,

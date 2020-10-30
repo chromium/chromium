@@ -49,7 +49,7 @@ class InlineTextBoxPainter {
                             const ComputedStyle&,
                             const Font&,
                             DocumentMarkerPaintPhase);
-  void PaintDocumentMarker(GraphicsContext&,
+  void PaintDocumentMarker(const PaintInfo&,
                            const PhysicalOffset& box_origin,
                            const DocumentMarker&,
                            const ComputedStyle&,

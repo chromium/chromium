@@ -24,23 +24,27 @@ class CORE_EXPORT HighlightPaintingUtils {
   STATIC_ONLY(HighlightPaintingUtils);
 
  public:
-  static base::Optional<AppliedTextDecoration> SelectionTextDecoration(
-      const ComputedStyle&,
-      const ComputedStyle&);
-  static Color SelectionBackgroundColor(const Document&,
-                                        const ComputedStyle&,
-                                        Node*);
-  static Color SelectionForegroundColor(const Document&,
+  static base::Optional<AppliedTextDecoration> HighlightTextDecoration(
+      const ComputedStyle& style,
+      const ComputedStyle& pseudo_style);
+  static Color HighlightBackgroundColor(const Document&,
                                         const ComputedStyle&,
                                         Node*,
+                                        PseudoId);
+  static Color HighlightForegroundColor(const Document&,
+                                        const ComputedStyle&,
+                                        Node*,
+                                        PseudoId,
                                         const GlobalPaintFlags);
-  static Color SelectionEmphasisMarkColor(const Document&,
+  static Color HighlightEmphasisMarkColor(const Document&,
                                           const ComputedStyle&,
                                           Node*,
+                                          PseudoId,
                                           const GlobalPaintFlags);
-  static TextPaintStyle SelectionPaintingStyle(const Document&,
+  static TextPaintStyle HighlightPaintingStyle(const Document&,
                                                const ComputedStyle&,
                                                Node*,
+                                               PseudoId,
                                                const TextPaintStyle& text_style,
                                                const PaintInfo&);
 };

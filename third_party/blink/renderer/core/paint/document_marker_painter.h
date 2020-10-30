@@ -11,14 +11,16 @@
 namespace blink {
 
 class ComputedStyle;
+class Document;
 class FloatRect;
 class GraphicsContext;
 class LayoutUnit;
 class StyleableMarker;
 class TextMarkerBase;
-struct TextPaintStyle;
+struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
+struct TextPaintStyle;
 
 // Document marker painter for both LayoutNG and legacy layout.
 // This paints text decorations for spell/grammer check, find-in-page, and
@@ -34,14 +36,16 @@ class DocumentMarkerPainter {
                                             const FloatRect& marker_rect,
                                             LayoutUnit logical_height,
                                             bool in_dark_mode);
-  static void PaintDocumentMarker(GraphicsContext& context,
+  static void PaintDocumentMarker(const PaintInfo& paint_info,
                                   const PhysicalOffset& box_origin,
                                   const ComputedStyle& style,
                                   DocumentMarker::MarkerType marker_type,
                                   const PhysicalRect& local_rect);
-  static TextPaintStyle ComputeTextPaintStyleFrom(const ComputedStyle& style,
+  static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
+                                                  Node* node,
+                                                  const ComputedStyle& style,
                                                   const TextMarkerBase& marker,
-                                                  bool in_forced_colors_mode);
+                                                  const PaintInfo& paint_info);
   static bool ShouldPaintMarkerUnderline(const StyleableMarker& marker);
 };
 

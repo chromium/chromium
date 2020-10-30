@@ -57,14 +57,16 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 
   EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::SelectionForegroundColor(
-                                  GetDocument(), text_style, text_node, flags));
+  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(
+                                  GetDocument(), text_style, text_node,
+                                  kPseudoIdSelection, flags));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
-                                  GetDocument(), text_style, text_node, flags));
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
+                                  GetDocument(), text_style, text_node,
+                                  kPseudoIdSelection, flags));
   const ComputedStyle* active_style =
       body_style.GetCachedPseudoElementStyle(kPseudoIdSelection);
   EXPECT_TRUE(active_style);
@@ -72,8 +74,9 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   // Unfocus the window.
   GetPage().SetActive(false);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::SelectionForegroundColor(
-                                  GetDocument(), text_style, text_node, flags));
+  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(
+                                  GetDocument(), text_style, text_node,
+                                  kPseudoIdSelection, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
@@ -116,22 +119,25 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   EXPECT_TRUE(active_style);
 
   EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
-                                  GetDocument(), text_style, text_node, flags));
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
+                                  GetDocument(), text_style, text_node,
+                                  kPseudoIdSelection, flags));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
-                                  GetDocument(), text_style, text_node, flags));
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
+                                  GetDocument(), text_style, text_node,
+                                  kPseudoIdSelection, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 
   // Unfocus the window.
   GetPage().SetActive(false);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
-                                  GetDocument(), text_style, text_node, flags));
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
+                                  GetDocument(), text_style, text_node,
+                                  kPseudoIdSelection, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
@@ -168,8 +174,9 @@ TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
                        kGlobalPaintNormalPhase, 0 /* paint_flags */);
   TextPaintStyle paint_style;
 
-  paint_style = HighlightPaintingUtils::SelectionPaintingStyle(
-      GetDocument(), text_style, text_node, paint_style, paint_info);
+  paint_style = HighlightPaintingUtils::HighlightPaintingStyle(
+      GetDocument(), text_style, text_node, kPseudoIdSelection, paint_style,
+      paint_info);
 
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_TRUE(paint_style.shadow);

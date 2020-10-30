@@ -30,6 +30,86 @@ bool NodeIsSelectable(const ComputedStyle& style, Node* node) {
                                style.UserModify() == EUserModify::kReadOnly);
 }
 
+Color ForcedSystemForegroundColor(PseudoId pseudo_id,
+                                  mojom::blink::ColorScheme color_scheme) {
+  CSSValueID keyword = CSSValueID::kHighlighttext;
+  switch (pseudo_id) {
+    case kPseudoIdTargetText:
+      // TODO(futhark): According to the spec, the UA style should use Marktext.
+      keyword = CSSValueID::kHighlighttext;
+      break;
+    case kPseudoIdSelection:
+      keyword = CSSValueID::kHighlighttext;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
+}
+
+Color ForcedSystemBackgroundColor(PseudoId pseudo_id,
+                                  mojom::blink::ColorScheme color_scheme) {
+  CSSValueID keyword = CSSValueID::kHighlight;
+  switch (pseudo_id) {
+    case kPseudoIdTargetText:
+      // TODO(futhark): According to the spec, the UA style should use Mark.
+      keyword = CSSValueID::kHighlight;
+      break;
+    case kPseudoIdSelection:
+      keyword = CSSValueID::kHighlight;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
+}
+
+Color HighlightThemeForegroundColor(const Document& document,
+                                    const ComputedStyle& style,
+                                    const CSSProperty& color_property,
+                                    PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdSelection:
+      if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors())
+        return style.VisitedDependentColor(color_property);
+      if (document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
+        return LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
+            style.UsedColorScheme());
+      }
+      return LayoutTheme::GetTheme().InactiveSelectionForegroundColor(
+          style.UsedColorScheme());
+    case kPseudoIdTargetText:
+      return LayoutTheme::GetTheme().PlatformTextSearchColor(
+          false /* active match */, document.InForcedColorsMode(),
+          style.UsedColorScheme());
+    default:
+      NOTREACHED();
+      return Color();
+  }
+}
+
+Color HighlightThemeBackgroundColor(const Document& document,
+                                    const ComputedStyle& style,
+                                    PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdSelection:
+      return document.GetFrame()->Selection().FrameIsFocusedAndActive()
+                 ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
+                       style.UsedColorScheme())
+                 : LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
+                       style.UsedColorScheme());
+    case kPseudoIdTargetText:
+      return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
+          false /* active match */, document.InForcedColorsMode(),
+          style.UsedColorScheme());
+    default:
+      NOTREACHED();
+      return Color();
+  }
+}
+
 scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
                                                         PseudoId pseudo) {
   if (!node)
@@ -77,75 +157,71 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
   return element->CachedStyleForPseudoElement(request);
 }
 
-Color SelectionColor(const Document& document,
+Color HighlightColor(const Document& document,
                      const ComputedStyle& style,
                      Node* node,
+                     PseudoId pseudo,
                      const CSSProperty& color_property,
                      const GlobalPaintFlags global_paint_flags) {
-  // If the element is unselectable, or we are only painting the selection,
-  // don't override the foreground color with the selection foreground color.
-  if ((node && !NodeIsSelectable(style, node)) ||
-      (global_paint_flags & kGlobalPaintSelectionDragImageOnly))
-    return style.VisitedDependentColor(color_property);
-
-  if (scoped_refptr<const ComputedStyle> pseudo_style =
-          HighlightPseudoStyle(node, kPseudoIdSelection)) {
-    if (document.InForcedColorsMode() &&
-        pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kNone) {
-      return LayoutTheme::GetTheme().SystemColor(CSSValueID::kHighlighttext,
-                                                 style.UsedColorScheme());
+  if (pseudo == kPseudoIdSelection) {
+    // If the element is unselectable, or we are only painting the selection,
+    // don't override the foreground color with the selection foreground color.
+    if ((node && !NodeIsSelectable(style, node)) ||
+        (global_paint_flags & kGlobalPaintSelectionDragImageOnly)) {
+      return style.VisitedDependentColor(color_property);
     }
-    return pseudo_style->VisitedDependentColor(color_property);
   }
 
-  if (document.InForcedColorsMode()) {
-    return LayoutTheme::GetTheme().SystemColor(CSSValueID::kHighlighttext,
-                                               style.UsedColorScheme());
+  scoped_refptr<const ComputedStyle> pseudo_style =
+      HighlightPseudoStyle(node, pseudo);
+
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  if (pseudo_style) {
+    if (!document.InForcedColorsMode() ||
+        pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
+      return pseudo_style->VisitedDependentColor(color_property);
+    }
+    color_scheme = pseudo_style->UsedColorScheme();
   }
 
-  if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors())
-    return style.VisitedDependentColor(color_property);
-  return document.GetFrame()->Selection().FrameIsFocusedAndActive()
-             ? LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
-                   style.UsedColorScheme())
-             : LayoutTheme::GetTheme().InactiveSelectionForegroundColor(
-                   style.UsedColorScheme());
+  if (document.InForcedColorsMode())
+    return ForcedSystemForegroundColor(pseudo, color_scheme);
+  return HighlightThemeForegroundColor(document, style, color_property, pseudo);
 }
 
 }  // anonymous namespace
 
-Color HighlightPaintingUtils::SelectionBackgroundColor(
+Color HighlightPaintingUtils::HighlightBackgroundColor(
     const Document& document,
     const ComputedStyle& style,
-    Node* node) {
-  if (node && !NodeIsSelectable(style, node))
-    return Color::kTransparent;
+    Node* node,
+    PseudoId pseudo) {
+  if (pseudo == kPseudoIdSelection) {
+    if (node && !NodeIsSelectable(style, node))
+      return Color::kTransparent;
+  }
 
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   if (scoped_refptr<const ComputedStyle> pseudo_style =
-          HighlightPseudoStyle(node, kPseudoIdSelection)) {
-    if (document.InForcedColorsMode() &&
-        pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kNone) {
-      return LayoutTheme::GetTheme().SystemColor(CSSValueID::kHighlight,
-                                                 style.UsedColorScheme());
+          HighlightPseudoStyle(node, pseudo)) {
+    if (!document.InForcedColorsMode() ||
+        pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
+      Color highlight_color =
+          pseudo_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      if (pseudo == kPseudoIdSelection)
+        return highlight_color.BlendWithWhite();
+      return highlight_color;
     }
-    return pseudo_style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
-        .BlendWithWhite();
+    color_scheme = pseudo_style->UsedColorScheme();
   }
 
-  if (document.InForcedColorsMode()) {
-    return LayoutTheme::GetTheme().SystemColor(CSSValueID::kHighlight,
-                                               style.UsedColorScheme());
-  }
-
-  return document.GetFrame()->Selection().FrameIsFocusedAndActive()
-             ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
-                   style.UsedColorScheme())
-             : LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
-                   style.UsedColorScheme());
+  if (document.InForcedColorsMode())
+    return ForcedSystemBackgroundColor(pseudo, color_scheme);
+  return HighlightThemeBackgroundColor(document, style, pseudo);
 }
 
 base::Optional<AppliedTextDecoration>
-HighlightPaintingUtils::SelectionTextDecoration(
+HighlightPaintingUtils::HighlightTextDecoration(
     const ComputedStyle& style,
     const ComputedStyle& pseudo_style) {
   const Vector<AppliedTextDecoration>& style_decorations =
@@ -156,78 +232,81 @@ HighlightPaintingUtils::SelectionTextDecoration(
   if (style_decorations.IsEmpty())
     return base::nullopt;
 
-  base::Optional<AppliedTextDecoration> selection_text_decoration =
+  base::Optional<AppliedTextDecoration> highlight_text_decoration =
       base::nullopt;
 
   if (style_decorations.back().Lines() ==
       pseudo_style_decorations.back().Lines()) {
-    selection_text_decoration = pseudo_style_decorations.back();
+    highlight_text_decoration = pseudo_style_decorations.back();
 
     if (style_decorations.size() == pseudo_style_decorations.size()) {
-      selection_text_decoration.value().SetColor(
+      highlight_text_decoration.value().SetColor(
           pseudo_style.VisitedDependentColor(
               GetCSSPropertyTextDecorationColor()));
     }
   }
 
-  return selection_text_decoration;
+  return highlight_text_decoration;
 }
 
-Color HighlightPaintingUtils::SelectionForegroundColor(
+Color HighlightPaintingUtils::HighlightForegroundColor(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
+    PseudoId pseudo,
     const GlobalPaintFlags global_paint_flags) {
-  return SelectionColor(document, style, node,
+  return HighlightColor(document, style, node, pseudo,
                         GetCSSPropertyWebkitTextFillColor(),
                         global_paint_flags);
 }
 
-Color HighlightPaintingUtils::SelectionEmphasisMarkColor(
+Color HighlightPaintingUtils::HighlightEmphasisMarkColor(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
+    PseudoId pseudo,
     const GlobalPaintFlags global_paint_flags) {
-  return SelectionColor(document, style, node,
+  return HighlightColor(document, style, node, pseudo,
                         GetCSSPropertyWebkitTextEmphasisColor(),
                         global_paint_flags);
 }
 
-TextPaintStyle HighlightPaintingUtils::SelectionPaintingStyle(
+TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
+    PseudoId pseudo,
     const TextPaintStyle& text_style,
     const PaintInfo& paint_info) {
-  TextPaintStyle selection_style = text_style;
+  TextPaintStyle highlight_style = text_style;
   bool uses_text_as_clip = paint_info.phase == PaintPhase::kTextClip;
   const GlobalPaintFlags global_paint_flags = paint_info.GetGlobalPaintFlags();
 
   if (!uses_text_as_clip) {
-    selection_style.fill_color =
-        SelectionForegroundColor(document, style, node, global_paint_flags);
-    selection_style.emphasis_mark_color =
-        SelectionEmphasisMarkColor(document, style, node, global_paint_flags);
+    highlight_style.fill_color = HighlightForegroundColor(
+        document, style, node, pseudo, global_paint_flags);
+    highlight_style.emphasis_mark_color = HighlightEmphasisMarkColor(
+        document, style, node, pseudo, global_paint_flags);
   }
 
   if (scoped_refptr<const ComputedStyle> pseudo_style =
-          HighlightPseudoStyle(node, kPseudoIdSelection)) {
-    selection_style.stroke_color =
+          HighlightPseudoStyle(node, pseudo)) {
+    highlight_style.stroke_color =
         uses_text_as_clip ? Color::kBlack
                           : pseudo_style->VisitedDependentColor(
                                 GetCSSPropertyWebkitTextStrokeColor());
-    selection_style.stroke_width = pseudo_style->TextStrokeWidth();
-    selection_style.shadow =
+    highlight_style.stroke_width = pseudo_style->TextStrokeWidth();
+    highlight_style.shadow =
         uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
-    selection_style.selection_text_decoration =
-        SelectionTextDecoration(style, *pseudo_style);
+    highlight_style.selection_text_decoration =
+        HighlightTextDecoration(style, *pseudo_style);
   }
 
   // Text shadows are disabled when printing. http://crbug.com/258321
   if (paint_info.IsPrinting())
-    selection_style.shadow = nullptr;
+    highlight_style.shadow = nullptr;
 
-  return selection_style;
+  return highlight_style;
 }
 
 }  // namespace blink

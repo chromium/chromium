@@ -221,8 +221,9 @@ void SVGInlineTextBoxPainter::PaintSelectionBackground(
     return;
 
   auto layout_item = svg_inline_text_box_.GetLineLayoutItem();
-  Color background_color = HighlightPaintingUtils::SelectionBackgroundColor(
-      layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode());
+  Color background_color = HighlightPaintingUtils::HighlightBackgroundColor(
+      layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode(),
+      kPseudoIdSelection);
   if (!background_color.Alpha())
     return;
 

@@ -165,8 +165,8 @@ TextPaintStyle TextPainterBase::SelectionPaintingStyle(
     Node* node,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  return HighlightPaintingUtils::SelectionPaintingStyle(document, style, node,
-                                                        text_style, paint_info);
+  return HighlightPaintingUtils::HighlightPaintingStyle(
+      document, style, node, kPseudoIdSelection, text_style, paint_info);
 }
 
 void TextPainterBase::DecorationsStripeIntercepts(

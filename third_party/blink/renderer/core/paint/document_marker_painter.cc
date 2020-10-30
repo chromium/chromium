@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -222,7 +224,7 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
 }
 
 void DocumentMarkerPainter::PaintDocumentMarker(
-    GraphicsContext& context,
+    const PaintInfo& paint_info,
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     DocumentMarker::MarkerType marker_type,
@@ -267,20 +269,28 @@ void DocumentMarkerPainter::PaintDocumentMarker(
   auto* const marker = marker_type == DocumentMarker::kSpelling
                            ? spelling_marker
                            : grammar_marker;
-  DrawDocumentMarker(context,
+  DrawDocumentMarker(paint_info.context,
                      FloatPoint((box_origin.left + local_rect.X()).ToFloat(),
                                 (box_origin.top + underline_offset).ToFloat()),
                      local_rect.Width().ToFloat(), zoom, marker);
 }
 
 TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
+    const Document& document,
+    Node* node,
     const ComputedStyle& style,
     const TextMarkerBase& marker,
-    bool in_forced_colors_mode) {
-  const Color text_color = LayoutTheme::GetTheme().PlatformTextSearchColor(
-      marker.IsActiveMatch(), in_forced_colors_mode, style.UsedColorScheme());
-  if (style.VisitedDependentColor(GetCSSPropertyColor()) == text_color)
-    return {};
+    const PaintInfo& paint_info) {
+  Color text_color = style.VisitedDependentColor(GetCSSPropertyColor());
+  if (marker.GetType() != DocumentMarker::kTextFragment) {
+    const Color platform_text_color =
+        LayoutTheme::GetTheme().PlatformTextSearchColor(
+            marker.IsActiveMatch(), document.InForcedColorsMode(),
+            style.UsedColorScheme());
+    if (platform_text_color == text_color)
+      return {};
+    text_color = platform_text_color;
+  }
 
   TextPaintStyle text_style;
   text_style.current_color = text_style.fill_color = text_style.stroke_color =
@@ -288,6 +298,9 @@ TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
   text_style.stroke_width = style.TextStrokeWidth();
   text_style.color_scheme = style.UsedColorScheme();
   text_style.shadow = nullptr;
-  return text_style;
+  if (marker.GetType() != DocumentMarker::kTextFragment)
+    return text_style;
+  return HighlightPaintingUtils::HighlightPaintingStyle(
+      document, style, node, kPseudoIdTargetText, text_style, paint_info);
 }
 }  // namespace blink

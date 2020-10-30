@@ -80,7 +80,7 @@ class SVGInlineTextBox final : public InlineTextBox {
   TextRun ConstructTextRun(const ComputedStyle&, const SVGTextFragment&) const;
 
  private:
-  void PaintDocumentMarker(GraphicsContext&,
+  void PaintDocumentMarker(const PaintInfo&,
                            const PhysicalOffset&,
                            const DocumentMarker&,
                            const ComputedStyle&,
