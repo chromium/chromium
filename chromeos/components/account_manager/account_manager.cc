@@ -633,10 +633,19 @@ bool AccountManager::IsTokenAvailable(
 
 void AccountManager::HasDummyGaiaToken(
     const ::account_manager::AccountKey& account_key,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_NE(init_state_, InitializationState::kNotStarted);
+
+  base::OnceClosure closure = base::BindOnce(
+      &AccountManager::HasDummyGaiaTokenInternal, weak_factory_.GetWeakPtr(),
+      account_key, std::move(callback));
+  RunOnInitialization(std::move(closure));
+}
+
+void AccountManager::HasDummyGaiaTokenInternal(
+    const ::account_manager::AccountKey& account_key,
     base::OnceCallback<void(bool)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1135980): Remove this DCHECK and call
-  // |RunOnInitialization| instead.
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
 
   auto it = accounts_.find(account_key);
@@ -647,10 +656,20 @@ void AccountManager::HasDummyGaiaToken(
 void AccountManager::CheckDummyGaiaTokenForAllAccounts(
     base::OnceCallback<
         void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
+        callback) {
+  DCHECK_NE(init_state_, InitializationState::kNotStarted);
+
+  base::OnceClosure closure =
+      base::BindOnce(&AccountManager::CheckDummyGaiaTokenForAllAccountsInternal,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  RunOnInitialization(std::move(closure));
+}
+
+void AccountManager::CheckDummyGaiaTokenForAllAccountsInternal(
+    base::OnceCallback<
+        void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1135980): Remove this DCHECK and call
-  // |RunOnInitialization| instead.
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
 
   std::vector<std::pair<::account_manager::Account, bool>> accounts_list;
