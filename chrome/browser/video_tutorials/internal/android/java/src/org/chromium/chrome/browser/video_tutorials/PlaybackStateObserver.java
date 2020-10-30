@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.video_tutorials;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.media_session.MediaPosition;
 
 /**
@@ -34,7 +35,7 @@ public class PlaybackStateObserver extends MediaSessionObserver {
         }
 
         /** The current state. */
-        public State state;
+        public State state = State.INITIAL;
 
         /** The duration of the video. */
         public long videoLength;
@@ -68,16 +69,16 @@ public class PlaybackStateObserver extends MediaSessionObserver {
         void onError();
     }
 
+    private static Long sCurrentSystemTimeForTesting;
     private final Supplier<Observer> mObserver;
-    private long mLastUpdateTime;
     private WatchStateInfo mWatchStateInfo = new WatchStateInfo();
     private MediaPosition mLastPosition;
     private boolean mIsControllable;
     private boolean mIsSuspended;
 
     /** Constructor. */
-    public PlaybackStateObserver(WebContents webContents, Supplier<Observer> observer) {
-        super(MediaSession.fromWebContents(webContents));
+    public PlaybackStateObserver(MediaSession mediaSession, Supplier<Observer> observer) {
+        super(mediaSession);
         mObserver = observer;
     }
 
@@ -95,16 +96,18 @@ public class PlaybackStateObserver extends MediaSessionObserver {
         mLastPosition = null;
         mIsControllable = false;
         mIsSuspended = false;
-        mLastUpdateTime = 0;
         mWatchStateInfo = new WatchStateInfo();
     }
 
     @Override
     public void mediaSessionPositionChanged(MediaPosition position) {
+        if (position != null) {
+            mWatchStateInfo.videoLength = position.getDuration();
+        }
+
         updateState(position);
         mWatchStateInfo.currentPosition =
-                computeCurrentTime(position == null ? mLastPosition : position, mLastUpdateTime);
-        mLastUpdateTime = System.currentTimeMillis();
+                computeCurrentPosition(position == null ? mLastPosition : position);
         mLastPosition = position;
     }
 
@@ -122,8 +125,7 @@ public class PlaybackStateObserver extends MediaSessionObserver {
             // TODO(shaktisahu): Determine error state.
             if (mLastPosition == null) {
                 nextState = State.INITIAL;
-            } else if (mLastPosition.getDuration()
-                    == computeCurrentTime(mLastPosition, mLastUpdateTime)) {
+            } else if (mLastPosition.getDuration() == computeCurrentPosition(mLastPosition)) {
                 nextState = State.ENDED;
             }
         }
@@ -155,12 +157,23 @@ public class PlaybackStateObserver extends MediaSessionObserver {
         }
     }
 
-    private static long computeCurrentTime(MediaPosition mediaPosition, long lastUpdateTime) {
+    private static long computeCurrentPosition(MediaPosition mediaPosition) {
         if (mediaPosition == null) return 0;
-        long elapsedTime = System.currentTimeMillis() - lastUpdateTime;
+
+        long elapsedTime = getCurrentSystemTime() - mediaPosition.getLastUpdatedTime();
         long updatedPosition = (long) (mediaPosition.getPosition()
                 + (elapsedTime * mediaPosition.getPlaybackRate()));
         updatedPosition = Math.min(updatedPosition, mediaPosition.getDuration());
         return updatedPosition;
+    }
+
+    private static long getCurrentSystemTime() {
+        if (sCurrentSystemTimeForTesting != null) return sCurrentSystemTimeForTesting;
+        return System.currentTimeMillis();
+    }
+
+    @VisibleForTesting
+    protected static void setCurrentSystemTimeForTesting(Long currentTimeForTesting) {
+        sCurrentSystemTimeForTesting = currentTimeForTesting;
     }
 }

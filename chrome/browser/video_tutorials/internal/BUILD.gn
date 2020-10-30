@@ -146,6 +146,7 @@ if (is_android) {
     bypass_platform_checks = true
     testonly = true
     sources = [
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/PlaybackStateObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerMediatorUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerMediatorUnitTest.java",
     ]
@@ -157,6 +158,7 @@ if (is_android) {
       "//chrome/browser/video_tutorials:java",
       "//chrome/browser/video_tutorials:test_support_java",
       "//content/public/android:content_java",
+      "//services/media_session/public/cpp/android:media_session_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/junit",

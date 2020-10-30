@@ -21,6 +21,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -95,8 +96,8 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
         mWebContents = pair.first;
         ContentView webContentView = pair.second;
         mWebContentsDelegate = new WebContentsDelegateAndroid();
-        mMediaSessionObserver =
-                new PlaybackStateObserver(mWebContents, () -> { return mMediator; });
+        mMediaSessionObserver = new PlaybackStateObserver(
+                MediaSession.fromWebContents(mWebContents), () -> { return mMediator; });
 
         ThinWebView thinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
         thinWebView.attachWebContents(mWebContents, webContentView, mWebContentsDelegate);
