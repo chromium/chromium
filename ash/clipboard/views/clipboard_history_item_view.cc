@@ -55,6 +55,10 @@ void ClipboardHistoryItemView::ContentsView::InstallDeleteButton() {
   delete_button_ = CreateDeleteButton();
 }
 
+const char* ClipboardHistoryItemView::ContentsView::GetClassName() const {
+  return "ContenstView";
+}
+
 // Accepts the event only when |delete_button_| should be the handler.
 bool ClipboardHistoryItemView::ContentsView::DoesIntersectRect(
     const views::View* target,

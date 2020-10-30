@@ -43,7 +43,7 @@ class ClipboardHistoryTextItemView::TextContentsView
  private:
   // ContentsView:
   DeleteButton* CreateDeleteButton() override {
-    auto delete_button = std::make_unique<DeleteButton>(container_);
+    auto delete_button = std::make_unique<DeleteButton>(container());
     delete_button->SetVisible(false);
     delete_button->SetProperty(views::kMarginsKey, kDeleteButtonMargins);
     return AddChildView(std::move(delete_button));

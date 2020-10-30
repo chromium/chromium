@@ -78,16 +78,21 @@ class ClipboardHistoryItemView : public views::View {
    protected:
     virtual DeleteButton* CreateDeleteButton() = 0;
 
-    // The parent of ContentsView.
-    ClipboardHistoryItemView* const container_;
+    ClipboardHistoryItemView* container() { return container_; }
 
    private:
+    // views::View:
+    const char* GetClassName() const override;
+
     // views::ViewTargeterDelegate:
     bool DoesIntersectRect(const views::View* target,
                            const gfx::Rect& rect) const override;
 
     // Owned by the view hierarchy.
     DeleteButton* delete_button_ = nullptr;
+
+    // The parent of ContentsView.
+    ClipboardHistoryItemView* const container_;
   };
 
   ClipboardHistoryItemView(const ClipboardHistoryItem* clipboard_history_item,

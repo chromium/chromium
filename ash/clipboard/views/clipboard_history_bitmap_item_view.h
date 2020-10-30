@@ -11,7 +11,6 @@
 
 namespace ash {
 class ClipboardHistoryResourceManager;
-class RoundedImageView;
 
 // The menu item showing a bitmap.
 class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
@@ -26,23 +25,12 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
       const ClipboardHistoryBitmapItemView& rhs) = delete;
   ~ClipboardHistoryBitmapItemView() override;
 
-  // Updates |image_view_|'s size.
-  void UpdateChildImageViewSize();
-
  private:
   class BitmapContentsView;
 
   // ClipboardHistoryItemView:
   const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
-
-  // Builds `image_view_`.
-  std::unique_ptr<RoundedImageView> BuildImageView();
-
-  // Owned by view hierarchy.
-  RoundedImageView* image_view_ = nullptr;
 
   // Owned by ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;
