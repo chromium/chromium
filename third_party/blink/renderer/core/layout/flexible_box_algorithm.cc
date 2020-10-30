@@ -506,8 +506,6 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
   sum_justify_adjustments_ += initial_position;
   LayoutUnit main_axis_offset = initial_position + main_axis_start_offset;
 
-  LayoutUnit logical_width_when_flipped = container_logical_width_;
-  LayoutUnit flipped_offset;
   bool should_flip_main_axis;
   if (algorithm_->IsNGFlexBox()) {
     should_flip_main_axis = style.ResolvedIsRowReverseFlexDirection();
@@ -515,18 +513,12 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     should_flip_main_axis = !style.ResolvedIsColumnFlexDirection() &&
                             !algorithm_->IsLeftToRightFlow();
 
-    // -webkit-box, always did layout starting at 0. ltr and reverse were
-    // handled by reversing the order of iteration. OTOH, flex always iterates
-    // in order and flips the main coordinate. The following gives the same
-    // behavior for -webkit-box while using the same iteration order as flex
-    // does by changing how the flipped coordinate is calculated.
-    if (should_flip_main_axis && is_webkit_box) {
-      // -webkit-box only distributed space when > 0.
-      logical_width_when_flipped =
-          total_item_size + available_free_space.ClampNegativeToZero();
-      flipped_offset = main_axis_end_offset;
-      main_axis_offset -= main_axis_start_offset;
-    }
+    // When a -webkit-box has negative available-space it always places that
+    // overflow to the line-right. (Even if we have "direction: rtl" or
+    // "-webkit-box-direction: reverse"). In the future it will hopefully be
+    // possible to remove this quirk.
+    if (should_flip_main_axis && is_webkit_box && available_free_space < 0)
+      main_axis_offset += available_free_space;
   }
 
   LayoutUnit max_descent;  // Used when align-items: baseline.
@@ -562,9 +554,9 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     // on the left. This will be fixed later in
     // LayoutFlexibleBox::FlipForRightToLeftColumn.
     flex_item.desired_location_ = LayoutPoint(
-        should_flip_main_axis ? logical_width_when_flipped - main_axis_offset -
-                                    child_main_extent + flipped_offset
-                              : main_axis_offset,
+        should_flip_main_axis
+            ? container_logical_width_ - main_axis_offset - child_main_extent
+            : main_axis_offset,
         cross_axis_offset + flex_item.FlowAwareMarginBefore());
     main_axis_offset += child_main_extent + flex_item.FlowAwareMarginEnd();
 
