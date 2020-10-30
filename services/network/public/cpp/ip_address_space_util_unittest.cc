@@ -113,6 +113,40 @@ TEST(IPAddressSpaceTest, CalculateClientAddressSpaceFileURL) {
             CalculateClientAddressSpace(GURL("file:///foo"), nullptr));
 }
 
+TEST(IPAddressSpaceTest,
+     CalculateIPAddressSpaceFetchedViaServiceWorkerFromFile) {
+  URLResponseHead response_head;
+  response_head.url_list_via_service_worker.emplace_back("http://bar.test");
+  response_head.url_list_via_service_worker.emplace_back("file:///foo");
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kLocal,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest,
+     CalculateIPAddressSpaceFetchedViaServiceWorkerFromHttp) {
+  URLResponseHead response_head;
+  response_head.url_list_via_service_worker.emplace_back("file:///foo");
+  response_head.url_list_via_service_worker.emplace_back("http://bar.test");
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kUnknown,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest,
+     CalculateIPAddressSpaceFetchedViaServiceWorkerFromHttpInsteadOfFile) {
+  URLResponseHead response_head;
+  response_head.url_list_via_service_worker.emplace_back("http://bar.test");
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(IPAddressSpace::kUnknown,
+            CalculateClientAddressSpace(GURL("file:///foo"), &response_head));
+}
+
 TEST(IPAddressSpaceTest, CalculateClientAddressSpaceNullResponseHead) {
   EXPECT_EQ(IPAddressSpace::kUnknown,
             CalculateClientAddressSpace(GURL("http://foo.test"), nullptr));

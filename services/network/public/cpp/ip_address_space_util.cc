@@ -44,10 +44,25 @@ bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
   return CollapseUnknown(lhs) < CollapseUnknown(rhs);
 }
 
+// Helper for CalculateClientAddressSpace() with the same arguments.
+//
+// If the response was fetched via service workers, returns the last URL in the
+// list. Otherwise returns |request_url|.
+//
+// See: https://fetch.spec.whatwg.org/#concept-response-url-list
+const GURL& ResponseUrl(const GURL& request_url,
+                        const mojom::URLResponseHead* response_head) {
+  if (response_head && !response_head->url_list_via_service_worker.empty()) {
+    return response_head->url_list_via_service_worker.back();
+  }
+
+  return request_url;
+}
+
 IPAddressSpace CalculateClientAddressSpace(
     const GURL& url,
     const mojom::URLResponseHead* response_head) {
-  if (url.SchemeIsFile()) {
+  if (ResponseUrl(url, response_head).SchemeIsFile()) {
     // See: https://wicg.github.io/cors-rfc1918/#file-url.
     return IPAddressSpace::kLocal;
   }
