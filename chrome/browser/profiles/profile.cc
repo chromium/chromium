@@ -119,6 +119,8 @@ class ChromeVariationsClient : public variations::VariationsClient {
 };
 
 const char kDevToolsOTRProfileIDPrefix[] = "Devtools::BrowserContext";
+const char kMediaRouterOTRProfileIDPrefix[] = "MediaRouter::Presentation";
+
 }  // namespace
 
 Profile::OTRProfileID::OTRProfileID(const std::string& profile_id)
@@ -126,9 +128,12 @@ Profile::OTRProfileID::OTRProfileID(const std::string& profile_id)
 
 bool Profile::OTRProfileID::AllowsBrowserWindows() const {
   // Non-Primary OTR profiles are not supposed to create Browser windows.
-  // DevTools::BrowserContext is an exception to this ban.
+  // DevTools::BrowserContext and MediaRouter::Presentation are an
+  // exception to this ban.
   return *this == PrimaryID() ||
          base::StartsWith(profile_id_, kDevToolsOTRProfileIDPrefix,
+                          base::CompareCase::SENSITIVE) ||
+         base::StartsWith(profile_id_, kMediaRouterOTRProfileIDPrefix,
                           base::CompareCase::SENSITIVE);
 }
 
@@ -150,6 +155,11 @@ Profile::OTRProfileID Profile::OTRProfileID::CreateUnique(
 // static
 Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForDevTools() {
   return CreateUnique(kDevToolsOTRProfileIDPrefix);
+}
+
+// static
+Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForMediaRouter() {
+  return CreateUnique(kMediaRouterOTRProfileIDPrefix);
 }
 
 const std::string& Profile::OTRProfileID::ToString() const {

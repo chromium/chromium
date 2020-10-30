@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "components/media_router/browser/presentation/local_presentation_manager.h"
 #include "components/media_router/browser/test/test_helper.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,7 +37,7 @@ class MockReceiverConnectionAvailableCallback {
            mojo::PendingReceiver<blink::mojom::PresentationConnection>));
 };
 
-class LocalPresentationManagerTest : public ::testing::Test {
+class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
  public:
   LocalPresentationManagerTest()
       : render_frame_host_id_(1, 1),
@@ -101,7 +102,8 @@ class LocalPresentationManagerTest : public ::testing::Test {
         PresentationInfo(GURL(kPresentationUrl), presentation_id),
         base::BindRepeating(&MockReceiverConnectionAvailableCallback::
                                 OnReceiverConnectionAvailable,
-                            base::Unretained(&receiver_callback)));
+                            base::Unretained(&receiver_callback)),
+        web_contents());
   }
 
   void UnregisterController(
@@ -319,11 +321,19 @@ TEST_F(LocalPresentationManagerTest, TwoPresentations) {
   VerifyPresentationsSize(1);
 }
 
-TEST_F(LocalPresentationManagerTest, TestIsLocalPresentation) {
+TEST_F(LocalPresentationManagerTest,
+       TestIsLocalPresentationWithPresentationId) {
   EXPECT_FALSE(manager()->IsLocalPresentation(kPresentationId));
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller1;
   RegisterController(kPresentationId, std::move(controller1));
   EXPECT_TRUE(manager()->IsLocalPresentation(kPresentationId));
+}
+
+TEST_F(LocalPresentationManagerTest, TestIsLocalPresentationWithWebContents) {
+  EXPECT_FALSE(manager()->IsLocalPresentation(web_contents()));
+  MockReceiverConnectionAvailableCallback receiver_callback;
+  RegisterReceiver(receiver_callback);
+  EXPECT_TRUE(manager()->IsLocalPresentation(web_contents()));
 }
 
 TEST_F(LocalPresentationManagerTest, TestRegisterAndGetRoute) {

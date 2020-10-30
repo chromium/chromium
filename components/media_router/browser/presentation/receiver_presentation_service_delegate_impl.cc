@@ -73,7 +73,7 @@ void ReceiverPresentationServiceDelegateImpl::
   local_presentation_manager_->OnLocalPresentationReceiverCreated(
       blink::mojom::PresentationInfo(web_contents_->GetLastCommittedURL(),
                                      presentation_id_),
-      receiver_available_callback);
+      receiver_available_callback, web_contents_);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReceiverPresentationServiceDelegateImpl)

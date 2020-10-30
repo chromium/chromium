@@ -21,6 +21,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace media_router {
 // Manages all local presentations started in the associated Profile and
 // facilitates communication between the controllers and the receiver of a
@@ -132,10 +136,12 @@ class LocalPresentationManager : public KeyedService {
       const std::string& presentation_id,
       const content::GlobalFrameRoutingId& render_frame_id);
 
-  // Registers |receiver_callback| to presentation with |presentation_info|.
+  // Registers |receiver_callback| and set |receiver_web_contents| to
+  // presentation with |presentation_info|.
   virtual void OnLocalPresentationReceiverCreated(
       const blink::mojom::PresentationInfo& presentation_info,
-      const content::ReceiverConnectionAvailableCallback& receiver_callback);
+      const content::ReceiverConnectionAvailableCallback& receiver_callback,
+      content::WebContents* receiver_web_contents);
 
   // Unregisters ReceiverConnectionAvailableCallback associated with
   // |presentation_id|.
@@ -145,6 +151,9 @@ class LocalPresentationManager : public KeyedService {
   // Returns true if this class has a local presentation with
   // |presentation_id|.
   virtual bool IsLocalPresentation(const std::string& presentation_id);
+
+  // Returns true if this class has a local presentation with |web_contents|.
+  virtual bool IsLocalPresentation(content::WebContents* web_contents);
 
   // Returns nullptr if |presentation_id| is not associated with a local
   // presentation.
@@ -181,12 +190,13 @@ class LocalPresentationManager : public KeyedService {
     void UnregisterController(
         const content::GlobalFrameRoutingId& render_frame_id);
 
-    // Register |receiver_callback| to current local_presentation object.
-    // For each controller in |pending_controllers_| map, invoke
-    // |receiver_callback| with controller as parameter. Clear
+    // Register |receiver_callback| and set |receiver_web_contents| to current
+    // local_presentation object. For each controller in |pending_controllers_|
+    // map, invoke |receiver_callback| with controller as parameter. Clear
     // |pending_controllers_| map afterwards.
     void RegisterReceiver(
-        const content::ReceiverConnectionAvailableCallback& receiver_callback);
+        const content::ReceiverConnectionAvailableCallback& receiver_callback,
+        content::WebContents* receiver_web_contents);
 
    private:
     friend class LocalPresentationManagerTest;
@@ -198,6 +208,7 @@ class LocalPresentationManager : public KeyedService {
 
     const blink::mojom::PresentationInfo presentation_info_;
     base::Optional<MediaRoute> route_;
+    content::WebContents* receiver_web_contents_ = nullptr;
 
     // Callback to invoke whenever a receiver connection is available.
     content::ReceiverConnectionAvailableCallback receiver_callback_;

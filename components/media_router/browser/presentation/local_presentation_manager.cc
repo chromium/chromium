@@ -66,10 +66,11 @@ void LocalPresentationManager::UnregisterLocalPresentationController(
 
 void LocalPresentationManager::OnLocalPresentationReceiverCreated(
     const PresentationInfo& presentation_info,
-    const content::ReceiverConnectionAvailableCallback& receiver_callback) {
+    const content::ReceiverConnectionAvailableCallback& receiver_callback,
+    content::WebContents* receiver_web_contents) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* presentation = GetOrCreateLocalPresentation(presentation_info);
-  presentation->RegisterReceiver(receiver_callback);
+  presentation->RegisterReceiver(receiver_callback, receiver_web_contents);
 }
 
 void LocalPresentationManager::OnLocalPresentationReceiverTerminated(
@@ -81,6 +82,15 @@ void LocalPresentationManager::OnLocalPresentationReceiverTerminated(
 bool LocalPresentationManager::IsLocalPresentation(
     const std::string& presentation_id) {
   return base::Contains(local_presentations_, presentation_id);
+}
+
+bool LocalPresentationManager::IsLocalPresentation(
+    content::WebContents* web_contents) {
+  for (auto& local_presentation : local_presentations_) {
+    if (local_presentation.second->receiver_web_contents_ == web_contents)
+      return true;
+  }
+  return false;
 }
 
 const MediaRoute* LocalPresentationManager::GetRoute(
@@ -124,8 +134,10 @@ void LocalPresentationManager::LocalPresentation::UnregisterController(
 }
 
 void LocalPresentationManager::LocalPresentation::RegisterReceiver(
-    const content::ReceiverConnectionAvailableCallback& receiver_callback) {
+    const content::ReceiverConnectionAvailableCallback& receiver_callback,
+    content::WebContents* receiver_web_contents) {
   DCHECK(receiver_callback_.is_null());
+  DCHECK(receiver_web_contents);
   for (auto& controller : pending_controllers_) {
     receiver_callback.Run(
         PresentationInfo::New(presentation_info_),
@@ -133,6 +145,7 @@ void LocalPresentationManager::LocalPresentation::RegisterReceiver(
         std::move(controller.second->receiver_connection_receiver));
   }
   receiver_callback_ = receiver_callback;
+  receiver_web_contents_ = receiver_web_contents;
   pending_controllers_.clear();
 }
 
