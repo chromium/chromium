@@ -143,7 +143,6 @@ performance_manager::frame_priority::BoostingVoteAggregator::Edge::dst_
 
 # Populated manually - these pointers crash due to a mismatching tag.
 # Under investigation.
-base::internal::UnretainedWrapper::ptr_
 blink::NGPhysicalContainerFragment::buffer_
 blink::DisplayItem::client_
 cc::FrameSequenceMetrics::throughput_ukm_reporter_
