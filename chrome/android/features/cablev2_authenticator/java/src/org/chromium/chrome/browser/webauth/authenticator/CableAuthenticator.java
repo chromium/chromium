@@ -128,7 +128,7 @@ class CableAuthenticator {
 
         if (isFcmNotification) {
             // The user tapped a notification that resulted from an FCM message.
-            CableAuthenticatorJni.get().startFCM(this);
+            CableAuthenticatorJni.get().onInteractionReady(this);
         }
 
         // Otherwise wait for a QR scan.
@@ -552,11 +552,10 @@ class CableAuthenticator {
                 CableAuthenticator cableAuthenticator, String authenticatorName, String qrUrl);
 
         /**
-         * Called to instruct the C++ code to start a new transaction based on a cloud message
-         * because the user tapped the notification that was shown because |showNotification| was
-         * called.
+         * Called after the notification created by {@link showNotification} has been pressed and
+         * the {@link CableAuthenticatorUI} Fragment is now in the foreground for showing UI.
          */
-        void startFCM(CableAuthenticator cableAuthenticator);
+        void onInteractionReady(CableAuthenticator cableAuthenticator);
 
         /**
          * Called to alert the C++ code to stop any ongoing transactions.
