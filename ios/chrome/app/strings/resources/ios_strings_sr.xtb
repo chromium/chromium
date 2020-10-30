@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Штампање није успело.</translation>
 <translation id="1125564390852150847">Направи нову картицу.</translation>
 <translation id="1145536944570833626">Избришите постојеће податке</translation>
+<translation id="1154690515305205900">Прављење линка до истакнутог текста није успело.</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следеће поље</translation>
 <translation id="1176932207622159128">Није могуће сачувати слику</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">Отворене картице</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
+<translation id="3285962946108803577">Дели страницу…</translation>
 <translation id="3290875554372353449">Изаберите налог</translation>
 <translation id="3311748811247479259">Искључено</translation>
 <translation id="3324193307694657476">2. ред за адресу</translation>
@@ -611,6 +613,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="766891008101699113">Да бисте приватно прегледали веб, додајте нову картицу.</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЊЕ</translation>
+<translation id="7690812411882623730">Генерисање линка до текста није успело</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7771470029643830783">Ако се одјавите, обележивачи, историја, лозинке и други Chrome подаци више се неће синхронизовати са Google налогом.

@@ -116,7 +116,7 @@
 <translation id="2198315389084035571">סינית פשוטה</translation>
 <translation id="2208158072373999562">‏ארכיון Zip</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
-<translation id="2230062665678605299">לא ניתן ליצור את התיקיה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2230062665678605299">לא ניתן ליצור את התיקייה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">ההעברה הסתיימה.</translation>
 <translation id="2278988676849463018">מקלדת קנאדה (פונטית)</translation>
 <translation id="2287742181953707290">‏פורטוגזית עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
@@ -564,7 +564,7 @@
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6970230597523682626">בולגרית</translation>
 <translation id="6973630695168034713">תיקיות</translation>
-<translation id="6978611942794658017">‏קובץ זה מיועד עבור מחשב אישי המשתמש בתוכנת Windows. הוא אינו מתאים למכשירך שעובד עם מערכת הפעלה של Chrome. חפש יישום חלופי מתאים בחנות האינטרנט של Chrome.</translation>
+<translation id="6978611942794658017">‏קובץ זה מיועד עבור מחשב אישי המשתמש בתוכנת Windows. הוא אינו מתאים למכשיר שלך שעובד עם מערכת הפעלה של Chrome. יש לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> תיקיות נבחרו</translation>

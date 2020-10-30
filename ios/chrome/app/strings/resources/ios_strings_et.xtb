@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Print. ebaõnn.</translation>
 <translation id="1125564390852150847">Loo uus vaheleht.</translation>
 <translation id="1145536944570833626">Kustutage olemasolevad andmed.</translation>
+<translation id="1154690515305205900">Linki esiletõstetud teksti juurde ei saa luua.</translation>
 <translation id="1165039591588034296">Viga</translation>
 <translation id="1172898394251786223">Järgmine väli</translation>
 <translation id="1176932207622159128">Ei saa salvestada</translation>
@@ -211,6 +212,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="3268451620468152448">Avatud vahelehed</translation>
 <translation id="3272527697863656322">Loobu</translation>
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
+<translation id="3285962946108803577">Lehe jagamine …</translation>
 <translation id="3290875554372353449">Konto valimine</translation>
 <translation id="3311748811247479259">Väljas</translation>
 <translation id="3324193307694657476">Aadress 2</translation>
@@ -611,6 +613,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="766891008101699113">Privaatselt veebi sirvimiseks lisage uus vaheleht.</translation>
 <translation id="7671141431838911305">INSTALLI</translation>
+<translation id="7690812411882623730">Teksti juurde ei õnnestu linkida</translation>
 <translation id="7701040980221191251">Pole</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7771470029643830783">Väljalogimisel ei sünkroonita teie järjehoidjaid, ajalugu, paroole ja muid Chrome'i andmeid enam teie Google'i kontoga.

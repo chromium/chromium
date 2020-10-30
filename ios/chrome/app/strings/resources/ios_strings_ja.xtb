@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">印刷できませんでした。</translation>
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
+<translation id="1154690515305205900">選択したテキストへのリンクを作成できません。</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1172898394251786223">次の項目</translation>
 <translation id="1176932207622159128">画像を保存できません</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3272527697863656322">キャンセル</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
+<translation id="3285962946108803577">ページを共有...</translation>
 <translation id="3290875554372353449">アカウントの選択</translation>
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3324193307694657476">住所2行目</translation>
@@ -611,6 +613,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="766891008101699113">ウェブをプライベートに閲覧するには新しいタブを追加してください。</translation>
 <translation id="7671141431838911305">インストール</translation>
+<translation id="7690812411882623730">テキストリンクを作成できません</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7771470029643830783">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります。

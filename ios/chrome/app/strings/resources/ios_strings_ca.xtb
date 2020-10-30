@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Error en imprimir</translation>
 <translation id="1125564390852150847">Crea una pestanya nova.</translation>
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
+<translation id="1154690515305205900">No es pot crear un enllaç al text marcat.</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Camp següent</translation>
 <translation id="1176932207622159128">No es pot desar.</translation>
@@ -211,6 +212,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="3268451620468152448">Pestanyes obertes</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
+<translation id="3285962946108803577">Comparteix la pàgina...</translation>
 <translation id="3290875554372353449">Tria un compte</translation>
 <translation id="3311748811247479259">Desactivat</translation>
 <translation id="3324193307694657476">Adreça 2</translation>
@@ -611,6 +613,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="766891008101699113">Per navegar pel web de manera privada, obre una pestanya nova.</translation>
 <translation id="7671141431838911305">INSTAL·LA</translation>
+<translation id="7690812411882623730">No es pot enllaçar al text</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7765158879357617694">Mou</translation>
 <translation id="7771470029643830783">En tancar la sessió, les adreces d'interès, l'historial, les contrasenyes i altres dades de Chrome es deixaran de sincronitzar amb el teu Compte de Google

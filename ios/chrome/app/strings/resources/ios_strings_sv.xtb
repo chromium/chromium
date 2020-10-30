@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Utskriftsfel.</translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1145536944570833626">Radera befintlig data.</translation>
+<translation id="1154690515305205900">Det gick inte att skapa en länk till den markerade texten.</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1172898394251786223">Nästa fält</translation>
 <translation id="1176932207622159128">Bilden sparades inte</translation>
@@ -211,6 +212,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
+<translation id="3285962946108803577">Dela sidan …</translation>
 <translation id="3290875554372353449">Välj ett konto</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
@@ -611,6 +613,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="766891008101699113">Öppna en ny flik om du vill använda internet privat.</translation>
 <translation id="7671141431838911305">INSTALLERA</translation>
+<translation id="7690812411882623730">Det gick inte att länka till texten</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7771470029643830783">När du loggar ut synkroniseras inte längre bokmärken, lösenord och annan data i Chrome till Google-kontot.

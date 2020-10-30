@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Hindi na-print.</translation>
 <translation id="1125564390852150847">Gumawa ng bagong tab.</translation>
 <translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
+<translation id="1154690515305205900">Hindi makagawa ng link sa naka-highlight na text.</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Susunod na field</translation>
 <translation id="1176932207622159128">Di Ma-save Larawan</translation>
@@ -211,6 +212,7 @@ Habang nasa incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
+<translation id="3285962946108803577">Ibahagi ang Page...</translation>
 <translation id="3290875554372353449">Pumili ng Account</translation>
 <translation id="3311748811247479259">Naka-off</translation>
 <translation id="3324193307694657476">Address 2</translation>
@@ -611,6 +613,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="766891008101699113">Para pribadong mag-browse sa web, magdagdag ng bagong tab.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
+<translation id="7690812411882623730">Hindi Maka-link sa Text</translation>
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7765158879357617694">Ilipat</translation>
 <translation id="7771470029643830783">Sa pamamagitan ng pag-sign out, hindi na masi-sync sa iyong Google Account ang mga bookmark, history, mga password, at iba mo pang data ng Chrome.

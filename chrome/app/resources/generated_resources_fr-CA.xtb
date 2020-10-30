@@ -2752,7 +2752,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4194570336751258953">Activer la fonction « Toucher l'écran pour cliquer »</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre vos activités en ligne là où vous vous étiez arrêté</translation>
-<translation id="4198146608511578238">Il vous suffit de maintenir le doigt sur l'icône du Lanceur d'applications pour parler à votre Assistant Google.</translation>
+<translation id="4198146608511578238">Il vous suffit de maintenir le doigt sur l'icône du lanceur d'applications pour parler à votre Assistant Google.</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
 <translation id="4200983522494130825">Nouvel ongle&amp;t</translation>
 <translation id="4201546031411513170">Vous pouvez toujours choisir les éléments à synchroniser dans les paramètres.</translation>
@@ -5308,7 +5308,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="730515362922783851">Échanger des données avec tout appareil sur le réseau local ou sur Internet</translation>
 <translation id="7306521477691455105">Ouvrez le menu Paramètres pour connecter <ph name="USB_DEVICE_NAME" /> à <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Suspendue</translation>
-<translation id="7308002049209013926">Utilisez le Lanceur d'applications pour accéder rapidement aux nouvelles applications et activités. Pour y accéder à l'aide du clavier, appuyez sur Alt + Maj + L.</translation>
+<translation id="7308002049209013926">Utilisez le lanceur d'applications pour accéder rapidement aux nouvelles applications et activités. Pour y accéder à l'aide du clavier, appuyez sur Alt+Maj+L.</translation>
 <translation id="7309257895202129721">Afficher les &amp;commandes</translation>
 <translation id="7310598146671372464">Échec de la connexion. Le serveur ne prend pas en charge les types de chiffrement Kerberos spécifiés. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="7311079019872751559">Accès aux plugiciels hors carré de sable</translation>

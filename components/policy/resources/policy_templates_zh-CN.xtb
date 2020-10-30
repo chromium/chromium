@@ -969,6 +969,7 @@
 
        如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态；但在受管理的设备上，该功能会保持开启状态。</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
+<translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
 <translation id="2456629156652006573">仅限不公开</translation>
 <translation id="2463034609187171371">在 TLS 中启用 DHE 加密套件</translation>
 <translation id="2463365186486772703">应用语言区域</translation>
@@ -2408,6 +2409,7 @@
       如果此政策未设置，默认情况下，系统会对受企业管理的用户停用此政策，并对不受管理的用户启用此政策。</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>
+<translation id="4558166110367609724">自动跳过《服务条款》并加载浏览器。</translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
 <translation id="456686782928669977">此政策旨在控制是否从 <ph name="IE_PRODUCT_NAME" /> 的 SiteList 政策中加载规则。
 
@@ -2604,6 +2606,17 @@
 
       如果此政策设为“disabled”或未设置，<ph name="PRODUCT_NAME" /> 将不会报告不安全事件。
       </translation>
+<translation id="4892647988357350237">默认情况下，当 CCT 首次运行时，系统会显示《服务条款》。如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，在首次运行体验或后续运行期间，《服务条款》对话框将不会出现。如果此政策设为 <ph name="STANDARD_TOS_DIALOG" /> 或未设置，在首次运行体验期间，《服务条款》对话框将会出现。其他注意事项：
+
+      - 此政策仅适用于可由统一端点管理 (Unified Endpoint Management) 供应商配置的全代管式 Android 设备。
+
+      - 如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，BrowserSignin 政策将不会产生任何影响。
+
+      - 如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，系统不会将指标发送给服务器。
+
+      - 如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，浏览器的功能会受到限制。
+
+      - 如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，管理员必须将这项设置告知设备的最终用户。</translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 设为“已停用”，否则，如果 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 已启用，<ph name="PRODUCT_NAME" /> 将会连接到位于所有 IP 地址的投射设备，而不是只连接到位于 RFC1918/RFC4193 私有地址的投射设备。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会只连接到位于 RFC1918/RFC4193 的投射设备。
@@ -3841,6 +3854,19 @@
       注意：对于未加入 <ph name="MS_AD_NAME" /> 网域的 Windows® 实例，强制安装仅限于 Chrome 网上应用店中所列的应用和扩展程序。</translation>
 <translation id="6598235178374410284">用户头像图片</translation>
 <translation id="6603004149426829878">解析时区时一律将任何可用的位置信号发送给服务器</translation>
+<translation id="660567106648774919">此政策已被弃用，请改用 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 政策。
+
+      默认情况下，当 CCT 首次运行时，系统会显示《服务条款》。如果此政策已停用，在首次运行体验或后续运行期间，《服务条款》对话框将不会出现。如果此政策已启用或未设置，在首次运行体验期间，《服务条款》对话框将会出现。其他注意事项：
+
+      - 此政策仅适用于可由统一端点管理 (Unified Endpoint Management) 供应商配置的全代管式 Android 设备。
+
+      - 如果此政策已停用，BrowserSignin 政策将不会产生任何影响。
+
+      - 如果此政策已停用，系统不会将指标发送给服务器。
+
+      - 如果此政策已停用，浏览器的功能会受到限制。
+
+      - 如果此政策已停用，管理员必须将这项设置告知设备的最终用户。</translation>
 <translation id="6607920041550065565">
       当设为 False 时，此政策不允许设备触发 Powerwash。但例外情况是：如果为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 政策设定的值允许 TPM 固件更新，且 TPM 固件尚未更新，则允许设备触发 Powerwash。
       当设为 True 时，此政策允许设备触发 Powerwash。
@@ -4183,6 +4209,7 @@
 
       如果此政策已停用，当切换到备用浏览器后，<ph name="PRODUCT_NAME" /> 会关闭所含的标签页（即使仅剩下此标签页）。这会导致 <ph name="PRODUCT_NAME" /> 彻底关闭。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7025332601572838001">配置 CCT 首次运行期间的《服务条款》行为</translation>
 <translation id="7027785306666625591">配置<ph name="PRODUCT_OS_NAME" />中的电源管理设置。
 
       这些政策可让您配置在用户停止操作一定时间后<ph name="PRODUCT_OS_NAME" />的行为。</translation>

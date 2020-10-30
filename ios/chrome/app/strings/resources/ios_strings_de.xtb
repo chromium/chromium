@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Fehler beim Drucken.</translation>
 <translation id="1125564390852150847">Neuen Tab erstellen.</translation>
 <translation id="1145536944570833626">Vorhandene Daten löschen</translation>
+<translation id="1154690515305205900">Zum markierten Text kann kein entsprechender Link erstellt werden.</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1172898394251786223">Nächstes Feld</translation>
 <translation id="1176932207622159128">Speichern v. Bild n. möglich</translation>
@@ -211,6 +212,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites Cookies nicht verwenden,
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
 <translation id="3272527697863656322">Abbrechen</translation>
 <translation id="3277021493514034324">Websiteadresse kopiert</translation>
+<translation id="3285962946108803577">Seite teilen…</translation>
 <translation id="3290875554372353449">Konto auswählen</translation>
 <translation id="3311748811247479259">Aus</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
@@ -611,6 +613,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="766891008101699113">Fügen Sie einen neuen Tab hinzu, um privat im Web zu surfen.</translation>
 <translation id="7671141431838911305">Installieren</translation>
+<translation id="7690812411882623730">Link zum Text kann nicht generiert werden</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7771470029643830783">Wenn Sie sich abmelden, werden Ihre Lesezeichen, Ihr Verlauf, Ihre Passwörter und andere Chrome-Daten nicht mehr mit Ihrem Google-Konto synchronisiert.

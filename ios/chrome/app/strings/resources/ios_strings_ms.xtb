@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Pencetakan gagal.</translation>
 <translation id="1125564390852150847">Buat tab baharu.</translation>
 <translation id="1145536944570833626">Padam data sedia ada.</translation>
+<translation id="1154690515305205900">Pautan kepada teks yang diserlahkan tidak dapat dibuat.</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1172898394251786223">Medan seterusnya</translation>
 <translation id="1176932207622159128">Gagal Simpan Imej</translation>
@@ -211,6 +212,7 @@ Semasa dalam mod inkognito, tapak tidak boleh menggunakan kuki untuk melihat akt
 <translation id="3268451620468152448">Tab Terbuka</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3277021493514034324">Alamat tapak disalin</translation>
+<translation id="3285962946108803577">Kongsi Halaman...</translation>
 <translation id="3290875554372353449">Pilih Akaun</translation>
 <translation id="3311748811247479259">Mati</translation>
 <translation id="3324193307694657476">Alamat 2</translation>
@@ -611,6 +613,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="7658239707568436148">Batal</translation>
 <translation id="766891008101699113">Untuk menyemak imbas web secara sulit, tambahkan tab baharu.</translation>
 <translation id="7671141431838911305">PASANG</translation>
+<translation id="7690812411882623730">Tidak Dapat Memaut kepada Teks</translation>
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7765158879357617694">Alih</translation>
 <translation id="7771470029643830783">Apabila anda log keluar, penanda halaman, sejarah, kata laluan dan data Chrome anda yang lain tidak akan disegerakkan ke Akaun Google anda lagi.

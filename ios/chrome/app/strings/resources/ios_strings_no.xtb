@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Utskriften mislyktes.</translation>
 <translation id="1125564390852150847">Åpne en ny fane.</translation>
 <translation id="1145536944570833626">Slett eksisterende data.</translation>
+<translation id="1154690515305205900">Kunne ikke opprette noen link til den merkede teksten.</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1172898394251786223">Neste felt</translation>
 <translation id="1176932207622159128">Kan ikke lagre bildet</translation>
@@ -211,6 +212,7 @@ Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til �
 <translation id="3268451620468152448">Åpne faner</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3277021493514034324">Nettstedsadressen er kopiert</translation>
+<translation id="3285962946108803577">Del siden</translation>
 <translation id="3290875554372353449">Velg konto</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
@@ -611,6 +613,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="766891008101699113">For å surfe på nettet privat, legg til en ny fane.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
+<translation id="7690812411882623730">Kunne ikke linke til teksten</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7771470029643830783">Når du logger av, blir ikke bokmerker, loggen, passord og andre Chrome-data synkronisert med Google-kontoen din lenger.

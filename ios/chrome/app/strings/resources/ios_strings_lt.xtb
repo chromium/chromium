@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Nepav. atsp.</translation>
 <translation id="1125564390852150847">Kurti naują skirtuką.</translation>
 <translation id="1145536944570833626">Ištrinti esamus duomenis.</translation>
+<translation id="1154690515305205900">Negalima sukurti nuorodos į paryškintą tekstą.</translation>
 <translation id="1165039591588034296">Klaida</translation>
 <translation id="1172898394251786223">Kitas laukas</translation>
 <translation id="1176932207622159128">Nepav. išs. vaizdo</translation>
@@ -211,6 +212,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, kad sužin
 <translation id="3268451620468152448">Atidaryti skirtukai</translation>
 <translation id="3272527697863656322">Atšaukti</translation>
 <translation id="3277021493514034324">Svetainės adresas nukopijuotas</translation>
+<translation id="3285962946108803577">Bendrinti puslapį...</translation>
 <translation id="3290875554372353449">Pasirinkite paskyrą</translation>
 <translation id="3311748811247479259">Išjungta</translation>
 <translation id="3324193307694657476">2 adreso eil.</translation>
@@ -611,6 +613,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="766891008101699113">Norėdami privačiai naršyti žiniatinklyje, pridėkite naują skirtuką.</translation>
 <translation id="7671141431838911305">ĮDIEGTI</translation>
+<translation id="7690812411882623730">Nepavyko sugeneruoti nuorodos į tekstą</translation>
 <translation id="7701040980221191251">Nėra</translation>
 <translation id="7765158879357617694">Perkelti</translation>
 <translation id="7771470029643830783">Atsijungus su jūsų „Google“ paskyra nebebus sinchronizuojamos žymės, istorija, slaptažodžiai ir kiti „Chrome“ duomenys.

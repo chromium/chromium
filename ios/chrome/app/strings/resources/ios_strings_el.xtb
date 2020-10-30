@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Η εκτύπωση απέτυχε.</translation>
 <translation id="1125564390852150847">Δημιουργία νέας καρτέλας.</translation>
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
+<translation id="1154690515305205900">Δεν είναι δυνατή η δημιουργία ενός συνδέσμου προς το επισημασμένο κείμενο.</translation>
 <translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1172898394251786223">Επόμενο πεδίο</translation>
 <translation id="1176932207622159128">Αδύνατη αποθ.εικόνας</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">Ανοικτές καρτέλες</translation>
 <translation id="3272527697863656322">Ακύρωση</translation>
 <translation id="3277021493514034324">Η διεύθυνση ιστοτόπου αντιγράφηκε</translation>
+<translation id="3285962946108803577">Κοινοποίηση σελίδας…</translation>
 <translation id="3290875554372353449">Επιλέξτε λογαριασμό</translation>
 <translation id="3311748811247479259">Ανενεργό</translation>
 <translation id="3324193307694657476">Διεύθυνση 2</translation>
@@ -612,6 +614,7 @@
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="766891008101699113">Για να περιηγηθείτε στον ιστό ιδιωτικά, προσθέστε μια νέα καρτέλα.</translation>
 <translation id="7671141431838911305">ΕΓΚΑΤΑΣΤΑΣΗ</translation>
+<translation id="7690812411882623730">Δεν είναι δυνατή η δημιουργία συνδέσμου προς κείμενο</translation>
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7765158879357617694">Μεταφορά</translation>
 <translation id="7771470029643830783">Με την αποσύνδεση, οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλα δεδομένα Chrome δεν θα συγχρονίζονται πλέον με τον Λογαριασμό σας Google

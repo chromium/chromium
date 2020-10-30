@@ -1278,7 +1278,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2471506181342525583">Se permite el acceso a ubicaciones</translation>
 <translation id="2473195200299095979">Traducir esta página</translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
-<translation id="2476578072172137802">Configuración del sitio</translation>
+<translation id="2476578072172137802">Configuración de sitios</translation>
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, debes cerrar Windows.</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
 <translation id="247949520305900375">Compartir audio</translation>
@@ -5901,7 +5901,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7978450511781612192">Con esta acción, saldrás de tus cuentas de Google. Ya no se sincronizarán tus favoritos, historial ni contraseñas, entre otros datos.</translation>
 <translation id="7980084013673500153">ID de activo: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Cargar previamente las páginas para acelerar la navegación y las búsquedas</translation>
+<translation id="7981313251711023384">Precargar las páginas para acelerar la navegación y las búsquedas</translation>
 <translation id="798145602633458219">Agregar la sugerencia <ph name="SUGGESTION_NAME" /> al cuadro de búsqueda</translation>
 <translation id="7982083145464587921">Reinicia el dispositivo para corregir el error.</translation>
 <translation id="7982789257301363584">Red</translation>

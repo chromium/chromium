@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">列印失敗。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
+<translation id="1154690515305205900">無法建立已標示文字的連結。</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1172898394251786223">下一個欄位</translation>
 <translation id="1176932207622159128">無法儲存圖片</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
+<translation id="3285962946108803577">分享網頁...</translation>
 <translation id="3290875554372353449">選擇帳戶</translation>
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3324193307694657476">地址 2</translation>
@@ -611,6 +613,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="766891008101699113">如要以私密模式瀏覽網頁，請開啟新分頁。</translation>
 <translation id="7671141431838911305">安裝</translation>
+<translation id="7690812411882623730">無法建立文字連結</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7771470029643830783">登出帳戶之後，你的書籤、歷史記錄、密碼和其他 Chrome 資料將停止同步到你的 Google 帳戶。

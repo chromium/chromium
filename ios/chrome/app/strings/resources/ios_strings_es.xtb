@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Error al imprimir.</translation>
 <translation id="1125564390852150847">Crear nueva pestaña.</translation>
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
+<translation id="1154690515305205900">No se puede crear un enlace al texto destacado.</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Siguiente campo</translation>
 <translation id="1176932207622159128">Error al guardar imagen</translation>
@@ -211,6 +212,7 @@ Mientras estás en modo de incógnito, los sitios web no pueden usar cookies par
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
+<translation id="3285962946108803577">Compartir página...</translation>
 <translation id="3290875554372353449">Elige una cuenta</translation>
 <translation id="3311748811247479259">Desactivada</translation>
 <translation id="3324193307694657476">Dirección 2</translation>
@@ -611,6 +613,7 @@ Los sitios web no pueden usar cookies para ver tu actividad de navegación en ot
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="766891008101699113">Para navegar por la Web de forma privada, añade una nueva pestaña.</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
+<translation id="7690812411882623730">No se puede enlazar al texto</translation>
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7771470029643830783">Si cierras sesión, tus marcadores, tu historial, tus contraseñas y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google.

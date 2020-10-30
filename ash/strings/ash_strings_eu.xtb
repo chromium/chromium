@@ -120,7 +120,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2083190527011054446">Gabon, <ph name="GIVEN_NAME" />:</translation>
 <translation id="209965399369889474">Ez zaude sarera konektatuta</translation>
 <translation id="2126242104232412123">Lan-eremu berria</translation>
-<translation id="2127372758936585790">Potentzia gutxiko kargagailua</translation>
+<translation id="2127372758936585790">Potentzia txikiko kargagailua</translation>
 <translation id="2135456203358955318">Lupa ainguratua</translation>
 <translation id="2144487987174258011">Eguneratzeko, berrabiarazi Adobe Flash Player</translation>
 <translation id="2180011262286780504">Administratzaileak desgaitu egin du pantaila-argazkiak ateratzeko modua.</translation>
@@ -179,7 +179,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2706462751667573066">Gora</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
 <translation id="2727175239389218057">Erantzun</translation>
-<translation id="2727977024730340865">Energia gutxiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
+<translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena. <ph name="FALLBACK_RESOLUTION" /> ezarri da bereizmen gisa.</translation>
@@ -374,7 +374,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ezkutatu pasahitza</translation>
 <translation id="4570957409596482333">"Hautatu ozen irakurtzeko" botoia</translation>
-<translation id="4577274620589681794">Agortu da denbora · <ph name="LABEL" /></translation>
+<translation id="4577274620589681794">Agortu egin da denbora · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Utzi hargailu ezezagun batera igortzeari</translation>
 <translation id="4596144739579517758">Desaktibatuta dago gai iluna.</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
@@ -413,7 +413,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Aplikazio-multzokatzea</translation>
-<translation id="5030687792513154421">Amaitu da denbora</translation>
+<translation id="5030687792513154421">Amaitu egin da denbora</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> beste telefono batekin konektatu da</translation>
 <translation id="5035389544768382859">Berretsi pantailaren konfigurazioa</translation>
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>

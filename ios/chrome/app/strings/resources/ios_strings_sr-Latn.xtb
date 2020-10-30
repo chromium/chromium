@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Štampanje nije uspelo.</translation>
 <translation id="1125564390852150847">Napravi novu karticu.</translation>
 <translation id="1145536944570833626">Izbrišite postojeće podatke</translation>
+<translation id="1154690515305205900">Pravljenje linka do istaknutog teksta nije uspelo.</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1172898394251786223">Sledeće polje</translation>
 <translation id="1176932207622159128">Nije moguće sačuvati sliku</translation>
@@ -211,6 +212,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="3268451620468152448">Otvorene kartice</translation>
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3277021493514034324">Adresa sajta je kopirana</translation>
+<translation id="3285962946108803577">Deli stranicu…</translation>
 <translation id="3290875554372353449">Izaberite nalog</translation>
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3324193307694657476">2. red za adresu</translation>
@@ -611,6 +613,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="766891008101699113">Da biste privatno pregledali veb, dodajte novu karticu.</translation>
 <translation id="7671141431838911305">INSTALIRANJE</translation>
+<translation id="7690812411882623730">Generisanje linka do teksta nije uspelo</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7765158879357617694">Premesti</translation>
 <translation id="7771470029643830783">Ako se odjavite, obeleživači, istorija, lozinke i drugi Chrome podaci više se neće sinhronizovati sa Google nalogom.

@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">ပုံနှိပ်ခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="1125564390852150847">တဘ်အသစ်ဖန်တီးပါ</translation>
 <translation id="1145536944570833626">လက်ရှိဒေတာများကို ဖျက်ပါ</translation>
+<translation id="1154690515305205900">မြင်သာထင်သာဖြစ်အောင်လုပ်ထားသော စာသားသို့ လင့်ခ်ကို ပြုလုပ်၍မရပါ။</translation>
 <translation id="1165039591588034296">အမှား</translation>
 <translation id="1172898394251786223">ရှေ့ အကွက်</translation>
 <translation id="1176932207622159128">ရုပ်ပုံကို မသိမ်းဆည်းနိုင်ပါ။</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">တဲဘ်များ ဖွင့်ရန်</translation>
 <translation id="3272527697863656322">မလုပ်တော့</translation>
 <translation id="3277021493514034324">ဝဘ်ဆိုက်လိပ်စာကို မိတ္တူကူးယူထားသည်</translation>
+<translation id="3285962946108803577">စာမျက်နှာကို မျှဝေရန်...</translation>
 <translation id="3290875554372353449">'အကောင့်' တစ်ခု ရွေးရန်</translation>
 <translation id="3311748811247479259">ပိတ်ထားသည်</translation>
 <translation id="3324193307694657476">လိပ်စာ 2</translation>
@@ -610,6 +612,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="766891008101699113">ဝဘ်ကို သီးသန့်မုဒ်ဖြင့် ကြည့်ရန် တဘ်အသစ်ဖွင့်ပါ။</translation>
 <translation id="7671141431838911305">တပ်ဆင်မည်</translation>
+<translation id="7690812411882623730">'စာသားနှင့် လင့်ခ်ချိတ်၍' မရပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
 <translation id="7771470029643830783">အကောင့်မှထွက်ခြင်းဖြင့် သင်၏လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြား Chrome ဒေတာများကို သင့် Google Account သို့ စင့်ခ်လုပ်တော့မည် မဟုတ်ပါ။

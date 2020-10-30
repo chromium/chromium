@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
 <translation id="1125564390852150847">Създаване на нов раздел.</translation>
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
+<translation id="1154690515305205900">Не може да се създаде връзка към откроения текст.</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следващото поле</translation>
 <translation id="1176932207622159128">Изобр. не може да се запази</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3272527697863656322">Отказ</translation>
 <translation id="3277021493514034324">Адресът на сайта бе копиран</translation>
+<translation id="3285962946108803577">Споделяне на страницата...</translation>
 <translation id="3290875554372353449">Изберете профил</translation>
 <translation id="3311748811247479259">Изключено</translation>
 <translation id="3324193307694657476">Адрес 2</translation>
@@ -611,6 +613,7 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="766891008101699113">За да сърфирате в мрежата частно, добавете нов раздел.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
+<translation id="7690812411882623730">Неуспешно генериране на връзка към текста</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7765158879357617694">Преместване</translation>
 <translation id="7771470029643830783">Като излезете от профила си в Google, вашите отметки, история, пароли и други данни в Chrome повече няма да се синхронизират с него.

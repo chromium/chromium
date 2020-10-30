@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Памылка друкавання.</translation>
 <translation id="1125564390852150847">Стварыць новую ўкладку.</translation>
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
+<translation id="1154690515305205900">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1172898394251786223">Наступнае поле</translation>
 <translation id="1176932207622159128">Не ўдалося захаваць відарыс</translation>
@@ -211,6 +212,7 @@
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
+<translation id="3285962946108803577">Абагуліць старонку...</translation>
 <translation id="3290875554372353449">Выберыце ўлік. запіс</translation>
 <translation id="3311748811247479259">Выключана</translation>
 <translation id="3324193307694657476">Радок адраса 2</translation>
@@ -611,6 +613,7 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="766891008101699113">Для прагляду інтэрнэт-змесціва ў прыватным рэжыме дадайце новую ўкладку.</translation>
 <translation id="7671141431838911305">УСТАЛЯВАЦЬ</translation>
+<translation id="7690812411882623730">Не ўдалося стварыць спасылку на тэкст</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7771470029643830783">Пасля выхаду закладкі, гісторыя, паролі і іншыя даныя Chrome больш не будуць сінхранізавацца з Уліковым запісам Google.

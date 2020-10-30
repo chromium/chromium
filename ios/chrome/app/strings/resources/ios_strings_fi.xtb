@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Tulostus epäonnistui</translation>
 <translation id="1125564390852150847">Luo uusi välilehti.</translation>
 <translation id="1145536944570833626">Poistaa olemassa olevat tiedot.</translation>
+<translation id="1154690515305205900">Korostettuun tekstiin ei voi luoda linkkiä.</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1172898394251786223">Seuraava kenttä</translation>
 <translation id="1176932207622159128">Kuvaa ei voi tall.</translation>
@@ -211,6 +212,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="3268451620468152448">Avoimet välilehdet</translation>
 <translation id="3272527697863656322">Peruuta</translation>
 <translation id="3277021493514034324">Sivuston osoite kopioitu</translation>
+<translation id="3285962946108803577">Jaa sivu…</translation>
 <translation id="3290875554372353449">Valitse tili</translation>
 <translation id="3311748811247479259">Pois päältä</translation>
 <translation id="3324193307694657476">Osoite 2</translation>
@@ -611,6 +613,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="766891008101699113">Jos haluat selata verkkoa yksityisesti, lisää uusi välilehti.</translation>
 <translation id="7671141431838911305">ASENNA</translation>
+<translation id="7690812411882623730">Tekstiin ei voi linkittää</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7771470029643830783">Jos kirjaudut ulos, kirjanmerkkejä, historiaa, salasanoja tai muuta Chrome-dataasi ei enää synkronoida Google-tilillesi.
