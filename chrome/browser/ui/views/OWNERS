@@ -1,17 +1,17 @@
 # Prefer ellyjones for Mac-specific changes.
 
 bsep@chromium.org
-ellyjones@chromium.org
+collinbaker@chromium.org
+connily@chromium.org
+corising@chromium.org
 dfried@chromium.org
+ellyjones@chromium.org
 kylixrd@chromium.org
 msw@chromium.org
 pbos@chromium.org
 pkasting@chromium.org
 sky@chromium.org
-collinbaker@chromium.org
-corising@chromium.org
 tbergquist@chromium.org
-connily@chromium.org
 
 per-file drag_and_drop_interactive_uitest.*=lukasza@chromium.org
 per-file drag_and_drop_interactive_uitest.*=paulmeyer@chromium.org
