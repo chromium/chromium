@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 
 namespace network {
 
@@ -24,14 +25,30 @@ class PreloadedFirstPartySets {
   PreloadedFirstPartySets(const PreloadedFirstPartySets&) = delete;
   PreloadedFirstPartySets& operator=(const PreloadedFirstPartySets&) = delete;
 
+  void SetManuallySpecifiedSet(const std::string& flag_value);
+
   // Overwrites the current owners-to-sets map with the values in |raw_sets|,
   // which should be the JSON-encoded string representation of a collection of
   // set declarations according to the format specified in this document:
-  // https://github.com/privacycg/first-party-sets
-  void ParseAndSet(base::StringPiece raw_sets);
+  // https://github.com/privacycg/first-party-sets. Returns a pointer to the
+  // set, for testing.
+  base::flat_map<std::string, std::string>* ParseAndSet(
+      base::StringPiece raw_sets);
+
+  int64_t size() const { return sets_.size(); }
 
  private:
+  // We must ensure there's no intersection between the manually-specified set
+  // and the sets that came from Component Updater. (When reconciling the
+  // manually-specified set and `sets`, entries in the manually-specified set
+  // always win.) We must also ensure that `sets` includes the set described by
+  // `manually_specified_set_`.
+  void ApplyManuallySpecifiedSet(
+      base::flat_map<std::string, std::string>& sets) const;
+
   base::flat_map<std::string, std::string> sets_;
+  base::Optional<std::pair<std::string, base::flat_set<std::string>>>
+      manually_specified_set_;
 };
 
 }  // namespace network

@@ -1390,6 +1390,9 @@ extern const char kUnsafeFastJSCallsDescription[];
 extern const char kUiPartialSwapName[];
 extern const char kUiPartialSwapDescription[];
 
+extern const char kUseFirstPartySetName[];
+extern const char kUseFirstPartySetDescription[];
+
 extern const char kUsePreferredIntervalForVideoName[];
 extern const char kUsePreferredIntervalForVideoDescription[];
 

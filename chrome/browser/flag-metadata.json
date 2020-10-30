@@ -4664,6 +4664,12 @@
     "expiry_milestone": -1
   },
   {
+      "name": "use-first-party-set",
+      "owners": [ "chrome-first-party-sets@chromium.org" ],
+      // This flag is used by site developers to test their site configurations.
+      "expiry_milestone": -1
+  },
+  {
     "name": "use-hdr-transfer-function",
     "owners": [ "mcasas", "chromeos-gfx@google.com" ],
     "expiry_milestone": 89

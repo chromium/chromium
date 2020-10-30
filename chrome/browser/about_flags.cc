@@ -6688,6 +6688,9 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnablePasswordInfoBarAccountIndicationFooter)},
 #endif
+    {"use-first-party-set", flag_descriptions::kUseFirstPartySetName,
+     flag_descriptions::kUseFirstPartySetDescription, kOsAll,
+     ORIGIN_LIST_VALUE_TYPE(network::switches::kUseFirstPartySet, "")},
 
     {"check-offline-capability", flag_descriptions::kCheckOfflineCapabilityName,
      flag_descriptions::kCheckOfflineCapabilityDescription, kOsAll,

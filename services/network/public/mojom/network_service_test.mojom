@@ -117,4 +117,9 @@ interface NetworkServiceTest {
   // policy oid.
   [Sync]
   SetEVPolicy(array<uint8, 32> fingerprint_sha256, string policy_oid) => ();
+
+  // Gets the current count of entries in the preloaded First-Party sets
+  // mapping. Note that each entry is a registered domain mapped to its owner.
+  [Sync]
+  GetPreloadedFirstPartySetEntriesCount() => (int64 entries);
 };

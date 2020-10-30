@@ -87,6 +87,11 @@ const char kUnsafelyTreatInsecureOriginAsSecure[] =
 const char kAdditionalTrustTokenKeyCommitments[] =
     "additional-trust-token-key-commitments";
 
+// Allows the manual specification of a First-Party Set, as a comma-separated
+// list of origins. The first origin in the list is treated as the owner of the
+// set.
+const char kUseFirstPartySet[] = "use-first-party-set";
+
 }  // namespace switches
 
 }  // namespace network

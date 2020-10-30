@@ -95,6 +95,7 @@
   "use-angle",
   "use-custom-messages-domain",
   "use-fake-device-for-media-stream",
+  "use-first-party-set",
   "use_messages_staging_url",
   "use-sync-sandbox",
   "use-wallpaper-staging-url",

@@ -375,6 +375,10 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   trust_token_key_commitments_ = std::make_unique<TrustTokenKeyCommitments>();
 
   preloaded_first_party_sets_ = std::make_unique<PreloadedFirstPartySets>();
+  if (command_line->HasSwitch(switches::kUseFirstPartySet)) {
+    preloaded_first_party_sets_->SetManuallySpecifiedSet(
+        command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
+  }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;

@@ -44247,6 +44247,7 @@ from previous Chrome versions.
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
+  <int value="491258649" label="UseFirstPartySet"/>
   <int value="491334698" label="ConditionalTabStripAndroid:enabled"/>
   <int value="492113129" label="ExperimentalAppBanners:enabled"/>
   <int value="492985975" label="use-monitor-color-space"/>

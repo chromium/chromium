@@ -287,6 +287,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kWebXrForceRuntime,
       sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif
+      network::switches::kUseFirstPartySet,
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                                base::size(kSwitchNames));

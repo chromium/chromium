@@ -60,7 +60,10 @@ source_set("tests") {
 
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 
-  sources = [ "first_party_set_parser_unittest.cc" ]
+  sources = [
+    "first_party_set_parser_unittest.cc",
+    "preloaded_first_party_sets_unittest.cc",
+  ]
 
   deps = [
     ":first_party_sets",

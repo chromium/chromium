@@ -234,6 +234,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run(count);
   }
 
+  void GetPreloadedFirstPartySetEntriesCount(
+      GetPreloadedFirstPartySetEntriesCountCallback callback) override {
+    std::move(callback).Run(
+        network::NetworkService::GetNetworkServiceForTesting()
+            ->preloaded_first_party_sets()
+            ->size());
+  }
+
   void GetEnvironmentVariableValue(
       const std::string& name,
       GetEnvironmentVariableValueCallback callback) override {

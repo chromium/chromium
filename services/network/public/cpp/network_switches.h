@@ -25,6 +25,7 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kUnsafelyTreatInsecureOriginAsSecure[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAdditionalTrustTokenKeyCommitments[];
+COMPONENT_EXPORT(NETWORK_CPP) extern const char kUseFirstPartySet[];
 
 }  // namespace switches
 
