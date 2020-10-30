@@ -79,8 +79,11 @@ content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
       network::mojom::CSPDirectiveName::ConnectSrc,
       std::string("connect-src http://www.google-analytics.com/ 'self';"));
   untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      std::string("worker-src 'self';"));
+  untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      std::string("trusted-types ga-js-static;"));
+      std::string("trusted-types ga-js-static mp4-js-static;"));
 
   return untrusted_source;
 }

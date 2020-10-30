@@ -149,11 +149,6 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  isMp4RecordingEnabled() {
-    return false;
-  }
-
-  /** @override */
   fitWindow() {
     // TODO(crbug.com/980846): Remove the method once we migrate to SWA.
   }

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
 import {assert} from '../../../chrome_util.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {
@@ -29,9 +28,7 @@ import {RecordTime} from './record_time.js';
  * Video recording MIME type. Mkv with AVC1 is the only preferred format.
  * @type {string}
  */
-const VIDEO_MIMETYPE = browserProxy.isMp4RecordingEnabled() ?
-    'video/x-matroska;codecs=avc1,pcm' :
-    'video/x-matroska;codecs=avc1';
+const VIDEO_MIMETYPE = 'video/x-matroska;codecs=avc1,pcm';
 
 /**
  * Contains video recording result.

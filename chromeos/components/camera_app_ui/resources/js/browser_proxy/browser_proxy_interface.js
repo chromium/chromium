@@ -113,12 +113,6 @@ export class BrowserProxy {
   shouldAddFakeHistory() {}
 
   /**
-   * @return {boolean}
-   * @abstract
-   */
-  isMp4RecordingEnabled() {}
-
-  /**
    * @return {!Promise}
    * @abstract
    */

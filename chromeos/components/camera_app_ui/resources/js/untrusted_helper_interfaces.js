@@ -11,3 +11,10 @@
  * }}
  */
 export let GAHelperInterface;
+
+/**
+ * @typedef {{
+ *   connectToWorker: function(!Port): !Promise,
+ * }}
+ */
+export let VideoProcessorHelperInterface;

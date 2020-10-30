@@ -323,6 +323,14 @@ class Mp4VideoProcessor {
     // Flush and close the output writer.
     await this.output_.close();
   }
+
+  /**
+   * Expose the VideoProcessor constructor to given end point.
+   * @param {!Port} endPoint
+   */
+  static exposeVideoProcessor(endPoint) {
+    Comlink.expose(Mp4VideoProcessor, endPoint);
+  }
 }
 
 Comlink.expose(Mp4VideoProcessor);

@@ -33,6 +33,7 @@
       <structure name="IDR_CAMERA_DOM_JS" file="js/dom.js" type="chrome_html" />
       <structure name="IDR_CAMERA_DYNAMIC_IMPORT_JS" file="js/dynamic_import.js" type="chrome_html" />
       <structure name="IDR_CAMERA_ERROR_JS" file="js/error.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_FFMPEG_JS" file="js/lib/ffmpeg.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FILE_NAMER_JS" file="js/models/file_namer.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FILE_SYSTEM_ENTRY_JS" file="js/models/file_system_entry.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FILE_SYSTEM_JS" file="js/models/file_system.js" type="chrome_html" />
@@ -58,7 +59,6 @@
       <structure name="IDR_CAMERA_MP4_VIDEO_PROCESSOR_JS" file="js/models/mp4_video_processor.js" type="chrome_html" />
       <structure name="IDR_CAMERA_NATIVE_FILE_SYSTEM_ENTRY_JS" file="js/models/native_file_system_entry.js" type="chrome_html" />
       <structure name="IDR_CAMERA_NAV_JS" file="js/nav.js" type="chrome_html" />
-      <structure name="IDR_CAMERA_NOP_VIDEO_PROCESSOR_JS" file="js/models/nop_video_processor.js" type="chrome_html" />
       <structure name="IDR_CAMERA_OPTIONS_JS" file="js/views/camera/options.js" type="chrome_html" />
       <structure name="IDR_CAMERA_PERF_JS" file="js/perf.js" type="chrome_html" />
       <structure name="IDR_CAMERA_PREVIEW_JS" file="js/views/camera/preview.js" type="chrome_html" />
@@ -77,6 +77,7 @@
       <structure name="IDR_CAMERA_UNTRUSTED_HELPER_INTERFACES_JS" file="js/untrusted_helper_interfaces.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UNTRUSTED_SCRIPT_LOADER_HTML" file="views/untrusted_script_loader.html" type="chrome_html" />
       <structure name="IDR_CAMERA_UNTRUSTED_SCRIPT_LOADER_JS" file="js/untrusted_script_loader.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_UNTRUSTED_VIDEO_PROCESSOR_HELPER_JS" file="js/untrusted_video_processor_helper.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UTIL_JS" file="js/util.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIDEO_SAVER_JS" file="js/models/video_saver.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIEW_JS" file="js/views/view.js" type="chrome_html" />
@@ -132,7 +133,7 @@
           use_base_dir="false"
           type="BINDATA"/>
 
-      <!-- TODO(crbug.com/980846): Add FFMpeg library here with comrpession enabled once video recording is ready to test in SWA -->
+      <include name="IDR_CAMERA_FFMPEG_WASM" file="js/lib/ffmpeg.wasm" type="BINDATA" />
 
       <include name="IDR_CAMERA_RECORD_END_OGG" file="sounds/record_end.ogg" type="BINDATA" />
       <include name="IDR_CAMERA_RECORD_PAUSE_OGG" file="sounds/record_pause.ogg" type="BINDATA" />

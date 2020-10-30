@@ -156,11 +156,6 @@ class ChromeAppBrowserProxy {
   }
 
   /** @override */
-  isMp4RecordingEnabled() {
-    return true;
-  }
-
-  /** @override */
   async fitWindow() {
     const appWindow = chrome.app.window.current();
 
