@@ -2194,6 +2194,21 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_PWA_INSTALL_AVAILABLE_TEXT" desc="The in-product-help message for PWAs that can be installed to the device.">
         Install this app
       </message>
+      <message name="IDS_IPH_BUBBLE_ADD_TO_HOME_SCREEN" desc="The in-product-help message encouraging users to add a commonly visited webpage to the home screen.">
+        To get here quicker, add this page to your Home screen
+      </message>
+      <message name="IDS_IPH_BUBBLE_ADD_TO_HOME_SCREEN_ACCESSIBILITY" desc="The in-product-help message encouraging users to add a commonly visited webpage to the home screen. Used when a screen reader is turned. 'More options' should match TC ID 8110367050267853536.">
+        To get here quicker, add this page to your Home screen from the More options button
+      </message>
+      <message name="IDS_IPH_INFOBAR_ADD_TO_HOME_SCREEN_TITLE" desc="The title of in-product-help infobar encouraging users to add a commonly visited webpage to the home screen.">
+        Get to this site quicker
+      </message>
+      <message name="IDS_IPH_INFOBAR_ADD_TO_HOME_SCREEN_DESCRIPTION" desc="The description of in-product-help infobar encouraging users to add a commonly visited webpage to the home screen. Shown on phones.">
+        Add this site to your phone’s Home screen so you can get here more easily
+      </message>
+      <message name="IDS_IPH_INFOBAR_ADD_TO_HOME_SCREEN_DESCRIPTION_TABLET" desc="The description of in-product-help infobar encouraging users to add a commonly visited webpage to the home screen. Shown on tablets.">
+        Add this site to your tablet’s Home screen so you can get here more easily
+      </message>
 
       <!-- Page info popup -->
       <message name="IDS_PAGE_INFO_CONNECTION_OFFLINE" desc="Message to display in the page info bubble when viewing and offline page.">
