@@ -297,9 +297,9 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
     : pcscan_(pcscan), root_(root) {
   // Take a snapshot of all allocated non-empty slot spans.
   static constexpr size_t kScanAreasReservationSlack = 10;
-  const size_t kScanAreasReservationSize = root_.total_size_of_committed_pages /
-                                           PartitionPageSize() /
-                                           kScanAreasReservationSlack;
+  const size_t kScanAreasReservationSize =
+      root_.get_total_size_of_committed_pages() / PartitionPageSize() /
+      kScanAreasReservationSlack;
   scan_areas_.reserve(kScanAreasReservationSize);
 
   typename Root::ScopedGuard guard(root.lock_);
@@ -346,7 +346,8 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
               new_quarantine_size);
 
   pcscan_.quarantine_data_.Account(new_quarantine_size);
-  pcscan_.quarantine_data_.GrowLimitIfNeeded();
+  pcscan_.quarantine_data_.GrowLimitIfNeeded(
+      root_.get_total_size_of_committed_pages());
 
   // Check that concurrent task can't be scheduled twice.
   PA_CHECK(pcscan_.in_progress_.exchange(false));

@@ -1361,7 +1361,7 @@ TEST_F(PartitionAllocTest, MappingCollision) {
 // Tests that slot spans in the free slot span cache do get freed as
 // appropriate.
 TEST_F(PartitionAllocTest, FreeCache) {
-  EXPECT_EQ(0U, allocator.root()->total_size_of_committed_pages_for_testing());
+  EXPECT_EQ(0U, allocator.root()->get_total_size_of_committed_pages());
 
   size_t big_size = 1000 - kExtraAllocSize;
   size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
@@ -1376,7 +1376,7 @@ TEST_F(PartitionAllocTest, FreeCache) {
   EXPECT_EQ(1, slot_span->num_allocated_slots);
   size_t expected_committed_size = PartitionPageSize();
   EXPECT_EQ(expected_committed_size,
-            allocator.root()->total_size_of_committed_pages_for_testing());
+            allocator.root()->get_total_size_of_committed_pages());
   allocator.root()->Free(ptr);
   EXPECT_EQ(0, slot_span->num_allocated_slots);
   EXPECT_NE(-1, slot_span->empty_cache_index);
@@ -1394,7 +1394,7 @@ TEST_F(PartitionAllocTest, FreeCache) {
       cycle_free_cache_bucket->num_system_pages_per_slot_span *
       SystemPageSize();
   EXPECT_EQ(expected_size,
-            allocator.root()->total_size_of_committed_pages_for_testing());
+            allocator.root()->get_total_size_of_committed_pages());
 
   // Check that an allocation works ok whilst in this state (a free'd slot span
   // as the active slot spans head).
@@ -1411,7 +1411,7 @@ TEST_F(PartitionAllocTest, FreeCache) {
     EXPECT_TRUE(slot_span->freelist_head);
   }
   EXPECT_EQ(expected_committed_size,
-            allocator.root()->total_size_of_committed_pages_for_testing());
+            allocator.root()->get_total_size_of_committed_pages());
 }
 
 // Tests for a bug we had with losing references to free slot spans.

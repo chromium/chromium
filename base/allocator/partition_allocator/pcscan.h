@@ -56,7 +56,7 @@ class BASE_EXPORT PCScan final {
     // Account freed bytes. Returns true if limit was reached.
     ALWAYS_INLINE bool Account(size_t bytes);
 
-    void GrowLimitIfNeeded();
+    void GrowLimitIfNeeded(size_t heap_size);
     void ResetAndAdvanceEpoch();
 
     size_t epoch() const { return epoch_.load(std::memory_order_relaxed); }
@@ -66,8 +66,7 @@ class BASE_EXPORT PCScan final {
     size_t last_size() const { return last_size_; }
 
    private:
-    static constexpr size_t kQuarantineSizeMinLimit = 16 * 1024 * 1024;
-    static constexpr double kQuarantineSizeGrowingFactor = 1.1;
+    static constexpr size_t kQuarantineSizeMinLimit = 1 * 1024 * 1024;
 
     std::atomic<size_t> current_size_{0u};
     std::atomic<size_t> size_limit_{kQuarantineSizeMinLimit};
@@ -85,9 +84,6 @@ class BASE_EXPORT PCScan final {
 
 template <bool thread_safe>
 constexpr size_t PCScan<thread_safe>::QuarantineData::kQuarantineSizeMinLimit;
-template <bool thread_safe>
-constexpr double
-    PCScan<thread_safe>::QuarantineData::kQuarantineSizeGrowingFactor;
 
 template <bool thread_safe>
 bool PCScan<thread_safe>::QuarantineData::Account(size_t size) {
@@ -102,12 +98,13 @@ void PCScan<thread_safe>::QuarantineData::ResetAndAdvanceEpoch() {
 }
 
 template <bool thread_safe>
-void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded() {
+void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
+  static constexpr double kQuarantineSizeFraction = 0.1;
+  // |heap_size| includes the current quarantine size, we intentionally leave
+  // some slack till hitting the limit.
   size_limit_.store(
-      std::max(
-          kQuarantineSizeMinLimit,
-          static_cast<size_t>(kQuarantineSizeGrowingFactor *
-                              current_size_.load(std::memory_order_relaxed))),
+      std::max(kQuarantineSizeMinLimit,
+               static_cast<size_t>(kQuarantineSizeFraction * heap_size)),
       std::memory_order_relaxed);
 }
 

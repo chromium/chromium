@@ -30,6 +30,8 @@
 //   might be placed into a 4096-byte bucket. Bucket sizes are chosen to try and
 //   keep worst-case waste to ~10%.
 
+#include <atomic>
+
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -143,9 +145,11 @@ struct BASE_EXPORT PartitionRoot {
   // Invariant: total_size_of_committed_pages <=
   //                total_size_of_super_pages +
   //                total_size_of_direct_mapped_pages.
-  size_t total_size_of_committed_pages GUARDED_BY(lock_) = 0;
-  size_t total_size_of_super_pages GUARDED_BY(lock_) = 0;
-  size_t total_size_of_direct_mapped_pages GUARDED_BY(lock_) = 0;
+  // Since all operations on these atomic variables have relaxed semantics, we
+  // don't check this invariant with DCHECKs.
+  std::atomic<size_t> total_size_of_committed_pages{0};
+  std::atomic<size_t> total_size_of_super_pages{0};
+  std::atomic<size_t> total_size_of_direct_mapped_pages{0};
 
   char* next_super_page = nullptr;
   char* next_partition_page = nullptr;
@@ -191,10 +195,8 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
 
-  ALWAYS_INLINE void IncreaseCommittedPages(size_t len)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  ALWAYS_INLINE void DecreaseCommittedPages(size_t len)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
+  ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecommitSystemPages(void* address, size_t length)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void RecommitSystemPages(void* address, size_t length)
@@ -265,9 +267,8 @@ struct BASE_EXPORT PartitionRoot {
   internal::ThreadCache* thread_cache_for_testing() const {
     return with_thread_cache ? internal::ThreadCache::Get() : nullptr;
   }
-  size_t total_size_of_committed_pages_for_testing() {
-    ScopedGuard guard{lock_};
-    return total_size_of_committed_pages;
+  size_t get_total_size_of_committed_pages() const {
+    return total_size_of_committed_pages.load(std::memory_order_relaxed);
   }
 
   ALWAYS_INLINE internal::PartitionTag GetNewPartitionTag() {
@@ -666,17 +667,13 @@ PartitionRoot<thread_safe>::FromSlotSpan(SlotSpan* slot_span) {
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::IncreaseCommittedPages(
     size_t len) {
-  total_size_of_committed_pages += len;
-  PA_DCHECK(total_size_of_committed_pages <=
-            total_size_of_super_pages + total_size_of_direct_mapped_pages);
+  total_size_of_committed_pages.fetch_add(len, std::memory_order_relaxed);
 }
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::DecreaseCommittedPages(
     size_t len) {
-  total_size_of_committed_pages -= len;
-  PA_DCHECK(total_size_of_committed_pages <=
-            total_size_of_super_pages + total_size_of_direct_mapped_pages);
+  total_size_of_committed_pages.fetch_sub(len, std::memory_order_relaxed);
 }
 
 template <bool thread_safe>

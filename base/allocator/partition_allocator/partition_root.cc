@@ -332,12 +332,9 @@ NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(size_t size) {
   // Check whether this OOM is due to a lot of super pages that are allocated
   // but not committed, probably due to http://crbug.com/421387.
   //
-  // Reading values without locking is fine here, we are going to crash anyway,
-  // this is used for reporting only, and concurrent successful allocations are
-  // unlikely.
-  if (TS_UNCHECKED_READ(total_size_of_super_pages) +
-          TS_UNCHECKED_READ(total_size_of_direct_mapped_pages) -
-          TS_UNCHECKED_READ(total_size_of_committed_pages) >
+  if (total_size_of_super_pages.load(std::memory_order_relaxed) +
+          total_size_of_direct_mapped_pages.load(std::memory_order_relaxed) -
+          total_size_of_committed_pages.load(std::memory_order_relaxed) >
       kReasonableSizeOfUnusedPages) {
     internal::PartitionOutOfMemoryWithLotsOfUncommitedPages(size);
   }
@@ -647,8 +644,10 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
     ScopedGuard guard{lock_};
 
     stats.total_mmapped_bytes =
-        total_size_of_super_pages + total_size_of_direct_mapped_pages;
-    stats.total_committed_bytes = total_size_of_committed_pages;
+        total_size_of_super_pages.load(std::memory_order_relaxed) +
+        total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
+    stats.total_committed_bytes =
+        total_size_of_committed_pages.load(std::memory_order_relaxed);
 
     size_t direct_mapped_allocations_total_size = 0;
     for (size_t i = 0; i < kNumBuckets; ++i) {

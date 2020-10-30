@@ -63,7 +63,8 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     return nullptr;
 
   size_t committed_page_size = size + SystemPageSize();
-  root->total_size_of_direct_mapped_pages += committed_page_size;
+  root->total_size_of_direct_mapped_pages.fetch_add(committed_page_size,
+                                                    std::memory_order_relaxed);
   root->IncreaseCommittedPages(committed_page_size);
 
   char* slot = ptr + PartitionPageSize();
@@ -279,7 +280,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   if (UNLIKELY(!super_page))
     return nullptr;
 
-  root->total_size_of_super_pages += kSuperPageSize;
+  root->total_size_of_super_pages.fetch_add(kSuperPageSize,
+                                            std::memory_order_relaxed);
 
   // |total_size| MUST be less than kSuperPageSize - (PartitionPageSize()*2).
   // This is a trustworthy value because num_partition_pages is not user
