@@ -17,7 +17,7 @@ async function testToast(done) {
     }
   };
   const getToastOpacity = () => {
-    return Number(
+    return parseFloat(
         window.getComputedStyle(toast.shadowRoot.querySelector('cr-toast'))
             .opacity);
   };
@@ -80,7 +80,7 @@ async function testToast(done) {
   // Call hide(), toast should no longer be visible, no more toasts shown.
   toast.hide();
   await waitFor(() => getToastOpacity() === 0);
-  assertFalse(toast.visible);
+  await waitFor(() => !toast.visible);
 
   done();
 }
