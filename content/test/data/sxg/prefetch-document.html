@@ -4,6 +4,7 @@
 function addPrefetch(url) {
   let link = document.createElement('link');
   link.rel = 'prefetch';
+  link.as = 'document';
   link.href = url;
   link.addEventListener('error', () => {
     document.title = 'FAIL';

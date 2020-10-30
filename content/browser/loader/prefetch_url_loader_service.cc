@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -209,7 +210,12 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<PrefetchURLLoader>(
           routing_id, request_id, options, current_context.frame_tree_node_id,
-          resource_request, std::move(client), traffic_annotation,
+          resource_request,
+          resource_request.trusted_params
+              ? resource_request.trusted_params->isolation_info
+                    .network_isolation_key()
+              : current_context.render_frame_host->GetNetworkIsolationKey(),
+          std::move(client), traffic_annotation,
           std::move(network_loader_factory_to_use),
           base::BindRepeating(
               &PrefetchURLLoaderService::CreateURLLoaderThrottles, this,

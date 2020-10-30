@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "net/base/network_isolation_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -51,6 +52,11 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
       base::OnceCallback<base::UnguessableToken(
           const network::ResourceRequest&)>;
 
+  // |network_isolation_key| must be the NetworkIsolationKey that will be used
+  // for the request (either matching |resource_request.trusted_params|'s
+  // IsolationInfo, if trusted_params| is non-null, or bound to
+  // |network_loader_factory|, otherwise).
+  //
   // |url_loader_throttles_getter| may be used when a prefetch handler needs to
   // additionally create a request (e.g. for fetching certificate if the
   // prefetch was for a signed exchange).
@@ -60,6 +66,7 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
       uint32_t options,
       int frame_tree_node_id,
       const network::ResourceRequest& resource_request,
+      const net::NetworkIsolationKey& network_isolation_key,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
@@ -117,6 +124,8 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
 
   // Set in the constructor and updated when redirected.
   network::ResourceRequest resource_request_;
+
+  const net::NetworkIsolationKey network_isolation_key_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
