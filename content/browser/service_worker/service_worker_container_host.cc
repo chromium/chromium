@@ -134,15 +134,9 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (IsBackForwardCacheEnabled() && IsContainerForClient()) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, BrowserThread::UI,
-        base::BindOnce(
-            [](int process_id, int frame_id, const std::string& uuid) {
-              auto* rfh = RenderFrameHostImpl::FromID(process_id, frame_id);
-              if (rfh)
-                rfh->RemoveServiceWorkerContainerHost(uuid);
-            },
-            process_id(), frame_id(), client_uuid()));
+    auto* rfh = RenderFrameHostImpl::FromID(process_id(), frame_id());
+    if (rfh)
+      rfh->RemoveServiceWorkerContainerHost(client_uuid());
   }
 
   if (fetch_request_window_id_)
@@ -759,18 +753,10 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   }
 
   if (IsBackForwardCacheEnabled()) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, BrowserThread::UI,
-        base::BindOnce(
-            [](int process_id, int frame_id, const std::string& uuid,
-               base::WeakPtr<ServiceWorkerContainerHost> self) {
-              auto* rfh = RenderFrameHostImpl::FromID(process_id, frame_id);
-              // |rfh| may be null in tests (but it should not happen in
-              // production).
-              if (rfh)
-                rfh->AddServiceWorkerContainerHost(uuid, self);
-            },
-            container_process_id, frame_id_, client_uuid(), GetWeakPtr()));
+    auto* rfh = RenderFrameHostImpl::FromID(container_process_id, frame_id());
+    // |rfh| may be null in tests (but it should not happen in production).
+    if (rfh)
+      rfh->AddServiceWorkerContainerHost(client_uuid(), GetWeakPtr());
   }
 
   DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
@@ -957,9 +943,7 @@ bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
       GetContentClient()->browser()->AllowServiceWorker(
           scope, site_for_cookies().RepresentativeUrl(), top_frame_origin(),
           script_url, context_->wrapper()->browser_context());
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(&ReportServiceWorkerAccess, process_id_,
-                                       frame_id_, scope, allowed));
+  ReportServiceWorkerAccess(process_id(), frame_id(), scope, allowed);
   return allowed;
 }
 
@@ -1079,18 +1063,11 @@ void ServiceWorkerContainerHost::EvictFromBackForwardCache(
   DCHECK(IsBackForwardCacheEnabled());
   DCHECK(IsContainerForWindowClient());
   is_in_back_forward_cache_ = false;
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(
-          [](int process_id, int frame_id,
-             BackForwardCacheMetrics::NotRestoredReason reason) {
-            auto* rfh = RenderFrameHostImpl::FromID(process_id, frame_id);
-            // |rfh| could be evicted before this function is called.
-            if (!rfh || !rfh->IsInBackForwardCache())
-              return;
-            rfh->EvictFromBackForwardCacheWithReason(reason);
-          },
-          process_id_, frame_id_, reason));
+
+  auto* rfh = RenderFrameHostImpl::FromID(process_id(), frame_id());
+  // |rfh| could be evicted before this function is called.
+  if (rfh && rfh->IsInBackForwardCache())
+    rfh->EvictFromBackForwardCacheWithReason(reason);
 }
 
 void ServiceWorkerContainerHost::OnEnterBackForwardCache() {
