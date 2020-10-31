@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/holding_space_tray_icon_item.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
@@ -13,8 +14,9 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/shadow_util.h"
 #include "ui/gfx/skia_paint_util.h"
 
@@ -55,6 +57,84 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
   animation_settings->SetTweenType(gfx::Tween::EASE_OUT);
 }
 
+// ContentsImageSource ---------------------------------------------------------
+
+class ContentsImageSource : public gfx::ImageSkiaSource {
+ public:
+  explicit ContentsImageSource(const HoldingSpaceItem* item) : item_(item) {}
+  ContentsImageSource(const ContentsImageSource&) = delete;
+  ContentsImageSource& operator=(const ContentsImageSource&) = delete;
+  ~ContentsImageSource() override = default;
+
+ private:
+  // gfx::ImageSkiaSource:
+  gfx::ImageSkiaRep GetImageForScale(float scale) override {
+    gfx::ImageSkia image = item_->image().image_skia();
+
+    // Crop to square (if necessary).
+    gfx::Size square_size = image.size();
+    square_size.SetToMin(gfx::Size(square_size.height(), square_size.width()));
+    if (image.size() != square_size) {
+      gfx::Rect square_rect(image.size());
+      square_rect.ClampToCenteredSize(square_size);
+      image = gfx::ImageSkiaOperations::ExtractSubset(image, square_rect);
+    }
+
+    // Resize to contents size (if necessary).
+    gfx::Size contents_size = GetContentsBounds().size();
+    if (image.size() != contents_size) {
+      image = gfx::ImageSkiaOperations::CreateResizedImage(
+          image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+          contents_size);
+    }
+
+    // Clip to circle.
+    // NOTE: Since `image` has already been cropped to a square, the center
+    // x-coordinate, center y-coordinate, and radius all equal the same value.
+    const int radius = image.width() / 2;
+    gfx::Canvas canvas(image.size(), scale, /*is_opaque=*/false);
+    canvas.ClipPath(SkPath::Circle(/*cx=*/radius, /*cy=*/radius, radius),
+                    /*anti_alias=*/true);
+    canvas.DrawImageInt(image, /*x=*/0, /*y=*/0);
+    return gfx::ImageSkiaRep(canvas.GetBitmap(), scale);
+  }
+
+  const HoldingSpaceItem* item_;
+};
+
+// ContentsImage ---------------------------------------------------------------
+
+class ContentsImage : public gfx::ImageSkia {
+ public:
+  ContentsImage(const HoldingSpaceItem* item,
+                base::RepeatingClosure image_invalidated_closure)
+      : gfx::ImageSkia(std::make_unique<ContentsImageSource>(item),
+                       GetContentsBounds().size()),
+        image_invalidated_closure_(image_invalidated_closure) {
+    image_subscription_ = item->image().AddImageSkiaChangedCallback(
+        base::BindRepeating(&ContentsImage::OnHoldingSpaceItemImageChanged,
+                            base::Unretained(this)));
+  }
+
+  ContentsImage(const ContentsImage&) = delete;
+  ContentsImage& operator=(const ContentsImage&) = delete;
+  ~ContentsImage() = default;
+
+ private:
+  void OnHoldingSpaceItemImageChanged() {
+    // Invalidate cached image reps.
+    for (const gfx::ImageSkiaRep& image_rep : image_reps()) {
+      RemoveRepresentation(image_rep.scale());
+      RemoveUnsupportedRepresentationsForScale(image_rep.scale());
+    }
+    // Notify closure of invalidation.
+    image_invalidated_closure_.Run();
+  }
+
+  base::RepeatingClosure image_invalidated_closure_;
+  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
+};
+
 }  // namespace
 
 // HoldingSpaceTrayIconItem ----------------------------------------------------
@@ -62,12 +142,9 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
 HoldingSpaceTrayIconItem::HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon* icon,
                                                    const HoldingSpaceItem* item)
     : icon_(icon), item_(item) {
-  image_subscription_ =
-      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
-          &HoldingSpaceTrayIconItem::OnHoldingSpaceItemImageChanged,
-          base::Unretained(this)));
-  if (!item->image().image_skia().isNull())
-    OnHoldingSpaceItemImageChanged();
+  contents_image_ = std::make_unique<ContentsImage>(
+      item_, base::BindRepeating(&HoldingSpaceTrayIconItem::InvalidateLayer,
+                                 base::Unretained(this)));
 }
 
 HoldingSpaceTrayIconItem::~HoldingSpaceTrayIconItem() = default;
@@ -154,19 +231,34 @@ void HoldingSpaceTrayIconItem::AnimateUnshift() {
   layer_->SetOpacity(1.f);
 }
 
+// TODO(crbug.com/1142572): Support theming.
 void HoldingSpaceTrayIconItem::OnPaintLayer(const ui::PaintContext& context) {
-  ui::PaintRecorder recorder(context, gfx::Size(kTrayItemSize, kTrayItemSize));
   const gfx::Rect contents_bounds = GetContentsBounds();
 
-  PaintBackground(recorder.canvas(), contents_bounds);
-  PaintContents(recorder.canvas(), contents_bounds);
+  ui::PaintRecorder recorder(context, gfx::Size(kTrayItemSize, kTrayItemSize));
+  gfx::Canvas* canvas = recorder.canvas();
+
+  // Background.
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(SK_ColorWHITE);
+  flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
+  canvas->DrawCircle(
+      contents_bounds.CenterPoint(),
+      std::min(contents_bounds.width(), contents_bounds.height()) / 2, flags);
+
+  // Contents.
+  DCHECK(contents_image_);
+  if (!contents_image_->isNull()) {
+    canvas->DrawImageInt(*contents_image_, contents_bounds.x(),
+                         contents_bounds.y());
+  }
 }
 
 void HoldingSpaceTrayIconItem::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
-  DCHECK(layer_);
-  layer_->SchedulePaint(layer_->bounds());
+  InvalidateLayer();
 }
 
 void HoldingSpaceTrayIconItem::OnImplicitAnimationsCompleted() {
@@ -176,10 +268,9 @@ void HoldingSpaceTrayIconItem::OnImplicitAnimationsCompleted() {
   icon_->layer()->Remove(layer_.get());
   layer_.reset();
 
-  if (animate_out_closure_) {
-    // NOTE: Running `animate_out_closure_` may delete `this`.
+  // NOTE: Running `animate_out_closure_` may delete `this`.
+  if (animate_out_closure_)
     std::move(animate_out_closure_).Run();
-  }
 }
 
 void HoldingSpaceTrayIconItem::CreateLayer() {
@@ -197,57 +288,7 @@ bool HoldingSpaceTrayIconItem::NeedsLayer() const {
   return x < kHoldingSpaceTrayIconMaxVisibleItems * kTrayItemSize / 2;
 }
 
-// TODO(crbug.com/1142572): Support theming.
-void HoldingSpaceTrayIconItem::PaintBackground(
-    gfx::Canvas* canvas,
-    const gfx::Rect& contents_bounds) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(SK_ColorWHITE);
-  flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
-  canvas->DrawCircle(
-      contents_bounds.CenterPoint(),
-      std::min(contents_bounds.width(), contents_bounds.height()) / 2, flags);
-}
-
-void HoldingSpaceTrayIconItem::PaintContents(gfx::Canvas* canvas,
-                                             const gfx::Rect& contents_bounds) {
-  if (image_.isNull())
-    return;
-
-  const gfx::Point center_point = contents_bounds.CenterPoint();
-  const int radius =
-      std::min(contents_bounds.width(), contents_bounds.height()) / 2;
-
-  // Clip `image_` to a circular path.
-  gfx::ScopedCanvas scoped_canvas(canvas);
-  canvas->ClipPath(
-      /*path=*/SkPath::Circle(center_point.x(), center_point.y(), radius),
-      /*anti_alias=*/true);
-
-  canvas->DrawImageInt(image_, contents_bounds.x(), contents_bounds.y());
-}
-
-void HoldingSpaceTrayIconItem::OnHoldingSpaceItemImageChanged() {
-  image_ = item_->image().image_skia();
-
-  // Crop to square (if necessary).
-  gfx::Size square_size = image_.size();
-  square_size.SetToMin(gfx::Size(square_size.height(), square_size.width()));
-  if (image_.size() != square_size) {
-    gfx::Rect square_rect(image_.size());
-    square_rect.ClampToCenteredSize(square_size);
-    image_ = gfx::ImageSkiaOperations::ExtractSubset(image_, square_rect);
-  }
-
-  // Resize to contents size (if necessary).
-  gfx::Size contents_size = GetContentsBounds().size();
-  if (image_.size() != contents_size) {
-    image_ = gfx::ImageSkiaOperations::CreateResizedImage(
-        image_, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-        contents_size);
-  }
-
+void HoldingSpaceTrayIconItem::InvalidateLayer() {
   if (layer_)
     layer_->SchedulePaint(layer_->bounds());
 }

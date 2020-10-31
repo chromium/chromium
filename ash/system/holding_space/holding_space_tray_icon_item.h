@@ -9,13 +9,12 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 
 namespace gfx {
-class Canvas;
+class ImageSkia;
 }  // namespace gfx
 
 namespace ui {
@@ -73,19 +72,16 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   // space tray `icon_`, this is used to gate creation/deletion of `layer_`.
   bool NeedsLayer() const;
 
-  // Invoked to paint the background/contents to the given `canvas`.
-  void PaintBackground(gfx::Canvas* canvas, const gfx::Rect& contents_bounds);
-  void PaintContents(gfx::Canvas* canvas, const gfx::Rect& contents_bounds);
-
-  // Invoked when the associated holding space `item_`'s image has been changed.
-  void OnHoldingSpaceItemImageChanged();
+  // Schedules repaint of `layer_`, no-oping if it doesn't exist.
+  void InvalidateLayer();
 
   HoldingSpaceTrayIcon* const icon_;
   const HoldingSpaceItem* item_;
 
   // A cached representation of the associated holding space `item_`'s image
-  // which has been cropped and resized to be painted to `layer_`.
-  gfx::ImageSkia image_;
+  // which has been cropped, resized, and clipped to a circle to be painted at
+  // `layer_`'s contents bounds.
+  std::unique_ptr<gfx::ImageSkia> contents_image_;
 
   // This is a proxy for `layer_`'s transform and represents the target
   // position of this item. Because `layer_` only exists while in `icon_`'s
@@ -97,10 +93,6 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   // space `item_` in the holding space `icon_` in the shelf. This only exists
   // while in the `icon_`s viewport as determined by the current `transform_`.
   std::unique_ptr<ui::Layer> layer_;
-
-  // We need to repaint `layer_` whenever the associated holding space `item_`'s
-  // image is changed. We receive change events while this subscription exists.
-  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
 
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
   // instance may be deleted during invocation.
