@@ -91,6 +91,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile),
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
       std::make_unique<BrowserTabsModelProviderImpl>(
+          device_sync::DeviceSyncClientFactory::GetForProfile(profile),
           multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
               profile),
           SessionSyncServiceFactory::GetInstance()->GetForProfile(profile),

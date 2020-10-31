@@ -8,6 +8,7 @@
 #include "chromeos/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
+#include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -95,11 +96,13 @@ class BrowserTabsModelProviderImplTest
       const BrowserTabsModelProviderImplTest&) = delete;
   ~BrowserTabsModelProviderImplTest() override = default;
 
+  // BrowserTabsModelProvider::Observer:
   void OnBrowserTabsUpdated(
       bool is_sync_enabled,
       const std::vector<BrowserTabsModel::BrowserTabMetadata>&
           browser_tabs_metadata) override {
-    phone_model_.SetBrowserTabsModel(BrowserTabsModel(
+    num_observer_calls_++;
+    phone_model()->SetBrowserTabsModel(BrowserTabsModel(
         /*is_tab_sync_enabled=*/is_sync_enabled, browser_tabs_metadata));
   }
 
@@ -118,13 +121,16 @@ class BrowserTabsModelProviderImplTest
         .WillByDefault(Invoke(this, &BrowserTabsModelProviderImplTest::
                                         MockSubscribeToForeignSessionsChanged));
 
+    fake_device_sync_client_.NotifyReady();
+
     provider_ = std::make_unique<BrowserTabsModelProviderImpl>(
-        &fake_multidevice_setup_client_, &mock_session_sync_service_,
+        &fake_device_sync_client_, &fake_multidevice_setup_client_,
+        &mock_session_sync_service_,
         std::make_unique<FakeBrowserTabsMetadataFetcher>());
     provider_->AddObserver(this);
   }
 
-  void SetPiiFreeName(const std::string& pii_free_name) {
+  void SetNewDeviceWithPiiFreeName(const std::string& pii_free_name) {
     fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
         multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
         CreatePhoneDevice(/*pii_name=*/pii_free_name)));
@@ -163,16 +169,26 @@ class BrowserTabsModelProviderImplTest
         provider_->browser_tabs_metadata_fetcher_.get());
   }
 
+  MutablePhoneModel* phone_model() { return &phone_model_; }
+
+  device_sync::FakeDeviceSyncClient* fake_device_sync_client() {
+    return &fake_device_sync_client_;
+  }
+
+  size_t GetNumObserverCalls() { return num_observer_calls_; }
+
+ private:
   MutablePhoneModel phone_model_;
+  device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   testing::NiceMock<SessionSyncServiceMock> mock_session_sync_service_;
   std::unique_ptr<BrowserTabsModelProviderImpl> provider_;
-
   testing::NiceMock<OpenTabsUIDelegateMock> open_tabs_ui_delegate_;
 
   bool enable_tab_sync_ = true;
   std::vector<const sync_sessions::SyncedSession*>* sessions_ = nullptr;
   base::RepeatingClosure foreign_sessions_changed_callback_;
+  size_t num_observer_calls_ = 0;
 };
 
 TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
@@ -180,31 +196,42 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   set_enable_tab_sync(true);
   set_synced_sessions(nullptr);
   NotifySubscription();
-  EXPECT_FALSE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_FALSE(phone_model()->browser_tabs_model()->is_tab_sync_enabled());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
   EXPECT_FALSE(
       fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
+  EXPECT_EQ(GetNumObserverCalls(), 1);
 
-  // Set name of phone. Tests that OnHostStatusChanged causes name change.
-  SetPiiFreeName(kPhoneNameOne);
+  fake_device_sync_client()->NotifyNewDevicesSynced();
+  EXPECT_EQ(GetNumObserverCalls(), 2);
+
+  // Set new host device. Tests that OnHostStatusChanged causes a fetch attempt.
+  SetNewDeviceWithPiiFreeName(kPhoneNameOne);
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->is_tab_sync_enabled());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_FALSE(
+      fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
+  EXPECT_EQ(GetNumObserverCalls(), 3);
 
   // Test disabling tab sync with no browser tab metadata.
   set_enable_tab_sync(false);
   set_synced_sessions(nullptr);
   NotifySubscription();
-  EXPECT_FALSE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_FALSE(phone_model()->browser_tabs_model()->is_tab_sync_enabled());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
   EXPECT_FALSE(
       fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
+  EXPECT_EQ(GetNumObserverCalls(), 4);
 
   // Test enabling tab sync with no browser tab metadata.
   set_enable_tab_sync(true);
   set_synced_sessions(nullptr);
   NotifySubscription();
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->is_tab_sync_enabled());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
   EXPECT_FALSE(
       fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
+  EXPECT_EQ(GetNumObserverCalls(), 5);
 
   // Test enabling tab sync with no matching pii name with session_name.
   std::vector<const sync_sessions::SyncedSession*> sessions;
@@ -213,10 +240,11 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
   NotifySubscription();
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->is_tab_sync_enabled());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
   EXPECT_FALSE(
       fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
+  EXPECT_EQ(GetNumObserverCalls(), 6);
 
   // Test enabling tab sync with matching pii name with session_name, which
   // will cause the |fake_browser_tabs_metadata_fetcher()| to have a pending
@@ -226,8 +254,8 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
   NotifySubscription();
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->is_tab_sync_enabled());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
   EXPECT_TRUE(fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
 
   // Test that once |fake_browser_tabs_metadata_fetcher()| responds, the phone
@@ -236,11 +264,12 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   metadata.push_back(CreateFakeBrowserTabMetadata());
   fake_browser_tabs_metadata_fetcher()->RespondToCurrentFetchAttempt(
       std::move(metadata));
-  EXPECT_EQ(phone_model_.browser_tabs_model()->most_recent_tabs().size(), 1U);
+  EXPECT_EQ(phone_model()->browser_tabs_model()->most_recent_tabs().size(), 1U);
+  EXPECT_EQ(GetNumObserverCalls(), 7);
 }
 
 TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
-  SetPiiFreeName(kPhoneNameOne);
+  SetNewDeviceWithPiiFreeName(kPhoneNameOne);
   sync_sessions::SyncedSession* new_session = CreateNewSession(kPhoneNameOne);
   std::vector<const sync_sessions::SyncedSession*> sessions({new_session});
 
@@ -259,11 +288,11 @@ TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
   metadata.push_back(CreateFakeBrowserTabMetadata());
   fake_browser_tabs_metadata_fetcher()->RespondToCurrentFetchAttempt(
       std::move(metadata));
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
+  EXPECT_TRUE(phone_model()->browser_tabs_model()->most_recent_tabs().empty());
 }
 
 TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
-  SetPiiFreeName(kPhoneNameOne);
+  SetNewDeviceWithPiiFreeName(kPhoneNameOne);
   sync_sessions::SyncedSession* session_a =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(1));
   sync_sessions::SyncedSession* session_b =
