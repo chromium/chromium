@@ -81,18 +81,6 @@ PrintDialogGtk::dialog_
 blink::GCInfoTable::table_
 disk_cache::MappedFile::buffer_
 
-# Populated manually:
-# 1. This guarantees that both fields of the union are skipped
-#    (otherwise, |characters8| might be skipped because of anyCharType
-#     heuristic, but |characters16| might be rewritte)
-# 2. Note that this is one of the cases where the code may write one
-#    field of the union and then read another.  According to the spec
-#    this may result in undefined behavior.
-#    https://en.cppreference.com/w/cpp/language/union: "It's undefined behavior
-#    to read from the member of the union that wasn't most recently written."
-blink::VTTScanner::(anonymous union)::characters8
-blink::VTTScanner::(anonymous union)::characters16
-
 # Populated manually, because of in-out-arg usage.
 blink::PaintController::IdAsHashKey::client
 ui::AXPlatformNodeAuraLinux::atk_object_
@@ -172,12 +160,6 @@ sql::recover::InnerPageDecoder::db_reader_
 sql::recover::LeafPageDecoder::db_reader_
 WTF::ListHashSet::head_
 WTF::ListHashSet::tail_
-
-# Populated manually - exit-time destructor
-WTF::StaticSingleton::InstanceStorage::pointer_
-
-# Populated manually - attempt to use a deleted function (union's destructor is
-# deleted, because an inner struct has CheckedPtr field)
 
 # Populated manually - flexible array with non-trivial destruction
 blink::ShapeResultView::(anonymous struct)::alignment
