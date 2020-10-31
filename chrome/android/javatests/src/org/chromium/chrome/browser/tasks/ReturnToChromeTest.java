@@ -296,10 +296,11 @@ public class ReturnToChromeTest {
 
         // Trigger hide and resume.
         ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.resumeMainActivityFromLauncher();
 
-        Assert.assertFalse(
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
+        CriteriaHelper.pollUiThread(() -> {
+            return !mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected();
+        });
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
     }
@@ -332,7 +333,7 @@ public class ReturnToChromeTest {
 
         // Trigger hide and resume.
         ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.resumeMainActivityFromLauncher();
 
         Assert.assertTrue(
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());

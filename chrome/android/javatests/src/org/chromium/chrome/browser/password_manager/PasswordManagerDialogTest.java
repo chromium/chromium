@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.ILLUSTRATION_VISIBLE;
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.SmallTest;
 
@@ -79,6 +80,7 @@ public class PasswordManagerDialogTest {
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.showDialog(); });
+        onViewWaiting(withId(R.id.positive_button));
     }
 
     @Test

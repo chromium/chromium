@@ -16,6 +16,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+
 import android.content.pm.ActivityInfo;
 
 import androidx.test.espresso.Espresso;
@@ -240,7 +242,7 @@ public class JavascriptTabModalDialogTest {
     public void testDialogDismissedAfterToggleOverview() {
         executeJavaScriptAndWaitForDialog("alert('Android')");
 
-        onView(withId(R.id.tab_switcher_button)).perform(click());
+        onViewWaiting(withId(R.id.tab_switcher_button)).perform(click());
 
         // Entering tab switcher should have dismissed the dialog.
         checkDialogShowing(

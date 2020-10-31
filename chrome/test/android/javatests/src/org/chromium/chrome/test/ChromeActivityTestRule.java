@@ -29,6 +29,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -421,6 +422,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
     public void startMainActivityFromIntent(Intent intent, String url) {
         prepareUrlIntent(intent, url);
 
+        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         startActivityCompletely(intent);
         waitForActivityNativeInitializationComplete();
 
@@ -435,12 +437,14 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
-        CriteriaHelper.pollUiThread(
-                () -> DeferredStartupHandler.getInstance().isDeferredStartupCompleteForApp(),
-                "Deferred startup never completed");
+        Assert.assertTrue("Deferred startup never completed. Did you try to start an Activity "
+                        + "that was already started?",
+                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
 
         Assert.assertNotNull(tab);
         Assert.assertNotNull(tab.getView());
+
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 

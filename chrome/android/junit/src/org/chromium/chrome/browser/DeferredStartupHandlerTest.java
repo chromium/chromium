@@ -47,10 +47,6 @@ public class DeferredStartupHandlerTest {
 
         mShadowMessageQueue.runIdleHandlers();
         Assert.assertEquals(1, helper.getCallCount());
-        Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
-
-        mShadowMessageQueue.runIdleHandlers();
-        Assert.assertEquals(1, helper.getCallCount());
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());
     }
 
@@ -77,17 +73,17 @@ public class DeferredStartupHandlerTest {
 
         mShadowMessageQueue.runIdleHandlers();
         Assert.assertEquals(3, helper.getCallCount());
-        Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
-
-        mShadowMessageQueue.runIdleHandlers();
-        Assert.assertEquals(3, helper.getCallCount());
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());
     }
 
     @Test
     public void addDeferredTask_WhileIdleHandlerRunning() {
         CallbackHelper helper = new CallbackHelper();
-        mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
+        mDeferredStartupHandler.addDeferredTask(() -> {
+            helper.notifyCalled();
+            // Add a new deferred task.
+            mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
+        });
 
         Assert.assertEquals(0, helper.getCallCount());
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());
@@ -99,14 +95,7 @@ public class DeferredStartupHandlerTest {
         Assert.assertEquals(1, helper.getCallCount());
         Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
 
-        // Add a new deferred task.
-        mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
-
         // The subsequent IdleHandler pass should run the newly added task.
-        mShadowMessageQueue.runIdleHandlers();
-        Assert.assertEquals(2, helper.getCallCount());
-        Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
-
         mShadowMessageQueue.runIdleHandlers();
         Assert.assertEquals(2, helper.getCallCount());
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());
@@ -124,7 +113,6 @@ public class DeferredStartupHandlerTest {
         Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
 
         mShadowMessageQueue.runIdleHandlers();
-        mShadowMessageQueue.runIdleHandlers();
 
         Assert.assertEquals(1, helper.getCallCount());
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());
@@ -141,7 +129,6 @@ public class DeferredStartupHandlerTest {
         Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
 
         mShadowMessageQueue.runIdleHandlers();
-        mShadowMessageQueue.runIdleHandlers();
 
         Assert.assertEquals(1, helper.getCallCount());
         Assert.assertEquals(1, helper2.getCallCount());
@@ -149,19 +136,17 @@ public class DeferredStartupHandlerTest {
     }
 
     @Test
-    public void queueDeferredTasksOnIdleHandler_OnlyOneIdleHandler() {
+    public void queueDeferredTasksOnIdleHandler_MultipleActivities() {
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());
 
         mDeferredStartupHandler.queueDeferredTasksOnIdleHandler();
         Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
         IdleHandler initialIdleHandler = mShadowMessageQueue.getIdleHandlers().get(0);
 
-        // Ensure a second call to queueDeferredTasksOnIdleHandler does not add another IdleHandler.
         mDeferredStartupHandler.queueDeferredTasksOnIdleHandler();
-        Assert.assertEquals(1, mShadowMessageQueue.getIdleHandlers().size());
+        Assert.assertTrue(mShadowMessageQueue.getIdleHandlers().size() >= 1);
         Assert.assertEquals(initialIdleHandler, mShadowMessageQueue.getIdleHandlers().get(0));
 
-        mShadowMessageQueue.runIdleHandlers();
         mShadowMessageQueue.runIdleHandlers();
 
         Assert.assertEquals(0, mShadowMessageQueue.getIdleHandlers().size());

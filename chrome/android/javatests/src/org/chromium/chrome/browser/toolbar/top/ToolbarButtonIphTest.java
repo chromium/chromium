@@ -127,7 +127,9 @@ public class ToolbarButtonIphTest {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
                 .thenReturn(true);
 
-        mActivityTestRule.loadUrl("about:blank");
+        // Navigating to about:blank here was flaky for some reason, probably because the page was
+        // already on about:blank.
+        mActivityTestRule.loadUrl("chrome://about/");
         ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));
         toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
 

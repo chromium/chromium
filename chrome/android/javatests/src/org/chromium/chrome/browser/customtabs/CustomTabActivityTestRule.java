@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeoutException;
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
  */
 public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabActivity> {
-    protected static final long STARTUP_TIMEOUT_MS = 5L * 1000;
+    protected static final long STARTUP_TIMEOUT_MS = ScalableTimeout.scaleTimeout(5L * 1000);
     protected static final long LONG_TIMEOUT_MS = 10L * 1000;
     private static int sCustomTabId;
 
@@ -83,6 +84,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
      * initialized.
      */
     public void startCustomTabActivityWithIntent(Intent intent) {
+        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         startActivityCompletely(intent);
         waitForActivityNativeInitializationComplete();
         CriteriaHelper.pollUiThread(() -> {
@@ -104,10 +106,9 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
         } catch (TimeoutException e) {
             Assert.fail();
         }
-        CriteriaHelper.pollUiThread(
-                DeferredStartupHandler.getInstance()::isDeferredStartupCompleteForApp,
-                "Deferred startup never completed", STARTUP_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        Assert.assertTrue("Deferred startup never completed",
+                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                        STARTUP_TIMEOUT_MS));
         Assert.assertNotNull(tab);
         Assert.assertNotNull(tab.getView());
         Assert.assertTrue(TabTestUtils.isCustomTab(tab));

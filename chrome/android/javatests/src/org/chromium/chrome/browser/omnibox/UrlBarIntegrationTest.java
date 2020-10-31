@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -198,6 +205,7 @@ public class UrlBarIntegrationTest {
         ActionModeCreatedCallback callback = new ActionModeCreatedCallback();
         getUrlBar().setCustomSelectionActionModeCallback(callback);
 
+        onViewWaiting(allOf(is(getUrlBar()), isDisplayed()));
         TouchCommon.longPressView(getUrlBar());
 
         CriteriaHelper.pollUiThread(() -> {

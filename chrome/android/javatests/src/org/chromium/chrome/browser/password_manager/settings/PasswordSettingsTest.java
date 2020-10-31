@@ -425,7 +425,9 @@ public class PasswordSettingsTest {
         // Avoid launching the Android-provided reauthentication challenge, which cannot be
         // completed in the test.
         ReauthenticationManager.setSkipSystemReauth(true);
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Now Chrome thinks it triggered the challenge and is waiting to be resumed. Once resumed
         // it will check the reauthentication result. First, update the reauth timestamp to indicate
@@ -931,7 +933,9 @@ public class PasswordSettingsTest {
         // reauthentication just happened. This will allow the export flow to continue.
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         Assert.assertNotNull(mHandler.getExportTargetPath());
         Assert.assertFalse(mHandler.getExportTargetPath().isEmpty());
@@ -989,7 +993,9 @@ public class PasswordSettingsTest {
         // Avoid launching the Android-provided reauthentication challenge, which cannot be
         // completed in the test.
         ReauthenticationManager.setSkipSystemReauth(true);
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Now Chrome thinks it triggered the challenge and is waiting to be resumed. Once resumed
         // it will check the reauthentication result. First, update the reauth timestamp to indicate
@@ -1026,7 +1032,9 @@ public class PasswordSettingsTest {
         View mainDecorView = settingsActivity.getWindow().getDecorView();
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
         Espresso.onView(withText(R.string.password_export_set_lock_screen))
                 .inRoot(withDecorView(not(is(mainDecorView))))
                 .check(matches(isDisplayed()));
@@ -1051,7 +1059,9 @@ public class PasswordSettingsTest {
         // Trigger exporting and let it fail on the unavailable lock.
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Check that for re-triggering, the export menu item is enabled.
         checkExportMenuItemState(MenuItemState.ENABLED);
@@ -1074,7 +1084,9 @@ public class PasswordSettingsTest {
 
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
         // The reauthentication dialog is skipped and the last reauthentication timestamp is not
         // reset. This looks like a failed reauthentication to PasswordSettings' onResume.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1109,7 +1121,9 @@ public class PasswordSettingsTest {
         // Avoid launching the Android-provided reauthentication challenge, which cannot be
         // completed in the test.
         ReauthenticationManager.setSkipSystemReauth(true);
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Check that Chrome indeed issued an (ignored) request to reauthenticate the user rather
         // than re-using the recent reauthentication, by observing that the next step in the flow
@@ -1147,7 +1161,9 @@ public class PasswordSettingsTest {
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
 
         // Confirm the export warning to fire the sharing intent.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         intended(allOf(hasAction(equalTo(Intent.ACTION_CHOOSER)),
                 hasExtras(hasEntry(equalTo(Intent.EXTRA_INTENT),
@@ -1193,7 +1209,9 @@ public class PasswordSettingsTest {
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
 
         // Confirm the export warning to fire the sharing intent.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         intended(allOf(hasAction(equalTo(Intent.ACTION_CHOOSER)),
                 hasExtras(hasEntry(equalTo(Intent.EXTRA_INTENT),
@@ -1287,7 +1305,9 @@ public class PasswordSettingsTest {
                         - ReauthenticationManager.VALID_REAUTHENTICATION_TIME_INTERVAL_MILLIS - 1,
                 ReauthenticationManager.ReauthScope.BULK);
 
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Call onResume to simulate that the user put Chrome into background by opening "recent
         // apps" and then restored Chrome by choosing it from the list.
@@ -1359,7 +1379,9 @@ public class PasswordSettingsTest {
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
 
         // Confirm the export warning to fire the sharing intent.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
@@ -1415,7 +1437,9 @@ public class PasswordSettingsTest {
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
 
         // Confirm the export warning to fire the sharing intent.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
@@ -1460,7 +1484,9 @@ public class PasswordSettingsTest {
         reauthenticateAndRequestExport(settingsActivity);
 
         // Confirm the export warning to fire the sharing intent.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Simulate the minimal time for showing the progress bar to have passed, to ensure that it
         // is kept live because of the pending serialization.
@@ -1496,7 +1522,9 @@ public class PasswordSettingsTest {
         reauthenticateAndRequestExport(settingsActivity);
 
         // Confirm the export warning.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Show an arbitrary error. This should replace the progress bar if that has been shown in
         // the meantime.
@@ -1534,7 +1562,9 @@ public class PasswordSettingsTest {
         reauthenticateAndRequestExport(settingsActivity);
 
         // Confirm the export warning.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Show an arbitrary error but ensure that the positive button label is the one for "try
         // again".
@@ -1568,7 +1598,9 @@ public class PasswordSettingsTest {
         reauthenticateAndRequestExport(settingsActivity);
 
         // Confirm the export warning.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Show an arbitrary error but ensure that the positive button label is the one for the
         // Google Drive help site.
@@ -1616,7 +1648,9 @@ public class PasswordSettingsTest {
         requestShowingExportError();
 
         // Check that the confirmation dialog is showing and dismiss it.
-        Espresso.onView(withText(R.string.password_settings_export_action_title)).perform(click());
+        onViewWaiting(
+                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                .perform(click());
 
         // Check that now the error is displayed, instead of the progress bar.
         allowProgressBarToBeHidden(settingsActivity);

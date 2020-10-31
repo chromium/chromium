@@ -251,6 +251,12 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
 
     public void startMainActivity() {
         startMainActivityWithURL(mTestFilePath);
+        try {
+            // TODO(crbug.com/1144303): Figure out what these tests need to wait on to not be flaky
+            // instead of sleeping.
+            Thread.sleep(2000);
+        } catch (Exception ex) {
+        }
     }
 
     // public is used so as to be visible to the payment tests in //clank.

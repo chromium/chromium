@@ -173,7 +173,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.READER_MODE_IN_CCT, ChromeFeatureList.CCT_INCOGNITO})
     public void testReaderModeInCCT_Incognito() throws TimeoutException {
-        mDownloadTestRule.startMainActivityWithURL(mURL);
         ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
                 (ChromeTabbedActivity) mDownloadTestRule.getActivity(), mURL, true);
 

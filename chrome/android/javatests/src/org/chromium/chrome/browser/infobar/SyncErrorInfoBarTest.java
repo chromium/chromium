@@ -56,7 +56,6 @@ import java.io.IOException;
     public void setUp() {
         deleteSyncErrorInfoBarShowTimePref();
         mFakeProfileSyncService = (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
-        mSyncTestRule.startMainActivityOnBlankPage();
     }
 
     @Test

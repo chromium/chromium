@@ -107,7 +107,11 @@ public class ManualFillingTestHelper {
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_OK);
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
-        mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
+        if (mActivityTestRule.getActivity() == null) {
+            mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
+        } else {
+            mActivityTestRule.loadUrl(mEmbeddedTestServer.getURL(url));
+        }
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
         cacheCredentials(new String[0], new String[0], false); // This caches the empty state.

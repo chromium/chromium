@@ -10,11 +10,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.times;
 
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.os.Build.VERSION_CODES;
@@ -486,6 +488,7 @@ public class HomepagePromoTest {
 
         if (toolbarManager != null) {
             HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
+            onViewWaiting(allOf(is(homeButton), isDisplayed()));
             if (homeButton != null) {
                 ChromeTabUtils.waitForTabPageLoaded(
                         mActivityTestRule.getActivity().getActivityTab(), UrlConstants.NTP_URL,

@@ -16,6 +16,7 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
@@ -61,8 +63,13 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TileGroupTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -86,13 +93,11 @@ public class TileGroupTest {
         mMostVisitedSites = new FakeMostVisitedSites();
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
         mMostVisitedSites.setTileSuggestions(mSiteSuggestionUrls);
-
-        initializeTab();
     }
 
     public void initializeTab() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        Tab mTab = mActivityTestRule.getActivity().getActivityTab();
+        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab mTab = sActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
 
         Assert.assertTrue(mTab.getNativePage() instanceof NewTabPage);
@@ -111,6 +116,7 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testDismissTileWithContextMenu() throws Exception {
+        initializeTab();
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(0);
         final View tileView = getTileViewFor(siteToDismiss);
 
@@ -141,7 +147,7 @@ public class TileGroupTest {
         TestTouchUtils.performLongClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(), tileView);
         Assert.assertFalse(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mActivityTestRule.getActivity(), ContextMenuManager.ContextMenuItemId.REMOVE, 0));
+                sActivityTestRule.getActivity(), ContextMenuManager.ContextMenuItemId.REMOVE, 0));
         Assert.assertEquals(4, getTileGridLayout().getChildCount());
     }
 
@@ -149,6 +155,7 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     public void testDismissTileUndo() throws Exception {
+        initializeTab();
         GURL url0 = new GURL(mSiteSuggestionUrls[0]);
         GURL url1 = new GURL(mSiteSuggestionUrls[1]);
         GURL url2 = new GURL(mSiteSuggestionUrls[2]);
@@ -166,7 +173,7 @@ public class TileGroupTest {
         });
         waitForTileRemoved(siteToDismiss);
         Assert.assertEquals(2, tileContainer.getChildCount());
-        final View snackbarButton = waitForSnackbar(mActivityTestRule.getActivity());
+        final View snackbarButton = waitForSnackbar(sActivityTestRule.getActivity());
 
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(url0));
         TestThreadUtils.runOnUiThreadBlocking(() -> { snackbarButton.callOnClick(); });
@@ -200,7 +207,7 @@ public class TileGroupTest {
         TestTouchUtils.performLongClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(), view);
         Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mActivityTestRule.getActivity(), contextMenuItemId, 0));
+                sActivityTestRule.getActivity(), contextMenuItemId, 0));
     }
 
     /** Wait for the snackbar associated to a tile dismissal to be shown and returns its button. */

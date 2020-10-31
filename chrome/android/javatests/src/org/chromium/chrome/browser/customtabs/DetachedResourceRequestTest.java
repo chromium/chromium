@@ -490,11 +490,11 @@ public class DetachedResourceRequestTest {
             Assert.assertTrue(mConnection.canDoParallelRequest(token, ORIGIN));
         });
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mContext.startActivity(intent);
         callback.waitForRequest(0, 1);
         callback.waitForCompletion(0, 1);
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mContext.startActivity(intent);
         callback.waitForRequest(1, 1);
         callback.waitForCompletion(1, 1);
     }

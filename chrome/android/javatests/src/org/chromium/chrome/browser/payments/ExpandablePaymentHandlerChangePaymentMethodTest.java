@@ -39,7 +39,7 @@ public class ExpandablePaymentHandlerChangePaymentMethodTest {
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule
-    public PaymentRequestTestRule mRule = new PaymentRequestTestRule("about:blank");
+    public PaymentRequestTestRule mRule = new PaymentRequestTestRule("about:blank", null, true);
 
     // Host the tests on https://127.0.0.1, because file:// URLs cannot have service workers.
     private EmbeddedTestServer mServer;
