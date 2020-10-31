@@ -7,10 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/rounded_label_button.h"
-
-namespace views {
-class ButtonListener;
-}  // namespace views
+#include "ui/views/controls/button/button.h"
 
 namespace ash {
 
@@ -21,7 +18,7 @@ class ASH_EXPORT InterstitialViewButton : public RoundedLabelButton {
  public:
   METADATA_HEADER(InterstitialViewButton);
 
-  InterstitialViewButton(views::ButtonListener* listener,
+  InterstitialViewButton(Button::PressedCallback callback,
                          const base::string16& text,
                          bool paint_background);
   InterstitialViewButton(const InterstitialViewButton&) = delete;

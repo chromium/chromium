@@ -27,8 +27,7 @@ class TrayBubbleView;
 
 // An additional entry point shown on the Phone Hub bubble for the user to grant
 // access or opt out for notifications from the phone.
-class ASH_EXPORT NotificationOptInView : public views::View,
-                                         public views::ButtonListener {
+class ASH_EXPORT NotificationOptInView : public views::View {
  public:
   METADATA_HEADER(NotificationOptInView);
 
@@ -39,14 +38,14 @@ class ASH_EXPORT NotificationOptInView : public views::View,
   NotificationOptInView& operator=(const NotificationOptInView&) = delete;
   ~NotificationOptInView() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   views::View* set_up_button_for_testing() { return set_up_button_; }
   views::View* dismiss_button_for_testing() { return dismiss_button_; }
 
  private:
   void InitLayout();
+
+  void SetUpButtonPressed();
+  void DismissButtonPressed();
 
   // Main components of this view. Owned by view hierarchy.
   views::Label* text_label_ = nullptr;

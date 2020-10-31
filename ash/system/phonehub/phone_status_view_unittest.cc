@@ -12,6 +12,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace ash {
 
@@ -150,7 +151,8 @@ TEST_F(PhoneStatusViewTest, ClickOnSettings) {
   EXPECT_TRUE(status_view_->settings_button_->GetVisible());
 
   // Click on the settings button.
-  status_view_->ButtonPressed(status_view_->settings_button_, DummyEvent());
+  views::test::ButtonTestApi(status_view_->settings_button_)
+      .NotifyClick(DummyEvent());
   EXPECT_TRUE(connected_device_settings_opened_);
 }
 

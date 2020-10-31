@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -19,10 +18,13 @@ namespace ash {
 
 class PhoneHubInterstitialView;
 
+namespace phone_hub_metrics {
+enum class InterstitialScreenEvent;
+}
+
 // An interstitial view represeting that the Phone Hub feature is not available
 // due to connection issues.
-class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView,
-                                       public views::ButtonListener {
+class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView {
  public:
   METADATA_HEADER(ConnectionErrorView);
 
@@ -42,10 +44,10 @@ class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView,
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
+  void ButtonPressed(phone_hub_metrics::InterstitialScreenEvent event,
+                     base::RepeatingClosure callback);
+
   chromeos::phonehub::ConnectionScheduler* connection_scheduler_ = nullptr;
 
   PhoneHubInterstitialView* content_view_ = nullptr;

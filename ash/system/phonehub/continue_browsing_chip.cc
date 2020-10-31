@@ -35,7 +35,10 @@ constexpr int kTitleMaxLines = 2;
 ContinueBrowsingChip::ContinueBrowsingChip(
     const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
     int index)
-    : views::Button(this), url_(metadata.url), index_(index) {
+    : views::Button(base::BindRepeating(&ContinueBrowsingChip::ButtonPressed,
+                                        base::Unretained(this))),
+      url_(metadata.url),
+      index_(index) {
   auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
@@ -100,8 +103,13 @@ void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
   views::View::OnPaintBackground(canvas);
 }
 
-void ContinueBrowsingChip::ButtonPressed(views::Button* sender,
-                                         const ui::Event& event) {
+ContinueBrowsingChip::~ContinueBrowsingChip() = default;
+
+const char* ContinueBrowsingChip::GetClassName() const {
+  return "ContinueBrowsingChip";
+}
+
+void ContinueBrowsingChip::ButtonPressed() {
   PA_LOG(INFO) << "Opening browser tab: " << url_;
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
 
@@ -112,12 +120,6 @@ void ContinueBrowsingChip::ButtonPressed(views::Button* sender,
       ->GetStatusAreaWidget()
       ->phone_hub_tray()
       ->CloseBubble();
-}
-
-ContinueBrowsingChip::~ContinueBrowsingChip() = default;
-
-const char* ContinueBrowsingChip::GetClassName() const {
-  return "ContinueBrowsingChip";
 }
 
 }  // namespace ash

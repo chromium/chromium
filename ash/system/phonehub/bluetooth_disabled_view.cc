@@ -47,7 +47,8 @@ BluetoothDisabledView::BluetoothDisabledView() {
 
   // Add "Learn more" and "Ok, got it" buttons.
   auto learn_more = std::make_unique<InterstitialViewButton>(
-      this,
+      base::BindRepeating(&BluetoothDisabledView::LearnMoreButtonPressed,
+                          base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON),
       /*paint_background=*/false);
@@ -58,7 +59,8 @@ BluetoothDisabledView::BluetoothDisabledView() {
   content_view_->AddButton(std::move(learn_more));
 
   auto confirm = std::make_unique<InterstitialViewButton>(
-      this,
+      base::BindRepeating(&BluetoothDisabledView::ConfirmButtonPressed,
+                          base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_OK_BUTTON),
       /*paint_background=*/true);
@@ -75,24 +77,20 @@ phone_hub_metrics::Screen BluetoothDisabledView::GetScreenForMetrics() const {
   return Screen::kBluetoothOrWifiDisabled;
 }
 
-void BluetoothDisabledView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  switch (sender->GetID()) {
-    case kBluetoothDisabledLearnMoreButton:
-      LogInterstitialScreenEvent(GetScreenForMetrics(),
-                                 InterstitialScreenEvent::kLearnMore);
-      NewWindowDelegate::GetInstance()->NewTabWithUrl(
-          GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
-      return;
-    case kBluetoothDisabledConfirmButton:
-      LogInterstitialScreenEvent(GetScreenForMetrics(),
-                                 InterstitialScreenEvent::kConfirm);
-      Shell::GetPrimaryRootWindowController()
-          ->GetStatusAreaWidget()
-          ->phone_hub_tray()
-          ->CloseBubble();
-      return;
-  }
+void BluetoothDisabledView::LearnMoreButtonPressed() {
+  LogInterstitialScreenEvent(GetScreenForMetrics(),
+                             InterstitialScreenEvent::kLearnMore);
+  NewWindowDelegate::GetInstance()->NewTabWithUrl(
+      GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
+}
+
+void BluetoothDisabledView::ConfirmButtonPressed() {
+  LogInterstitialScreenEvent(GetScreenForMetrics(),
+                             InterstitialScreenEvent::kConfirm);
+  Shell::GetPrimaryRootWindowController()
+      ->GetStatusAreaWidget()
+      ->phone_hub_tray()
+      ->CloseBubble();
 }
 
 BEGIN_METADATA(BluetoothDisabledView, views::View)

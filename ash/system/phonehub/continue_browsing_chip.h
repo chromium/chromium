@@ -14,8 +14,7 @@ namespace ash {
 
 // A chip containing a web page info (title, web URL, etc.) that users left off
 // from their phone.
-class ASH_EXPORT ContinueBrowsingChip : public views::Button,
-                                        public views::ButtonListener {
+class ASH_EXPORT ContinueBrowsingChip : public views::Button {
  public:
   ContinueBrowsingChip(
       const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
@@ -27,10 +26,11 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button,
 
   // views::ButtonListener:
   void OnPaintBackground(gfx::Canvas* canvas) override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
   const char* GetClassName() const override;
 
  private:
+  void ButtonPressed();
+
   // The URL of the tab to open.
   GURL url_;
 

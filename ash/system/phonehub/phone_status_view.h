@@ -10,7 +10,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "chromeos/components/phonehub/phone_model.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class ImageView;
@@ -23,7 +22,6 @@ namespace ash {
 // status (wifi, volime, etc.).
 class ASH_EXPORT PhoneStatusView
     : public TriView,
-      public views::ButtonListener,
       public chromeos::phonehub::PhoneModel::Observer {
  public:
   class Delegate {
@@ -37,9 +35,6 @@ class ASH_EXPORT PhoneStatusView
   ~PhoneStatusView() override;
   PhoneStatusView(PhoneStatusView&) = delete;
   PhoneStatusView operator=(PhoneStatusView&) = delete;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // chromeos::phonehub::PhoneHubModel::Observer:
   void OnModelChanged() override;

@@ -29,7 +29,6 @@
 #include "chromeos/components/phonehub/onboarding_ui_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -43,8 +42,7 @@ using phone_hub_metrics::Screen;
 // Main onboarding screen with Phone Hub feature description and two buttons
 // (Get Started and Dismiss), where user can either choose to grant permission
 // to enable this feature or dismiss the screen.
-class OnboardingMainView : public PhoneHubInterstitialView,
-                           public views::ButtonListener {
+class OnboardingMainView : public PhoneHubInterstitialView {
  public:
   OnboardingMainView(
       chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
@@ -54,23 +52,6 @@ class OnboardingMainView : public PhoneHubInterstitialView,
         parent_view_(parent_view) {
     SetID(PhoneHubViewID::kOnboardingMainView);
     InitLayout();
-  }
-
-  // views::ButtonListener:
-  // TODO(crbug.com/1141629): deprecated, replace with |PressedCallback|.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    switch (sender->GetID()) {
-      case PhoneHubViewID::kOnboardingGetStartedButton:
-        LogInterstitialScreenEvent(GetScreenForMetrics(),
-                                   InterstitialScreenEvent::kConfirm);
-        onboarding_ui_tracker_->HandleGetStarted();
-        return;
-      case PhoneHubViewID::kOnboardingDismissButton:
-        LogInterstitialScreenEvent(GetScreenForMetrics(),
-                                   InterstitialScreenEvent::kDismiss);
-        parent_view_->ShowDismissPrompt();
-        return;
-    }
   }
 
   // PhoneHubInterstitialView:
@@ -93,7 +74,8 @@ class OnboardingMainView : public PhoneHubInterstitialView,
 
     // Add "Dismiss" and "Get started" buttons.
     auto dismiss = std::make_unique<InterstitialViewButton>(
-        this,
+        base::BindRepeating(&OnboardingMainView::DismissButtonPressed,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON),
         /*paint_background=*/false);
@@ -103,12 +85,25 @@ class OnboardingMainView : public PhoneHubInterstitialView,
     AddButton(std::move(dismiss));
 
     auto get_started = std::make_unique<InterstitialViewButton>(
-        this,
+        base::BindRepeating(&OnboardingMainView::GetStartedButtonPressed,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON),
         /*paint_background=*/true);
     get_started->SetID(PhoneHubViewID::kOnboardingGetStartedButton);
     AddButton(std::move(get_started));
+  }
+
+  void GetStartedButtonPressed() {
+    LogInterstitialScreenEvent(GetScreenForMetrics(),
+                               InterstitialScreenEvent::kConfirm);
+    onboarding_ui_tracker_->HandleGetStarted();
+  }
+
+  void DismissButtonPressed() {
+    LogInterstitialScreenEvent(GetScreenForMetrics(),
+                               InterstitialScreenEvent::kDismiss);
+    parent_view_->ShowDismissPrompt();
   }
 
   chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
@@ -119,8 +114,7 @@ class OnboardingMainView : public PhoneHubInterstitialView,
 // A follow-up prompt screen that pops up when the user has chosen to dismiss
 // the main onboarding screen. It should not be shown again after being
 // dismissed manually by either clicking the ack button or outside the bubble.
-class OnboardingDismissPromptView : public PhoneHubInterstitialView,
-                                    public views::ButtonListener {
+class OnboardingDismissPromptView : public PhoneHubInterstitialView {
  public:
   explicit OnboardingDismissPromptView(
       chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker)
@@ -144,7 +138,8 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView,
 
     // Adds "Ok, got it" button.
     auto ack_button = std::make_unique<InterstitialViewButton>(
-        this,
+        base::BindRepeating(&OnboardingDismissPromptView::ButtonPressed,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_OK_BUTTON),
         /*paint_background=*/true);
@@ -152,17 +147,7 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView,
     AddButton(std::move(ack_button));
   }
 
-  // PhoneHubInterstitialView:
-  void OnBubbleClose() override { onboarding_ui_tracker_->DismissSetupUi(); }
-
-  Screen GetScreenForMetrics() const override {
-    return Screen::kOnboardingDismissPrompt;
-  }
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK_EQ(sender->GetID(), PhoneHubViewID::kOnboardingDismissAckButton);
-
+  void ButtonPressed() {
     LogInterstitialScreenEvent(GetScreenForMetrics(),
                                InterstitialScreenEvent::kConfirm);
 
@@ -170,6 +155,13 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView,
         ->GetStatusAreaWidget()
         ->phone_hub_tray()
         ->CloseBubble();
+  }
+
+  // PhoneHubInterstitialView:
+  void OnBubbleClose() override { onboarding_ui_tracker_->DismissSetupUi(); }
+
+  Screen GetScreenForMetrics() const override {
+    return Screen::kOnboardingDismissPrompt;
   }
 
   chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;

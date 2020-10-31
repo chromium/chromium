@@ -61,7 +61,13 @@ ConnectionErrorView::ConnectionErrorView(
 
   // Add "Learn more" and "Refresh" buttons only for disconnected state.
   auto learn_more = std::make_unique<InterstitialViewButton>(
-      this,
+      base::BindRepeating(
+          &ConnectionErrorView::ButtonPressed, base::Unretained(this),
+          InterstitialScreenEvent::kLearnMore,
+          base::BindRepeating(
+              &NewWindowDelegate::NewTabWithUrl,
+              base::Unretained(NewWindowDelegate::GetInstance()),
+              GURL(kLearnMoreUrl), /*from_user_interaction=*/true)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_LEARN_MORE_BUTTON),
       /*paint_background=*/false);
@@ -72,7 +78,12 @@ ConnectionErrorView::ConnectionErrorView(
   content_view_->AddButton(std::move(learn_more));
 
   auto refresh = std::make_unique<InterstitialViewButton>(
-      this,
+      base::BindRepeating(
+          &ConnectionErrorView::ButtonPressed, base::Unretained(this),
+          InterstitialScreenEvent::kConfirm,
+          base::BindRepeating(
+              &chromeos::phonehub::ConnectionScheduler::ScheduleConnectionNow,
+              base::Unretained(connection_scheduler_))),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_REFRESH_BUTTON),
       /*paint_background=*/true);
@@ -91,22 +102,10 @@ phone_hub_metrics::Screen ConnectionErrorView::GetScreenForMetrics() const {
              : Screen::kConnectionError;
 }
 
-void ConnectionErrorView::ButtonPressed(views::Button* sender,
-                                        const ui::Event& event) {
-  switch (sender->GetID()) {
-    case PhoneHubViewID::kDisconnectedRefreshButton:
-      LogInterstitialScreenEvent(GetScreenForMetrics(),
-                                 InterstitialScreenEvent::kConfirm);
-      // Retry the connection attempt.
-      connection_scheduler_->ScheduleConnectionNow();
-      return;
-    case PhoneHubViewID::kDisconnectedLearnMoreButton:
-      LogInterstitialScreenEvent(GetScreenForMetrics(),
-                                 InterstitialScreenEvent::kLearnMore);
-      NewWindowDelegate::GetInstance()->NewTabWithUrl(
-          GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
-      return;
-  }
+void ConnectionErrorView::ButtonPressed(InterstitialScreenEvent event,
+                                        base::RepeatingClosure callback) {
+  LogInterstitialScreenEvent(GetScreenForMetrics(), event);
+  std::move(callback).Run();
 }
 
 BEGIN_METADATA(ConnectionErrorView, views::View)

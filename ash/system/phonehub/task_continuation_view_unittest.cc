@@ -12,6 +12,7 @@
 #include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace ash {
 
@@ -119,7 +120,7 @@ TEST_F(TaskContinuationViewTest, TaskChipsView) {
           EXPECT_TRUE(from_user_interaction);
         });
     // Simulate clicking button using dummy event.
-    chip->ButtonPressed(nullptr, DummyEvent());
+    views::test::ButtonTestApi(chip).NotifyClick(DummyEvent());
   }
 }
 

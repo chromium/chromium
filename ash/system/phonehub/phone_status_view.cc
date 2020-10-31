@@ -64,12 +64,13 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
                                  Delegate* delegate)
     : TriView(kTitleContainerSpacing),
       phone_model_(phone_model),
-      delegate_(delegate),
       phone_name_label_(new views::Label),
       signal_icon_(new views::ImageView),
       mobile_provider_label_(new views::Label),
       battery_icon_(new views::ImageView),
       battery_label_(new views::Label) {
+  DCHECK(delegate);
+
   SetID(PhoneHubViewID::kPhoneStatusView);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
@@ -110,26 +111,20 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
   separator->SetPreferredHeight(kSeparatorHeight);
   AddView(TriView::Container::END, separator);
 
-  settings_button_ = new TopShortcutButton(this, kSystemMenuSettingsIcon,
-                                           IDS_ASH_STATUS_TRAY_SETTINGS);
+  settings_button_ = new TopShortcutButton(
+      base::BindRepeating(&Delegate::OpenConnectedDevicesSettings,
+                          base::Unretained(delegate)),
+      kSystemMenuSettingsIcon, IDS_ASH_STATUS_TRAY_SETTINGS);
   AddView(TriView::Container::END, settings_button_);
 
-  DCHECK(delegate_);
-  separator->SetVisible(delegate_->CanOpenConnectedDeviceSettings());
-  settings_button_->SetVisible(delegate_->CanOpenConnectedDeviceSettings());
+  separator->SetVisible(delegate->CanOpenConnectedDeviceSettings());
+  settings_button_->SetVisible(delegate->CanOpenConnectedDeviceSettings());
 
   Update();
 }
 
 PhoneStatusView::~PhoneStatusView() {
   phone_model_->RemoveObserver(this);
-}
-
-void PhoneStatusView::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
-  DCHECK_EQ(settings_button_, sender);
-  DCHECK(delegate_);
-  delegate_->OpenConnectedDevicesSettings();
 }
 
 void PhoneStatusView::OnModelChanged() {

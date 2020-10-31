@@ -44,10 +44,6 @@ constexpr int kTextLabelLineHeightDip = 20;
 // Typography.
 constexpr int kLabelTextFontSizeDip = 14;
 
-// Tag value used to uniquely identify the "Dismiss" and "Get started" buttons.
-constexpr int kDismissButtonTag = 1;
-constexpr int kSetUpButtonTag = 2;
-
 // URL of the multidevice settings page with the URL parameter that will
 // start up the opt-in-flow.
 constexpr char kMultideviceSettingsUrl[] =
@@ -68,24 +64,19 @@ NotificationOptInView::NotificationOptInView(
 
 NotificationOptInView::~NotificationOptInView() = default;
 
-void NotificationOptInView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  switch (sender->tag()) {
-    case kDismissButtonTag:
-      // Dismiss this view if user chose to opt out and update the bubble size.
-      LogNotificationOptInEvent(InterstitialScreenEvent::kDismiss);
-      SetVisible(false);
-      bubble_view_->UpdateBubble();
-      notification_access_manager_->DismissSetupRequiredUi();
-      break;
-    case kSetUpButtonTag:
-      // Opens the notification set up dialog in settings to start the opt in
-      // flow.
-      LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
-      NewWindowDelegate::GetInstance()->NewTabWithUrl(
-          GURL(kMultideviceSettingsUrl), /*from_user_interaction=*/true);
-      break;
-  }
+void NotificationOptInView::SetUpButtonPressed() {
+  // Opens the notification set up dialog in settings to start the opt in flow.
+  LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
+  NewWindowDelegate::GetInstance()->NewTabWithUrl(
+      GURL(kMultideviceSettingsUrl), /*from_user_interaction=*/true);
+}
+
+void NotificationOptInView::DismissButtonPressed() {
+  // Dismiss this view if user chose to opt out and update the bubble size.
+  LogNotificationOptInEvent(InterstitialScreenEvent::kDismiss);
+  SetVisible(false);
+  bubble_view_->UpdateBubble();
+  notification_access_manager_->DismissSetupRequiredUi();
 }
 
 void NotificationOptInView::InitLayout() {
@@ -134,21 +125,21 @@ void NotificationOptInView::InitLayout() {
       views::CreateEmptyBorder(kButtonContainerBorderInsets));
   dismiss_button_ =
       button_container->AddChildView(std::make_unique<InterstitialViewButton>(
-          this,
+          base::BindRepeating(&NotificationOptInView::DismissButtonPressed,
+                              base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON),
           /*paint_background=*/false));
-  dismiss_button_->set_tag(kDismissButtonTag);
   dismiss_button_->SetEnabledTextColors(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
   set_up_button_ =
       button_container->AddChildView(std::make_unique<InterstitialViewButton>(
-          this,
+          base::BindRepeating(&NotificationOptInView::SetUpButtonPressed,
+                              base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
           /*paint_background=*/true));
-  set_up_button_->set_tag(kSetUpButtonTag);
 }
 
 BEGIN_METADATA(NotificationOptInView, views::View)
