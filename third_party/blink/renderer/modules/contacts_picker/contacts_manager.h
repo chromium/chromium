@@ -35,11 +35,6 @@ class ContactsManager final : public ScriptWrappable {
                        const Vector<V8ContactProperty>& properties,
                        ContactsSelectOptions* options,
                        ExceptionState& exception_state);
-  // TODO(crbug.com/1050474): Remove Vector<String> version.
-  ScriptPromise select(ScriptState* script_state,
-                       const Vector<String>& properties,
-                       ContactsSelectOptions* options,
-                       ExceptionState& exception_state);  // DEPRECATED
   ScriptPromise getProperties(ScriptState* script_state);
 
   void Trace(Visitor*) const override;

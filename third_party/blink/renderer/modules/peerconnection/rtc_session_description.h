@@ -55,8 +55,6 @@ class RTCSessionDescription final : public ScriptWrappable {
 
   String type() const;
   void setType(base::Optional<V8RTCSdpType> type);
-  // TODO(crbug.com/1050474): Remove String version.
-  void setType(const String&);  // DEPRECATED
 
   String sdp() const;
   void setSdp(const String&);

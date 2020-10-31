@@ -2136,7 +2136,7 @@ void WebGLRenderingContextBase::bufferSubData(
     const FlexibleArrayBufferView& data) {
   if (isContextLost())
     return;
-  DCHECK(data);
+  DCHECK(!data.IsNull());
   BufferSubDataImpl(target, offset, data.ByteLengthAsSizeT(),
                     data.BaseAddressMaybeOnStack());
 }

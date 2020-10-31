@@ -25,11 +25,6 @@ Vector<V8FoodEnum> SequenceTest::identityFoodEnumSequence(
   return arg;
 }
 
-Vector<String> SequenceTest::identityFoodEnumSequence(
-    const Vector<String>& arg) const {
-  return arg;
-}
-
 Vector<int32_t> SequenceTest::identityLongSequence(
     const Vector<int32_t>& arg) const {
   return arg;

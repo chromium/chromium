@@ -28,9 +28,6 @@ class SequenceTest final : public ScriptWrappable {
   Vector<double> identityDoubleSequence(const Vector<double>& arg) const;
   Vector<V8FoodEnum> identityFoodEnumSequence(
       const Vector<V8FoodEnum>& arg) const;
-  // TODO(crbug.com/1050474): Remove Vector<String> version.
-  Vector<String> identityFoodEnumSequence(
-      const Vector<String>& arg) const;  // DEPRECATED
   Vector<int32_t> identityLongSequence(const Vector<int32_t>& arg) const;
   base::Optional<Vector<uint8_t>> identityOctetSequenceOrNull(
       const base::Optional<Vector<uint8_t>>& arg) const;

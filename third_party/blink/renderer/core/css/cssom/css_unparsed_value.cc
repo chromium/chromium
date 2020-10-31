@@ -86,12 +86,15 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
   return CSSUnparsedValue::Create(ParserTokenRangeToTokens(value.TokenRange()));
 }
 
-CSSUnparsedSegment CSSUnparsedValue::AnonymousIndexedGetter(
+void CSSUnparsedValue::AnonymousIndexedGetter(
     unsigned index,
+    CSSUnparsedSegment& return_value,
     ExceptionState& exception_state) const {
-  if (index < tokens_.size())
-    return tokens_[index];
-  return {};
+  if (index < tokens_.size()) {
+    return_value = tokens_[index];
+  } else {
+    return_value = CSSUnparsedSegment();
+  }
 }
 
 IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(

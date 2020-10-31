@@ -83,51 +83,6 @@ ScriptPromise PaymentManager::enableDelegations(
   return enable_delegations_resolver_->Promise();
 }
 
-ScriptPromise PaymentManager::enableDelegations(
-    ScriptState* script_state,
-    const Vector<String>& stringified_delegations,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot enable payment delegations");
-    return ScriptPromise();
-  }
-
-  if (enable_delegations_resolver_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Cannot call enableDelegations() again until the previous "
-        "enableDelegations() is finished");
-    return ScriptPromise();
-  }
-
-  Vector<payments::mojom::blink::PaymentDelegation> delegations;
-  for (auto delegation : stringified_delegations) {
-    if (delegation == "shippingAddress") {
-      delegations.emplace_back(
-          payments::mojom::blink::PaymentDelegation::SHIPPING_ADDRESS);
-    } else if (delegation == "payerName") {
-      delegations.emplace_back(
-          payments::mojom::blink::PaymentDelegation::PAYER_NAME);
-    } else if (delegation == "payerPhone") {
-      delegations.emplace_back(
-          payments::mojom::blink::PaymentDelegation::PAYER_PHONE);
-    } else {
-      DCHECK_EQ("payerEmail", delegation);
-      delegations.emplace_back(
-          payments::mojom::blink::PaymentDelegation::PAYER_EMAIL);
-    }
-  }
-
-  manager_->EnableDelegations(
-      std::move(delegations),
-      WTF::Bind(&PaymentManager::OnEnableDelegationsResponse,
-                WrapPersistent(this)));
-  enable_delegations_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  return enable_delegations_resolver_->Promise();
-}
-
 void PaymentManager::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(manager_);

@@ -626,7 +626,6 @@ blink_core_tests_css = [
   "cssom/css_resource_value_test.cc",
   "cssom/css_style_image_value_test.cc",
   "cssom/css_unit_value_test.cc",
-  "cssom/css_unparsed_value_test.cc",
   "cssom/css_unsupported_color_value_test.cc",
   "cssom/inline_style_property_map_test.cc",
   "cssom/paint_worklet_style_property_map_test.cc",

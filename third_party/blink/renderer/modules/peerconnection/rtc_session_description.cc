@@ -77,10 +77,6 @@ void RTCSessionDescription::setType(base::Optional<V8RTCSdpType> type) {
       type.has_value() ? type.value().AsString() : String());
 }
 
-void RTCSessionDescription::setType(const String& type) {
-  platform_session_description_->SetType(type);
-}
-
 String RTCSessionDescription::sdp() const {
   return platform_session_description_->Sdp();
 }

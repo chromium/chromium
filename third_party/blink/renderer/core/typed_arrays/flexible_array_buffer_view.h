@@ -79,10 +79,6 @@ class CORE_EXPORT FlexibleArrayBufferView {
                     : base::checked_cast<unsigned>(small_length_);
   }
 
-  // TODO(crbug.com/1050474): Remove this cast operator and make the callsites
-  // explicitly call IsNull().
-  operator bool() const { return !IsNull(); }
-
  private:
   DOMArrayBufferView* full_ = nullptr;
 
