@@ -23,20 +23,27 @@ import {routineResultEntryTestSuite} from './routine_result_entry_test.js';
 import {routineResultListTestSuite} from './routine_result_list_test.js';
 import {routineSectionTestSuite} from './routine_section_test.js';
 
-suite('App', appTestSuite);
-suite('BatteryStatusCard', batteryStatusCardTestSuite);
-suite('CpuCard', cpuCardTestSuite);
-suite('DataPoint', dataPointTestSuite);
-suite('FakeMethodProvider', fakeMethodResolverTestSuite);
-suite('FakeMojoInterface', fakeMojoProviderTestSuite);
-suite('FakeObservables', fakeObservablesTestSuite);
-suite('FakeSystemDataProvider', fakeSystemDataProviderTestSuite);
-suite('FakeSystemRoutineContoller', fakeSystemRoutineContollerTestSuite);
-suite('MemoryCard', memoryCardTestSuite);
-suite('OverviewCard', overviewCardTestSuite);
-suite('PercentBarChart', percentBarChartTestSuite);
-suite('RealtimeCpuChart', realtimeCpuChartTestSuite);
-suite('RoutineListExecutor', fakeRoutineListExecutorTestSuite);
-suite('RoutineResultEntry', routineResultEntryTestSuite);
-suite('RoutineResultList', routineResultListTestSuite);
-suite('RoutineSection', routineSectionTestSuite);
+window.test_suites_list = [];
+
+function runSuite(suiteName, testFn) {
+  test_suites_list.push(suiteName);
+  suite(suiteName, testFn);
+}
+
+runSuite('App', appTestSuite);
+runSuite('BatteryStatusCard', batteryStatusCardTestSuite);
+runSuite('CpuCard', cpuCardTestSuite);
+runSuite('DataPoint', dataPointTestSuite);
+runSuite('FakeMethodProvider', fakeMethodResolverTestSuite);
+runSuite('FakeMojoInterface', fakeMojoProviderTestSuite);
+runSuite('FakeObservables', fakeObservablesTestSuite);
+runSuite('FakeSystemDataProvider', fakeSystemDataProviderTestSuite);
+runSuite('FakeSystemRoutineContoller', fakeSystemRoutineContollerTestSuite);
+runSuite('MemoryCard', memoryCardTestSuite);
+runSuite('OverviewCard', overviewCardTestSuite);
+runSuite('PercentBarChart', percentBarChartTestSuite);
+runSuite('RealtimeCpuChart', realtimeCpuChartTestSuite);
+runSuite('RoutineListExecutor', fakeRoutineListExecutorTestSuite);
+runSuite('RoutineResultEntry', routineResultEntryTestSuite);
+runSuite('RoutineResultList', routineResultListTestSuite);
+runSuite('RoutineSection', routineSectionTestSuite);
