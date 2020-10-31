@@ -96,8 +96,8 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
     return mock_key_systems_[key_system_name];
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   MockKeySystemMap mock_key_systems_;
   base::ScopedTempDir temp_dir_;
@@ -109,7 +109,7 @@ TEST_F(FuchsiaCdmManagerTest, NoKeySystems) {
   base::RunLoop run_loop;
   drm::ContentDecryptionModulePtr cdm_ptr;
   cdm_ptr.set_error_handler([&](zx_status_t status) {
-    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
+    EXPECT_EQ(status, ZX_ERR_NOT_FOUND);
     run_loop.Quit();
   });
 
@@ -211,7 +211,14 @@ TEST_F(FuchsiaCdmManagerTest, SameOriginShareDataStore) {
 
   base::RunLoop run_loop;
   drm::ContentDecryptionModulePtr cdm1, cdm2;
-  cdm2.set_error_handler([&](zx_status_t) { run_loop.Quit(); });
+  auto error_handler = [&](zx_status_t status) {
+    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
+    if (!cdm1.is_bound() && !cdm2.is_bound()) {
+      run_loop.Quit();
+    }
+  };
+  cdm1.set_error_handler(error_handler);
+  cdm2.set_error_handler(error_handler);
 
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(1u), _, _))
       .WillOnce(
@@ -240,7 +247,15 @@ TEST_F(FuchsiaCdmManagerTest, DifferentOriginDoNotShareDataStore) {
 
   base::RunLoop run_loop;
   drm::ContentDecryptionModulePtr cdm1, cdm2;
-  cdm2.set_error_handler([&](zx_status_t) { run_loop.Quit(); });
+  auto error_handler = [&](zx_status_t status) {
+    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
+    if (!cdm1.is_bound() && !cdm2.is_bound()) {
+      run_loop.Quit();
+    }
+  };
+  cdm1.set_error_handler(error_handler);
+  cdm2.set_error_handler(error_handler);
+
   EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(Eq(1u), _, _))
       .WillOnce(
           WithArgs<2>(Invoke([](drm::KeySystem::AddDataStoreCallback callback) {
