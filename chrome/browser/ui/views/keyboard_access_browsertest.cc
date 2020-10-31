@@ -23,6 +23,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -479,32 +480,41 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
 }
 
 #if defined(OS_WIN)  // These keys are Windows-only.
-// Disabled due to high flake rate; see https://crbug.com/846623.
-IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, DISABLED_BackForwardKeys) {
+IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
   // Navigate to create some history.
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://about/"));
 
   base::string16 before_back;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &before_back));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate back.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_BROWSER_BACK, false, false, false, false));
+  {
+    content::TestNavigationObserver navigation_observer(web_contents, 1);
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        browser(), ui::VKEY_BROWSER_BACK, false, false, false, false));
+    navigation_observer.Wait();
 
-  base::string16 after_back;
-  ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &after_back));
+    base::string16 after_back;
+    ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &after_back));
 
-  EXPECT_NE(before_back, after_back);
+    EXPECT_NE(before_back, after_back);
+  }
 
   // And then forward.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_BROWSER_FORWARD, false, false, false, false));
+  {
+    content::TestNavigationObserver navigation_observer(web_contents, 1);
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        browser(), ui::VKEY_BROWSER_FORWARD, false, false, false, false));
+    navigation_observer.Wait();
 
-  base::string16 after_forward;
-  ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &after_forward));
+    base::string16 after_forward;
+    ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &after_forward));
 
-  EXPECT_EQ(before_back, after_forward);
+    EXPECT_EQ(before_back, after_forward);
+  }
 }
 #endif
 
