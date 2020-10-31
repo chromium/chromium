@@ -13,8 +13,7 @@ namespace chromeos {
 namespace phonehub {
 
 void OnboardingUiTrackerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kHasDismissedUiAfterCompletingOnboarding,
-                                false);
+  registry->RegisterBooleanPref(prefs::kHideOnboardingUi, false);
 }
 
 OnboardingUiTrackerImpl::OnboardingUiTrackerImpl(
@@ -28,11 +27,14 @@ OnboardingUiTrackerImpl::OnboardingUiTrackerImpl(
       show_multidevice_setup_dialog_callback_(
           std::move(show_multidevice_setup_dialog_callback)) {
   feature_status_provider_->AddObserver(this);
+  multidevice_setup_client_->AddObserver(this);
+
   should_show_onboarding_ui_ = ComputeShouldShowOnboardingUi();
 }
 
 OnboardingUiTrackerImpl::~OnboardingUiTrackerImpl() {
   feature_status_provider_->RemoveObserver(this);
+  multidevice_setup_client_->RemoveObserver(this);
 }
 
 bool OnboardingUiTrackerImpl::ShouldShowOnboardingUi() const {
@@ -40,8 +42,7 @@ bool OnboardingUiTrackerImpl::ShouldShowOnboardingUi() const {
 }
 
 void OnboardingUiTrackerImpl::DismissSetupUi() {
-  pref_service_->SetBoolean(prefs::kHasDismissedUiAfterCompletingOnboarding,
-                            true);
+  pref_service_->SetBoolean(prefs::kHideOnboardingUi, true);
   UpdateShouldShowOnboardingUi();
 }
 
@@ -70,12 +71,27 @@ void OnboardingUiTrackerImpl::OnFeatureStatusChanged() {
   UpdateShouldShowOnboardingUi();
 }
 
+void OnboardingUiTrackerImpl::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  const multidevice_setup::mojom::FeatureState phonehub_state =
+      feature_states_map.find(multidevice_setup::mojom::Feature::kPhoneHub)
+          ->second;
+  // User has gone through the onboarding process, prevent the UI from
+  // displaying again.
+  if (phonehub_state ==
+      multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+    pref_service_->SetBoolean(prefs::kHideOnboardingUi, true);
+    UpdateShouldShowOnboardingUi();
+  }
+}
+
 bool OnboardingUiTrackerImpl::ComputeShouldShowOnboardingUi() {
   FeatureStatus status = feature_status_provider_->GetStatus();
+
   if (status == FeatureStatus::kEligiblePhoneButNotSetUp ||
       status == FeatureStatus::kDisabled) {
-    return !pref_service_->GetBoolean(
-        prefs::kHasDismissedUiAfterCompletingOnboarding);
+    return !pref_service_->GetBoolean(prefs::kHideOnboardingUi);
   }
   return false;
 }

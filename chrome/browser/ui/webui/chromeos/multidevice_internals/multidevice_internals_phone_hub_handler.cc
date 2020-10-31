@@ -557,10 +557,8 @@ void MultidevicePhoneHubHandler::HandleRemoveNotification(
 void MultidevicePhoneHubHandler::HandleResetShouldShowOnboardingUi(
     const base::ListValue* args) {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  prefs->SetBoolean(
-      chromeos::phonehub::prefs::kHasDismissedUiAfterCompletingOnboarding,
-      false);
-  PA_LOG(VERBOSE) << "Reset kHasDismissedUiAfterCompletingOnboarding pref";
+  prefs->SetBoolean(chromeos::phonehub::prefs::kHideOnboardingUi, false);
+  PA_LOG(VERBOSE) << "Reset kHideOnboardingUi pref";
 }
 
 void MultidevicePhoneHubHandler::HandleResetHasNotificationSetupUiBeenDismissed(

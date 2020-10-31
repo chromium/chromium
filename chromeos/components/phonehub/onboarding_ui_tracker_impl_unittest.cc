@@ -51,6 +51,8 @@ class OnboardingUiTrackerImplTest : public testing::Test {
     OnboardingUiTrackerImpl::RegisterPrefs(pref_service_.registry());
     fake_feature_status_provider_ =
         std::make_unique<FakeFeatureStatusProvider>();
+    fake_feature_status_provider_->SetStatus(
+        FeatureStatus::kNotEligibleForFeature);
     controller_ = std::make_unique<OnboardingUiTrackerImpl>(
         &pref_service_, fake_feature_status_provider_.get(),
         &fake_multidevice_setup_client_,
@@ -68,6 +70,11 @@ class OnboardingUiTrackerImplTest : public testing::Test {
 
   void SetStatus(FeatureStatus feature_status) {
     fake_feature_status_provider_->SetStatus(feature_status);
+  }
+
+  void SetFeatureState(multidevice_setup::mojom::Feature feature,
+                       multidevice_setup::mojom::FeatureState state) {
+    fake_multidevice_setup_client_.SetFeatureState(feature, state);
   }
 
   void DismissSetupUi() { controller_->DismissSetupUi(); }
@@ -156,6 +163,36 @@ TEST_F(OnboardingUiTrackerImplTest, ShouldShowUiWhenDisabled) {
 
   // User dismisses setup flow a second time.
   DismissSetupUi();
+  EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 2U);
+  EXPECT_FALSE(ShouldShowOnboardingUi());
+}
+
+TEST_F(OnboardingUiTrackerImplTest, HideUiWhenFeatureIsEnabled) {
+  SetStatus(FeatureStatus::kNotEligibleForFeature);
+  EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 0U);
+
+  SetStatus(FeatureStatus::kDisabled);
+  EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 1U);
+  EXPECT_TRUE(ShouldShowOnboardingUi());
+
+  // Simulate feature disabled feature. Expect onboarding UI to still be
+  // displayed.
+  SetFeatureState(multidevice_setup::mojom::Feature::kPhoneHub,
+                  multidevice_setup::mojom::FeatureState::kDisabledByUser);
+  EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 1U);
+  EXPECT_TRUE(ShouldShowOnboardingUi());
+
+  // Toggle the feature to be enabled. Expect onboarding UI to no longer be
+  // displayed.
+  SetFeatureState(multidevice_setup::mojom::Feature::kPhoneHub,
+                  multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 2U);
+  EXPECT_FALSE(ShouldShowOnboardingUi());
+
+  // Toggle the feature back to disabled. Expect onboarding UI to still be
+  // hidden.
+  SetFeatureState(multidevice_setup::mojom::Feature::kPhoneHub,
+                  multidevice_setup::mojom::FeatureState::kDisabledByUser);
   EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 2U);
   EXPECT_FALSE(ShouldShowOnboardingUi());
 }

@@ -12,8 +12,12 @@ namespace prefs {
 const char kNotificationAccessGranted[] =
     "cros.phonehub.notification_access_granted";
 
-// Whether user has completed onboarding and dismissed the UI before.
-const char kHasDismissedUiAfterCompletingOnboarding[] =
+// Whether user has completed onboarding and dismissed the UI before or if
+// the user has already gone through the onboarding process and has enabled the
+// feature. Note: The pref name is no longer accurate as there are multiple ways
+// the onboarding UI can be hidden. |kHideOnboardingUi| is a generic variable
+// name to better convey the functionality of the pref.
+const char kHideOnboardingUi[] =
     "cros.phonehub.has_completed_onboarding_before";
 
 // Whether the MultideviceSetupStateUpdater is waiting for a verified host

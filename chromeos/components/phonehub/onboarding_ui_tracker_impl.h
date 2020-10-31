@@ -17,14 +17,15 @@ namespace chromeos {
 namespace phonehub {
 
 // OnboardingUiTracker implementation that uses the
-// |kHasDismissedUiAfterCompletingOnboarding| pref to determine whether the
-// Onboarding UI should be shown. This class invokes
-// |show_multidevice_setup_dialog_callback| when the user proceeds with the
-// onboarding flow if Better Together is disabled. If Better Together is
-// enabled, but PhoneHub is disabled, this class enables the PhoneHub feature
-// via the MultiDeviceSetupClient instead.
-class OnboardingUiTrackerImpl : public OnboardingUiTracker,
-                                public FeatureStatusProvider::Observer {
+// |kHideOnboardingUi| pref to determine whether the Onboarding UI should be
+// shown. This class invokes |show_multidevice_setup_dialog_callback| when the
+// user proceeds with the onboarding flow if Better Together is disabled. If
+// Better Together is enabled, but PhoneHub is disabled, this class enables the
+// PhoneHub feature via the MultiDeviceSetupClient instead.
+class OnboardingUiTrackerImpl
+    : public OnboardingUiTracker,
+      public FeatureStatusProvider::Observer,
+      public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -43,6 +44,11 @@ class OnboardingUiTrackerImpl : public OnboardingUiTracker,
  private:
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
+
+  // MultiDeviceSetupClient::Observer:
+  void OnFeatureStatesChanged(
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_states_map) override;
 
   bool ComputeShouldShowOnboardingUi();
   void UpdateShouldShowOnboardingUi();
