@@ -13,14 +13,17 @@ class TabStripModel;
 // A menu model that builds the contents of the tab context menu. To make sure
 // the menu reflects the real state of the tab a new TabMenuModel should be
 // created each time the menu is shown.
+// IDS in the TabMenuModel cannot overlap. Most menu items will use an ID
+// defined in chrome/app/chrome_command_ids.h however dynamic menus will not.
+// If adding dynamic IDs to a submenu of this menu, add it to this list
+// and make sure the values don't overlap with ranges used by any of the models
+// in this list. Also make sure to allocate a fairly large range so you're not
+// likely having to expand it later on:
+//   ExistingTabGroupSubMenuModel
+//   ExistingWindowSubMenuModel
+//   SendTabToSelfSubMenuModel
 class TabMenuModel : public ui::SimpleMenuModel {
  public:
-  // Range of command IDs to use for the items in the send tab to self submenu.
-  static const int kMinSendTabToSelfSubMenuCommandId =
-      send_tab_to_self::SendTabToSelfSubMenuModel::kMinCommandId;
-  static const int kMaxSendTabToSelfSubMenuCommandId =
-      send_tab_to_self::SendTabToSelfSubMenuModel::kMaxCommandId;
-
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                TabStripModel* tab_strip,
                int index);

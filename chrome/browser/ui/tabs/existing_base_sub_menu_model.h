@@ -40,7 +40,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
   // Command IDs for various submenus.
   static constexpr int kMinExistingWindowCommandId = 1001;
-  static constexpr int kMinExistingTabGroupCommandId = 2001;
+  static constexpr int kMinExistingTabGroupCommandId = 1301;
 
   ~ExistingBaseSubMenuModel() override;
 
