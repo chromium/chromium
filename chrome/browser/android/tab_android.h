@@ -182,12 +182,20 @@ class TabAndroid : public base::SupportsUserData {
   jboolean GetAddApi2TransitionToFutureNavigations(JNIEnv* env) {
     return should_add_api2_transition_to_future_navigations_;
   }
+  void SetHideFutureNavigations(JNIEnv* env, jboolean hide);
+  jboolean GetHideFutureNavigations(JNIEnv* env) {
+    return hide_future_navigations_;
+  }
 
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
  private:
+  // Calls set_hide_future_navigations() on the HistoryTabHelper associated
+  // with |web_contents_|.
+  void PropagateHideFutureNavigationsToHistoryTabHelper();
+
   JavaObjectWeakGlobalRef weak_java_tab_;
 
   // Identifier of the window the tab is in.
@@ -201,6 +209,7 @@ class TabAndroid : public base::SupportsUserData {
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
   bool should_add_api2_transition_to_future_navigations_ = false;
+  bool hide_future_navigations_ = false;
 
   base::ObserverList<Observer> observers_;
 

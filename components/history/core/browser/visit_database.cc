@@ -14,10 +14,12 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/url_database.h"
 #include "sql/statement.h"
@@ -26,6 +28,19 @@
 #include "url/url_constants.h"
 
 namespace history {
+
+namespace {
+
+// This is called from functions that are testing for the absence of
+// PAGE_TRANSITION_FROM_API_3 in transitions. It is expected this is used
+// with a database query of '& FromApi3QualifierForQuery() == 0'.
+int32_t FromApi3QualifierForQuery() {
+  return base::FeatureList::IsEnabled(kHideFromApi3Transitions)
+             ? ui::PAGE_TRANSITION_FROM_API_3
+             : 0;
+}
+
+}  // namespace
 
 VisitDatabase::VisitDatabase() {}
 
@@ -283,6 +298,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
       "FROM visits "
       "WHERE url=? AND visit_time >= ? AND visit_time < ? "
       "AND (transition & ?) != 0 "              // CHAIN_END
+      "AND (transition & ?) == 0 "              // FROM_API_3
       "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
                                                 // KEYWORD_GENERATED
       "ORDER BY visit_time DESC"));
@@ -290,10 +306,11 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
   statement.BindInt64(1, options.EffectiveBeginTime());
   statement.BindInt64(2, options.EffectiveEndTime());
   statement.BindInt64(3, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  statement.BindInt64(4, FromApi3QualifierForQuery());
+  statement.BindInt64(5, ui::PAGE_TRANSITION_CORE_MASK);
+  statement.BindInt64(6, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  statement.BindInt64(7, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  statement.BindInt64(8, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
   return FillVisitVectorWithOptions(statement, options, visits);
 }
@@ -389,6 +406,7 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
       "FROM visits "
       "WHERE visit_time >= ? AND visit_time < ? "
       "AND (transition & ?) != 0 "              // CHAIN_END
+      "AND (transition & ?) == 0 "              // FROM_API_3
       "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
                                                 // KEYWORD_GENERATED
       "ORDER BY visit_time DESC, id DESC"));
@@ -396,10 +414,11 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
   statement.BindInt64(0, options.EffectiveBeginTime());
   statement.BindInt64(1, options.EffectiveEndTime());
   statement.BindInt64(2, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(3, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(4, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  statement.BindInt64(3, FromApi3QualifierForQuery());
+  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
+  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
   return FillVisitVectorWithOptions(statement, options, visits);
 }
@@ -516,15 +535,17 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
       "FROM visits v INNER JOIN urls u ON v.url = u.id "
       "WHERE u.url >= ? AND u.url < ? "
       "AND (transition & ?) != 0 "
+      "AND (transition & ?) == 0 "
       "AND (transition & ?) NOT IN (?, ?, ?)"));
   statement.BindString(0, host_query_min);
   statement.BindString(
       1, host_query_min.substr(0, host_query_min.size() - 1) + '0');
   statement.BindInt64(2, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(3, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(4, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  statement.BindInt64(3, FromApi3QualifierForQuery());
+  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
+  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
   if (!statement.Step()) {
     // We've never been to this page before.
@@ -554,6 +575,7 @@ bool VisitDatabase::GetHistoryCount(const base::Time& begin_time,
       "DATE((visit_time - ?) / ?, 'unixepoch', 'localtime')"
       "FROM visits "
       "WHERE (transition & ?) != 0 "            // CHAIN_END
+      "AND (transition & ?) == 0 "              // FROM_API_3
       "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
                                                 // KEYWORD_GENERATED
       "AND visit_time >= ? AND visit_time < ?"
@@ -562,12 +584,13 @@ bool VisitDatabase::GetHistoryCount(const base::Time& begin_time,
   statement.BindInt64(0, base::Time::kTimeTToMicrosecondsOffset);
   statement.BindInt64(1, base::Time::kMicrosecondsPerSecond);
   statement.BindInt64(2, ui::PAGE_TRANSITION_CHAIN_END);
-  statement.BindInt64(3, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(4, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  statement.BindInt64(5, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  statement.BindInt64(6, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
-  statement.BindInt64(7, begin_time.ToInternalValue());
-  statement.BindInt64(8, end_time.ToInternalValue());
+  statement.BindInt64(3, FromApi3QualifierForQuery());
+  statement.BindInt64(4, ui::PAGE_TRANSITION_CORE_MASK);
+  statement.BindInt64(5, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  statement.BindInt64(6, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  statement.BindInt64(7, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  statement.BindInt64(8, begin_time.ToInternalValue());
+  statement.BindInt64(9, end_time.ToInternalValue());
 
   if (!statement.Step())
     return false;

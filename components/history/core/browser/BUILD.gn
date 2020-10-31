@@ -20,6 +20,8 @@ static_library("browser") {
     "download_types.h",
     "expire_history_backend.cc",
     "expire_history_backend.h",
+    "features.cc",
+    "features.h",
     "history_backend.cc",
     "history_backend.h",
     "history_backend_client.h",

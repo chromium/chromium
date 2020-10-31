@@ -2417,6 +2417,120 @@ public class CustomTabActivityTest {
         Assert.assertEquals(0, getVisibleEntryTransitionType() & PageTransition.FROM_API_2);
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.HIDE_FROM_API_3_TRANSITIONS_FROM_HISTORY})
+    public void testHideVisitsFromCctDefaultsToFalse() throws Exception {
+        // Start CCT.
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        Assert.assertFalse(mCustomTabActivityTestRule.getActivity()
+                                   .getActivityTab()
+                                   .getHideFutureNavigations());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.HIDE_FROM_API_3_TRANSITIONS_FROM_HISTORY})
+    public void testHideVisitsFromCctNotAvailableTo3p() throws Exception {
+        // Start CCT.
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_VISITS_FROM_CCT, true);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        // Value of EXTRA_HIDE_VISITS_FROM_CCT is ignored for non-1ps.
+        Assert.assertFalse(mCustomTabActivityTestRule.getActivity()
+                                   .getActivityTab()
+                                   .getHideFutureNavigations());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.HIDE_FROM_API_3_TRANSITIONS_FROM_HISTORY})
+    public void testHideVisitsFromCctRemovedWhenOpenInBrowser() throws Exception {
+        // Augment the CustomTabsSession to catch open in browser.
+        CallbackHelper callbackTriggered = new CallbackHelper();
+        CustomTabsSession session =
+                CustomTabsTestUtils
+                        .bindWithCallback(new CustomTabsCallback() {
+                            @Override
+                            public void extraCallback(String callbackName, Bundle args) {
+                                if (callbackName.equals(
+                                            CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK)) {
+                                    callbackTriggered.notifyCalled();
+                                }
+                            }
+                        })
+                        .session;
+
+        // Start CCT.
+        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
+        intent.setData(Uri.parse(mTestPage));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_VISITS_FROM_CCT, true);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(
+                token, "com.google.android.googlequicksearchbox");
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        Assert.assertTrue(mCustomTabActivityTestRule.getActivity()
+                                  .getActivityTab()
+                                  .getHideFutureNavigations());
+
+        // Trigger open in browser.
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme(Uri.parse(mTestServer.getURL("/")).getScheme());
+        final ActivityMonitor monitor =
+                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
+        openAppMenuAndAssertMenuShown();
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            MenuItem item =
+                    AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
+                            .findItem(R.id.open_in_browser_id);
+            Assert.assertNotNull(item);
+            getActivity().onMenuOrKeyboardAction(R.id.open_in_browser_id, false);
+        });
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
+        });
+        callbackTriggered.waitForCallback(0);
+        Assert.assertFalse(mCustomTabActivityTestRule.getActivity()
+                                   .getActivityTab()
+                                   .getHideFutureNavigations());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.HIDE_FROM_API_3_TRANSITIONS_FROM_HISTORY})
+    public void testHideVisitsFromCctPreloadDisabled() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        intent.setData(Uri.parse(mTestPage));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("org.chromium.chrome.browser.init.DISABLE_STARTUP_TAB_PRELOADER", true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_VISITS_FROM_CCT, true);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(
+                token, "com.google.android.googlequicksearchbox");
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        Assert.assertTrue(mCustomTabActivityTestRule.getActivity()
+                                  .getActivityTab()
+                                  .getHideFutureNavigations());
+    }
+
     /**
      * The following test that history only has a single final page after speculation,
      * whether it was a hit or a miss.

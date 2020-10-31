@@ -111,8 +111,13 @@ enum PageTransition {
   // Any of the core values above can be augmented by one or more qualifiers.
   // These qualifiers further define the transition.
 
-  // TODO(https://crbug.com/1141501): this is for an experiment, and will be
+  // TODO(https://crbug.com/1141501): these are for an experiment, and will be
   // removed once data is collected from experiment.
+  // Both of these transition types are for experiments to exclude visits from
+  // appearing in the omnibox. PAGE_TRANSITION_FROM_API_3 also makes it so
+  // the visit does not surface in the history page. Neither transition type
+  // is used with TYPED.
+  PAGE_TRANSITION_FROM_API_3 = 0x00200000,
   PAGE_TRANSITION_FROM_API_2 = 0x00400000,
 
   // A managed user attempted to visit a URL but was blocked.

@@ -129,6 +129,13 @@ class HistoryPathsTracker {
 };
 #endif
 
+bool HasApiTransition2or3(ui::PageTransition transition) {
+  return (ui::PageTransitionGetQualifier(transition) &
+          (ui::PageTransitionGetQualifier(ui::PAGE_TRANSITION_FROM_API_2) |
+           ui::PageTransitionGetQualifier(ui::PAGE_TRANSITION_FROM_API_3))) !=
+         0;
+}
+
 void RunUnlessCanceled(
     base::OnceClosure closure,
     const base::CancelableTaskTracker::IsCanceledCallback& is_canceled) {
@@ -541,12 +548,14 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
 
   // If the user is navigating to a not-previously-typed intranet hostname,
   // change the transition to TYPED so that the omnibox will learn that this is
-  // a known host.
+  // a known host. This logic is disabled if API_2/API_3 is present as such
+  // visits are not intended to influence the omnibox, and shouldn't be
+  // changed to TYPED. (API_2/API_3 are not used with TYPED transitions).
   bool has_redirects = request.redirects.size() > 1;
   if (ui::PageTransitionIsMainFrame(request_transition) &&
       !ui::PageTransitionCoreTypeIs(request_transition,
                                     ui::PAGE_TRANSITION_TYPED) &&
-      !is_keyword_generated) {
+      !is_keyword_generated && !HasApiTransition2or3(request_transition)) {
     // Check both the start and end of a redirect chain, since the user will
     // consider both to have been "navigated to".
     if (IsUntypedIntranetHost(request.url) ||
@@ -556,6 +565,11 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
           ui::PageTransitionGetQualifier(request_transition));
     }
   }
+
+  // FROM_API_2/FROM_API_3 should never be used with a transition type that
+  // increments the typed-count as that defeats the purpose.
+  DCHECK(!IsTypedIncrement(request_transition) ||
+         !HasApiTransition2or3(request_transition));
 
   if (!has_redirects) {
     // The single entry is both a chain start and end.
