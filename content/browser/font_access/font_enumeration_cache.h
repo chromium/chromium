@@ -83,10 +83,11 @@ class CONTENT_EXPORT FontEnumerationCache {
   // Build the cache given a properly formed enumeration cache table.
   void BuildEnumerationCache(
       std::unique_ptr<blink::FontEnumerationTable> table);
+  void InitializeCacheState();
 
   base::MappedReadOnlyRegion enumeration_cache_memory_;
-  base::AtomicFlag enumeration_cache_built_;
-  base::AtomicFlag enumeration_cache_build_started_;
+  std::unique_ptr<base::AtomicFlag> enumeration_cache_built_;
+  std::unique_ptr<base::AtomicFlag> enumeration_cache_build_started_;
 
   // All responses are serialized through this DeferredSequencedTaskRunner. It
   // is started when the table is ready and guarantees that requests made before

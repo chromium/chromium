@@ -79,7 +79,7 @@ void FontEnumerationCacheFontconfig::SchedulePrepareFontEnumerationCache() {
 }
 
 void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(!enumeration_cache_built_->IsSet());
   // Metrics.
   const base::ElapsedTimer start_timer;
   int incomplete_count = 0;

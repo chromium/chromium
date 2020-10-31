@@ -234,7 +234,7 @@ void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
 }
 
 void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(!enumeration_cache_built_->IsSet());
   DCHECK(!enumeration_timer_);
 
   enumeration_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -279,7 +279,7 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
 
   // If this task's response came late for some reason, we do not need the
   // results anymore and the table was already finalized.
-  if (enumeration_cache_built_.IsSet())
+  if (enumeration_cache_built_->IsSet())
     return;
 
   if (FAILED(family_data_result->exit_hresult))
@@ -313,7 +313,7 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
 }
 
 void FontEnumerationCacheWin::FinalizeEnumerationCache() {
-  DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(!enumeration_cache_built_->IsSet());
   DCHECK(enumeration_timer_);
 
   if (enumeration_errors_.size() > 0) {

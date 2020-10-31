@@ -14,7 +14,10 @@
 
 namespace content {
 
-FontEnumerationCache::FontEnumerationCache() = default;
+FontEnumerationCache::FontEnumerationCache() {
+  InitializeCacheState();
+}
+
 FontEnumerationCache::~FontEnumerationCache() = default;
 
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
@@ -37,8 +40,8 @@ void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
           base::Unretained(this),
           CallbackOnTaskRunner(std::move(task_runner), std::move(callback))));
 
-  if (!enumeration_cache_build_started_.IsSet()) {
-    enumeration_cache_build_started_.Set();
+  if (!enumeration_cache_build_started_->IsSet()) {
+    enumeration_cache_build_started_->Set();
 
     SchedulePrepareFontEnumerationCache();
   }
@@ -47,16 +50,13 @@ void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
 bool FontEnumerationCache::IsFontEnumerationCacheReady() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
 
-  return enumeration_cache_built_.IsSet() && IsFontEnumerationCacheValid();
+  return enumeration_cache_built_->IsSet() && IsFontEnumerationCacheValid();
 }
 
 void FontEnumerationCache::ResetStateForTesting() {
   callbacks_task_runner_ =
       base::MakeRefCounted<base::DeferredSequencedTaskRunner>();
-  enumeration_cache_memory_ = base::MappedReadOnlyRegion();
-  enumeration_cache_built_.UnsafeResetForTesting();
-  enumeration_cache_build_started_.UnsafeResetForTesting();
-  status_ = blink::mojom::FontEnumerationStatus::kOk;
+  InitializeCacheState();
 }
 
 base::ReadOnlySharedMemoryRegion FontEnumerationCache::DuplicateMemoryRegion() {
@@ -96,7 +96,7 @@ bool FontEnumerationCache::IsFontEnumerationCacheValid() const {
 
 void FontEnumerationCache::BuildEnumerationCache(
     std::unique_ptr<blink::FontEnumerationTable> table) {
-  DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(!enumeration_cache_built_->IsSet());
 
   // Postscript names, according to spec, are expected to be encoded in a subset
   // of ASCII. See:
@@ -117,7 +117,14 @@ void FontEnumerationCache::BuildEnumerationCache(
     enumeration_cache_memory_ = base::MappedReadOnlyRegion();
   }
 
-  enumeration_cache_built_.Set();
+  enumeration_cache_built_->Set();
+}
+
+void FontEnumerationCache::InitializeCacheState() {
+  enumeration_cache_memory_ = base::MappedReadOnlyRegion();
+  enumeration_cache_built_ = std::make_unique<base::AtomicFlag>();
+  enumeration_cache_build_started_ = std::make_unique<base::AtomicFlag>();
+  status_ = blink::mojom::FontEnumerationStatus::kOk;
 }
 
 }  // namespace content

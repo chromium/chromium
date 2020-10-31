@@ -60,7 +60,7 @@ void FontEnumerationCacheMac::SchedulePrepareFontEnumerationCache() {
 }
 
 void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_.IsSet());
+  DCHECK(!enumeration_cache_built_->IsSet());
 
   @autoreleasepool {
     // Metrics.
