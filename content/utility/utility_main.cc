@@ -155,6 +155,12 @@ int UtilityMain(const MainFunctionParams& parameters) {
 #if defined(OS_WIN)
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+
+  // https://crbug.com/1076771 https://crbug.com/1075487 Premature unload of
+  // shell32 caused process to crash during process shutdown.
+  HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
+  UNREFERENCED_PARAMETER(shell32_pin);
+
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       sandbox_type != sandbox::policy::SandboxType::kCdm) {
     if (!g_utility_target_services)
