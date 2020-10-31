@@ -28,6 +28,10 @@ import multiprocessing
 import subprocess
 import sys
 
+# Provided by root level .vpython file
+import pytz
+from dateutil.tz import tzlocal
+
 import git_utils
 
 
@@ -39,6 +43,96 @@ def _find_builds(predicate):
 
   bb_args = ['bb', 'ls', '-json', '-predicate', pred_json]
   return subprocess.check_output(bb_args).strip().splitlines()
+
+
+def _get_build_running_time(build):
+  """Gets the build's current runtime.
+
+  A build's current runtimes which is the difference between the current actual
+  time and the build's start time.
+
+  Args:
+    build: A dict containing information about a build.
+
+  Returns:
+    The build's current runtime in minutes.
+  """
+  date = datetime.datetime.strptime(build['startTime'], '%Y-%m-%dT%H:%M:%S.%fZ')
+  return datetime.datetime.now(tzlocal()) - pytz.timezone('UTC').localize(date)
+
+
+def _assess_build(build, max_running_time, revisions_in_scope, builders):
+  """Assesses a build, to determine if it's 'bad'.
+
+  Multiple criteria are used here. The build must be considered 'bad' by every
+  stage of analysis for it to be fully assessed as bad.
+
+  This argument is usually called via functools.partial, with everything but
+  the first argument in the partial.
+
+  Args:
+    build: The build json of a buildbucket build.
+    max_running_time: The maximum amount of time a build could be running. Any
+      build which has been running for longer than this is considered 'good'.
+      This is a datetime.timedelta object.
+    revisions_in_scope: The list of revisions that are considered 'bad'. Any
+      build which has one of these revisions is considered 'bad'.
+    builders: A list of builders which are considered 'bad'.
+
+  Returns:
+    If the build is 'bad'.
+  """
+  bid = build['id']
+  if builders and build['builder']['builder'] not in builders:
+    logging.debug('builder of build %s not in %s', bid, builders)
+    return False
+  if _get_build_running_time(build) >= max_running_time:
+    logging.debug('build %s has duration >= %s', bid, max_running_time)
+    return False
+  return _fetch_build_revision(bid) in revisions_in_scope
+
+
+# FIXME: Could cache this on disk to make repeated calls to the script fast.
+def _fetch_build_revision(bid):
+  """Fetches the chromium/src revision checked out in the build.
+
+  Args:
+    bid: A buildbucket id.
+
+  Returns:
+    The revision the build checked out, or None if either:
+      * The build didn't run bot_update
+      * The build didn't check out chromium/src at all. Usually this happens due
+        to a patch error
+  """
+  bid = bid.strip()
+  try:
+    output = subprocess.check_output(
+        ['bb', 'log', bid, 'bot_update', 'json.output'],
+        # If the build is missing, it dumps to stderr. We handle that, so don't
+        # print any errors.
+        stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError:
+    logging.warning('build %s is missing bot_update. Ignoring...' % bid)
+    return None
+
+  contents = json.loads(output)
+  # (usually a) patch failure. These builds didn't end up checking anything out,
+  # so just ignore them.
+  if 'manifest' not in contents:
+    return None
+
+  src_manifest = contents['manifest']['src']
+  assert src_manifest['repository'] == (
+      'https://chromium.googlesource.com/chromium/src.git')
+  rev = src_manifest['revision']
+  logging.debug('build %s has revision %s', bid, rev)
+  return rev
+
+
+def _get_pool():
+  # Returns a multiprocessing pool. Exists for mocking in tests.
+  return multiprocessing.Pool()
 
 
 def _parse_args(raw_args):
@@ -56,6 +150,17 @@ def _parse_args(raw_args):
       help=
       "A known bad revision. This is usually automatically calculated from the"
       " good revision (assuming it's a revert).")
+  parser.add_argument(
+      'max_running_time',
+      help='Only output builds which have been running for less time than this'
+      ' (in minutes).',
+      type=float)
+  parser.add_argument(
+      '--show_all_builds',
+      '-s',
+      action='store_true',
+      help='Show all builds, along with information for each build. Useful when'
+      ' manually inspecting the output of this tool.')
   # FIXME: This is imperfect in some scenarios. For example, if we want to
   # cancel all linux builds, we'd have to manually specify ~15 different
   # builders (at least). We should potentially allow for filtering based on
@@ -82,8 +187,9 @@ def _parse_args(raw_args):
       default=0,
       help=
       'Use for more logging. Can use multiple times to increase logging level.')
-  return parser.parse_args(raw_args)
-
+  args = parser.parse_args(raw_args)
+  args.max_running_time = datetime.timedelta(minutes=args.max_running_time)
+  return args
 
 # FIXME: Add support for time based cancellations. This could be used for
 # issues which don't show up via chromium/src commits.
@@ -109,6 +215,8 @@ def main(raw_args, print_fn):
   # FIXME: Handle only bad revision? Not sure if a reasonable scenario where
   # we'd want to do that exists.
 
+  revisions_in_scope = set(
+      git_utils.get_revisions_between(bad_commit, good_commit) + [bad_commit])
   revert_date = git_utils.get_commit_date(good_commit)
   orig_date = git_utils.get_commit_date(bad_commit)
   # Add 20 minutes to account for git replication delay. Sometimes gerrit
@@ -141,12 +249,32 @@ def main(raw_args, print_fn):
     predicate['builder']['builder'] = args.builder[0]
   resp = _find_builds(predicate)
   build_jsons = [json.loads(x) for x in resp]
+  logging.info('%d total builds to process' % len(build_jsons))
 
-  # TODO: Filter builds found by buildbucket.
-
-  ids = [build['id'] for build in build_jsons]
-  for bid in ids:
-    print_fn(bid)
+  p = _get_pool()
+  for rev in sorted(revisions_in_scope):
+    logging.debug('bad revision: %s', rev)
+  results = p.map(
+      functools.partial(_assess_build,
+                        max_running_time=args.max_running_time,
+                        revisions_in_scope=revisions_in_scope,
+                        builders=args.builder), build_jsons)
+  if args.show_all_builds:
+    rows = [('Build ID', 'is_bad', 'running time (minutes)')]
+    # Build IDS are 19 characters.
+    column_lens = [20, 10, len(rows[0][-1])]
+    for build, is_bad_build in zip(build_jsons, results):
+      bid = build['id']
+      running_time = _get_build_running_time(build).total_seconds() / 60.0
+      rows.append((bid, is_bad_build, running_time))
+    for row in rows:
+      print_fn("%s | %s | %s" % tuple(
+          (str(itm).ljust(column_lens[i]) for i, itm in enumerate(row))))
+  else:
+    ids = [build['id'] for build in build_jsons]
+    for bid, is_bad_build in zip(ids, results):
+      if is_bad_build:
+        print_fn(bid)
 
   return 0
 

@@ -34,3 +34,20 @@ def get_commit_date(rev):
   # itself is hard, so just enforce that we always get UTC for now.
   assert tz == '+0000', 'Expected git timezone %s, got %s.' % ('+0000', tz)
   return datetime.datetime.strptime(raw_date.strip(), '%a %b %d %H:%M:%S %Y')
+
+
+def get_revisions_between(commit1, commit2):
+  """Gets the list of revisions between commit1 and commit2.
+
+  commit1 must have been committed before commit2.
+
+  Args:
+    commit1: A git commit hash.
+    commit2: A git commit hash.
+
+  Returns:
+    A list of git commits between the two commits, not including commit1 or
+      commit2.
+  """
+  lines = _run_git('log', '--format=oneline', '%s..%s' % (commit1, commit2))
+  return [l.split()[0].strip() for l in lines.splitlines()]
