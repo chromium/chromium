@@ -889,6 +889,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the parent of this widget. Note that a top-level widget is not
   // necessarily a root widget and can have a parent.
   Widget* parent() { return parent_; }
+  const Widget* parent() const { return parent_; }
 
   // True if the widget is considered top level widget. Top level widget
   // is a widget of TYPE_WINDOW, TYPE_PANEL, TYPE_WINDOW_FRAMELESS, BUBBLE,
