@@ -3014,7 +3014,7 @@
   {
     "name": "legacy-tls-enforced",
     "owners": [ "cthomp" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 92
   },
   {
     "name": "legacy-tls-interstitial",
