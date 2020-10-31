@@ -58,7 +58,6 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   getDisplayList(filter) {
-    this.methodCalled('getDisplayList', filter);
     if (filter === undefined) {
       filter = '';
     }

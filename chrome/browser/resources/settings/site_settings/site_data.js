@@ -123,18 +123,11 @@ Polymer({
    *
    * RouteObserverBehavior
    * @param {!Route} currentRoute
-   * @param {!Route} previousRoute
    * @protected
    */
-  currentRouteChanged(currentRoute, previousRoute) {
+  currentRouteChanged(currentRoute) {
     GlobalScrollTargetBehaviorImpl.currentRouteChanged.call(this, currentRoute);
-    // Reload cookies on navigation to the site data page from a different
-    // route, except when a search query is present, as that will be handled by
-    // onFilterChanged_.
-    // TODO (crbug.com/1141796): Remove this layering violation.
-    const searchQueryParam =
-        Router.getInstance().getQueryParameters().get('searchSubpage');
-    if (currentRoute === routes.SITE_SETTINGS_SITE_DATA && !searchQueryParam) {
+    if (currentRoute === routes.SITE_SETTINGS_SITE_DATA) {
       this.isLoading_ = true;
       // Needed to fix iron-list rendering issue. The list will not render
       // correctly until a scroll occurs.
@@ -204,12 +197,7 @@ Polymer({
    * @private
    */
   onFilterChanged_(current, previous) {
-    // Ignore the first undefined -> defined transition, unless |current| has a
-    // value. This can occur if the first navigation to the page contains a
-    // search query parameter.
-    // TODO (crbug.com/1141796): Remove requirement to perform this check as
-    // it is subtle and a flow on from a layering violation.
-    if (previous === undefined && !current) {
+    if (previous === undefined) {
       return;
     }
     this.updateSiteList_();
