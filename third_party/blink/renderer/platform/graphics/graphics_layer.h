@@ -153,7 +153,6 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   GraphicsLayerPaintingPhase PaintingPhase() const { return painting_phase_; }
   void SetPaintingPhase(GraphicsLayerPaintingPhase);
 
-  void SetNeedsDisplay();
   void InvalidateContents();
 
   // Set that the position/size of the contents (image or video).

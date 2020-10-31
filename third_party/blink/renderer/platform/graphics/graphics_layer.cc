@@ -640,25 +640,6 @@ void GraphicsLayer::InvalidateContents() {
   }
 }
 
-void GraphicsLayer::SetNeedsDisplay() {
-  if (!PaintsContentOrHitTest())
-    return;
-
-  raster_invalidated_ = true;
-  CcLayer().SetNeedsDisplay();
-
-  // Invalidate the paint controller if it exists, but don't bother creating one
-  // if not.
-  if (paint_controller_)
-    paint_controller_->InvalidateAll();
-
-  if (raster_invalidator_)
-    raster_invalidator_->ClearOldStates();
-
-  TrackRasterInvalidation(*this, IntRect(IntPoint(), IntSize(Size())),
-                          PaintInvalidationReason::kFullLayer);
-}
-
 void GraphicsLayer::InvalidateRaster(const IntRect& rect) {
   DCHECK(PaintsContentOrHitTest());
   raster_invalidated_ = true;

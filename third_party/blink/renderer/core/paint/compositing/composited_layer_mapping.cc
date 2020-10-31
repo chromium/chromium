@@ -1477,13 +1477,6 @@ GraphicsLayer* CompositedLayerMapping::SquashingLayer(
   return NonScrollingSquashingLayer();
 }
 
-void CompositedLayerMapping::SetAllLayersNeedDisplay() {
-  ApplyToGraphicsLayers(this, [](GraphicsLayer* graphics_layer) {
-    if (graphics_layer->PaintsContentOrHitTest())
-      graphics_layer->SetNeedsDisplay();
-  });
-}
-
 void CompositedLayerMapping::SetNeedsCheckRasterInvalidation() {
   ApplyToGraphicsLayers(this, [](GraphicsLayer* graphics_layer) {
     if (graphics_layer->DrawsContent())

@@ -81,9 +81,6 @@ class PLATFORM_EXPORT PaintController {
   Usage GetUsage() const { return usage_; }
 #endif
 
-  // For pre-PaintAfterPaint only.
-  void InvalidateAll();
-
   // These methods are called during painting.
 
   // Provide a new set of paint chunk properties to apply to recorded display
@@ -280,8 +277,7 @@ class PLATFORM_EXPORT PaintController {
   //    display item will be removed. This doesn't affect performance.
   bool ClientCacheIsValid(const DisplayItemClient&) const;
 
-  void InvalidateAllForTesting() { InvalidateAllInternal(); }
-  void InvalidateAllInternal();
+  void InvalidateAllForTesting();
 
   // Set new item state (cache skipping, etc) for the last new display item.
   void ProcessNewItem(DisplayItem&);
