@@ -26,8 +26,9 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
  public:
   struct Options {
-    bool use_amd_specific_policies = false;    // For ChromiumOS.
-    bool use_intel_specific_policies = false;  // For ChromiumOS.
+    bool use_amd_specific_policies = false;     // For ChromiumOS.
+    bool use_intel_specific_policies = false;   // For ChromiumOS.
+    bool use_nvidia_specific_policies = false;  // For Linux.
 
     // Options for GPU's PreSandboxHook.
     bool accelerated_video_decode_enabled = false;

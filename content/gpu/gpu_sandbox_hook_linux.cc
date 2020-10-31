@@ -395,6 +395,14 @@ bool LoadAmdGpuLibraries() {
   return true;
 }
 
+bool LoadNvidiaLibraries() {
+  // The driver may lazily load libxcb-glx. It's not an error on wayland-only
+  // systems for the library to be missing.
+  if (!dlopen("libxcb-glx.so.0", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-glx.so.0) failed with error: " << dlerror();
+  return true;
+}
+
 bool IsAcceleratedVideoEnabled(
     const sandbox::policy::SandboxSeccompBPF::Options& options) {
   return options.accelerated_video_encode_enabled ||
@@ -433,10 +441,14 @@ bool LoadLibrariesForGpu(
     }
     if (options.use_amd_specific_policies)
       return LoadAmdGpuLibraries();
-  } else if (UseChromecastSandboxAllowlist() && IsArchitectureArm()) {
-    LoadArmGpuLibraries();
-    if (UseV4L2Codec())
-      LoadChromecastV4L2Libraries();
+  } else {
+    if (UseChromecastSandboxAllowlist() && IsArchitectureArm()) {
+      LoadArmGpuLibraries();
+      if (UseV4L2Codec())
+        LoadChromecastV4L2Libraries();
+    }
+    if (options.use_nvidia_specific_policies)
+      return LoadNvidiaLibraries();
   }
   return true;
 }
