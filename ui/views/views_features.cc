@@ -30,16 +30,9 @@ const base::Feature kEnableViewPaintOptimization{
     "EnableViewPaintOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Change views::Textfield to take focus on a completed tap, rather than
-// immediately on tap down. This only affects touch input. See
-// https://crbug.com/1069634.
-const base::Feature kTextfieldFocusOnTapUp {
-  "TextfieldFocusOnTapUp",
-#if defined(OS_CHROMEOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // defined(OS_CHROMEOS)
-};
+// immediately on tap down. This only affects touch input.
+const base::Feature kTextfieldFocusOnTapUp{"TextfieldFocusOnTapUp",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows a "New" badge to be displayed on menu items that provide access to new
 // features.
