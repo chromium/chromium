@@ -5,8 +5,8 @@
 cr.define('cellular_setup', function() {
   /** @enum{string} */
   /* #export */ const ESimPageName = {
-    ESIM: 'qr-code-page',
-    FINAL: 'final-page',
+    ESIM: 'activationCodePage',
+    FINAL: 'finalPage',
   };
   /**
    * Root element for the eSIM cellular setup flow. This element interacts with
@@ -23,16 +23,6 @@ cr.define('cellular_setup', function() {
     properties: {
       /** @type {!cellular_setup.CellularSetupDelegate} */
       delegate: Object,
-
-      /**
-       * @type {string}
-       * @private
-       */
-      activationCode_: {
-        type: String,
-        value: '',
-        observer: 'onActivationCodeChanged_',
-      },
 
       /**
        * Element name of the current selected sub-page.
@@ -54,6 +44,8 @@ cr.define('cellular_setup', function() {
       },
     },
 
+    listeners: {'activation-code-updated': 'onActivationCodeUpdated_'},
+
     initSubflow() {
       this.buttonState = {
         backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
@@ -64,6 +56,16 @@ cr.define('cellular_setup', function() {
         next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
         tryAgain: cellularSetup.ButtonState.HIDDEN
       };
+    },
+
+    onActivationCodeUpdated_(event) {
+      if (event.detail.activationCode) {
+        this.set(
+            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+      } else {
+        this.set(
+            'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+      }
     },
 
     navigateForward() {
@@ -77,16 +79,6 @@ cr.define('cellular_setup', function() {
       // TODO(crbug.com/1093185): Handle state when camera is used
       return false;
     },
-
-    /** @private */
-    onActivationCodeChanged_() {
-      if (!this.activationCode_) {
-        this.buttonState.next = cellularSetup.ButtonState.SHOWN_BUT_DISABLED;
-        return;
-      }
-
-      this.buttonState.next = cellularSetup.ButtonState.SHOWN_AND_ENABLED;
-    }
   });
 
   // #cr_define_end

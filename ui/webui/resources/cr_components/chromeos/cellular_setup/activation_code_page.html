@@ -1,0 +1,121 @@
+<link rel="import" href="../../../html/polymer.html">
+
+<link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="base_page.html">
+<link rel="import" href="cellular_setup_delegate.html">
+
+<dom-module id="activation-code-page">
+  <template>
+    <style>
+      [slot='page-body'] {
+        height: 300px;
+        margin-top: -20px;
+      }
+
+      :host cr-button {
+        --ripple-opacity: 0;
+      }
+
+      #esimQrCodeDetection {
+        background-color: var(--google-grey-refresh-100);
+        border-radius: 4px;
+        height: 130px;
+        margin: 20px 0 30px 0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      cr-button {
+        border: none;
+        box-shadow: none;
+      }
+
+      cr-button:hover {
+        background-color: transparent;
+      }
+
+      #scanSuccessMessage {
+        color: green;
+        font-size: medium;
+      }
+
+      #scanSuccessMessage:hover {
+        cursor: default;
+      }
+
+      .center {
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%) translateX(-50%);
+      }
+
+      .label {
+        font-weight: 500;
+      }
+
+      #startScanningImage {
+        margin-inline-end: 8px;
+      }
+
+      #useCameraAgainButton {
+        font-weight: 500;
+        left: 50%;
+        margin-top: 16px;
+        transform: translateX(-50%);
+      }
+
+      #scanSuccessImage {
+        position: absolute;
+       }
+
+       #scanSuccessMessage {
+        padding-inline-end: 0;
+        padding-inline-start: 30px;
+      }
+    </style>
+    <base-page>
+      <div slot="page-body">
+        [[i18n('scanQRCode')]]
+        <!-- TODO(crbug.com/1093185): Add flip camera button -->
+        <div id="esimQrCodeDetection">
+          <div class="center" id="startScanningContainer"
+              hidden$="[[!isInitialState_]]">
+            <cr-button class="label"
+                id="startScanningButton"
+                on-click="startScanning_">
+              <img class="label-image"
+                  id="startScanningImage"
+                  src="activation_code_page_camera.svg"
+                  width="20" height="20"
+                  aria-hidden="true">
+              [[i18n('useCamera')]]
+            </cr-button>
+          </div>
+          <div class="center" id="scanSuccessContainer"
+              hidden$="[[!activationCode_]]">
+            <div>
+              <img id="scanSuccessImage"
+                  src="activation_code_page_checked.svg"
+                  width="20" height="20"
+                  aria-hidden="true">
+              <span class="label" id="scanSuccessMessage">
+                [[i18n('scanQRCodeSuccess')]]
+              </span>
+            </div>
+            <cr-button id="useCameraAgainButton"
+                on-click="startScanning_">
+              [[i18n('qrCodeRetry')]]
+            </cr-button>
+          </div>
+          <video id="video" hidden$="[[!qrCodeScanInProgress_]]"></video>
+        </div>
+        <cr-input id="activationCode"
+            label="[[i18n('activationCode')]]"
+            value="{{activationCode_}}">
+        </cr-input>
+      </div>
+    </base-page>
+  </template>
+  <script src="activation_code_page.js"></script>
+</dom-module>

@@ -26,13 +26,7 @@ Polymer({
   },
 
   initSubflow() {
-    this.buttonState = {
-      backward: cellularSetup.ButtonState.HIDDEN,
-      cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-      done: cellularSetup.ButtonState.HIDDEN,
-      next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
-      tryAgain: cellularSetup.ButtonState.HIDDEN
-    };
+    this.updateButtonState_(this.selectedPage);
   },
 
   /**
@@ -40,20 +34,26 @@ Polymer({
    * @private
    */
   onSetupFlowRadioSelectedChange_(event) {
-    switch (event.detail.value) {
-      case cellularSetup.CellularSetupPageName.PSIM_FLOW_UI:
-        this.selectedPage = cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
-        this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-        break;
-      case cellularSetup.CellularSetupPageName.ESIM_FLOW_UI:
-        this.selectedPage = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
-        this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-        break;
-      default:
-        this.set(
-            'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
-    }
+    this.selectedPage = event.detail.value;
+    this.updateButtonState_(this.selectedPage);
   },
+
+  /**
+   * @param {!cellularSetup.CellularSetupPageName} selectedPage
+   * @private
+   */
+  updateButtonState_(selectedPage) {
+    this.buttonState = {
+      backward: cellularSetup.ButtonState.HIDDEN,
+      cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+      done: cellularSetup.ButtonState.HIDDEN,
+      tryAgain: cellularSetup.ButtonState.HIDDEN
+    };
+    if (selectedPage === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI ||
+        selectedPage === cellularSetup.CellularSetupPageName.ESIM_FLOW_UI) {
+      this.buttonState.next = cellularSetup.ButtonState.SHOWN_AND_ENABLED;
+    } else {
+      this.buttonState.next = cellularSetup.ButtonState.SHOWN_BUT_DISABLED;
+    }
+  }
 });

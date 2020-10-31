@@ -5,6 +5,8 @@
 <link rel="import" href="cellular_types.html">
 <link rel="import" href="cellular_setup_delegate.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
+<link rel="import" href="activation_code_page.html">
+<link rel="import" href="final_page.html">
 
 <dom-module id="esim-flow-ui">
   <template>
@@ -15,29 +17,13 @@
         flex: 1 1 auto;
         flex-direction: column;
       }
-
-      #esim-qrcode-detection {
-        /* TODO(crbug.com/1093185): Remove When QR code detection is added */
-        background-color: darkgray;
-        height: 200px;
-        margin: 10px 0;
-      }
     </style>
     <iron-pages attr-for-selected="id"
         selected="[[selectedESimPageName_]]">
-      <!-- TODO(crbug.com/1093185): Move to separate page-->
-      <div id="qr-code-page">
-        [[i18n('scanQRCode')]]
-        <!-- TODO(crbug.com/1093185): Add QR code detection-->
-        <div id="esim-qrcode-detection"></div>
-        <cr-input id="activation-code"
-            label="[[i18n('activationCode')]]"
-            value="{{activationCode_}}">
-        </cr-input>
-      </div>
+      <activation-code-page id="activationCodePage"></activation-code-page>
       <final-page
-        id="final-page"
-        delegate="[[delegate]]" 
+        id="finalPage"
+        delegate="[[delegate]]"
         show-error="[[showError_]]">
       </final-page>
     </iron-pages>

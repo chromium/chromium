@@ -24,15 +24,15 @@ suite('CrComponentsEsimFlowUiTest', function() {
   });
 
   test('Forward navigation goes to final page', function() {
-    const qrCodePage = eSimPage.$$('#qr-code-page');
-    const finalPage = eSimPage.$$('#final-page');
+    const activationCodePage = eSimPage.$$('#activationCodePage');
+    const finalPage = eSimPage.$$('#finalPage');
 
-    assertTrue(!!qrCodePage);
+    assertTrue(!!activationCodePage);
     assertTrue(!!finalPage);
 
     assertTrue(
         eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.ESIM &&
-        eSimPage.selectedESimPageName_ === qrCodePage.id);
+        eSimPage.selectedESimPageName_ === activationCodePage.id);
 
     eSimPage.navigateForward();
     Polymer.dom.flush();
@@ -48,7 +48,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
         eSimPage.buttonState.next ===
         cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
 
-    eSimPage.activationCode_ = 'ACTIVATION CODE';
+    const activationCodePage = eSimPage.$$('#activationCodePage');
+    activationCodePage.activationCode_ = 'ACTIVATION CODE';
     Polymer.dom.flush();
 
     assertTrue(

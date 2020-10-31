@@ -82,6 +82,7 @@ preprocess_grit("preprocess_generated") {
   if (is_chromeos) {
     in_files += [
       "chromeos/bluetooth/bluetooth_dialog.m.js",
+      "chromeos/cellular_setup/activation_code_page.m.js",
       "chromeos/cellular_setup/base_page.m.js",
       "chromeos/cellular_setup/button_bar.m.js",
       "chromeos/cellular_setup/cellular_setup_delegate.m.js",
@@ -182,6 +183,8 @@ preprocess_grit("preprocess_polymer2") {
       ]
     }
     in_files += [
+      "chromeos/cellular_setup/activation_code_page.html",
+      "chromeos/cellular_setup/activation_code_page.js",
       "chromeos/cellular_setup/base_page.html",
       "chromeos/cellular_setup/base_page.js",
       "chromeos/cellular_setup/button_bar.html",
