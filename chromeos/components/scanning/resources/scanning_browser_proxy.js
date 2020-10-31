@@ -10,14 +10,22 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
+/**
+ * @typedef {{
+ *   baseName: string,
+ *   filePath: string,
+ * }}
+ */
+export let SelectedPath;
+
 /** @interface */
-class ScanningBrowserProxy {
+export class ScanningBrowserProxy {
   /** Initialize ScanningHandler. */
   initialize() {}
 
   /**
    * Requests the user to choose the directory to save scans.
-   * @return {!Promise<string>}
+   * @return {!Promise<!SelectedPath>}
    */
   requestScanToLocation() {}
 }

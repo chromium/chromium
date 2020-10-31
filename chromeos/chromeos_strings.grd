@@ -504,6 +504,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_MY_FILES_SELECT_OPTION" desc="The text displayed in the Scan To dropdown when the user chooses the local 'My files' folder from the select dialog.">
         My files
       </message>
+      <message name="IDS_SCANNING_APP_SELECT_FOLDER_OPTION" desc="The text displayed in the Scan To dropdown option which the user can click to open the select dialog for choosing the folder to save completed scans.">
+        Select folder in Files app...
+      </message>
 
       <!-- Diagnostics App -->
       <!-- TODO(michaelcheco): Update with finalized copies of the strings -->

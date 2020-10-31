@@ -62,6 +62,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"resolutionOptionText", IDS_SCANNING_APP_RESOLUTION_OPTION_TEXT},
       {"scanToDropdownLabel", IDS_SCANNING_APP_SCAN_TO_DROPDOWN_LABEL},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
+      {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},
       {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL}};
 
   for (const auto& str : kLocalizedStrings)

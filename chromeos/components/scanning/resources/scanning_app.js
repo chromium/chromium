@@ -25,6 +25,12 @@ import {ScannerArr} from './scanning_app_types.js';
 import {colorModeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 
 /**
+ * The default save directory for completed scans.
+ * @const {string}
+ */
+const DEFAULT_SAVE_DIRECTORY = '/home/chronos/user/MyFiles';
+
+/**
  * @fileoverview
  * 'scanning-app' is used to interact with connected scanners.
  */
@@ -54,7 +60,7 @@ Polymer({
     /** @type {string} */
     selectedScannerId: {
       type: String,
-      observer: 'onSelectedScannerIdChange_'
+      observer: 'onSelectedScannerIdChange_',
     },
 
     /**
@@ -68,6 +74,9 @@ Polymer({
 
     /** @type {?string} */
     selectedFileType: String,
+
+    /** @type {string} */
+    selectedFilePath: String,
 
     /** @type {?string} */
     selectedColorMode: String,
@@ -116,6 +125,7 @@ Polymer({
   /** @override */
   created() {
     this.scanService_ = getScanService();
+    this.selectedFilePath = DEFAULT_SAVE_DIRECTORY;
   },
 
   /** @override */
@@ -225,11 +235,10 @@ Polymer({
     this.scanButtonDisabled_ = true;
 
     // TODO(jschettler): Use the selected file type when ScanService supports
-    // it. Use the selected scan-to path when the corresponding dropdown is
-    // added.
+    // it.
     const settings = {
       'sourceName': this.selectedSource,
-      'scanToPath': {'path': '/home/chronos/user/MyFiles'},
+      'scanToPath': {'path': this.selectedFilePath},
       'fileType': chromeos.scanning.mojom.FileType.kPng,
       'colorMode': colorModeFromString(this.selectedColorMode),
       'pageSize': pageSizeFromString(this.selectedPageSize),
@@ -249,7 +258,8 @@ Polymer({
    */
   onScanCompleted_(response) {
     if (response.success) {
-      this.statusText_ = 'Scan complete! File(s) saved to My files.';
+      this.statusText_ =
+          'Scan complete! File(s) saved to ' + this.selectedFilePath + '.';
     } else {
       this.statusText_ = 'Scan failed.';
     }

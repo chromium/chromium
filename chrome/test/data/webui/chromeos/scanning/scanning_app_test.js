@@ -11,7 +11,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {getColorModeString, getPageSizeString, getSourceTypeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
+
+import {flushTasks} from '../../test_util.m.js';
+
 import * as utils from './scanning_app_test_utils.js';
+import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -287,7 +292,7 @@ suite('ScanningAppTest', () => {
               scanningApp.$$('#resolutionSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#scanButton').disabled);
           assertEquals(
-              'Scan complete! File(s) saved to My files.',
+              'Scan complete! File(s) saved to /home/chronos/user/MyFiles.',
               scanningApp.$$('#statusText').textContent.trim());
         });
   });
@@ -724,10 +729,19 @@ suite('ScanToSelectTest', () => {
   /** @type {?ScanToSelectElement} */
   let scanToSelect = null;
 
-  /** {string} */
+  /** @type {?TestScanningBrowserProxy} */
+  let scanningBrowserProxy = null;
+
+  /** @const {string} */
   const myFiles = 'My files';
 
+  /** @const {string} */
+  const selectFolderText = 'Select folder in Files app…';
+
   setup(() => {
+    scanningBrowserProxy = new TestScanningBrowserProxy();
+    ScanningBrowserProxyImpl.instance_ = scanningBrowserProxy;
+
     scanToSelect = document.createElement('scan-to-select');
     assertTrue(!!scanToSelect);
     document.body.appendChild(scanToSelect);
@@ -741,11 +755,83 @@ suite('ScanToSelectTest', () => {
   });
 
   test('initializeScanToSelect', () => {
-    // The dropdown should be disabled and only have one entry for 'My files'.
     const select = scanToSelect.$$('select');
     assertTrue(!!select);
-    assertTrue(select.disabled);
-    assertEquals(1, select.length);
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
     assertEquals(myFiles, select.options[0].textContent.trim());
+    assertEquals(selectFolderText, select.options[1].textContent.trim());
+  });
+
+  // Verifies the 'Scan To' dropdown updates when the user chooses a folder in
+  // the select dialog.
+  test('selectFolderDialog', () => {
+    const googleDrivePath = '/this/is/a/Google/Drive';
+    const googleDrive = 'Drive';
+    const myDownloadsPath = '/this/is/a/test/directory/My Downloads';
+    const myDownloads = 'My Downloads';
+
+    // Simulate clicking the 'Select folder' option.
+    scanningBrowserProxy.setSelectedPath(
+        {baseName: myDownloads, filePath: myDownloadsPath});
+    const select = scanToSelect.$$('select');
+    select.selectedIndex = 1;
+    select.dispatchEvent(new CustomEvent('change'));
+    return flushTasks()
+        .then(() => {
+          assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
+          assertEquals(
+              myDownloads,
+              select.options[select.selectedIndex].textContent.trim());
+          assertEquals(0, select.selectedIndex);
+
+          scanningBrowserProxy.setSelectedPath(
+              {baseName: googleDrive, filePath: googleDrivePath});
+          select.selectedIndex = 1;
+          select.dispatchEvent(new CustomEvent('change'));
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(googleDrivePath, scanToSelect.selectedFilePath);
+          assertEquals(
+              googleDrive,
+              select.options[select.selectedIndex].textContent.trim());
+          assertEquals(0, select.selectedIndex);
+        });
+  });
+
+  // Verifys the 'Scan To' dropdown retains the previous selection when the user
+  // cancels the select dialog.
+  test('cancelSelectDialog', () => {
+    const myDownloadsPath = '/this/is/a/test/directory/My Downloads';
+    const myDownloads = 'My Downloads';
+
+    // Simulate clicking the 'Select folder' option.
+    scanningBrowserProxy.setSelectedPath(
+        {baseName: myDownloads, filePath: myDownloadsPath});
+    const select = scanToSelect.$$('select');
+    select.selectedIndex = 1;
+    select.dispatchEvent(new CustomEvent('change'));
+    return flushTasks()
+        .then(() => {
+          assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
+          assertEquals(
+              myDownloads,
+              select.options[select.selectedIndex].textContent.trim());
+          assertEquals(0, select.selectedIndex);
+
+          // Simulate canceling the select dialog
+          scanningBrowserProxy.setSelectedPath({baseName: '', filePath: ''});
+          select.selectedIndex = 1;
+          select.dispatchEvent(new CustomEvent('change'));
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
+          assertEquals(
+              myDownloads,
+              select.options[select.selectedIndex].textContent.trim());
+          assertEquals(0, select.selectedIndex);
+        });
   });
 });
