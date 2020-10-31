@@ -178,7 +178,8 @@ public class CompositorViewHolder extends FrameLayout
     private Runnable mSystemUiFullscreenResizeRunnable;
 
     /** The currently visible Tab. */
-    private Tab mTabVisible;
+    @VisibleForTesting
+    Tab mTabVisible;
 
     /** The currently attached View. */
     private View mView;
@@ -205,6 +206,13 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mContentViewScrolling;
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
     private Callback<Integer> mViewportInsetObserver;
+
+    /**
+     * Tracks whether geometrychange event is fired for the active tab when the keyboard
+     *  is shown/hidden. When active tab changes, this flag is reset so we can fire
+     *  geometrychange event for the new tab when the keyboard shows.
+     */
+    private boolean mHasKeyboardGeometryChangeFired;
 
     // Indicates if ContentCaptureConsumer should be created, we only try to create it once.
     private boolean mShouldCreateContentCaptureConsumer = true;
@@ -778,7 +786,8 @@ public class CompositorViewHolder extends FrameLayout
      * @param w Width of the view.
      * @param h Height of the view.
      */
-    private void setSize(WebContents webContents, View view, int w, int h) {
+    @VisibleForTesting
+    void setSize(WebContents webContents, View view, int w, int h) {
         if (webContents == null || view == null) return;
 
         // When in VR, the CompositorView doesn't control the size of the WebContents.
@@ -796,7 +805,26 @@ public class CompositorViewHolder extends FrameLayout
                 : totalMinHeight;
 
         if (isAttachedToWindow(view)) {
+            // If overlay content flag is set and the keyboard is shown or hidden then resize the
+            // visual/layout viewports in WebContents to match the previous size so there
+            // isn't a change in size after the keyboard is raised or hidden.
+            // Also the geometrychange event should only fire to the foreground tab.
+            int keyboardHeight = 0;
+            boolean overlayContentForegroundTab = webContents.shouldVirtualKeyboardOverlayContent()
+                    && mTabVisible.getWebContents() == webContents;
+            if (overlayContentForegroundTab) {
+                // During orientation changes, width of the |WebContents| changes to match the width
+                // of the screen and so does the keyboard. We fire geometrychange with the updated
+                // keyboard size as well as resize the viewport so the height resize doesn't affect
+                // the |WebContents|.
+                keyboardHeight = KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(
+                        this.getRootView());
+                h += keyboardHeight;
+            }
             webContents.setSize(w, h - controlsHeight);
+            if (overlayContentForegroundTab) {
+                notifyVirtualKeyboardOverlayGeometryChangeEvent(w, keyboardHeight, webContents);
+            }
         } else {
             setSizeOfUnattachedView(view, webContents, controlsHeight);
             requestRender();
@@ -805,6 +833,36 @@ public class CompositorViewHolder extends FrameLayout
 
     private static boolean isAttachedToWindow(View view) {
         return view != null && view.getWindowToken() != null;
+    }
+
+    /**
+     * Notifies geometrychange event to JS.
+     * @param w  Width of the view.
+     * @param keyboardHeight Height of the keyboard.
+     * @param webContents Active WebContent for which this event needs to be fired.
+     */
+    private void notifyVirtualKeyboardOverlayGeometryChangeEvent(
+            int w, int keyboardHeight, WebContents webContents) {
+        assert webContents.shouldVirtualKeyboardOverlayContent();
+
+        boolean keyboardVisible = keyboardHeight > 0;
+        if (!keyboardVisible && !mHasKeyboardGeometryChangeFired) {
+            return;
+        }
+
+        mHasKeyboardGeometryChangeFired = keyboardVisible;
+        Rect appRect = new Rect();
+        getRootView().getWindowVisibleDisplayFrame(appRect);
+        if (keyboardVisible) {
+            // Fire geometrychange event to JS.
+            // The assumption here is that the keyboard is docked at the bottom so we use the
+            // root visible window frame's origin to calculate the position of the keyboard.
+            notifyVirtualKeyboardOverlayRect(
+                    webContents, appRect.left, appRect.top, w, keyboardHeight);
+        } else {
+            // Keyboard has hidden.
+            notifyVirtualKeyboardOverlayRect(webContents, 0, 0, 0, 0);
+        }
     }
 
     @Override
@@ -824,6 +882,22 @@ public class CompositorViewHolder extends FrameLayout
     private void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
         if (webContents != null && mCompositorView != null) {
             mCompositorView.onControlsResizeViewChanged(webContents, controlsResizeView);
+        }
+    }
+
+    /**
+     * Fires geometrychange event to JS with the keyboard size.
+     * @param webContents Active WebContent for which this event needs to be fired.
+     * @param x When the keyboard is shown, it has the left position of the app's rect, else, 0.
+     * @param y When the keyboard is shown, it has the top position of the app's rect, else, 0.
+     * @param width  When the keyboard is shown, it has the width of the view, else, 0.
+     * @param height The height of the keyboard.
+     */
+    @VisibleForTesting
+    void notifyVirtualKeyboardOverlayRect(
+            WebContents webContents, int x, int y, int width, int height) {
+        if (mCompositorView != null) {
+            mCompositorView.notifyVirtualKeyboardOverlayRect(webContents, x, y, width, height);
         }
     }
 
@@ -1318,6 +1392,8 @@ public class CompositorViewHolder extends FrameLayout
         updateContentOverlayVisibility(false);
 
         if (mTabVisible != tab) {
+            // Reset the geometrychange event flag so it can fire on the current active tab.
+            mHasKeyboardGeometryChangeFired = false;
             if (mTabVisible != null) mTabVisible.removeObserver(mTabObserver);
             if (tab != null) {
                 tab.addObserver(mTabObserver);

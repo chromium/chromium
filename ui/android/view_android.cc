@@ -659,6 +659,16 @@ bool ViewAndroid::ScrollTo(float x, float y) {
   return false;
 }
 
+void ViewAndroid::NotifyVirtualKeyboardOverlayRect(
+    const gfx::Rect& keyboard_rect) {
+  if (event_handler_)
+    event_handler_->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
+
+  for (auto* child : children_) {
+    child->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
+  }
+}
+
 template <typename E>
 bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const E& event,

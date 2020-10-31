@@ -26,6 +26,7 @@ import org.chromium.content.browser.ViewEventSinkImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ImeAdapter;
+import org.chromium.content_public.browser.test.RenderFrameHostTestExt;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -376,6 +377,15 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void cut() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
         TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.cut(); });
+    }
+
+    void notifyVirtualKeyboardOverlayRect(int x, int y, int width, int height) {
+        final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
+        RenderFrameHostTestExt rfh = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new RenderFrameHostTestExt(webContents.getMainFrame()));
+        Assert.assertTrue("Did not get a focused frame", rfh != null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { rfh.notifyVirtualKeyboardOverlayRect(x, y, width, height); });
     }
 
     void setClip(final CharSequence text) {

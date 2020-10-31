@@ -13,9 +13,21 @@
   <input id="input_text" type="text"></input>
 </body>
   <script>
+        let VKRect, new_vv_width = 0, new_vv_height = 0, numEvents = 0;
+        navigator.virtualKeyboard.overlaysContent = true;
+        let old_vv_width = visualViewport.width.toFixed(2);
+        let old_vv_height = visualViewport.height.toFixed(2);
+        navigator.virtualKeyboard.addEventListener('geometrychange', evt => {
+          numEvents++;
+          VKRect = navigator.virtualKeyboard.boundingRect;
+          new_vv_width = visualViewport.width.toFixed(2);
+          new_vv_height = visualViewport.height.toFixed(2);
+        }, false);
+
         function FocusIn1() {
           navigator.virtualKeyboard.show();
         }
+
         function FocusIn2() {
           txt2.focus();
         }

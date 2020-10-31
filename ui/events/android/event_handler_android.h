@@ -9,6 +9,10 @@
 #include "base/time/time.h"
 #include "ui/events/events_export.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace ui {
 
 class DragEventAndroid;
@@ -40,6 +44,7 @@ class EVENTS_EXPORT EventHandlerAndroid {
   virtual bool DispatchKeyEvent(const KeyEventAndroid& event);
   virtual bool ScrollBy(float delta_x, float delta_y);
   virtual bool ScrollTo(float x, float y);
+  virtual void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 };
 
 }  // namespace ui

@@ -35,9 +35,15 @@ public class RenderFrameHostTestExt {
         nativeUpdateVisualState(mNativeRenderFrameHostTestExt, callback);
     }
 
+    public void notifyVirtualKeyboardOverlayRect(int x, int y, int width, int height) {
+        nativeNotifyVirtualKeyboardOverlayRect(mNativeRenderFrameHostTestExt, x, y, width, height);
+    }
+
     private native long nativeInit(long renderFrameHostAndroidPtr);
     private native void nativeExecuteJavaScript(
             long nativeRenderFrameHostTestExt, String script, Callback<String> callback);
     private native void nativeUpdateVisualState(
             long nativeRenderFrameHostTestExt, Callback<Boolean> callback);
+    private native void nativeNotifyVirtualKeyboardOverlayRect(
+            long nativeRenderFrameHostTestExt, int x, int y, int width, int height);
 }

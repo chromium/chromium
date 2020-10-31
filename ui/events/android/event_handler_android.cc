@@ -4,6 +4,8 @@
 
 #include "ui/events/android/event_handler_android.h"
 
+#include "ui/gfx/geometry/rect.h"
+
 namespace ui {
 
 bool EventHandlerAndroid::OnTouchEvent(const MotionEventAndroid& event) {
@@ -56,4 +58,6 @@ void EventHandlerAndroid::OnBrowserControlsHeightChanged() {}
 
 void EventHandlerAndroid::OnControlsResizeViewChanged() {}
 
+void EventHandlerAndroid::NotifyVirtualKeyboardOverlayRect(
+    const gfx::Rect& keyboard_rect) {}
 }  // namespace ui

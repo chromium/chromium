@@ -188,6 +188,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool OnGestureEvent(const ui::GestureEventAndroid& event) override;
   void OnPhysicalBackingSizeChanged(
       base::Optional<base::TimeDelta> deadline_override) override;
+  void NotifyVirtualKeyboardOverlayRect(
+      const gfx::Rect& keyboard_rect) override;
 
   // ui::ViewAndroidObserver implementation:
   void OnAttachedToWindow() override;

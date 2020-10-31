@@ -57,6 +57,7 @@
 #include "content/browser/renderer_host/input/synthetic_gesture_target_android.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
 #include "content/browser/renderer_host/input/web_input_event_builders_android.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -325,6 +326,17 @@ void RenderWidgetHostViewAndroid::InitAsPopup(
 void RenderWidgetHostViewAndroid::InitAsFullscreen(
     RenderWidgetHostView* reference_host_view) {
   NOTIMPLEMENTED();
+}
+
+void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
+    const gfx::Rect& keyboard_rect) {
+  RenderFrameHostImpl* frame_host = static_cast<RenderFrameHostImpl*>(
+      RenderViewHost::From(host())->GetMainFrame());
+  if (frame_host && frame_host->ShouldVirtualKeyboardOverlayContent()) {
+    float scale = IsUseZoomForDSFEnabled() ? 1 / view_.GetDipScale() : 1.f;
+    frame_host->NotifyVirtualKeyboardOverlayRect(
+        ScaleToEnclosedRect(keyboard_rect, scale));
+  }
 }
 
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(

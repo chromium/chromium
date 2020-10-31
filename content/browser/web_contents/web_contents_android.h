@@ -162,6 +162,14 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj);
 
+  // Returns true if the overlaycontent flag is set in the JS, else false.
+  // This determines whether to fire geometrychange event to JS and also not
+  // resize the visual/layout viewports in response to keyboard visibility
+  // changes.
+  bool ShouldVirtualKeyboardOverlayContent(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   // No theme color is represented by SK_ColorTRANSPARENT.
   jint GetThemeColor(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);

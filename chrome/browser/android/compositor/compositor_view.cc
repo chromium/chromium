@@ -37,6 +37,7 @@
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/geometry/rect.h"
 
 using base::android::JavaParamRef;
 
@@ -209,6 +210,21 @@ void CompositorView::OnControlsResizeViewChanged(
       content::WebContents::FromJavaWebContents(jweb_contents);
   web_contents->GetNativeView()->OnControlsResizeViewChanged(
       controls_resize_view);
+}
+
+void CompositorView::NotifyVirtualKeyboardOverlayRect(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jweb_contents,
+    jint x,
+    jint y,
+    jint width,
+    jint height) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  gfx::Rect keyboard_rect(x, y, width, height);
+  web_contents->GetNativeView()->NotifyVirtualKeyboardOverlayRect(
+      keyboard_rect);
 }
 
 void CompositorView::SetLayoutBounds(JNIEnv* env,

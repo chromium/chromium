@@ -125,6 +125,8 @@ class WebContentsViewAndroid : public WebContentsView,
       base::Optional<base::TimeDelta> deadline_override) override;
   void OnBrowserControlsHeightChanged() override;
   void OnControlsResizeViewChanged() override;
+  void NotifyVirtualKeyboardOverlayRect(
+      const gfx::Rect& keyboard_rect) override;
 
   void SetFocus(bool focused);
   void set_device_orientation(int orientation) {

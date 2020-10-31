@@ -7,6 +7,7 @@ package org.chromium.content.browser.input;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -113,5 +114,92 @@ public class ImeInputVKApiTest {
         // script switches focus to another manual element.
         DOMUtils.clickNode(mRule.getWebContents(), "txt3");
         mRule.assertWaitForKeyboardStatus(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"VKGeometryChange", "Main"})
+    public void testKeyboardGeometryChangeEventWithInsertText() throws Throwable {
+        mRule.assertWaitForKeyboardStatus(true);
+
+        // Hide keyboard when loading a new Url.
+        mRule.fullyLoadUrl(UrlUtils.getIsolatedTestFileUrl(ImeActivityTestRule.INPUT_VK_API_HTML));
+        mRule.assertWaitForKeyboardStatus(false);
+
+        // Show keyboard when manual policy element has focus and show API is called.
+        DOMUtils.clickNode(mRule.getWebContents(), "txt1");
+        mRule.assertWaitForKeyboardStatus(true);
+
+        // Now that the keyboard has been raised, we notify about the bounding rectangle.
+        mRule.notifyVirtualKeyboardOverlayRect(0, 63, 1080, 741);
+        // Check the VK bounding rectangle and the event getting fired.
+        String code = "numEvents";
+        String expectedValue = "1";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.x";
+        expectedValue = "0";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.y > 0";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.width > 0";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.height > 0";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "new_vv_width === old_vv_width";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "new_vv_height === old_vv_height";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+
+        // Hide keyboard when manual policy element has focus and hide API is called.
+        code = "navigator.virtualKeyboard.hide()";
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code);
+        // keyboard has hidden.
+        // Insert some text while the keyboard geometrychange event is fired for VK hide.
+        mRule.commitText("ab", 0);
+        mRule.waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);
+        mRule.assertWaitForKeyboardStatus(false);
+        mRule.notifyVirtualKeyboardOverlayRect(0, 0, 0, 0);
+        mRule.assertWaitForKeyboardStatus(false);
+
+        code = "numEvents";
+        expectedValue = "2";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.x";
+        expectedValue = "0";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.y";
+        expectedValue = "0";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.width";
+        expectedValue = "0";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "VKRect.height";
+        expectedValue = "0";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "new_vv_width === old_vv_width";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
+        code = "new_vv_height === old_vv_height";
+        expectedValue = "true";
+        Assert.assertEquals(expectedValue,
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code));
     }
 }

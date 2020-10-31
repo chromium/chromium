@@ -213,6 +213,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
     return OnTouchEvent(event);
   }
 
+  void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+
  protected:
   void RemoveAllChildren(bool attached_to_window);
 

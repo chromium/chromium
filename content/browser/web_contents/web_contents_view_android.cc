@@ -598,4 +598,11 @@ void WebContentsViewAndroid::OnControlsResizeViewChanged() {
                                       base::nullopt);
 }
 
+void WebContentsViewAndroid::NotifyVirtualKeyboardOverlayRect(
+    const gfx::Rect& keyboard_rect) {
+  auto* rwhv = GetRenderWidgetHostViewAndroid();
+  if (rwhv)
+    rwhv->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
+}
+
 } // namespace content

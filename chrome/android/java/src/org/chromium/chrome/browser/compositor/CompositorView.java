@@ -446,6 +446,20 @@ public class CompositorView
                 mNativeCompositorView, CompositorView.this, webContents, controlsResizeView);
     }
 
+    /**
+     * Notifies geometrychange event to JS.
+     * @param webContents Active WebContent for which this event needs to be fired.
+     * @param x When the keyboard is shown, it has the left position of the app's rect, else, 0.
+     * @param y When the keyboard is shown, it has the top position of the app's rect, else, 0.
+     * @param width  When the keyboard is shown, it has the width of the view, else, 0.
+     * @param height When the keyboard is shown, it has the height of the keyboard, else, 0.
+     */
+    void notifyVirtualKeyboardOverlayRect(
+            WebContents webContents, int x, int y, int width, int height) {
+        CompositorViewJni.get().notifyVirtualKeyboardOverlayRect(
+                mNativeCompositorView, CompositorView.this, webContents, x, y, width, height);
+    }
+
     @CalledByNative
     private void onCompositorLayout() {
         mRenderHost.onCompositorLayout();
@@ -644,6 +658,8 @@ public class CompositorView
                 WebContents webContents, int width, int height);
         void onControlsResizeViewChanged(long nativeCompositorView, CompositorView caller,
                 WebContents webContents, boolean controlsResizeView);
+        void notifyVirtualKeyboardOverlayRect(long nativeCompositorView, CompositorView caller,
+                WebContents webContents, int x, int y, int width, int height);
         void finalizeLayers(long nativeCompositorView, CompositorView caller);
         void setNeedsComposite(long nativeCompositorView, CompositorView caller);
         void setLayoutBounds(long nativeCompositorView, CompositorView caller);
