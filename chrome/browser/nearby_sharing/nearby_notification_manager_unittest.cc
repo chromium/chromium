@@ -7,6 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -19,6 +23,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
@@ -32,11 +37,21 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ui/ash/holding_space/fake_holding_space_color_provider.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/scoped_test_downloads_mount_point.h"
+#include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -94,6 +109,13 @@ SkBitmap CreateTestSkBitmap() {
   bitmap.allocN32Pixels(/*w=*/10, /*h=*/15);
   bitmap.eraseColor(SK_ColorRED);
   return bitmap;
+}
+
+std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
+  std::unique_ptr<TestingProfileManager> profile_manager(
+      new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+  EXPECT_TRUE(profile_manager->SetUp());
+  return profile_manager;
 }
 
 class NearbyNotificationManagerTest : public testing::Test {
@@ -1117,4 +1139,97 @@ TEST_F(NearbyNotificationManagerTest,
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+class NearbyFilesHoldingSpaceTest : public testing::Test {
+ public:
+  NearbyFilesHoldingSpaceTest()
+      : session_controller_(std::make_unique<TestSessionController>()),
+        user_manager_(new chromeos::FakeChromeUserManager) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kNearbySharing, ash::features::kTemporaryHoldingSpace}, {});
+
+    holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>(
+        std::make_unique<ash::holding_space::FakeHoldingSpaceColorProvider>());
+    profile_manager_ = CreateTestingProfileManager();
+    const AccountId account_id(AccountId::FromUserEmail(""));
+    user_manager_->AddUser(account_id);
+    user_manager_->LoginUser(account_id);
+    profile_ = profile_manager_->CreateTestingProfile("");
+  }
+
+  ~NearbyFilesHoldingSpaceTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    manager_ = std::make_unique<NearbyNotificationManager>(
+        NotificationDisplayServiceFactory::GetForProfile(profile_),
+        CreateAndUseMockNearbySharingService(profile_), profile_->GetPrefs(),
+        profile_);
+  }
+
+  NearbyNotificationManager* manager() { return manager_.get(); }
+
+  ash::HoldingSpaceModel* GetHoldingSpaceModel() const {
+    return holding_space_controller_ ? holding_space_controller_->model()
+                                     : nullptr;
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* profile_;
+  std::unique_ptr<NearbyNotificationManager> manager_;
+  std::unique_ptr<TestSessionController> session_controller_;
+  std::unique_ptr<ash::HoldingSpaceController> holding_space_controller_;
+  chromeos::FakeChromeUserManager* user_manager_;
+};
+
+TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {
+  ash::holding_space::ScopedTestDownloadsMountPoint downloads_mount(profile_);
+  ASSERT_TRUE(downloads_mount.IsValid());
+  ShareTarget share_target;
+  share_target.is_incoming = true;
+
+  const base::FilePath file_virtual_path("Sample.txt");
+  base::FilePath file_path =
+      downloads_mount.CreateFile(file_virtual_path, "Sample Text");
+
+  FileAttachment attachment(file_path);
+  share_target.file_attachments.push_back(std::move(attachment));
+
+  manager()->ShowSuccess(share_target);
+
+  ash::HoldingSpaceModel* holding_space_model = GetHoldingSpaceModel();
+  ASSERT_TRUE(holding_space_model);
+
+  ASSERT_EQ(share_target.file_attachments.size(),
+            holding_space_model->items().size());
+
+  for (int i = 0; i < share_target.file_attachments.size(); ++i) {
+    ash::HoldingSpaceItem* holding_space_item =
+        holding_space_model->items()[i].get();
+    EXPECT_EQ(ash::HoldingSpaceItem::Type::kNearbyShare,
+              holding_space_item->type());
+
+    EXPECT_EQ(share_target.file_attachments[i].file_path(),
+              holding_space_item->file_path());
+  }
+}
+
+TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Text) {
+  ShareTarget share_target;
+  share_target.is_incoming = true;
+
+  TextAttachment attachment(TextAttachment::Type::kText, "Sample Text");
+  share_target.text_attachments.push_back(std::move(attachment));
+
+  manager()->ShowSuccess(share_target);
+
+  ash::HoldingSpaceModel* holding_space_model = GetHoldingSpaceModel();
+  ASSERT_TRUE(holding_space_model);
+
+  EXPECT_TRUE(holding_space_model->items().empty());
 }

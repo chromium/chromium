@@ -5017,6 +5017,7 @@ test("unit_tests") {
       "//chrome/browser/resources/chromeos/zip_archiver/cpp:ziparchiver_unittests",
       "//chrome/browser/ui/app_list/search/search_result_ranker:app_launch_predictor_proto",
       "//chrome/browser/ui/app_list/search/search_result_ranker:recurrence_ranker_proto",
+      "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/services/printing:pdf_thumbnailer_test",
       "//chrome/services/sharing:unit_tests",
       "//chrome/services/sharing/nearby:unit_tests",

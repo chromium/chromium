@@ -22,6 +22,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chrome/browser/ui/ash/holding_space/scoped_test_downloads_mount_point.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -61,40 +63,6 @@ std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
     types.push_back(static_cast<HoldingSpaceItem::Type>(i));
   return types;
 }
-
-// Utility class that registers the downloads external file system mount point,
-// and grants file manager app access permission for the mount point.
-class ScopedDownloadsMountPoint {
- public:
-  explicit ScopedDownloadsMountPoint(Profile* profile)
-      : name_(file_manager::util::GetDownloadsMountPointName(profile)) {
-    if (!temp_dir_.CreateUniqueTempDir())
-      return;
-
-    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        name_, storage::kFileSystemTypeNativeLocal,
-        storage::FileSystemMountOption(), temp_dir_.GetPath());
-    file_manager::util::GetFileSystemContextForExtensionId(
-        profile, file_manager::kFileManagerAppId)
-        ->external_backend()
-        ->GrantFileAccessToExtension(file_manager::kFileManagerAppId,
-                                     base::FilePath(name_));
-  }
-
-  ~ScopedDownloadsMountPoint() {
-    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(name_);
-  }
-
-  bool IsValid() const { return temp_dir_.IsValid(); }
-
-  const base::FilePath& GetRootPath() const { return temp_dir_.GetPath(); }
-
-  const std::string& name() const { return name_; }
-
- private:
-  base::ScopedTempDir temp_dir_;
-  std::string name_;
-};
 
 // Utility class which can wait until a `HoldingSpaceModel` for a given profile
 // is attached to the `HoldingSpaceController`.
@@ -230,28 +198,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return ash_test_helper()->test_session_controller_client();
   }
 
-  // Creates a file under path |mount_point|/|relative_path| with the provided
-  // content. Returns the created file's file path, or an empty path on failure.
-  base::FilePath CreateFile(const ScopedDownloadsMountPoint& mount_point,
-                            const base::FilePath& relative_path,
-                            const std::string& content) {
-    const base::FilePath path = mount_point.GetRootPath().Append(relative_path);
-    if (!base::CreateDirectory(path.DirName()))
-      return base::FilePath();
-    if (!base::WriteFile(path, content))
-      return base::FilePath();
-    return path;
-  }
-
-  // Creates an arbitrary file under the specified 'mount_point'.
-  base::FilePath CreateArbitraryFile(
-      const ScopedDownloadsMountPoint& mount_point) {
-    return CreateFile(
-        mount_point,
-        base::FilePath(base::UnguessableToken::Create().ToString()),
-        /*content=*/std::string());
-  }
-
   // Resolves an absolute file path in the file manager's file system context,
   // and returns the file's file system URL.
   GURL GetFileSystemUrl(Profile* profile,
@@ -352,7 +298,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 // manager app.
 TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   // Create a test downloads mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  holding_space::ScopedTestDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
   // Wait for the holding space model.
@@ -371,7 +317,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   // test will try to resolve the file's file system URL, which fails if the
   // file does not exist.
   const base::FilePath item_1_full_path =
-      CreateFile(downloads_mount, item_1_virtual_path, "red");
+      downloads_mount.CreateFile(item_1_virtual_path, "red");
   ASSERT_FALSE(item_1_full_path.empty());
 
   holding_space_service->AddScreenshot(item_1_full_path);
@@ -382,7 +328,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   // test will try to resolve the file's file system URL, which fails if the
   // file does not exist.
   const base::FilePath item_2_full_path =
-      CreateFile(downloads_mount, item_2_virtual_path, "blue");
+      downloads_mount.CreateFile(item_2_virtual_path, "blue");
   ASSERT_FALSE(item_2_full_path.empty());
   holding_space_service->AddScreenshot(item_2_full_path);
 
@@ -453,7 +399,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, SecondaryUserProfile) {
 // Verifies that updates to the holding space model are persisted.
 TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
   // Create a file system mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  holding_space::ScopedTestDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
   HoldingSpaceKeyedService* const primary_holding_space_service =
@@ -468,7 +414,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
 
   // Verify persistent storage is updated when adding each type of item.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
-    const base::FilePath file_path = CreateArbitraryFile(downloads_mount);
+    const base::FilePath file_path = downloads_mount.CreateArbitraryFile();
     const GURL file_system_url = GetFileSystemUrl(GetProfile(), file_path);
 
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
@@ -504,7 +450,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
 // any stale holding space items are removed.
 TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
   // Create file system mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  holding_space::ScopedTestDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
   HoldingSpaceKeyedService* const primary_holding_space_service =
@@ -521,7 +467,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
-          const base::FilePath file = CreateArbitraryFile(downloads_mount);
+          const base::FilePath file = downloads_mount.CreateArbitraryFile();
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
 
           auto fresh_holding_space_item =
@@ -603,7 +549,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 // kMaxFileAge.
 TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
   // Create file system mount point.
-  ScopedDownloadsMountPoint downloads_mount(GetProfile());
+  holding_space::ScopedTestDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
 
   HoldingSpaceKeyedService* const primary_holding_space_service =
@@ -620,7 +566,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
-          const base::FilePath file = CreateArbitraryFile(downloads_mount);
+          const base::FilePath file = downloads_mount.CreateArbitraryFile();
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
 
           auto fresh_holding_space_item =
@@ -704,7 +650,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
 TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
-  ScopedDownloadsMountPoint downloads_mount(profile);
+  holding_space::ScopedTestDownloadsMountPoint downloads_mount(profile);
   ASSERT_TRUE(downloads_mount.IsValid());
 
   // Create a fake download file on the local file system - later parts of the
@@ -712,7 +658,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   // file does not exist.
   const base::FilePath download_item_virtual_path("Download 1.png");
   const base::FilePath download_item_full_path =
-      CreateFile(downloads_mount, download_item_virtual_path, "download 1");
+      downloads_mount.CreateFile(download_item_virtual_path, "download 1");
 
   MockDownloadManager* mock_download_manager = download_manager();
   std::unique_ptr<download::MockDownloadItem> item(
@@ -759,6 +705,96 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   EXPECT_EQ(download_item_virtual_path,
             GetVirtualPathFromUrl(download_item->file_system_url(),
                                   downloads_mount.name()));
+}
+
+class HoldingSpaceKeyedServiceNearbySharingTest
+    : public HoldingSpaceKeyedServiceTest {
+ public:
+  HoldingSpaceKeyedServiceNearbySharingTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kNearbySharing, ash::features::kTemporaryHoldingSpace},
+        {});
+  }
+
+  ~HoldingSpaceKeyedServiceNearbySharingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
+  // Create a test downloads mount point.
+  holding_space::ScopedTestDownloadsMountPoint downloads_mount(GetProfile());
+  ASSERT_TRUE(downloads_mount.IsValid());
+
+  // Wait for the holding space model.
+  HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();
+
+  // Verify that the holding space model gets set even if the holding space
+  // keyed service is not explicitly created.
+  HoldingSpaceModel* const initial_model =
+      HoldingSpaceController::Get()->model();
+  EXPECT_TRUE(initial_model);
+
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  const base::FilePath item_1_virtual_path("File 1.png");
+  // Create a fake nearby shared file on the local file system - later parts of
+  // the test will try to resolve the file's file system URL, which fails if the
+  // file does not exist.
+  const base::FilePath item_1_full_path =
+      downloads_mount.CreateFile(item_1_virtual_path, "red");
+  ASSERT_FALSE(item_1_full_path.empty());
+
+  holding_space_service->AddNearbyShare(item_1_full_path);
+
+  const base::FilePath item_2_virtual_path = base::FilePath("Alt/File 2.png");
+  // Create a fake nearby shared file on the local file system - later parts of
+  // the test will try to resolve the file's file system URL, which fails if the
+  // file does not exist.
+  const base::FilePath item_2_full_path =
+      downloads_mount.CreateFile(item_2_virtual_path, "blue");
+  ASSERT_FALSE(item_2_full_path.empty());
+  holding_space_service->AddNearbyShare(item_2_full_path);
+
+  EXPECT_EQ(initial_model, HoldingSpaceController::Get()->model());
+  EXPECT_EQ(HoldingSpaceController::Get()->model(),
+            holding_space_service->model_for_testing());
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(2u, model->items().size());
+
+  const HoldingSpaceItem* item_1 = model->items()[0].get();
+  EXPECT_EQ(item_1_full_path, item_1->file_path());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           holding_space_service->thumbnail_loader_for_testing(),
+           HoldingSpaceItem::Type::kNearbyShare, item_1_full_path)
+           ->image_skia()
+           .bitmap(),
+      *item_1->image().image_skia().bitmap()));
+  // Verify the item file system URL resolves to the correct file in the file
+  // manager's context.
+  EXPECT_EQ(
+      item_1_virtual_path,
+      GetVirtualPathFromUrl(item_1->file_system_url(), downloads_mount.name()));
+  EXPECT_EQ(base::ASCIIToUTF16("File 1.png"), item_1->text());
+
+  const HoldingSpaceItem* item_2 = model->items()[1].get();
+  EXPECT_EQ(item_2_full_path, item_2->file_path());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           holding_space_service->thumbnail_loader_for_testing(),
+           HoldingSpaceItem::Type::kNearbyShare, item_2_full_path)
+           ->image_skia()
+           .bitmap(),
+      *item_2->image().image_skia().bitmap()));
+  // Verify the item file system URL resolves to the correct file in the file
+  // manager's context.
+  EXPECT_EQ(
+      item_2_virtual_path,
+      GetVirtualPathFromUrl(item_2->file_system_url(), downloads_mount.name()));
+  EXPECT_EQ(base::ASCIIToUTF16("File 2.png"), item_2->text());
 }
 
 }  // namespace ash

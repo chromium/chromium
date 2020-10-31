@@ -36,8 +36,12 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "//chrome/browser/ui/ash/holding_space/fake_holding_space_color_provider.cc",
+    "//chrome/browser/ui/ash/holding_space/fake_holding_space_color_provider.h",
     "//chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.cc",
     "//chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h",
+    "//chrome/browser/ui/ash/holding_space/scoped_test_downloads_mount_point.cc",
+    "//chrome/browser/ui/ash/holding_space/scoped_test_downloads_mount_point.h",
   ]
 
   deps = [
