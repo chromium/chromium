@@ -10,6 +10,7 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_jni_headers/BitmapHelper_jni.h"
 
@@ -86,6 +87,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(const SkBitmap* skbitmap,
   JavaBitmap dst_lock(jbitmap);
   void* src_pixels = skbitmap->getPixels();
   void* dst_pixels = dst_lock.pixels();
+  CHECK_GE(base::checked_cast<size_t>(dst_lock.byte_count()),
+           skbitmap->computeByteSize());
   memcpy(dst_pixels, src_pixels, skbitmap->computeByteSize());
 
   return jbitmap;
