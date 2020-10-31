@@ -58,6 +58,9 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
                     "Failed to parse H.264 stream");
 
     switch (nalu.nal_unit_type) {
+      case H264NALU::kAUD: {
+        break;
+      }
       case H264NALU::kSPS: {
         int sps_id = -1;
         result = parser_.ParseSPS(&sps_id);
