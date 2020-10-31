@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_TETHER_CONTROLLER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/components/phonehub/tether_controller.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -31,10 +32,12 @@ using multidevice_setup::MultiDeviceSetupClient;
 // if one exists.
 class TetherControllerImpl
     : public TetherController,
+      public PhoneModel::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public chromeos::network_config::mojom::CrosNetworkConfigObserver {
  public:
   explicit TetherControllerImpl(
+      PhoneModel* phone_model,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   ~TetherControllerImpl() override;
 
@@ -104,8 +107,12 @@ class TetherControllerImpl
   // Two parameter constructor made available for testing purposes. The one
   // parameter constructor calls this constructor.
   TetherControllerImpl(
+      PhoneModel* phone_model,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       std::unique_ptr<TetherControllerImpl::TetherNetworkConnector> connector);
+
+  // PhoneModel::Observer:
+  void OnModelChanged() override;
 
   // multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(const MultiDeviceSetupClient::FeatureStatesMap&
@@ -140,6 +147,7 @@ class TetherControllerImpl
   void UpdateStatus();
   TetherController::Status ComputeStatus() const;
 
+  PhoneModel* phone_model_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   ConnectDisconnectStatus connect_disconnect_status_ =
       ConnectDisconnectStatus::kIdle;
