@@ -505,9 +505,6 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionURL) {
 
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::HISTORY_URL;
-  prerender::test_utils::RestorePrerenderMode restore_prerender_mode;
-  prerender::PrerenderManager::SetMode(
-      prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
 
   for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
     match.destination_url = GURL(TestUrlDb()[i].url);
@@ -522,9 +519,6 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
 
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
-  prerender::test_utils::RestorePrerenderMode restore_prerender_mode;
-  prerender::PrerenderManager::SetMode(
-      prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
 
   for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
     match.destination_url = GURL(TestUrlDb()[i].url);

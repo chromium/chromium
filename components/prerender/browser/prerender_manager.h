@@ -74,16 +74,6 @@ class PrerenderManagerObserver {
 class PrerenderManager : public content::RenderProcessHostObserver,
                          public KeyedService {
  public:
-  enum PrerenderManagerMode {
-    // For each request to prerender performs a NoStatePrefetch for the same URL
-    // instead.
-    PRERENDER_MODE_NOSTATE_PREFETCH,
-
-    // Ignores requests to prerender, but keeps track of pages that would have
-    // been prerendered and records metrics for comparison with other modes.
-    PRERENDER_MODE_SIMPLE_LOAD_EXPERIMENT
-  };
-
   // One or more of these flags must be passed to ClearData() to specify just
   // what data to clear.  See function declaration for more information.
   enum ClearFlags {
@@ -168,9 +158,6 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // active prerenders when prerendering should be cancelled.
   virtual void MoveEntryToPendingDelete(PrerenderContents* entry,
                                         FinalStatus final_status);
-
-  static PrerenderManagerMode GetMode() { return mode_; }
-  static void SetMode(PrerenderManagerMode mode) { mode_ = mode; }
 
   // Query the list of current prerender pages to see if the given web contents
   // is prerendering a page.
@@ -494,8 +481,6 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   std::vector<NavigationRecord> prefetches_;
 
   std::unique_ptr<PrerenderContents::Factory> prerender_contents_factory_;
-
-  static PrerenderManagerMode mode_;
 
   // RepeatingTimer to perform periodic cleanups of pending prerendered
   // pages.

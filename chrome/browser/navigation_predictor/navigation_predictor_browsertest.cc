@@ -364,9 +364,6 @@ class NavigationPredictorBrowserTestWithPrefetchAfterPreconnect
 IN_PROC_BROWSER_TEST_F(
     NavigationPredictorBrowserTestWithPrefetchAfterPreconnect,
     DISABLE_ON_CHROMEOS(PrefetchAfterPreconnect)) {
-  prerender::PrerenderManager::SetMode(
-      prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder =
       std::make_unique<ukm::TestAutoSetUkmRecorder>();

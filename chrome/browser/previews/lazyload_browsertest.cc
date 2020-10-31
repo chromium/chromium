@@ -366,8 +366,6 @@ class LazyLoadPrerenderBrowserTest
  public:
   void SetUpOnMainThread() override {
     prerender::test_utils::PrerenderInProcessBrowserTest::SetUpOnMainThread();
-    prerender::PrerenderManager::SetMode(
-        prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
   }
   void EnableDataSaver(bool enabled) {
     data_reduction_proxy::DataReductionProxySettings::

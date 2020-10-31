@@ -730,22 +730,12 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(2, 2);
 }
 
-class MediaEngagementPrerenderBrowserTest : public MediaEngagementBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    MediaEngagementBrowserTest::SetUpOnMainThread();
-
-    prerender::PrerenderManager::SetMode(
-        prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-  }
-};
-
 #if defined(OS_WIN)
 #define MAYBE_Ignored DISABLED_Ignored
 #else
 #define MAYBE_Ignored Ignored
 #endif
-IN_PROC_BROWSER_TEST_F(MediaEngagementPrerenderBrowserTest, MAYBE_Ignored) {
+IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_Ignored) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   prerender::PrerenderManager* prerender_manager =

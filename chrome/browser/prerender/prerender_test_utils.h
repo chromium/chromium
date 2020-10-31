@@ -408,21 +408,6 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(PrerenderInProcessBrowserTest);
 };
 
-// RAII class to save and restore the prerender mode.
-class RestorePrerenderMode {
- public:
-  RestorePrerenderMode() : prev_mode_(PrerenderManager::GetMode()) {}
-
-  ~RestorePrerenderMode() {
-    PrerenderManager::SetMode(prev_mode_);
-  }
-
- private:
-  PrerenderManager::PrerenderManagerMode prev_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(RestorePrerenderMode);
-};
-
 }  // namespace test_utils
 
 }  // namespace prerender

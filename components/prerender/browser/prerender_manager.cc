@@ -115,10 +115,6 @@ class PrerenderManager::OnCloseWebContentsDeleter
 
 PrerenderManagerObserver::~PrerenderManagerObserver() = default;
 
-// static
-PrerenderManager::PrerenderManagerMode PrerenderManager::mode_ =
-    PRERENDER_MODE_NOSTATE_PREFETCH;
-
 struct PrerenderManager::NavigationRecord {
   NavigationRecord(const GURL& url, base::TimeTicks time, Origin origin)
       : url(url), time(time), origin(origin) {}
@@ -575,12 +571,6 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
   // Record the URL in the prefetch list, even when in full prerender mode, to
   // enable metrics comparisons.
   prefetches_.emplace_back(url, GetCurrentTimeTicks(), origin);
-
-  if (GetMode() == PRERENDER_MODE_SIMPLE_LOAD_EXPERIMENT) {
-    // Exit after adding the url to prefetches_, so that no prefetching occurs
-    // but the page is still tracked as "would have been prefetched".
-    return nullptr;
-  }
 
   // If this is GWS and we are in the holdback, skip the prefetch. Record the
   // status as holdback, so we can analyze via UKM.

@@ -330,8 +330,6 @@ class PrerenderTest : public testing::Test {
       : prerender_manager_(new UnitTestPrerenderManager(&profile_)),
         prerender_link_manager_(
             new PrerenderLinkManager(prerender_manager_.get())) {
-    prerender::PrerenderManager::SetMode(
-        prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
     prerender_manager()->SetIsLowEndDevice(false);
   }
 
@@ -476,9 +474,6 @@ class PrerenderTest : public testing::Test {
   std::unique_ptr<PrerenderLinkManager> prerender_link_manager_;
   base::HistogramTester histogram_tester_;
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessorClient> clients_;
-
-  // Restore prerender mode after this test finishes running.
-  test_utils::RestorePrerenderMode restore_prerender_mode_;
 };
 
 TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {
@@ -493,11 +488,6 @@ TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {
 
 TEST_F(PrerenderTest, NoStatePrefetchMode) {
   GURL url("http://www.google.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   DummyPrerenderContents* prerender_contents =
       prerender_manager()->CreateNextPrerenderContents(
           url, FINAL_STATUS_PROFILE_DESTROYED);
@@ -506,22 +496,8 @@ TEST_F(PrerenderTest, NoStatePrefetchMode) {
             prerender_contents->prerender_mode());
 }
 
-TEST_F(PrerenderTest, SimpleLoadMode) {
-  GURL url("http://www.google.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_SIMPLE_LOAD_EXPERIMENT);
-  EXPECT_FALSE(AddSimplePrerender(url));
-}
-
 TEST_F(PrerenderTest, GWSPrefetchHoldbackNonGWSSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kGWSPrefetchHoldback);
   prerender_manager()->CreateNextPrerenderContents(
@@ -532,11 +508,6 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackNonGWSSReferrer) {
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackGWSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kGWSPrefetchHoldback);
   prerender_manager()->CreateNextPrerenderContents(
@@ -548,11 +519,6 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackGWSReferrer) {
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackOffNonGWSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kGWSPrefetchHoldback);
   prerender_manager()->CreateNextPrerenderContents(
@@ -563,11 +529,6 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackOffNonGWSReferrer) {
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackOffGWSReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kGWSPrefetchHoldback);
   prerender_manager()->CreateNextPrerenderContents(
@@ -579,11 +540,6 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackOffGWSReferrer) {
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackNonPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       kNavigationPredictorPrefetchHoldback);
@@ -596,11 +552,6 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackNonPredictorReferrer) {
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       kNavigationPredictorPrefetchHoldback);
@@ -613,11 +564,6 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackPredictorReferrer) {
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffNonPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kNavigationPredictorPrefetchHoldback);
@@ -630,11 +576,6 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffNonPredictorReferrer) {
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffPredictorReferrer) {
   GURL url("http://www.notgoogle.com/");
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kNavigationPredictorPrefetchHoldback);
@@ -695,10 +636,6 @@ TEST_F(PrerenderTest, FoundTest) {
 // and we don't use the second prerender contents.
 // This test is the same as the "DuplicateTest" above, but for NoStatePrefetch.
 TEST_F(PrerenderTest, DISABLED_DuplicateTest_NoStatePrefetch) {
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
-
   SetConcurrency(2);
   GURL url("http://www.google.com/");
   DummyPrerenderContents* prerender_contents =
@@ -863,9 +800,6 @@ TEST_F(PrerenderTest, NoStatePrefetchDuplicate) {
   loading_predictor->StartInitialization();
   content::RunAllTasksUntilIdle();
 
-  test_utils::RestorePrerenderMode restore_prerender_mode;
-  prerender_manager()->SetMode(
-      PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
   prerender_manager()->SetTickClockForTesting(tick_clock());
 
   // Prefetch the url once.

@@ -275,8 +275,6 @@ class NoStatePrefetchBrowserTest
 
   void SetUpOnMainThread() override {
     test_utils::PrerenderInProcessBrowserTest::SetUpOnMainThread();
-    PrerenderManager::SetMode(
-        PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
