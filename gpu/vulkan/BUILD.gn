@@ -16,11 +16,11 @@ buildflag_header("buildflags") {
 }
 
 if (enable_vulkan) {
-  use_vulkan_xlib = use_x11 || ozone_platform_x11
+  use_vulkan_xcb = use_x11 || ozone_platform_x11
   config("vulkan_config") {
     defines = [ "VK_NO_PROTOTYPES" ]
-    if (use_vulkan_xlib) {
-      defines += [ "USE_VULKAN_XLIB" ]
+    if (use_vulkan_xcb) {
+      defines += [ "USE_VULKAN_XCB" ]
     }
   }
 

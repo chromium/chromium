@@ -72,11 +72,11 @@ VULKAN_INSTANCE_FUNCTIONS = [
     ]
   },
   {
-    'ifdef': 'defined(USE_VULKAN_XLIB)',
-    'extension': 'VK_KHR_XLIB_SURFACE_EXTENSION_NAME',
+    'ifdef': 'defined(USE_VULKAN_XCB)',
+    'extension': 'VK_KHR_XCB_SURFACE_EXTENSION_NAME',
     'functions': [
-      'vkCreateXlibSurfaceKHR',
-      'vkGetPhysicalDeviceXlibPresentationSupportKHR',
+      'vkCreateXcbSurfaceKHR',
+      'vkGetPhysicalDeviceXcbPresentationSupportKHR',
     ]
   },
   {
@@ -381,11 +381,10 @@ def GenerateHeaderFile(out_file):
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if defined(USE_VULKAN_XLIB)
-typedef struct _XDisplay Display;
-typedef unsigned long Window;
-typedef unsigned long VisualID;
-#include <vulkan/vulkan_xlib.h>
+#if defined(USE_VULKAN_XCB)
+#include <xcb/xcb.h>
+// <vulkan/vulkan_xcb.h> must be included after <xcb/xcb.h>
+#include <vulkan/vulkan_xcb.h>
 #endif
 
 #if defined(OS_WIN)

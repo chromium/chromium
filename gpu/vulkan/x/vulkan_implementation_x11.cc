@@ -58,7 +58,7 @@ bool VulkanImplementationX11::InitializeVulkanInstance(bool using_surface) {
       VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME};
   if (using_surface_) {
     required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    required_extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+    required_extensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
   }
 
   VulkanFunctionPointers* vulkan_function_pointers =
@@ -103,9 +103,9 @@ bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
   if (use_swiftshader())
     return true;
   auto* connection = x11::Connection::Get();
-  return vkGetPhysicalDeviceXlibPresentationSupportKHR(
-      device, queue_family_index, connection->GetXlibDisplay(),
-      static_cast<VisualID>(connection->default_root_visual().visual_id));
+  return vkGetPhysicalDeviceXcbPresentationSupportKHR(
+      device, queue_family_index, connection->XcbConnection(),
+      static_cast<xcb_visualid_t>(connection->default_root_visual().visual_id));
 }
 
 std::vector<const char*>

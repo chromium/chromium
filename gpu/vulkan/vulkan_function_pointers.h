@@ -31,11 +31,10 @@
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if defined(USE_VULKAN_XLIB)
-typedef struct _XDisplay Display;
-typedef unsigned long Window;
-typedef unsigned long VisualID;
-#include <vulkan/vulkan_xlib.h>
+#if defined(USE_VULKAN_XCB)
+#include <xcb/xcb.h>
+// <vulkan/vulkan_xcb.h> must be included after <xcb/xcb.h>
+#include <vulkan/vulkan_xcb.h>
 #endif
 
 #if defined(OS_WIN)
@@ -142,11 +141,11 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>
       vkGetPhysicalDeviceSurfaceSupportKHR;
 
-#if defined(USE_VULKAN_XLIB)
-  VulkanFunction<PFN_vkCreateXlibSurfaceKHR> vkCreateXlibSurfaceKHR;
-  VulkanFunction<PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>
-      vkGetPhysicalDeviceXlibPresentationSupportKHR;
-#endif  // defined(USE_VULKAN_XLIB)
+#if defined(USE_VULKAN_XCB)
+  VulkanFunction<PFN_vkCreateXcbSurfaceKHR> vkCreateXcbSurfaceKHR;
+  VulkanFunction<PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>
+      vkGetPhysicalDeviceXcbPresentationSupportKHR;
+#endif  // defined(USE_VULKAN_XCB)
 
 #if defined(OS_WIN)
   VulkanFunction<PFN_vkCreateWin32SurfaceKHR> vkCreateWin32SurfaceKHR;
@@ -459,25 +458,25 @@ vkGetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice physicalDevice,
       physicalDevice, queueFamilyIndex, surface, pSupported);
 }
 
-#if defined(USE_VULKAN_XLIB)
+#if defined(USE_VULKAN_XCB)
 ALWAYS_INLINE VkResult
-vkCreateXlibSurfaceKHR(VkInstance instance,
-                       const VkXlibSurfaceCreateInfoKHR* pCreateInfo,
-                       const VkAllocationCallbacks* pAllocator,
-                       VkSurfaceKHR* pSurface) {
-  return gpu::GetVulkanFunctionPointers()->vkCreateXlibSurfaceKHR(
+vkCreateXcbSurfaceKHR(VkInstance instance,
+                      const VkXcbSurfaceCreateInfoKHR* pCreateInfo,
+                      const VkAllocationCallbacks* pAllocator,
+                      VkSurfaceKHR* pSurface) {
+  return gpu::GetVulkanFunctionPointers()->vkCreateXcbSurfaceKHR(
       instance, pCreateInfo, pAllocator, pSurface);
 }
 ALWAYS_INLINE VkBool32
-vkGetPhysicalDeviceXlibPresentationSupportKHR(VkPhysicalDevice physicalDevice,
-                                              uint32_t queueFamilyIndex,
-                                              Display* dpy,
-                                              VisualID visualID) {
+vkGetPhysicalDeviceXcbPresentationSupportKHR(VkPhysicalDevice physicalDevice,
+                                             uint32_t queueFamilyIndex,
+                                             xcb_connection_t* connection,
+                                             xcb_visualid_t visual_id) {
   return gpu::GetVulkanFunctionPointers()
-      ->vkGetPhysicalDeviceXlibPresentationSupportKHR(
-          physicalDevice, queueFamilyIndex, dpy, visualID);
+      ->vkGetPhysicalDeviceXcbPresentationSupportKHR(
+          physicalDevice, queueFamilyIndex, connection, visual_id);
 }
-#endif  // defined(USE_VULKAN_XLIB)
+#endif  // defined(USE_VULKAN_XCB)
 
 #if defined(OS_WIN)
 ALWAYS_INLINE VkResult

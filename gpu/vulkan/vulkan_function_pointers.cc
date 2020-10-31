@@ -260,28 +260,28 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     }
   }
 
-#if defined(USE_VULKAN_XLIB)
+#if defined(USE_VULKAN_XCB)
   if (gfx::HasExtension(enabled_extensions,
-                        VK_KHR_XLIB_SURFACE_EXTENSION_NAME)) {
-    vkCreateXlibSurfaceKHR = reinterpret_cast<PFN_vkCreateXlibSurfaceKHR>(
-        vkGetInstanceProcAddr(vk_instance, "vkCreateXlibSurfaceKHR"));
-    if (!vkCreateXlibSurfaceKHR) {
+                        VK_KHR_XCB_SURFACE_EXTENSION_NAME)) {
+    vkCreateXcbSurfaceKHR = reinterpret_cast<PFN_vkCreateXcbSurfaceKHR>(
+        vkGetInstanceProcAddr(vk_instance, "vkCreateXcbSurfaceKHR"));
+    if (!vkCreateXcbSurfaceKHR) {
       DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkCreateXlibSurfaceKHR";
+                    << "vkCreateXcbSurfaceKHR";
       return false;
     }
 
-    vkGetPhysicalDeviceXlibPresentationSupportKHR =
-        reinterpret_cast<PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>(
+    vkGetPhysicalDeviceXcbPresentationSupportKHR =
+        reinterpret_cast<PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>(
             vkGetInstanceProcAddr(
-                vk_instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR"));
-    if (!vkGetPhysicalDeviceXlibPresentationSupportKHR) {
+                vk_instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR"));
+    if (!vkGetPhysicalDeviceXcbPresentationSupportKHR) {
       DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                    << "vkGetPhysicalDeviceXlibPresentationSupportKHR";
+                    << "vkGetPhysicalDeviceXcbPresentationSupportKHR";
       return false;
     }
   }
-#endif  // defined(USE_VULKAN_XLIB)
+#endif  // defined(USE_VULKAN_XCB)
 
 #if defined(OS_WIN)
   if (gfx::HasExtension(enabled_extensions,
