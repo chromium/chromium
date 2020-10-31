@@ -204,9 +204,6 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kInCompositingAssignmentsUpdate);
 
-  LocalFrameView* view = layout_view_->GetFrameView();
-  view->ResetNeedsForcedCompositingUpdate();
-
   for (Frame* child =
            layout_view_->GetFrameView()->GetFrame().Tree().FirstChild();
        child; child = child->Tree().NextSibling()) {
@@ -258,6 +255,8 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
         ->AssertNoUnresolvedDirtyBits();
   }
 #endif
+
+  layout_view_->GetFrameView()->ResetNeedsForcedCompositingUpdate();
 }
 
 #if DCHECK_IS_ON()
@@ -522,18 +521,16 @@ bool PaintLayerCompositor::CanBeComposited(const PaintLayer* layer) const {
   if (frame_view && !frame_view->IsVisible())
     return false;
 
+  DCHECK(!frame_view->ShouldThrottleRendering());
+
   const bool has_compositor_animation =
       CompositingReasonFinder::CompositingReasonsForAnimation(
           layer->GetLayoutObject()) != CompositingReason::kNone;
 
-  // Throttled frames have stale visibility state.
-  bool frame_is_visible =
-      !frame_view->ShouldThrottleRendering() && !layer->SubtreeIsInvisible();
-
   return layout_view_->GetDocument()
              .GetSettings()
              ->GetAcceleratedCompositingEnabled() &&
-         (has_compositor_animation || frame_is_visible) &&
+         (has_compositor_animation || !layer->SubtreeIsInvisible()) &&
          layer->IsSelfPaintingLayer() &&
          !layer->GetLayoutObject().IsLayoutFlowThread() &&
          // Don't composite <foreignObject> for the moment, to reduce instances

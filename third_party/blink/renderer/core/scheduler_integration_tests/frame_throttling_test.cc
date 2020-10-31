@@ -496,26 +496,71 @@ TEST_P(FrameThrottlingTest, UnthrottlingFrameSchedulesAnimation) {
   // Then bring it back on-screen. This should schedule an animation update.
   frame_element->setAttribute(kStyleAttr, "");
   CompositeFrame();
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Compositing inputs need to be re-computed on the next frame after
-    // unthrottling, because while throttled all throttled content is not
-    // considered eligible for compositing (PLC::CanBeComposited often returns
-    // false).
-    EXPECT_TRUE(frame_element->contentDocument()
-                    ->View()
-                    ->GetLayoutView()
-                    ->Layer()
-                    ->NeedsCompositingInputsUpdate());
-  }
-
   EXPECT_TRUE(Compositor().NeedsBeginFrame());
   CompositeFrame();
-  EXPECT_FALSE(frame_element->contentDocument()
-                   ->View()
-                   ->GetLayoutView()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(Compositor().NeedsBeginFrame());
+}
+
+TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id="container">
+      <iframe sandbox id="frame"></iframe>
+    </div>
+  )HTML");
+
+  CompositeFrame();
+
+  auto* container_element = GetDocument().getElementById("container");
+  auto* container = container_element->GetLayoutBox();
+  EXPECT_EQ(container->GetCompositingState(), kNotComposited);
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_view = frame_element->contentDocument()->View();
+  EXPECT_FALSE(frame_view->CanThrottleRendering());
+  auto* frame_layout_view = frame_view->GetLayoutView();
+  EXPECT_TRUE(frame_layout_view->Compositor()->CanBeComposited(
+      frame_layout_view->Layer()));
+  auto* frame_graphics_layer =
+      frame_layout_view->Layer()->GraphicsLayerBacking(frame_layout_view);
+  EXPECT_TRUE(frame_graphics_layer);
+  auto* main_graphics_layer =
+      GetDocument().View()->GetLayoutView()->Layer()->GraphicsLayerBacking();
+  EXPECT_EQ(main_graphics_layer, frame_graphics_layer->Parent());
+
+  // First make the child hidden to enable throttling, and composite
+  // the container.
+  container_element->setAttribute(
+      kStyleAttr, "will-change: transform; transform: translateY(480px)");
+  CompositeFrame();
+  EXPECT_TRUE(frame_view->CanThrottleRendering());
+  auto* container_graphics_layer = container->Layer()->GraphicsLayerBacking();
+  ASSERT_TRUE(container_graphics_layer);
+  EXPECT_EQ(
+      frame_graphics_layer,
+      frame_layout_view->Layer()->GraphicsLayerBacking(frame_layout_view));
+  EXPECT_EQ(container_graphics_layer, frame_graphics_layer->Parent());
+  EXPECT_FALSE(Compositor().NeedsBeginFrame());
+
+  // Then bring it back on-screen, and decomposite container.
+  container_element->setAttribute(kStyleAttr, "");
+  CompositeFrame();
+  ASSERT_TRUE(Compositor().NeedsBeginFrame());
+  CompositeFrame();
+  EXPECT_FALSE(frame_view->CanThrottleRendering());
+  ASSERT_EQ(frame_layout_view, frame_view->GetLayoutView());
+  EXPECT_TRUE(frame_layout_view->Compositor()->CanBeComposited(
+      frame_layout_view->Layer()));
+  EXPECT_EQ(container->GetCompositingState(), kNotComposited);
+  EXPECT_EQ(
+      frame_graphics_layer,
+      frame_layout_view->Layer()->GraphicsLayerBacking(frame_layout_view));
+  EXPECT_EQ(main_graphics_layer, frame_graphics_layer->Parent());
 }
 
 TEST_P(FrameThrottlingTest, MutatingThrottledFrameDoesNotCauseAnimation) {

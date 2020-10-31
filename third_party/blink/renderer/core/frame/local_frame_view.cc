@@ -4276,13 +4276,6 @@ void LocalFrameView::InvalidateForThrottlingChange() {
     // the frame was throttled.
     layout_view->AddSubtreePaintPropertyUpdateReason(
         SubtreePaintPropertyUpdateReason::kPreviouslySkipped);
-
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // PaintLayerCompositor::CanBeComposited returns an incorrect visibility
-      // value for throttled frames, and it needs to be recomputed when the
-      // frame becomes unthrottled again.
-      layout_view->Layer()->SetNeedsCompositingInputsUpdate();
-    }
   }
   // Ensure we'll recompute viewport intersection for the frame subtree during
   // the scheduled visual update.
