@@ -79,15 +79,30 @@ suite('SiteDataTest', function() {
   test('calls reloadCookies() when created', function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
     document.body.appendChild(siteData);
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_COOKIES);
+    Router.getInstance().navigateTo(routes.COOKIES);
     return testBrowserProxy.whenCalled('reloadCookies');
   });
 
   test('calls reloadCookies() when visited again', function() {
     document.body.appendChild(siteData);
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_COOKIES);
+    Router.getInstance().navigateTo(routes.COOKIES);
     testBrowserProxy.reset();
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
     return testBrowserProxy.whenCalled('reloadCookies');
+  });
+
+  test('calls getDisplayList() when search param present', async function() {
+    // Check that providing a search query parameter while navigating and a
+    // search filter to the cookies page does not reload cookies, but instead
+    // updates the list.
+    document.body.appendChild(siteData);
+    Router.getInstance().navigateTo(routes.BASIC);
+    const params = new URLSearchParams();
+    params.append('searchSubpage', 'test');
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA, params);
+    siteData.filter = 'test';
+    const filter = await testBrowserProxy.whenCalled('getDisplayList');
+    assertEquals('test', filter);
+    assertEquals(0, testBrowserProxy.getCallCount('reloadCookies'));
   });
 });
