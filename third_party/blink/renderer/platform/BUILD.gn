@@ -1469,6 +1469,8 @@ component("platform") {
     "widget/frame_widget.h",
     "widget/input/compositor_thread_event_queue.cc",
     "widget/input/compositor_thread_event_queue.h",
+    "widget/input/cursor_control_handler.cc",
+    "widget/input/cursor_control_handler.h",
     "widget/input/elastic_overscroll_controller.cc",
     "widget/input/elastic_overscroll_controller.h",
     "widget/input/elastic_overscroll_controller_bezier.cc",

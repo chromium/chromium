@@ -92,6 +92,9 @@ struct ScrollData {
   blink.mojom.InertialPhaseState inertial_phase;
   bool synthetic;
   int32 pointer_count;
+  // Used for GestureScrollBegin type only. If this is true, we use the scroll
+  // sequence to do cursor control rather than scroll.
+  bool cursor_control;
   ScrollUpdate? update_details;
 };
 

@@ -106,6 +106,9 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // unification when the event is sent back the the compositor for a
       // second time after the main thread hit test is complete.
       bool main_thread_hit_tested;
+      // If true, this event will be used for cursor control instead of
+      // scrolling. the entire scroll sequence will be used for cursor control.
+      bool cursor_control;
     } scroll_begin;
 
     struct {

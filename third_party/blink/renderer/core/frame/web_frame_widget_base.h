@@ -737,6 +737,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // Indicates whether tab-initiated fullscreen was granted.
   bool is_fullscreen_granted_ = false;
 
+  // Indicates whether we need to consume scroll gestures to move cursor.
+  bool swipe_to_move_cursor_activated_ = false;
+
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
 };

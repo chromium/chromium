@@ -33,8 +33,15 @@ enum class TouchAction {
   kPinchZoom = 0x10,
   kManipulation = kPan | kPinchZoom,
   kDoubleTapZoom = 0x20,
-  kAuto = kManipulation | kDoubleTapZoom,
-  kMax = (1 << 6) - 1
+  // Used by swipe to move cursor feature. This is only used internally
+  // for swipe to move cursor feature  and it is not a web-visible value. When
+  // an element have this bit or doesn't have kPanX, we will disable swipe to
+  // move cursor feature for that element. When the element is contenteditable
+  // and it doesn't have a horizontal scrollable ancestor (including
+  // itself), we don't set this bit.
+  kInternalPanXScrolls = 0x40,
+  kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls,
+  kMax = (1 << 7) - 1
 };
 
 inline TouchAction operator|(TouchAction a, TouchAction b) {
@@ -58,6 +65,9 @@ inline TouchAction operator~(TouchAction touch_action) {
 }
 
 inline const char* TouchActionToString(TouchAction touch_action) {
+  //  we skip printing internal panx scrolls since it's not a web exposed touch
+  //  action field.
+  touch_action &= ~TouchAction::kInternalPanXScrolls;
   switch (static_cast<int>(touch_action)) {
     case 0:
       return "NONE";

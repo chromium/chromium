@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/platform/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/compositor_thread_event_queue.h"
+#include "third_party/blink/renderer/platform/widget/input/cursor_control_handler.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller.h"
 #include "third_party/blink/renderer/platform/widget/input/event_with_callback.h"
 #include "third_party/blink/renderer/platform/widget/input/momentum_scroll_jank_tracker.h"
@@ -217,7 +218,8 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
       has_seen_first_gesture_scroll_update_after_begin_(false),
       last_injected_gesture_was_begin_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      snap_fling_controller_(std::make_unique<cc::SnapFlingController>(this)) {
+      snap_fling_controller_(std::make_unique<cc::SnapFlingController>(this)),
+      cursor_control_handler_(std::make_unique<CursorControlHandler>()) {
   DCHECK(client);
   input_handler_->BindToClient(this);
   cc::ScrollElasticityHelper* scroll_elasticity_helper =
@@ -621,6 +623,10 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
           GestureScrollEventType(event.GetType())))) {
     return DROP_EVENT;
   }
+
+  if (base::Optional<InputHandlerProxy::EventDisposition> handled =
+          cursor_control_handler_->ObserveInputEvent(event))
+    return *handled;
 
   switch (event.GetType()) {
     case WebInputEvent::Type::kMouseWheel:

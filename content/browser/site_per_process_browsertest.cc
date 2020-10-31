@@ -13589,7 +13589,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
                             child_thread_observer.get());
   base::Optional<cc::TouchAction> effective_touch_action;
   base::Optional<cc::TouchAction> allowed_touch_action;
-  cc::TouchAction expected_touch_action = cc::TouchAction::kPan;
+  cc::TouchAction expected_touch_action =
+      cc::TouchAction::kPan | cc::TouchAction::kInternalPanXScrolls;
   GetTouchActionsForChild(router, rwhv_root, rwhv_child, point_inside_child,
                           effective_touch_action, allowed_touch_action);
   if (allowed_touch_action.has_value())

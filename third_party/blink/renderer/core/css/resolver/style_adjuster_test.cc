@@ -56,7 +56,7 @@ TEST_F(StyleAdjusterTest, TouchActionPanningReEnabledByScrollers) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kManipulation,
+  EXPECT_EQ(TouchAction::kManipulation | TouchAction::kInternalPanXScrolls,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
@@ -72,7 +72,7 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kPanX,
+  EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 
   Element* ancestor = GetDocument().getElementById("ancestor");
@@ -85,7 +85,7 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
       GetDocument().getElementById("potential-scroller");
   potential_scroller->setAttribute(html_names::kStyleAttr, "overflow: scroll");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TouchAction::kPan,
+  EXPECT_EQ(TouchAction::kPan | TouchAction::kInternalPanXScrolls,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
@@ -100,13 +100,13 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kPanRight,
+  EXPECT_EQ(TouchAction::kPanRight | TouchAction::kInternalPanXScrolls,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 
   Element* parent = GetDocument().getElementById("parent");
   parent->setAttribute(html_names::kStyleAttr, "touch-action: auto");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TouchAction::kPanX,
+  EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
@@ -175,76 +175,76 @@ TEST_F(StyleAdjusterTest, AdjustOverflow) {
   EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 }
 
-TEST_F(StyleAdjusterTest, SetListenerForContentEditableArea) {
+TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
   ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
 
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
-    <div id='target' contenteditable='false'></div>
+    <div id='editable1' contenteditable='false'></div>
+    <input type="text" id='input1' disabled>
+    <textarea id="textarea1" readonly></textarea>
+    <div id='editable2' contenteditable='true'></div>
+    <input type="text" id='input2'>
+    <textarea id="textarea2"></textarea>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  EventHandlerRegistry& registry =
-      GetDocument().GetFrame()->GetEventHandlerRegistry();
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("editable1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("input1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("textarea1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+            GetDocument()
+                .getElementById("editable2")
+                ->GetComputedStyle()
+                ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+            GetDocument()
+                .getElementById("input2")
+                ->GetComputedStyle()
+                ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+            GetDocument()
+                .getElementById("textarea2")
+                ->GetComputedStyle()
+                ->GetEffectiveTouchAction());
+
+  Element* target = GetDocument().getElementById("editable1");
+  target->setAttribute(html_names::kContenteditableAttr, "true");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
+            target->GetComputedStyle()->GetEffectiveTouchAction());
+}
+
+TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
+  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable='false' style='touch-action: pan-y'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_FALSE(registry.HasEventHandlers(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+  EXPECT_EQ(TouchAction::kPanY,
+            target->GetComputedStyle()->GetEffectiveTouchAction());
 
   target->setAttribute(html_names::kContenteditableAttr, "true");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(registry.HasEventHandlers(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
-}
-
-TEST_F(StyleAdjusterTest, SetListenerForInputElement) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
-  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
-
-  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-  SetBodyInnerHTML(R"HTML(
-    <input type="text" id='target' disabled>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  EventHandlerRegistry& registry =
-      GetDocument().GetFrame()->GetEventHandlerRegistry();
-
-  Element* target = GetDocument().getElementById("target");
-  EXPECT_FALSE(registry.HasEventHandlers(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
-
-  target->removeAttribute(html_names::kDisabledAttr);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(registry.HasEventHandlers(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
-}
-
-TEST_F(StyleAdjusterTest, SetListenerForTextAreaElement) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
-  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
-
-  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-  SetBodyInnerHTML(R"HTML(
-    <textarea id="target" readonly></textarea>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  EventHandlerRegistry& registry =
-      GetDocument().GetFrame()->GetEventHandlerRegistry();
-
-  Element* target = GetDocument().getElementById("target");
-  EXPECT_FALSE(registry.HasEventHandlers(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
-
-  target->removeAttribute(html_names::kReadonlyAttr);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(registry.HasEventHandlers(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking));
+  EXPECT_EQ(TouchAction::kPanY,
+            target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
 }  // namespace blink

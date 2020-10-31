@@ -395,9 +395,9 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
   EXPECT_TRUE(touchaction.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(descendant.EffectiveAllowedTouchActionChanged());
   EXPECT_TRUE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
   EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 
   UpdateAllLifecyclePhasesForTest();

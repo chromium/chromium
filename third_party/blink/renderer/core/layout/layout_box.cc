@@ -1700,15 +1700,40 @@ LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
 
     if (!layout_object->Parent() &&
         layout_object->GetNode() == layout_object->GetDocument() &&
-        layout_object->GetDocument().LocalOwner())
+        layout_object->GetDocument().LocalOwner()) {
       layout_object =
           layout_object->GetDocument().LocalOwner()->GetLayoutObject();
-    else
+    } else {
       layout_object = layout_object->Parent();
+    }
   }
 
   return layout_object && layout_object->IsBox() ? ToLayoutBox(layout_object)
                                                  : nullptr;
+}
+
+bool LayoutBox::HasHorizontallyScrollableAncestor(LayoutObject* layout_object) {
+  while (layout_object) {
+    if (layout_object->IsBox() &&
+        ToLayoutBox(layout_object)->HasScrollableOverflowX())
+      return true;
+
+    // Scroll is not propagating.
+    if (layout_object->StyleRef().OverscrollBehaviorX() !=
+        EOverscrollBehavior::kAuto)
+      break;
+
+    if (!layout_object->Parent() &&
+        layout_object->GetNode() == layout_object->GetDocument() &&
+        layout_object->GetDocument().LocalOwner()) {
+      layout_object =
+          layout_object->GetDocument().LocalOwner()->GetLayoutObject();
+    } else {
+      layout_object = layout_object->Parent();
+    }
+  }
+
+  return false;
 }
 
 void LayoutBox::ScrollByRecursively(const ScrollOffset& delta) {

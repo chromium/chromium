@@ -2563,12 +2563,9 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
   TouchAction old_touch_action = TouchAction::kAuto;
   bool is_document_element = GetNode() && IsDocumentElement();
   if (style_) {
-    old_touch_action = is_document_element ? style_->GetEffectiveTouchAction()
-                                           : style_->GetTouchAction();
+    old_touch_action = style_->GetEffectiveTouchAction();
   }
-  TouchAction new_touch_action = is_document_element
-                                     ? new_style.GetEffectiveTouchAction()
-                                     : new_style.GetTouchAction();
+  TouchAction new_touch_action = new_style.GetEffectiveTouchAction();
   if (GetNode() && !GetNode()->IsTextNode() &&
       (old_touch_action == TouchAction::kAuto) !=
           (new_touch_action == TouchAction::kAuto)) {

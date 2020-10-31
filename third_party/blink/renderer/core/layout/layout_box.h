@@ -1484,6 +1484,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const FloatPoint& point_in_root_frame) const;
   static LayoutBox* FindAutoscrollable(LayoutObject*,
                                        bool is_middle_click_autoscroll);
+  static bool HasHorizontallyScrollableAncestor(LayoutObject*);
 
   DISABLE_CFI_PERF bool HasAutoVerticalScrollbar() const {
     NOT_DESTROYED();

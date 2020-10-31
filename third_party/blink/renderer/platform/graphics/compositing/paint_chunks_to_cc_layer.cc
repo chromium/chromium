@@ -838,6 +838,25 @@ static void UpdateTouchActionRegion(
     const PropertyTreeState& chunk_state,
     const FloatPoint& layer_offset,
     cc::TouchActionRegion& touch_action_region) {
+  // If the element has an horizontal scrollable ancestor (including itself), we
+  // need to disable cursor control by setting the bit kInternalPanXScrolls.
+  TouchAction disable_cursor_control = TouchAction::kNone;
+  // TODO(input-dev): Consider to share the code with
+  // ThreadedInputHandler::FindNodeToLatch.
+  for (const auto* scroll_node = chunk_state.Transform().ScrollNode();
+       scroll_node; scroll_node = scroll_node->Parent()) {
+    if (scroll_node->UserScrollableHorizontal() &&
+        scroll_node->ContainerRect().Width() <
+            scroll_node->ContentsSize().Width()) {
+      disable_cursor_control = TouchAction::kInternalPanXScrolls;
+      break;
+    }
+    // If it is not kAuto, scroll can't propagate, so break here.
+    if (scroll_node->OverscrollBehaviorX() !=
+        cc::OverscrollBehavior::Type::kAuto)
+      break;
+  }
+
   for (const auto& touch_action_rect : hit_test_data.touch_action_rects) {
     auto rect = FloatClipRect(FloatRect(touch_action_rect.rect));
     if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
@@ -845,7 +864,10 @@ static void UpdateTouchActionRegion(
       continue;
     }
     rect.MoveBy(-layer_offset);
-    touch_action_region.Union(touch_action_rect.allowed_touch_action,
+    TouchAction touch_action = touch_action_rect.allowed_touch_action;
+    if ((touch_action & TouchAction::kPanX) != TouchAction::kNone)
+      touch_action |= disable_cursor_control;
+    touch_action_region.Union(touch_action,
                               gfx::Rect(EnclosingIntRect(rect.Rect())));
   }
 }

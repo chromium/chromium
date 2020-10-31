@@ -1056,6 +1056,42 @@ bool WebFrameWidgetBase::WillHandleGestureEvent(const WebGestureEvent& event) {
   possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kTouch;
   possible_drag_event_info_.location =
       gfx::ToFlooredPoint(event.PositionInScreen());
+
+  bool move_cursor = false;
+  switch (event.GetType()) {
+    case WebInputEvent::Type::kGestureScrollBegin: {
+      if (event.data.scroll_begin.cursor_control) {
+        swipe_to_move_cursor_activated_ = true;
+        move_cursor = true;
+      }
+      break;
+    }
+    case WebInputEvent::Type::kGestureScrollUpdate: {
+      if (swipe_to_move_cursor_activated_)
+        move_cursor = true;
+      break;
+    }
+    case WebInputEvent::Type::kGestureScrollEnd: {
+      if (swipe_to_move_cursor_activated_) {
+        move_cursor = true;
+        swipe_to_move_cursor_activated_ = false;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  // TODO(crbug.com/1140106): Place cursor for scroll begin other than just move
+  // cursor.
+  if (move_cursor) {
+    WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
+    if (focused_frame) {
+      gfx::Point base(event.PositionInWidget().x(),
+                      event.PositionInWidget().y());
+      focused_frame->MoveCaretSelection(base);
+    }
+    return true;
+  }
   return false;
 }
 

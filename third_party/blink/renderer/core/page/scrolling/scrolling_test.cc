@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -507,7 +508,8 @@ TEST_P(ScrollingTest, touchAction) {
 
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kPanDown);
+      TouchAction::kPanX | TouchAction::kPanDown |
+      TouchAction::kInternalPanXScrolls);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 1000));
 }
@@ -520,12 +522,14 @@ TEST_P(ScrollingTest, touchActionRegions) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanDown | TouchAction::kPanX);
+      TouchAction::kPanDown | TouchAction::kPanX |
+      TouchAction::kInternalPanXScrolls);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanDown | TouchAction::kPanRight);
+      TouchAction::kPanDown | TouchAction::kPanRight |
+      TouchAction::kInternalPanXScrolls);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 50));
 
@@ -567,7 +571,7 @@ TEST_P(ScrollingTest, touchActionNesting) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 }
@@ -604,7 +608,7 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 
@@ -612,7 +616,7 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   scrollable->setAttribute("style", "touch-action: none", ASSERT_NO_EXCEPTION);
   ForceFullCompositingUpdate();
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
   EXPECT_TRUE(region.IsEmpty());
 }
 
@@ -641,7 +645,7 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
   const auto* cc_layer = MainFrameScrollingContentsLayer();
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 150, 50));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -655,11 +659,53 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
       TouchAction::kPanY);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
   EXPECT_TRUE(region.IsEmpty());
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 150, 50));
+}
+
+TEST_P(ScrollingTest, touchActionEditableElement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
+  ASSERT_TRUE(base::FeatureList::IsEnabled(::features::kSwipeToMoveCursor));
+  // Long text that will overflow in y-direction.
+  LoadHTML(R"HTML(
+    <style>
+      #touchaction {
+        touch-action: manipulation;
+        width: 100px;
+        height: 50px;
+        overflow: scroll;
+      }
+    </style>
+    <div id="touchaction" contenteditable>
+      <div id="child"></div>
+    </div>
+  )HTML");
+  ForceFullCompositingUpdate();
+  const auto* cc_layer = MainFrameScrollingContentsLayer();
+  cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kManipulation);
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 50));
+  region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_TRUE(region.IsEmpty());
+
+  // Make touchaction scrollable by making child overflow.
+  Element* child = GetFrame()->GetDocument()->getElementById("child");
+  child->setAttribute("style", "width: 1000px; height: 100px;",
+                      ASSERT_NO_EXCEPTION);
+  ForceFullCompositingUpdate();
+
+  cc_layer = ScrollingContentsLayerByDOMElementId("touchaction");
+  region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kManipulation | TouchAction::kInternalPanXScrolls);
+  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 100));
+  region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_TRUE(region.IsEmpty());
 }
 
 // Box shadow is not hit testable and should not be included in touch action.

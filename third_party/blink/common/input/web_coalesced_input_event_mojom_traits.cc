@@ -188,6 +188,8 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->synthetic;
           gesture_event->data.scroll_begin.pointer_count =
               gesture_data->scroll_data->pointer_count;
+          gesture_event->data.scroll_begin.cursor_control =
+              gesture_data->scroll_data->cursor_control;
           break;
         case blink::WebInputEvent::Type::kGestureScrollEnd:
           gesture_event->data.scroll_end.delta_units =
@@ -466,20 +468,21 @@ StructTraits<blink::mojom::EventDataView,
           gesture_event->data.scroll_begin.target_viewport,
           gesture_event->data.scroll_begin.inertial_phase,
           gesture_event->data.scroll_begin.synthetic,
-          gesture_event->data.scroll_begin.pointer_count, nullptr);
+          gesture_event->data.scroll_begin.pointer_count,
+          gesture_event->data.scroll_begin.cursor_control, nullptr);
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           0, 0, gesture_event->data.scroll_end.delta_units, false,
           gesture_event->data.scroll_end.inertial_phase,
-          gesture_event->data.scroll_end.synthetic, 0, nullptr);
+          gesture_event->data.scroll_end.synthetic, 0, false, nullptr);
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           gesture_event->data.scroll_update.delta_x,
           gesture_event->data.scroll_update.delta_y,
           gesture_event->data.scroll_update.delta_units, false,
-          gesture_event->data.scroll_update.inertial_phase, false, 0,
+          gesture_event->data.scroll_update.inertial_phase, false, 0, false,
           blink::mojom::ScrollUpdate::New(
               gesture_event->data.scroll_update.velocity_x,
               gesture_event->data.scroll_update.velocity_y));

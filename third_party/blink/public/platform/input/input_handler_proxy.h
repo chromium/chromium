@@ -53,6 +53,7 @@ class ScrollPredictor;
 class SynchronousInputHandler;
 class SynchronousInputHandlerProxy;
 class MomentumScrollJankTracker;
+class CursorControlHandler;
 
 // This class is a proxy between the blink web input events for a WebWidget and
 // the compositor's input handling logic. InputHandlerProxy instances live
@@ -372,6 +373,9 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
 
   // Helpers for the momentum scroll jank UMAs.
   std::unique_ptr<MomentumScrollJankTracker> momentum_scroll_jank_tracker_;
+
+  // Swipe to move cursor feature.
+  std::unique_ptr<CursorControlHandler> cursor_control_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(InputHandlerProxy);
 };

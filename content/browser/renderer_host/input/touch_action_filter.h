@@ -92,7 +92,8 @@ class CONTENT_EXPORT TouchActionFilter {
   friend class SitePerProcessBrowserTouchActionTest;
 
   bool ShouldSuppressScrolling(const blink::WebGestureEvent&,
-                               cc::TouchAction touch_action);
+                               cc::TouchAction touch_action,
+                               bool is_active_touch_action);
   FilterGestureEventResult FilterScrollEventAndResetState();
   FilterGestureEventResult FilterPinchEventAndResetState();
   void ResetTouchAction();
