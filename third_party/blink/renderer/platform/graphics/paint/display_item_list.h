@@ -37,36 +37,20 @@ class PLATFORM_EXPORT DisplayItemList
                                 ? initial_capacity_in_bytes
                                 : kDefaultCapacityInBytes) {}
 
-  DisplayItemList(DisplayItemList&& source)
-      : ContiguousContainer(std::move(source)) {}
-
-  DisplayItemList& operator=(DisplayItemList&& source) {
-    ContiguousContainer::operator=(std::move(source));
-    return *this;
-  }
-
   DisplayItem& AppendByMoving(DisplayItem& item) {
     SECURITY_CHECK(!item.IsTombstone());
     DisplayItem& result =
         ContiguousContainer::AppendByMoving(item, item.DerivedSize());
-    // ContiguousContainer::AppendByMoving() calls an in-place constructor
-    // on item which replaces it with a tombstone/"dead display item" that
-    // can be safely destructed but should never be used except for debugging
-    // and raster invalidation (see below).
-    DCHECK(item.IsTombstone());
-    // We need |visual_rect_| and |outset_for_raster_effects_| of the old
-    // display item for raster invalidation. Also, the fields that make up the
-    // ID (|client_|, |type_| and |fragment_|) need to match. As their values
-    // were either initialized to default values or were left uninitialized by
-    // DisplayItem's default constructor, now copy their original values back
-    // from |result|.
-    item.client_ = result.client_;
-    item.type_ = result.type_;
-    item.fragment_ = result.fragment_;
-    DCHECK(item.GetId() == result.GetId());
-    item.visual_rect_ = result.visual_rect_;
-    item.raster_effect_outset_ = result.raster_effect_outset_;
-    result.SetMovedFromCachedSubsequence(false);
+    SetupTombstone(item, result);
+    return result;
+  }
+
+  DisplayItem& ReplaceLastByMoving(DisplayItem& item) {
+    SECURITY_CHECK(!item.IsTombstone());
+    DCHECK_EQ(back().DerivedSize(), item.DerivedSize());
+    DisplayItem& result =
+        ContiguousContainer::ReplaceLastByMoving(item, item.DerivedSize());
+    SetupTombstone(item, result);
     return result;
   }
 
@@ -116,6 +100,26 @@ class PLATFORM_EXPORT DisplayItemList
       const Range<const_iterator>& display_items,
       JsonFlags);
 #endif  // DCHECK_IS_ON()
+
+ private:
+  // Called by AppendByMoving() and ReplaceLastByMoving() which created a
+  // tombstone/"dead display item" that can be safely destructed but should
+  // never be used except for debugging and raster invalidation.
+  void SetupTombstone(DisplayItem& item, const DisplayItem& new_item) {
+    DCHECK(item.IsTombstone());
+    // We need |visual_rect_| and |outset_for_raster_effects_| of the old
+    // display item for raster invalidation. Also, the fields that make up the
+    // ID (|client_|, |type_| and |fragment_|) need to match. As their values
+    // were either initialized to default values or were left uninitialized by
+    // DisplayItem's default constructor, now copy their original values back
+    // from |result|.
+    item.client_ = new_item.client_;
+    item.type_ = new_item.type_;
+    item.fragment_ = new_item.fragment_;
+    DCHECK_EQ(item.GetId(), new_item.GetId());
+    item.visual_rect_ = new_item.visual_rect_;
+    item.raster_effect_outset_ = new_item.raster_effect_outset_;
+  }
 };
 
 using DisplayItemIterator = DisplayItemList::const_iterator;

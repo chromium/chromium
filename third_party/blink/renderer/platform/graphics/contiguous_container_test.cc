@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
@@ -60,11 +61,8 @@ TEST(ContiguousContainerTest, SimpleStructs) {
 
 TEST(ContiguousContainerTest, AllocateLots) {
   PointList list;
-  for (int i = 0; i < static_cast<int>(kNumElements); i++) {
+  for (int i = 0; i < static_cast<int>(kNumElements); i++)
     list.AllocateAndConstruct<Point2D>(i, i);
-    list.AllocateAndConstruct<Point2D>(i, i);
-    list.RemoveLast();
-  }
   ASSERT_EQ(kNumElements, list.size());
   for (int i = 0; i < static_cast<int>(kNumElements); i++) {
     ASSERT_EQ(i, list[i].x);
@@ -91,98 +89,8 @@ class MockDestructibleList : public ContiguousContainer<MockDestructible> {
 TEST(ContiguousContainerTest, DestructorCalled) {
   MockDestructibleList list;
   auto& destructible = list.AllocateAndConstruct<MockDestructible>();
-  EXPECT_EQ(&destructible, &list.First());
+  EXPECT_EQ(&destructible, &list.front());
   EXPECT_CALL(destructible, Destruct());
-}
-
-TEST(ContiguousContainerTest, DestructorCalledOnceWhenClear) {
-  MockDestructibleList list;
-  auto& destructible = list.AllocateAndConstruct<MockDestructible>();
-  EXPECT_EQ(&destructible, &list.First());
-
-  testing::MockFunction<void()> separator;
-  {
-    testing::InSequence s;
-    EXPECT_CALL(destructible, Destruct());
-    EXPECT_CALL(separator, Call());
-    EXPECT_CALL(destructible, Destruct()).Times(0);
-  }
-
-  list.Clear();
-  separator.Call();
-}
-
-TEST(ContiguousContainerTest, DestructorCalledOnceWhenRemoveLast) {
-  MockDestructibleList list;
-  auto& destructible = list.AllocateAndConstruct<MockDestructible>();
-  EXPECT_EQ(&destructible, &list.First());
-
-  testing::MockFunction<void()> separator;
-  {
-    testing::InSequence s;
-    EXPECT_CALL(destructible, Destruct());
-    EXPECT_CALL(separator, Call());
-    EXPECT_CALL(destructible, Destruct()).Times(0);
-  }
-
-  list.RemoveLast();
-  separator.Call();
-}
-
-TEST(ContiguousContainerTest, DestructorCalledWithMultipleRemoveLastCalls) {
-  // This container only requests space for one, but the implementation is
-  // free to use more space if the allocator provides it.
-  MockDestructibleList list(1 * sizeof(MockDestructible));
-  testing::MockFunction<void()> separator;
-
-  // We should be okay to allocate and remove a single one, like before.
-  list.AllocateAndConstruct<MockDestructible>();
-  EXPECT_EQ(1u, list.size());
-  {
-    testing::InSequence s;
-    EXPECT_CALL(list[0], Destruct());
-    EXPECT_CALL(separator, Call());
-    EXPECT_CALL(list[0], Destruct()).Times(0);
-  }
-  list.RemoveLast();
-  separator.Call();
-  EXPECT_EQ(0u, list.size());
-
-  testing::Mock::VerifyAndClearExpectations(&separator);
-
-  // We should also be okay to allocate and remove multiple.
-  list.AllocateAndConstruct<MockDestructible>();
-  list.AllocateAndConstruct<MockDestructible>();
-  list.AllocateAndConstruct<MockDestructible>();
-  list.AllocateAndConstruct<MockDestructible>();
-  list.AllocateAndConstruct<MockDestructible>();
-  list.AllocateAndConstruct<MockDestructible>();
-  EXPECT_EQ(6u, list.size());
-  {
-    // The last three should be destroyed by removeLast.
-    testing::InSequence s;
-    EXPECT_CALL(list[5], Destruct());
-    EXPECT_CALL(separator, Call());
-    EXPECT_CALL(list[5], Destruct()).Times(0);
-    EXPECT_CALL(list[4], Destruct());
-    EXPECT_CALL(separator, Call());
-    EXPECT_CALL(list[4], Destruct()).Times(0);
-    EXPECT_CALL(list[3], Destruct());
-    EXPECT_CALL(separator, Call());
-    EXPECT_CALL(list[3], Destruct()).Times(0);
-  }
-  list.RemoveLast();
-  separator.Call();
-  list.RemoveLast();
-  separator.Call();
-  list.RemoveLast();
-  separator.Call();
-  EXPECT_EQ(3u, list.size());
-
-  // The remaining ones are destroyed when the test finishes.
-  EXPECT_CALL(list[2], Destruct());
-  EXPECT_CALL(list[1], Destruct());
-  EXPECT_CALL(list[0], Destruct());
 }
 
 TEST(ContiguousContainerTest, InsertionAndIndexedAccess) {
@@ -193,27 +101,15 @@ TEST(ContiguousContainerTest, InsertionAndIndexedAccess) {
   auto& point3 = list.AllocateAndConstruct<Point2D>();
 
   EXPECT_EQ(3u, list.size());
-  EXPECT_EQ(&point1, &list.First());
-  EXPECT_EQ(&point3, &list.Last());
+  EXPECT_EQ(&point1, &list.front());
+  EXPECT_EQ(&point3, &list.back());
   EXPECT_EQ(&point1, &list[0]);
   EXPECT_EQ(&point2, &list[1]);
   EXPECT_EQ(&point3, &list[2]);
 }
 
-TEST(ContiguousContainerTest, InsertionAndClear) {
+TEST(ContiguousContainerTest, Insertion) {
   PointList list;
-  EXPECT_TRUE(list.IsEmpty());
-  EXPECT_EQ(0u, list.size());
-  EXPECT_EQ(0u, list.CapacityInBytes());
-  EXPECT_EQ(0u, list.UsedCapacityInBytes());
-
-  list.AllocateAndConstruct<Point2D>();
-  EXPECT_FALSE(list.IsEmpty());
-  EXPECT_EQ(1u, list.size());
-  EXPECT_GE(list.CapacityInBytes(), kDefaultInitialCapacityInBytes);
-  EXPECT_EQ(sizeof(Point2D), list.UsedCapacityInBytes());
-
-  list.Clear();
   EXPECT_TRUE(list.IsEmpty());
   EXPECT_EQ(0u, list.size());
   EXPECT_EQ(0u, list.CapacityInBytes());
@@ -299,78 +195,23 @@ bool EqualPointers(It1 it1, const It1& end1, It2 it2) {
   return true;
 }
 
-TEST(ContiguousContainerTest, IterationAfterRemoveLast) {
-  struct SmallStruct {
-    char dummy[16];
-  };
-  ContiguousContainer<SmallStruct> list(sizeof(SmallStruct),
-                                        1 * sizeof(SmallStruct));
-  Vector<SmallStruct*> pointers;
-
-  // Utilities which keep these two lists in sync and check that their
-  // iteration order matches.
-  auto push = [&list, &pointers]() {
-    pointers.push_back(&list.AllocateAndConstruct<SmallStruct>());
-  };
-  auto pop = [&list, &pointers]() {
-    pointers.pop_back();
-    list.RemoveLast();
-  };
-  auto check_equal = [&list, &pointers]() {
-    // They should be of the same size, and compare equal with all four
-    // kinds of iteration.
-    const auto& const_list = list;
-    const auto& const_pointers = pointers;
-    ASSERT_EQ(list.size(), pointers.size());
-    ASSERT_TRUE(EqualPointers(list.begin(), list.end(), pointers.begin()));
-    ASSERT_TRUE(EqualPointers(const_list.begin(), const_list.end(),
-                              const_pointers.begin()));
-    ASSERT_TRUE(EqualPointers(list.rbegin(), list.rend(), pointers.rbegin()));
-    ASSERT_TRUE(EqualPointers(const_list.rbegin(), const_list.rend(),
-                              const_pointers.rbegin()));
-  };
-
-  // Note that the allocations that actually happen may not match the
-  // idealized descriptions here, since the implementation takes advantage of
-  // space available in the underlying allocator.
-  check_equal();  // Initially empty.
-  push();
-  check_equal();  // One full inner list.
-  push();
-  check_equal();  // One full, one partially full.
-  push();
-  push();
-  check_equal();  // Two full, one partially full.
-  pop();
-  check_equal();  // Two full, one empty.
-  pop();
-  check_equal();  // One full, one partially full, one empty.
-  pop();
-  check_equal();  // One full, one empty.
-  push();
-  pop();
-  pop();
-  ASSERT_TRUE(list.IsEmpty());
-  check_equal();  // Empty.
-}
-
 TEST(ContiguousContainerTest, AppendByMovingSameList) {
   PointList list;
   list.AllocateAndConstruct<Point3D>(1, 2, 3);
 
   // Moves the Point3D to the end, and default-constructs a Point2D in its
   // place.
-  list.AppendByMoving(list.First(), sizeof(Point3D));
-  EXPECT_EQ(1, list.Last().x);
-  EXPECT_EQ(2, list.Last().y);
-  EXPECT_EQ(3, static_cast<const Point3D&>(list.Last()).z);
+  list.AppendByMoving(list.front(), sizeof(Point3D));
+  EXPECT_EQ(1, list.back().x);
+  EXPECT_EQ(2, list.back().y);
+  EXPECT_EQ(3, static_cast<const Point3D&>(list.back()).z);
   EXPECT_EQ(2u, list.size());
 
   // Moves that Point2D to the end, and default-constructs another in its
   // place.
-  list.First().x = 4;
-  list.AppendByMoving(list.First(), sizeof(Point2D));
-  EXPECT_EQ(4, list.Last().x);
+  list.front().x = 4;
+  list.AppendByMoving(list.front(), sizeof(Point2D));
+  EXPECT_EQ(4, list.back().x);
   EXPECT_EQ(3u, list.size());
 }
 
@@ -399,7 +240,7 @@ TEST(ContiguousContainerTest, AppendByMovingDoesNotDestruct) {
     // Make sure destructor isn't called during appendByMoving.
     ContiguousContainer<DestructionNotifier> list2(
         sizeof(DestructionNotifier), kDefaultInitialCapacityInBytes);
-    list2.AppendByMoving(list1.Last(), sizeof(DestructionNotifier));
+    list2.AppendByMoving(list1.back(), sizeof(DestructionNotifier));
     EXPECT_FALSE(destroyed);
   }
   // But it should be destroyed when list2 is.
@@ -412,10 +253,10 @@ TEST(ContiguousContainerTest, AppendByMovingReturnsMovedPointer) {
 
   Point2D& point = list1.AllocateAndConstruct<Point2D>();
   Point2D& moved_point1 = list2.AppendByMoving(point, sizeof(Point2D));
-  EXPECT_EQ(&moved_point1, &list2.Last());
+  EXPECT_EQ(&moved_point1, &list2.back());
 
   Point2D& moved_point2 = list1.AppendByMoving(moved_point1, sizeof(Point2D));
-  EXPECT_EQ(&moved_point2, &list1.Last());
+  EXPECT_EQ(&moved_point2, &list1.back());
   EXPECT_NE(&moved_point1, &moved_point2);
 }
 
@@ -424,14 +265,14 @@ TEST(ContiguousContainerTest, AppendByMovingReplacesSourceWithNewElement) {
   PointList list2;
 
   list1.AllocateAndConstruct<Point2D>(1, 2);
-  EXPECT_EQ(1, list1.First().x);
-  EXPECT_EQ(2, list1.First().y);
+  EXPECT_EQ(1, list1.front().x);
+  EXPECT_EQ(2, list1.front().y);
 
-  list2.AppendByMoving(list1.First(), sizeof(Point2D));
-  EXPECT_EQ(0, list1.First().x);
-  EXPECT_EQ(0, list1.First().y);
-  EXPECT_EQ(1, list2.First().x);
-  EXPECT_EQ(2, list2.First().y);
+  list2.AppendByMoving(list1.front(), sizeof(Point2D));
+  EXPECT_EQ(0, list1.front().x);
+  EXPECT_EQ(0, list1.front().y);
+  EXPECT_EQ(1, list2.front().x);
+  EXPECT_EQ(2, list2.front().y);
 
   EXPECT_EQ(1u, list1.size());
   EXPECT_EQ(1u, list2.size());
@@ -465,34 +306,6 @@ TEST(ContiguousContainerTest, AppendByMovingElementsOfDifferentSizes) {
   EXPECT_EQ(5, list[3].y);
 }
 
-TEST(ContiguousContainerTest, Swap) {
-  PointList list1;
-  list1.AllocateAndConstruct<Point2D>(1, 2);
-  PointList list2;
-  list2.AllocateAndConstruct<Point2D>(3, 4);
-  list2.AllocateAndConstruct<Point2D>(5, 6);
-
-  EXPECT_EQ(1u, list1.size());
-  EXPECT_EQ(1, list1[0].x);
-  EXPECT_EQ(2, list1[0].y);
-  EXPECT_EQ(2u, list2.size());
-  EXPECT_EQ(3, list2[0].x);
-  EXPECT_EQ(4, list2[0].y);
-  EXPECT_EQ(5, list2[1].x);
-  EXPECT_EQ(6, list2[1].y);
-
-  list2.Swap(list1);
-
-  EXPECT_EQ(1u, list2.size());
-  EXPECT_EQ(1, list2[0].x);
-  EXPECT_EQ(2, list2[0].y);
-  EXPECT_EQ(2u, list1.size());
-  EXPECT_EQ(3, list1[0].x);
-  EXPECT_EQ(4, list1[0].y);
-  EXPECT_EQ(5, list1[1].x);
-  EXPECT_EQ(6, list1[1].y);
-}
-
 TEST(ContiguousContainerTest, CapacityInBytes) {
   const int kIterations = 500;
   const wtf_size_t kInitialCapacity = 10 * kMaxPointSize;
@@ -515,43 +328,32 @@ TEST(ContiguousContainerTest, CapacityInBytes) {
   }
 }
 
-TEST(ContiguousContainerTest, CapacityInBytesAfterClear) {
-  // Clearing should restore the capacity of the container to the same as a
-  // newly allocated one (without reserved capacity requested).
-  PointList list;
-  size_t empty_capacity = list.CapacityInBytes();
-  list.AllocateAndConstruct<Point2D>();
-  list.AllocateAndConstruct<Point2D>();
-  list.Clear();
-  EXPECT_EQ(empty_capacity, list.CapacityInBytes());
-}
-
 TEST(ContiguousContainerTest, Alignment) {
   const size_t kMaxAlign = alignof(long double);
   ContiguousContainer<Point2D, kMaxAlign> list(kMaxPointSize,
                                                kDefaultInitialCapacityInBytes);
 
   list.AllocateAndConstruct<Point2D>();
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AllocateAndConstruct<Point2D>();
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AllocateAndConstruct<Point3D>();
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AllocateAndConstruct<Point3D>();
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AllocateAndConstruct<Point2D>();
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
 
   list.AppendByMoving(list[0], sizeof(Point2D));
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AppendByMoving(list[1], sizeof(Point2D));
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AppendByMoving(list[2], sizeof(Point3D));
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AppendByMoving(list[3], sizeof(Point3D));
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
   list.AppendByMoving(list[4], sizeof(Point2D));
-  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.Last()) & (kMaxAlign - 1));
+  EXPECT_EQ(0u, reinterpret_cast<intptr_t>(&list.back()) & (kMaxAlign - 1));
 }
 
 }  // namespace

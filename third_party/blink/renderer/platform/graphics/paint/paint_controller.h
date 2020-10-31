@@ -286,9 +286,9 @@ class PLATFORM_EXPORT PaintController {
   // Set new item state (cache skipping, etc) for the last new display item.
   void ProcessNewItem(DisplayItem&);
 
-  void DidAppendItem(DisplayItem&);
+  void CheckNewItem(DisplayItem&);
   DisplayItem& MoveItemFromCurrentListToNewList(wtf_size_t);
-  void DidAppendChunk();
+  void CheckNewChunk();
 
   struct IdAsHashKey {
     IdAsHashKey() = default;

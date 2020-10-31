@@ -11,28 +11,28 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/container_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 // ContiguousContainer is a container which stores a list of heterogeneous
-// objects (in particular, of varying sizes), packed next to one another in
-// memory. Objects are never relocated, so it is safe to store pointers to them
-// for the lifetime of the container (unless the object is removed).
+// items (in particular, of varying sizes), packed next to one another in
+// memory. Items are never relocated, so it is safe to store pointers to them
+// for the lifetime of the container (unless the item is removed).
 //
 // Memory is allocated in a series of buffers (with exponential growth). When an
-// object is allocated, it is given only the space it requires (possibly with
+// item is allocated, it is given only the space it requires (possibly with
 // enough padding to preserve alignment), rather than the maximum possible size.
-// This allows small and large objects to coexist without wasting much space.
+// This allows small and large items to coexist without wasting much space.
 //
-// Since it stores pointers to all of the objects it allocates in a vector, it
+// Since it stores pointers to all of the items it allocates in a vector, it
 // supports efficient iteration and indexing. However, for mutation the
-// supported operations are limited to appending to, and removing from, the end
-// of the list.
+// supported operations are limited to appending to the end of the list and
+// replacing the last item.
 //
 // Clients should instantiate ContiguousContainer; ContiguousContainerBase is an
 // artifact of the implementation.
@@ -40,40 +40,79 @@ namespace blink {
 class PLATFORM_EXPORT ContiguousContainerBase {
   DISALLOW_NEW();
 
+ public:
+  ContiguousContainerBase(const ContiguousContainerBase&) = delete;
+  ContiguousContainerBase& operator=(const ContiguousContainerBase&) = delete;
+  ContiguousContainerBase(ContiguousContainerBase&&) = delete;
+  ContiguousContainerBase& operator=(ContiguousContainerBase&&) = delete;
+
  protected:
   // The initial capacity will be allocated when the first item is added.
-  ContiguousContainerBase(wtf_size_t max_object_size,
+  ContiguousContainerBase(wtf_size_t max_item_size,
                           wtf_size_t initial_capacity_in_bytes);
-  ContiguousContainerBase(ContiguousContainerBase&&);
   ~ContiguousContainerBase();
 
-  ContiguousContainerBase& operator=(ContiguousContainerBase&&);
-
-  wtf_size_t size() const { return elements_.size(); }
+  wtf_size_t size() const { return items_.size(); }
   bool IsEmpty() const { return !size(); }
   wtf_size_t CapacityInBytes() const;
   wtf_size_t UsedCapacityInBytes() const;
   wtf_size_t MemoryUsageInBytes() const;
 
   // These do not invoke constructors or destructors.
-  void* Allocate(wtf_size_t object_size, const char* type_name);
-  void RemoveLast();
-  void Clear();
-  void Swap(ContiguousContainerBase&);
+  uint8_t* Allocate(wtf_size_t item_size, const char* type_name);
 
-  Vector<void*> elements_;
+  wtf_size_t LastItemSize() const {
+    return static_cast<wtf_size_t>(buffers_.back().End() - items_.back());
+  }
+
+  using ItemVector = Vector<uint8_t*>;
+  ItemVector items_;
 
  private:
-  class Buffer;
+  class Buffer {
+   public:
+    Buffer(wtf_size_t buffer_size, const char* type_name)
+        : capacity_(static_cast<wtf_size_t>(
+              WTF::Partitions::BufferActualSize(buffer_size))),
+          begin_(static_cast<uint8_t*>(
+              WTF::Partitions::BufferMalloc(capacity_, type_name))),
+          end_(begin_) {
+      ANNOTATE_NEW_BUFFER(begin_, capacity_, 0);
+    }
 
-  Buffer* AllocateNewBufferForNextAllocation(wtf_size_t, const char* type_name);
+    ~Buffer() {
+      ANNOTATE_DELETE_BUFFER(begin_, capacity_, UsedCapacity());
+      WTF::Partitions::BufferFree(begin_);
+    }
 
-  Vector<std::unique_ptr<Buffer>> buffers_;
-  unsigned end_index_;
-  wtf_size_t max_object_size_;
+    wtf_size_t Capacity() const { return capacity_; }
+    wtf_size_t UsedCapacity() const {
+      return static_cast<wtf_size_t>(end_ - begin_);
+    }
+    wtf_size_t UnusedCapacity() const { return Capacity() - UsedCapacity(); }
+    bool IsEmpty() const { return UsedCapacity() == 0; }
+
+    uint8_t* Allocate(wtf_size_t item_size) {
+      DCHECK_GE(UnusedCapacity(), item_size);
+      ANNOTATE_CHANGE_SIZE(begin_, capacity_, UsedCapacity(),
+                           UsedCapacity() + item_size);
+      uint8_t* result = end_;
+      end_ += item_size;
+      return result;
+    }
+
+    uint8_t* End() const { return end_; }
+
+   private:
+    // begin_ <= end_ <= begin_ + capacity_
+    wtf_size_t capacity_;
+    uint8_t* begin_;
+    uint8_t* end_;
+  };
+
+  Vector<Buffer> buffers_;
+  wtf_size_t max_item_size_;
   wtf_size_t initial_capacity_in_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContiguousContainerBase);
 };
 
 // For most cases, no alignment stricter than pointer alignment is required. If
@@ -82,7 +121,7 @@ class PLATFORM_EXPORT ContiguousContainerBase {
 // alignments. For small structs without pointers, it may be possible to reduce
 // alignment for tighter packing.
 
-template <class BaseElementType, unsigned alignment = sizeof(void*)>
+template <class BaseItemType, unsigned alignment = sizeof(void*)>
 class ContiguousContainer : public ContiguousContainerBase {
  private:
   // Declares itself as a forward iterator, but also supports a few more
@@ -103,7 +142,7 @@ class ContiguousContainer : public ContiguousContainerBase {
     bool operator<(const IteratorWrapper& other) const {
       return it_ < other.it_;
     }
-    ValueType& operator*() const { return *static_cast<ValueType*>(*it_); }
+    ValueType& operator*() const { return *reinterpret_cast<ValueType*>(*it_); }
     ValueType* operator->() const { return &operator*(); }
     IteratorWrapper operator+(std::ptrdiff_t n) const {
       return IteratorWrapper(it_ + n);
@@ -128,39 +167,25 @@ class ContiguousContainer : public ContiguousContainerBase {
   };
 
  public:
-  using iterator = IteratorWrapper<Vector<void*>::iterator, BaseElementType>;
+  using iterator = IteratorWrapper<ItemVector::iterator, BaseItemType>;
   using const_iterator =
-      IteratorWrapper<Vector<void*>::const_iterator, const BaseElementType>;
+      IteratorWrapper<ItemVector::const_iterator, const BaseItemType>;
   using reverse_iterator =
-      IteratorWrapper<Vector<void*>::reverse_iterator, BaseElementType>;
+      IteratorWrapper<ItemVector::reverse_iterator, BaseItemType>;
   using const_reverse_iterator =
-      IteratorWrapper<Vector<void*>::const_reverse_iterator,
-                      const BaseElementType>;
+      IteratorWrapper<ItemVector::const_reverse_iterator, const BaseItemType>;
 
-  using value_type = BaseElementType;
+  using value_type = BaseItemType;
 
-  ContiguousContainer(wtf_size_t max_object_size,
+  ContiguousContainer(wtf_size_t max_item_size,
                       wtf_size_t initial_capacity_in_bytes)
-      : ContiguousContainerBase(Align(max_object_size),
+      : ContiguousContainerBase(Align(max_item_size),
                                 initial_capacity_in_bytes) {}
-
-  ContiguousContainer(ContiguousContainer&& source)
-      : ContiguousContainerBase(std::move(source)) {}
-
   ~ContiguousContainer() {
-    for (auto& element : *this) {
-      (void)element;  // MSVC incorrectly reports this variable as unused.
-      element.~BaseElementType();
+    for (auto& item : *this) {
+      (void)item;  // MSVC incorrectly reports this variable as unused.
+      item.~BaseItemType();
     }
-  }
-
-  ContiguousContainer& operator=(ContiguousContainer&& source) {
-    // Must clear in the derived class to ensure that element destructors
-    // care called.
-    Clear();
-
-    ContiguousContainerBase::operator=(std::move(source));
-    return *this;
   }
 
   using ContiguousContainerBase::CapacityInBytes;
@@ -169,71 +194,63 @@ class ContiguousContainer : public ContiguousContainerBase {
   using ContiguousContainerBase::size;
   using ContiguousContainerBase::UsedCapacityInBytes;
 
-  iterator begin() { return iterator(elements_.begin()); }
-  iterator end() { return iterator(elements_.end()); }
-  const_iterator begin() const { return const_iterator(elements_.begin()); }
-  const_iterator end() const { return const_iterator(elements_.end()); }
-  reverse_iterator rbegin() { return reverse_iterator(elements_.rbegin()); }
-  reverse_iterator rend() { return reverse_iterator(elements_.rend()); }
+  iterator begin() { return iterator(items_.begin()); }
+  iterator end() { return iterator(items_.end()); }
+  const_iterator begin() const { return const_iterator(items_.begin()); }
+  const_iterator end() const { return const_iterator(items_.end()); }
+  reverse_iterator rbegin() { return reverse_iterator(items_.rbegin()); }
+  reverse_iterator rend() { return reverse_iterator(items_.rend()); }
   const_reverse_iterator rbegin() const {
-    return const_reverse_iterator(elements_.rbegin());
+    return const_reverse_iterator(items_.rbegin());
   }
   const_reverse_iterator rend() const {
-    return const_reverse_iterator(elements_.rend());
+    return const_reverse_iterator(items_.rend());
   }
 
-  BaseElementType& First() { return *begin(); }
-  const BaseElementType& First() const { return *begin(); }
-  BaseElementType& Last() { return *rbegin(); }
-  const BaseElementType& Last() const { return *rbegin(); }
-  BaseElementType& operator[](wtf_size_t index) { return *(begin() + index); }
-  const BaseElementType& operator[](wtf_size_t index) const {
+  BaseItemType& front() { return *begin(); }
+  const BaseItemType& front() const { return *begin(); }
+  BaseItemType& back() { return *rbegin(); }
+  const BaseItemType& back() const { return *rbegin(); }
+  BaseItemType& operator[](wtf_size_t index) { return *(begin() + index); }
+  const BaseItemType& operator[](wtf_size_t index) const {
     return *(begin() + index);
   }
 
-  template <class DerivedElementType, typename... Args>
-  DerivedElementType& AllocateAndConstruct(Args&&... args) {
-    static_assert(WTF::IsSubclass<DerivedElementType, BaseElementType>::value,
-                  "Must use subclass of BaseElementType.");
-    static_assert(alignment % alignof(DerivedElementType) == 0,
+  template <class DerivedItemType, typename... Args>
+  DerivedItemType& AllocateAndConstruct(Args&&... args) {
+    static_assert(WTF::IsSubclass<DerivedItemType, BaseItemType>::value,
+                  "Must use subclass of BaseItemType.");
+    static_assert(alignment % alignof(DerivedItemType) == 0,
                   "Derived type requires stronger alignment.");
-    return *new (AlignedAllocate(sizeof(DerivedElementType)))
-        DerivedElementType(std::forward<Args>(args)...);
+    return *new (AlignedAllocate(sizeof(DerivedItemType)))
+        DerivedItemType(std::forward<Args>(args)...);
   }
 
-  void RemoveLast() {
-    DCHECK(!IsEmpty());
-    Last().~BaseElementType();
-    ContiguousContainerBase::RemoveLast();
-  }
-
-  DISABLE_CFI_PERF
-  void Clear() {
-    for (auto& element : *this) {
-      (void)element;  // MSVC incorrectly reports this variable as unused.
-      element.~BaseElementType();
-    }
-    ContiguousContainerBase::Clear();
-  }
-
-  void Swap(ContiguousContainer& other) {
-    ContiguousContainerBase::Swap(other);
-  }
-
-  // Appends a new element using memcpy, then default-constructs a base
-  // element in its place. Use with care.
-  BaseElementType& AppendByMoving(BaseElementType& item, wtf_size_t size) {
-    DCHECK_GE(size, sizeof(BaseElementType));
+  // Appends a new item using memcpy, then default-constructs a base item
+  // in its place. Use with care.
+  BaseItemType& AppendByMoving(BaseItemType& item, wtf_size_t size) {
+    DCHECK_GE(size, sizeof(BaseItemType));
     void* new_item = AlignedAllocate(size);
     memcpy(new_item, static_cast<void*>(&item), size);
-    new (&item) BaseElementType;
-    return *static_cast<BaseElementType*>(new_item);
+    new (&item) BaseItemType;
+    return *static_cast<BaseItemType*>(new_item);
+  }
+
+  // The caller must ensure that |size| (the actual size of |item|) is the same
+  // as or smaller than the replaced item.
+  BaseItemType& ReplaceLastByMoving(BaseItemType& item, wtf_size_t size) {
+    DCHECK_GE(size, sizeof(BaseItemType));
+    DCHECK_GE(LastItemSize(), size);
+    back().~BaseItemType();
+    memcpy(static_cast<void*>(&back()), static_cast<void*>(&item), size);
+    new (&item) BaseItemType;
+    return back();
   }
 
  private:
   void* AlignedAllocate(wtf_size_t size) {
     void* result = ContiguousContainerBase::Allocate(
-        Align(size), WTF_HEAP_PROFILER_TYPE_NAME(BaseElementType));
+        Align(size), WTF_HEAP_PROFILER_TYPE_NAME(BaseItemType));
     DCHECK_EQ(reinterpret_cast<intptr_t>(result) & (alignment - 1), 0u);
     return result;
   }

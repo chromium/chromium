@@ -168,8 +168,7 @@ class PLATFORM_EXPORT DisplayItem {
             static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
         draws_content_(draws_content),
         is_cacheable_(client.IsCacheable()),
-        is_tombstone_(false),
-        is_moved_from_cached_subsequence_(false) {
+        is_tombstone_(false) {
     // |derived_size| must fit in |derived_size_|.
     // If it doesn't, enlarge |derived_size_| and fix this assert.
     SECURITY_DCHECK(derived_size == derived_size_);
@@ -258,13 +257,6 @@ class PLATFORM_EXPORT DisplayItem {
   bool IsCacheable() const { return is_cacheable_; }
   void SetUncacheable() { is_cacheable_ = false; }
 
-  bool IsMovedFromCachedSubsequence() const {
-    return is_moved_from_cached_subsequence_;
-  }
-  void SetMovedFromCachedSubsequence(bool b) {
-    is_moved_from_cached_subsequence_ = b;
-  }
-
   virtual bool Equals(const DisplayItem& other) const {
     // Failure of this DCHECK would cause bad casts in subclasses.
     SECURITY_CHECK(!is_tombstone_);
@@ -309,7 +301,6 @@ class PLATFORM_EXPORT DisplayItem {
   unsigned draws_content_ : 1;
   unsigned is_cacheable_ : 1;
   unsigned is_tombstone_ : 1;
-  unsigned is_moved_from_cached_subsequence_ : 1;
 };
 
 inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {

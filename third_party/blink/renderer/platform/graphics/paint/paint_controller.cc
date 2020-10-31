@@ -43,7 +43,7 @@ PaintController::~PaintController() {
 
 void PaintController::EnsureChunk() {
   if (paint_chunker_.EnsureChunk())
-    DidAppendChunk();
+    CheckNewChunk();
 }
 
 void PaintController::RecordHitTestData(const DisplayItemClient& client,
@@ -65,7 +65,7 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
   CheckDuplicatePaintChunkId(id);
   if (paint_chunker_.AddHitTestDataToCurrentChunk(id, rect, touch_action,
                                                   blocking_wheel))
-    DidAppendChunk();
+    CheckNewChunk();
 }
 
 void PaintController::RecordScrollHitTestData(
@@ -76,7 +76,7 @@ void PaintController::RecordScrollHitTestData(
   PaintChunk::Id id(client, type, current_fragment_);
   CheckDuplicatePaintChunkId(id);
   paint_chunker_.CreateScrollHitTestChunk(id, scroll_translation, rect);
-  DidAppendChunk();
+  CheckNewChunk();
 }
 
 void PaintController::SetPossibleBackgroundColor(
@@ -87,7 +87,7 @@ void PaintController::SetPossibleBackgroundColor(
                     current_fragment_);
   CheckDuplicatePaintChunkId(id);
   if (paint_chunker_.ProcessBackgroundColorCandidate(id, color, area))
-    DidAppendChunk();
+    CheckNewChunk();
 }
 
 bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
@@ -280,7 +280,7 @@ void PaintController::EndSubsequence(const DisplayItemClient& client,
       &client, SubsequenceMarkers{start_chunk_index, end_chunk_index});
 }
 
-void PaintController::DidAppendItem(DisplayItem& display_item) {
+void PaintController::CheckNewItem(DisplayItem& display_item) {
   if (usage_ == kTransient)
     return;
 
@@ -313,7 +313,7 @@ void PaintController::ProcessNewItem(DisplayItem& display_item) {
   }
 
   if (paint_chunker_.IncrementDisplayItemIndex(display_item))
-    DidAppendChunk();
+    CheckNewChunk();
 
   if (!frame_first_paints_.back().first_painted && display_item.IsDrawing() &&
       // Here we ignore all document-background paintings because we don't
@@ -325,7 +325,7 @@ void PaintController::ProcessNewItem(DisplayItem& display_item) {
     SetFirstPainted();
   }
 
-  DidAppendItem(display_item);
+  CheckNewItem(display_item);
 }
 
 DisplayItem& PaintController::MoveItemFromCurrentListToNewList(
@@ -334,7 +334,7 @@ DisplayItem& PaintController::MoveItemFromCurrentListToNewList(
       current_paint_artifact_->GetDisplayItemList()[index]);
 }
 
-void PaintController::DidAppendChunk() {
+void PaintController::CheckNewChunk() {
 #if DCHECK_IS_ON()
   auto& chunks = new_paint_artifact_->PaintChunks();
   if (chunks.back().is_cacheable) {
@@ -374,7 +374,7 @@ void PaintController::UpdateCurrentPaintChunkProperties(
 void PaintController::AppendChunkByMoving(PaintChunk&& chunk) {
   CheckDuplicatePaintChunkId(chunk.id);
   paint_chunker_.AppendByMoving(std::move(chunk));
-  DidAppendChunk();
+  CheckNewChunk();
 }
 
 bool PaintController::ClientCacheIsValid(
@@ -504,9 +504,7 @@ void PaintController::CopyCachedSubsequence(wtf_size_t start_chunk_index,
       SECURITY_CHECK(!cached_item.IsTombstone());
       DCHECK(!cached_item.IsCacheable() ||
              ClientCacheIsValid(cached_item.Client()));
-      auto& item = MoveItemFromCurrentListToNewList(cached_item_index++);
-      item.SetMovedFromCachedSubsequence(true);
-      DidAppendItem(item);
+      CheckNewItem(MoveItemFromCurrentListToNewList(cached_item_index++));
     }
 
     DCHECK_EQ(cached_item_index, cached_chunk.end_index);
@@ -593,20 +591,20 @@ void PaintController::FinishCycle() {
     chunk.client_is_just_created = false;
     const auto& client = chunk.id.client;
     if (chunk.is_moved_from_cached_subsequence) {
-      DCHECK(!chunk.is_cacheable || ClientCacheIsValid(client));
+      // We don't need to validate the clients of paint chunks and display
+      // items that are moved from a cached subsequence, because they should be
+      // already valid. See http://crbug.com/1050090 for more details.
+#if DCHECK_IS_ON()
+      DCHECK(ClientCacheIsValid(client));
+      for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i))
+        DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
+#endif
       continue;
     }
     if (client.IsCacheable())
       client.Validate();
 
     for (const auto& item : current_paint_artifact_->DisplayItemsInChunk(i)) {
-      if (item.IsMovedFromCachedSubsequence()) {
-        // We don't need to validate the clients of a display item that is
-        // copied from a cached subsequence, because it should be already
-        // valid. See http://crbug.com/1050090 for more details.
-        DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
-        continue;
-      }
       item.Client().ClearPartialInvalidationVisualRect();
       if (item.Client().IsCacheable())
         item.Client().Validate();
@@ -716,7 +714,7 @@ void PaintController::CheckUnderInvalidation() {
     return;
   }
 
-  DisplayItem& new_item = new_paint_artifact_->GetDisplayItemList().Last();
+  DisplayItem& new_item = new_paint_artifact_->GetDisplayItemList().back();
   auto old_item_index = under_invalidation_checking_begin_;
   DisplayItem* old_item =
       old_item_index < current_paint_artifact_->GetDisplayItemList().size()
@@ -736,8 +734,8 @@ void PaintController::CheckUnderInvalidation() {
   // non-under-invalidation-checking path to empty the original cached slot,
   // leaving only disappeared or invalidated display items in the old list after
   // painting.
-  new_paint_artifact_->GetDisplayItemList().RemoveLast();
-  MoveItemFromCurrentListToNewList(old_item_index);
+  new_paint_artifact_->GetDisplayItemList().ReplaceLastByMoving(
+      current_paint_artifact_->GetDisplayItemList()[old_item_index]);
 
   ++under_invalidation_checking_begin_;
 }
