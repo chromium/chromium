@@ -655,6 +655,13 @@ def AddJUnitTestOptions(parser):
       '--runner-filter',
       help='Filters tests by runner class. Must be fully qualified.')
   parser.add_argument(
+      '--shards',
+      default=1,
+      type=int,
+      help='Number of shards to run junit tests in parallel on. Only 1 shard '
+      'is supported when test-filter is specified. Values less than 1 will '
+      'use auto select.')
+  parser.add_argument(
       '-s', '--test-suite', required=True,
       help='JUnit test suite to run.')
   debug_group = parser.add_mutually_exclusive_group()

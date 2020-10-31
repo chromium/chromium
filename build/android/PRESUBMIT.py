@@ -85,6 +85,8 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'local', 'device',
                 'local_device_instrumentation_test_run_test.py'),
               J('pylib', 'local', 'device', 'local_device_test_run_test.py'),
+              J('pylib', 'local', 'machine',
+                'local_machine_junit_test_run_test.py'),
               J('pylib', 'output', 'local_output_manager_test.py'),
               J('pylib', 'output', 'noop_output_manager_test.py'),
               J('pylib', 'output', 'remote_output_manager_test.py'),

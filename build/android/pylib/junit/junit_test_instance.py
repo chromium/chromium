@@ -18,6 +18,7 @@ class JunitTestInstance(test_instance.TestInstance):
     self._resource_apk = args.resource_apk
     self._robolectric_runtime_deps_dir = args.robolectric_runtime_deps_dir
     self._runner_filter = args.runner_filter
+    self._shards = args.shards
     self._test_filter = test_filter.InitializeFilterFromArgs(args)
     self._test_suite = args.test_suite
 
@@ -64,6 +65,10 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def test_filter(self):
     return self._test_filter
+
+  @property
+  def shards(self):
+    return self._shards
 
   @property
   def suite(self):
