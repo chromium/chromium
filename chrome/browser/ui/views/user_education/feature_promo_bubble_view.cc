@@ -85,6 +85,7 @@ class MdIPHBubbleButton : public MdTextButton {
     // inactive style when the bubble loses focus.
     SetTextColor(ButtonState::STATE_DISABLED, kBubbleButtonTextColor);
     focus_ring()->SetColor(kBubbleButtonFocusRingColor);
+    GetViewAccessibility().OverrideIsLeaf(true);
   }
 
   void UpdateBackgroundColor() override {
@@ -148,11 +149,6 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
           ? l10n_util::GetStringUTF16(params.body_string_specifier)
           : params.body_text_raw;
 
-  // Feature promos are purely informational. We can skip reading the UI
-  // elements inside the bubble and just have the information announced when the
-  // bubble shows. To do so, we change the a11y tree to make this a leaf node
-  // and set the name to the message we want to announce.
-  GetViewAccessibility().OverrideIsLeaf(true);
   if (!params.screenreader_string_specifier) {
     accessible_name_ = body_text;
   } else if (params.feature_accelerator) {
