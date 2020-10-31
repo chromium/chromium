@@ -8,8 +8,6 @@
 #include <initializer_list>
 #include <string>
 
-#include "base/callback.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/metrics/call_stack_profile_params.h"
@@ -17,6 +15,8 @@
 
 namespace base {
 class CommandLine;
+template <typename>
+class NoDestructor;
 }  // namespace base
 
 class ThreadProfilerPlatformConfiguration;
@@ -27,8 +27,13 @@ class ThreadProfilerPlatformConfiguration;
 // processes are communicated via command line arguments.
 class ThreadProfilerConfiguration {
  public:
-  ThreadProfilerConfiguration();
-  ~ThreadProfilerConfiguration();
+  // Returns the ThreadProfilerConfiguration for the process.
+  static ThreadProfilerConfiguration* Get();
+
+  ~ThreadProfilerConfiguration() = delete;
+  ThreadProfilerConfiguration(const ThreadProfilerConfiguration&) = delete;
+  ThreadProfilerConfiguration& operator=(const ThreadProfilerConfiguration&) =
+      delete;
 
   // Get the stack sampling params to use.
   base::StackSamplingProfiler::SamplingParams GetSamplingParams() const;
@@ -52,26 +57,25 @@ class ThreadProfilerConfiguration {
   void AppendCommandLineSwitchForChildProcess(
       base::CommandLine* command_line) const;
 
-  // Returns the ThreadProfilerConfiguration for the process.
-  static ThreadProfilerConfiguration* Get();
-
  private:
+  friend base::NoDestructor<ThreadProfilerConfiguration>;
+
   // The variation groups that represent the Chrome-wide profiling
   // configurations.
   enum VariationGroup {
     // Disabled within the experiment.
-    PROFILE_DISABLED,
+    kProfileDisabled,
 
     // Disabled because the required module is not installed, and outside the
     // experiment.
-    PROFILE_DISABLED_MODULE_NOT_INSTALLED,
+    kProfileDisabledModuleNotInstalled,
 
     // Enabled within the experiment (and paired with equal-sized
-    // PROFILE_DISABLED group).
-    PROFILE_CONTROL,
+    // kProfileDisabled group).
+    kProfileControl,
 
     // Enabled outside of the experiment.
-    PROFILE_ENABLED,
+    kProfileEnabled,
   };
 
   // The configuration state for the browser process. If !has_value() profiling
@@ -81,8 +85,8 @@ class ThreadProfilerConfiguration {
 
   // The configuration state in child processes.
   enum ChildProcessConfiguration {
-    CHILD_PROCESS_PROFILE_DISABLED,
-    CHILD_PROCESS_PROFILE_ENABLED,
+    kChildProcessProfileDisabled,
+    kChildProcessProfileEnabled,
   };
 
   // The configuration state for the current process, browser or child.
@@ -95,6 +99,8 @@ class ThreadProfilerConfiguration {
     VariationGroup group;
     int weight;
   };
+
+  ThreadProfilerConfiguration();
 
   // True if the profiler is to be enabled for |variation_group|.
   static bool EnableForVariationGroup(
@@ -127,8 +133,6 @@ class ThreadProfilerConfiguration {
 
   // Represents the configuration to use in the current process.
   const Configuration configuration_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadProfilerConfiguration);
 };
 
 #endif  // CHROME_COMMON_PROFILER_THREAD_PROFILER_CONFIGURATION_H_
