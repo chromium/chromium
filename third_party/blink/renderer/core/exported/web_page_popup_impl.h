@@ -272,6 +272,10 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // complicated inheritance structures.
   std::unique_ptr<WidgetBase> widget_base_;
 
+  // Only used for Scroll Unification.
+  // Will be set in GestureScrollBegin
+  WeakPersistent<Node> scrollable_node_;
+
   friend class WebPagePopup;
   friend class PagePopupChromeClient;
 

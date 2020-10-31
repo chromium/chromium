@@ -79,6 +79,41 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 namespace blink {
+namespace {
+ScrollableArea* ToScrollableArea(Node* node) {
+  DCHECK(node);
+  LayoutBox* scrolling_box = node->GetLayoutBox();
+  if (auto* element = DynamicTo<Element>(node))
+    scrolling_box = element->GetLayoutBoxForScrolling();
+  return scrolling_box ? scrolling_box->GetScrollableArea() : nullptr;
+}
+
+bool CanScroll(Node* node) {
+  if (!node)
+    return false;
+  return ToScrollableArea(node);
+}
+
+Node* FindFirstScroller(Node* event_target) {
+  DCHECK(event_target);
+  Node* cur_node = nullptr;
+  bool found = false;
+  LayoutBox* cur_box = event_target->GetLayoutObject()
+                           ? event_target->GetLayoutObject()->EnclosingBox()
+                           : nullptr;
+  while (cur_box) {
+    cur_node = cur_box->GetNode();
+    if (CanScroll(cur_node)) {
+      found = true;
+      break;
+    }
+    cur_box = cur_box->ContainingBlock();
+  }
+  if (found && cur_node)
+    return cur_node;
+  return nullptr;
+}
+}  // namespace
 
 class PagePopupChromeClient final : public EmptyChromeClient {
  public:
@@ -692,6 +727,33 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupGestureTapExceedsOwnerWindowBounds);
+  }
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+    if (event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
+      HitTestLocation locationScroll(FloatPoint(event.PositionInWidget()));
+      HitTestResult resultScroll =
+          MainFrame().GetEventHandler().HitTestResultAtLocation(locationScroll);
+      scrollable_node_ = FindFirstScroller(resultScroll.InnerNode());
+      return WebInputEventResult::kHandledSystem;
+    }
+    if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
+      if (!scrollable_node_)
+        return WebInputEventResult::kNotHandled;
+
+      ScrollableArea* scrollable = ToScrollableArea(scrollable_node_);
+
+      if (!scrollable)
+        return WebInputEventResult::kNotHandled;
+      ScrollOffset scroll_offset(-event.data.scroll_update.delta_x,
+                                 -event.data.scroll_update.delta_y);
+      scrollable->UserScroll(event.data.scroll_update.delta_units,
+                             scroll_offset, ScrollableArea::ScrollCallback());
+      return WebInputEventResult::kHandledSystem;
+    }
+    if (event.GetType() == WebInputEvent::Type::kGestureScrollEnd) {
+      scrollable_node_ = nullptr;
+      return WebInputEventResult::kHandledSystem;
+    }
   }
   WebGestureEvent scaled_event =
       TransformWebGestureEvent(MainFrame().View(), event);
