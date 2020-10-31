@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -64,7 +65,7 @@ void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
       base::MakeRefCounted<UpdateServiceImpl>(config_);
 
   update_service->UpdateAll(
-      base::BindRepeating([](UpdateService::UpdateState) {}),
+      base::DoNothing(),
       base::BindOnce(
           [](base::OnceClosure closure,
              scoped_refptr<updater::Configurator> config,
