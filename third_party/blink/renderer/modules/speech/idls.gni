@@ -25,10 +25,7 @@ modules_dictionary_idl_files = [
   "speech_synthesis_event_init.idl",
 ]
 
-modules_dependency_idl_files = [
-  "window_speech.idl",
-  "window_speech_synthesis.idl",
-]
+modules_dependency_idl_files = [ "window_speech_synthesis.idl" ]
 
 modules_testing_dependency_idl_files =
     [ "testing/internals_speech_synthesis.idl" ]

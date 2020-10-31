@@ -180,9 +180,6 @@
     // https://github.com/WICG/aom/blob/HEAD/explainer.md
     [RuntimeEnabled=AccessibilityObjectModel, CallWith=ScriptState] Promise<ComputedAccessibleNode> getComputedAccessibleNode(Element element);
 
-    // TODO(yhirano): Move this to url.idl when LegacyWindowAlias is supported.
-    [DisableInNewIDLCompiler] attribute URLConstructor webkitURL;
-
     // https://dom.spec.whatwg.org/#interface-window-extensions
     [Replaceable, GetterCallWith=ScriptState, MeasureAs=WindowEvent, NotEnumerable] readonly attribute any event;
 
@@ -203,15 +200,12 @@
     [MeasureAs=StyleMedia] readonly attribute StyleMedia styleMedia;
     [DeprecateAs=PrefixedRequestAnimationFrame] long webkitRequestAnimationFrame(FrameRequestCallback callback);
     [DeprecateAs=PrefixedCancelAnimationFrame, ImplementedAs=cancelAnimationFrame] void webkitCancelAnimationFrame(long id);
-    [DisableInNewIDLCompiler, MeasureAs=PrefixedMutationObserverConstructor] attribute MutationObserverConstructor WebKitMutationObserver;
 
     // Event handler attributes
     attribute EventHandler onsearch;
 
     // https://w3c.github.io/webappsec-secure-contexts/#monkey-patching-global-object
     readonly attribute boolean isSecureContext;
-
-    [DisableInNewIDLCompiler] attribute DOMMatrixConstructor WebKitCSSMatrix;
 
     // TrustedTypes API: http://github.com/wicg/trusted-types
     [RuntimeEnabled=TrustedDOMTypes] readonly attribute TrustedTypePolicyFactory trustedTypes;

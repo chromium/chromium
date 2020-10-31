@@ -58,8 +58,4 @@
     [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString pathname;
     [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString search;
     [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString hash;
-
-    // TODO(foolip): Location does not have a valueOf() override in the spec.
-    // See the comment in Location.h for the purpose of this.
-    [DisableInNewIDLCompiler, NotEnumerable, CallWith=ThisValue, LegacyUnforgeable] any valueOf();
 };

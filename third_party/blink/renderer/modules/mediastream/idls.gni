@@ -34,7 +34,6 @@ modules_dependency_idl_files = [
   "media_stream_track_content_hint.idl",
   "navigator_media_stream.idl",
   "navigator_user_media.idl",
-  "window_media_stream.idl",
 ]
 
 modules_testing_dependency_idl_files = [ "testing/internals_media_stream.idl" ]

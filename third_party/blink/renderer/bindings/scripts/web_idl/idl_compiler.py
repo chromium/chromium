@@ -84,11 +84,6 @@ class IdlCompiler(object):
         assert not self._did_run
         self._did_run = True
 
-        # Remove the interface members that are specific to the old bindings
-        # generator, i.e. that are not necessary for (or even harmful to) the
-        # new bindings generator.
-        self._remove_legacy_interface_members()
-
         # Merge partial definitions.
         self._record_defined_in_partial_and_mixin()
         self._propagate_extattrs_per_idl_fragment()
@@ -134,23 +129,6 @@ class IdlCompiler(object):
         # You can make this function return make_copy(ir) for debugging
         # purpose, etc.
         return ir  # Skip copying as an optimization.
-
-    def _remove_legacy_interface_members(self):
-        old_irs = self._ir_map.irs_of_kinds(
-            IRMap.IR.Kind.INTERFACE, IRMap.IR.Kind.INTERFACE_MIXIN,
-            IRMap.IR.Kind.PARTIAL_INTERFACE,
-            IRMap.IR.Kind.PARTIAL_INTERFACE_MIXIN)
-
-        not_disabled = (
-            lambda x: 'DisableInNewIDLCompiler' not in x.extended_attributes)
-
-        self._ir_map.move_to_new_phase()
-
-        for old_ir in old_irs:
-            new_ir = make_copy(old_ir)
-            self._ir_map.add(new_ir)
-            new_ir.attributes = filter(not_disabled, new_ir.attributes)
-            new_ir.operations = filter(not_disabled, new_ir.operations)
 
     def _record_defined_in_partial_and_mixin(self):
         old_irs = self._ir_map.irs_of_kinds(
