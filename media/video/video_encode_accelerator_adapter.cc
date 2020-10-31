@@ -366,6 +366,19 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
         h264_converter_->ConvertChunk(base::span<uint8_t>(src, result.size),
                                       base::span<uint8_t>(dst.get(), dst_size),
                                       &config_changed, &actual_output_size);
+    if (status.code() == StatusCode::kH264BufferTooSmall) {
+      // Between AnnexB and AVCC bitstream formats, the start code length and
+      // the nal size length can be different. See H.264 specification at
+      // http://www.itu.int/rec/T-REC-H.264. Retry the conversion if the output
+      // buffer size is too small.
+      dst_size = actual_output_size;
+      dst.reset(new uint8_t[dst_size]);
+      status = h264_converter_->ConvertChunk(
+          base::span<uint8_t>(src, result.size),
+          base::span<uint8_t>(dst.get(), dst_size), &config_changed,
+          &actual_output_size);
+    }
+
     if (!status.is_ok()) {
       LOG(ERROR) << status.message();
       NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
