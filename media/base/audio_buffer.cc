@@ -39,8 +39,12 @@ AudioBufferMemoryPool::AudioMemory AudioBufferMemoryPool::CreateBuffer(
       return std::move(entry.first);
   }
 
-  return AudioMemory(static_cast<uint8_t*>(
+  // FFmpeg may not always initialize the entire output memory, so just like
+  // for VideoFrames we need to zero out the memory. https://crbug.com/1144070.
+  auto memory = AudioMemory(static_cast<uint8_t*>(
       base::AlignedAlloc(size, AudioBuffer::kChannelAlignment)));
+  memset(memory.get(), 0, size);
+  return memory;
 }
 
 void AudioBufferMemoryPool::ReturnBuffer(AudioMemory memory, size_t size) {
