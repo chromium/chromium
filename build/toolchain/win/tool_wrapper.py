@@ -158,7 +158,7 @@ class WinTool(object):
     popen = subprocess.Popen(args, shell=True, env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = popen.communicate()
-    for line in out.splitlines():
+    for line in out.decode('utf8').splitlines():
       if not line.startswith(' Assembling: '):
         print(line)
     return popen.returncode

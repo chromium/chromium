@@ -12,8 +12,13 @@ if sys.version_info.major == 2:
   exe = sys.executable
 elif sys.executable.endswith('.exe'):
   # If we get here, we're a Python3 executable likely running on
-  # Windows, so look for the Python2 wrapper in depot_tools.
-  exe = 'python.bat'
+  # Windows, so look for the Python2 wrapper in depot_tools. We
+  # can't invoke it directly because some command lines might exceed the
+  # 8K commamand line length limit in cmd.exe, but we can use it to
+  # find the underlying executable, which we can then safely call.
+  exe = subprocess.check_output(
+      ['python.bat', '-c',
+       'import sys; print(sys.executable)']).decode('utf8').strip()
 else:
   # If we get here, we are a Python3 executable. Hope that we can find
   # a `python2.7` in path somewhere.
