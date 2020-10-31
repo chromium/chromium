@@ -8,6 +8,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/continue_browsing_chip.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/phonehub/ui_constants.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -21,15 +23,24 @@ using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
 namespace {
 
 // Appearance constants in dip.
-constexpr gfx::Size kTaskContinuationChipSize(176, 96);
+constexpr int kTaskContinuationChipHeight = 96;
 constexpr int kTaskContinuationChipsInRow = 2;
 constexpr int kTaskContinuationChipSpacing = 8;
-constexpr int kTaskContinuationChipHorizontalPadding = 4;
+constexpr int kTaskContinuationChipHorizontalSidePadding = 4;
 constexpr int kTaskContinuationChipVerticalPadding = 4;
 constexpr int kHeaderLabelLineHeight = 48;
 
 // Typography.
 constexpr int kHeaderTextFontSizeDip = 15;
+
+gfx::Size GetTaskContinuationChipSize() {
+  int width =
+      (kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2 -
+       kTaskContinuationChipHorizontalSidePadding * 2 -
+       kTaskContinuationChipSpacing * (kTaskContinuationChipsInRow - 1)) /
+      kTaskContinuationChipsInRow;
+  return gfx::Size(width, kTaskContinuationChipHeight);
+}
 
 class HeaderView : public views::Label {
  public:
@@ -101,16 +112,16 @@ void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
 
 // views::View:
 gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
-  int width = kTaskContinuationChipSize.width() * kTaskContinuationChipsInRow +
+  auto chip_size = GetTaskContinuationChipSize();
+  int width = chip_size.width() * kTaskContinuationChipsInRow +
               kTaskContinuationChipSpacing +
-              2 * kTaskContinuationChipHorizontalPadding;
+              2 * kTaskContinuationChipHorizontalSidePadding;
   int rows_num =
       std::ceil((double)task_chips_.view_size() / kTaskContinuationChipsInRow);
-  int height = (kTaskContinuationChipSize.height() +
-                kTaskContinuationChipVerticalPadding) *
+  int height = (chip_size.height() + kTaskContinuationChipVerticalPadding) *
                    std::max(0, rows_num - 1) +
-               kTaskContinuationChipSize.height() +
-               2 * kTaskContinuationChipHorizontalPadding;
+               chip_size.height() +
+               2 * kTaskContinuationChipHorizontalSidePadding;
   return gfx::Size(width, height);
 }
 
@@ -133,14 +144,12 @@ void TaskContinuationView::TaskChipsView::Reset() {
 }
 
 gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
+  auto chip_size = GetTaskContinuationChipSize();
   int row = index / kTaskContinuationChipsInRow;
   int column = index % kTaskContinuationChipsInRow;
-  int x = (kTaskContinuationChipSize.width() + kTaskContinuationChipSpacing) *
-              column +
-          kTaskContinuationChipHorizontalPadding;
-  int y = (kTaskContinuationChipSize.height() +
-           kTaskContinuationChipVerticalPadding) *
-              row +
+  int x = (chip_size.width() + kTaskContinuationChipSpacing) * column +
+          kTaskContinuationChipHorizontalSidePadding;
+  int y = (chip_size.height() + kTaskContinuationChipVerticalPadding) * row +
           kTaskContinuationChipVerticalPadding;
   return gfx::Point(x, y);
 }
@@ -148,7 +157,7 @@ gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
 void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
   for (int i = 0; i < task_chips_.view_size(); ++i) {
     gfx::Rect tile_bounds =
-        gfx::Rect(GetButtonPosition(i), kTaskContinuationChipSize);
+        gfx::Rect(GetButtonPosition(i), GetTaskContinuationChipSize());
     task_chips_.set_ideal_bounds(i, tile_bounds);
   }
 }

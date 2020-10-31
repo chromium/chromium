@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/unified/rounded_label_button.h"
@@ -33,9 +34,7 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kImageWidthDip = 368;
 constexpr int kImageHeightDip = 256;
-constexpr int kHorizontalPaddingDip = 16;
 constexpr int kButtonSpacingDip = 8;
 constexpr int kButtonContainerTopPaddingDip = 16;
 constexpr int kProgressBarHeightDip = 2;
@@ -68,7 +67,8 @@ void PhoneHubInterstitialView::SetImage(const gfx::ImageSkia& image) {
   // Expect a non-empty string for the title.
   DCHECK(!image.isNull());
   image_->SetImage(image);
-  image_->SetImageSize(gfx::Size(kImageWidthDip, kImageHeightDip));
+  image_->SetImageSize(gfx::Size(
+      kTrayMenuWidth - 2 * kBubbleHorizontalSidePaddingDip, kImageHeightDip));
 }
 
 void PhoneHubInterstitialView::SetTitle(const base::string16& title) {
@@ -105,7 +105,8 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   // Set up the second column set with horizontal paddings to layout the image,
   // text and buttons.
   const int kSecondColumnSetId = 1;
-  AddColumnWithSidePadding(layout, kHorizontalPaddingDip, kSecondColumnSetId);
+  AddColumnWithSidePadding(layout, kBubbleHorizontalSidePaddingDip,
+                           kSecondColumnSetId);
 
   if (show_progress) {
     // Set up layout row for the progress bar if |show_progess| is true.

@@ -16,6 +16,7 @@
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
+#include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -41,8 +42,7 @@ namespace {
 constexpr int kTrayIconMainAxisInset = 8;
 constexpr int kTrayIconCrossAxisInset = 0;
 
-constexpr gfx::Insets kBubblePadding(0, 0, 16, 0);
-constexpr int kBubbleWidth = 400;
+constexpr gfx::Insets kBubblePadding(0, 0, kBubbleBottomPaddingDip, 0);
 
 }  // namespace
 
@@ -155,7 +155,7 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = GetBubbleAnchor();
   init_params.shelf_alignment = shelf()->alignment();
-  init_params.preferred_width = kBubbleWidth;
+  init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
   init_params.translucent = true;

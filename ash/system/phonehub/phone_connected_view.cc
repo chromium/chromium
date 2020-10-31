@@ -12,6 +12,7 @@
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
+#include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
@@ -25,15 +26,10 @@
 
 namespace ash {
 
-namespace {
-constexpr gfx::Insets kBorderInsetsDip(0, 16, 0, 16);
-}  // namespace
-
 PhoneConnectedView::PhoneConnectedView(
     TrayBubbleView* bubble_view,
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
-  SetBorder(views::CreateEmptyBorder(kBorderInsetsDip));
 
   auto setup_layered_view = [](views::View* view) {
     view->SetPaintToLayer();
@@ -41,7 +37,8 @@ PhoneConnectedView::PhoneConnectedView(
   };
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets(0, kBubbleHorizontalSidePaddingDip)));
   layout->SetDefaultFlex(1);
 
   chromeos::phonehub::NotificationAccessManager* access_manager =

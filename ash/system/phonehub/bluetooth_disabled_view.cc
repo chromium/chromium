@@ -15,7 +15,7 @@
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
-#include "ash/system/phonehub/url_constants.h"
+#include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/status_area_widget.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
