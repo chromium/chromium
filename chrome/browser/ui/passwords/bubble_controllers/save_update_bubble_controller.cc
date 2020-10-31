@@ -16,6 +16,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -272,8 +273,16 @@ void SaveUpdateBubbleController::ReportInteractions() {
   if (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     metrics_util::LogUpdateUIDismissalReason(dismissal_reason_);
   } else if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {
-    metrics_util::LogSaveUIDismissalReason(dismissal_reason_,
-                                           /*user_state=*/base::nullopt);
+    base::Optional<metrics_util::PasswordAccountStorageUserState> user_state =
+        base::nullopt;
+    Profile* profile = GetProfile();
+    if (profile) {
+      user_state = password_manager::features_util::
+          ComputePasswordAccountStorageUserState(
+              profile->GetPrefs(),
+              ProfileSyncServiceFactory::GetForProfile(profile));
+    }
+    metrics_util::LogSaveUIDismissalReason(dismissal_reason_, user_state);
   }
 
   // Update the delegate so that it can send votes to the server.
