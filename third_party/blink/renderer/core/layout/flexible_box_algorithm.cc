@@ -509,6 +509,11 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
   bool should_flip_main_axis;
   if (algorithm_->IsNGFlexBox()) {
     should_flip_main_axis = style.ResolvedIsRowReverseFlexDirection();
+
+    if (is_webkit_box && available_free_space < 0 &&
+        (style.ResolvedIsRowReverseFlexDirection() ==
+         style.IsLeftToRightDirection()))
+      main_axis_offset += available_free_space;
   } else {
     should_flip_main_axis = !style.ResolvedIsColumnFlexDirection() &&
                             !algorithm_->IsLeftToRightFlow();

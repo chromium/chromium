@@ -647,6 +647,12 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     if (flex_basis.IsAuto()) {
       if (!is_column_ || IsItemMainSizeDefinite(child))
         length_to_resolve = specified_length_in_main_axis;
+
+      // 'auto' for items within a -webkit-box resolve as 'fit-content'.
+      if (length_to_resolve.IsAuto() && Style().IsDeprecatedWebkitBox() &&
+          (Style().BoxOrient() == EBoxOrient::kHorizontal ||
+           Style().BoxAlign() != EBoxAlignment::kStretch))
+        length_to_resolve = Length::FitContent();
     } else if (IsItemFlexBasisDefinite(child)) {
       length_to_resolve = flex_basis;
     }

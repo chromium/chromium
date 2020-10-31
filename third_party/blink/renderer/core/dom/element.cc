@@ -355,8 +355,8 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     }
   }
 
-  if (style.IsDeprecatedWebkitBox() &&
-      !style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
+  if (!RuntimeEnabledFeatures::LayoutNGWebkitBoxEnabled() &&
+      style.IsDeprecatedFlexboxUsingFlexLayout()) {
     UseCounter::Count(
         document, WebFeature::kLegacyLayoutByWebkitBoxWithoutVerticalLineClamp);
     return true;
@@ -402,7 +402,8 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     // on). Inline display types end up on a line, and are therefore monolithic,
     // so we can allow those.
     if (!style.IsDisplayInlineType()) {
-      if (style.IsDisplayTableType() || style.IsDisplayFlexibleOrGridBox()) {
+      if (style.IsDisplayTableType() || style.IsDisplayFlexibleOrGridBox() ||
+          style.IsDeprecatedFlexboxUsingFlexLayout()) {
         UseCounter::Count(
             document,
             WebFeature::
