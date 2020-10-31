@@ -405,16 +405,19 @@ if (is_win) {
 
   tweak_info_plist("chrome_app_plist") {
     info_plist = "app/app-Info.plist"
-    _keystone_arg = "0"
-    if (is_chrome_branded) {
-      _keystone_arg = "1"
-    }
     args = [
       "--breakpad=0",
-      "--keystone=$_keystone_arg",
       "--scm=1",
       "--bundle_id=$chrome_mac_bundle_id",
     ]
+    if (is_chrome_branded) {
+      args += [ "--keystone=1" ]
+      if (current_cpu == "arm64") {
+        args += [ "--keystone-base-tag=arm64" ]
+      }
+    } else {
+      args += [ "--keystone=0" ]
+    }
   }
 
   mac_app_bundle("chrome_app") {
