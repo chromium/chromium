@@ -224,6 +224,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   may_have_descendant_above_block_start_ =
       builder->may_have_descendant_above_block_start_;
   is_fieldset_container_ = builder->is_fieldset_container_;
+  is_table_ng_part_ = builder->is_table_ng_part_;
   is_legacy_layout_root_ = builder->is_legacy_layout_root_;
   is_painted_atomically_ =
       builder->space_ && builder->space_->IsPaintedAtomically();
@@ -807,6 +808,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
             other.depends_on_percentage_block_size_);
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
+  DCHECK_EQ(is_table_ng_part_, other.is_table_ng_part_);
   DCHECK_EQ(is_legacy_layout_root_, other.is_legacy_layout_root_);
   DCHECK_EQ(is_painted_atomically_, other.is_painted_atomically_);
   DCHECK_EQ(has_collapsed_borders_, other.has_collapsed_borders_);

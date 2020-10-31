@@ -405,6 +405,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return BoxType() == NGPhysicalFragment::kColumnBox;
   }
   void SetIsFieldsetContainer() { is_fieldset_container_ = true; }
+  void SetIsTableNGPart() { is_table_ng_part_ = true; }
   void SetIsLegacyLayoutRoot() { is_legacy_layout_root_ = true; }
 
   void SetIsInlineFormattingContext(bool is_inline_formatting_context) {
@@ -576,6 +577,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   NGPhysicalFragment::NGBoxType box_type_;
   bool may_have_descendant_above_block_start_ = false;
   bool is_fieldset_container_ = false;
+  bool is_table_ng_part_ = false;
   bool is_initial_block_size_indefinite_ = false;
   bool is_inline_formatting_context_;
   bool is_first_for_node_ = true;

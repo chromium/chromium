@@ -506,7 +506,8 @@ bool NGBoxFragmentPainter::ShouldRecordHitTestData(
     return false;
 
   // Table rows/sections do not participate in hit testing.
-  if (PhysicalFragment().IsTableRow() || PhysicalFragment().IsTableSection())
+  if (PhysicalFragment().IsTableNGRow() ||
+      PhysicalFragment().IsTableNGSection())
     return false;
 
   return true;
@@ -760,7 +761,8 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
       layout_object->Paint(paint_info_for_descendants);
     }
   }
-  if (paint_info.phase == PaintPhase::kForeground && box_fragment_.IsTable()) {
+  if (paint_info.phase == PaintPhase::kForeground &&
+      box_fragment_.IsTableNGPart() && box_fragment_.IsTable()) {
     NGTablePainter(box_fragment_)
         .PaintCollapsedBorders(paint_info, paint_offset,
                                VisualRect(paint_offset));
@@ -986,23 +988,30 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     if (PhysicalFragment().IsFieldsetContainer()) {
       NGFieldsetPainter(box_fragment_)
           .PaintBoxDecorationBackground(paint_info, paint_offset);
-    } else if (box_fragment_.IsTable()) {
-      NGTablePainter(box_fragment_)
-          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
-    } else if (box_fragment_.IsTableSection()) {
-      NGTableSectionPainter(box_fragment_)
-          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
-    } else if (box_fragment_.IsTableRow()) {
-      NGTableRowPainter(box_fragment_)
-          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
-    } else if (box_fragment_.IsTableNGCell()) {
-      // Just doing this without any collapsed borders makes 2 extra tests pass,
-      // they used to be off by 1 pixel.
-      // external/wpt/css/css-backgrounds/background-image-table-cells-zoomed.html
-      // tables/mozilla/bugs/bug131020_iframe.html
-      // TODO(atotic+pdr) Flagged for followup code review.
-      NGTableCellPainter(box_fragment_)
-          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
+    } else if (PhysicalFragment().IsTableNGPart()) {
+      if (box_fragment_.IsTableNGCell()) {
+        // Just doing this without any collapsed borders makes 2 extra tests
+        // pass, they used to be off by 1 pixel.
+        // external/wpt/css/css-backgrounds/background-image-table-cells-zoomed.html
+        // tables/mozilla/bugs/bug131020_iframe.html
+        // TODO(atotic+pdr) Flagged for followup code review.
+        NGTableCellPainter(box_fragment_)
+            .PaintBoxDecorationBackground(paint_info, paint_offset,
+                                          visual_rect);
+      } else if (box_fragment_.IsTableNGRow()) {
+        NGTableRowPainter(box_fragment_)
+            .PaintBoxDecorationBackground(paint_info, paint_offset,
+                                          visual_rect);
+      } else if (box_fragment_.IsTableNGSection()) {
+        NGTableSectionPainter(box_fragment_)
+            .PaintBoxDecorationBackground(paint_info, paint_offset,
+                                          visual_rect);
+      } else {
+        DCHECK(box_fragment_.IsTable());
+        NGTablePainter(box_fragment_)
+            .PaintBoxDecorationBackground(paint_info, paint_offset,
+                                          visual_rect);
+      }
     } else if (box_fragment_.Style().HasBoxDecorationBackground()) {
       PaintBoxDecorationBackgroundWithRect(
           contents_paint_state ? contents_paint_state->GetPaintInfo()
@@ -1915,7 +1924,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
   if (hit_test_self) {
     // Table row and table section are never a hit target.
-    if (PhysicalFragment().IsTableRow() || PhysicalFragment().IsTableSection())
+    if (PhysicalFragment().IsTableNGRow() ||
+        PhysicalFragment().IsTableNGSection())
       hit_test_self = false;
   }
 

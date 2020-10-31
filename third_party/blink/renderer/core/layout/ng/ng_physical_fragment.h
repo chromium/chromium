@@ -160,14 +160,20 @@ class CORE_EXPORT NGPhysicalFragment
            layout_object_->IsRubyBase();
   }
 
-  bool IsTable() const { return layout_object_->IsTable(); }
+  bool IsTableNGPart() const { return is_table_ng_part_; }
 
-  bool IsTableRow() const { return layout_object_->IsTableRow(); }
+  bool IsTable() const { return IsBox() && layout_object_->IsTable(); }
 
-  bool IsTableSection() const { return layout_object_->IsTableSection(); }
+  bool IsTableNGRow() const {
+    return IsTableNGPart() && layout_object_->IsTableRow();
+  }
+
+  bool IsTableNGSection() const {
+    return IsTableNGPart() && layout_object_->IsTableSection();
+  }
 
   bool IsTableNGCell() const {
-    return layout_object_->IsTableCell() &&
+    return IsTableNGPart() && layout_object_->IsTableCell() &&
            !layout_object_->IsTableCellLegacy();
   }
 
@@ -509,6 +515,7 @@ class CORE_EXPORT NGPhysicalFragment
   // The following are only used by NGPhysicalBoxFragment but are initialized
   // for all types to allow methods using them to be inlined.
   unsigned is_fieldset_container_ : 1;
+  unsigned is_table_ng_part_ : 1;
   unsigned is_legacy_layout_root_ : 1;
   unsigned is_painted_atomically_ : 1;
   unsigned has_collapsed_borders_ : 1;

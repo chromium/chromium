@@ -924,6 +924,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
   if (table_baseline)
     container_builder_.SetBaseline(*table_baseline);
 
+  container_builder_.SetIsTableNGPart();
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }

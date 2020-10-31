@@ -76,6 +76,7 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentBlockSize(offset.block_offset);
   if (section_baseline)
     container_builder_.SetBaseline(*section_baseline);
+  container_builder_.SetIsTableNGPart();
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();

@@ -117,14 +117,16 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   // TODO(atotic,ikilpatrick): Copy across table related data for table,
   // table-row, table-section.
   DCHECK(!physical_fragment.IsTable());
-  DCHECK(!physical_fragment.IsTableRow());
-  DCHECK(!physical_fragment.IsTableSection());
+  DCHECK(!physical_fragment.IsTableNGRow());
+  DCHECK(!physical_fragment.IsTableNGSection());
 
   if (physical_fragment.IsHiddenForPaint())
     container_builder_.SetIsHiddenForPaint(true);
 
   if (physical_fragment.Baseline())
     container_builder_.SetBaseline(*physical_fragment.Baseline());
+  if (physical_fragment.IsTableNGPart())
+    container_builder_.SetIsTableNGPart();
 
   container_builder_.SetIntrinsicBlockSize(result.IntrinsicBlockSize());
   container_builder_.SetOverflowBlockSize(result.OverflowBlockSize());

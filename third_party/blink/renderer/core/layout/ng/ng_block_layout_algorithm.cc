@@ -2165,6 +2165,8 @@ void NGBlockLayoutAlgorithm::FinalizeForTableCell(
   if (ConstraintSpace().IsLegacyTableCell())
     return;
 
+  container_builder_.SetIsTableNGPart();
+
   container_builder_.SetTableCellColumnIndex(
       ConstraintSpace().TableCellColumnIndex());
 

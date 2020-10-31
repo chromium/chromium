@@ -145,6 +145,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
       reported_row_baseline.value_or(row.block_size));
   if (row.is_collapsed)
     container_builder_.SetIsHiddenForPaint(true);
+  container_builder_.SetIsTableNGPart();
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }

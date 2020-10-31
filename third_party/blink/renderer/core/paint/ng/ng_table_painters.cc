@@ -352,7 +352,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
               border_spacing.height};
       PhysicalRect columns_paint_rect(column_offset, column_size);
       for (const NGLink& child : fragment_.Children()) {
-        if (!child.fragment->IsTableSection())
+        if (!child.fragment->IsTableNGSection())
           continue;  // child is a caption.
         PhysicalOffset section_offset =
             child.offset - fragment_.TableGridRect().offset;
