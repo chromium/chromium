@@ -719,6 +719,10 @@
       'gn-builder-win': 'release_bot_x86_minimal_symbols',
     },
 
+    'official.chrome': {
+      'lacros64': 'chromeos_amd64-generic_lacros_official',
+    },
+
     'official.chrome.continuous': {
       'chromeos-amd64-generic-lacros-internal': 'chromeos_amd64-generic_lacros_official',
     },
