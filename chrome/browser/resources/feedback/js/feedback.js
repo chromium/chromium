@@ -28,11 +28,6 @@ const FEEDBACK_MIN_HEIGHT_LOGIN = 482;
 /** @type {number}
  * @const
  */
-const CONTENT_MARGIN_HEIGHT = 40;
-
-/** @type {number}
- * @const
- */
 const MAX_SCREENSHOT_WIDTH = 100;
 
 /** @type {string}
@@ -346,7 +341,8 @@ function resizeAppWindow() {
   }
   height = Math.max(height, minHeight);
 
-  chrome.app.window.current().resizeTo(width, height);
+  chrome.app.window.current().innerBounds.width = width;
+  chrome.app.window.current().innerBounds.height = height;
 }
 
 /**
