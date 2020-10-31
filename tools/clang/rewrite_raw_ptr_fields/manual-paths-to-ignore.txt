@@ -58,13 +58,11 @@ third_party/blink/
 #      grep -v third_party | \
 #      grep -v '^$' | \
 #      sort | uniq > ~/scratch/git-paths
-buildtools/
 buildtools/clang_format/script/
 chrome/app/theme/default_100_percent/google_chrome/
 chrome/app/theme/default_200_percent/google_chrome/
 chrome/app/theme/google_chrome/
 chrome/app/vector_icons/google_chrome/
-chrome/browser/chromeos/arc/voice_interaction/internal/
 chrome/browser/google/linkdoctor_internal/
 chrome/browser/internal/
 chrome/browser/media/engagement_internal/
@@ -76,17 +74,10 @@ chrome/browser/resources/settings_internal/
 chrome/browser/spellchecker/internal/
 chrome/browser/ui/media_router/internal/
 chrome/installer/mac/internal/
-chromeos/assistant/internal/
-chromeos/assistant/libassistant/deps/
-chromeos/assistant/libassistant/src/
-chromeos/assistant/libassistant/src/buildtools/
-chromeos/assistant/libassistant/src/buildtools/clang_format/script/
-chromeos/components/media_app_ui/resources/app/
 chrome/services/soda/internal/
 chrome/test/data/firefox3_profile/searchplugins/
 chrome/test/data/firefox3_searchplugins/
 chrome/test/data/gpu/vt/
-chrome/test/data/osdd/
 chrome/test/data/pdf_private/
 chrome/test/data/perf/canvas_bench/
 chrome/test/data/perf/frame_rate/content/
@@ -95,7 +86,7 @@ chrome/test/data/perf/private/
 chrome/test/data/xr/webvr_info/
 chrome/test/media_router/internal/
 chrome/test/python_tests/
-chrome/tools/test/reference_build/chrome_linux/
+chrome/tools/memory/
 clank/
 components/ntp_tiles/resources/internal/
 components/resources/default_100_percent/google_chrome/
@@ -112,11 +103,6 @@ data/page_cycler/
 data/selenium_core/
 data/tab_switching/
 google_apis/internal/
-libassistant/communication/
-libassistant/contrib/
-libassistant/internal/
-libassistant/resources/
-libassistant/shared/
 media/cdm/api/
 mojo/internal/
 native_client/
@@ -127,12 +113,10 @@ remoting/test/internal/
 remoting/tools/internal/
 remoting/webapp/app_remoting/internal/
 skia/tools/clusterfuzz-data/
-tools/histograms/
 tools/page_cycler/acid3/
 tools/perf/data/
 tools/swarming_client/
 ui/file_manager/internal/
-ui/webui/internal/
 v8/
 webkit/data/bmp_decoder/
 webkit/data/ico_decoder/
