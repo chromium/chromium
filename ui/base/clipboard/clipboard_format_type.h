@@ -62,10 +62,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& GetSvgType();
   static const ClipboardFormatType& GetRtfType();
   static const ClipboardFormatType& GetBitmapType();
-  // TODO(raymes): Unify web custom data and pepper custom data:
-  // crbug.com/158399.
   static const ClipboardFormatType& GetWebCustomDataType();
-  static const ClipboardFormatType& GetPepperCustomDataType();
 
 #if defined(OS_WIN)
   // ANSI formats. Only Windows differentiates between ANSI and UNICODE formats

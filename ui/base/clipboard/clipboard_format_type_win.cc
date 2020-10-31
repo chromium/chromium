@@ -333,11 +333,4 @@ const ClipboardFormatType& ClipboardFormatType::GetWebCustomDataType() {
   return *format;
 }
 
-// static
-const ClipboardFormatType& ClipboardFormatType::GetPepperCustomDataType() {
-  static base::NoDestructor<ClipboardFormatType> format(
-      ::RegisterClipboardFormat(L"Chromium Pepper MIME Data Format"));
-  return *format;
-}
-
 }  // namespace ui

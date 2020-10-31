@@ -110,11 +110,4 @@ const ClipboardFormatType& ClipboardFormatType::GetWebCustomDataType() {
   return *type;
 }
 
-// static
-const ClipboardFormatType& ClipboardFormatType::GetPepperCustomDataType() {
-  static base::NoDestructor<ClipboardFormatType> type(
-      kPepperCustomDataPboardType);
-  return *type;
-}
-
 }  // namespace ui

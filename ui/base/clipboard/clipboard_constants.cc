@@ -25,7 +25,6 @@ const char kMimeTypeLinuxText[] = "TEXT";
 #if !defined(OS_APPLE)
 const char kMimeTypeWebCustomData[] = "chromium/x-web-custom-data";
 const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
-const char kMimeTypePepperCustomData[] = "chromium/x-pepper-custom-data";
 #endif  // defined(OS_APPLE)
 
 #if defined(OS_ANDROID)

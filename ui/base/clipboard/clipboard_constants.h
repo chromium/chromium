@@ -52,8 +52,6 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeWebCustomData[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeWebkitSmartPaste[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypePepperCustomData[];
 #else
 // MacOS-specific Uniform Type Identifiers.
 
@@ -69,10 +67,6 @@ extern NSString* const kWebCustomDataPboardType;
 // actual data associated with this type.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kWebSmartPastePboardType;
-
-// Pepper custom data format type.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kPepperCustomDataPboardType;
 
 // Data format used to tag the current data as confidential.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
