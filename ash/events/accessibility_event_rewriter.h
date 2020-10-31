@@ -24,6 +24,7 @@ namespace ash {
 
 class AccessibilityEventRewriterDelegate;
 enum class SwitchAccessCommand;
+enum class MagnifierCommand;
 
 // AccessibilityEventRewriter sends key events to Accessibility extensions (such
 // as ChromeVox and Switch Access) via the delegate when the corresponding
@@ -79,6 +80,10 @@ class ASH_EXPORT AccessibilityEventRewriter
                                 const Continuation continuation);
   bool RewriteEventForSwitchAccess(const ui::Event& event,
                                    const Continuation continuation);
+  bool RewriteEventForMagnifier(const ui::Event& event,
+                                const Continuation continuation);
+  void OnMagnifierKeyPressed(const ui::KeyEvent* event);
+  void OnMagnifierKeyReleased(const ui::KeyEvent* event);
 
   // Updates the list of allowed keyboard device ids based on the current set of
   // keyboard input types.
