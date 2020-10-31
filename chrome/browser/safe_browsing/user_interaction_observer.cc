@@ -90,10 +90,14 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
   // render widget host handles keyboard events earlier and the callback can
   // indicate that it wants the key press to be ignored.
   // (DidGetUserInteraction() can only observe and not cancel the event.)
-  web_contents->GetRenderViewHost()->GetWidget()->AddKeyPressEventCallback(
-      key_press_callback_);
-  web_contents->GetRenderViewHost()->GetWidget()->AddMouseEventCallback(
-      mouse_event_callback_);
+  web_contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->AddKeyPressEventCallback(key_press_callback_);
+  web_contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->AddMouseEventCallback(mouse_event_callback_);
 
   // Observe permission bubble events.
   permissions::PermissionRequestManager* permission_request_manager =
@@ -110,10 +114,14 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
   if (permission_request_manager) {
     permission_request_manager->RemoveObserver(this);
   }
-  web_contents_->GetRenderViewHost()->GetWidget()->RemoveKeyPressEventCallback(
-      key_press_callback_);
-  web_contents_->GetRenderViewHost()->GetWidget()->RemoveMouseEventCallback(
-      mouse_event_callback_);
+  web_contents_->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->RemoveKeyPressEventCallback(key_press_callback_);
+  web_contents_->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->RemoveMouseEventCallback(mouse_event_callback_);
 }
 
 // static
@@ -368,10 +376,14 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
 }
 
 void SafeBrowsingUserInteractionObserver::CleanUp() {
-  web_contents_->GetRenderViewHost()->GetWidget()->RemoveKeyPressEventCallback(
-      key_press_callback_);
-  web_contents_->GetRenderViewHost()->GetWidget()->RemoveMouseEventCallback(
-      mouse_event_callback_);
+  web_contents_->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->RemoveKeyPressEventCallback(key_press_callback_);
+  web_contents_->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->RemoveMouseEventCallback(mouse_event_callback_);
 }
 
 }  // namespace safe_browsing

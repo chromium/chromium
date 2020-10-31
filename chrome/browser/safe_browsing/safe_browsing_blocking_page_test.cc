@@ -1910,7 +1910,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
     event.text[0] = 'a';
-    content::RenderWidgetHost* rwh = contents->GetRenderViewHost()->GetWidget();
+    content::RenderWidgetHost* rwh =
+        contents->GetMainFrame()->GetRenderViewHost()->GetWidget();
     rwh->ForwardKeyboardEvent(event);
     observer.WaitForNavigationFinished();
     return WaitForReady(browser);
@@ -1926,7 +1927,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     event.click_count = 1;
     content::WebContents* contents =
         browser->tab_strip_model()->GetActiveWebContents();
-    content::RenderWidgetHost* rwh = contents->GetRenderViewHost()->GetWidget();
+    content::RenderWidgetHost* rwh =
+        contents->GetMainFrame()->GetRenderViewHost()->GetWidget();
     rwh->ForwardMouseEvent(event);
   }
 
@@ -2217,7 +2219,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
   event.skip_in_browser = true;
-  contents->GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(event);
+  contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
   AssertNoInterstitial(browser(), false);
 
   // Navigate to about:blank twice to "flush" metrics, if any. The delayed
@@ -2250,7 +2255,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
   event.skip_in_browser = true;
-  contents->GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(event);
+  contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
   AssertNoInterstitial(browser(), false);
 
   // Navigate to about:blank twice to "flush" metrics, if any. The delayed
@@ -2283,7 +2291,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   event.native_key_code = ui::VKEY_C;
   // We don't set event.skip_in_browser = true here because the event will be
   // consumed by UserInteractionObserver and not passed to the browser.
-  contents->GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(event);
+  contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
 
   observer.WaitForNavigationFinished();
   EXPECT_TRUE(WaitForReady(browser()));
@@ -2318,7 +2329,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   // Browser expects a non-synthesized event to have an os_event. Make the
   // browser ignore this event instead.
   event.skip_in_browser = true;
-  contents->GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(event);
+  contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
   base::RunLoop().RunUntilIdle();
   AssertNoInterstitial(browser(), false);
   histograms.ExpectTotalCount(kDelayedWarningsHistogram, 1);
