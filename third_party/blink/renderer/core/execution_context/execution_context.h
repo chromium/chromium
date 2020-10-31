@@ -373,6 +373,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // https://html.spec.whatwg.org/C/webappapis.html#concept-settings-object-cross-origin-isolated-capability
   virtual bool CrossOriginIsolatedCapability() const = 0;
 
+  // Returns true if SharedArrayBuffers can be transferred via PostMessage,
+  // false otherwise. SharedArrayBuffer allows pages to craft high-precision
+  // timers useful for Spectre-style side channel attacks, so are restricted
+  // to cross-origin isolated contexts.
+  bool SharedArrayBufferTransferAllowed() const;
+
   virtual ukm::UkmRecorder* UkmRecorder() { return nullptr; }
   virtual ukm::SourceId UkmSourceID() const { return ukm::kInvalidSourceId; }
 

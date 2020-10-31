@@ -204,6 +204,10 @@ void V8ScriptValueDeserializer::Transfer() {
     v8::Local<v8::Value> wrapper =
         ToV8(array_buffer, creation_context, isolate);
     if (array_buffer->IsShared()) {
+      // Crash if we are receiving a SharedArrayBuffer and this isn't allowed.
+      auto* execution_context = ExecutionContext::From(script_state_);
+      CHECK(execution_context->SharedArrayBufferTransferAllowed());
+
       DCHECK(wrapper->IsSharedArrayBuffer());
       deserializer_.TransferSharedArrayBuffer(
           i, v8::Local<v8::SharedArrayBuffer>::Cast(wrapper));

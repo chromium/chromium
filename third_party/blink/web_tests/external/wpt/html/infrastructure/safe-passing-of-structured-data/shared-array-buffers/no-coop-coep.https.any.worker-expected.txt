@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL SharedArrayBuffer constructor does not exist without COOP+COEP assert_equals: expected (undefined) undefined but got (function) function "function SharedArrayBuffer() { [native code] }"
-FAIL SharedArrayBuffer over MessageChannel without COOP+COEP assert_throws_dom: function "() => channel.port1.postMessage(sab)" did not throw
-FAIL SharedArrayBuffer over BroadcastChannel without COOP+COEP assert_throws_dom: function "() => channel.postMessage(sab)" did not throw
-PASS Bonus: self.crossOriginIsolated
-Harness: the test ran to completion.
-

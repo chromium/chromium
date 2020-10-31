@@ -177,6 +177,11 @@ unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
   return lifecycle_state_observers;
 }
 
+bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
+  return RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
+         CrossOriginIsolatedCapability();
+}
+
 void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
                                              mojom::ConsoleMessageLevel level,
                                              const String& message,

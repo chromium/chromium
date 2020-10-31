@@ -192,6 +192,9 @@ void CreateMainThreadAndInitialize(Platform* platform,
 // Function defined in third_party/blink/public/web/blink.h.
 void SetIsCrossOriginIsolated(bool value) {
   Agent::SetIsCrossOriginIsolated(value);
+  if (value) {
+    v8::V8::SetIsCrossOriginIsolated();
+  }
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
