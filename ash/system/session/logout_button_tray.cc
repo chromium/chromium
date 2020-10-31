@@ -36,8 +36,10 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   DCHECK(shelf);
   Shell::Get()->session_controller()->AddObserver(this);
 
-  auto button = std::make_unique<views::MdTextButton>(this, base::string16(),
-                                                      CONTEXT_LAUNCHER_BUTTON);
+  auto button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&LogoutButtonTray::ButtonPressed,
+                          base::Unretained(this)),
+      base::string16(), CONTEXT_LAUNCHER_BUTTON);
   button->SetProminent(true);
   button->SetBgColorOverride(AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert));
@@ -64,22 +66,6 @@ void LogoutButtonTray::UpdateLayout() {
 
 void LogoutButtonTray::UpdateBackground() {
   // The logout button does not have a background.
-}
-
-void LogoutButtonTray::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  DCHECK_EQ(button_, sender);
-
-  if (dialog_duration_ <= base::TimeDelta()) {
-    if (Shell::Get()->session_controller()->IsDemoSession())
-      base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromShelf"));
-    // Sign out immediately if |dialog_duration_| is non-positive.
-    Shell::Get()->session_controller()->RequestSignOut();
-  } else if (Shell::Get()->logout_confirmation_controller()) {
-    Shell::Get()->logout_confirmation_controller()->ConfirmLogout(
-        base::TimeTicks::Now() + dialog_duration_,
-        LogoutConfirmationController::Source::kShelfExitButton);
-  }
 }
 
 void LogoutButtonTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
@@ -159,6 +145,19 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
     button_->SetMinSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   }
   UpdateVisibility();
+}
+
+void LogoutButtonTray::ButtonPressed() {
+  if (dialog_duration_ <= base::TimeDelta()) {
+    if (Shell::Get()->session_controller()->IsDemoSession())
+      base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromShelf"));
+    // Sign out immediately if |dialog_duration_| is non-positive.
+    Shell::Get()->session_controller()->RequestSignOut();
+  } else if (Shell::Get()->logout_confirmation_controller()) {
+    Shell::Get()->logout_confirmation_controller()->ConfirmLogout(
+        base::TimeTicks::Now() + dialog_duration_,
+        LogoutConfirmationController::Source::kShelfExitButton);
+  }
 }
 
 }  // namespace ash

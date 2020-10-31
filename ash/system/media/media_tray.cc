@@ -170,14 +170,14 @@ void MediaTray::SetPinnedToShelf(bool pinned) {
 
 MediaTray::PinButton::PinButton()
     : TopShortcutButton(
-          this,
+          base::BindRepeating(&PinButton::ButtonPressed,
+                              base::Unretained(this)),
           MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
           MediaTray::IsPinnedToShelf()
               ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
               : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT) {}
 
-void MediaTray::PinButton::ButtonPressed(views::Button* sender,
-                                         const ui::Event& event) {
+void MediaTray::PinButton::ButtonPressed() {
   MediaTray::SetPinnedToShelf(!MediaTray::IsPinnedToShelf());
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.PinAction",
                             MediaTray::IsPinnedToShelf());

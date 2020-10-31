@@ -300,9 +300,10 @@ void TrayPopupUtils::ConfigureContainer(TriView::Container container,
 }
 
 views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback callback,
     const base::string16& text) {
-  auto button = std::make_unique<views::MdTextButton>(listener, text);
+  auto button =
+      std::make_unique<views::MdTextButton>(std::move(callback), text);
   button->SetProminent(true);
   return button.release();
 }

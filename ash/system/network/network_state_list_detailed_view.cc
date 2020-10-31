@@ -263,17 +263,6 @@ void NetworkStateListDetailedView::NetworkListChanged() {
   Update();
 }
 
-void NetworkStateListDetailedView::HandleButtonPressed(views::Button* sender,
-                                                       const ui::Event& event) {
-  if (sender == info_button_) {
-    ToggleInfoBubble();
-    return;
-  }
-
-  if (sender == settings_button_)
-    ShowSettings();
-}
-
 void NetworkStateListDetailedView::HandleViewClicked(views::View* view) {
   if (login_ == LoginStatus::LOCKED)
     return;
@@ -316,11 +305,17 @@ void NetworkStateListDetailedView::CreateExtraTitleRowButtons() {
   DCHECK(!info_button_);
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
-  info_button_ = CreateInfoButton(IDS_ASH_STATUS_TRAY_NETWORK_INFO);
+  info_button_ = CreateInfoButton(
+      base::BindRepeating(&NetworkStateListDetailedView::ToggleInfoBubble,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_NETWORK_INFO);
   tri_view()->AddView(TriView::Container::END, info_button_);
 
   DCHECK(!settings_button_);
-  settings_button_ = CreateSettingsButton(IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS);
+  settings_button_ = CreateSettingsButton(
+      base::BindRepeating(&NetworkStateListDetailedView::ShowSettings,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS);
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 

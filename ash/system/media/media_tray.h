@@ -39,13 +39,13 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   // Pin button showed in media tray bubble's title view and media controls
   // detailed view's title view.
-  class PinButton : public TopShortcutButton, public ButtonListener {
+  class PinButton : public TopShortcutButton {
    public:
     PinButton();
     ~PinButton() override = default;
 
-    // views::ButtonListener implementation.
-    void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+   private:
+    void ButtonPressed();
   };
 
   explicit MediaTray(Shelf* shelf);

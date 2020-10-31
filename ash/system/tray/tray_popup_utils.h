@@ -132,7 +132,7 @@ class TrayPopupUtils {
   // button. For non-MD, this does the same thing as the above. Caller assumes
   // ownership.
   static views::LabelButton* CreateTrayPopupButton(
-      views::ButtonListener* listener,
+      views::Button::PressedCallback callback,
       const base::string16& text);
 
   // Creates and returns a vertical separator to be used between two items in a

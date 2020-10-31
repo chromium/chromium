@@ -133,9 +133,9 @@ FloatingAccessibilityDetailedController::GetAccessibleNameForBubble() {
 }
 
 views::Button* FloatingAccessibilityDetailedController::CreateBackButton(
-    views::ButtonListener* listener) {
+    views::Button::PressedCallback callback) {
   views::ImageButton* button = static_cast<views::ImageButton*>(
-      DetailedViewDelegate::CreateBackButton(listener));
+      DetailedViewDelegate::CreateBackButton(std::move(callback)));
   gfx::ImageSkia image = gfx::CreateVectorIcon(
       kAutoclickCloseIcon,
       AshColorProvider::Get()->GetContentLayerColor(
@@ -148,8 +148,8 @@ views::Button* FloatingAccessibilityDetailedController::CreateBackButton(
 }
 
 views::Button* FloatingAccessibilityDetailedController::CreateHelpButton(
-    views::ButtonListener* listener) {
-  auto* button = DetailedViewDelegate::CreateHelpButton(listener);
+    views::Button::PressedCallback callback) {
+  auto* button = DetailedViewDelegate::CreateHelpButton(std::move(callback));
   button->SetVisible(false);
   return button;
 }

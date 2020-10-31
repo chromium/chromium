@@ -151,7 +151,7 @@ class KeyboardStatusRow : public views::View {
 
   views::ToggleButton* toggle() const { return toggle_; }
 
-  void Init(views::ButtonListener* listener, bool use_unified_theme) {
+  void Init(views::Button::PressedCallback callback, bool use_unified_theme) {
     TrayPopupUtils::ConfigureAsStickyHeader(this);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -177,7 +177,8 @@ class KeyboardStatusRow : public views::View {
 
     // The on-screen keyboard toggle button.
     toggle_ = TrayPopupUtils::CreateToggleButton(
-        listener, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD);
+        std::move(callback),
+        IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD);
     toggle_->SetIsOn(keyboard::IsKeyboardEnabled());
     tri_view->AddView(TriView::Container::END, toggle_);
   }
@@ -305,8 +306,20 @@ void ImeListView::AppendImeListAndProperties(
 void ImeListView::PrependKeyboardStatusRow() {
   DCHECK(!keyboard_status_row_);
   keyboard_status_row_ = new KeyboardStatusRow;
-  keyboard_status_row_->Init(this, use_unified_theme_);
+  keyboard_status_row_->Init(
+      base::BindRepeating(&ImeListView::KeyboardStatusTogglePressed,
+                          base::Unretained(this)),
+      use_unified_theme_);
   scroll_content()->AddChildViewAt(keyboard_status_row_, 0);
+}
+
+void ImeListView::KeyboardStatusTogglePressed() {
+  Shell::Get()
+      ->keyboard_controller()
+      ->virtual_keyboard_controller()
+      ->ToggleIgnoreExternalKeyboard();
+  last_selected_item_id_.clear();
+  last_item_selected_with_keyboard_ = false;
 }
 
 void ImeListView::HandleViewClicked(views::View* view) {
@@ -333,18 +346,6 @@ void ImeListView::HandleViewClicked(views::View* view) {
       !last_item_selected_with_keyboard_) {
     CloseImeListView();
   }
-}
-
-void ImeListView::HandleButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  DCHECK_EQ(sender, keyboard_status_row_->toggle());
-
-  Shell::Get()
-      ->keyboard_controller()
-      ->virtual_keyboard_controller()
-      ->ToggleIgnoreExternalKeyboard();
-  last_selected_item_id_.clear();
-  last_item_selected_with_keyboard_ = false;
 }
 
 void ImeListView::VisibilityChanged(View* starting_from, bool is_visible) {

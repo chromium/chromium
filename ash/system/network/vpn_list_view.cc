@@ -214,9 +214,6 @@ class VPNListNetworkEntry : public HoverHighlightView,
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
   // views::View:
   const char* GetClassName() const override { return "VPNListNetworkEntry"; }
 
@@ -255,17 +252,6 @@ void VPNListNetworkEntry::NetworkIconChanged() {
                             weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VPNListNetworkEntry::ButtonPressed(Button* sender,
-                                        const ui::Event& event) {
-  if (sender != disconnect_button_) {
-    HoverHighlightView::ButtonPressed(sender, event);
-    return;
-  }
-
-  // TODO(stevenjb): Replace with mojo API. https://crbug.com/862420.
-  chromeos::NetworkConnect::Get()->DisconnectFromNetworkId(guid_);
-}
-
 void VPNListNetworkEntry::OnGetNetworkState(NetworkStatePropertiesPtr result) {
   UpdateFromNetworkState(result.get());
 }
@@ -293,7 +279,10 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
     owner_->SetupConnectedScrollListItem(this);
     if (IsVpnConfigAllowed()) {
       disconnect_button_ = TrayPopupUtils::CreateTrayPopupButton(
-          this, l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT));
+          base::BindRepeating(
+              &chromeos::NetworkConnect::DisconnectFromNetworkId,
+              base::Unretained(chromeos::NetworkConnect::Get()), guid_),
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT));
       disconnect_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));
       AddRightView(disconnect_button_);

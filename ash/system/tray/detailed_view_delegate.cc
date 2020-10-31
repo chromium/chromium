@@ -63,8 +63,8 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
 
 class BackButton : public CustomShapeButton {
  public:
-  BackButton(views::ButtonListener* listener)
-      : CustomShapeButton(PressedCallback(listener, this)) {
+  BackButton(views::Button::PressedCallback callback)
+      : CustomShapeButton(std::move(callback)) {
     gfx::ImageSkia image =
         gfx::CreateVectorIcon(kUnifiedMenuArrowBackIcon,
                               AshColorProvider::Get()->GetContentLayerColor(
@@ -196,31 +196,33 @@ HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
 }
 
 views::Button* DetailedViewDelegate::CreateBackButton(
-    views::ButtonListener* listener) {
-  return new BackButton(listener);
+    views::Button::PressedCallback callback) {
+  return new BackButton(std::move(callback));
 }
 
 views::Button* DetailedViewDelegate::CreateInfoButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback callback,
     int info_accessible_name_id) {
-  return new TopShortcutButton(listener, kUnifiedMenuInfoIcon,
+  return new TopShortcutButton(std::move(callback), kUnifiedMenuInfoIcon,
                                info_accessible_name_id);
 }
 
 views::Button* DetailedViewDelegate::CreateSettingsButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback callback,
     int setting_accessible_name_id) {
-  auto* button = new TopShortcutButton(listener, kUnifiedMenuSettingsIcon,
-                                       setting_accessible_name_id);
+  auto* button =
+      new TopShortcutButton(std::move(callback), kUnifiedMenuSettingsIcon,
+                            setting_accessible_name_id);
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);
   return button;
 }
 
 views::Button* DetailedViewDelegate::CreateHelpButton(
-    views::ButtonListener* listener) {
-  auto* button = new TopShortcutButton(listener, vector_icons::kHelpOutlineIcon,
-                                       IDS_ASH_STATUS_TRAY_HELP);
+    views::Button::PressedCallback callback) {
+  auto* button =
+      new TopShortcutButton(std::move(callback), vector_icons::kHelpOutlineIcon,
+                            IDS_ASH_STATUS_TRAY_HELP);
   // Help opens a web page, so treat it like Web UI settings.
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);

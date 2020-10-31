@@ -282,22 +282,13 @@ void TrayDetailedView::OnViewClicked(views::View* sender) {
   HandleViewClicked(sender);
 }
 
-void TrayDetailedView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  if (sender == back_button_) {
-    TransitionToMainView();
-    return;
-  }
-
-  HandleButtonPressed(sender, event);
-}
-
 void TrayDetailedView::CreateTitleRow(int string_id) {
   DCHECK(!tri_view_);
 
   tri_view_ = delegate_->CreateTitleRow(string_id);
 
-  back_button_ = delegate_->CreateBackButton(this);
+  back_button_ = delegate_->CreateBackButton(base::BindRepeating(
+      &TrayDetailedView::TransitionToMainView, base::Unretained(this)));
   tri_view_->AddView(TriView::Container::START, back_button_);
 
   AddChildViewAt(tri_view_, 0);
@@ -439,17 +430,23 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
   children()[size_t{kTitleRowSeparatorIndex}]->SetVisible(!visible);
 }
 
-views::Button* TrayDetailedView::CreateInfoButton(int info_accessible_name_id) {
-  return delegate_->CreateInfoButton(this, info_accessible_name_id);
+views::Button* TrayDetailedView::CreateInfoButton(
+    views::Button::PressedCallback callback,
+    int info_accessible_name_id) {
+  return delegate_->CreateInfoButton(std::move(callback),
+                                     info_accessible_name_id);
 }
 
 views::Button* TrayDetailedView::CreateSettingsButton(
+    views::Button::PressedCallback callback,
     int setting_accessible_name_id) {
-  return delegate_->CreateSettingsButton(this, setting_accessible_name_id);
+  return delegate_->CreateSettingsButton(std::move(callback),
+                                         setting_accessible_name_id);
 }
 
-views::Button* TrayDetailedView::CreateHelpButton() {
-  return delegate_->CreateHelpButton(this);
+views::Button* TrayDetailedView::CreateHelpButton(
+    views::Button::PressedCallback callback) {
+  return delegate_->CreateHelpButton(std::move(callback));
 }
 
 views::Separator* TrayDetailedView::CreateListSubHeaderSeparator() {
@@ -457,11 +454,6 @@ views::Separator* TrayDetailedView::CreateListSubHeaderSeparator() {
 }
 
 void TrayDetailedView::HandleViewClicked(views::View* view) {
-  NOTREACHED();
-}
-
-void TrayDetailedView::HandleButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
   NOTREACHED();
 }
 

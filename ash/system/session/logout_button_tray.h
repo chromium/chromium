@@ -44,7 +44,6 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
   base::string16 GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
@@ -56,6 +55,8 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
   void UpdateLogoutDialogDuration();
   void UpdateVisibility();
   void UpdateButtonTextAndImage();
+
+  void ButtonPressed();
 
   views::MdTextButton* button_;
   bool show_logout_button_in_tray_ = false;

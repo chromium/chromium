@@ -47,8 +47,10 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
   friend class FloatingAccessibilityControllerTest;
   class DetailedBubbleView;
   // DetailedViewDelegate:
-  views::Button* CreateBackButton(views::ButtonListener* listener) override;
-  views::Button* CreateHelpButton(views::ButtonListener* listener) override;
+  views::Button* CreateBackButton(
+      views::Button::PressedCallback callback) override;
+  views::Button* CreateHelpButton(
+      views::Button::PressedCallback callback) override;
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
 

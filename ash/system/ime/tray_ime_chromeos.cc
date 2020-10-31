@@ -53,14 +53,6 @@ void IMEDetailedView::ResetImeListView() {
   controlled_setting_icon_ = nullptr;
 }
 
-void IMEDetailedView::HandleButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  if (sender == settings_button_)
-    ShowSettings();
-  else
-    ImeListView::HandleButtonPressed(sender, event);
-}
-
 void IMEDetailedView::CreateExtraTitleRowButtons() {
   if (ime_controller_->managed_by_policy()) {
     controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView();
@@ -74,7 +66,10 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
   }
 
   tri_view()->SetContainerVisible(TriView::Container::END, true);
-  settings_button_ = CreateSettingsButton(IDS_ASH_STATUS_TRAY_IME_SETTINGS);
+  settings_button_ =
+      CreateSettingsButton(base::BindRepeating(&IMEDetailedView::ShowSettings,
+                                               base::Unretained(this)),
+                           IDS_ASH_STATUS_TRAY_IME_SETTINGS);
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 

@@ -495,23 +495,18 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
   }
 }
 
-void AccessibilityDetailedView::HandleButtonPressed(views::Button* sender,
-                                                    const ui::Event& event) {
-  if (sender == help_view_)
-    ShowHelp();
-  else if (sender == settings_view_)
-    ShowSettings();
-}
-
 void AccessibilityDetailedView::CreateExtraTitleRowButtons() {
   DCHECK(!help_view_);
   DCHECK(!settings_view_);
 
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
-  help_view_ = CreateHelpButton();
-  settings_view_ =
-      CreateSettingsButton(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SETTINGS);
+  help_view_ = CreateHelpButton(base::BindRepeating(
+      &AccessibilityDetailedView::ShowHelp, base::Unretained(this)));
+  settings_view_ = CreateSettingsButton(
+      base::BindRepeating(&AccessibilityDetailedView::ShowSettings,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SETTINGS);
   tri_view()->AddView(TriView::Container::END, help_view_);
   tri_view()->AddView(TriView::Container::END, settings_view_);
 }

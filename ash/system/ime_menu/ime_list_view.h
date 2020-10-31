@@ -71,8 +71,6 @@ class ImeListView : public TrayDetailedView {
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
 
   // views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -89,6 +87,8 @@ class ImeListView : public TrayDetailedView {
 
   // Initializes |keyboard_status_row_| and adds it above the scrollable list.
   void PrependKeyboardStatusRow();
+
+  void KeyboardStatusTogglePressed();
 
   // Requests focus on the current IME if it was selected with keyboard so that
   // accessible text will alert the user of the IME change.

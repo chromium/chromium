@@ -22,7 +22,8 @@ namespace ash {
 const char ActionableView::kViewClassName[] = "tray/ActionableView";
 
 ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
-    : views::Button(this),
+    : views::Button(base::BindRepeating(&ActionableView::ButtonPressed,
+                                        base::Unretained(this))),
       destroyed_(nullptr),
       ink_drop_style_(ink_drop_style) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -79,7 +80,7 @@ ActionableView::CreateInkDropHighlight() const {
   return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
-void ActionableView::ButtonPressed(Button* sender, const ui::Event& event) {
+void ActionableView::ButtonPressed(const ui::Event& event) {
   bool destroyed = false;
   destroyed_ = &destroyed;
   const bool action_performed = PerformAction(event);

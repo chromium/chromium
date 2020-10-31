@@ -348,6 +348,11 @@ void BluetoothDetailedView::UpdateClickedDevice(
   }
 }
 
+void BluetoothDetailedView::ToggleButtonPressed() {
+  Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(
+      toggle_->GetIsOn());
+}
+
 void BluetoothDetailedView::ShowSettings() {
   if (TrayPopupUtils::CanOpenWebUISettings()) {
     CloseBubble();  // Deletes |this|.
@@ -394,17 +399,6 @@ void BluetoothDetailedView::HandleViewClicked(views::View* view) {
   helper->ConnectToBluetoothDevice(device_address);
 }
 
-void BluetoothDetailedView::HandleButtonPressed(views::Button* sender,
-                                                const ui::Event& event) {
-  if (sender == toggle_) {
-    Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(
-        toggle_->GetIsOn());
-  } else {
-    DCHECK_EQ(settings_, sender);
-    ShowSettings();
-  }
-}
-
 void BluetoothDetailedView::CreateExtraTitleRowButtons() {
   if (login_ == LoginStatus::LOCKED)
     return;
@@ -414,13 +408,18 @@ void BluetoothDetailedView::CreateExtraTitleRowButtons() {
 
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
-  toggle_ =
-      TrayPopupUtils::CreateToggleButton(this, IDS_ASH_STATUS_TRAY_BLUETOOTH);
+  toggle_ = TrayPopupUtils::CreateToggleButton(
+      base::BindRepeating(&BluetoothDetailedView::ToggleButtonPressed,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_BLUETOOTH);
   toggle_->SetIsOn(Shell::Get()->tray_bluetooth_helper()->GetBluetoothState() ==
                    BluetoothSystem::State::kPoweredOn);
   tri_view()->AddView(TriView::Container::END, toggle_);
 
-  settings_ = CreateSettingsButton(IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS);
+  settings_ = CreateSettingsButton(
+      base::BindRepeating(&BluetoothDetailedView::ShowSettings,
+                          base::Unretained(this)),
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS);
   tri_view()->AddView(TriView::Container::END, settings_);
 }
 

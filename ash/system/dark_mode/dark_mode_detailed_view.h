@@ -36,10 +36,6 @@ class DarkModeDetailedView : public TrayDetailedView {
  private:
   void CreateItems();
 
-  // TrayDetailedView:
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
-
   views::ToggleButton* toggle_ = nullptr;
   views::RadioButton* themed_mode_button_ = nullptr;
   views::RadioButton* neutral_mode_button_ = nullptr;

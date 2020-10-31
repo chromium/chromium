@@ -34,8 +34,7 @@ class ScrollBorder;
 class TriView;
 
 class ASH_EXPORT TrayDetailedView : public views::View,
-                                    public ViewClickListener,
-                                    public views::ButtonListener {
+                                    public ViewClickListener {
  public:
   explicit TrayDetailedView(DetailedViewDelegate* delegate);
   ~TrayDetailedView() override;
@@ -43,10 +42,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // ViewClickListener:
   // Don't override this --- override HandleViewClicked.
   void OnViewClicked(views::View* sender) final;
-
-  // views::ButtonListener:
-  // Don't override this --- override HandleButtonPressed.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) final;
 
  protected:
   // views::View:
@@ -124,9 +119,11 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Helper functions which create and return the settings and help buttons,
   // respectively, used in the material design top-most header row. The caller
   // assumes ownership of the returned buttons.
-  views::Button* CreateInfoButton(int info_accessible_name_id);
-  views::Button* CreateSettingsButton(int setting_accessible_name_id);
-  views::Button* CreateHelpButton();
+  views::Button* CreateInfoButton(views::Button::PressedCallback callback,
+                                  int info_accessible_name_id);
+  views::Button* CreateSettingsButton(views::Button::PressedCallback callback,
+                                      int setting_accessible_name_id);
+  views::Button* CreateHelpButton(views::Button::PressedCallback callback);
 
   // Create a horizontal separator line to be drawn between rows in a detailed
   // view above the sub-header rows. Caller takes ownership of the returned
@@ -145,10 +142,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   // Overridden to handle clicks on subclass-specific views.
   virtual void HandleViewClicked(views::View* view);
-
-  // Overridden to handle button presses on subclass-specific buttons.
-  virtual void HandleButtonPressed(views::Button* sender,
-                                   const ui::Event& event);
 
   // Creates and adds subclass-specific buttons to the title row.
   virtual void CreateExtraTitleRowButtons();

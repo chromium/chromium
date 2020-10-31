@@ -10,14 +10,13 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/controls/button/button.h"
 
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
-class Button;
-class ButtonListener;
 class Separator;
 class View;
 }  // namespace views
@@ -76,21 +75,25 @@ class ASH_EXPORT DetailedViewDelegate {
 
   // Return the back button used in the title row. Caller takes ownership of the
   // returned view.
-  virtual views::Button* CreateBackButton(views::ButtonListener* listener);
+  virtual views::Button* CreateBackButton(
+      views::Button::PressedCallback callback);
 
   // Return the info button used in the title row. Caller takes ownership of the
   // returned view.
-  virtual views::Button* CreateInfoButton(views::ButtonListener* listener,
-                                          int info_accessible_name_id);
+  virtual views::Button* CreateInfoButton(
+      views::Button::PressedCallback callback,
+      int info_accessible_name_id);
 
   // Return the settings button used in the title row. Caller takes ownership of
   // the returned view.
-  virtual views::Button* CreateSettingsButton(views::ButtonListener* listener,
-                                              int setting_accessible_name_id);
+  virtual views::Button* CreateSettingsButton(
+      views::Button::PressedCallback callback,
+      int setting_accessible_name_id);
 
   // Return the help button used in the title row. Caller takes ownership of the
   // returned view.
-  virtual views::Button* CreateHelpButton(views::ButtonListener* listener);
+  virtual views::Button* CreateHelpButton(
+      views::Button::PressedCallback callback);
 
  private:
   UnifiedSystemTrayController* const tray_controller_;

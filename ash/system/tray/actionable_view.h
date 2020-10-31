@@ -22,8 +22,7 @@ namespace ash {
 //
 // TODO(bruthig): Consider removing ActionableView and make clients use
 // Buttons instead. (See crbug.com/614453)
-class ASH_EXPORT ActionableView : public views::ButtonListener,
-                                  public views::Button {
+class ASH_EXPORT ActionableView : public views::Button {
  public:
   static const char kViewClassName[];
 
@@ -54,10 +53,9 @@ class ASH_EXPORT ActionableView : public views::ButtonListener,
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
 
-  // Overridden from views::ButtonListener.
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
  private:
+  void ButtonPressed(const ui::Event& event);
+
   // Used by ButtonPressed() to determine whether |this| has been destroyed as a
   // result of performing the associated action. This is necessary because in
   // the not-destroyed case ButtonPressed() uses member variables.

@@ -54,8 +54,6 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
   void CreateExtraTitleRowButtons() override;
 
   // Launches the WebUI settings in a browser and closes the system menu.

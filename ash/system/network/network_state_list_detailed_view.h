@@ -73,8 +73,6 @@ class ASH_EXPORT NetworkStateListDetailedView
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
   void CreateExtraTitleRowButtons() override;
 
   // Implementation of 'HandleViewClicked' once networks are received.

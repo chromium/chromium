@@ -42,8 +42,6 @@ class IMEDetailedView : public ImeListView {
  private:
   // ImeListView:
   void ResetImeListView() override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
   void CreateExtraTitleRowButtons() override;
   void ShowSettings();
   const char* GetClassName() const override;

@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace ash {
 namespace {
@@ -100,7 +101,8 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
 
   // Sign out immediately when duration is zero.
   pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 0);
-  tray->ButtonPressed(button, event);
+  views::test::ButtonTestApi button_test(button);
+  button_test.NotifyClick(event);
   session_client->FlushForTest();
   EXPECT_EQ(1, session_client->request_sign_out_count());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kUserAction));
@@ -111,7 +113,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
   // Call |LogoutConfirmationController::ConfirmLogout| when duration is
   // non-zero.
   pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 1000);
-  tray->ButtonPressed(button, event);
+  button_test.NotifyClick(event);
   session_client->FlushForTest();
   EXPECT_EQ(1, session_client->request_sign_out_count());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kUserAction));
@@ -123,7 +125,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
   // demo session.
   pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 0);
   session_client->SetIsDemoSession();
-  tray->ButtonPressed(button, event);
+  button_test.NotifyClick(event);
   session_client->FlushForTest();
   EXPECT_EQ(2, session_client->request_sign_out_count());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kUserAction));

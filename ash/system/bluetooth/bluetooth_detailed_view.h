@@ -84,6 +84,8 @@ class BluetoothDetailedView : public TrayDetailedView {
   void UpdateClickedDevice(const BluetoothAddress& device_id,
                            HoverHighlightView* item_container);
 
+  void ToggleButtonPressed();
+
   void ShowSettings();
 
   base::Optional<BluetoothAddress> GetFocusedDeviceAddress() const;
@@ -91,8 +93,6 @@ class BluetoothDetailedView : public TrayDetailedView {
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
   void CreateExtraTitleRowButtons() override;
 
   // TODO(jamescook): Don't cache this.

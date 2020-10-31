@@ -63,8 +63,10 @@ void DarkModeDetailedView::CreateItems() {
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
   auto* ash_color_provider = AshColorProvider::Get();
-  toggle_ =
-      TrayPopupUtils::CreateToggleButton(this, IDS_ASH_STATUS_TRAY_DARK_THEME);
+  toggle_ = TrayPopupUtils::CreateToggleButton(
+      base::BindRepeating(&AshColorProvider::ToggleColorMode,
+                          base::Unretained(AshColorProvider::Get())),
+      IDS_ASH_STATUS_TRAY_DARK_THEME);
   toggle_->SetIsOn(ash_color_provider->IsDarkModeEnabled());
   tri_view()->AddView(TriView::Container::END, toggle_);
 
@@ -110,11 +112,6 @@ void DarkModeDetailedView::UpdateToggleButton(bool dark_mode_enabled) {
 void DarkModeDetailedView::UpdateCheckedButton(bool is_themed) {
   is_themed ? themed_mode_button_->SetChecked(true)
             : neutral_mode_button_->SetChecked(true);
-}
-
-void DarkModeDetailedView::HandleButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  AshColorProvider::Get()->ToggleColorMode();
 }
 
 }  // namespace ash
