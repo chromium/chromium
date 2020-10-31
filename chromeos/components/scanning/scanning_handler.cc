@@ -4,9 +4,10 @@
 
 #include "chromeos/components/scanning/scanning_handler.h"
 
-#include "base/strings/string16.h"
 #include "base/values.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -62,7 +63,8 @@ void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, select_file_policy_creator_.Run(web_contents));
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_FOLDER, base::string16() /* title */,
+      ui::SelectFileDialog::SELECT_FOLDER,
+      l10n_util::GetStringUTF16(IDS_SCANNING_APP_SELECT_DIALOG_TITLE),
       base::FilePath() /* default_path */, nullptr /* file_types */,
       0 /* file_type_index */,
       base::FilePath::StringType() /* default_extension */, owning_window,
