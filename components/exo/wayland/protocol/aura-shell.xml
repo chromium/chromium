@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="10">
+  <interface name="zaura_shell" version="11">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -66,6 +66,23 @@
       <arg name="output" type="object" interface="wl_output"
 	   summary="the output"/>
     </request>
+
+    <!-- Version 11 additions -->
+
+    <enum name="layout_mode">
+      <description summary="the layout mode">
+        Specifies the server's window layout mode.
+      </description>
+      <entry name="windowed" value="1" summary="multiple windows"/>
+      <entry name="tablet" value="2" summary="restricted mode for tablet"/>
+    </enum>
+
+    <event name="layout_mode" since="11">
+      <description summary="sends the layout_mode">
+        Sends the layout_mode used by the server.
+      </description>
+      <arg name="layout_mode" type="uint" summary="layout_mode enum"/>
+    </event>
   </interface>
 
   <interface name="zaura_surface" version="10">

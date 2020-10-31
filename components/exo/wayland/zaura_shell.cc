@@ -31,8 +31,10 @@
 #include "ui/wm/public/activation_client.h"
 
 #if defined(OS_CHROMEOS)
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "components/exo/wm_helper_chromeos.h"
 #endif  // defined(OS_CHROMEOS)
 
 namespace exo {
@@ -456,6 +458,51 @@ class AuraOutput : public WaylandDisplayObserver {
 ////////////////////////////////////////////////////////////////////////////////
 // aura_shell_interface:
 
+#if defined(OS_CHROMEOS)
+// Implements aura shell interface and monitors workspace state needed
+// for the aura shell interface.
+class WaylandAuraShell : public ash::TabletModeObserver {
+ public:
+  explicit WaylandAuraShell(wl_resource* aura_shell_resource)
+      : aura_shell_resource_(aura_shell_resource) {
+    WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
+    helper->AddTabletModeObserver(this);
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
+      auto layout_mode = helper->InTabletMode()
+                             ? ZAURA_SHELL_LAYOUT_MODE_TABLET
+                             : ZAURA_SHELL_LAYOUT_MODE_WINDOWED;
+      zaura_shell_send_layout_mode(aura_shell_resource_, layout_mode);
+    }
+  }
+  WaylandAuraShell(const WaylandAuraShell&) = delete;
+  WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
+  ~WaylandAuraShell() override {
+    WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
+    helper->RemoveTabletModeObserver(this);
+  }
+
+  // Overridden from ash::TabletModeObserver:
+  void OnTabletModeStarted() override {
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION)
+      zaura_shell_send_layout_mode(aura_shell_resource_,
+                                   ZAURA_SHELL_LAYOUT_MODE_TABLET);
+  }
+  void OnTabletModeEnding() override {
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION)
+      zaura_shell_send_layout_mode(aura_shell_resource_,
+                                   ZAURA_SHELL_LAYOUT_MODE_WINDOWED);
+  }
+  void OnTabletModeEnded() override {}
+
+ private:
+  // The aura shell resource associated with observer.
+  wl_resource* const aura_shell_resource_;
+};
+#endif  // OS_CHROMEOS)
+
 void aura_shell_get_aura_surface(wl_client* client,
                                  wl_resource* resource,
                                  uint32_t id,
@@ -505,8 +552,13 @@ void bind_aura_shell(wl_client* client,
       wl_resource_create(client, &zaura_shell_interface,
                          std::min(version, kZAuraShellVersion), id);
 
+#if defined(OS_CHROMEOS)
+  SetImplementation(resource, &aura_shell_implementation,
+                    std::make_unique<WaylandAuraShell>(resource));
+#else
   wl_resource_set_implementation(resource, &aura_shell_implementation, nullptr,
                                  nullptr);
+#endif
 }
 
 }  // namespace wayland
