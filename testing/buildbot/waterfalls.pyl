@@ -3995,7 +3995,9 @@
           'mac_mini_intel_uhd_630_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
         },
       },
       'Mac FYI Release (Intel)': {

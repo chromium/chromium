@@ -25,7 +25,8 @@
 #         apple apple-apple-a12z
 #         arm
 #         google google-0xffff
-#         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x5912
+#         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
+#               intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm ]
 # Decoder
@@ -415,12 +416,16 @@ crbug.com/929009 [ mac amd ] conformance/glsl/misc/shader-with-non-reserved-word
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 # Mac Intel ANGLE and native OpenGL
-crbug.com/886970 [ mac intel-0xa2e angle-opengl ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
-crbug.com/782317 [ mac intel angle-opengl ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1144247 [ mac intel-0x3e9b angle-opengl ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
+crbug.com/1144247 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
+crbug.com/1144207 [ mac intel-0x3e9b angle-opengl ] conformance/extensions/webgl-multi-draw.html [ Failure ]
+crbug.com/1144207 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 crbug.com/1018028 [ mac intel angle-opengl ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
-crbug.com/886970 [ mac intel-0xa2e angle-disabled ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
-crbug.com/782317 [ mac intel angle-disabled ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/1018028 [ mac intel angle-disabled ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
+crbug.com/886970 [ mac intel-0xa2e angle-opengl ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
+crbug.com/886970 [ mac intel-0xa2e angle-disabled ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
+crbug.com/782317 [ mac intel angle-opengl ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/782317 [ mac intel angle-disabled ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/1092734 [ mac passthrough intel angle-opengl ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba* [ Failure ]
 
 # Mac Retina NVidia failures
@@ -462,7 +467,9 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough ] conformance/uniforms
 
 # Mac / Passthrough command decoder / Metal / Intel
 
+crbug.com/1144258 [ mac angle-metal passthrough intel-0x3e9b ] conformance/glsl/functions/glsl-function-atan-xy.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
+crbug.com/1144258 [ mac angle-metal passthrough intel-0x3e9b ] conformance/ogles/GL/atan/atan_009_to_012.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/textures/misc/texture-size.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] deqp/data/gles2/shaders/conversions.html [ Failure ]
