@@ -114,6 +114,8 @@ performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tra
 content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
 
 # Populated manually - other compile-time reasons
+iovec::iov_base  # requires adding .get() in another repository, used e.g. in
+                 # reinterpret_cast in quic_stream_sequencer_buffer.cc
 views::internal::ClassPropertySetter::property_  # passed to templated param T*
 (anonymous namespace)::ScopedFunctionHelper::function_ # function pointer template
 
