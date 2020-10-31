@@ -20,9 +20,9 @@
 
 namespace ash {
 
-using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
+using phone_hub_metrics::Screen;
 
 InitialConnectingView::InitialConnectingView() {
   SetID(PhoneHubViewID::kInitialConnectingView);
@@ -40,11 +40,15 @@ InitialConnectingView::InitialConnectingView() {
   content_view_->SetDescription(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION));
 
-  LogInterstitialScreenEvent(InterstitialScreen::kInitialConnecting,
+  LogInterstitialScreenEvent(GetScreenForMetrics(),
                              InterstitialScreenEvent::kShown);
 }
 
 InitialConnectingView::~InitialConnectingView() = default;
+
+phone_hub_metrics::Screen InitialConnectingView::GetScreenForMetrics() const {
+  return Screen::kInitialConnecting;
+}
 
 BEGIN_METADATA(InitialConnectingView, views::View)
 END_METADATA

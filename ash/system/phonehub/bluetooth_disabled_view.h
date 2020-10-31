@@ -25,6 +25,9 @@ class ASH_EXPORT BluetoothDisabledView : public PhoneHubContentView,
   BluetoothDisabledView& operator=(const BluetoothDisabledView&) = delete;
   ~BluetoothDisabledView() override;
 
+  // PhoneHubInterstitialView:
+  phone_hub_metrics::Screen GetScreenForMetrics() const override;
+
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 

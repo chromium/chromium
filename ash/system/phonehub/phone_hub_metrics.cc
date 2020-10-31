@@ -12,31 +12,48 @@ namespace phone_hub_metrics {
 
 namespace {
 
-std::string GetInterstitialScreenHistogramName(InterstitialScreen screen) {
+std::string GetInterstitialScreenEventHistogramName(Screen screen) {
   switch (screen) {
-    case InterstitialScreen::kConnectionError:
+    case Screen::kConnectionError:
       return "Ash.PhoneHub.InterstitialScreenEvent.ConnectionError";
-    case InterstitialScreen::kBluetoothOrWifiDisabled:
+    case Screen::kBluetoothOrWifiDisabled:
       return "Ash.PhoneHub.InterstitialScreenEvent.BluetoothOrWifiDisabled";
-    case InterstitialScreen::kReconnecting:
+    case Screen::kReconnecting:
       return "Ash.PhoneHub.InterstitialScreenEvent.Reconnecting";
-    case InterstitialScreen::kInitialConnecting:
+    case Screen::kInitialConnecting:
       return "Ash.PhoneHub.InterstitialScreenEvent.InitialConnecting";
-    case InterstitialScreen::kOnboardingExistingMultideviceUser:
+    case Screen::kOnboardingExistingMultideviceUser:
       return "Ash.PhoneHub.InterstitialScreenEvent.Onboarding."
              "ExistingMultideviceUser";
-    case InterstitialScreen::kOnboardingNewMultideviceUser:
+    case Screen::kOnboardingNewMultideviceUser:
       return "Ash.PhoneHub.InterstitialScreenEvent.Onboarding."
              "NewMultideviceUser";
+    case Screen::kOnboardingDismissPrompt:
+      return "Ash.PhoneHub.InterstitialScreenEvent.OnboardingDismissPrompt";
+    default:
+      DCHECK(false) << "Invalid interstitial screen";
+      return "";
   }
 }
 
 }  // namespace
 
-void LogInterstitialScreenEvent(InterstitialScreen screen,
-                                InterstitialScreenEvent event) {
-  base::UmaHistogramEnumeration(GetInterstitialScreenHistogramName(screen),
+void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event) {
+  base::UmaHistogramEnumeration(GetInterstitialScreenEventHistogramName(screen),
                                 event);
+}
+
+void LogScreenOnBubbleOpen(Screen screen) {
+  base::UmaHistogramEnumeration("Ash.PhoneHub.ScreenOnBubbleOpen", screen);
+}
+
+void LogScreenOnBubbleClose(Screen screen) {
+  base::UmaHistogramEnumeration("Ash.PhoneHub.ScreenOnBubbleClose", screen);
+}
+
+void LogScreenOnSettingsButtonClicked(Screen screen) {
+  base::UmaHistogramEnumeration("Ash.PhoneHub.Screen.OnSettingsButtonClicked",
+                                screen);
 }
 
 void LogNotificationOptInEvent(InterstitialScreenEvent event) {

@@ -39,6 +39,9 @@ class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView,
   ConnectionErrorView& operator=(const ConnectionErrorView&) = delete;
   ~ConnectionErrorView() override;
 
+  // PhoneHubContentView:
+  phone_hub_metrics::Screen GetScreenForMetrics() const override;
+
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 

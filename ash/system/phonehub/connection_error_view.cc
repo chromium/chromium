@@ -23,9 +23,9 @@
 
 namespace ash {
 
-using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
+using phone_hub_metrics::Screen;
 
 ConnectionErrorView::ConnectionErrorView(
     ErrorStatus error,
@@ -54,7 +54,7 @@ ConnectionErrorView::ConnectionErrorView(
       IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_DESCRIPTION));
 
   if (error == ErrorStatus::kReconnecting) {
-    LogInterstitialScreenEvent(InterstitialScreen::kReconnecting,
+    LogInterstitialScreenEvent(Screen::kReconnecting,
                                InterstitialScreenEvent::kShown);
     return;
   }
@@ -79,28 +79,29 @@ ConnectionErrorView::ConnectionErrorView(
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));
 
-  LogInterstitialScreenEvent(InterstitialScreen::kConnectionError,
+  LogInterstitialScreenEvent(Screen::kConnectionError,
                              InterstitialScreenEvent::kShown);
 }
 
 ConnectionErrorView::~ConnectionErrorView() = default;
 
+phone_hub_metrics::Screen ConnectionErrorView::GetScreenForMetrics() const {
+  return GetID() == PhoneHubViewID::kReconnectingView
+             ? Screen::kReconnecting
+             : Screen::kConnectionError;
+}
+
 void ConnectionErrorView::ButtonPressed(views::Button* sender,
                                         const ui::Event& event) {
-  InterstitialScreen interstitial_screen =
-      GetID() == PhoneHubViewID::kReconnectingView
-          ? InterstitialScreen::kReconnecting
-          : InterstitialScreen::kConnectionError;
-
   switch (sender->GetID()) {
     case PhoneHubViewID::kDisconnectedRefreshButton:
-      LogInterstitialScreenEvent(interstitial_screen,
+      LogInterstitialScreenEvent(GetScreenForMetrics(),
                                  InterstitialScreenEvent::kConfirm);
       // Retry the connection attempt.
       connection_scheduler_->ScheduleConnectionNow();
       return;
     case PhoneHubViewID::kDisconnectedLearnMoreButton:
-      LogInterstitialScreenEvent(interstitial_screen,
+      LogInterstitialScreenEvent(GetScreenForMetrics(),
                                  InterstitialScreenEvent::kLearnMore);
       NewWindowDelegate::GetInstance()->NewTabWithUrl(
           GURL(kLearnMoreUrl), /*from_user_interaction=*/true);

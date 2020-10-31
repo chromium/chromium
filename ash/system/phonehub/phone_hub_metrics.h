@@ -17,15 +17,18 @@ enum class InterstitialScreenEvent {
   kMaxValue = kConfirm
 };
 
-// Keep in sync with corresponding template variants in the
-// Ash.PhoneHub.InterstitialEvent.* histogram.
-enum class InterstitialScreen {
-  kConnectionError = 0,
-  kBluetoothOrWifiDisabled,
-  kReconnecting,
-  kInitialConnecting,
-  kOnboardingExistingMultideviceUser,
-  kOnboardingNewMultideviceUser
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class Screen {
+  kBluetoothOrWifiDisabled = 0,
+  kConnectionError = 1,
+  kInitialConnecting = 2,
+  kReconnecting = 3,
+  kOnboardingExistingMultideviceUser = 4,
+  kOnboardingNewMultideviceUser = 5,
+  kPhoneConnected = 6,
+  kOnboardingDismissPrompt = 7,
+  kInvalid = 8,
+  kMaxValue = kInvalid
 };
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
@@ -40,8 +43,16 @@ enum class QuickAction {
 };
 
 // Logs an |event| occurring for the given |interstitial_screen|.
-void LogInterstitialScreenEvent(InterstitialScreen screen,
-                                InterstitialScreenEvent event);
+void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event);
+
+// Logs the |screen| when the PhoneHub bubble opens.
+void LogScreenOnBubbleOpen(Screen screen);
+
+// Logs the |screen| when the PhoneHub bubble closes.
+void LogScreenOnBubbleClose(Screen screen);
+
+// Logs the |screen| when the settings button is clicked.
+void LogScreenOnSettingsButtonClicked(Screen screen);
 
 // Logs an |event| for the notification opt-in prompt.
 void LogNotificationOptInEvent(InterstitialScreenEvent event);

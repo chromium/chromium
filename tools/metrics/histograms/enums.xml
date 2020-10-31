@@ -57767,6 +57767,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Toggle Locate Phone Off"/>
 </enum>
 
+<enum name="PhoneHubScreen">
+  <int value="0" label="BluetoothOrWifiDisabled"/>
+  <int value="1" label="ConnectionError"/>
+  <int value="2" label="InitialConnecting"/>
+  <int value="3" label="Reconnecting"/>
+  <int value="4" label="Onboarding.ExistingMultideviceUser"/>
+  <int value="5" label="Onboarding.NewMultideviceUser"/>
+  <int value="6" label="PhoneConnected"/>
+  <int value="7" label="OnboardingDismissPrompt"/>
+  <int value="8" label="Invalid"/>
+</enum>
+
 <enum name="PhoneNumberRegexVariantResult">
   <obsolete>
     Removed in M82 as the experiment has been stopped.

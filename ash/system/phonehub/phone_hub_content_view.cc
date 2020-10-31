@@ -13,4 +13,8 @@ void PhoneHubContentView::OnBubbleClose() {
   // Nothing to do.
 }
 
+phone_hub_metrics::Screen PhoneHubContentView::GetScreenForMetrics() const {
+  return phone_hub_metrics::Screen::kInvalid;
+}
+
 }  // namespace ash

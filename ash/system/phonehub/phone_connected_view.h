@@ -31,6 +31,9 @@ class PhoneConnectedView : public PhoneHubContentView {
   void ChildPreferredSizeChanged(View* child) override;
   void ChildVisibilityChanged(View* child) override;
   const char* GetClassName() const override;
+
+  // PhoneHubContentView:
+  phone_hub_metrics::Screen GetScreenForMetrics() const override;
 };
 
 }  // namespace ash

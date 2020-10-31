@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_CONTENT_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,6 +19,9 @@ class ASH_EXPORT PhoneHubContentView : public views::View {
   // Called upon bubble closing, subclasses can install their own handlers here
   // if needed for when the the bubble is dismissed.
   virtual void OnBubbleClose();
+
+  // Returns the screen to be logged for metrics.
+  virtual phone_hub_metrics::Screen GetScreenForMetrics() const;
 
  protected:
   PhoneHubContentView();

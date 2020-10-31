@@ -35,9 +35,9 @@
 
 namespace ash {
 
-using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
+using phone_hub_metrics::Screen;
 
 // OnboardingMainView ---------------------------------------------------------
 // Main onboarding screen with Phone Hub feature description and two buttons
@@ -61,20 +61,22 @@ class OnboardingMainView : public PhoneHubInterstitialView,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     switch (sender->GetID()) {
       case PhoneHubViewID::kOnboardingGetStartedButton:
-        // TODO(tengs): Distinguish between the two different onboarding flows.
-        LogInterstitialScreenEvent(
-            InterstitialScreen::kOnboardingNewMultideviceUser,
-            InterstitialScreenEvent::kConfirm);
+        LogInterstitialScreenEvent(GetScreenForMetrics(),
+                                   InterstitialScreenEvent::kConfirm);
         onboarding_ui_tracker_->HandleGetStarted();
         return;
       case PhoneHubViewID::kOnboardingDismissButton:
-        // TODO(tengs): Distinguish between the two different onboarding flows.
-        LogInterstitialScreenEvent(
-            InterstitialScreen::kOnboardingNewMultideviceUser,
-            InterstitialScreenEvent::kDismiss);
+        LogInterstitialScreenEvent(GetScreenForMetrics(),
+                                   InterstitialScreenEvent::kDismiss);
         parent_view_->ShowDismissPrompt();
         return;
     }
+  }
+
+  // PhoneHubInterstitialView:
+  Screen GetScreenForMetrics() const override {
+    // TODO(tengs): Distinguish between the two different onboarding flows.
+    return Screen::kOnboardingNewMultideviceUser;
   }
 
  private:
@@ -150,12 +152,20 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView,
     AddButton(std::move(ack_button));
   }
 
-  // PhoneHubContentView:
+  // PhoneHubInterstitialView:
   void OnBubbleClose() override { onboarding_ui_tracker_->DismissSetupUi(); }
+
+  Screen GetScreenForMetrics() const override {
+    return Screen::kOnboardingDismissPrompt;
+  }
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     DCHECK_EQ(sender->GetID(), PhoneHubViewID::kOnboardingDismissAckButton);
+
+    LogInterstitialScreenEvent(GetScreenForMetrics(),
+                               InterstitialScreenEvent::kConfirm);
+
     Shell::GetPrimaryRootWindowController()
         ->GetStatusAreaWidget()
         ->phone_hub_tray()
@@ -176,8 +186,7 @@ OnboardingView::OnboardingView(
   main_view_ = AddChildView(
       std::make_unique<OnboardingMainView>(onboarding_ui_tracker_, this));
 
-  // TODO(tengs): Distinguish between the two different onboarding flows.
-  LogInterstitialScreenEvent(InterstitialScreen::kOnboardingNewMultideviceUser,
+  LogInterstitialScreenEvent(GetScreenForMetrics(),
                              InterstitialScreenEvent::kShown);
 }
 
@@ -187,8 +196,15 @@ void OnboardingView::OnBubbleClose() {
   main_view_->OnBubbleClose();
 }
 
+Screen OnboardingView::GetScreenForMetrics() const {
+  return main_view_->GetScreenForMetrics();
+}
+
 void OnboardingView::ShowDismissPrompt() {
   DCHECK(main_view_);
+
+  LogInterstitialScreenEvent(GetScreenForMetrics(),
+                             InterstitialScreenEvent::kShown);
 
   RemoveChildView(main_view_);
   main_view_ = AddChildView(

@@ -28,9 +28,8 @@
 
 namespace ash {
 
-using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogNotificationOptInEvent;
+using phone_hub_metrics::LogInterstitialScreenEvent;
 
 namespace {
 

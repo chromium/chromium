@@ -26,6 +26,9 @@ class ASH_EXPORT InitialConnectingView : public PhoneHubContentView {
   InitialConnectingView& operator=(const InitialConnectingView&) = delete;
   ~InitialConnectingView() override;
 
+  // PhoneHubContentView:
+  phone_hub_metrics::Screen GetScreenForMetrics() const override;
+
  private:
   // Responsible for displaying the connecting UI contents.
   // Owned by view hierarchy.

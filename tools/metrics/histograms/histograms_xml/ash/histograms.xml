@@ -1065,17 +1065,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Ash.PhoneHub.InterstitialScreenEvent.{ScreenName}"
+<histogram name="Ash.PhoneHub.InterstitialScreenEvent.{Screen}"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Events for the given PhoneHub interstitial screen.</summary>
-  <token key="ScreenName">
+<!-- The entries below should be a subset of the PhoneHubScreen enum -->
+
+  <token key="Screen">
     <variant name="BluetoothOrWifiDisabled"/>
     <variant name="ConnectionError"/>
     <variant name="InitialConnecting"/>
     <variant name="Onboarding.ExistingMultideviceUser"/>
     <variant name="Onboarding.NewMultideviceUser"/>
+    <variant name="OnboardingDismissPrompt"/>
     <variant name="Reconnecting"/>
   </token>
 </histogram>
@@ -1092,6 +1095,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.ScreenOnSettingsButtonClicked"
+    enum="PhoneHubScreen" expires_after="2021-10-31">
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Logs the current screen when the settings button is clicked in the tray
+    bubble.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.ScreenOn{BubbleEvent}" enum="PhoneHubScreen"
+    expires_after="2021-10-31">
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Logs the current screen for the PhoneHub tray given bubble event (i.e. on
+    bubble open or close).
+  </summary>
+  <token key="BubbleEvent">
+    <variant name="BubbleClose"/>
+    <variant name="BubbleOpen"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.PhoneHub.TabContinuationChipClicked" units="tab index"

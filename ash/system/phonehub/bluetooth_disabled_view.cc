@@ -24,9 +24,9 @@
 
 namespace ash {
 
-using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
+using phone_hub_metrics::Screen;
 
 BluetoothDisabledView::BluetoothDisabledView() {
   SetID(PhoneHubViewID::kBluetoothDisabledView);
@@ -65,23 +65,27 @@ BluetoothDisabledView::BluetoothDisabledView() {
   confirm->SetID(PhoneHubViewID::kBluetoothDisabledConfirmButton);
   content_view_->AddButton(std::move(confirm));
 
-  LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+  LogInterstitialScreenEvent(GetScreenForMetrics(),
                              InterstitialScreenEvent::kShown);
 }
 
 BluetoothDisabledView::~BluetoothDisabledView() = default;
 
+phone_hub_metrics::Screen BluetoothDisabledView::GetScreenForMetrics() const {
+  return Screen::kBluetoothOrWifiDisabled;
+}
+
 void BluetoothDisabledView::ButtonPressed(views::Button* sender,
                                           const ui::Event& event) {
   switch (sender->GetID()) {
     case kBluetoothDisabledLearnMoreButton:
-      LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+      LogInterstitialScreenEvent(GetScreenForMetrics(),
                                  InterstitialScreenEvent::kLearnMore);
       NewWindowDelegate::GetInstance()->NewTabWithUrl(
           GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
       return;
     case kBluetoothDisabledConfirmButton:
-      LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+      LogInterstitialScreenEvent(GetScreenForMetrics(),
                                  InterstitialScreenEvent::kConfirm);
       Shell::GetPrimaryRootWindowController()
           ->GetStatusAreaWidget()

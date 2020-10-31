@@ -43,6 +43,7 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
 
   // PhoneHubContentView:
   void OnBubbleClose() override;
+  phone_hub_metrics::Screen GetScreenForMetrics() const override;
 
  private:
   // The view responsible for displaying the onboarding UI contents.
