@@ -243,12 +243,8 @@ class DragSession {
     this.element_.setDragging(false);
     this.element_.setDraggedOut(false);
 
-    if (event.type === 'dragend' && isTabElement(this.element_) &&
-        !this.hasMoved_) {
-      // If the user was dragging a tab and the tab has not ever been moved,
-      // show a context menu instead.
-      this.tabStripEmbedderProxy_.showTabContextMenu(
-          this.element_.tab.id, this.lastPoint_.x, this.lastPoint_.y);
+    if (event.type === 'dragend') {
+      this.maybeShowTabContextMenu_();
     }
   }
 
@@ -302,6 +298,20 @@ class DragSession {
 
     this.element_.setDragging(false);
     this.element_.setDraggedOut(false);
+
+    this.maybeShowTabContextMenu_();
+  }
+
+  /** @private */
+  maybeShowTabContextMenu_() {
+    if (!isTabElement(this.element_) || this.hasMoved_) {
+      return;
+    }
+
+    // If the user was dragging a tab and the tab has not ever been moved,
+    // show a context menu instead.
+    this.tabStripEmbedderProxy_.showTabContextMenu(
+        this.element_.tab.id, this.lastPoint_.x, this.lastPoint_.y);
   }
 
   /**
