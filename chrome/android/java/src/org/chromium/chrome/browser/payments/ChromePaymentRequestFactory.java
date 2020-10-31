@@ -14,6 +14,7 @@ import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.OriginSecurityChecker;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
+import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -64,9 +65,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         @Override
         public boolean isOffTheRecord() {
-            // TODO(crbug.com/1128658): Try getting around the Profile dependency, as in C++ where
-            // we can do web_contents->GetBrowserContext()->IsOffTheRecord().
-            WebContents liveWebContents = getLiveWebContents();
+            WebContents liveWebContents =
+                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return true;
             Profile profile = Profile.fromWebContents(liveWebContents);
             if (profile == null) return true;
@@ -75,7 +75,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         @Override
         public String getInvalidSslCertificateErrorMessage() {
-            WebContents liveWebContents = getLiveWebContents();
+            WebContents liveWebContents =
+                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
             if (!OriginSecurityChecker.isSchemeCryptographic(
                         liveWebContents.getLastCommittedUrl())) {
@@ -86,9 +87,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         @Override
         public boolean prefsCanMakePayment() {
-            // TODO(crbug.com/1128658): Try replacing Profile with BrowserContextHandle, which
-            // represents a Chrome Profile or WebLayer ProfileImpl, and which UserPrefs operates on.
-            WebContents liveWebContents = getLiveWebContents();
+            WebContents liveWebContents =
+                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             return liveWebContents != null
                     && UserPrefs.get(Profile.fromWebContents(liveWebContents))
                                .getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED);
@@ -102,7 +102,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         @Override
         @Nullable
         public String getTwaPackageName() {
-            WebContents liveWebContents = getLiveWebContents();
+            WebContents liveWebContents =
+                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
             ChromeActivity activity = ChromeActivity.fromWebContents(liveWebContents);
             return activity != null ? mPackageManagerDelegate.getTwaPackageName(activity) : null;
@@ -111,12 +112,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         @VisibleForTesting
         public void setSkipUiForBasicCard() {
             mSkipUiForBasicCard = true;
-        }
-
-        @Nullable
-        private WebContents getLiveWebContents() {
-            WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
-            return webContents != null && !webContents.isDestroyed() ? webContents : null;
         }
     }
 

@@ -132,6 +132,7 @@ android_library("all_java") {
     "java/src/org/chromium/components/payments/PaymentRequestLifecycleObserver.java",
     "java/src/org/chromium/components/payments/PaymentRequestParams.java",
     "java/src/org/chromium/components/payments/PaymentRequestService.java",
+    "java/src/org/chromium/components/payments/PaymentRequestServiceUtil.java",
     "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
     "java/src/org/chromium/components/payments/PaymentUIsObserver.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
@@ -165,6 +166,7 @@ android_library("all_java") {
     ":method_strings_generated_srcjar",
     ":payment_app_type_generated_enum",
     ":payments_journey_logger_enum_javagen",
+    ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
 }
@@ -194,6 +196,12 @@ java_cpp_strings("method_strings_generated_srcjar") {
   sources = [ "//components/payments/core/method_strings.cc" ]
 
   template = "java_templates/MethodStrings.java.tmpl"
+}
+
+java_cpp_strings("prefs_strings_generated_srcjar") {
+  sources = [ "//components/payments/core/payment_prefs.cc" ]
+
+  template = "java_templates/PrefsStrings.java.tmpl"
 }
 
 java_cpp_enum("payment_app_type_generated_enum") {
