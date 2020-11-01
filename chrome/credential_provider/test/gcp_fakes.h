@@ -619,12 +619,7 @@ class FakeUserPoliciesManager : public UserPoliciesManager {
   void SetUserPolicies(const base::string16& sid, const UserPolicies& policies);
 
   bool GetUserPolicies(const base::string16& sid,
-                       UserPolicies* policies) const override;
-
-  // Specify whether user policy is valid for a user.
-  void SetUserPolicyStaleOrMissing(const base::string16& sid, bool status);
-
-  bool IsUserPolicyStaleOrMissing(const base::string16& sid) const override;
+                       UserPolicies* policies) override;
 
   // Returns the number of times FetchAndStoreCloudUserPolicies method was
   // called.
@@ -634,7 +629,6 @@ class FakeUserPoliciesManager : public UserPoliciesManager {
   UserPoliciesManager* original_manager_ = nullptr;
   std::map<base::string16, UserPolicies> user_policies_;
   int num_times_fetch_called_ = 0;
-  std::map<base::string16, bool> user_policies_stale_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

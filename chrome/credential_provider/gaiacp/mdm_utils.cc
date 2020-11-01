@@ -346,16 +346,7 @@ bool UploadDeviceDetailsNeeded(const base::string16& sid) {
   DWORD status = 0;
   GetUserProperty(sid, kRegDeviceDetailsUploadStatus, &status);
 
-  // GCPW token is required for ESA to communicate with the GEM backends. So
-  // enforce upload if this token is missing.
-  base::string16 gcpw_token;
-  HRESULT hr = GetGCPWDmToken(sid, &gcpw_token);
-  bool gcpw_token_upload_required = false;
-  if (UserPoliciesManager::Get()->CloudPoliciesEnabled() && FAILED(hr)) {
-    gcpw_token_upload_required = true;
-  }
-
-  if (status != 1 || gcpw_token_upload_required) {
+  if (status != 1) {
     DWORD device_upload_failures = 1;
     GetUserProperty(sid, kRegDeviceDetailsUploadFailures,
                     &device_upload_failures);

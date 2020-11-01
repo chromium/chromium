@@ -1198,31 +1198,16 @@ HRESULT FakeUserPoliciesManager::FetchAndStoreCloudUserPolicies(
 void FakeUserPoliciesManager::SetUserPolicies(const base::string16& sid,
                                               const UserPolicies& policies) {
   user_policies_[sid] = policies;
-  user_policies_stale_[sid] = false;
 }
 
 bool FakeUserPoliciesManager::GetUserPolicies(const base::string16& sid,
-                                              UserPolicies* policies) const {
+                                              UserPolicies* policies) {
   if (user_policies_.find(sid) != user_policies_.end()) {
-    *policies = user_policies_.at(sid);
+    *policies = user_policies_[sid];
     return true;
   }
 
   return false;
-}
-
-void FakeUserPoliciesManager::SetUserPolicyStaleOrMissing(
-    const base::string16& sid,
-    bool status) {
-  user_policies_stale_[sid] = status;
-}
-
-bool FakeUserPoliciesManager::IsUserPolicyStaleOrMissing(
-    const base::string16& sid) const {
-  if (user_policies_stale_.find(sid) != user_policies_stale_.end())
-    return user_policies_stale_.at(sid);
-
-  return true;
 }
 
 int FakeUserPoliciesManager::GetNumTimesFetchAndStoreCalled() const {

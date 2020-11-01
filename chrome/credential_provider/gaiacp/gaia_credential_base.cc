@@ -2494,7 +2494,8 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
 
   base::string16 sid = OLE2CW(user_sid_);
   if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
-      UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
+      UserPoliciesManager::Get()->GetTimeDeltaSinceLastPolicyFetch(sid) >
+          kMaxTimeDeltaSinceLastUserPolicyRefresh) {
     // Save gaia id since it is needed for the cloud policies server request.
     base::string16 gaia_id = GetDictString(*authentication_results_, kKeyId);
     HRESULT hr = SetUserProperty(sid, kUserId, gaia_id);

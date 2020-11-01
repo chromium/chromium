@@ -345,7 +345,7 @@ base::TimeDelta UserPoliciesManager::GetTimeDeltaSinceLastPolicyFetch(
 }
 
 bool UserPoliciesManager::GetUserPolicies(const base::string16& sid,
-                                          UserPolicies* user_policies) const {
+                                          UserPolicies* user_policies) {
   DCHECK(user_policies);
 
   uint32_t open_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
@@ -378,21 +378,6 @@ bool UserPoliciesManager::GetUserPolicies(const base::string16& sid,
   *user_policies = UserPolicies::FromValue(*policies);
 
   return true;
-}
-
-bool UserPoliciesManager::IsUserPolicyStaleOrMissing(
-    const base::string16& sid) const {
-  UserPolicies user_policies;
-  if (!GetUserPolicies(sid, &user_policies)) {
-    return true;
-  }
-
-  if (GetTimeDeltaSinceLastPolicyFetch(sid) >
-      kMaxTimeDeltaSinceLastUserPolicyRefresh) {
-    return true;
-  }
-
-  return false;
 }
 
 void UserPoliciesManager::SetCloudPoliciesEnabledForTesting(bool value) {

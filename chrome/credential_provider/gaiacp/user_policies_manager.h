@@ -60,11 +60,7 @@ class COMPONENT_EXPORT(GCPW_POLICIES) UserPoliciesManager {
   // Retrieves the policies for the user with |sid| from local storage. Returns
   // the default user policy if policy not fetched or on any error.
   virtual bool GetUserPolicies(const base::string16& sid,
-                               UserPolicies* user_policies) const;
-
-  // Returns true if the policies are missing for the user with |sid| or if
-  // they haven't been refreshed recently.
-  virtual bool IsUserPolicyStaleOrMissing(const base::string16& sid) const;
+                               UserPolicies* user_policies);
 
   // For testing only return the status of the last policy fetch.
   HRESULT GetLastFetchStatusForTesting() const;
