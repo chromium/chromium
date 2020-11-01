@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -23,8 +24,6 @@ constexpr char kSensesKey[] = "senses";
 constexpr char kDefinitionPathUnderSense[] = "definition.text";
 constexpr char kPhoneticsKey[] = "phonetics";
 constexpr char kPhoneticsTextKey[] = "text";
-constexpr char kDefinitionResultDefaultTemplate[] = "%s · /%s/";
-constexpr char kDefinitionResultNoPhoneticsTemplate[] = "%s";
 
 }  // namespace
 
@@ -52,10 +51,9 @@ bool DefinitionResultParser::Parse(const Value* result,
   }
 
   const std::string& secondary_answer =
-      phonetics ? base::StringPrintf(kDefinitionResultDefaultTemplate,
-                                     query_term->c_str(), phonetics->c_str())
-                : base::StringPrintf(kDefinitionResultNoPhoneticsTemplate,
-                                     query_term->c_str());
+      phonetics
+          ? BuildDefinitionTitleText(query_term->c_str(), phonetics->c_str())
+          : query_term->c_str();
   quick_answer->result_type = ResultType::kDefinitionResult;
   quick_answer->primary_answer = *definition;
   quick_answer->secondary_answer = secondary_answer;

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -22,7 +23,7 @@ constexpr char kScorePath[] =
 constexpr char kRatingCountPath[] =
     "ratingsAndReviews.google.aggregateRating.aggregatedCount";
 constexpr char kKnownForReasonPath[] = "localizedKnownForReason";
-constexpr char kRatingReviewTemplate[] = "%.1f ★ (%s reviews)";
+constexpr char kAverageScoreTemplate[] = "%.1f";
 
 }  // namespace
 
@@ -39,9 +40,9 @@ bool KpEntityResultParser::Parse(const Value* result,
   const auto* aggregated_count = entity->FindStringPath(kRatingCountPath);
 
   if (average_score.has_value() && aggregated_count) {
-    const auto& answer =
-        base::StringPrintf(kRatingReviewTemplate, average_score.value(),
-                           aggregated_count->c_str());
+    const auto& answer = BuildKpEntityTitleText(
+        base::StringPrintf(kAverageScoreTemplate, average_score.value()),
+        aggregated_count->c_str());
     quick_answer->primary_answer = answer;
     quick_answer->first_answer_row.push_back(
         std::make_unique<QuickAnswerResultText>(answer));

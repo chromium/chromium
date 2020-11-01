@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -42,6 +44,35 @@ const PreprocessedOutput PreprocessRequest(const IntentInfo& intent_info) {
       break;
   }
   return processed_output;
+}
+
+std::string BuildDefinitionTitleText(const std::string& query_term,
+                                     const std::string& phonetics) {
+  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT,
+                                   base::UTF8ToUTF16(query_term),
+                                   base::UTF8ToUTF16(phonetics));
+}
+
+std::string BuildKpEntityTitleText(const std::string& average_score,
+                                   const std::string& aggregated_count) {
+  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_RATING_REVIEW_TITLE_TEXT,
+                                   base::UTF8ToUTF16(average_score),
+                                   base::UTF8ToUTF16(aggregated_count));
+}
+
+std::string BuildTranslationTitleText(const IntentInfo& intent_info) {
+  auto locale_name = l10n_util::GetDisplayNameForLocale(
+      intent_info.source_language, intent_info.target_language, true);
+  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
+                                   base::UTF8ToUTF16(intent_info.intent_text),
+                                   locale_name);
+}
+
+std::string BuildTranslationTitleText(const std::string& query_text,
+                                      const std::string& locale_name) {
+  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
+                                   base::UTF8ToUTF16(query_text),
+                                   base::UTF8ToUTF16(locale_name));
 }
 
 }  // namespace quick_answers

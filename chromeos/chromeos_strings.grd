@@ -578,6 +578,12 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Quick Answers -->
+      <message name="IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT" desc="The title text format string used for Quick Answers definition result card. The first placeholder contains the source query text and the second placeholder contains the phonetics.">
+        <ph name="QUERY_TEXT">$1<ex>unfathomable</ex></ph> · /<ph name="PHONETICS">$2<ex>ˌənˈfaT͟Həməb(ə)</ex></ph>/
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RATING_REVIEW_TITLE_TEXT" desc="The title text format string used for Quick Answers rating review result card. The first placeholder contains the average rating score and the second placeholder contains the aggregated count of reviews.">
+        <ph name="AVERAGE_SCORE">$1<ex>4.6</ex></ph> ★ (<ph name="AGGREGATED_COUNT">$2<ex>100</ex></ph> reviews)
+      </message>
       <message name="IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT" desc="The title text format string used for Quick Answers translation result card. The first placeholder contains the source text in foreign language and the second placeholder contains the detected source language name displayed in system locale.">
         <ph name="QUERY_TEXT">$1<ex>prodotto</ex></ph> · <ph name="SOURCE_LANGUAGE_NAME">$2<ex>Italian</ex></ph>
       </message>

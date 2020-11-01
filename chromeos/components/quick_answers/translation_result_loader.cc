@@ -9,13 +9,12 @@
 #include "ash/public/cpp/quick_answers/controller/quick_answers_browser_client.h"
 #include "base/json/json_writer.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
@@ -42,14 +41,6 @@ constexpr char kAuthorizationHeaderFormat[] = "Bearer ";
 constexpr base::StringPiece kQueryKey = "q";
 constexpr base::StringPiece kSourceLanguageKey = "source";
 constexpr base::StringPiece kTargetLanguageKey = "target";
-
-std::string BuildTitleText(const IntentInfo& intent_info) {
-  auto locale_name = l10n_util::GetDisplayNameForLocale(
-      intent_info.source_language, intent_info.target_language, true);
-  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
-                                   base::UTF8ToUTF16(intent_info.intent_text),
-                                   locale_name);
-}
 
 std::string BuildTranslationRequestBody(const IntentInfo& intent_info) {
   Value payload(Value::Type::DICTIONARY);
@@ -92,7 +83,7 @@ void TranslationResultLoader::ProcessResponse(
       std::make_unique<TranslationResponseParser>(std::move(complete_callback));
   translation_response_parser_->ProcessResponse(
       std::move(response_body),
-      BuildTitleText(preprocessed_output.intent_info));
+      BuildTranslationTitleText(preprocessed_output.intent_info));
 }
 
 void TranslationResultLoader::OnRequestAccessTokenComplete(

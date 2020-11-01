@@ -12,6 +12,21 @@ namespace quick_answers {
 
 const PreprocessedOutput PreprocessRequest(const IntentInfo& intent_info);
 
+// Build title text for Quick Answers definition result.
+std::string BuildDefinitionTitleText(const std::string& query_term,
+                                     const std::string& phonetics);
+
+// Build title text for Quick Answers knowledge panel entity result.
+std::string BuildKpEntityTitleText(const std::string& average_score,
+                                   const std::string& aggregated_count);
+
+// Build title text for Quick Answers translation result.
+std::string BuildTranslationTitleText(const IntentInfo& intent_info);
+
+// Build title text for Quick Answers translation result.
+std::string BuildTranslationTitleText(const std::string& query_text,
+                                      const std::string& locale_name);
+
 }  // namespace quick_answers
 }  // namespace chromeos
 
