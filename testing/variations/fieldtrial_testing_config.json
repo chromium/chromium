@@ -4443,21 +4443,6 @@
             ]
         }
     ],
-    "NativeWindowOcclusionTrackerWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NativeWindowOcclusionTrackerWin",
-                    "enable_features": [
-                        "CalculateNativeWinOcclusion"
-                    ]
-                }
-            ]
-        }
-    ],
     "NavigationPredictor": [
         {
             "platforms": [
@@ -7683,21 +7668,6 @@
                     "name": "Disabled_20200708",
                     "disable_features": [
                         "WebComponentsV0"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebContentsOcclusionWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "WebContentsOcclusionWin",
-                    "enable_features": [
-                        "WebContentsOcclusion"
                     ]
                 }
             ]
