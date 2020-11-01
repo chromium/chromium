@@ -31,6 +31,7 @@ class WaylandOutputManager;
 class WaylandPointer;
 class WaylandShm;
 class WaylandTouch;
+class WaylandZAuraShell;
 class WaylandZwpLinuxDmabuf;
 class WaylandDataDeviceManager;
 class WaylandCursorPosition;
@@ -68,7 +69,6 @@ class WaylandConnection {
   wp_viewporter* viewporter() const { return viewporter_.get(); }
   xdg_wm_base* shell() const { return shell_.get(); }
   zxdg_shell_v6* shell_v6() const { return shell_v6_.get(); }
-  zaura_shell* aura_shell() const { return aura_shell_.get(); }
   wl_seat* seat() const { return seat_.get(); }
   wp_presentation* presentation() const { return presentation_.get(); }
   zwp_text_input_manager_v1* text_input_manager_v1() const {
@@ -117,6 +117,8 @@ class WaylandConnection {
   WaylandBufferManagerHost* buffer_manager_host() const {
     return buffer_manager_host_.get();
   }
+
+  WaylandZAuraShell* zaura_shell() const { return zaura_shell_.get(); }
 
   WaylandZwpLinuxDmabuf* zwp_dmabuf() const { return zwp_dmabuf_.get(); }
 
@@ -199,7 +201,6 @@ class WaylandConnection {
   wl::Object<wp_viewporter> viewporter_;
   wl::Object<zcr_keyboard_extension_v1> keyboard_extension_v1_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
-  wl::Object<zaura_shell> aura_shell_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
       linux_explicit_synchronization_;
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
@@ -218,6 +219,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandClipboard> clipboard_;
   std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
   std::unique_ptr<WaylandCursorPosition> wayland_cursor_position_;
+  std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZwpLinuxDmabuf> zwp_dmabuf_;
   std::unique_ptr<WaylandDrm> drm_;
   std::unique_ptr<WaylandShm> shm_;

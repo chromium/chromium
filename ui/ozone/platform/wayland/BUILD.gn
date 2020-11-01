@@ -126,6 +126,8 @@ source_set("wayland") {
     "host/wayland_window_manager.h",
     "host/wayland_window_observer.cc",
     "host/wayland_window_observer.h",
+    "host/wayland_zaura_shell.cc",
+    "host/wayland_zaura_shell.h",
     "host/wayland_zwp_linux_dmabuf.cc",
     "host/wayland_zwp_linux_dmabuf.h",
     "host/xdg_foreign_wrapper.cc",

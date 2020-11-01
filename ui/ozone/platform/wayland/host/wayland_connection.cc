@@ -21,7 +21,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
-#include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
@@ -38,8 +37,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
+#include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 
 #if defined(USE_LIBWAYLAND_STUBS)
 #include <dlfcn.h>
@@ -419,15 +420,16 @@ void WaylandConnection::Global(void* data,
     auto wayland_drm = wl::Bind<struct wl_drm>(registry, name, version);
     connection->drm_ =
         std::make_unique<WaylandDrm>(wayland_drm.release(), connection);
-  } else if (!connection->aura_shell_ &&
+  } else if (!connection->zaura_shell_ &&
              (strcmp(interface, "zaura_shell") == 0) &&
              version >= kMinAuraShellVersion) {
-    connection->aura_shell_ =
-        wl::Bind<struct zaura_shell>(registry, name, version);
-    if (!connection->aura_shell_) {
+    auto zaura_shell = wl::Bind<struct zaura_shell>(registry, name, version);
+    if (!zaura_shell) {
       LOG(ERROR) << "Failed to bind zaura_shell";
       return;
     }
+    connection->zaura_shell_ =
+        std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     connection->xdg_decoration_manager_ =

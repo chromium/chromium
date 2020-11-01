@@ -21,6 +21,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 
@@ -431,10 +432,10 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
 }
 
 void WaylandToplevelWindow::InitializeAuraShell() {
-  if (connection()->aura_shell()) {
+  if (connection()->zaura_shell()) {
     DCHECK(!aura_surface_);
     aura_surface_.reset(zaura_shell_get_aura_surface(
-        connection()->aura_shell(), root_surface()->surface()));
+        connection()->zaura_shell()->wl_object(), root_surface()->surface()));
     zaura_surface_set_fullscreen_mode(aura_surface_.get(),
                                       ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE);
   }
