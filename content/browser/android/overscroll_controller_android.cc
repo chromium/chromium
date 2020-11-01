@@ -5,9 +5,11 @@
 #include "content/browser/android/overscroll_controller_android.h"
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -58,8 +60,13 @@ std::unique_ptr<OverscrollRefresh> CreateRefreshEffect(
     return nullptr;
   }
 
+  float edge_width = base::GetFieldTrialParamByFeatureAsInt(
+                         features::kOverscrollHistoryNavigation,
+                         "gesture_navigation_triggering_area_width",
+                         OverscrollRefresh::kDefaultNavigationEdgeWidth) *
+                     dpi_scale;
   return std::make_unique<OverscrollRefresh>(overscroll_refresh_handler,
-                                             dpi_scale);
+                                             edge_width);
 }
 
 }  // namespace

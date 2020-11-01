@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder.TouchEventObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -34,10 +35,13 @@ import java.lang.annotation.RetentionPolicy;
  * Handles history overscroll navigation controlling the underlying UI widget.
  */
 class NavigationHandler implements TouchEventObserver {
-    // Width of a rectangluar area in dp on the left/right edge used for navigation.
+    // Default width of a rectangluar area in dp on the left/right edge used for navigation.
     // Swipe beginning from a point within these rects triggers the operation.
     @VisibleForTesting
-    static final float EDGE_WIDTH_DP = 48;
+    static final int DEFAULT_EDGE_WIDTH_DP = 24;
+
+    // Key name of the server-controlled parameter for the edge width.
+    private static final String EDGE_WIDTH_KEY = "gesture_navigation_triggering_area_width";
 
     // Weighted value to determine when to trigger an edge swipe. Initial scroll
     // vector should form 30 deg or below to initiate swipe action.
@@ -145,7 +149,12 @@ class NavigationHandler implements TouchEventObserver {
         mIsNativePage = isNativePage;
         mIsSheetExpanded = isSheetExpanded;
         mState = GestureState.NONE;
-        mEdgeWidthPx = EDGE_WIDTH_DP * parentView.getResources().getDisplayMetrics().density;
+
+        int edgeWidthDp = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.OVERSCROLL_HISTORY_NAVIGATION, EDGE_WIDTH_KEY,
+                DEFAULT_EDGE_WIDTH_DP);
+
+        mEdgeWidthPx = edgeWidthDp * parentView.getResources().getDisplayMetrics().density;
         mDetector = new GestureDetector(mContext, new SideNavGestureListener());
         mAttachStateListener = new View.OnAttachStateChangeListener() {
             @Override
