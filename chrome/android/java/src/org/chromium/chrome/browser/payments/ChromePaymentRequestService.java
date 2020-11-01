@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -12,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
-import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -20,13 +18,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
-import org.chromium.chrome.browser.payments.ui.PaymentInformation;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
-import org.chromium.chrome.browser.payments.ui.ShoppingCart;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.AbortReason;
@@ -95,9 +89,9 @@ import java.util.Set;
  * living in {@link PaymentRequestService}.
  */
 public class ChromePaymentRequestService
-        implements BrowserPaymentRequest, PaymentRequestUI.Client, PaymentAppFactoryDelegate,
-                   PaymentAppFactoryParams, PaymentRequestUpdateEventListener,
-                   PaymentApp.AbortCallback, PaymentApp.InstrumentDetailsCallback,
+        implements BrowserPaymentRequest, PaymentAppFactoryDelegate, PaymentAppFactoryParams,
+                   PaymentRequestUpdateEventListener, PaymentApp.AbortCallback,
+                   PaymentApp.InstrumentDetailsCallback,
                    PaymentResponseHelper.PaymentResponseRequesterDelegate,
                    PaymentDetailsConverter.MethodChecker, PaymentUiService.Delegate,
                    PaymentUIsObserver {
@@ -496,7 +490,10 @@ public class ChromePaymentRequestService
             if (isMinimalUiApplicable()) {
                 if (mPaymentUiService.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
                             this::onMinimalUIReady, this::onMinimalUiConfirmed,
-                            /*dismissObserver=*/this::onDismiss)) {
+                            /*dismissObserver=*/
+                            ()
+                                    -> onUiAborted(AbortReason.ABORTED_BY_USER,
+                                            ErrorStrings.USER_CANCELLED))) {
                     mDidRecordShowEvent = true;
                     mJourneyLogger.setEventOccurred(Event.SHOWN);
                 } else {
@@ -517,7 +514,7 @@ public class ChromePaymentRequestService
             assert !mWaitForUpdatedDetails;
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                     mSpec.getRawTotal().amount.value, false /*completed*/);
-            onPayClicked(null /* selectedShippingAddress */, null /* selectedShippingOption */,
+            invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
         }
     }
@@ -548,7 +545,8 @@ public class ChromePaymentRequestService
         mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                 mSpec.getRawTotal().amount.value, false /*completed*/);
         app.disableShowingOwnUI();
-        onPayClicked(null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
+        invokePaymentApp(
+                null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
     }
 
     private void onMinimalUiCompletedAndClosed() {
@@ -831,7 +829,7 @@ public class ChromePaymentRequestService
             return;
         }
 
-        if (shouldShowShippingSection()
+        if (mPaymentUiService.shouldShowShippingSection()
                 && (mPaymentUiService.getUiShippingOptions().isEmpty()
                         || !TextUtils.isEmpty(details.error))
                 && mPaymentUiService.getShippingAddressesSection().getSelectedItem() != null) {
@@ -876,7 +874,8 @@ public class ChromePaymentRequestService
 
         // Do not create shipping section When UI is not built yet. This happens when the show
         // promise gets resolved before all apps are ready.
-        if (mPaymentUiService.getPaymentRequestUI() != null && shouldShowShippingSection()) {
+        if (mPaymentUiService.getPaymentRequestUI() != null
+                && mPaymentUiService.shouldShowShippingSection()) {
             mPaymentUiService.createShippingSectionForPaymentRequestUI(chromeActivity);
         }
 
@@ -928,7 +927,7 @@ public class ChromePaymentRequestService
             return;
         }
 
-        if (shouldShowShippingSection()
+        if (mPaymentUiService.shouldShowShippingSection()
                 && (mPaymentUiService.getUiShippingOptions().isEmpty()
                         || !TextUtils.isEmpty(mSpec.selectedShippingOptionError()))
                 && mPaymentUiService.getShippingAddressesSection().getSelectedItem() != null) {
@@ -954,16 +953,13 @@ public class ChromePaymentRequestService
         return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
     }
 
-    /**
-     * Called to retrieve the data to show in the initial PaymentRequest UI.
-     */
+    // Implements PaymentUiService.Delegate:
     @Override
-    public void getDefaultPaymentInformation(Callback<PaymentInformation> callback) {
-        mPaymentUiService.getDefaultPaymentInformation(callback, mIsCurrentPaymentRequestShowing,
-                mIsFinishedQueryingPaymentApps, mWaitForUpdatedDetails);
+    public boolean waitForUpdatedDetails() {
+        return mWaitForUpdatedDetails;
     }
 
-    // Implement PaymentUiService.Delegate:
+    // Implements PaymentUiService.Delegate:
     @Override
     public void recordShowEventAndTransactionAmount() {
         if (mDidRecordShowEvent) return;
@@ -979,49 +975,7 @@ public class ChromePaymentRequestService
         }
     }
 
-    @Override
-    public void getShoppingCart(final Callback<ShoppingCart> callback) {
-        mHandler.post(callback.bind(mPaymentUiService.getUiShoppingCart()));
-    }
-
-    @Override
-    public void getSectionInformation(@PaymentRequestUI.DataType final int optionType,
-            final Callback<SectionInformation> callback) {
-        mPaymentUiService.getSectionInformation(optionType, callback);
-    }
-
-    @Override
-    @PaymentRequestUI.SelectionResult
-    public int onSectionOptionSelected(@PaymentRequestUI.DataType int optionType,
-            EditableOption option, Callback<PaymentInformation> callback) {
-        return mPaymentUiService.onSectionOptionSelected(
-                optionType, option, callback, mWasRetryCalled);
-    }
-
-    @Override
-    @PaymentRequestUI.SelectionResult
-    public int onSectionEditOption(@PaymentRequestUI.DataType int optionType, EditableOption option,
-            Callback<PaymentInformation> callback) {
-        return mPaymentUiService.onSectionEditOption(optionType, option, callback);
-    }
-
-    @Override
-    @PaymentRequestUI.SelectionResult
-    public int onSectionAddOption(
-            @PaymentRequestUI.DataType int optionType, Callback<PaymentInformation> callback) {
-        return mPaymentUiService.onSectionAddOption(optionType, callback);
-    }
-
-    @Override
-    public boolean shouldShowShippingSection() {
-        return mPaymentUiService.shouldShowShippingSection();
-    }
-
-    @Override
-    public boolean shouldShowContactSection() {
-        return mPaymentUiService.shouldShowContactSection();
-    }
-
+    // Implements PaymentApp.InstrumentDetailsCallback:
     @Override
     public void onInstrumentDetailsLoadingWithoutUI() {
         if (mPaymentRequestService == null || mPaymentUiService.getPaymentRequestUI() == null
@@ -1034,11 +988,12 @@ public class ChromePaymentRequestService
         mPaymentUiService.getPaymentRequestUI().showProcessingMessage();
     }
 
+    // Implements PaymentUiService.Delegate:
     @Override
-    public boolean onPayClicked(EditableOption selectedShippingAddress,
-            EditableOption selectedShippingOption, EditableOption selectedPaymentMethod) {
+    public boolean invokePaymentApp(EditableOption selectedShippingAddress,
+            EditableOption selectedShippingOption, PaymentApp selectedPaymentApp) {
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.PAYMENT_HANDLER_INVOKED);
-        mInvokedPaymentApp = (PaymentApp) selectedPaymentMethod;
+        mInvokedPaymentApp = selectedPaymentApp;
 
         EditableOption selectedContact = mPaymentUiService.getContactSection() != null
                 ? mPaymentUiService.getContactSection().getSelectedItem()
@@ -1121,10 +1076,17 @@ public class ChromePaymentRequestService
         return mPaymentHandlerHost;
     }
 
+    // Implements PaymentUiService.Delegate:
     @Override
-    public void onDismiss() {
-        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-        disconnectFromClientWithDebugMessage(ErrorStrings.USER_CANCELLED);
+    public boolean wasRetryCalled() {
+        return mWasRetryCalled;
+    }
+
+    // Implements PaymentUiService.Delegate:
+    @Override
+    public void onUiAborted(@AbortReason int reason, String debugMessage) {
+        mJourneyLogger.setAborted(reason);
+        disconnectFromClientWithDebugMessage(debugMessage);
     }
 
     private void disconnectFromClientWithDebugMessage(String debugMessage) {
@@ -1161,6 +1123,7 @@ public class ChromePaymentRequestService
         onInstrumentAbortResult(true);
     }
 
+    // Implements PaymentApp.InstrumentDetailsCallback:
     /** Called by the payment app in response to an abort request. */
     @Override
     public void onInstrumentAbortResult(boolean abortSucceeded) {
@@ -1219,19 +1182,6 @@ public class ChromePaymentRequestService
         mWasRetryCalled = true;
 
         mPaymentRequestService.getPaymentRequestLifecycleObserver().onRetry(errors);
-    }
-
-    @Override
-    public void onCardAndAddressSettingsClicked() {
-        Context context = ChromeActivity.fromWebContents(mWebContents);
-        if (context == null) {
-            mJourneyLogger.setAborted(AbortReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            return;
-        }
-
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(context);
     }
 
     // Implement BrowserPaymentRequest:
@@ -1695,6 +1645,7 @@ public class ChromePaymentRequestService
         return true;
     }
 
+    // Implements PaymentApp.InstrumentDetailsCallback:
     /** Called after retrieving payment details. */
     @Override
     public void onInstrumentDetailsReady(
@@ -1763,12 +1714,6 @@ public class ChromePaymentRequestService
             mPaymentUiService.getPaymentRequestUI().onPayButtonProcessingCancelled();
             PaymentDetailsUpdateServiceHelper.getInstance().reset();
         }
-    }
-
-    // Implement PaymentUiService.Delegate:
-    @Override
-    public PaymentRequestUI.Client getPaymentRequestUIClient() {
-        return this;
     }
 
     /**
