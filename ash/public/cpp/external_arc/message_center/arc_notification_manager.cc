@@ -205,7 +205,6 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     // TODO(yoshiki): Reconsider when ARC supports multi-user.
     auto item = std::make_unique<ArcNotificationItemImpl>(
         this, message_center_, key, main_profile_id_);
-    // TODO(yoshiki): Use emplacement for performance when it's available.
     auto result = items_.insert(std::make_pair(key, std::move(item)));
     DCHECK(result.second);
     it = result.first;
