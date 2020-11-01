@@ -18,9 +18,6 @@ namespace file_manager {
 FILE_MANAGER_EXPORT const GritResourceMap* GetFileManagerResources(
     size_t* size);
 
-FILE_MANAGER_EXPORT const GritResourceMap* GetFileManagerGenResources(
-    size_t* size);
-
 }  // namespace file_manager
 
 #endif  // UI_FILE_MANAGER_FILE_MANAGER_RESOURCE_UTIL_H_

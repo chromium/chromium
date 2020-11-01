@@ -92,6 +92,5 @@ optimize_webui("audio_player_bundle") {
     ":main.m",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
-    "//ui/webui/resources:preprocess",
   ]
 }

@@ -97,11 +97,6 @@ ChromeComponentExtensionResourceManager::Data::Data() {
       file_manager::GetFileManagerResources(&file_manager_resource_size);
   AddComponentResourceEntries(file_manager_resources,
                               file_manager_resource_size);
-  // Add Files app JS modules resources.
-  file_manager_resources =
-      file_manager::GetFileManagerGenResources(&file_manager_resource_size);
-  AddComponentResourceEntries(file_manager_resources,
-                              file_manager_resource_size);
 
   // ResourceBundle and g_browser_process are not always initialized in unit
   // tests.

@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_grit.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 grit("resources") {
   source = "file_manager_resources.grd"
@@ -26,7 +24,6 @@ component("file_manager") {
     "file_manager_resource_util.h",
   ]
   public_deps = [
-    ":file_manager_gen_resources",
     ":resources",
     "//base",
   ]
@@ -102,47 +99,4 @@ preprocess_grit("preprocess_generated") {
   ]
 
   deps = [ "//ui/file_manager/base/js:modulize" ]
-}
-
-grd_prefix = "file_manager_gen"
-generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-
-generate_grd("build_grd") {
-  out_grd = generated_grd
-
-  input_files_base_dir = "$target_gen_dir/preprocessed"
-  input_files = [ "../audio_player/js/main.m.rollup.js" ]
-
-  resource_path_rewrites =
-      [ "../audio_player/js/main.m.rollup.js|audio_player/js/main.m.js" ]
-
-  deps = [ "//ui/file_manager/audio_player/js:audio_player_bundle" ]
-}
-
-# Resources for the JS modules.
-grit("file_manager_gen_resources") {
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    "-E",
-    "root_src_dir=" + rebase_path("//", root_build_dir),
-  ]
-
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  defines +=
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-
-  source = generated_grd
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/file_manager_gen_resources.h",
-    "grit/file_manager_gen_resources_map.cc",
-    "grit/file_manager_gen_resources_map.h",
-    "file_manager_gen_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/ui/file_manager"
 }
