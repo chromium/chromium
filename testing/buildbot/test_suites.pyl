@@ -1881,6 +1881,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'swarming': {
+          'shards': 4,
+        },
         'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
       },

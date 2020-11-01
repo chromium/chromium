@@ -21834,7 +21834,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "angle_deqp_gles3_tests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_deqp_gles3_tests/",
@@ -21996,7 +21997,8 @@
               "os": "Mac-10.15.5"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "angle_deqp_gles3_tests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_deqp_gles3_tests/",
