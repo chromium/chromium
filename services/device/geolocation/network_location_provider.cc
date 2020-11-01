@@ -19,6 +19,11 @@
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if defined(OS_MAC)
+#include "services/device/geolocation/mac_location_permission_delegate.h"
+#include "services/device/public/cpp/device_features.h"
+#endif
+
 namespace device {
 namespace {
 // The maximum period of time we'll wait for a complete set of wifi data
@@ -50,6 +55,14 @@ NetworkLocationProvider::NetworkLocationProvider(
           base::BindRepeating(&NetworkLocationProvider::OnLocationResponse,
                               base::Unretained(this)))) {
   DCHECK(position_cache_);
+#if defined(OS_MAC)
+  if (base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
+    permission_delegate_ = std::make_unique<MacLocationPermissionDelegate>();
+    permission_delegate_->SetPermissionUpdateCallback(
+        base::BindRepeating(&NetworkLocationProvider::OnSystemPermissionUpdated,
+                            base::Unretained(this)));
+  }
+#endif
 }
 
 NetworkLocationProvider::~NetworkLocationProvider() {
@@ -71,9 +84,27 @@ void NetworkLocationProvider::OnPermissionGranted() {
     RequestPosition();
 }
 
+#if defined(OS_MAC)
+void NetworkLocationProvider::OnSystemPermissionUpdated(
+    bool permission_granted) {
+  const bool was_permission_granted = is_system_permission_granted_;
+  is_system_permission_granted_ = permission_granted;
+  if (!was_permission_granted && is_system_permission_granted_ && IsStarted()) {
+    wifi_data_provider_manager_->ForceRescan();
+    OnWifiDataUpdate();
+  }
+}
+#endif
+
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
+#if defined(OS_MAC)
+  if (!is_system_permission_granted_ &&
+      base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
+    return;
+  }
+#endif
   is_wifi_data_complete_ = wifi_data_provider_manager_->GetData(&wifi_data_);
   if (is_wifi_data_complete_) {
     wifi_timestamp_ = base::Time::Now();
@@ -149,6 +180,13 @@ const mojom::Geoposition& NetworkLocationProvider::GetPosition() {
 void NetworkLocationProvider::RequestPosition() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+#if defined(OS_MAC)
+  if (!is_system_permission_granted_ &&
+      base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
+    return;
+  }
+#endif
+
   // The wifi polling policy may require us to wait for several minutes before
   // fresh wifi data is available. To ensure we can return a position estimate
   // quickly when the network location provider is the primary provider, allow
@@ -201,6 +239,7 @@ void NetworkLocationProvider::RequestPosition() {
     // Let listeners know that we now have a position available.
     if (!location_provider_update_callback_.is_null())
       location_provider_update_callback_.Run(this, position);
+
     return;
   }
   // Don't send network requests until authorized. http://crbug.com/39171

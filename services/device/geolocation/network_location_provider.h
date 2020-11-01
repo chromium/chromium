@@ -18,12 +18,14 @@
 #include "base/strings/string16.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "services/device/geolocation/network_location_request.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
+class MacLocationPermissionDelegate;
 class PositionCache;
 class NetworkLocationProvider : public LocationProvider {
  public:
@@ -40,6 +42,9 @@ class NetworkLocationProvider : public LocationProvider {
   const mojom::Geoposition& GetPosition() override;
   void OnPermissionGranted() override;
 
+#if defined(OS_MAC)
+  void OnSystemPermissionUpdated(bool permission_granted);
+#endif
  private:
   // Tries to update |position_| request from cache or network.
   void RequestPosition();
@@ -81,6 +86,11 @@ class NetworkLocationProvider : public LocationProvider {
   const std::unique_ptr<NetworkLocationRequest> request_;
 
   base::ThreadChecker thread_checker_;
+
+#if defined(OS_MAC)
+  std::unique_ptr<MacLocationPermissionDelegate> permission_delegate_;
+  bool is_system_permission_granted_ = false;
+#endif
 
   base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
 

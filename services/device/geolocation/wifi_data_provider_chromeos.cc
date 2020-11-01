@@ -60,6 +60,10 @@ bool WifiDataProviderChromeOs::GetData(WifiData* data) {
   return is_first_scan_complete_;
 }
 
+// There is currently no reason to force a rescan on ChromeOS so this has not
+// been implemented.
+void WifiDataProviderChromeOs::ForceRescan() {}
+
 std::unique_ptr<WifiPollingPolicy>
 WifiDataProviderChromeOs::CreatePollingPolicy() {
   return std::make_unique<GenericWifiPollingPolicy<

@@ -80,6 +80,7 @@ source_set("geolocation") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
+    "//services/device/public/cpp:device_features",
     "//ui/gfx",
   ]
   public_deps = [
@@ -131,9 +132,9 @@ source_set("geolocation") {
     sources += [
       "core_location_provider.h",
       "core_location_provider.mm",
+      "mac_location_permission_delegate.h",
+      "mac_location_permission_delegate.mm",
     ]
-
-    deps += [ "//services/device/public/cpp:device_features" ]
   }
 
   if (is_win) {
