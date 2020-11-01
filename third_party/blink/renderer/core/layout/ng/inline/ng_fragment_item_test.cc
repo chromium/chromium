@@ -162,7 +162,7 @@ TEST_F(NGFragmentItemTest, BasicText) {
   LayoutBlockFlow* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   LayoutText* layout_text = ToLayoutText(container->FirstChild());
-  const NGPhysicalBoxFragment* box = container->CurrentFragment();
+  const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
   const NGFragmentItems* items = box->Items();
   EXPECT_NE(items, nullptr);
@@ -209,7 +209,7 @@ TEST_F(NGFragmentItemTest, RtlText) {
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   LayoutObject* span = GetLayoutObjectByElementId("span");
   LayoutText* layout_text = ToLayoutText(span->SlowFirstChild());
-  const NGPhysicalBoxFragment* box = container->CurrentFragment();
+  const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
   const NGFragmentItems* items = box->Items();
   EXPECT_NE(items, nullptr);

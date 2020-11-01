@@ -2474,7 +2474,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
   NGBlockNode target(target_block_flow);
   ASSERT_TRUE(target.UseBlockEndMarginEdgeForInlineBlockBaseline());
   scoped_refptr<const NGPhysicalBoxFragment> before =
-      To<NGPhysicalBoxFragment>(target_block_flow->CurrentFragment());
+      To<NGPhysicalBoxFragment>(target_block_flow->GetPhysicalFragment(0));
   EXPECT_EQ(*before->LastBaseline(), LayoutUnit(200));
 
   // Change the height of the container. This should kick the simplified layout.
@@ -2483,7 +2483,7 @@ TEST_F(NGBlockLayoutAlgorithmTest,
   UpdateAllLifecyclePhasesForTest();
 
   scoped_refptr<const NGPhysicalBoxFragment> after =
-      To<NGPhysicalBoxFragment>(target_block_flow->CurrentFragment());
+      To<NGPhysicalBoxFragment>(target_block_flow->GetPhysicalFragment(0));
   EXPECT_EQ(*after->LastBaseline(), LayoutUnit(400));
 }
 

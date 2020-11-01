@@ -82,14 +82,14 @@ NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
   CHECK(layout_object && layout_object->IsLayoutNGMixin());
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
-      To<LayoutBlockFlow>(layout_object)->CurrentFragment();
+      To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);
   return fragment;
 }
 
 const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::CurrentFragmentFor(
     const LayoutNGBlockFlow* block_flow) {
-  return block_flow->CurrentFragment();
+  return block_flow->GetPhysicalFragment(0);
 }
 
 const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(

@@ -14,14 +14,15 @@ class NGPhysicalBoxFragmentTest : public NGLayoutTest {
 
   const NGPhysicalBoxFragment& GetBodyFragment() const {
     return *To<LayoutBlockFlow>(GetDocument().body()->GetLayoutObject())
-                ->CurrentFragment();
+                ->GetPhysicalFragment(0);
   }
 
   const NGPhysicalBoxFragment& GetPhysicalBoxFragmentByElementId(
       const char* id) {
     auto* layout_object = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     DCHECK(layout_object);
-    const NGPhysicalBoxFragment* fragment = layout_object->CurrentFragment();
+    const NGPhysicalBoxFragment* fragment =
+        layout_object->GetPhysicalFragment(0);
     DCHECK(fragment);
     return *fragment;
   }
