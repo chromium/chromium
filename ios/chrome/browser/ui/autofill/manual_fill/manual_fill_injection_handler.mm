@@ -131,42 +131,33 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 
   if ([self canUserInjectInPasswordField:passwordField
                            requiresHTTPS:requiresHTTPS]) {
-    if (!base::FeatureList::IsEnabled(kEnableAutofillPasswordReauthIOS)) {
+    if (!passwordField) {
       [self fillLastSelectedFieldWithString:content];
-      if (passwordField) {
-        UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
-                                ReauthenticationEvent::kSuccess);
-      }
+      return;
+    }
+
+    if ([self.reauthenticationModule canAttemptReauth]) {
+      NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+      __weak __typeof(self) weakSelf = self;
+      auto completionHandler = ^(ReauthenticationResult result) {
+        if (result != ReauthenticationResult::kFailure) {
+          UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                                  ReauthenticationEvent::kSuccess);
+          [weakSelf fillLastSelectedFieldWithString:content];
+        } else {
+          UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                                  ReauthenticationEvent::kFailure);
+        }
+      };
+
+      [self.reauthenticationModule
+          attemptReauthWithLocalizedReason:reason
+                      canReusePreviousAuth:YES
+                                   handler:completionHandler];
     } else {
-      if (!passwordField) {
-        [self fillLastSelectedFieldWithString:content];
-        return;
-      }
-
-      if ([self.reauthenticationModule canAttemptReauth]) {
-        NSString* reason =
-            l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
-        __weak __typeof(self) weakSelf = self;
-        auto completionHandler = ^(ReauthenticationResult result) {
-          if (result != ReauthenticationResult::kFailure) {
-            UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
-                                    ReauthenticationEvent::kSuccess);
-            [weakSelf fillLastSelectedFieldWithString:content];
-          } else {
-            UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
-                                    ReauthenticationEvent::kFailure);
-          }
-        };
-
-        [self.reauthenticationModule
-            attemptReauthWithLocalizedReason:reason
-                        canReusePreviousAuth:YES
-                                     handler:completionHandler];
-      } else {
-        UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
-                                ReauthenticationEvent::kMissingPasscode);
-        [self.securityAlertHandler showSetPasscodeDialog];
-      }
+      UmaHistogramEnumeration("IOS.Reauth.Password.ManualFallback",
+                              ReauthenticationEvent::kMissingPasscode);
+      [self.securityAlertHandler showSetPasscodeDialog];
     }
   }
 }

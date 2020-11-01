@@ -178,10 +178,6 @@ extern const char kEmbedderBlockRestoreUrlDescription[];
 extern const char kEnableAutofillCacheServerCardInfoName[];
 extern const char kEnableAutofillCacheServerCardInfoDescription[];
 
-// Title and description for the flag to enable reauth for filling passwords.
-extern const char kEnableAutofillPasswordReauthIOSName[];
-extern const char kEnableAutofillPasswordReauthIOSDescription[];
-
 // Title and description for the flag to enable the clipboard provider to
 // suggest searchihng for copied images.
 extern const char kEnableClipboardProviderImageSuggestionsName[];

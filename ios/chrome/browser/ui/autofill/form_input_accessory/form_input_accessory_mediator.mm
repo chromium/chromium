@@ -632,8 +632,7 @@ using base::UmaHistogramEnumeration;
   UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                           ReauthenticationEvent::kAttempt);
 
-  if (!base::FeatureList::IsEnabled(kEnableAutofillPasswordReauthIOS) ||
-      !formSuggestion.requiresReauth) {
+  if (!formSuggestion.requiresReauth) {
     UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                             ReauthenticationEvent::kSuccess);
     [self.currentProvider didSelectSuggestion:formSuggestion];

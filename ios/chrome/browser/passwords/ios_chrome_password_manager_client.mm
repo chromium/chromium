@@ -116,7 +116,7 @@ void IOSChromePasswordManagerClient::PromptUserToMovePasswordToAccount(
 }
 
 bool IOSChromePasswordManagerClient::RequiresReauthToFill() {
-  return base::FeatureList::IsEnabled(kEnableAutofillPasswordReauthIOS);
+  return true;
 }
 
 void IOSChromePasswordManagerClient::ShowManualFallbackForSaving(

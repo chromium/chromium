@@ -60,9 +60,6 @@ const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
 const base::Feature kEnableFullPageScreenshot{
     "EnableFullPageScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableAutofillPasswordReauthIOS{
-    "EnableAutofillPasswordReauthIOS", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDefaultBrowserFullscreenPromo{
     "DefaultBrowserFullscreenPromo", base::FEATURE_DISABLED_BY_DEFAULT};
 

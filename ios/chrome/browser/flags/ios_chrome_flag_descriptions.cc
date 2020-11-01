@@ -210,12 +210,6 @@ const char kEnableAutofillCacheServerCardInfoDescription[] =
     "If enabled, when a server card is unmasked, its info will be cached until "
     "page navigation to simplify consecutive fills on the same page.";
 
-const char kEnableAutofillPasswordReauthIOSName[] =
-    "Enable Autofill reauth request for passwords";
-const char kEnableAutofillPasswordReauthIOSDescription[] =
-    "If enabled, when a credential will be filled, the browser will require "
-    "the user to authenticate with the device first.";
-
 const char kEnableClipboardProviderImageSuggestionsName[] =
     "Enable copied image provider";
 const char kEnableClipboardProviderImageSuggestionsDescription[] =
