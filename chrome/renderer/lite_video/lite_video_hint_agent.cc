@@ -86,14 +86,14 @@ void LiteVideoHintAgent::SetLiteVideoHint(
   LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.HintAgent.HasHint", true);
 }
 
-void LiteVideoHintAgent::StopThrottling() {
-  // TODO(rajendrant): Send the stop throttling signal to browser process, after
-  // some K rebuffer events had occurred.
-  DCHECK(HasLiteVideoHint());
-  for (auto* throttle : active_throttles_) {
+void LiteVideoHintAgent::StopThrottlingAndClearHints() {
+  for (auto* throttle : active_throttles_)
     throttle->ResumeIfThrottled();
-  }
   kilobytes_buffered_before_throttle_ = 0;
+  target_downlink_bandwidth_kbps_.reset();
+  kilobytes_to_buffer_before_throttle_.reset();
+  target_downlink_rtt_latency_.reset();
+  max_throttling_delay_.reset();
 }
 
 }  // namespace lite_video

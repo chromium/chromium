@@ -54,9 +54,10 @@ class LiteVideoHintAgent
     return active_throttles_;
   }
 
-  // Stop throttling and resume the current throttled media requests
-  // immediately. Throttling could start again for new requests
-  void StopThrottling();
+  // Stop throttling permanently. Resumes the current throttled media requests
+  // immediately, and clears the hints so that throttling does not happen for
+  // new requests.
+  void StopThrottlingAndClearHints();
 
  private:
   friend class LiteVideoHintAgentTest;
