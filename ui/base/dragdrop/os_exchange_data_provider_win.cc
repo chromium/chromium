@@ -699,7 +699,7 @@ void OSExchangeDataProviderWin::SetDragImage(
   int width = unpremul_bitmap.width();
   int height = unpremul_bitmap.height();
   size_t rowbytes = unpremul_bitmap.rowBytes();
-  DCHECK_EQ(rowbytes, static_cast<size_t>(width) * 4u);
+  CHECK_EQ(rowbytes, static_cast<size_t>(width) * 4u);
 
   void* bits;
   HBITMAP hbitmap;
