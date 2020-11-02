@@ -13,21 +13,16 @@ import android.content.pm.PackageManager;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import org.chromium.chrome.R;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -37,15 +32,15 @@ import java.lang.ref.WeakReference;
  */
 public class CableAuthenticatorUI extends Fragment
         implements OnClickListener, QRScanDialog.Callback, CableAuthenticator.Callback {
-    /** True if this UI was created because the user connected a desktop via USB. */
-    private boolean mCreatedByUsbIntent;
-
+    private enum Mode {
+        QR, // Triggered from Settings; can scan QR code to start handshake.
+        FCM, // Triggered by user selecting notification; handshake already running.
+        USB, // Triggered by connecting via USB.
+    }
+    private Mode mMode;
     private AndroidPermissionDelegate mPermissionDelegate;
     private CableAuthenticator mAuthenticator;
-
-    private ButtonCompat mQRButton;
-    private ProgressBar mSpinner;
-    private TextView mStatus;
+    private LinearLayout mQRButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,69 +50,55 @@ public class CableAuthenticatorUI extends Fragment
         Bundle arguments = getArguments();
         final UsbAccessory accessory =
                 (UsbAccessory) arguments.getParcelable(UsbManager.EXTRA_ACCESSORY);
-        mCreatedByUsbIntent = (accessory != null);
+        if (accessory != null) {
+            mMode = Mode.USB;
+        } else if (arguments.getBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM")) {
+            mMode = Mode.FCM;
+        } else {
+            mMode = Mode.QR;
+        }
+
         final long networkContext = arguments.getLong(
                 "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext");
         final long registration =
                 arguments.getLong("org.chromium.chrome.modules.cablev2_authenticator.Registration");
         final String activityClassName = arguments.getString(
                 "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName");
-        final boolean isFcmNotification =
-                arguments.getBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM");
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                activityClassName, isFcmNotification, accessory);
+                activityClassName, mMode == Mode.FCM, accessory);
     }
 
     @Override
     @SuppressLint("SetTextI18n")
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Shows a placeholder UI that provides a very basic animation and status text informing of
-        // progress, as well as a button to scan QR codes.
-
-        // TODO: should check FEATURE_BLUETOOTH with
-        // https://developer.android.com/reference/android/content/pm/PackageManager.html#hasSystemFeature(java.lang.String)
-        // TODO: strings should be translated but this will be replaced during
-        // the UI process.
         getActivity().setTitle("Security Key");
 
-        final Context context = getContext();
+        switch (mMode) {
+            case USB:
+                return inflater.inflate(R.layout.cablev2_usb_attached, container, false);
 
-        ProgressBar mSpinner = new ProgressBar(context);
-        mSpinner.setIndeterminate(true);
-        mSpinner.setPadding(0, 60, 0, 60);
+            case FCM:
+                return inflater.inflate(R.layout.cablev2_fcm, container, false);
 
-        mStatus = new TextView(context);
-        mStatus.setPadding(0, 60, 0, 60);
+            case QR:
+                // TODO: should check FEATURE_BLUETOOTH with
+                // https://developer.android.com/reference/android/content/pm/PackageManager.html#hasSystemFeature(java.lang.String)
+                // TODO: strings should be translated but this will be replaced during
+                // the UI process.
 
-        if (mCreatedByUsbIntent) {
-            mStatus.setText("Connected via USB. Awaiting command.");
-        } else {
-            mStatus.setText("Looking for known devices nearby");
+                View v = inflater.inflate(R.layout.cablev2_qr_scan, container, false);
+                mQRButton = v.findViewById(R.id.qr_scan);
+                mQRButton.setOnClickListener(this);
+
+                return v;
         }
 
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setGravity(Gravity.CENTER_HORIZONTAL);
-        layout.addView(mSpinner);
-        layout.addView(mStatus,
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        if (!mCreatedByUsbIntent) {
-            mQRButton = new ButtonCompat(context, R.style.TextButtonThemeOverlay);
-            mQRButton.setText("Connect a new device");
-            mQRButton.setOnClickListener(this);
-
-            layout.addView(mQRButton,
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT));
-        }
-
-        return layout;
+        assert false;
+        return null;
     }
 
     /**
@@ -154,7 +135,6 @@ public class CableAuthenticatorUI extends Fragment
     @Override
     @SuppressLint("SetTextI18n")
     public void onQRCode(String value) {
-        mStatus.setText("Looking for your new device nearby");
         mAuthenticator.onQRCode(value);
     }
 
@@ -184,12 +164,7 @@ public class CableAuthenticatorUI extends Fragment
 
     @Override
     @SuppressLint("SetTextI18n")
-    public void onAuthenticatorConnected() {
-        getActivity().runOnUiThread(() -> {
-            mStatus.setText("Connected. Verifying it's you.");
-            mQRButton.setEnabled(false);
-        });
-    }
+    public void onAuthenticatorConnected() {}
 
     @Override
     public void onAuthenticatorResult(CableAuthenticator.Result result) {

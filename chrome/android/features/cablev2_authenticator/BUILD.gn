@@ -15,6 +15,7 @@ android_library("java") {
   ]
 
   deps = [
+    ":java_resources",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_fido_java",
     "$google_play_services_package:google_play_services_tasks_java",
@@ -30,6 +31,7 @@ android_library("java") {
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.webauth.authenticator"
 }
 
 generate_jni("jni_headers") {
@@ -38,6 +40,16 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/USBHandler.java",
   ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/header.xml",
+    "java/res/layout/cablev2_fcm.xml",
+    "java/res/layout/cablev2_qr_scan.xml",
+    "java/res/layout/cablev2_usb_attached.xml",
+  ]
+  deps = [ "//chrome/android:chrome_app_java_resources" ]
 }
 
 source_set("native") {
