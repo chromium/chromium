@@ -26,7 +26,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {getScanService} from './mojo_interface_provider.js';
 import {ScannerArr} from './scanning_app_types.js';
-import {colorModeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
+import {colorModeFromString, fileTypeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 
 /**
  * The default save directory for completed scans.
@@ -227,10 +227,10 @@ Polymer({
       return;
     }
 
-    // TODO(jschettler): Remove this once ScanService supports other file types.
-    if (this.selectedFileType !==
-        chromeos.scanning.mojom.FileType.kPng.toString()) {
-      this.statusText_ = 'PNG is the only supported file type.';
+    // TODO(jschettler): Remove this once ScanService supports PDF.
+    if (this.selectedFileType ==
+        chromeos.scanning.mojom.FileType.kPdf.toString()) {
+      this.statusText_ = 'PDF is not a supported file type.';
       return;
     }
 
@@ -238,12 +238,10 @@ Polymer({
     this.settingsDisabled_ = true;
     this.scanButtonDisabled_ = true;
 
-    // TODO(jschettler): Use the selected file type when ScanService supports
-    // it.
     const settings = {
       'sourceName': this.selectedSource,
       'scanToPath': {'path': this.selectedFilePath},
-      'fileType': chromeos.scanning.mojom.FileType.kPng,
+      'fileType': fileTypeFromString(this.selectedFileType),
       'colorMode': colorModeFromString(this.selectedColorMode),
       'pageSize': pageSizeFromString(this.selectedPageSize),
       'resolutionDpi': Number(this.selectedResolution),

@@ -4,8 +4,11 @@
 
 #include "chrome/browser/chromeos/scanning/scan_service.h"
 
+#include <map>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -222,19 +225,24 @@ TEST_F(ScanServiceTest, Scan) {
   base::Time::Exploded scan_time;
   // Since we're using mock time, this is deterministic.
   base::Time::Now().LocalExplode(&scan_time);
-  base::FilePath saved_scan_path = temp_dir_.GetPath().Append(
-      base::StringPrintf("scan_%02d%02d%02d-%02d%02d%02d_1.png", scan_time.year,
-                         scan_time.month, scan_time.day_of_month,
-                         scan_time.hour, scan_time.minute, scan_time.second));
-  EXPECT_FALSE(base::PathExists(saved_scan_path));
 
-  // Saving scanned images is currently only supported for the PNG file type.
   scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
   mojo_ipc::ScanSettings settings;
   settings.scan_to_path = temp_dir_.GetPath();
-  settings.file_type = mojo_ipc::FileType::kPng;
-  EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
-  EXPECT_TRUE(base::PathExists(saved_scan_path));
+  std::map<std::string, mojo_ipc::FileType> file_types = {
+      {"png", mojo_ipc::FileType::kPng}, {"jpg", mojo_ipc::FileType::kJpg}};
+  base::FilePath saved_scan_path;
+  for (const auto& type : file_types) {
+    saved_scan_path = temp_dir_.GetPath().Append(base::StringPrintf(
+        "scan_%02d%02d%02d-%02d%02d%02d_1.%s", scan_time.year, scan_time.month,
+        scan_time.day_of_month, scan_time.hour, scan_time.minute,
+        scan_time.second, type.first.c_str()));
+    EXPECT_FALSE(base::PathExists(saved_scan_path));
+
+    settings.file_type = type.second;
+    EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
+    EXPECT_TRUE(base::PathExists(saved_scan_path));
+  }
 }
 
 }  // namespace chromeos

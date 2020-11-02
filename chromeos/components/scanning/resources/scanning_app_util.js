@@ -25,6 +25,26 @@ export function colorModeFromString(colorModeString) {
 }
 
 /**
+ * Converts a chromeos.scanning.mojom.FileType string to the corresponding
+ * enum value.
+ * @param {string} fileTypeString
+ * @return {chromeos.scanning.mojom.FileType}
+ */
+export function fileTypeFromString(fileTypeString) {
+  switch (fileTypeString) {
+    case chromeos.scanning.mojom.FileType.kJpg.toString():
+      return chromeos.scanning.mojom.FileType.kJpg;
+    case chromeos.scanning.mojom.FileType.kPdf.toString():
+      return chromeos.scanning.mojom.FileType.kPdf;
+    case chromeos.scanning.mojom.FileType.kPng.toString():
+      return chromeos.scanning.mojom.FileType.kPng;
+    default:
+      assertNotReached();
+      return chromeos.scanning.mojom.FileType.kPdf;
+  }
+}
+
+/**
  * Converts a chromeos.scanning.mojom.ColorMode to a string that can be
  * displayed in the color mode dropdown.
  * @param {number} mojoColorMode
