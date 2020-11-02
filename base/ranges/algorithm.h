@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/functional/identity.h"
 #include "base/functional/invoke.h"
 #include "base/ranges/functional.h"
@@ -151,13 +150,14 @@ using range_category_t = iterator_category_t<ranges::iterator_t<Range>>;
 
 namespace ranges {
 
-// C++14 implementation of std::ranges::in_fun_result.
+// C++14 implementation of std::ranges::in_fun_result. Note the because C++14
+// lacks the `no_unique_address` attribute it is commented out.
 //
 // Reference: https://wg21.link/algorithms.results#:~:text=in_fun_result
 template <typename I, typename F>
 struct in_fun_result {
-  NO_UNIQUE_ADDRESS I in;
-  NO_UNIQUE_ADDRESS F fun;
+  /* [[no_unique_address]] */ I in;
+  /* [[no_unique_address]] */ F fun;
 
   template <typename I2,
             typename F2,
