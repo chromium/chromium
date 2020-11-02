@@ -180,6 +180,7 @@ public class DownloadLocationCustomView
      * @param  availableSpace The available space of the file location.
      */
     private void setLocationAvailableSpace(long availableSpace) {
+        if (mDialogType != DownloadLocationDialogType.LOCATION_SUGGESTION) return;
         String locationAvailableSpaceText =
                 StringUtils.getAvailableBytesForUi(getContext(), availableSpace);
         int textColor = ContextCompat.getColor(getContext(), R.color.default_text_color);
