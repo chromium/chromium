@@ -1567,7 +1567,9 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
               offset + GetCursorPosition() - next_double_click_selection_len_;
         }
         // Reset selection
-        SelectAll(false);
+        // Select all in the reverse direction so as not to scroll the caret
+        // into view and shift the contents jarringly.
+        SelectAll(true);
       }
     } else if (event.GetClickCount() == 2 && event.IsLeftMouseButton()) {
       // If the user double clicked and we unelided between the first and second
