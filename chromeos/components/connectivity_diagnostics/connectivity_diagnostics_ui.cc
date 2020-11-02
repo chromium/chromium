@@ -4,9 +4,13 @@
 
 #include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 
+#include <utility>
+
+#include "chromeos/components/connectivity_diagnostics/network_diagnostics_localized_strings.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/grit/connectivity_diagnostics_resources.h"
 #include "chromeos/grit/connectivity_diagnostics_resources_map.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -37,8 +41,12 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 }  // namespace
 
-ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
+    content::WebUI* web_ui,
+    BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback)
+    : ui::MojoWebUIController(web_ui),
+      bind_network_diagnostics_service_callback_(
+          std::move(bind_network_diagnostics_callback)) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIConnectivityDiagnosticsHost);
   source->OverrideContentSecurityPolicy(
@@ -54,12 +62,19 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(content::WebUI* web_ui)
   SetUpWebUIDataSource(source, resources, kGeneratedPath,
                        IDR_CONNECTIVITY_DIAGNOSTICS_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
+  network_diagnostics::AddLocalizedStrings(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }
 
 ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;
+
+void ConnectivityDiagnosticsUI::BindInterface(
+    mojo::PendingReceiver<
+        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+  bind_network_diagnostics_service_callback_.Run(std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ConnectivityDiagnosticsUI)
 

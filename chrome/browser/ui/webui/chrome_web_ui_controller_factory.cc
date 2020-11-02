@@ -160,6 +160,7 @@
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
+#include "chrome/browser/chromeos/net/network_health/network_health_service.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/scanning/scan_service.h"
@@ -219,6 +220,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
@@ -436,6 +438,22 @@ WebUIController* NewWebUI<chromeos::multidevice::ProximityAuthUI>(
       chromeos::secure_channel::SecureChannelClientProvider::GetInstance()
           ->GetClient(),
       base::BindRepeating(&BindMultiDeviceSetup, Profile::FromWebUI(web_ui)));
+}
+
+template <>
+WebUIController* NewWebUI<chromeos::ConnectivityDiagnosticsUI>(
+    WebUI* web_ui,
+    const GURL& url) {
+  return new chromeos::ConnectivityDiagnosticsUI(
+      web_ui,
+      /* BindNetworkDiagnosticsServiceCallback */
+      base::BindRepeating(
+          [](mojo::PendingReceiver<
+              chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+                 receiver) {
+            chromeos::network_health::NetworkHealthService::GetInstance()
+                ->BindDiagnosticsReceiver(std::move(receiver));
+          }));
 }
 #endif  // defined(OS_CHROMEOS)
 
