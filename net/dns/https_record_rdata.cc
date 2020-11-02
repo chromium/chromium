@@ -5,8 +5,11 @@
 #include "net/dns/https_record_rdata.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +17,7 @@
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/immediate_crash.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -44,6 +48,33 @@ bool ReadNextServiceParam(base::Optional<uint16_t> last_key,
 
   *out_param_key = key;
   *out_param_value = value;
+  return true;
+}
+
+bool ParseMandatoryKeys(base::StringPiece param_value,
+                        std::set<uint16_t>* out_parsed) {
+  DCHECK(out_parsed);
+
+  base::BigEndianReader reader(param_value.data(), param_value.size());
+
+  std::set<uint16_t> mandatory_keys;
+  // Do/while to require at least one key.
+  do {
+    uint16_t key;
+    if (!reader.ReadU16(&key))
+      return false;
+
+    // Mandatory key itself is disallowed from its list.
+    if (key == dns_protocol::kHttpsServiceParamKeyMandatory)
+      return false;
+    // Keys required to be listed in ascending order.
+    if (!mandatory_keys.empty() && key <= *mandatory_keys.rbegin())
+      return false;
+
+    CHECK(mandatory_keys.insert(key).second);
+  } while (reader.remaining() > 0);
+
+  *out_parsed = std::move(mandatory_keys);
   return true;
 }
 
@@ -161,7 +192,7 @@ std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
 
   base::Optional<std::string> alias_name =
       DnsDomainToString(reader, true /* require_complete */);
-  if (!alias_name.has_value() || alias_name.value().empty())
+  if (!alias_name.has_value())
     return nullptr;
 
   if (reader.remaining() != 0)
@@ -186,9 +217,13 @@ bool AliasFormHttpsRecordRdata::IsAlias() const {
   return true;
 }
 
+// static
+constexpr uint16_t ServiceFormHttpsRecordRdata::kSupportedKeys[];
+
 ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
     uint16_t priority,
     std::string service_name,
+    std::set<uint16_t> mandatory_keys,
     std::vector<std::string> alpn_ids,
     bool default_alpn,
     base::Optional<uint16_t> port,
@@ -198,6 +233,7 @@ ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
     std::map<uint16_t, std::string> unparsed_params)
     : priority_(priority),
       service_name_(std::move(service_name)),
+      mandatory_keys_(std::move(mandatory_keys)),
       alpn_ids_(std::move(alpn_ids)),
       default_alpn_(default_alpn),
       port_(port),
@@ -206,13 +242,18 @@ ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
       ipv6_hint_(std::move(ipv6_hint)),
       unparsed_params_(std::move(unparsed_params)) {
   DCHECK_NE(priority_, 0);
+  DCHECK(mandatory_keys_.find(dns_protocol::kHttpsServiceParamKeyMandatory) ==
+         mandatory_keys_.end());
 
 #if DCHECK_IS_ON()
-  for (const IPAddress& address : ipv4_hint) {
+  for (const IPAddress& address : ipv4_hint_) {
     DCHECK(address.IsIPv4());
   }
-  for (const IPAddress& address : ipv6_hint) {
+  for (const IPAddress& address : ipv6_hint_) {
     DCHECK(address.IsIPv6());
+  }
+  for (const auto& unparsed_param : unparsed_params_) {
+    DCHECK(!IsSupportedKey(unparsed_param.first));
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -229,6 +270,7 @@ bool ServiceFormHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
       static_cast<const ServiceFormHttpsRecordRdata*>(other);
   return priority_ == service->priority_ &&
          service_name_ == service->service_name_ &&
+         mandatory_keys_ == service->mandatory_keys_ &&
          alpn_ids_ == service->alpn_ids_ &&
          default_alpn_ == service->default_alpn_ && port_ == service->port_ &&
          ipv4_hint_ == service->ipv4_hint_ &&
@@ -259,6 +301,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   if (reader.remaining() == 0) {
     return std::make_unique<ServiceFormHttpsRecordRdata>(
         priority, std::move(service_name).value(),
+        std::set<uint16_t>() /* mandatory_keys */,
         std::vector<std::string>() /* alpn_ids */, true /* default_alpn */,
         base::nullopt /* port */, std::vector<IPAddress>() /* ipv4_hint */,
         std::string() /* ech_config */,
@@ -272,19 +315,23 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
                             &param_value))
     return nullptr;
 
-  std::map<uint16_t, std::string> unparsed_params;
-  while (param_key < dns_protocol::kHttpsServiceParamKeyAlpn) {
-    CHECK(unparsed_params
-              .emplace(param_key, static_cast<std::string>(param_value))
-              .second);
-    if (reader.remaining() == 0)
-      break;
-    if (!ReadNextServiceParam(param_key, reader, &param_key, &param_value))
+  // Assume keys less than Mandatory are not possible.
+  DCHECK_GE(param_key, dns_protocol::kHttpsServiceParamKeyMandatory);
+
+  std::set<uint16_t> mandatory_keys;
+  if (param_key == dns_protocol::kHttpsServiceParamKeyMandatory) {
+    DCHECK(IsSupportedKey(param_key));
+    if (!ParseMandatoryKeys(param_value, &mandatory_keys))
       return nullptr;
+    if (reader.remaining() > 0 &&
+        !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {
+      return nullptr;
+    }
   }
 
   std::vector<std::string> alpn_ids;
   if (param_key == dns_protocol::kHttpsServiceParamKeyAlpn) {
+    DCHECK(IsSupportedKey(param_key));
     if (!ParseAlpnIds(param_value, &alpn_ids))
       return nullptr;
     if (reader.remaining() > 0 &&
@@ -295,6 +342,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   bool default_alpn = true;
   if (param_key == dns_protocol::kHttpsServiceParamKeyNoDefaultAlpn) {
+    DCHECK(IsSupportedKey(param_key));
     if (!param_value.empty())
       return nullptr;
     default_alpn = false;
@@ -306,6 +354,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   base::Optional<uint16_t> port;
   if (param_key == dns_protocol::kHttpsServiceParamKeyPort) {
+    DCHECK(IsSupportedKey(param_key));
     if (param_value.size() != 2)
       return nullptr;
     uint16_t port_val;
@@ -319,6 +368,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   std::vector<IPAddress> ipv4_hint;
   if (param_key == dns_protocol::kHttpsServiceParamKeyIpv4Hint) {
+    DCHECK(IsSupportedKey(param_key));
     if (!ParseIpAddresses<IPAddress::kIPv4AddressSize>(param_value, &ipv4_hint))
       return nullptr;
     if (reader.remaining() > 0 &&
@@ -329,6 +379,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   std::string ech_config;
   if (param_key == dns_protocol::kHttpsServiceParamKeyEchConfig) {
+    DCHECK(IsSupportedKey(param_key));
     ech_config = std::string(param_value.data(), param_value.size());
     if (reader.remaining() > 0 &&
         !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {
@@ -338,6 +389,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   std::vector<IPAddress> ipv6_hint;
   if (param_key == dns_protocol::kHttpsServiceParamKeyIpv6Hint) {
+    DCHECK(IsSupportedKey(param_key));
     if (!ParseIpAddresses<IPAddress::kIPv6AddressSize>(param_value, &ipv6_hint))
       return nullptr;
     if (reader.remaining() > 0 &&
@@ -348,8 +400,10 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   // Note that if parsing has already reached the end of the rdata, `param_key`
   // is still set for whatever param was read last.
+  std::map<uint16_t, std::string> unparsed_params;
   if (param_key > dns_protocol::kHttpsServiceParamKeyIpv6Hint) {
     for (;;) {
+      DCHECK(!IsSupportedKey(param_key));
       CHECK(unparsed_params
                 .emplace(param_key, static_cast<std::string>(param_value))
                 .second);
@@ -361,9 +415,40 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   }
 
   return std::make_unique<ServiceFormHttpsRecordRdata>(
-      priority, std::move(service_name).value(), std::move(alpn_ids),
-      default_alpn, port, std::move(ipv4_hint), std::move(ech_config),
-      std::move(ipv6_hint), std::move(unparsed_params));
+      priority, std::move(service_name).value(), std::move(mandatory_keys),
+      std::move(alpn_ids), default_alpn, port, std::move(ipv4_hint),
+      std::move(ech_config), std::move(ipv6_hint), std::move(unparsed_params));
+}
+
+bool ServiceFormHttpsRecordRdata::IsCompatible() const {
+  std::set<uint16_t> supported_keys(std::begin(kSupportedKeys),
+                                    std::end(kSupportedKeys));
+
+  for (uint16_t mandatory_key : mandatory_keys_) {
+    DCHECK_NE(mandatory_key, dns_protocol::kHttpsServiceParamKeyMandatory);
+
+    if (supported_keys.find(mandatory_key) == supported_keys.end())
+      return false;
+  }
+
+#if DCHECK_IS_ON()
+  for (const auto& unparsed_param : unparsed_params_) {
+    DCHECK(mandatory_keys_.find(unparsed_param.first) == mandatory_keys_.end());
+  }
+#endif  // DCHECK_IS_ON()
+
+  return true;
+}
+
+// static
+bool ServiceFormHttpsRecordRdata::IsSupportedKey(uint16_t key) {
+#if DCHECK_IS_ON()
+  return std::find(std::begin(kSupportedKeys), std::end(kSupportedKeys), key) !=
+         std::end(kSupportedKeys);
+#else
+  // Only intended for DCHECKs.
+  IMMEDIATE_CRASH();
+#endif  // DCHECK_IS_ON()
 }
 
 }  // namespace net

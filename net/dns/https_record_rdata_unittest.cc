@@ -43,6 +43,8 @@ TEST(HttpsRecordRdataTest, ParsesService) {
       "\000\001"
       // Service name: chromium.org
       "\010chromium\003org\000"
+      // mandatory=alpn,no-default-alpn,port,ipv4hint,echconfig,ipv6hint
+      "\000\000\000\014\000\001\000\002\000\003\000\004\000\005\000\006"
       // alpn=foo,bar
       "\000\001\000\010\003foo\003bar"
       // no-default-alpn
@@ -66,7 +68,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   IPAddress expected_ipv6;
   ASSERT_TRUE(expected_ipv6.AssignFromIPLiteral("2001:4860:4860::8888"));
   ServiceFormHttpsRecordRdata expected(
-      1 /* priority */, "chromium.org",
+      1 /* priority */, "chromium.org", std::set<uint16_t>({1, 2, 3, 4, 5, 6}),
       std::vector<std::string>({"foo", "bar"}) /* alpn_ids */,
       false /* default_alpn */, base::Optional<uint16_t>(46) /* port */,
       std::vector<IPAddress>({IPAddress(8, 8, 8, 8)}) /* ipv4_hint */,
@@ -80,6 +82,8 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   ASSERT_TRUE(service_rdata);
   EXPECT_EQ(service_rdata->priority(), 1);
   EXPECT_EQ(service_rdata->service_name(), "chromium.org");
+  EXPECT_THAT(service_rdata->mandatory_keys(),
+              testing::ElementsAre(1, 2, 3, 4, 5, 6));
   EXPECT_THAT(service_rdata->alpn_ids(), testing::ElementsAre("foo", "bar"));
   EXPECT_FALSE(service_rdata->default_alpn());
   EXPECT_THAT(service_rdata->port(), testing::Optional(46));
@@ -89,6 +93,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   EXPECT_THAT(service_rdata->ipv6_hint(), testing::ElementsAre(expected_ipv6));
   EXPECT_THAT(service_rdata->unparsed_params(),
               testing::ElementsAre(testing::Pair(7, "foo")));
+  EXPECT_TRUE(service_rdata->IsCompatible());
 }
 
 TEST(HttpsRecordRdataTest, RejectCorruptRdata) {

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -57,7 +58,7 @@ class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {
   bool IsEqual(const HttpsRecordRdata* other) const override;
   bool IsAlias() const override;
 
-  base::StringPiece alias_name() { return alias_name_; }
+  base::StringPiece alias_name() const { return alias_name_; }
 
  private:
   AliasFormHttpsRecordRdata() = default;
@@ -67,8 +68,18 @@ class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {
 
 class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
  public:
+  static constexpr uint16_t kSupportedKeys[] = {
+      dns_protocol::kHttpsServiceParamKeyMandatory,
+      dns_protocol::kHttpsServiceParamKeyAlpn,
+      dns_protocol::kHttpsServiceParamKeyNoDefaultAlpn,
+      dns_protocol::kHttpsServiceParamKeyPort,
+      dns_protocol::kHttpsServiceParamKeyIpv4Hint,
+      dns_protocol::kHttpsServiceParamKeyEchConfig,
+      dns_protocol::kHttpsServiceParamKeyIpv6Hint};
+
   ServiceFormHttpsRecordRdata(uint16_t priority,
                               std::string service_name,
+                              std::set<uint16_t> mandatory_keys,
                               std::vector<std::string> alpn_ids,
                               bool default_alpn,
                               base::Optional<uint16_t> port,
@@ -84,23 +95,33 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   bool IsEqual(const HttpsRecordRdata* other) const override;
   bool IsAlias() const override;
 
-  uint16_t priority() { return priority_; }
-  base::StringPiece service_name() { return service_name_; }
-  const std::vector<std::string>& alpn_ids() { return alpn_ids_; }
-  bool default_alpn() { return default_alpn_; }
-  base::Optional<uint16_t> port() { return port_; }
-  const std::vector<IPAddress>& ipv4_hint() { return ipv4_hint_; }
-  base::StringPiece ech_config() { return ech_config_; }
-  const std::vector<IPAddress>& ipv6_hint() { return ipv6_hint_; }
-  const std::map<uint16_t, std::string>& unparsed_params() {
+  uint16_t priority() const { return priority_; }
+  base::StringPiece service_name() const { return service_name_; }
+  const std::set<uint16_t>& mandatory_keys() const { return mandatory_keys_; }
+  const std::vector<std::string>& alpn_ids() const { return alpn_ids_; }
+  bool default_alpn() const { return default_alpn_; }
+  base::Optional<uint16_t> port() const { return port_; }
+  const std::vector<IPAddress>& ipv4_hint() const { return ipv4_hint_; }
+  base::StringPiece ech_config() const { return ech_config_; }
+  const std::vector<IPAddress>& ipv6_hint() const { return ipv6_hint_; }
+  const std::map<uint16_t, std::string>& unparsed_params() const {
     return unparsed_params_;
   }
 
+  // Returns whether or not this rdata parser is considered "compatible" with
+  // the parsed rdata. That is that all keys listed by mandatory_keys() (and all
+  // keys considered default mandatory for HTTPS records) are parsable by this
+  // parser.
+  bool IsCompatible() const;
+
  private:
+  static bool IsSupportedKey(uint16_t key);
+
   const uint16_t priority_;
   const std::string service_name_;
 
   // Supported service parameters.
+  const std::set<uint16_t> mandatory_keys_;
   const std::vector<std::string> alpn_ids_;
   const bool default_alpn_;
   const base::Optional<uint16_t> port_;
