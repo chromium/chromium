@@ -991,6 +991,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("installLinuxPackageDialog")));
 
+#if !defined(OFFICIAL_BUILD)
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    LaunchFilesAppSwa, /* launch_files_app_swa.js */
+    FilesAppBrowserTest,
+    ::testing::Values(TestCase("launchFilesAppSwa").FilesSwa(),
+                      TestCase("launchFilesAppSwa").FilesSwa().InGuestMode()));
+#endif
+
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     LauncherSearch, /* launcher_search.js */
     FilesAppBrowserTest,
