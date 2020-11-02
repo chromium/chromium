@@ -327,7 +327,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
 template <typename Base>
 scoped_refptr<const NGLayoutResult>
 LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
-  const auto* previous_result = Base::GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> previous_result =
+      Base::GetCachedLayoutResult();
   bool is_layout_root = !Base::View()->GetLayoutState()->Next();
 
   // If we are a layout root, use the previous space if available. This will
@@ -340,9 +341,24 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   scoped_refptr<const NGLayoutResult> result =
       NGBlockNode(this).Layout(constraint_space);
 
+  const auto& physical_fragment =
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+
   for (const auto& descendant :
-       result->PhysicalFragment().OutOfFlowPositionedDescendants())
+       physical_fragment.OutOfFlowPositionedDescendants())
     descendant.node.UseLegacyOutOfFlowPositioning();
+
+  // Even if we are a layout root, our baseline may have shifted. In this
+  // (rare) case, mark our containing-block for layout.
+  if (is_layout_root && previous_result) {
+    if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
+            .Baseline() != physical_fragment.Baseline()) {
+      if (auto* containing_block = Base::ContainingBlock()) {
+        containing_block->SetNeedsLayout(
+            layout_invalidation_reason::kChildChanged, kMarkContainerChain);
+      }
+    }
+  }
 
   return result;
 }

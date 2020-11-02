@@ -576,11 +576,21 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::SimplifiedLayout(
   scoped_refptr<const NGLayoutResult> result =
       Layout(space, /* break_token */ nullptr);
 
-  // If we changed size from performing "simplified" layout, we have
-  // added/removed scrollbars. Return null indicating to our parent that it
-  // needs to perform a full layout.
-  if (previous_result->PhysicalFragment().Size() !=
-      result->PhysicalFragment().Size())
+  const auto& old_fragment =
+      To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment());
+  const auto& new_fragment =
+      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+
+  // Simplified layout has the ability to add/remove scrollbars, this can cause
+  // a couple (rare) edge-cases which will make the fragment different enough
+  // that the parent should perform a full layout.
+  //  - The size has changed.
+  //  - The alignment baseline has shifted.
+  // We return a nullptr in these cases indicating to our parent that it needs
+  // to perform a full layout.
+  if (old_fragment.Size() != new_fragment.Size())
+    return nullptr;
+  if (old_fragment.Baseline() != new_fragment.Baseline())
     return nullptr;
 
 #if DCHECK_IS_ON()
