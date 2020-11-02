@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadItem;
@@ -417,6 +418,7 @@ public class RuntimePermissionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1144670")
     @Feature({"RuntimePermissions", "Location"})
     public void testAllowRuntimeLocationIncognito() throws Exception {
         setupGeolocationSystemMock();
@@ -432,6 +434,7 @@ public class RuntimePermissionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1144670")
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
     public void testAllowRuntimeCameraIncognito() throws Exception {
@@ -444,6 +447,7 @@ public class RuntimePermissionTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1144670")
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
     public void testAllowRuntimeMicrophoneIncognito() throws Exception {
