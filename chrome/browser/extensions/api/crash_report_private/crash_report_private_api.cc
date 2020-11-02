@@ -6,9 +6,13 @@
 
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/renderer_uptime_tracker.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace extensions {
 namespace api {
@@ -77,6 +81,18 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
 
   if (params->info.stack_trace) {
     error_report.stack_trace = std::move(*params->info.stack_trace);
+  }
+
+  if (web_contents && web_contents->GetMainFrame() &&
+      web_contents->GetMainFrame()->GetProcess()) {
+    int pid = web_contents->GetMainFrame()->GetProcess()->GetID();
+    base::TimeDelta render_process_uptime =
+        metrics::RendererUptimeTracker::Get()->GetProcessUptime(pid);
+    // Note: This can be 0 in tests or if the process can't be found (implying
+    // process fails to start up or terminated). Report this anyways as it can
+    // hint at race conditions.
+    error_report.renderer_process_uptime_ms =
+        render_process_uptime.InMilliseconds();
   }
 
   error_report.app_locale = g_browser_process->GetApplicationLocale();

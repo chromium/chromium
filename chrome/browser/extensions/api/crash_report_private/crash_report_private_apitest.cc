@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
                    "os=ChromeOS&os_version=7.20.1"
-                   "&prod=Chrome_ChromeOS&src=http%3A%2F%2Fwww.test."
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "http%3A%2F%2Fwww.test."
                    "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4"));
   EXPECT_EQ(report->content, "");
 }
@@ -134,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
                    "version=1.2.3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
                    "&line=123&os=ChromeOS&os_version=7.20.1"
-                   "&prod=Chrome%2520\\(Chrome%2520OS\\)&"
+                   "&prod=Chrome%2520\\(Chrome%2520OS\\)&renderer_process_"
+                   "uptime_ms=\\d+&"
                    "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
                    "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "   at <anonymous>:1:1");
@@ -164,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
                    "3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
                    "line=123&os=ChromeOS&os_version=7.20.1"
-                   "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
+                   "&prod=TestApp&renderer_process_uptime_ms=\\d+&src=http%3A%"
+                   "2F%2Fwww.test.com%2Ffoo&type="
                    "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
 }
@@ -196,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
           "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
           "os_version=7.20.1"
-          "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
+          "&prod=TestApp&renderer_process_uptime_ms=\\d+&src=http%3A%2F%2Fwww."
+          "test.com%2Ffoo&type="
           "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
 }

@@ -247,6 +247,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   // type" fields, eventually consider using that for process uptime.
   params["browser_process_uptime_ms"] =
       base::NumberToString(browser_process_uptime.InMilliseconds());
+  params["renderer_process_uptime_ms"] =
+      base::NumberToString(error_report->renderer_process_uptime_ms);
   if (error_report->app_locale)
     params["app_locale"] = std::move(*error_report->app_locale);
   const GURL url(base::StrCat(

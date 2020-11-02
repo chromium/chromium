@@ -48,6 +48,12 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
 
   // String containing the application locale. Not sent if not present.
   base::Optional<std::string> app_locale;
+
+  // Uptime of the renderer process in milliseconds. 0 if the callee
+  // |web_contents| is null (shouldn't really happen as this is caled from a JS
+  // context) or the renderer process doesn't exist (possible due to termination
+  // / failure to start).
+  int renderer_process_uptime_ms = 0;
 };
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JAVASCRIPT_ERROR_REPORT_H_

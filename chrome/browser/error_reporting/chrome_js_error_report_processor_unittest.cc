@@ -70,6 +70,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
   EXPECT_THAT(actual_report->query, HasSubstr("type=JavascriptError"));
   EXPECT_THAT(actual_report->query, HasSubstr("browser_process_uptime_ms="));
+  EXPECT_THAT(actual_report->query, HasSubstr("renderer_process_uptime_ms=0"));
   // TODO(iby) research why URL is repeated...
   EXPECT_THAT(actual_report->query,
               HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome"));
@@ -100,6 +101,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, AllFields) {
   report.line_number = 83;
   report.column_number = 14;
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
+  report.renderer_process_uptime_ms = 1234;
 
   processor_->SendErrorReport(
       std::move(report),
@@ -115,6 +117,8 @@ TEST_F(ChromeJsErrorReportProcessorTest, AllFields) {
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
   EXPECT_THAT(actual_report->query, HasSubstr("type=JavascriptError"));
   EXPECT_THAT(actual_report->query, HasSubstr("browser_process_uptime_ms="));
+  EXPECT_THAT(actual_report->query,
+              HasSubstr("renderer_process_uptime_ms=1234"));
   // TODO(iby) research why URL is repeated...
   EXPECT_THAT(actual_report->query,
               HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome"));
