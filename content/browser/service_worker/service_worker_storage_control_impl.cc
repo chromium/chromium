@@ -88,12 +88,8 @@ ServiceWorkerStorageControlImpl::~ServiceWorkerStorageControlImpl() = default;
 void ServiceWorkerStorageControlImpl::Bind(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
-  // There should be one connection at most for now because this class hasn't
-  // moved to the storage service yet.
-  DCHECK(receivers_.empty())
-      << "ServiceWorkerStorageControl doesn't support multiple connections yet";
-
-  receivers_.Add(this, std::move(receiver));
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
 }
 
 void ServiceWorkerStorageControlImpl::OnNoLiveVersion(int64_t version_id) {

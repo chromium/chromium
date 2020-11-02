@@ -13,7 +13,7 @@
 #include "content/browser/service_worker/service_worker_storage.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 
@@ -193,7 +193,7 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
 
   const std::unique_ptr<ServiceWorkerStorage> storage_;
 
-  mojo::ReceiverSet<storage::mojom::ServiceWorkerStorageControl> receivers_;
+  mojo::Receiver<storage::mojom::ServiceWorkerStorageControl> receiver_{this};
 
   base::flat_map<int64_t /*version_id*/,
                  std::unique_ptr<ServiceWorkerLiveVersionRefImpl>>
