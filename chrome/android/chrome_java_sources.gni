@@ -261,8 +261,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/Invalidator.java",
   "java/src/org/chromium/chrome/browser/compositor/LayerTitleCache.java",
   "java/src/org/chromium/chrome/browser/compositor/TitleCache.java",
-  "java/src/org/chromium/chrome/browser/compositor/animation/CompositorAnimationHandler.java",
-  "java/src/org/chromium/chrome/browser/compositor/animation/CompositorAnimator.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayContentDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayContentProgressObserver.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanel.java",

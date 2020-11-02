@@ -5,6 +5,8 @@
 
 import("//build/config/android/rules.gni")
 
-android_library("compositor_animator_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/compositor/animation/FloatProperty.java" ]
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/layouts/animation/FloatProperty.java",
+  ]
 }

@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.animation.FloatProperty;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
+import org.chromium.chrome.browser.layouts.animation.FloatProperty;
 
 /**
  * StackTab is used to keep track of a thumbnail's bitmap and position and to
