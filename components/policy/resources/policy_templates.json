@@ -19513,10 +19513,9 @@
       'id': 503,
       'caption': '''Allow devices to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>''',
       'tags': [],
-      'desc': '''Allow this device to run PluginVm.
+      'desc': '''Setting the policy to Enabled turns on <ph name="PLUGIN_VM_NAME">PluginVm</ph> for the device, as long as other settings also allow it. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME">PluginVmAllowed</ph> and <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME">UserPluginVmAllowed</ph> must be True, and either <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME">PluginVmLicenseKey</ph> or <ph name="PLUGIN_VM_USER_ID_POLICY_NAME">PluginVmUserId</ph> must be set for <ph name="PLUGIN_VM_NAME">PluginVm</ph> to run.
 
-      If the policy is set to false or left unset, <ph name="PLUGIN_VM_NAME">PluginVm</ph> is not enabled for the device.
-      If set to true, <ph name="PLUGIN_VM_NAME">PluginVm</ph> is enabled for the device as long as other settings also allow it. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME">PluginVmAllowed</ph> and <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME">UserPluginVmAllowed</ph> need to be true, and either <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME">PluginVmLicenseKey</ph> or <ph name="PLUGIN_VM_USER_ID_POLICY_NAME">PluginVmUserId</ph> need to be set for <ph name="PLUGIN_VM_NAME">PluginVm</ph> to be allowed to run.''',
+      Setting the policy to Disabled or leaving it unset means <ph name="PLUGIN_VM_NAME">PluginVm</ph> isn't on for the device.''',
     },
     {
       'name': 'UserPluginVmAllowed',
@@ -19554,7 +19553,7 @@
       'id': 515,
       'caption': '''<ph name="PLUGIN_VM_NAME">PluginVm</ph> license key''',
       'tags': [],
-      'desc': '''This policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> license key for this device.''',
+      'desc': '''Setting the policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> license key for this device.''',
     },
     {
       'name': 'PluginVmUserId',
@@ -19604,9 +19603,7 @@
       'id': 504,
       'caption': '''<ph name="PLUGIN_VM_NAME">PluginVm</ph> image''',
       'tags': [],
-      'desc': '''This policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> image for a user. The policy is set by specifying the URL from which the device can download the image and a SHA-256 hash used to verify the integrity of the download.
-
-      The policy should be specified as a string that expresses the URL and hash in the JSON format.''',
+      'desc': '''Setting the policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> image for a user. Specify this policy as a JSON format string, with <ph name="URL_PLUGIN_VM_IMAGE_FIELD">URL</ph> stating where to download the image and <ph name="HASH_PLUGIN_VM_IMAGE_FIELD">hash</ph> as a SHA-256 hash used to verify the integrity of the download.''',
     },
     {
       'name': 'PluginVmDataCollectionAllowed',
