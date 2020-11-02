@@ -218,25 +218,32 @@ std::string GetOpenLogString(WASAPIAudioInputStream::StreamOpenResult result,
 }
 
 bool InitializeUWPSupport() {
-  // Windows.Media.Effects and Windows.Media.Devices requires Windows 10 build
-  // 10.0.10240.0.
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    DLOG(WARNING) << "AudioCaptureEffectsManager requires Windows 10";
-    return false;
-  }
-  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
+  // Place the actual body of the initialization in a lambda and store the
+  // result as a static since we don't expect this result to change between
+  // runs.
+  static const bool initialization_result = []() {
+    // Windows.Media.Effects and Windows.Media.Devices requires Windows 10 build
+    // 10.0.10240.0.
+    if (base::win::GetVersion() < base::win::Version::WIN10) {
+      DLOG(WARNING) << "AudioCaptureEffectsManager requires Windows 10";
+      return false;
+    }
+    DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
 
-  // Provide access to Core WinRT/UWP functions and load all required HSTRING
-  // functions available from Win8 and onwards. ScopedHString is a wrapper
-  // around an HSTRING and it requires certain functions that need to be
-  // delayloaded to avoid breaking Chrome on Windows 7.
-  if (!(base::win::ResolveCoreWinRTDelayload() &&
-        base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
-    // Failed loading functions from combase.dll.
-    DLOG(WARNING) << "Failed to initialize WinRT/UWP";
-    return false;
-  }
-  return true;
+    // Provide access to Core WinRT/UWP functions and load all required HSTRING
+    // functions available from Win8 and onwards. ScopedHString is a wrapper
+    // around an HSTRING and it requires certain functions that need to be
+    // delayloaded to avoid breaking Chrome on Windows 7.
+    if (!(base::win::ResolveCoreWinRTDelayload() &&
+          base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
+      // Failed loading functions from combase.dll.
+      DLOG(WARNING) << "Failed to initialize WinRT/UWP";
+      return false;
+    }
+    return true;
+  }();
+
+  return initialization_result;
 }
 
 }  // namespace
@@ -1169,7 +1176,7 @@ HRESULT WASAPIAudioInputStream::GetAudioCaptureEffects(
   }
 
   return hr;
-}  // namespace media
+}
 
 HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
   DCHECK(audio_client_.Get());
