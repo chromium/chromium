@@ -18,6 +18,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
@@ -164,7 +165,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
+    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
     @DisableFeatures(
             {ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
     public void
@@ -179,6 +180,34 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         mRenderTestRule.render(view, "main_settings_signed_in");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI,
+            ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+    @DisableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
+    public void
+    testRenderDifferentSignedInStatesWithMobileIdentityConsistency() throws IOException {
+        launchSettingsActivity();
+        // Scroll to the middle of the page because the preference is supposed to be at the middle
+        // of the page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView =
+                    mSettingsActivityTestRule.getFragment().getView().findViewById(
+                            R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() / 2);
+        });
+        View view = mSettingsActivityTestRule.getActivity()
+                            .findViewById(android.R.id.content)
+                            .getRootView();
+        mRenderTestRule.render(view, "main_settings_signed_out_mobile_identity_consistency");
+
+        // Sign in and render changes.
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncActive();
+        mRenderTestRule.render(view, "main_settings_signed_in_mobile_identity_consistency");
     }
 
     @Test
@@ -199,6 +228,37 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncActive();
         mRenderTestRule.render(view, "main_settings_signed_in_safety_check");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(
+            {ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.SAFE_BROWSING_SECTION_UI,
+                    ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+    public void
+    testRenderDifferentSignedInStatesWithSafetyCheckAndMobileIdentity_consistency()
+            throws IOException {
+        launchSettingsActivity();
+        // Scroll to the middle of the page because the preference is supposed to be at the middle
+        // of the page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView =
+                    mSettingsActivityTestRule.getFragment().getView().findViewById(
+                            R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() / 2);
+        });
+        View view = mSettingsActivityTestRule.getActivity()
+                            .findViewById(android.R.id.content)
+                            .getRootView();
+        mRenderTestRule.render(
+                view, "main_settings_signed_out_safety_check_mobile_identity_consistency");
+
+        // Sign in and render changes.
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncActive();
+        mRenderTestRule.render(
+                view, "main_settings_signed_in_safety_check_mobile_identity_consistency");
     }
 
     /**
