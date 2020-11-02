@@ -100,6 +100,13 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
   browser_->signin_view_controller()->ShowModalSyncConfirmationDialog();
 }
 
+void DiceTurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
+    base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+        callback) {
+  // This is handled by the same UI element as the normal sync confirmation.
+  ShowSyncConfirmation(std::move(callback));
+}
+
 void DiceTurnSyncOnHelperDelegateImpl::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,

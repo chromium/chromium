@@ -64,6 +64,9 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+          callback) override {}
+  void ShowSyncDisabledConfirmation(
+      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
   void ShowSyncSettings() override;
   void SwitchToProfile(Profile* new_profile) override;
@@ -163,7 +166,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   }
 
-  void OnShowSyncConfirmation(
+  void OnShowSyncDisabledConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) {
     sync_confirmation_callback_ = std::move(callback);
@@ -329,10 +332,10 @@ void TestDiceTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
                                                      std::move(callback));
 }
 
-void TestDiceTurnSyncOnHelperDelegate::ShowSyncConfirmation(
+void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
-  test_fixture_->OnShowSyncConfirmation(std::move(callback));
+  test_fixture_->OnShowSyncDisabledConfirmation(std::move(callback));
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowSyncSettings() {
