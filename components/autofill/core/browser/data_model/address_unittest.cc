@@ -84,12 +84,6 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   Address address;
   EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
-  // Enable the feature that allows for full country names although the
-  // field type explicitly set to HTML_TYPE_COUNTRY_CODE.
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillAllowHtmlTypeCountryCodesWithFullNames);
-
   // Create an autofill type from HTML_TYPE_COUNTRY_CODE.
   AutofillType autofill_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
 
@@ -131,18 +125,6 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
       AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
   EXPECT_EQ(ASCIIToUTF16("DE"), actual_country_code);
   EXPECT_EQ(ASCIIToUTF16("Germany"), actual_country);
-
-  // By disabling the feature, test that the country name deduction actually
-  // uses the path for HTML_TYPE_COUNTRY_CODE.
-  feature.Reset();
-  feature.InitAndDisableFeature(
-      features::kAutofillAllowHtmlTypeCountryCodesWithFullNames);
-  address.SetInfo(autofill_type, ASCIIToUTF16("Germany"), "en-US");
-  actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
-  actual_country_code = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
-  EXPECT_EQ(ASCIIToUTF16(""), actual_country);
-  EXPECT_EQ(ASCIIToUTF16(""), actual_country_code);
 }
 
 // Test that we properly detect country codes appropriate for each country.

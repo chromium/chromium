@@ -366,21 +366,17 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   if (type.html_type() == HTML_TYPE_COUNTRY_CODE) {
     std::string country_code = base::ToUpperASCII(base::UTF16ToASCII(value));
     if (!data_util::IsValidCountryCode(country_code)) {
-      // Some popular websites use the HTML_TYPE_COUNTRY_CODE attribute for
-      // full text names (e.g. alliedelec.com). Try to convert the value to a
-      // country code as a fallback.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAllowHtmlTypeCountryCodesWithFullNames)) {
-        CountryNames* country_names =
-            !value.empty() ? CountryNames::GetInstance() : nullptr;
-        country_code =
-            country_names
-                ? country_names->GetCountryCodeForLocalizedCountryName(value,
-                                                                       locale)
-                : std::string();
-      } else {
-        country_code = std::string();
-      }
+      // To counteract the misuse of autocomplete=country attribute when used
+      // with full country names, if the supplied country code is not a valid,
+      // it is tested if a country code can be derived from the value when it is
+      // interpreted as a full country name. Otherwise an empty string is
+      // assigned to |country_code|.
+      CountryNames* country_names =
+          !value.empty() ? CountryNames::GetInstance() : nullptr;
+      country_code = country_names
+                         ? country_names->GetCountryCodeForLocalizedCountryName(
+                               value, locale)
+                         : std::string();
     }
 
     // TODO(crbug.com/1130194): Clean legacy implementation once structured

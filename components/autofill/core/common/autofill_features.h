@@ -24,7 +24,6 @@ namespace features {
 extern const base::Feature kAutofillAddressEnhancementVotes;
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
-extern const base::Feature kAutofillAllowHtmlTypeCountryCodesWithFullNames;
 extern const base::Feature kAutofillAllowNonHttpActivation;
 extern const base::Feature kAutofillAlwaysFillAddresses;
 extern const base::Feature
