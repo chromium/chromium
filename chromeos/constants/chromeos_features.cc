@@ -367,6 +367,21 @@ const base::Feature kHelpAppFirstRun{"HelpAppFirstRun",
 const base::Feature kHelpAppSearchServiceIntegration{
     "HelpAppSearchServiceIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable Unified Input Logic for HMM decoder in the IME extension
+// on Chrome OS.
+const base::Feature kImeInputLogicHmm{"ImeInputLogicHmm",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable or disable Unified Input Logic for FST decoder in the IME extension
+// on Chrome OS.
+const base::Feature kImeInputLogicFst{"ImeInputLogicFst",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable or disable Unified Input Logic for Mozc decoder in the IME extension
+// on Chrome OS.
+const base::Feature kImeInputLogicMozc{"ImeInputLogicMozc",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
