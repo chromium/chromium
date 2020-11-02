@@ -159,9 +159,10 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define BEGIN_VIEW_BUILDER(export, view_class, ancestor)                    \
   template <typename BuilderT>                                              \
   class export view_class##BuilderT : public ancestor##BuilderT<BuilderT> { \
-   public:                                                                  \
+   private:                                                                 \
     using ViewClass_ = view_class;                                          \
                                                                             \
+   public:                                                                  \
     view_class##BuilderT() = default;                                       \
     explicit view_class##BuilderT(                                          \
         typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_*   \
@@ -236,13 +237,15 @@ namespace views {                                                    \
   template <>                                                        \
   class export Builder<view_class>                                   \
       : public view_class##BuilderT<Builder<view_class>> {           \
+   private:                                                          \
+    using ViewClass_ = view_class;                                   \
    public:                                                           \
-    Builder<view_class>() = default;                                 \
-    explicit Builder<view_class>(ViewClass_* root_view)              \
-        : view_class##BuilderT<Builder<view_class>>(root_view) {}    \
-    Builder<view_class>(Builder&&) = default;                        \
-    Builder<view_class>& operator=(Builder<view_class>&&) = default; \
-    ~Builder<view_class>() = default;                                \
+    Builder<ViewClass_>() = default;                                 \
+    explicit Builder<ViewClass_>(ViewClass_* root_view)              \
+        : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}    \
+    Builder<ViewClass_>(Builder&&) = default;                        \
+    Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default; \
+    ~Builder<ViewClass_>() = default;                                \
   };                                                                 \
 }  // namespace views
 

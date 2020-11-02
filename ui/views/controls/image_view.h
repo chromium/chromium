@@ -5,9 +5,15 @@
 #ifndef UI_VIEWS_CONTROLS_IMAGE_VIEW_H_
 #define UI_VIEWS_CONTROLS_IMAGE_VIEW_H_
 
+#include <memory>
+#include <utility>
+
 #include "base/macros.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+#include "ui/views/views_export.h"
 
 namespace gfx {
 class Canvas;
@@ -132,6 +138,36 @@ class VIEWS_EXPORT ImageView : public View {
   DISALLOW_COPY_AND_ASSIGN(ImageView);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, View)
+// Explicitly declare the overloaded SetImage methods in order to properly
+// disambiguate between them.
+BuilderT& SetImage(const gfx::ImageSkia& value) {
+  auto setter = std::make_unique<::views::internal::PropertySetter<
+      ViewClass_, gfx::ImageSkia,
+      decltype((static_cast<void (ViewClass_::*)(const gfx::ImageSkia&)>(
+          &ViewClass_::SetImage))),
+      &ViewClass_::SetImage>>(value);
+  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+  return *static_cast<BuilderT*>(this);
+}
+BuilderT& SetImage(const gfx::ImageSkia* value) {
+  auto setter = std::make_unique<::views::internal::PropertySetter<
+      ViewClass_, gfx::ImageSkia*,
+      decltype((static_cast<void (ViewClass_::*)(const gfx::ImageSkia*)>(
+          &ViewClass_::SetImage))),
+      &ViewClass_::SetImage>>(value);
+  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+  return *static_cast<BuilderT*>(this);
+}
+VIEW_BUILDER_PROPERTY(gfx::Size, ImageSize)
+VIEW_BUILDER_PROPERTY(ImageView::Alignment, HorizontalAlignment)
+VIEW_BUILDER_PROPERTY(ImageView::Alignment, VerticalAlignment)
+VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
+VIEW_BUILDER_PROPERTY(base::string16, TooltipText)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ImageView)
 
 #endif  // UI_VIEWS_CONTROLS_IMAGE_VIEW_H_

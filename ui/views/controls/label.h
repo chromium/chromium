@@ -93,6 +93,7 @@ class VIEWS_EXPORT Label : public View,
   // Where the label appears in the UI. Passed in from the constructor. This is
   // a value from views::style::TextContext or an enum that extends it.
   int GetTextContext() const;
+  void SetTextContext(int text_context);
 
   // The style of the label.  This is a value from views::style::TextStyle or an
   // enum that extends it.
@@ -398,7 +399,7 @@ class VIEWS_EXPORT Label : public View,
   // Builds |context_menu_contents_|.
   void BuildContextMenuContents();
 
-  const int text_context_;
+  int text_context_;
   int text_style_;
   base::Optional<int> line_height_;
 
@@ -453,6 +454,7 @@ BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
 VIEW_BUILDER_PROPERTY(const gfx::FontList&, FontList)
 VIEW_BUILDER_PROPERTY(const base::string16&, Text)
 VIEW_BUILDER_PROPERTY(int, TextStyle)
+VIEW_BUILDER_PROPERTY(int, TextContext)
 VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
 VIEW_BUILDER_PROPERTY(SkColor, EnabledColor)
 VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)

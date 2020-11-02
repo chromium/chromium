@@ -112,6 +112,14 @@ int Label::GetTextContext() const {
   return text_context_;
 }
 
+void Label::SetTextContext(int text_context) {
+  if (text_context == text_context_)
+    return;
+  text_context_ = text_context;
+  UpdateColorsFromTheme();
+  OnPropertyChanged(&text_context_, views::kPropertyEffectsPaint);
+}
+
 int Label::GetTextStyle() const {
   return text_style_;
 }
@@ -1159,6 +1167,7 @@ void Label::BuildContextMenuContents() {
 
 BEGIN_METADATA(Label, View)
 ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
 ADD_PROPERTY_METADATA(SkColor, EnabledColor)
@@ -1179,7 +1188,6 @@ ADD_PROPERTY_METADATA(base::string16, TooltipText)
 ADD_PROPERTY_METADATA(bool, HandlesTooltips)
 ADD_PROPERTY_METADATA(bool, CollapseWhenHidden)
 ADD_PROPERTY_METADATA(int, MaximumWidth)
-ADD_READONLY_PROPERTY_METADATA(int, TextContext)
 END_METADATA
 
 }  // namespace views
