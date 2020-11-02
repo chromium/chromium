@@ -7491,9 +7491,11 @@
       'id': 563,
       'caption': '''Enable App Recommendations in Zero State of Search Box''',
       'tags': [],
-      'desc': '''Setting the policy to True can make app recommendations appear in the zero-state search. Setting the policy to False means these recommendations don't appear.
+      'desc': '''Setting this policy to Enabled will cause recommendations for apps previously installed by the user on other devices. These recommendations will appear in the launcher after the local app recomendations, if no search text has been entered.
 
-      If you set the policy, users can't change it. If not set, managed devices default to a False setting.'''
+      Setting this policy as Disabled or leaving it unset means these recommendations do not appear.
+
+      If this policy is set, users cannot change it.'''
     },
     {
       'name': 'TranslateEnabled',
