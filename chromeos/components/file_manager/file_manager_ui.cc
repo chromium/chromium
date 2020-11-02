@@ -20,6 +20,7 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
     : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   auto source = base::WrapUnique(content::WebUIDataSource::Create(
       chromeos::file_manager::kChromeUIFileManagerHost));
+  source->AddLocalizedStrings(*this->delegate()->GetFileManagerAppStrings());
   // The HTML content loaded on chrome://file-manager.
   source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
 

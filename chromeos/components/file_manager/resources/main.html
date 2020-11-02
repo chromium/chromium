@@ -2,16 +2,19 @@
  Use of this source code is governed by a BSD-style license that can be
  found in the LICENSE file. -->
 
-<!doctype html>
-<html lang="en">
+ <!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
-    <title>File Manager WebUI Demo</title>
+    <title>$i18n{FILEMANAGER_APP_NAME}</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
     <link rel="stylesheet" href="main.css">
     <script type="module" src="chrome://file-manager/main.js"></script>
   </head>
-  <body>
-    <h1>File Manager WebUI Demo</h1>
+  <body aria-label="$i18n{FILEMANAGER_APP_NAME}" tabindex="-1">
+    <h1>$i18n{FILEMANAGER_APP_NAME} SWA Demo</h1>
+    <p>
+      $i18n{OFFLINE_HEADER}
+    </p>
   </body>
 </html>
