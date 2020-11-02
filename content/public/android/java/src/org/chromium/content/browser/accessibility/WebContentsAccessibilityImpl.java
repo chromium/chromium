@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ReceiverCallNotAllowedException;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -117,11 +116,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private static final int ACTION_PAGE_RIGHT = 0x01020049;
 
     // Constants defined in the R SDK. (API Level 30, Android 11)
-    // TODO (mschillaci) - Replace with set IDs once R SDK finalizes values
-    private static final int ACTION_IME_ENTER =
-            Resources.getSystem().getIdentifier("accessibilityActionImeEnter", "id", "android");
-    private static final int ACTION_PRESS_AND_HOLD =
-            Resources.getSystem().getIdentifier("accessibilityActionPressAndHold", "id", "android");
+    private static final int ACTION_IME_ENTER = 0x01020054;
+    private static final int ACTION_PRESS_AND_HOLD = 0x0102004a;
 
     // Constant for no granularity selected.
     private static final int NO_GRANULARITY_SELECTED = 0;
@@ -620,18 +616,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             return false;
         }
 
-        // TODO (mschillaci) Move this into the switch below once ACTION_IME_ENTER is constant
-        if (action == ACTION_IME_ENTER && ACTION_IME_ENTER != 0) {
-            if (mWebContents != null) {
-                if (ImeAdapterImpl.fromWebContents(mWebContents) != null) {
-                    // We send an unspecified action to ensure Enter key is hit
-                    return ImeAdapterImpl.fromWebContents(mWebContents)
-                            .performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED);
-                }
-            }
-            return false;
-        }
-
         switch (action) {
             case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS:
                 if (!moveAccessibilityFocusToId(virtualViewId)) return true;
@@ -807,7 +791,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 if (value == -1) return false;
                 return WebContentsAccessibilityImplJni.get().setRangeValue(
                         mNativeObj, WebContentsAccessibilityImpl.this, virtualViewId, value);
-
+            case ACTION_IME_ENTER:
+                if (mWebContents != null) {
+                    if (ImeAdapterImpl.fromWebContents(mWebContents) != null) {
+                        // We send an unspecified action to ensure Enter key is hit
+                        return ImeAdapterImpl.fromWebContents(mWebContents)
+                                .performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED);
+                    }
+                }
+                return false;
             default:
                 break;
         }
@@ -1468,10 +1460,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             // SET_SELECTION and COPY are okay).
             addAction(node, ACTION_SET_TEXT);
             addAction(node, AccessibilityNodeInfo.ACTION_PASTE);
-
-            if (ACTION_IME_ENTER != 0) {
-                addAction(node, ACTION_IME_ENTER);
-            }
+            addAction(node, ACTION_IME_ENTER);
 
             if (hasNonEmptyValue) {
                 addAction(node, AccessibilityNodeInfo.ACTION_SET_SELECTION);
