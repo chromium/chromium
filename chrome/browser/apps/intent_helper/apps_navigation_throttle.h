@@ -218,6 +218,11 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
 
   bool navigate_from_link() const;
 
+  bool ShouldAutoDisplayUi(
+      const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
+      content::WebContents* web_contents,
+      const GURL& url);
+
   // Keeps track of whether we already shown the UI or preferred app. Since
   // AppsNavigationThrottle cannot wait for the user (due to the non-blocking
   // nature of the feature) the best we can do is check if we launched a

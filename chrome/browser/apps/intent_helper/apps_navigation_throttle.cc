@@ -104,6 +104,11 @@ GURL GetStartingGURL(content::NavigationHandle* navigation_handle) {
   return initiator_origin.has_value() ? initiator_origin->GetURL() : GURL();
 }
 
+bool InAppBrowser(content::WebContents* web_contents) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  return !browser || browser->deprecated_is_app();
+}
+
 }  // namespace
 
 namespace apps {
@@ -259,11 +264,13 @@ bool AppsNavigationThrottle::CanCreate(content::WebContents* web_contents) {
     return false;
   }
 
-  // Do not create the throttle if there is no browser for the WebContents or we
-  // are already in an app browser. The former can happen if an initial
-  // navigation is reparented into a new app browser instance.
+  // Do not create the throttle if we are already in an app browser.
+  // It is possible that the web contents is not inserted to tab strip
+  // model at this stage (e.g. open url in new tab). So if we cannot
+  // find a browser at this moment, skip the check and this will be handled
+  // in later stage.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser || browser->deprecated_is_app())
+  if (browser && browser->deprecated_is_app())
     return false;
 
   return true;
@@ -427,6 +434,7 @@ void AppsNavigationThrottle::ShowIntentPickerForApps(
     ui_displayed_ = false;
     return;
   }
+  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
     return;
@@ -435,7 +443,6 @@ void AppsNavigationThrottle::ShowIntentPickerForApps(
   switch (picker_show_state) {
     case PickerShowState::kOmnibox:
       ui_displayed_ = false;
-      IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
       break;
     case PickerShowState::kPopOut: {
       bool show_persistence_options = ShouldShowPersistenceOptions(apps);
@@ -471,6 +478,23 @@ bool AppsNavigationThrottle::navigate_from_link() const {
   return navigate_from_link_;
 }
 
+bool AppsNavigationThrottle::ShouldAutoDisplayUi(
+    const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
+    content::WebContents* web_contents,
+    const GURL& url) {
+  if (apps_for_picker.empty())
+    return false;
+
+  if (InAppBrowser(web_contents))
+    return false;
+
+  if (!ShouldOverrideUrlLoading(starting_url_, url))
+    return false;
+
+  DCHECK(ui_auto_display_service_);
+  return ui_auto_display_service_->ShouldAutoDisplayUi(url);
+}
+
 ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
   content::NavigationHandle* handle = navigation_handle();
   // If the navigation won't update the current document, don't check intent for
@@ -503,30 +527,33 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
 
   MaybeRemoveComingFromArcFlag(web_contents, starting_url_, url);
 
-  if (!ShouldOverrideUrlLoading(starting_url_, url))
-    return content::NavigationThrottle::PROCEED;
-
   base::Optional<ThrottleCheckResult> tab_strip_capture =
       CaptureExperimentalTabStripWebAppScopeNavigations(web_contents, handle);
   if (tab_strip_capture.has_value())
     return tab_strip_capture.value();
 
-  // Handles apps that are automatically launched and the navigation needs to be
-  // cancelled. This only applies on the new intent picker system, because we
-  // don't need to defer the navigation to find out preferred app anymore.
-  if (ShouldCancelNavigation(handle)) {
-    return content::NavigationThrottle::CANCEL_AND_IGNORE;
-  }
+  // Do not pop up the intent picker bubble or automatically launch the app if
+  // we shouldn't override url loading, or if we don't have a browser, or we are
+  // already in an app browser.
+  if (ShouldOverrideUrlLoading(starting_url_, url) &&
+      !InAppBrowser(web_contents)) {
+    // Handles apps that are automatically launched and the navigation needs to
+    // be cancelled. This only applies on the new intent picker system, because
+    // we don't need to defer the navigation to find out preferred app anymore.
+    if (ShouldCancelNavigation(handle)) {
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
 
-  if (ShouldDeferNavigation(handle)) {
-    // Handling is now deferred to ArcIntentPickerAppFetcher, which
-    // asynchronously queries ARC for apps, and runs
-    // OnDeferredNavigationProcessed() with an action based on whether an
-    // acceptable app was found and user consent to open received. We assume the
-    // UI is shown or a preferred app was found; reset to false if we resume the
-    // navigation.
-    ui_displayed_ = true;
-    return content::NavigationThrottle::DEFER;
+    if (ShouldDeferNavigation(handle)) {
+      // Handling is now deferred to ArcIntentPickerAppFetcher, which
+      // asynchronously queries ARC for apps, and runs
+      // OnDeferredNavigationProcessed() with an action based on whether an
+      // acceptable app was found and user consent to open received. We assume
+      // the UI is shown or a preferred app was found; reset to false if we
+      // resume the navigation.
+      ui_displayed_ = true;
+      return content::NavigationThrottle::DEFER;
+    }
   }
 
   // We didn't query ARC, so proceed with the navigation and query if we have an

@@ -300,9 +300,6 @@ bool ChromeOsAppsNavigationThrottle::ShouldAutoDisplayUi(
     const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
     content::WebContents* web_contents,
     const GURL& url) {
-  if (apps_for_picker.empty())
-    return false;
-
   // If we only have PWAs in the app list, do not show the intent picker.
   // Instead just show the omnibox icon. This is to reduce annoyance to users
   // until "Remember my choice" is available for desktop PWAs.
@@ -311,8 +308,8 @@ bool ChromeOsAppsNavigationThrottle::ShouldAutoDisplayUi(
   if (ContainsOnlyPwasAndMacApps(apps_for_picker))
     return false;
 
-  DCHECK(ui_auto_display_service_);
-  return ui_auto_display_service_->ShouldAutoDisplayUi(url);
+  return AppsNavigationThrottle::ShouldAutoDisplayUi(apps_for_picker,
+                                                     web_contents, url);
 }
 
 bool ChromeOsAppsNavigationThrottle::ShouldLaunchPreferredApp(const GURL& url) {

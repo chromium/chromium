@@ -64,6 +64,12 @@ CommonAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
 
   content::WebContents* web_contents = handle->GetWebContents();
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return nullptr;
+
   if (!apps::AppsNavigationThrottle::CanCreate(web_contents))
     return nullptr;
 
@@ -309,9 +315,6 @@ bool CommonAppsNavigationThrottle::ShouldAutoDisplayUi(
     const std::vector<apps::IntentPickerAppInfo>& apps_for_picker,
     content::WebContents* web_contents,
     const GURL& url) {
-  if (apps_for_picker.empty())
-    return false;
-
   // On devices with tablet form factor we should not pop out the intent
   // picker if Chrome has been chosen by the user as the platform for this URL.
   if (chromeos::switches::IsTabletFormFactor()) {
@@ -346,8 +349,8 @@ bool CommonAppsNavigationThrottle::ShouldAutoDisplayUi(
     }
   }
 
-  DCHECK(ui_auto_display_service_);
-  return ui_auto_display_service_->ShouldAutoDisplayUi(url);
+  return AppsNavigationThrottle::ShouldAutoDisplayUi(apps_for_picker,
+                                                     web_contents, url);
 }
 
 }  // namespace apps
