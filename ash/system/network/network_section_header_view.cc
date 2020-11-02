@@ -99,17 +99,7 @@ int NetworkSectionHeaderView::GetHeightForWidth(int width) const {
   // Make row height fixed avoiding layout manager adjustments.
   return GetPreferredSize().height();
 }
-void NetworkSectionHeaderView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  DCHECK_EQ(toggle_, sender);
-  // In the event of frequent clicks, helps to prevent a toggle button state
-  // from becoming inconsistent with the async operation of enabling /
-  // disabling of mobile radio. The toggle will get unlocked in the next
-  // call to NetworkListView::Update(). Note that we don't disable/enable
-  // because that would clear focus.
-  toggle_->SetAcceptsEvents(false);
-  OnToggleToggled(toggle_->GetIsOn());
-}
+
 void NetworkSectionHeaderView::InitializeLayout() {
   TrayPopupUtils::ConfigureAsStickyHeader(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -123,9 +113,22 @@ void NetworkSectionHeaderView::InitializeLayout() {
 }
 
 void NetworkSectionHeaderView::AddToggleButton(bool enabled) {
-  toggle_ = TrayPopupUtils::CreateToggleButton(this, title_id_);
+  toggle_ = TrayPopupUtils::CreateToggleButton(
+      base::BindRepeating(&NetworkSectionHeaderView::ToggleButtonPressed,
+                          base::Unretained(this)),
+      title_id_);
   toggle_->SetIsOn(enabled);
   container_->AddView(TriView::Container::END, toggle_);
+}
+
+void NetworkSectionHeaderView::ToggleButtonPressed() {
+  // In the event of frequent clicks, helps to prevent a toggle button state
+  // from becoming inconsistent with the async operation of enabling /
+  // disabling of mobile radio. The toggle will get unlocked in the next
+  // call to NetworkListView::Update(). Note that we don't disable/enable
+  // because that would clear focus.
+  toggle_->SetAcceptsEvents(false);
+  OnToggleToggled(toggle_->GetIsOn());
 }
 
 MobileSectionHeaderView::MobileSectionHeaderView()
@@ -313,23 +316,20 @@ void WifiSectionHeaderView::OnToggleToggled(bool is_on) {
 }
 
 void WifiSectionHeaderView::AddExtraButtons(bool enabled) {
-  auto* join_button = new TopShortcutButton(this, vector_icons::kWifiAddIcon,
-                                            IDS_ASH_STATUS_TRAY_OTHER_WIFI);
+  auto* join_button = new TopShortcutButton(
+      base::BindRepeating(&WifiSectionHeaderView::JoinButtonPressed,
+                          base::Unretained(this)),
+      vector_icons::kWifiAddIcon, IDS_ASH_STATUS_TRAY_OTHER_WIFI);
   join_button->SetEnabled(enabled);
   container()->AddView(TriView::Container::END, join_button);
   join_button_ = join_button;
 }
 
-void WifiSectionHeaderView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  if (sender == join_button_) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_NETWORK_JOIN_OTHER_CLICKED);
-    Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
-        ::onc::network_type::kWiFi);
-    return;
-  }
-  NetworkSectionHeaderView::ButtonPressed(sender, event);
+void WifiSectionHeaderView::JoinButtonPressed() {
+  Shell::Get()->metrics()->RecordUserMetricsAction(
+      UMA_STATUS_AREA_NETWORK_JOIN_OTHER_CLICKED);
+  Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+      ::onc::network_type::kWiFi);
 }
 
 }  // namespace tray

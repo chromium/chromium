@@ -16,11 +16,11 @@
 
 namespace ash {
 
-SystemMenuButton::SystemMenuButton(views::ButtonListener* listener,
+SystemMenuButton::SystemMenuButton(PressedCallback callback,
                                    const gfx::ImageSkia& normal_icon,
                                    const gfx::ImageSkia& disabled_icon,
                                    int accessible_name_id)
-    : views::ImageButton(listener) {
+    : views::ImageButton(std::move(callback)) {
   DCHECK_EQ(normal_icon.width(), disabled_icon.width());
   DCHECK_EQ(normal_icon.height(), disabled_icon.height());
 
@@ -43,7 +43,7 @@ SystemMenuButton::SystemMenuButton(views::ButtonListener* listener,
 SystemMenuButton::SystemMenuButton(views::ButtonListener* listener,
                                    const gfx::VectorIcon& icon,
                                    int accessible_name_id)
-    : SystemMenuButton(listener,
+    : SystemMenuButton(PressedCallback(listener, this),
                        gfx::ImageSkia(),
                        gfx::ImageSkia(),
                        accessible_name_id) {

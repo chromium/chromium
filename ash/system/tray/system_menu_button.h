@@ -18,11 +18,11 @@ namespace ash {
 // used across Ash material design native UI menus.
 class SystemMenuButton : public views::ImageButton {
  public:
-  // Constructs the button with |listener| and a centered icon corresponding to
+  // Constructs the button with |callback| and a centered icon corresponding to
   // |normal_icon| when button is enabled and |disabled_icon| when it is
   // disabled. |accessible_name_id| corresponds to the string in
   // ui::ResourceBundle to use for the button's accessible and tooltip text.
-  SystemMenuButton(views::ButtonListener* listener,
+  SystemMenuButton(PressedCallback callback,
                    const gfx::ImageSkia& normal_icon,
                    const gfx::ImageSkia& disabled_icon,
                    int accessible_name_id);
