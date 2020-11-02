@@ -98,11 +98,7 @@ void HoldingSpaceTray::CloseBubble() {
   if (!bubble_)
     return;
 
-  // If the call to `CloseBubble()` originated from `OnWidgetDestroying()`, as
-  // would be the case when closing due to ESC key press, the bubble widget will
-  // have already been destroyed.
-  if (bubble_->GetBubbleWidget())
-    bubble_->GetBubbleWidget()->RemoveObserver(this);
+  widget_observer_.RemoveAll();
 
   bubble_.reset();
   SetIsActive(false);
@@ -120,7 +116,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   // being destroyed. If destruction is due to a call to `CloseBubble()` we will
   // have already cleaned up state but there are cases where the bubble widget
   // is destroyed independent of a call to `CloseBubble()`, e.g. ESC key press.
-  bubble_->GetBubbleWidget()->AddObserver(this);
+  widget_observer_.Add(bubble_->GetBubbleWidget());
 
   SetIsActive(true);
 }
@@ -202,7 +198,6 @@ void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
 }
 
 void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
-  widget->RemoveObserver(this);
   CloseBubble();
 }
 

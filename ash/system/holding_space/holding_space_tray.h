@@ -16,6 +16,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
@@ -76,6 +77,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
       controller_observer_{this};
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> model_observer_{
       this};
+  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceTray> weak_factory_{this};
 };

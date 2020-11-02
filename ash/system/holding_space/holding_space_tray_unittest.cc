@@ -310,8 +310,6 @@ TEST_F(HoldingSpaceTrayTest, DownloadsContainer) {
 
   // Pinned container is showing "educational" info, and it should remain shown.
   EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-
-  test_api()->Close();
 }
 
 // Verifies the downloads container is shown and orders items as expected when
@@ -395,8 +393,6 @@ TEST_F(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
-
-  test_api()->Close();
 }
 
 // Tests that a partially initialized download item does not get shown if a full
@@ -436,8 +432,6 @@ TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
   ASSERT_EQ(1u, download_chips.size());
   EXPECT_EQ(item_3->id(),
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-
-  test_api()->Close();
 }
 
 // Tests how screen capture list is updated during item addition, removal and
@@ -538,8 +532,6 @@ TEST_F(HoldingSpaceTrayTest, ScreenCaptureContainer) {
 
   // Pinned container is showing "educational" info, and it should remain shown.
   EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-
-  test_api()->Close();
 }
 
 // Verifies the screen captures container is shown and orders items as expected
@@ -792,8 +784,6 @@ TEST_F(HoldingSpaceTrayTest, PinnedFilesContainer) {
 
   EXPECT_FALSE(test_api()->RecentFilesContainerShown());
   EXPECT_FALSE(test_api()->PinnedFilesContainerShown());
-
-  test_api()->Close();
 }
 
 // Verifies the pinned items container is not shown if it only contains
@@ -836,8 +826,6 @@ TEST_F(HoldingSpaceTrayTest,
   ASSERT_EQ(1u, pinned_files.size());
   EXPECT_EQ(item_3->id(),
             HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
-
-  test_api()->Close();
 }
 
 // Verifies the pinned items container is shown and orders items as expected
