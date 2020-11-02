@@ -12,7 +12,6 @@
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/pepper/pepper_platform_audio_output_dev.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "ipc/ipc_message.h"
@@ -30,26 +29,17 @@ PepperAudioOutputHost::PepperAudioOutputHost(RendererPpapiHostImpl* host,
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       renderer_ppapi_host_(host),
       audio_output_(nullptr),
-      playback_throttled_(false),
       enumeration_helper_(this,
                           PepperMediaDeviceManager::GetForRenderFrame(
                               host->GetRenderFrameForInstance(pp_instance())),
                           PP_DEVICETYPE_DEV_AUDIOOUTPUT,
                           host->GetDocumentURL(instance)) {
-  PepperPluginInstanceImpl* plugin_instance =
-      static_cast<PepperPluginInstanceImpl*>(
-          PepperPluginInstance::Get(pp_instance()));
-  if (plugin_instance && plugin_instance->throttler())
-    plugin_instance->throttler()->AddObserver(this);
 }
 
 PepperAudioOutputHost::~PepperAudioOutputHost() {
   PepperPluginInstanceImpl* instance = static_cast<PepperPluginInstanceImpl*>(
       PepperPluginInstance::Get(pp_instance()));
   if (instance) {
-    if (instance->throttler()) {
-      instance->throttler()->RemoveObserver(this);
-    }
     instance->audio_controller().RemoveInstance(this);
   }
   Close();
@@ -122,13 +112,6 @@ int32_t PepperAudioOutputHost::OnStartOrStop(
       PepperPluginInstance::Get(pp_instance()));
 
   if (playback) {
-    // If plugin is in power saver mode, defer audio IPC communication.
-    if (instance && instance->throttler() &&
-        instance->throttler()->power_saver_enabled()) {
-      instance->throttler()->NotifyAudioThrottled();
-      playback_throttled_ = true;
-      return PP_TRUE;
-    }
     if (instance)
       instance->audio_controller().AddInstance(this);
 
@@ -222,32 +205,6 @@ void PepperAudioOutputHost::SendOpenReply(int32_t result) {
   open_context_.params.set_result(result);
   host()->SendReply(open_context_, PpapiPluginMsg_AudioOutput_OpenReply());
   open_context_ = ppapi::host::ReplyMessageContext();
-}
-
-void PepperAudioOutputHost::OnThrottleStateChange() {
-  PepperPluginInstanceImpl* instance = static_cast<PepperPluginInstanceImpl*>(
-      PepperPluginInstance::Get(pp_instance()));
-  if (playback_throttled_ && instance && instance->throttler() &&
-      !instance->throttler()->power_saver_enabled()) {
-    // If we have become unthrottled, and we have a pending playback,
-    // start it.
-    StartDeferredPlayback();
-  }
-}
-
-void PepperAudioOutputHost::StartDeferredPlayback() {
-  if (!audio_output_)
-    return;
-
-  DCHECK(playback_throttled_);
-  playback_throttled_ = false;
-
-  PepperPluginInstanceImpl* instance = static_cast<PepperPluginInstanceImpl*>(
-      PepperPluginInstance::Get(pp_instance()));
-  if (instance)
-    instance->audio_controller().AddInstance(this);
-
-  audio_output_->StartPlayback();
 }
 
 }  // namespace content

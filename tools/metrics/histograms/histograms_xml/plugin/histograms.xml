@@ -36,6 +36,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Plugin.PowerSaver.Unthrottle"
     enum="PluginPowerSaverUnthrottleMethod" expires_after="2020-03-29">
+  <obsolete>
+    Deprecated Oct 2020.
+  </obsolete>
   <owner>tommycli@chromium.org</owner>
   <summary>
     Record how many throttled plugins are unthrottled, and by what method.

@@ -1220,11 +1220,6 @@ class PepperContentSettingsSpecialCasesTest : public ContentSettingsTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(ppapi::RegisterFlashTestPlugin(command_line));
 
-    // Plugin throttling is irrelevant to this test and just makes it harder to
-    // verify if a test Flash plugin loads successfully.
-    command_line->AppendSwitchASCII(
-        switches::kOverridePluginPowerSaverForTesting, "never");
-
 #if BUILDFLAG(ENABLE_NACL)
     // Ensure NaCl can run.
     command_line->AppendSwitch(switches::kEnableNaCl);

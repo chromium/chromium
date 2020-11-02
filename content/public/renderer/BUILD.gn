@@ -34,7 +34,6 @@ target(link_target_type, "renderer_sources") {
     "document_state.h",
     "pepper_plugin_instance.h",
     "plugin_ax_tree_source.h",
-    "plugin_instance_throttler.h",
     "render_accessibility.h",
     "render_frame.h",
     "render_frame_media_playback_options.h",

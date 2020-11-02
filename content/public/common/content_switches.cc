@@ -573,13 +573,6 @@ const char kNoV8UntrustedCodeMitigations[] = "no-v8-untrusted-code-mitigations";
 // Number of worker threads used to rasterize content.
 const char kNumRasterThreads[]              = "num-raster-threads";
 
-// Override the behavior of plugin throttling for testing.
-// By default the throttler is only enabled for a hard-coded list of plugins.
-// Set the value to 'always' to always throttle every plugin instance. Set the
-// value to 'never' to disable throttling.
-const char kOverridePluginPowerSaverForTesting[] =
-    "override-plugin-power-saver-for-testing";
-
 // Runs PPAPI (Pepper) plugins in-process.
 const char kPpapiInProcess[]                = "ppapi-in-process";
 

@@ -106,7 +106,6 @@
 #include "content/renderer/navigation_client.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/pepper/pepper_audio_controller.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
@@ -1998,9 +1997,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       render_view_(params.render_view),
       routing_id_(params.routing_id),
       previous_routing_id_(MSG_ROUTING_NONE),
-#if BUILDFLAG(ENABLE_PLUGINS)
-      plugin_power_saver_helper_(nullptr),
-#endif
       selection_text_offset_(0),
       selection_range_(gfx::Range::InvalidRange()),
       render_accessibility_manager_(
@@ -2041,11 +2037,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   // deleted when the RenderFrame gets deleted.
 #if defined(OS_ANDROID)
   new GinJavaBridgeDispatcher(this);
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Manages its own lifetime.
-  plugin_power_saver_helper_ = new PluginPowerSaverHelper(this);
 #endif
 }
 
@@ -2816,8 +2807,7 @@ void RenderFrameImpl::ShowVirtualKeyboard() {
 
 blink::WebPlugin* RenderFrameImpl::CreatePlugin(
     const WebPluginInfo& info,
-    const blink::WebPluginParams& params,
-    std::unique_ptr<content::PluginInstanceThrottler> throttler) {
+    const blink::WebPluginParams& params) {
 #if BUILDFLAG(ENABLE_PLUGINS)
   base::Optional<url::Origin> origin_lock;
   if (GetContentClient()->renderer()->IsOriginIsolatedPepperPlugin(info.path)) {
@@ -2830,10 +2820,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
       GetTaskRunner(blink::TaskType::kNetworking)));
   if (pepper_plugin_was_registered) {
     if (pepper_module.get()) {
-      return new PepperWebPluginImpl(
-          pepper_module.get(), params, this,
-          base::WrapUnique(
-              static_cast<PluginInstanceThrottlerImpl*>(throttler.release())));
+      return new PepperWebPluginImpl(pepper_module.get(), params, this);
     }
   }
 #if defined(OS_CHROMEOS)
@@ -2878,27 +2865,6 @@ RenderFrameImpl::GetRemoteAssociatedInterfaces() {
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-void RenderFrameImpl::RegisterPeripheralPlugin(
-    const url::Origin& content_origin,
-    base::OnceClosure unthrottle_callback) {
-  return plugin_power_saver_helper_->RegisterPeripheralPlugin(
-      content_origin, std::move(unthrottle_callback));
-}
-
-RenderFrame::PeripheralContentStatus
-RenderFrameImpl::GetPeripheralContentStatus(
-    const url::Origin& main_frame_origin,
-    const url::Origin& content_origin,
-    const gfx::Size& unobscured_size,
-    RecordPeripheralDecision record_decision) {
-  return plugin_power_saver_helper_->GetPeripheralContentStatus(
-      main_frame_origin, content_origin, unobscured_size, record_decision);
-}
-
-void RenderFrameImpl::AllowlistContentOrigin(
-    const url::Origin& content_origin) {
-  return plugin_power_saver_helper_->AllowlistContentOrigin(content_origin);
-}
 
 void RenderFrameImpl::PluginDidStartLoading() {
   DidStartLoading();
@@ -3778,7 +3744,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
 
   WebPluginParams params_to_use = params;
   params_to_use.mime_type = WebString::FromUTF8(mime_type);
-  return CreatePlugin(info, params_to_use, nullptr /* throttler */);
+  return CreatePlugin(info, params_to_use);
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)

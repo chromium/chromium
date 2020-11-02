@@ -24,66 +24,21 @@
 #include "url/origin.h"
 
 using base::UserMetricsAction;
-using content::PluginInstanceThrottler;
 using content::RenderFrame;
 using content::RenderThread;
 
 namespace plugins {
-
-void LoadablePluginPlaceholder::BlockForPowerSaverPoster() {
-  DCHECK(!is_blocked_for_power_saver_poster_);
-  is_blocked_for_power_saver_poster_ = true;
-
-  DCHECK(render_frame());
-  render_frame()->RegisterPeripheralPlugin(
-      url::Origin::Create(GURL(GetPluginParams().url)),
-      base::BindOnce(&LoadablePluginPlaceholder::MarkPluginEssential,
-                     weak_factory_.GetWeakPtr(),
-                     PluginInstanceThrottler::UNTHROTTLE_METHOD_BY_ALLOWLIST));
-}
-
-void LoadablePluginPlaceholder::SetPremadePlugin(
-    content::PluginInstanceThrottler* throttler) {
-  DCHECK(throttler);
-  DCHECK(!premade_throttler_);
-  heuristic_run_before_ = true;
-  premade_throttler_ = throttler;
-}
 
 LoadablePluginPlaceholder::LoadablePluginPlaceholder(
     RenderFrame* render_frame,
     const blink::WebPluginParams& params,
     const std::string& html_data)
     : PluginPlaceholderBase(render_frame, params, html_data),
-      heuristic_run_before_(false),
-      is_blocked_for_tinyness_(false),
-      is_blocked_for_background_tab_(false),
       is_blocked_for_prerendering_(false),
-      is_blocked_for_power_saver_poster_(false),
-      power_saver_enabled_(false),
-      premade_throttler_(nullptr),
       allow_loading_(false),
       finished_loading_(false) {}
 
 LoadablePluginPlaceholder::~LoadablePluginPlaceholder() {
-}
-
-void LoadablePluginPlaceholder::MarkPluginEssential(
-    PluginInstanceThrottler::PowerSaverUnthrottleMethod method) {
-  if (!power_saver_enabled_)
-    return;
-
-  power_saver_enabled_ = false;
-
-  if (premade_throttler_)
-    premade_throttler_->MarkPluginEssential(method);
-  else if (method != PluginInstanceThrottler::UNTHROTTLE_METHOD_DO_NOT_RECORD)
-    PluginInstanceThrottler::RecordUnthrottleMethodMetric(method);
-
-  is_blocked_for_power_saver_poster_ = false;
-  is_blocked_for_tinyness_ = false;
-  if (!LoadingBlocked())
-    LoadPlugin();
 }
 
 void LoadablePluginPlaceholder::ReplacePlugin(blink::WebPlugin* new_plugin) {
@@ -98,9 +53,7 @@ void LoadablePluginPlaceholder::ReplacePlugin(blink::WebPlugin* new_plugin) {
   }
 
   container->SetPlugin(new_plugin);
-  bool plugin_needs_initialization =
-      !premade_throttler_ || new_plugin != premade_throttler_->GetWebPlugin();
-  if (plugin_needs_initialization && !new_plugin->Initialize(container)) {
+  if (!new_plugin->Initialize(container)) {
     if (new_plugin->Container()) {
       // Since the we couldn't initialize the new plugin, but the container
       // still exists, restore the placeholder and destroy the new plugin.
@@ -141,119 +94,8 @@ void LoadablePluginPlaceholder::UpdateMessage() {
       blink::WebScriptSource(blink::WebString::FromUTF8(script)));
 }
 
-void LoadablePluginPlaceholder::PluginDestroyed() {
-  if (power_saver_enabled_) {
-    if (premade_throttler_) {
-      // Since the premade plugin has been detached from the container, it will
-      // not be automatically destroyed along with the page.
-      premade_throttler_->GetWebPlugin()->Destroy();
-      premade_throttler_ = nullptr;
-    } else if (is_blocked_for_power_saver_poster_) {
-      // Record the NEVER unthrottle count only if there is no throttler.
-      PluginInstanceThrottler::RecordUnthrottleMethodMetric(
-          PluginInstanceThrottler::UNTHROTTLE_METHOD_NEVER);
-    }
-
-    // Prevent processing subsequent calls to MarkPluginEssential.
-    power_saver_enabled_ = false;
-  }
-
-  PluginPlaceholderBase::PluginDestroyed();
-}
-
-v8::Local<v8::Object> LoadablePluginPlaceholder::GetV8ScriptableObject(
-    v8::Isolate* isolate) const {
-  // Pass through JavaScript access to the underlying throttled plugin.
-  if (premade_throttler_ && premade_throttler_->GetWebPlugin()) {
-    return premade_throttler_->GetWebPlugin()->V8ScriptableObject(isolate);
-  }
-  return v8::Local<v8::Object>();
-}
-
 bool LoadablePluginPlaceholder::IsErrorPlaceholder() {
   return !allow_loading_;
-}
-
-void LoadablePluginPlaceholder::OnUnobscuredRectUpdate(
-    const gfx::Rect& unobscured_rect) {
-  DCHECK(content::RenderThread::Get());
-  if (!render_frame())
-    return;
-
-  if (!plugin() || !finished_loading_)
-    return;
-
-  if (!is_blocked_for_tinyness_ && !is_blocked_for_power_saver_poster_)
-    return;
-
-  if (unobscured_rect_ == unobscured_rect)
-    return;
-
-  unobscured_rect_ = unobscured_rect;
-
-  float zoom_factor = plugin()->Container()->PageZoomFactor();
-  int width = roundf(unobscured_rect_.width() / zoom_factor);
-  int height = roundf(unobscured_rect_.height() / zoom_factor);
-  int x = roundf(unobscured_rect_.x() / zoom_factor);
-  int y = roundf(unobscured_rect_.y() / zoom_factor);
-
-  // On a size update check if we now qualify as a essential plugin.
-  url::Origin main_frame_origin =
-      render_frame()->GetWebFrame()->Top()->GetSecurityOrigin();
-  url::Origin content_origin = url::Origin::Create(GetPluginParams().url);
-  RenderFrame::PeripheralContentStatus status =
-      render_frame()->GetPeripheralContentStatus(
-          main_frame_origin, content_origin, gfx::Size(width, height),
-          heuristic_run_before_ ? RenderFrame::DONT_RECORD_DECISION
-                                : RenderFrame::RECORD_DECISION);
-
-  // Early exit for plugins that we've discovered to be essential.
-  if (status != RenderFrame::CONTENT_STATUS_PERIPHERAL &&
-      status != RenderFrame::CONTENT_STATUS_TINY) {
-    MarkPluginEssential(
-        heuristic_run_before_
-            ? PluginInstanceThrottler::UNTHROTTLE_METHOD_BY_SIZE_CHANGE
-            : PluginInstanceThrottler::UNTHROTTLE_METHOD_DO_NOT_RECORD);
-
-    if (!heuristic_run_before_ &&
-        status == RenderFrame::CONTENT_STATUS_ESSENTIAL_CROSS_ORIGIN_BIG) {
-      render_frame()->AllowlistContentOrigin(content_origin);
-    }
-
-    return;
-  }
-
-  if (!heuristic_run_before_) {
-    OnBlockedContent(status,
-                     main_frame_origin.IsSameOriginWith(content_origin));
-  }
-
-  if (is_blocked_for_tinyness_ && status != RenderFrame::CONTENT_STATUS_TINY) {
-    is_blocked_for_tinyness_ = false;
-    if (!LoadingBlocked()) {
-      LoadPlugin();
-    }
-  }
-
-  if (is_blocked_for_power_saver_poster_) {
-    // Adjust poster container padding and dimensions to center play button for
-    // plugins and plugin posters that have their top or left portions obscured.
-    std::string script = base::StringPrintf(
-        "window.resizePoster('%dpx', '%dpx', '%dpx', '%dpx')", x, y, width,
-        height);
-    plugin()->main_frame()->ExecuteScript(
-        blink::WebScriptSource(blink::WebString::FromUTF8(script)));
-  }
-
-  heuristic_run_before_ = true;
-}
-
-void LoadablePluginPlaceholder::WasShown() {
-  if (is_blocked_for_background_tab_) {
-    is_blocked_for_background_tab_ = false;
-    if (!LoadingBlocked())
-      LoadPlugin();
-  }
 }
 
 void LoadablePluginPlaceholder::OnLoadBlockedPlugins(
@@ -262,8 +104,6 @@ void LoadablePluginPlaceholder::OnLoadBlockedPlugins(
     return;
 
   RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_UI"));
-  MarkPluginEssential(
-      PluginInstanceThrottler::UNTHROTTLE_METHOD_BY_OMNIBOX_ICON);
   LoadPlugin();
 }
 
@@ -290,20 +130,13 @@ void LoadablePluginPlaceholder::LoadPlugin() {
     return;
   }
 
-  if (premade_throttler_) {
-    premade_throttler_->SetHiddenForPlaceholder(false /* hidden */);
-    ReplacePlugin(premade_throttler_->GetWebPlugin());
-    premade_throttler_ = nullptr;
-  } else {
-    ReplacePlugin(CreatePlugin());
-  }
+  ReplacePlugin(CreatePlugin());
 }
 
 void LoadablePluginPlaceholder::LoadCallback() {
   RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_Click"));
   // If the user specifically clicks on the plugin content's placeholder,
   // disable power saver throttling for this instance.
-  MarkPluginEssential(PluginInstanceThrottler::UNTHROTTLE_METHOD_BY_CLICK);
   LoadPlugin();
 }
 
@@ -311,11 +144,6 @@ void LoadablePluginPlaceholder::DidFinishLoadingCallback() {
   finished_loading_ = true;
   if (message_.length() > 0)
     UpdateMessage();
-
-  // Wait for the placeholder to finish loading to hide the premade plugin.
-  // This is necessary to prevent a flicker.
-  if (premade_throttler_ && power_saver_enabled_)
-    premade_throttler_->SetHiddenForPlaceholder(true /* hidden */);
 
   // In case our initial geometry was reported before the placeholder finished
   // loading, request another one. Needed for correct large poster unthrottling.
@@ -344,8 +172,7 @@ const std::string& LoadablePluginPlaceholder::GetIdentifier() const {
 
 bool LoadablePluginPlaceholder::LoadingBlocked() const {
   DCHECK(allow_loading_);
-  return is_blocked_for_tinyness_ || is_blocked_for_background_tab_ ||
-         is_blocked_for_power_saver_poster_ || is_blocked_for_prerendering_;
+  return is_blocked_for_prerendering_;
 }
 
 }  // namespace plugins

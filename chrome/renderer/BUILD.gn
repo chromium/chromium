@@ -219,10 +219,6 @@ static_library("renderer") {
       "pepper/pepper_uma_host.h",
       "plugins/chrome_plugin_placeholder.cc",
       "plugins/chrome_plugin_placeholder.h",
-      "plugins/plugin_preroller.cc",
-      "plugins/plugin_preroller.h",
-      "plugins/power_saver_info.cc",
-      "plugins/power_saver_info.h",
     ]
     deps += [
       "//components/pdf/renderer",

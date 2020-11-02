@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
-#include "chrome/renderer/plugins/power_saver_info.h"
 #include "components/plugins/renderer/loadable_plugin_placeholder.h"
 #include "components/prerender/common/prerender_types.mojom.h"
 #include "components/prerender/renderer/prerender_observer.h"
@@ -37,8 +36,7 @@ class ChromePluginPlaceholder final
       const std::string& identifier,
       const base::string16& name,
       int resource_id,
-      const base::string16& message,
-      const PowerSaverInfo& power_saver_info);
+      const base::string16& message);
 
   // Creates a new WebViewPlugin with a MissingPlugin as a delegate.
   static ChromePluginPlaceholder* CreateLoadableMissingPlugin(

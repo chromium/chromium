@@ -14,7 +14,6 @@
 #include "content/public/common/pepper_plugin_info.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/test/render_view_test.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/render_frame_impl.h"
@@ -31,22 +30,12 @@
 namespace content {
 namespace {
 
-class PepperWebPluginImplBrowserTest
-    : public RenderViewTest,
-      public PluginInstanceThrottler::Observer {
+class PepperWebPluginImplBrowserTest : public RenderViewTest {
  public:
   PepperWebPluginImplBrowserTest()
-      : throttler_(nullptr),
-        throttle_engaged_(false),
-        pp_module_(0),
-        pp_instance_(0),
-        graphics2d_(0) {}
+      : pp_module_(0), pp_instance_(0), graphics2d_(0) {}
 
   void SetUp() override {
-    base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    command_line.AppendSwitchASCII(
-        switches::kOverridePluginPowerSaverForTesting, "always");
-
     current_test_ = this;
     RenderViewTest::SetUp();
   }
@@ -59,12 +48,6 @@ class PepperWebPluginImplBrowserTest
   }
   ContentRendererClient* CreateContentRendererClient() override {
     return new MockContentRendererClient;
-  }
-
-  // PluginInstanceThrottler::Observer implementation
-  void OnThrottleStateChange() override {
-    if (throttler_->IsThrottled())
-      throttle_engaged_ = true;
   }
 
  protected:
@@ -168,18 +151,12 @@ class PepperWebPluginImplBrowserTest
     bool OverrideCreatePlugin(RenderFrame* render_frame,
                               const blink::WebPluginParams& params,
                               blink::WebPlugin** plugin) override {
-      current_test_->throttler_ =
-          new PluginInstanceThrottlerImpl(RenderFrame::DONT_RECORD_DECISION);
-      current_test_->throttler_->AddObserver(current_test_);
-      *plugin = render_frame->CreatePlugin(
-          GetPluginInfo().ToWebPluginInfo(), params,
-          base::WrapUnique(current_test_->throttler_));
+      *plugin =
+          render_frame->CreatePlugin(GetPluginInfo().ToWebPluginInfo(), params);
       return *plugin;
     }
   };
 
-  PluginInstanceThrottlerImpl* throttler_;
-  bool throttle_engaged_;
   PP_Module pp_module_;
   PP_Instance pp_instance_;
   PP_Resource graphics2d_;
@@ -203,7 +180,6 @@ TEST_F(PepperWebPluginImplBrowserTest, NotEngageThrottleDuringDestroy) {
   EXPECT_NE(0, pp_instance_);
   LoadHTML("");
   EXPECT_EQ(0, pp_instance_);
-  EXPECT_FALSE(throttle_engaged_);
 }
 
 }  // unnamed namespace

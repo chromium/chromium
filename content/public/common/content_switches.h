@@ -170,7 +170,6 @@ CONTENT_EXPORT extern const char kMojoLocalStorage[];
 CONTENT_EXPORT extern const char kNoZygote[];
 extern const char kNoV8UntrustedCodeMitigations[];
 CONTENT_EXPORT extern const char kNumRasterThreads[];
-CONTENT_EXPORT extern const char kOverridePluginPowerSaverForTesting[];
 CONTENT_EXPORT extern const char kPpapiInProcess[];
 extern const char kPpapiPluginLauncher[];
 CONTENT_EXPORT extern const char kPpapiPluginProcess[];

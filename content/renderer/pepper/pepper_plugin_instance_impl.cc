@@ -41,7 +41,6 @@
 #include "content/renderer/pepper/pepper_in_process_router.h"
 #include "content/renderer/pepper/pepper_try_catch.h"
 #include "content/renderer/pepper/pepper_url_loader_host.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/plugin_object.h"
 #include "content/renderer/pepper/ppapi_preferences_builder.h"
@@ -607,8 +606,6 @@ PepperPluginInstanceImpl::~PepperPluginInstanceImpl() {
   // want to look up in the global map to get info off of our object.
   HostGlobals::Get()->InstanceDeleted(pp_instance_);
 
-  if (throttler_)
-    throttler_->RemoveObserver(this);
 }
 
 // NOTE: Any of these methods that calls into the plugin needs to take into
@@ -645,12 +642,6 @@ void PepperPluginInstanceImpl::Delete() {
 
   // Keep a reference on the stack. See NOTE above.
   scoped_refptr<PepperPluginInstanceImpl> ref(this);
-
-  // It is important to destroy the throttler before anything else.
-  // The plugin instance may flush its graphics pipeline during its postmortem
-  // spasm, causing the throttler to engage and obtain new dangling reference
-  // to the plugin container being destroyed.
-  throttler_.reset();
 
   // Force the MessageChannel to release its "passthrough object" which should
   // release our last reference to the "InstanceObject" and will probably
@@ -801,17 +792,9 @@ void PepperPluginInstanceImpl::InstanceCrashed() {
 bool PepperPluginInstanceImpl::Initialize(
     const std::vector<std::string>& arg_names,
     const std::vector<std::string>& arg_values,
-    bool full_frame,
-    std::unique_ptr<PluginInstanceThrottlerImpl> throttler) {
-  DCHECK(!throttler_);
-
+    bool full_frame) {
   if (!render_frame_)
     return false;
-
-  if (throttler) {
-    throttler_ = std::move(throttler);
-    throttler_->AddObserver(this);
-  }
 
   message_channel_ = MessageChannel::Create(this, &message_channel_object_);
   DCHECK(message_channel_);
@@ -1084,9 +1067,6 @@ bool PepperPluginInstanceImpl::HandleInputEvent(
   if (!render_frame_)
     return false;
 
-  if (throttler_ && throttler_->ConsumeInputEvent(event))
-    return true;
-
   // Don't dispatch input events to crashed plugins.
   if (module()->is_crashed())
     return false;
@@ -1271,7 +1251,7 @@ void PepperPluginInstanceImpl::ViewChanged(
   }
 
   // During plugin initialization, there are often re-layouts. Avoid sending
-  // intermediate sizes the plugin and throttler.
+  // intermediate sizes the plugin.
   if (sent_initial_did_change_view_)
     SendDidChangeView();
   else
@@ -1776,23 +1756,7 @@ void PepperPluginInstanceImpl::SendDidChangeView() {
   module_->renderer_ppapi_host()->set_viewport_to_dip_scale(
       viewport_to_dip_scale_);
 
-  // During the first view update, initialize the throttler.
-  if (!sent_initial_did_change_view_ && throttler_) {
-    throttler_->Initialize(render_frame_, url::Origin::Create(plugin_url_),
-                           module()->name(), unobscured_rect_.size());
-  }
-
   ppapi::ViewData view_data = view_data_;
-
-  // When plugin content is throttled, fake the page being offscreen. We cannot
-  // send empty view data here, as some plugins rely on accurate view data.
-  if (throttler_ && throttler_->IsThrottled()) {
-    view_data.is_page_visible = false;
-    view_data.clip_rect.point.x = 0;
-    view_data.clip_rect.point.y = 0;
-    view_data.clip_rect.size.width = 0;
-    view_data.clip_rect.size.height = 0;
-  }
 
   if (sent_initial_did_change_view_ && last_sent_view_data_.Equals(view_data))
     return;  // Nothing to update.
@@ -2071,12 +2035,6 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
   bool want_2d_layer = !!bound_graphics_2d_platform_;
   bool want_texture_layer = want_3d_layer || want_2d_layer;
 
-  if (throttler_ && throttler_->IsHiddenForPlaceholder()) {
-    want_3d_layer = false;
-    want_2d_layer = false;
-    want_texture_layer = false;
-  }
-
   if (!force_creation && (want_texture_layer == !!texture_layer_) &&
       (want_3d_layer == layer_is_hardware_)) {
     UpdateLayerTransform();
@@ -2134,21 +2092,6 @@ void PepperPluginInstanceImpl::AccessibilityModeChanged(
 
 void PepperPluginInstanceImpl::OnDestruct() {
   render_frame_ = nullptr;
-}
-
-void PepperPluginInstanceImpl::OnThrottleStateChange() {
-  if (!render_frame_)
-    return;
-
-  SendDidChangeView();
-
-  bool is_throttled = throttler_->IsThrottled();
-  render_frame()->Send(new FrameHostMsg_PluginInstanceThrottleStateChange(
-      module_->GetPluginChildId(), pp_instance_, is_throttled));
-}
-
-void PepperPluginInstanceImpl::OnHiddenForPlaceholder(bool hidden) {
-  UpdateLayer(false /* device_changed */);
 }
 
 bool PepperPluginInstanceImpl::SupportsKeyboardFocus() {

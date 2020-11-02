@@ -17,7 +17,6 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/message_channel.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/v8object_var.h"
 #include "content/renderer/render_frame_impl.h"
@@ -72,14 +71,11 @@ struct PepperWebPluginImpl::InitData {
   GURL url;
 };
 
-PepperWebPluginImpl::PepperWebPluginImpl(
-    PluginModule* plugin_module,
-    const WebPluginParams& params,
-    RenderFrameImpl* render_frame,
-    std::unique_ptr<PluginInstanceThrottlerImpl> throttler)
+PepperWebPluginImpl::PepperWebPluginImpl(PluginModule* plugin_module,
+                                         const WebPluginParams& params,
+                                         RenderFrameImpl* render_frame)
     : init_data_(new InitData()),
       full_frame_(params.load_manually),
-      throttler_(std::move(throttler)),
       instance_object_(PP_MakeUndefined()),
       container_(nullptr) {
   DCHECK(plugin_module);
@@ -96,9 +92,6 @@ PepperWebPluginImpl::PepperWebPluginImpl(
       base::debug::AllocateCrashKeyString("subresource_url",
                                           base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(subresource_url, init_data_->url.spec());
-
-  if (throttler_)
-    throttler_->SetWebPlugin(this);
 }
 
 PepperWebPluginImpl::~PepperWebPluginImpl() {}
@@ -120,7 +113,7 @@ bool PepperWebPluginImpl::Initialize(WebPluginContainer* container) {
     return false;
 
   if (!instance_->Initialize(init_data_->arg_names, init_data_->arg_values,
-                             full_frame_, std::move(throttler_))) {
+                             full_frame_)) {
     // If |container_| is nullptr, this object has already been synchronously
     // destroy()-ed during |instance_|'s Initialize call. In that case, we early
     // exit. We neither create a replacement plugin nor destroy() ourselves.

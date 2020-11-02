@@ -110,10 +110,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/renderer/pepper/plugin_power_saver_helper.h"
-#endif
-
 namespace blink {
 namespace scheduler {
 class WebAgentGroupScheduler;
@@ -377,10 +373,8 @@ class CONTENT_EXPORT RenderFrameImpl
                       const UntrustworthyContextMenuParams& params) override;
   void CancelContextMenu(int request_id) override;
   void ShowVirtualKeyboard() override;
-  blink::WebPlugin* CreatePlugin(
-      const WebPluginInfo& info,
-      const blink::WebPluginParams& params,
-      std::unique_ptr<PluginInstanceThrottler> throttler) override;
+  blink::WebPlugin* CreatePlugin(const WebPluginInfo& info,
+                                 const blink::WebPluginParams& params) override;
   void ExecuteJavaScript(const base::string16& javascript) override;
   bool IsMainFrame() override;
   bool IsHidden() override;
@@ -391,14 +385,6 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry() override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
 #if BUILDFLAG(ENABLE_PLUGINS)
-  void RegisterPeripheralPlugin(const url::Origin& content_origin,
-                                base::OnceClosure unthrottle_callback) override;
-  RenderFrame::PeripheralContentStatus GetPeripheralContentStatus(
-      const url::Origin& main_frame_origin,
-      const url::Origin& content_origin,
-      const gfx::Size& unobscured_size,
-      RecordPeripheralDecision record_decision) override;
-  void AllowlistContentOrigin(const url::Origin& content_origin) override;
   void PluginDidStartLoading() override;
   void PluginDidStopLoading() override;
 #endif
@@ -1275,10 +1261,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Stores the current history item for this frame, so that updates to it can
   // be reported to the browser process via SendUpdateState.
   blink::WebHistoryItem current_history_item_;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  PluginPowerSaverHelper* plugin_power_saver_helper_;
-#endif
 
   // All the registered observers.
   base::ObserverList<RenderFrameObserver>::Unchecked observers_;

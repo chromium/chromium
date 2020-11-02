@@ -58,7 +58,6 @@
 #include "chrome/renderer/pepper/pepper_helper.h"
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
-#include "chrome/renderer/plugins/plugin_preroller.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
 #include "chrome/renderer/previews/resource_loading_hints_agent.h"
 #include "chrome/renderer/sync_encryption_keys_extension.h"
@@ -114,7 +113,7 @@
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/renderer/plugin_instance_throttler.h"
+#include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_view.h"
@@ -195,7 +194,6 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/common/plugin_utils.h"
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
-#include "chrome/renderer/plugins/power_saver_info.h"
 #else
 #include "components/plugins/renderer/plugin_placeholder.h"
 #endif
@@ -249,7 +247,6 @@ using blink::WebURLRequest;
 using blink::WebURLResponse;
 using blink::WebVector;
 using blink::mojom::FetchCacheMode;
-using content::PluginInstanceThrottler;
 using content::RenderFrame;
 using content::RenderThread;
 using content::WebPluginInfo;
@@ -830,7 +827,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                                                const base::string16& message) {
       return ChromePluginPlaceholder::CreateBlockedPlugin(
           render_frame, params, info, identifier, group_name, template_id,
-          message, PowerSaverInfo());
+          message);
     };
     WebLocalFrame* frame = render_frame->GetWebFrame();
     switch (status) {
@@ -938,35 +935,17 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         bool is_prerendering =
             prerender::PrerenderHelper::IsPrerendering(render_frame);
 
-        bool power_saver_setting_on =
-            status == chrome::mojom::PluginStatus::kPlayImportantContent;
-        PowerSaverInfo power_saver_info =
-            PowerSaverInfo::Get(render_frame, power_saver_setting_on, params,
-                                info, frame->GetDocument().Url());
-        if (power_saver_info.blocked_for_background_tab || is_prerendering ||
-            !power_saver_info.poster_attribute.empty() ||
-            power_saver_info.power_saver_enabled) {
+        if (is_prerendering) {
           placeholder = ChromePluginPlaceholder::CreateBlockedPlugin(
               render_frame, params, info, identifier, group_name,
-              power_saver_info.poster_attribute.empty()
-                  ? IDR_BLOCKED_PLUGIN_HTML
-                  : IDR_PLUGIN_POSTER_HTML,
-              l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name),
-              power_saver_info);
+              IDR_BLOCKED_PLUGIN_HTML,
+              l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name));
           placeholder->set_blocked_for_prerendering(is_prerendering);
-
-          // Because we can't determine the size of a plugin until it loads,
-          // all plugins are treated as tiny until proven otherwise.
-          placeholder->set_blocked_for_tinyness(
-              power_saver_info.power_saver_enabled);
-
           placeholder->AllowLoading();
           break;
         }
 
-        // Skip the placeholder for non-Flash plugins or if Plugin Power Saver
-        // is disabled for testing.
-        return render_frame->CreatePlugin(info, params, nullptr);
+        return render_frame->CreatePlugin(info, params);
       }
       case chrome::mojom::PluginStatus::kDisabled: {
         PluginUMAReporter::GetInstance()->ReportPluginDisabled(orig_mime_type,

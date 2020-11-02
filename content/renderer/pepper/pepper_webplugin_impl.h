@@ -26,7 +26,6 @@ struct WebPrintParams;
 namespace content {
 
 class PepperPluginInstanceImpl;
-class PluginInstanceThrottlerImpl;
 class PluginModule;
 class RenderFrameImpl;
 
@@ -34,8 +33,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
  public:
   PepperWebPluginImpl(PluginModule* module,
                       const blink::WebPluginParams& params,
-                      RenderFrameImpl* render_frame,
-                      std::unique_ptr<PluginInstanceThrottlerImpl> throttler);
+                      RenderFrameImpl* render_frame);
 
   PepperPluginInstanceImpl* instance() { return instance_.get(); }
 
@@ -121,7 +119,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   // being an embedded resource.
   const bool full_frame_;
 
-  std::unique_ptr<PluginInstanceThrottlerImpl> throttler_;
   scoped_refptr<PepperPluginInstanceImpl> instance_;
   gfx::Rect plugin_rect_;
   PP_Var instance_object_;

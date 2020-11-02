@@ -17,7 +17,6 @@
 #include "content/public/common/gpu_stream_constants.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
-#include "content/renderer/pepper/plugin_instance_throttler_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -222,11 +221,6 @@ bool PPB_Graphics3D_Impl::InitRaw(
 
   // 3D access might be disabled.
   if (!prefs.pepper_3d_enabled)
-    return false;
-
-  // Force SW rendering for keyframe extraction to avoid pixel reads from VRAM.
-  PluginInstanceThrottlerImpl* throttler = plugin_instance->throttler();
-  if (throttler && throttler->needs_representative_keyframe())
     return false;
 
   RenderThreadImpl* render_thread = RenderThreadImpl::current();

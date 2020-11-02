@@ -30,7 +30,6 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
-#include "content/public/renderer/plugin_instance_throttler.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/handle.h"
@@ -106,7 +105,6 @@ namespace content {
 class MessageChannel;
 class PepperAudioController;
 class PepperGraphics2DHost;
-class PluginInstanceThrottlerImpl;
 class PluginModule;
 class PluginObject;
 class PPB_Graphics3D_Impl;
@@ -121,8 +119,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
       public PepperPluginInstance,
       public ppapi::PPB_Instance_Shared,
       public cc::TextureLayerClient,
-      public RenderFrameObserver,
-      public PluginInstanceThrottler::Observer {
+      public RenderFrameObserver {
  public:
   // Create and return a PepperPluginInstanceImpl object which supports the most
   // recent version of PPP_Instance possible by querying the given
@@ -142,8 +139,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   PluginModule* module() const { return module_.get(); }
 
   blink::WebPluginContainer* container() const { return container_; }
-
-  PluginInstanceThrottlerImpl* throttler() const { return throttler_.get(); }
 
   // Returns the PP_Instance uniquely identifying this instance. Guaranteed
   // nonzero.
@@ -216,8 +211,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // PPP_Instance and PPP_Instance_Private.
   bool Initialize(const std::vector<std::string>& arg_names,
                   const std::vector<std::string>& arg_values,
-                  bool full_frame,
-                  std::unique_ptr<PluginInstanceThrottlerImpl> throttler);
+                  bool full_frame);
   bool HandleDocumentLoad(const blink::WebURLResponse& response);
   bool HandleCoalescedInputEvent(const blink::WebCoalescedInputEvent& event,
                                  ui::Cursor* cursor);
@@ -477,10 +471,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
 
-  // PluginInstanceThrottler::Observer
-  void OnThrottleStateChange() override;
-  void OnHiddenForPlaceholder(bool hidden) override;
-
   PepperAudioController& audio_controller() {
     return *audio_controller_;
   }
@@ -672,9 +662,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // Set to true the first time the plugin is clicked. Used to collect metrics.
   bool has_been_clicked_;
-
-  // Responsible for turning on throttling if Power Saver is on.
-  std::unique_ptr<PluginInstanceThrottlerImpl> throttler_;
 
   // Indicates whether this is a full frame instance, which means it represents
   // an entire document rather than an embed tag.

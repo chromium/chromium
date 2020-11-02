@@ -1564,7 +1564,6 @@ test("content_browsertests") {
       "../renderer/pepper/pepper_graphics_2d_host_unittest.cc",
       "../renderer/pepper/pepper_url_request_unittest.cc",
       "../renderer/pepper/pepper_webplugin_impl_browsertest.cc",
-      "../renderer/pepper/plugin_power_saver_helper_browsertest.cc",
       "../test/ppapi/ppapi_browsertest.cc",
       "../test/ppapi/ppapi_test.cc",
       "../test/ppapi/ppapi_test.h",
@@ -2304,7 +2303,6 @@ test("content_unittests") {
       "../renderer/pepper/event_conversion_unittest.cc",
       "../renderer/pepper/host_var_tracker_unittest.cc",
       "../renderer/pepper/mock_resource.h",
-      "../renderer/pepper/plugin_instance_throttler_impl_unittest.cc",
       "../renderer/pepper/v8_var_converter_unittest.cc",
     ]
     deps += [

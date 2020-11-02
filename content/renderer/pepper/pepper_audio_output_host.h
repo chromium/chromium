@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
-#include "content/public/renderer/plugin_instance_throttler.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/c/ppb_audio_config.h"
@@ -26,8 +25,7 @@ namespace content {
 class PepperPlatformAudioOutputDev;
 class RendererPpapiHostImpl;
 
-class PepperAudioOutputHost : public ppapi::host::ResourceHost,
-                              public PluginInstanceThrottler::Observer {
+class PepperAudioOutputHost : public ppapi::host::ResourceHost {
  public:
   PepperAudioOutputHost(RendererPpapiHostImpl* host,
                         PP_Instance instance,
@@ -67,12 +65,6 @@ class PepperAudioOutputHost : public ppapi::host::ResourceHost,
 
   void SendOpenReply(int32_t result);
 
-  // PluginInstanceThrottler::Observer implementation.
-  void OnThrottleStateChange() override;
-
-  // Starts the deferred playback and unsubscribes from the throttler.
-  void StartDeferredPlayback();
-
   // Non-owning pointer.
   RendererPpapiHostImpl* renderer_ppapi_host_;
 
@@ -81,9 +73,6 @@ class PepperAudioOutputHost : public ppapi::host::ResourceHost,
   // Audio output object that we delegate audio IPC through.
   // We don't own this pointer but are responsible for calling Shutdown on it.
   PepperPlatformAudioOutputDev* audio_output_;
-
-  // Stream is playing, but throttled due to Plugin Power Saver.
-  bool playback_throttled_;
 
   PepperDeviceEnumerationHostHelper enumeration_helper_;
 
