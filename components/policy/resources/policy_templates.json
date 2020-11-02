@@ -7288,15 +7288,11 @@
       'id': 61,
       'caption': '''Enable lock when the device become idle or suspended''',
       'tags': [],
-      'desc': '''Enable lock when <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices become idle or suspended.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> asks users for a password to unlock the device when it becomes idle.
 
-      If you enable this setting, users will be asked for a password to unlock the device from sleep.
+      Setting the policy to Disabled means users are not asked for a password to unlock the device from sleep.
 
-      If you disable this setting, users will not be asked for a password to unlock the device from sleep.
-
-      If you enable or disable this setting, users cannot change or override it.
-
-      If the policy is left not set the user can choose whether they want to be asked for password to unlock the device or not.''',
+      Leaving the policy unset lets the user choose whether to be prompted for a password to unlock the device from sleep.''',
     },
     {
       'name': 'ChromeOsMultiProfileUserBehavior',
@@ -11456,11 +11452,9 @@
       'id': 491,
       'caption': '''Allow wake locks''',
       'tags': [],
-      'desc': '''Specifies whether wake locks are allowed. Wake locks can be requested by extensions via the power management extension API and by ARC apps.
+      'desc': '''Setting the policy to Enabled or leaving it unset allows wake locks for power management. Extensions can request wake locks through the power management extension API and ARC apps.
 
-          If this policy is set to true or left not set, wake locks will be honored for power management.
-
-          If this policy is set to false, wake lock requests will get ignored.''',
+      Setting the policy to Disabled means wake lock requests are ignored.''',
     },
     {
       'name': 'AllowScreenWakeLocks',
@@ -11476,11 +11470,9 @@
       'id': 203,
       'caption': '''Allow screen wake locks''',
       'tags': [],
-      'desc': '''Specifies whether screen wake locks are allowed. Screen wake locks can be requested by extensions via the power management extension API and by ARC apps.
+      'desc': '''Unless <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME">AllowWakeLocks</ph> is set to Disabled, setting <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME">AllowScreenWakeLocks</ph> to Enabled or leaving it unset allows screen wake locks for power management. Extensions can request screen wake locks through the power management extension API and ARC apps.
 
-          If this policy is set to true or left not set, screen wake locks will be honored for power management, unless AllowWakeLocks is set to false.
-
-          If this policy is set to false, screen wake lock requests will be demoted to system wake lock requests.''',
+      Setting the policy to Disabled demotes screen wake lock requests to system wake lock requests.''',
     },
     {
       'name': 'UserActivityScreenDimDelayScale',
@@ -11744,15 +11736,15 @@
       'id': 225,
       'caption': '''Power management on the login screen''',
       'tags': [],
-      'desc': '''Configure power management on the login screen in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.
+      'desc': '''Setting the policy lets you set how <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> behaves when there is no user activity for some amount of time while the sign-in screen appears. The policy controls multiple settings. For their individual semantics and value ranges, see the corresponding policies that control power management within a session.
 
-      This policy lets you configure how <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> behaves when there is no user activity for some amount of time while the login screen is being shown. The policy controls multiple settings. For their individual semantics and value ranges, see the corresponding policies that control power management within a session. The only deviations from these policies are:
+      The deviations from these policies are:
+
       * The actions to take on idle or lid close cannot be to end the session.
+
       * The default action taken on idle when running on AC power is to shut down.
 
-      If a setting is left unspecified, a default value is used.
-
-      If this policy is unset, defaults are used for all settings.''',
+      Leaving the policy or any of its settings unset results in the use of the default values for the various power settings.''',
     },
     {
       'name': 'DeviceAllowRedeemChromeOsRegistrationOffers',
@@ -12892,19 +12884,11 @@
       'id': 192,
       'caption': '''Limit device uptime by automatically rebooting''',
       'tags': [],
-      'desc': '''Limit the device uptime by scheduling automatic reboots.
+      'desc': '''Setting the policy limits the device uptime by scheduling automatic restarts, which you can delay by up to 24 hours if a user is on the device. The policy value should be specified in seconds. Values are clamped to be at least 3,600 (one hour).
 
-      When this policy is set, it specifies the length of device uptime after which an automatic reboot is scheduled.
+      If you set the policy, users can't change it. If not set, the device uptime isn't limited.
 
-      When this policy is not set, the device uptime is not limited.
-
-      If you set this policy, users cannot change or override it.
-
-      An automatic reboot is scheduled at the selected time but may be delayed on the device by up to 24 hours if a user is currently using the device.
-
-      Note: Currently, automatic reboots are only enabled while the login screen is being shown or a kiosk app session is in progress. This will change in the future and the policy will always apply, regardless of whether a session of any particular type is in progress or not.
-
-      The policy value should be specified in seconds. Values are clamped to be at least 3600 (one hour).''',
+      Note: Automatic restarts are only on while the sign-in screen appears or during a kiosk app session.''',
     },
     {
       'name': 'RebootAfterUpdate',
@@ -13940,8 +13924,9 @@
       'id': 284,
       'caption': '''Automatic reboot on device shutdown''',
       'tags': [],
-      'desc': '''If this policy is set to false or not configured, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will allow the user to shut down the device.
-      If this policy is set to true, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will trigger a reboot when the user shuts down the device. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> replaces all occurrences of shutdown buttons in the UI by reboot buttons. If the user shuts down the device using the power button, it will not automatically reboot, even if the policy is enabled.''',
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> triggers a restart when users shut down the device. <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> replaces all shutdown buttons in the UI with restart buttons. If the users shut down devices using the power button, they won't automatically restart, even if the policy is on.
+
+      Setting the policy to Disabled or leaving it unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lets them shut down the device.''',
     },
     {
       'name': 'ExtensionCacheSize',
@@ -14721,7 +14706,9 @@
       'name': 'AllowScreenLock',
       'owners': ['file://components/policy/resources/OWNERS'],
       'caption': '''Permit locking the screen''',
-      'desc': '''If this policy is set to false, users will not be able to lock the screen (only signing out from the user session will be possible). If this setting is set to true or not set, users who authenticated with a password can lock the screen.''',
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users who authenticate with a password lock the screen.
+
+      Setting the policy to Disabled means users can't lock the screen. (They can only sign out from the user session.)''',
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:52-'],
@@ -20046,11 +20033,9 @@
       'id': 539,
       'caption': '''Set power peak shift battery threshold in percent''',
       'tags': [],
-      'desc': '''Set power peak shift battery threshold in percent.
+      'desc': '''If <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME">DevicePowerPeakShiftEnabled</ph> is Enabled, then setting <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME">DevicePowerPeakShiftBatteryThreshold</ph> sets power peak shift battery threshold in percent.
 
-          This policy is only used if <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_NAME">DevicePowerPeakShiftEnabled</ph> is set to true.
-
-          If this policy is not configured or left unset, power peak shift will always be disabled.'''
+       Leaving the policy unset keeps power peak shift off.'''
     },
     {
       'name': 'DevicePowerPeakShiftDayConfig',
@@ -20125,13 +20110,11 @@
       'id': 540,
       'caption': '''Set power peak shift day config''',
       'tags': [],
-      'desc': '''Set power peak shift day config.
+      'desc': '''If <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME">DevicePowerPeakShiftEnabled</ph> is Enabled, setting <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME">DevicePowerPeakShiftDayConfig</ph> sets power peak shift day configuration.
 
-          This policy is only used if <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_NAME">DevicePowerPeakShiftEnabled</ph> is set to true.
+      Leaving the policy unset keeps power peak shift off.
 
-          If this policy is not configured or left unset, power peak shift will always be disabled.
-
-          Note: allowed values for <ph name="MINUTE_FIELD_NAME">minute</ph> field in <ph name="START_TIME_FIELD_NAME">start_time</ph>, <ph name="END_TIME_FIELD_NAME">end_time</ph> and <ph name="CHARGE_START_TIME_FIELD_NAME">charge_start_time</ph> are 0, 15, 30, 45.'''
+      Valid values for the <ph name="MINUTE_FIELD_NAME">minute</ph> field in <ph name="START_TIME_FIELD_NAME">start_time</ph>, <ph name="END_TIME_FIELD_NAME">end_time</ph> and <ph name="CHARGE_START_TIME_FIELD_NAME">charge_start_time</ph> are 0, 15, 30, 45.'''
     },
     {
       'name': 'DeviceBootOnAcEnabled',
@@ -20148,17 +20131,11 @@
       'id': 541,
       'caption': '''Enable boot on AC (alternating current)''',
       'tags': [],
-      'desc': '''Enable the boot on AC power management policy.
+      'desc': '''Setting the policy to Enabled keeps boot on AC on, if supported on the device. Boot on AC provides an opportunity for the system to restart from Off or Hibernate after inserting the line power.
 
-          Boot on AC provides an opportunity for system to automatically boot up from OFF/Hibernate state when line power is inserted.
+      Setting the policy to Disabled keeps boot on AC off.
 
-          If this policy is set to true then boot on AC will always be enabled if supported on the device.
-
-          If this policy is set to false, boot on AC will always be disabled.
-
-          If you set this policy, users cannot change or override it.
-
-          If this policy is left unset, boot on AC is disabled and cannot be enabled by the user.'''
+      If you set this policy, users can't change it. If not set, boot on AC is off, and users can't turn it on.'''
     },
     {
       'name': 'DeviceUsbPowerShareEnabled',
@@ -20332,17 +20309,11 @@
       'id': 548,
       'caption': '''Enable advanced battery charge mode''',
       'tags': [],
-      'desc': '''Enable the advanced battery charge mode power management policy.
+      'desc': '''If <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME">DeviceAdvancedBatteryChargeModeDayConfig</ph> is set, setting <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME">DeviceAdvancedBatteryChargeModeEnabled</ph> to Enabled keeps advanced battery charge mode power management policy on (if supported on the device). Using a standard charging algorithm and other techniques outside work hours, this mode lets users maximize battery health. During work hours, the system uses an express charge, which lets the battery charge faster. Specify the time when the system is used most each day by the start time and the duration.
 
-          Advanced Battery Charging Mode allows the user to maximize the battery health. In Advanced Charging Mode the system will use standard charging algorithm and other techniques during non-work hours to maximize battery health. During work hours, an express charge is used. This express charge allows the battery to be charged faster; therefore, the battery is at full charge sooner. For each day the time in which the system will be most heavily used is specified by the start time and the duration.
+      Setting the policy to Disabled or leaving it unset keeps advanced battery charge mode off.
 
-          If this policy is set to true, and <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_NAME">DeviceAdvancedBatteryChargeModeDayConfig</ph> is set, then advanced battery charge mode will always be enabled if supported on the device.
-
-          If this policy is set to false, advanced battery charge mode will always be disabled.
-
-          If you set this policy, users cannot change or override it.
-
-          If this policy is left unset, advanced battery charge mode is disabled and cannot be enabled by the user.'''
+      Users are unable to change this setting.'''
     },
     {
       'name': 'DeviceAdvancedBatteryChargeModeDayConfig',
@@ -20405,15 +20376,11 @@
       'id': 549,
       'caption': '''Set advanced battery charge mode day config''',
       'tags': [],
-      'desc': '''Set advanced battery charge mode day config.
+      'desc': '''If <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME">DeviceAdvancedBatteryChargeModeEnabled</ph> is set to Enabled, then setting <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME">DeviceAdvancedBatteryChargeModeDayConfig</ph> lets you set up advanced battery charge mode. The value for <ph name="CHARGE_START_TIME_FIELD_NAME">charge_start_time</ph> must be less than <ph name="CHARGE_END_TIME_FIELD_NAME">charge_end_time</ph>.
 
-          This policy is only used if <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_NAME">DeviceAdvancedBatteryChargeModeEnabled</ph> is set to true.
+      Leaving the policy unset keeps advanced battery charge mode off.
 
-          If this policy is not configured or left unset, advanced battery charge mode will always be disabled.
-
-          Note: <ph name="CHARGE_START_TIME_FIELD_NAME">charge_start_time</ph> must be less than <ph name="CHARGE_END_TIME_FIELD_NAME">charge_end_time</ph>.
-
-          Note: allowed values for <ph name="MINUTE_FIELD_NAME">minute</ph> field in <ph name="CHARGE_START_TIME_FIELD_NAME">charge_start_time</ph> and <ph name="CHARGE_END_TIME_FIELD_NAME">charge_end_time</ph> are 0, 15, 30, 45.'''
+      Valid values for <ph name="MINUTE_FIELD_NAME">minute</ph> field in <ph name="CHARGE_START_TIME_FIELD_NAME">charge_start_time</ph> and <ph name="CHARGE_END_TIME_FIELD_NAME">charge_end_time</ph> are 0, 15, 30, 45.'''
     },
     {
       'name': 'DeviceBatteryChargeMode',
@@ -20460,17 +20427,11 @@
       'id': 550,
       'caption': '''Battery charge mode''',
       'tags': [],
-      'desc': '''Specifies battery charge mode power management policy.
+      'desc': '''Unless <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME">DeviceAdvancedBatteryChargeModeEnabled</ph> is specified, which overrides <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME">DeviceBatteryChargeMode</ph>, then setting <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME">DeviceBatteryChargeMode</ph> specifies battery charge mode power management policy (if supported on the device). To extend battery life, the policy dynamically controls battery charging by minimizing stress and wear-out.
 
-          Dynamically control battery charging to minimize battery wear-out due to battery stress and extend battery life.
+      Leaving the policy unset (if supported on the device) applies the standard battery charge mode, and users can't change it.
 
-          If custom battery charge mode is selected then <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_NAME">DeviceBatteryChargeCustomStartCharging</ph> and <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_NAME">DeviceBatteryChargeCustomStopCharging</ph> must be specified.
-
-          If this policy is set then battery charge mode will be applied if supported on the device.
-
-          If this policy is left unset and policy is supported on the device, the standard battery charge mode will be applied and cannot be changed by the user.
-
-          Note: <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_NAME">DeviceAdvancedBatteryChargeModeEnabled</ph> overrides this policy if the former is specified.'''
+      Note: If Custom battery charge mode is selected, then also specify <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStartCharging</ph> and <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStopCharging</ph>.'''
     },
     {
       'name': 'DeviceBatteryChargeCustomStartCharging',
@@ -20491,15 +20452,9 @@
       'id': 551,
       'caption': '''Set battery charge custom start charging in percent''',
       'tags': [],
-      'desc': '''Set battery charge custom start charging in percent.
+      'desc': '''If <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME">DeviceBatteryChargeMode</ph> is set to <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME">"custom"</ph>, then setting <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStartCharging</ph> customizes when the battery starts charging. It is based on a percent of battery charge depletion. The value must be at least 5 percentage points below <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStopCharging</ph>.
 
-          Battery starts charging when it depletes the battery charge custom start charging value.
-
-          <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_NAME">DeviceBatteryChargeCustomStartCharging</ph> must be at least five percentage points below <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_NAME">DeviceBatteryChargeCustomStopCharging</ph>.
-
-          This policy is only used if <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME">DeviceBatteryChargeMode</ph> is set to <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME">"custom"</ph>.
-
-          If this policy is not configured or left unset, the <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME">"standard"</ph> battery charge mode will be applied.'''
+      Leaving the policy unset applies the standard battery charge mode.'''
     },
     {
       'name': 'DeviceBatteryChargeCustomStopCharging',
@@ -20520,15 +20475,9 @@
       'id': 552,
       'caption': '''Set battery charge custom stop charging in percent''',
       'tags': [],
-      'desc': '''Set battery charge custom stop charging in percent.
+      'desc': '''If <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME">DeviceBatteryChargeMode</ph> is set to <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME">"custom"</ph>, then setting <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStopCharging</ph> customizes when the battery stops charging. It is based on a percent of battery charge. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStartCharging</ph> must be at least 5 percentage points below <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME">DeviceBatteryChargeCustomStopCharging</ph>.
 
-          Battery stops charging when it reaches the battery charge custom stop charging value.
-
-          <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_NAME">DeviceBatteryChargeCustomStartCharging</ph> must be at least five percentage points below <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_NAME">DeviceBatteryChargeCustomStopCharging</ph>.
-
-          This policy is only used if <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME">DeviceBatteryChargeMode</ph> is set to <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME">"custom"</ph>.
-
-          If this policy is not configured or left unset, the <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME">"standard"</ph> battery charge mode will be applied.'''
+      Leaving the policy unset applies the <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME">"standard"</ph> battery charge mode.'''
     },
     {
       'name': 'DeviceScheduledUpdateCheck',
