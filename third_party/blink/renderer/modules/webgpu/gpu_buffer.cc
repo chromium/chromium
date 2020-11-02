@@ -196,9 +196,9 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(uint64_t offset,
   // This could eventually be upgrade to the max ArrayBuffer size instead of the
   // max TypedArray size. See crbug.com/951196
   if (range_size > v8::TypedArray::kMaxLength) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
+    exception_state.ThrowRangeError(
         "getMappedRange failed, size is too large for the implementation");
+    return nullptr;
   }
 
   if (range_size > std::numeric_limits<size_t>::max() - range_offset) {
