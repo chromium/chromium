@@ -524,6 +524,9 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
 
   SetEnableArrowKeyTraversal(true);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
+
+  RegisterWindowClosingCallback(base::BindOnce(
+      &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
 }
 
 ProfileMenuViewBase::~ProfileMenuViewBase() {
@@ -969,7 +972,7 @@ void ProfileMenuViewBase::Init() {
   BuildMenu();
 }
 
-void ProfileMenuViewBase::WindowClosing() {
+void ProfileMenuViewBase::OnWindowClosing() {
   DCHECK_EQ(g_profile_bubble_, this);
   if (anchor_button())
     anchor_button()->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);

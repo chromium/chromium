@@ -172,13 +172,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   friend class ProfileMenuViewExtensionsTest;
 
   void Reset();
+  void OnWindowClosing();
 
   // Requests focus for a button when opened by keyboard.
   void FocusButtonOnKeyboardOpen();
 
   // views::BubbleDialogDelegateView:
   void Init() final;
-  void WindowClosing() override;
   void OnThemeChanged() override;
   ax::mojom::Role GetAccessibleWindowRole() override;
 
