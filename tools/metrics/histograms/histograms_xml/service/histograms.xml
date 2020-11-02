@@ -182,7 +182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.ContentDeleteEvent.Time" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>rayankans@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -709,7 +709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.PushSubscriptionChangeEvent.Time" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
