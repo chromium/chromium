@@ -128,6 +128,26 @@ class UnitTest(unittest.TestCase):
       parser = gn_helpers.GNValueParser('[1 2]')  # No separating comma.
       parser.ParseList()
 
+  def test_ParseScope(self):
+    parser = gn_helpers.GNValueParser('{a = 1}')
+    self.assertEqual(parser.ParseScope(), {'a': 1})
+
+    with self.assertRaises(gn_helpers.GNError):
+      parser = gn_helpers.GNValueParser('')  # Empty.
+      parser.ParseScope()
+    with self.assertRaises(gn_helpers.GNError):
+      parser = gn_helpers.GNValueParser('asdf')  # No {}.
+      parser.ParseScope()
+    with self.assertRaises(gn_helpers.GNError):
+      parser = gn_helpers.GNValueParser('{a = 1')  # Unterminated.
+      parser.ParseScope()
+    with self.assertRaises(gn_helpers.GNError):
+      parser = gn_helpers.GNValueParser('{"a" = 1}')  # Not identifier.
+      parser.ParseScope()
+    with self.assertRaises(gn_helpers.GNError):
+      parser = gn_helpers.GNValueParser('{a = }')  # No value.
+      parser.ParseScope()
+
   def test_FromGNArgs(self):
     # Booleans and numbers should work; whitespace is allowed works.
     self.assertEqual(gn_helpers.FromGNArgs('foo = true\nbar = 1\n'),
@@ -158,6 +178,51 @@ class UnitTest(unittest.TestCase):
     # Empty strings should return an empty dict.
     self.assertEqual(gn_helpers.FromGNArgs(''), {})
     self.assertEqual(gn_helpers.FromGNArgs(' \n '), {})
+
+    # Comments should work everywhere (and be ignored).
+    gn_args_lines = [
+        '# Top-level comment.',
+        '',
+        '# Variable comment.',
+        'foo = true',
+        'bar = [',
+        '    # Value comment in list.',
+        '    1,',
+        '    2,',
+        ']',
+        '',
+        'baz # Comment anywhere, really',
+        '  = # also here',
+        '    4',
+    ]
+    self.assertEqual(gn_helpers.FromGNArgs('\n'.join(gn_args_lines)), {
+        'foo': True,
+        'bar': [1, 2],
+        'baz': 4
+    })
+
+    # Scope should be parsed, even empty ones.
+    gn_args_lines = [
+        'foo = {',
+        '  a = 1',
+        '  b = [',
+        '    { },',
+        '    {',
+        '      c = 1',
+        '    },',
+        '  ]',
+        '}',
+    ]
+    self.assertEqual(gn_helpers.FromGNArgs('\n'.join(gn_args_lines)),
+                     {'foo': {
+                         'a': 1,
+                         'b': [
+                             {},
+                             {
+                                 'c': 1,
+                             },
+                         ]
+                     }})
 
     # Non-identifiers should raise an exception.
     with self.assertRaises(gn_helpers.GNError):

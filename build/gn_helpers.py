@@ -289,13 +289,12 @@ class GNValueParser(object):
     self.ReplaceImports()
 
 
-  def ConsumeWhitespace(self):
+  def _ConsumeWhitespace(self):
     while not self.IsDone() and self.input[self.cur] in ' \t\n':
       self.cur += 1
 
-  def ConsumeComment(self):
-    if self.IsDone() or self.input[self.cur] != '#':
-      return
+  def ConsumeCommentAndWhitespace(self):
+    self._ConsumeWhitespace()
 
     # Consume each comment, line by line.
     while not self.IsDone() and self.input[self.cur] == '#':
@@ -305,6 +304,8 @@ class GNValueParser(object):
       # Move the cursor to the next line (if there is one).
       if not self.IsDone():
         self.cur += 1
+
+      self._ConsumeWhitespace()
 
   def Parse(self):
     """Converts a string representing a printed GN value to the Python type.
@@ -328,7 +329,7 @@ class GNValueParser(object):
       GNError: Parse fails.
     """
     result = self._ParseAllowTrailing()
-    self.ConsumeWhitespace()
+    self.ConsumeCommentAndWhitespace()
     if not self.IsDone():
       raise GNError("Trailing input after parsing:\n  " + self.input[self.cur:])
     return result
@@ -344,32 +345,32 @@ class GNValueParser(object):
     d = {}
 
     self.ReplaceImports()
-    self.ConsumeWhitespace()
-    self.ConsumeComment()
+    self.ConsumeCommentAndWhitespace()
+
     while not self.IsDone():
       ident = self._ParseIdent()
-      self.ConsumeWhitespace()
+      self.ConsumeCommentAndWhitespace()
       if self.input[self.cur] != '=':
         raise GNError("Unexpected token: " + self.input[self.cur:])
       self.cur += 1
-      self.ConsumeWhitespace()
+      self.ConsumeCommentAndWhitespace()
       val = self._ParseAllowTrailing()
-      self.ConsumeWhitespace()
-      self.ConsumeComment()
-      self.ConsumeWhitespace()
+      self.ConsumeCommentAndWhitespace()
       d[ident] = val
 
     return d
 
   def _ParseAllowTrailing(self):
     """Internal version of Parse() that doesn't check for trailing stuff."""
-    self.ConsumeWhitespace()
+    self.ConsumeCommentAndWhitespace()
     if self.IsDone():
       raise GNError("Expected input to parse.")
 
     next_char = self.input[self.cur]
     if next_char == '[':
       return self.ParseList()
+    elif next_char == '{':
+      return self.ParseScope()
     elif _IsDigitOrMinus(next_char):
       return self.ParseNumber()
     elif next_char == '"':
@@ -400,7 +401,7 @@ class GNValueParser(object):
     return ident
 
   def ParseNumber(self):
-    self.ConsumeWhitespace()
+    self.ConsumeCommentAndWhitespace()
     if self.IsDone():
       raise GNError('Expected number but got nothing.')
 
@@ -418,7 +419,7 @@ class GNValueParser(object):
     return int(number_string)
 
   def ParseString(self):
-    self.ConsumeWhitespace()
+    self.ConsumeCommentAndWhitespace()
     if self.IsDone():
       raise GNError('Expected string but got nothing.')
 
@@ -444,7 +445,7 @@ class GNValueParser(object):
     return UnescapeGNString(self.input[begin:end])
 
   def ParseList(self):
-    self.ConsumeWhitespace()
+    self.ConsumeCommentAndWhitespace()
     if self.IsDone():
       raise GNError('Expected list but got nothing.')
 
@@ -452,7 +453,7 @@ class GNValueParser(object):
     if self.input[self.cur] != '[':
       raise GNError('Expected [ for list but got:\n  ' + self.input[self.cur:])
     self.cur += 1
-    self.ConsumeWhitespace()
+    self.ConsumeCommentAndWhitespace()
     if self.IsDone():
       raise GNError('Unterminated list:\n  ' + self.input)
 
@@ -467,7 +468,7 @@ class GNValueParser(object):
         raise GNError('List items not separated by comma.')
 
       list_result += [ self._ParseAllowTrailing() ]
-      self.ConsumeWhitespace()
+      self.ConsumeCommentAndWhitespace()
       if self.IsDone():
         break
 
@@ -476,9 +477,40 @@ class GNValueParser(object):
       if previous_had_trailing_comma:
         # Consume comma.
         self.cur += 1
-        self.ConsumeWhitespace()
+        self.ConsumeCommentAndWhitespace()
 
     raise GNError('Unterminated list:\n  ' + self.input)
+
+  def ParseScope(self):
+    self.ConsumeCommentAndWhitespace()
+    if self.IsDone():
+      raise GNError('Expected scope but got nothing.')
+
+    # Skip over opening '{'.
+    if self.input[self.cur] != '{':
+      raise GNError('Expected { for scope but got:\n ' + self.input[self.cur:])
+    self.cur += 1
+    self.ConsumeCommentAndWhitespace()
+    if self.IsDone():
+      raise GNError('Unterminated scope:\n ' + self.input)
+
+    scope_result = {}
+    while not self.IsDone():
+      if self.input[self.cur] == '}':
+        self.cur += 1
+        return scope_result
+
+      ident = self._ParseIdent()
+      self.ConsumeCommentAndWhitespace()
+      if self.input[self.cur] != '=':
+        raise GNError("Unexpected token: " + self.input[self.cur:])
+      self.cur += 1
+      self.ConsumeCommentAndWhitespace()
+      val = self._ParseAllowTrailing()
+      self.ConsumeCommentAndWhitespace()
+      scope_result[ident] = val
+
+    raise GNError('Unterminated scope:\n ' + self.input)
 
   def _ConstantFollows(self, constant):
     """Checks and maybe consumes a string constant at current input location.
