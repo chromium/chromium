@@ -1861,8 +1861,16 @@ public class TabListMediatorUnitTest {
 
         mMediator.resetWithListOfTabs(
                 PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/false);
-        assertThat(mModel.get(0).model.get(TabProperties.PRICE_STRING), equalTo("$3.14"));
-        assertThat(mModel.get(1).model.get(TabProperties.PRICE_STRING), equalTo(null));
+        mModel.get(0)
+                .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
+                .fetch((shoppingPersistedTabData) -> {
+                    assertThat(shoppingPersistedTabData.getPriceString(), equalTo("$3.14"));
+                });
+        mModel.get(1)
+                .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
+                .fetch((shoppingPersistedTabData) -> {
+                    assertThat(shoppingPersistedTabData.getPriceString(), equalTo(""));
+                });
     }
 
     @Test

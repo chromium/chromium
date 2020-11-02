@@ -61,7 +61,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private String mPreviousPriceString = "";
     public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
 
-    protected ShoppingPersistedTabData(Tab tab) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public ShoppingPersistedTabData(Tab tab) {
         super(tab,
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
                         .storage,
@@ -135,7 +136,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * @param priceString a string representing the price of the shopping offer
      * @param previousShoppingPersistedTabData {@link ShoppingPersistedTabData} from previous fetch
      */
-    protected void setPriceString(
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void setPriceString(
             String priceString, ShoppingPersistedTabData previousShoppingPersistedTabData) {
         mPriceString = priceString;
         // Detect price transition

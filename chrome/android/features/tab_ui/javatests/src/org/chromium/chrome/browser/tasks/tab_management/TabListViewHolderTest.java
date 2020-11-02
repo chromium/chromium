@@ -29,7 +29,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -561,12 +563,37 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         testGridSelected(mTabGridView, mGridModel);
         ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
 
-        mGridModel.set(TabProperties.PRICE_STRING, EXPECTED_PRICE_STRING);
+        Tab tab = MockTab.createAndInitialize(1, false);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setPriceString(EXPECTED_PRICE_STRING);
+        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
         Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
         Assert.assertEquals(EXPECTED_PRICE_STRING, pageInfoButton.getPrimaryTextView().getText());
 
-        mGridModel.set(TabProperties.PRICE_STRING, null);
+        fetcher.setPriceString("");
+        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
         Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
+    }
+
+    /**
+     * Mock {@link TabListMediator.ShoppingPersistedTabDataFetcher} for testing purposes
+     */
+    static class MockShoppingPersistedTabDataFetcher
+            extends TabListMediator.ShoppingPersistedTabDataFetcher {
+        MockShoppingPersistedTabDataFetcher(Tab tab) {
+            super(tab);
+        }
+        public void setPriceString(String priceString) {
+            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(mTab);
+            shoppingPersistedTabData.setPriceString(priceString, null);
+            mTab.getUserDataHost().setUserData(
+                    ShoppingPersistedTabData.class, shoppingPersistedTabData);
+        }
+
+        @Override
+        public void fetch(Callback<ShoppingPersistedTabData> callback) {
+            callback.onResult(mTab.getUserDataHost().getUserData(ShoppingPersistedTabData.class));
+        }
     }
 
     @Test

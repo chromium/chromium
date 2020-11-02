@@ -164,6 +164,28 @@ class TabListMediator {
     }
 
     /**
+     * Provides capability to asynchronously acquire {@link ShoppingPersistedTabData}
+     */
+    static class ShoppingPersistedTabDataFetcher {
+        protected Tab mTab;
+
+        /**
+         * @param tab {@link Tab} {@link ShoppingPersistedTabData} will be acquired for
+         */
+        ShoppingPersistedTabDataFetcher(Tab tab) {
+            mTab = tab;
+        }
+
+        /**
+         * Asynchronously acquire {@link ShoppingPersistedTabData}
+         * @param callback {@link Callback} to pass {@link ShoppingPersistedTabData} back in
+         */
+        public void fetch(Callback<ShoppingPersistedTabData> callback) {
+            ShoppingPersistedTabData.from(mTab, (res) -> { callback.onResult(res); });
+        }
+    }
+
+    /**
      * The object to set to {@link TabProperties#THUMBNAIL_FETCHER} for the TabGridViewBinder to
      * obtain the thumbnail asynchronously.
      */
@@ -1045,11 +1067,8 @@ class TabListMediator {
 
         if (TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.getValue() && mMode == TabListMode.GRID
                 && pseudoTab.hasRealTab()) {
-            ShoppingPersistedTabData.from(pseudoTab.getTab(), (res) -> {
-                if (!TextUtils.isEmpty(res.getPriceString())) {
-                    mModel.get(index).model.set(TabProperties.PRICE_STRING, res.getPriceString());
-                }
-            });
+            mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                    new ShoppingPersistedTabDataFetcher(pseudoTab.getTab()));
         }
 
         updateFaviconForTab(pseudoTab, null);

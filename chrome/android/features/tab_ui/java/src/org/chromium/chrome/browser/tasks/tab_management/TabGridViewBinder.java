@@ -213,21 +213,25 @@ class TabGridViewBinder {
                 pageInfoButton.setVisibility(View.GONE);
             } else {
                 // Search query and price string are mutually exclusive
-                assert TextUtils.isEmpty(model.get(TabProperties.PRICE_STRING));
+                assert model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) == null;
                 pageInfoButton.setVisibility(View.VISIBLE);
                 pageInfoButton.getPrimaryTextView().setText(query);
             }
-        } else if (TabProperties.PRICE_STRING == propertyKey) {
-            String priceString = model.get(TabProperties.PRICE_STRING);
-            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
-            if (TextUtils.isEmpty(priceString)) {
-                pageInfoButton.setVisibility(View.GONE);
-            } else {
-                // Price string and search query are mutually exclusive
-                assert TextUtils.isEmpty(model.get(TabProperties.SEARCH_QUERY));
-                pageInfoButton.setVisibility(View.VISIBLE);
-                pageInfoButton.getPrimaryTextView().setText(priceString);
-            }
+        } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
+            model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
+                    .fetch((shoppingPersistedTabData) -> {
+                        ChipView pageInfoButton =
+                                (ChipView) view.fastFindViewById(R.id.page_info_button);
+                        if (TextUtils.isEmpty(shoppingPersistedTabData.getPriceString())) {
+                            pageInfoButton.setVisibility(View.GONE);
+                        } else {
+                            // Price string and search query are mutually exclusive
+                            assert TextUtils.isEmpty(model.get(TabProperties.SEARCH_QUERY));
+                            pageInfoButton.setVisibility(View.VISIBLE);
+                            pageInfoButton.getPrimaryTextView().setText(
+                                    shoppingPersistedTabData.getPriceString());
+                        }
+                    });
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {
             TabListMediator.TabActionListener listener =
                     model.get(TabProperties.PAGE_INFO_LISTENER);
