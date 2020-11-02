@@ -171,8 +171,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return state_ >= kCommitted && !data_received_;
   }
 
-  void FillNavigationParamsForErrorPage(WebNavigationParams*);
-
   void SetSentDidFinishLoad() { state_ = kSentDidFinishLoad; }
   bool SentDidFinishLoad() const { return state_ == kSentDidFinishLoad; }
 

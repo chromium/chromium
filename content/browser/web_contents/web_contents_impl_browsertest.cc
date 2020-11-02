@@ -4032,7 +4032,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       LoadingCallbacksOrder_ErrorPage) {
+                       LoadingCallbacksOrder_ErrorPage_EmptyBody) {
   const char kPageURL[] = "/controlled_page_load.html";
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       kPageURL);
@@ -4054,7 +4054,31 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
               testing::ElementsAre(
                   "DidStartLoading", "DidStartNavigation",
                   "DidFinishNavigation", "DocumentAvailableInMainFrame",
-                  "DOMContentLoaded", "DidFinishLoad", "DidStartNavigation",
+                  "DOMContentLoaded", "DocumentOnLoadCompletedInMainFrame",
+                  "DidFinishLoad", "DidStopLoading"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       LoadingCallbacksOrder_ErrorPage_NonEmptyBody) {
+  const char kPageURL[] = "/controlled_page_load.html";
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      kPageURL);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL("a.com", kPageURL);
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  LoadingObserver loading_observer(web_contents);
+  shell()->LoadURL(url);
+  response.WaitForRequest();
+  response.Send(net::HTTP_NOT_FOUND, "text/html", "<html><body>foo</body>");
+  response.Done();
+
+  loading_observer.Wait();
+  EXPECT_THAT(loading_observer.GetEvents(),
+              testing::ElementsAre(
+                  "DidStartLoading", "DidStartNavigation",
                   "DidFinishNavigation", "DocumentAvailableInMainFrame",
                   "DOMContentLoaded", "DocumentOnLoadCompletedInMainFrame",
                   "DidFinishLoad", "DidStopLoading"));

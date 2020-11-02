@@ -993,4 +993,8 @@ ukm::UkmService* ContentBrowserClientImpl::GetUkmService() {
 #endif
 }
 
+bool ContentBrowserClientImpl::HasErrorPage(int http_status_code) {
+  return http_status_code >= 400;
+}
+
 }  // namespace weblayer

@@ -2592,17 +2592,6 @@ class RendererErrorPageTest : public RenderViewImplTest {
       if (error_html)
         *error_html = "A suffusion of yellow.";
     }
-
-    void PrepareErrorPageForHttpStatusError(content::RenderFrame* render_frame,
-                                            const GURL& unreachable_url,
-                                            const std::string& http_method,
-                                            int http_status,
-                                            std::string* error_html) override {
-      if (error_html)
-        *error_html = "A suffusion of yellow.";
-    }
-
-    bool HasErrorPage(int http_status_code) override { return true; }
   };
 };
 
@@ -2615,35 +2604,6 @@ TEST_F(RendererErrorPageTest, RegularError) {
       std::move(common_params), CreateCommitNavigationParams(),
       net::ERR_FILE_NOT_FOUND, net::ResolveErrorInfo(net::OK),
       "A suffusion of yellow.");
-
-  // The error page itself is loaded asynchronously.
-  FrameLoadWaiter(main_frame).Wait();
-  const int kMaxOutputCharacters = 22;
-  EXPECT_EQ("A suffusion of yellow.",
-            WebFrameContentDumper::DumpWebViewAsText(view()->GetWebView(),
-                                                     kMaxOutputCharacters)
-                .Ascii());
-}
-
-TEST_F(RendererErrorPageTest, HttpStatusCodeErrorWithEmptyBody) {
-  // Start a load that will reach provisional state synchronously,
-  // but won't complete synchronously.
-  auto common_params = CreateCommonNavigationParams();
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
-  common_params->url = GURL("data:text/html,test data");
-
-  // Emulate a 503 main resource response with an empty body.
-  auto head = network::mojom::URLResponseHead::New();
-  std::string headers(
-      "HTTP/1.1 503 SERVICE UNAVAILABLE\nContent-type: text/html\n\n");
-  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(headers));
-
-  TestRenderFrame* main_frame = static_cast<TestRenderFrame*>(frame());
-  main_frame->Navigate(std::move(head), std::move(common_params),
-                       CreateCommitNavigationParams());
-  main_frame->DidFinishDocumentLoad();
-  main_frame->RunScriptsAtDocumentReady(true);
 
   // The error page itself is loaded asynchronously.
   FrameLoadWaiter(main_frame).Wait();

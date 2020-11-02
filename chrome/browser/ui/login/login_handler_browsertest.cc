@@ -147,8 +147,11 @@ void TestProxyAuth(Browser* browser, const GURL& test_page) {
     auth_cancelled_waiter.Wait();
     reload_observer.Wait();
     if (https) {
-      EXPECT_EQ(true, content::EvalJs(contents, "document.body === null"));
+      EXPECT_EQ(
+          "<head></head><body></body>",
+          content::EvalJs(contents, "document.documentElement.innerHTML"));
     }
+
     EXPECT_FALSE(browser->location_bar_model()->GetFormattedFullURL().empty());
   }
 

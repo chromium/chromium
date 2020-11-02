@@ -532,24 +532,6 @@ const KURL& DocumentLoader::UrlForHistory() const {
   return UnreachableURL().IsEmpty() ? Url() : UnreachableURL();
 }
 
-void DocumentLoader::FillNavigationParamsForErrorPage(
-    WebNavigationParams* params) {
-  params->http_method = http_method_;
-  params->referrer = referrer_.referrer;
-  params->referrer_policy = referrer_.referrer_policy;
-  params->http_body = WebHTTPBody(http_body_.get());
-  params->http_content_type = http_content_type_;
-  params->previews_state = previews_state_;
-  params->requestor_origin = requestor_origin_;
-  params->origin_policy = origin_policy_;
-  // Force the commit origin for the error page to be opaque and
-  // contain precursor information from the document's origin.
-  // This is only used for renderer-side enforcement of CSP and the
-  // document origin used here is the origin of the document that was blocked.
-  params->origin_to_commit =
-      frame_->DomWindow()->GetSecurityOrigin()->DeriveNewOpaqueOrigin();
-}
-
 void DocumentLoader::SetHistoryItemStateForCommit(
     HistoryItem* old_item,
     WebFrameLoadType load_type,

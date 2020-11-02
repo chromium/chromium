@@ -863,7 +863,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
           /*forced_content_security_policies=*/std::vector<std::string>(),
-          /*old_page_info=*/nullptr);
+          /*old_page_info=*/nullptr, /*http_response_code=*/-1);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -958,7 +958,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */,
           std::vector<std::string>() /* forced_content_security_policies */,
-          nullptr /* old_page_info */
+          nullptr /* old_page_info */, 200 /* http_response_code */
       );
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New();
@@ -2141,6 +2141,10 @@ void NavigationRequest::OnResponseStarted(
 
   const bool is_first_response = commit_params_->redirects.empty();
   UpdateNavigationHandleTimingsOnResponseReceived(is_first_response);
+
+  commit_params_->http_response_code =
+      response_head_->headers ? response_head_->headers->response_code()
+                              : -1 /* no http_response_code */;
 
   // Update fetch start timing. While NavigationRequest updates fetch start
   // timing for redirects, it's not aware of service worker interception so

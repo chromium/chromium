@@ -375,7 +375,7 @@ createShadowRootWithin(document.body);
   }
 
   if (web_frame_->Client()) {
-    web_frame_->Client()->RunScriptsAtDocumentReady(document_is_empty);
+    web_frame_->Client()->RunScriptsAtDocumentReady();
   }
   // The callback might have deleted the frame, do not use |this|!
 }

@@ -199,14 +199,6 @@ struct BLINK_EXPORT WebNavigationParams {
       base::span<const char> html,
       const WebURL& base_url);
 
-  // Shortcut for loading an error page html.
-  static std::unique_ptr<WebNavigationParams> CreateForErrorPage(
-      WebDocumentLoader* failed_document_loader,
-      base::span<const char> html,
-      const WebURL& base_url,
-      const WebURL& unreachable_url,
-      int error_code);
-
 #if INSIDE_BLINK
   // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
   static std::unique_ptr<WebNavigationParams> CreateWithHTMLBuffer(

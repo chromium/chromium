@@ -209,7 +209,9 @@
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/switches.h"
+#include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
+#include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -5862,4 +5864,10 @@ void ChromeContentBrowserClient::GetHyphenationDictionary(
   component_updater::HyphenationComponentInstallerPolicy::
       GetHyphenationDictionary(std::move(callback));
 #endif
+}
+
+bool ChromeContentBrowserClient::HasErrorPage(int http_status_code) {
+  // Use an internal error page, if we have one for the status code.
+  return error_page::LocalizedError::HasStrings(
+      error_page::Error::kHttpErrorDomain, http_status_code);
 }

@@ -155,6 +155,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
   ukm::UkmService* GetUkmService() override;
+  bool HasErrorPage(int http_status_code) override;
 
   void CreateFeatureListAndFieldTrials();
 

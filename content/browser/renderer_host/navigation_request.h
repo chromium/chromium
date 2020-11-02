@@ -398,6 +398,15 @@ class CONTENT_EXPORT NavigationRequest
     return response_head_.get();
   }
 
+  const mojo::DataPipeConsumerHandle& response_body() {
+    DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
+    return response_body_.get();
+  }
+
+  mojo::ScopedDataPipeConsumerHandle& mutable_response_body_for_testing() {
+    return response_body_;
+  }
+
   void SetWaitingForRendererResponse();
 
   // Notifies the NavigatorDelegate the navigation started. This should be
@@ -711,10 +720,6 @@ class CONTENT_EXPORT NavigationRequest
   // Add information about this NavigationRequest to |traced_value| for
   // tracing purposes.
   void AsValueInto(base::trace_event::TracedValue* traced_value);
-
-  mojo::ScopedDataPipeConsumerHandle& mutable_response_body_for_testing() {
-    return response_body_;
-  }
 
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.

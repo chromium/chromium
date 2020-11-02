@@ -645,7 +645,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void RunScriptsAtDocumentElementAvailable() override;
   void DidReceiveTitle(const blink::WebString& title) override;
   void DidFinishDocumentLoad() override;
-  void RunScriptsAtDocumentReady(bool document_is_empty) override;
+  void RunScriptsAtDocumentReady() override;
   void RunScriptsAtDocumentIdle() override;
   void DidHandleOnloadEvents() override;
   void DidFinishLoad() override;

@@ -113,9 +113,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       override;
   std::vector<base::FilePath> GetNetworkContextsParentDirectory() override;
   void BindBrowserControlInterface(mojo::ScopedMessagePipeHandle pipe) override;
-
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
+  bool HasErrorPage(int http_status_code) override;
 
   ShellBrowserContext* browser_context();
   ShellBrowserContext* off_the_record_browser_context();

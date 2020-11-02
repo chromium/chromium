@@ -28,13 +28,12 @@ class ShellContentRendererClient : public ContentRendererClient {
   void RenderThreadStarted() override;
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
   void RenderFrameCreated(RenderFrame* render_frame) override;
-  bool HasErrorPage(int http_status_code) override;
   void PrepareErrorPage(RenderFrame* render_frame,
                         const blink::WebURLError& error,
                         const std::string& http_method,
                         std::string* error_html) override;
   void PrepareErrorPageForHttpStatusError(content::RenderFrame* render_frame,
-                                          const GURL& unreachable_url,
+                                          const blink::WebURLError& error,
                                           const std::string& http_method,
                                           int http_status,
                                           std::string* error_html) override;

@@ -150,10 +150,6 @@ void ShellContentRendererClient::RenderFrameCreated(RenderFrame* render_frame) {
   new ShellRenderFrameObserver(render_frame);
 }
 
-bool ShellContentRendererClient::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400 && http_status_code < 600;
-}
-
 void ShellContentRendererClient::PrepareErrorPage(
     RenderFrame* render_frame,
     const blink::WebURLError& error,
@@ -172,7 +168,7 @@ void ShellContentRendererClient::PrepareErrorPage(
 
 void ShellContentRendererClient::PrepareErrorPageForHttpStatusError(
     content::RenderFrame* render_frame,
-    const GURL& unreachable_url,
+    const blink::WebURLError& error,
     const std::string& http_method,
     int http_status,
     std::string* error_html) {

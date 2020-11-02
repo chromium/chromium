@@ -1206,12 +1206,6 @@ void ChromeContentRendererClient::ReportNaClAppType(bool is_pnacl,
 }
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-bool ChromeContentRendererClient::HasErrorPage(int http_status_code) {
-  // Use an internal error page, if we have one for the status code.
-  return error_page::LocalizedError::HasStrings(
-      error_page::Error::kHttpErrorDomain, http_status_code);
-}
-
 void ChromeContentRendererClient::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& web_error,
@@ -1232,14 +1226,13 @@ void ChromeContentRendererClient::PrepareErrorPage(
 
 void ChromeContentRendererClient::PrepareErrorPageForHttpStatusError(
     content::RenderFrame* render_frame,
-    const GURL& unreachable_url,
+    const blink::WebURLError& error,
     const std::string& http_method,
     int http_status,
     std::string* error_html) {
   NetErrorHelper::Get(render_frame)
-      ->PrepareErrorPage(
-          error_page::Error::HttpError(unreachable_url, http_status),
-          http_method == "POST", error_html);
+      ->PrepareErrorPage(error_page::Error::HttpError(error.url(), http_status),
+                         http_method == "POST", error_html);
 }
 
 void ChromeContentRendererClient::PostIOThreadCreated(

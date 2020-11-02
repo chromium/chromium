@@ -441,21 +441,16 @@ void PrerenderContents::DidFinishLoad(
 void PrerenderContents::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+      !navigation_handle->HasCommitted()) {
     return;
   }
 
-  if (navigation_handle->GetResponseHeaders() &&
-      navigation_handle->GetResponseHeaders()->response_code() >= 400) {
+  if (navigation_handle->IsErrorPage()) {
     // Maintain same behavior as old navigation API when the URL is unreachable
-    // and leads to an error page. While there will be a subsequent navigation
-    // that has navigation_handle->IsErrorPage(), it'll be too late to wait for
-    // it as the renderer side will consider this prerender complete. This
-    // object would therefore have been destructed already and so instead look
-    // for the error response code now.
-    // Also maintain same final status code that previous navigation API
-    // returned, which was reached because the URL for the error page was
-    // kUnreachableWebDataURL and that was interpreted as unsupported scheme.
+    // and leads to an error page. Also maintain same final status code that
+    // previous navigation API returned, which was reached because the URL for
+    // the error page was kUnreachableWebDataURL and that was interpreted as
+    // unsupported scheme.
     Destroy(FINAL_STATUS_UNSUPPORTED_SCHEME);
     return;
   }

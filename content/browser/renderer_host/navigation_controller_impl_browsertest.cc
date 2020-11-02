@@ -162,6 +162,10 @@ class NavigationControllerBrowserTestNoServer
     content::SetupCrossSiteRedirector(embedded_test_server());
   }
 
+  WebContentsImpl* contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
 };
@@ -8572,6 +8576,118 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   shell()->LoadURL(url_second);
   capturer.Wait();
   EXPECT_TRUE(capturer.is_same_document());
+}
+
+// Verify that navigating to a page with status 404 and an empty body will
+// result in an error page.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       EmptyBody404CommitsErrorPage) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  GURL url(embedded_test_server()->GetURL("/404.html"));
+
+  {
+    // Go to a non-existent page resulting in a 404 with an empty body.
+    TestNavigationObserver observer(contents());
+    shell()->LoadURL(url);
+    observer.Wait();
+
+    // The navigation fails and commits a 404 error page.
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+              observer.last_net_error_code());
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_PAGE, observer.last_navigation_type());
+    EXPECT_EQ(PAGE_TYPE_ERROR,
+              controller.GetLastCommittedEntry()->GetPageType());
+
+    // Check that the error page contains the error code.
+    EXPECT_EQ(true,
+              EvalJs(contents(), "document.body.innerText.includes('404')"));
+  }
+
+  {
+    // Reloads will still result in an error page.
+    TestNavigationObserver reload_observer(contents());
+    shell()->Reload();
+    reload_observer.Wait();
+    EXPECT_FALSE(reload_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+              reload_observer.last_net_error_code());
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_PAGE,
+              reload_observer.last_navigation_type());
+    EXPECT_EQ(PAGE_TYPE_ERROR,
+              controller.GetLastCommittedEntry()->GetPageType());
+  }
+
+  {
+    // Same-URL navigation will still result in an error page.
+    TestNavigationObserver same_url_observer(contents());
+    controller.LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string() /* extra_headers */);
+    same_url_observer.Wait();
+    EXPECT_FALSE(same_url_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+              same_url_observer.last_net_error_code());
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_PAGE,
+              same_url_observer.last_navigation_type());
+    EXPECT_EQ(PAGE_TYPE_ERROR,
+              controller.GetLastCommittedEntry()->GetPageType());
+  }
+}
+
+// Verify that navigating to a page with status 500 and an empty body will
+// result in an error page.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       EmptyBody500CommitsErrorPage) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+
+  // Go to a page that has a HTTP 500 status code with an empty body.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  TestNavigationObserver observer(contents());
+  shell()->LoadURL(url);
+  response.WaitForRequest();
+  response.Send(net::HTTP_INTERNAL_SERVER_ERROR);
+  response.Done();
+  observer.Wait();
+
+  // The navigation fails and commits a 500 error page.
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+            observer.last_net_error_code());
+  EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
+
+  // Check that the error page contains the error code.
+  EXPECT_EQ(true,
+            EvalJs(contents(), "document.body.innerText.includes('500')"));
+}
+
+// Verify that navigating to a page with status 404 but a non-empty body won't
+// result in an error page.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       NonEmpty404BodyDoesNotCommitErrorPage) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/404.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+
+  // Go to a non-existent page with a non-empty body.
+  GURL url(embedded_test_server()->GetURL("/404.html"));
+  TestNavigationObserver observer(contents());
+  shell()->LoadURL(url);
+  response.WaitForRequest();
+  response.Send(net::HTTP_NOT_FOUND, "text/html", "<html></html>");
+  response.Done();
+  observer.WaitForNavigationFinished();
+
+  // The navigation succeeds and commits the response body.
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_EQ(PAGE_TYPE_NORMAL,
+            controller.GetLastCommittedEntry()->GetPageType());
 }
 
 // Verify that a session history navigation which results in a different

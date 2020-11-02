@@ -177,10 +177,6 @@ void AwContentRendererClient::RenderViewCreated(
   AwRenderViewExt::RenderViewCreated(render_view);
 }
 
-bool AwContentRendererClient::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400;
-}
-
 void AwContentRendererClient::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,

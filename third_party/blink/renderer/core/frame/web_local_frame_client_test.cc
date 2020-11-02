@@ -60,9 +60,9 @@ class CallTrackingTestWebLocalFrameClient
     TestWebFrameClient::DidFinishDocumentLoad();
   }
 
-  void RunScriptsAtDocumentReady(bool document_is_empty) override {
+  void RunScriptsAtDocumentReady() override {
     calls_.push_back("RunScriptsAtDocumentReady");
-    TestWebFrameClient::RunScriptsAtDocumentReady(document_is_empty);
+    TestWebFrameClient::RunScriptsAtDocumentReady();
   }
 
   void RunScriptsAtDocumentIdle() override {

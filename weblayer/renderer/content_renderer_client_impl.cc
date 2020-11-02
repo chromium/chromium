@@ -146,10 +146,6 @@ SkBitmap* ContentRendererClientImpl::GetSadWebViewBitmap() {
                                    .ToSkBitmap());
 }
 
-bool ContentRendererClientImpl::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400;
-}
-
 void ContentRendererClientImpl::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,

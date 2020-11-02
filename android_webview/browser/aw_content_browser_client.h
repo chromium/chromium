@@ -225,13 +225,13 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                    blink::mojom::WebFeature feature) override;
   bool IsOriginTrialRequiredForAppCache(
       content::BrowserContext* browser_text) override;
+  content::SpeechRecognitionManagerDelegate*
+  CreateSpeechRecognitionManagerDelegate() override;
+  bool HasErrorPage(int http_status_code) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;
   }
-
-  content::SpeechRecognitionManagerDelegate*
-  CreateSpeechRecognitionManagerDelegate() override;
 
   static void DisableCreatingThreadPool();
 

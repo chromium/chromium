@@ -3489,12 +3489,22 @@ void RenderFrameImpl::CommitFailedNavigation(
 
   std::string error_html;
   std::string* error_html_ptr = &error_html;
-  if (error_page_content) {
-    error_html = error_page_content.value();
-    error_html_ptr = nullptr;
+  if (error_code == net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    DCHECK_NE(commit_params->http_response_code, -1);
+    GetContentClient()->renderer()->PrepareErrorPageForHttpStatusError(
+        this, error, navigation_params->http_method.Ascii(),
+        commit_params->http_response_code, error_html_ptr);
+  } else {
+    if (error_page_content) {
+      error_html = error_page_content.value();
+      error_html_ptr = nullptr;
+    }
+    // Prepare for the error page. Note that even if |error_html_ptr| is set to
+    // null above, PrepareErrorPage might have other side effects e.g. setting
+    // some error-related states, so we should still call it.
+    GetContentClient()->renderer()->PrepareErrorPage(
+        this, error, navigation_params->http_method.Ascii(), error_html_ptr);
   }
-  GetContentClient()->renderer()->PrepareErrorPage(
-      this, error, navigation_params->http_method.Ascii(), error_html_ptr);
 
   // Make sure we never show errors in view source mode.
   frame_->EnableViewSourceMode(false);
@@ -4463,66 +4473,8 @@ void RenderFrameImpl::DidFinishDocumentLoad() {
   UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());
 }
 
-void RenderFrameImpl::RunScriptsAtDocumentReady(bool document_is_empty) {
-  base::WeakPtr<RenderFrameImpl> weak_self = weak_factory_.GetWeakPtr();
-
+void RenderFrameImpl::RunScriptsAtDocumentReady() {
   GetContentClient()->renderer()->RunScriptsAtDocumentEnd(this);
-
-  // ContentClient might have deleted |frame_| and |this| by now!
-  if (!weak_self.get())
-    return;
-
-  // At this point, the entire data stream for the document is loaded. The
-  // below logic displays an error page to the user if:
-  // - this is a main frame navigation,
-  // - the stream contained no data,
-  // - and the HTTP status code indicates an error.
-  if (!document_is_empty || !IsMainFrame())
-    return;
-
-  WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
-  int http_status_code = document_loader->GetResponse().HttpStatusCode();
-  if (!GetContentClient()->renderer()->HasErrorPage(http_status_code))
-    return;
-
-  // Rather than display an unexplainable blank page to the user, commit a
-  // custom error page with some basic information.
-  WebURL unreachable_url = frame_->GetDocument().Url();
-  std::string error_html;
-  GetContentClient()->renderer()->PrepareErrorPageForHttpStatusError(
-      this, unreachable_url, document_loader->HttpMethod().Ascii(),
-      http_status_code, &error_html);
-  // Make sure we never show errors in view source mode.
-  frame_->EnableViewSourceMode(false);
-
-  auto navigation_params = WebNavigationParams::CreateForErrorPage(
-      document_loader, error_html, GURL(kUnreachableWebDataURL),
-      unreachable_url, net::ERR_FAILED);
-  navigation_params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
-  navigation_params->service_worker_network_provider =
-      ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance();
-
-  // TODO(dcheng): Remove this strange case. Typically, loading finishes
-  // asynchronously, so this will not be called while `CommitNavigation()`
-  // is on the stack. However, completion for media files is synchronously
-  // signalled in `blink::DocumentLoader::StartLoadingResponse()`. To prevent
-  // the CHECK in `AssertNavigationCommits` from tripping, temporarily reset the
-  // state and restore it after the reentrant `CommitNavigation()` completes.
-  bool reentrantly_committing =
-      (NavigationCommitState::kNone != navigation_commit_state_);
-  if (reentrantly_committing) {
-    CHECK_EQ(NavigationCommitState::kDidCommit, navigation_commit_state_);
-    navigation_commit_state_ = NavigationCommitState::kNone;
-  }
-  {
-    AssertNavigationCommits assert_navigation_commits(this);
-    frame_->CommitNavigation(std::move(navigation_params),
-                             BuildDocumentState());
-  }
-  // WARNING: The previous call may have have deleted |this|.
-  // Do not use |this| or |frame_| here without checking |weak_self|.
-  if (weak_self && reentrantly_committing)
-    navigation_commit_state_ = NavigationCommitState::kDidCommit;
 }
 
 void RenderFrameImpl::RunScriptsAtDocumentIdle() {

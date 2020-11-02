@@ -480,4 +480,8 @@ struct CommitNavigationParams {
   // where we did a proactive BrowsingInstance swap and we're reusing the old
   // page's process.
   OldPageInfo? old_page_info;
+
+  // The HTTP response status code for the navigation. Set to -1 if we never
+  // received response headers.
+  int32 http_response_code = -1;
 };

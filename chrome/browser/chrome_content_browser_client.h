@@ -705,6 +705,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
+  bool HasErrorPage(int http_status_code) override;
 
   StartupData* startup_data() { return &startup_data_; }
 

@@ -57,22 +57,6 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLString(
   return result;
 }
 
-// static
-std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateForErrorPage(
-    WebDocumentLoader* failed_document_loader,
-    base::span<const char> html,
-    const WebURL& base_url,
-    const WebURL& unreachable_url,
-    int error_code) {
-  auto result = WebNavigationParams::CreateWithHTMLString(html, base_url);
-  DCHECK(!unreachable_url.IsEmpty() || error_code != 0);
-  result->unreachable_url = unreachable_url;
-  result->error_code = error_code;
-  static_cast<WebDocumentLoaderImpl*>(failed_document_loader)
-      ->FillNavigationParamsForErrorPage(result.get());
-  return result;
-}
-
 #if INSIDE_BLINK
 // static
 std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLBuffer(

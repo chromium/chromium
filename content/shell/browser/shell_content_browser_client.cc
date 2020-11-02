@@ -502,4 +502,8 @@ void ShellContentBrowserClient::GetHyphenationDictionary(
   // No need to callback if there were no dictionaries.
 }
 
+bool ShellContentBrowserClient::HasErrorPage(int http_status_code) {
+  return http_status_code >= 400 && http_status_code < 600;
+}
+
 }  // namespace content

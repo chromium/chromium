@@ -104,13 +104,12 @@ class ChromeContentRendererClient
   blink::WebPlugin* CreatePluginReplacement(
       content::RenderFrame* render_frame,
       const base::FilePath& plugin_path) override;
-  bool HasErrorPage(int http_status_code) override;
   void PrepareErrorPage(content::RenderFrame* render_frame,
                         const blink::WebURLError& error,
                         const std::string& http_method,
                         std::string* error_html) override;
   void PrepareErrorPageForHttpStatusError(content::RenderFrame* render_frame,
-                                          const GURL& unreachable_url,
+                                          const blink::WebURLError& error,
                                           const std::string& http_method,
                                           int http_status,
                                           std::string* error_html) override;

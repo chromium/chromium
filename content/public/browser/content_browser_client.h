@@ -1919,6 +1919,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>);
+
+  // Returns true if the embedder has an error page to show for the given http
+  // status code.
+  virtual bool HasErrorPage(int http_status_code);
 };
 
 }  // namespace content

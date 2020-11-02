@@ -162,6 +162,21 @@ LoginTabHelper::WillProcessMainFrameUnauthorizedResponse(
     // because the navigation entry ID will change once the refresh finishes.
     navigation_handle_id_with_cancelled_prompt_ =
         navigation_handle->GetNavigationId();
+
+    int response_code =
+        navigation_handle->GetResponseHeaders()->response_code();
+    // For HTTPS navigations with 407 responses, we want to show an empty
+    // page. We need to cancel the navigation and commit an empty error
+    // page directly here, because otherwise the HttpErrorNavigationThrottle
+    // will see that the response body is empty (because the network stack
+    // refuses to read the response body) and will try to commit a generic
+    // non-empty error page instead.
+    if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme) &&
+        response_code ==
+            net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+      return {content::NavigationThrottle::CANCEL,
+              net::ERR_INVALID_AUTH_CREDENTIALS, "<html></html>"};
+    }
     return content::NavigationThrottle::PROCEED;
   }
 

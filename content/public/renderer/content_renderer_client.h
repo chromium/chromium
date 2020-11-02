@@ -128,10 +128,6 @@ class CONTENT_EXPORT ContentRendererClient {
       RenderFrame* render_frame,
       const base::FilePath& plugin_path);
 
-  // Returns true if the embedder has an error page to show for the given http
-  // status code.
-  virtual bool HasErrorPage(int http_status_code);
-
   // Returns the information to display when a navigation error occurs.
   // |error_html| should be set to null if this is a custom error page that will
   // set its own html content, otherwise if |error_html| is not null then it may
@@ -146,10 +142,10 @@ class CONTENT_EXPORT ContentRendererClient {
 
   virtual void PrepareErrorPageForHttpStatusError(
       content::RenderFrame* render_frame,
-      const GURL& unreachable_url,
+      const blink::WebURLError& error,
       const std::string& http_method,
       int http_status,
-      std::string* error_html) {}
+      std::string* error_html);
 
   // Allows the embedder to control when media resources are loaded. Embedders
   // can run |closure| immediately if they don't wish to defer media resource

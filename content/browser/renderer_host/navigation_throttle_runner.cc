@@ -9,6 +9,7 @@
 #include "content/browser/renderer_host/ancestor_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
 #include "content/browser/renderer_host/form_submission_throttle.h"
+#include "content/browser/renderer_host/http_error_navigation_throttle.h"
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
@@ -124,6 +125,12 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
        devtools_instrumentation::CreateNavigationThrottles(request)) {
     AddThrottle(std::move(throttle));
   }
+
+  // Make main frame navigations with error HTTP status code and an empty body
+  // commit an error page instead. Note that this should take lower priority
+  // than other throttles that might care about those navigations, e.g.
+  // throttles handling pages with 407 errors that require extra authentication.
+  AddThrottle(HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),

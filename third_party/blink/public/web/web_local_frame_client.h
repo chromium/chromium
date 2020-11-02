@@ -379,7 +379,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Like |didFinishDocumentLoad|, except this method may run JavaScript
   // code (and possibly invalidate the frame).
-  virtual void RunScriptsAtDocumentReady(bool document_is_empty) {}
+  virtual void RunScriptsAtDocumentReady() {}
 
   // The frame's window.onload event is ready to fire. This method may delay
   // window.onload by incrementing LoadEventDelayCount.

@@ -1067,6 +1067,10 @@ AwContentBrowserClient::CreateSpeechRecognitionManagerDelegate() {
   return new AwSpeechRecognitionManagerDelegate();
 }
 
+bool AwContentBrowserClient::HasErrorPage(int http_status_code) {
+  return http_status_code >= 400;
+}
+
 // static
 void AwContentBrowserClient::DisableCreatingThreadPool() {
   g_should_create_thread_pool = false;

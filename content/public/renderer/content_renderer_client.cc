@@ -50,8 +50,13 @@ blink::WebPlugin* ContentRendererClient::CreatePluginReplacement(
   return nullptr;
 }
 
-bool ContentRendererClient::HasErrorPage(int http_status_code) {
-  return false;
+void ContentRendererClient::PrepareErrorPageForHttpStatusError(
+    content::RenderFrame* render_frame,
+    const blink::WebURLError& error,
+    const std::string& http_method,
+    int http_status,
+    std::string* error_html) {
+  PrepareErrorPage(render_frame, error, http_method, error_html);
 }
 
 bool ContentRendererClient::DeferMediaLoad(RenderFrame* render_frame,

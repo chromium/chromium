@@ -3355,7 +3355,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */,
           std::vector<std::string>() /* forced_content_security_policies */,
-          nullptr /* old_page_info */);
+          nullptr /* old_page_info */, -1 /* http_response_code */);
 #if defined(OS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();
