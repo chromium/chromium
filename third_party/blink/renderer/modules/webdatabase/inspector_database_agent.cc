@@ -63,11 +63,10 @@ class ExecuteSQLCallbackWrapper : public RefCounted<ExecuteSQLCallbackWrapper> {
   ExecuteSQLCallback* Get() { return callback_.get(); }
 
   void ReportTransactionFailed(SQLError* error) {
-    std::unique_ptr<protocol::Database::Error> error_object =
-        protocol::Database::Error::create()
-            .setMessage(error->message())
-            .setCode(error->code())
-            .build();
+    auto error_object = protocol::Database::Error::create()
+                            .setMessage(error->message())
+                            .setCode(error->code())
+                            .build();
     callback_->sendSuccess(Maybe<protocol::Array<String>>(),
                            Maybe<protocol::Array<protocol::Value>>(),
                            std::move(error_object));
@@ -276,10 +275,7 @@ Response InspectorDatabaseAgent::getDatabaseTableNames(
 void InspectorDatabaseAgent::executeSQL(
     const String& database_id,
     const String& query,
-    std::unique_ptr<ExecuteSQLCallback> prp_request_callback) {
-  std::unique_ptr<ExecuteSQLCallback> request_callback =
-      std::move(prp_request_callback);
-
+    std::unique_ptr<ExecuteSQLCallback> request_callback) {
   if (!enabled_.Get()) {
     request_callback->sendFailure(
         Response::ServerError("Database agent is not enabled"));
@@ -303,10 +299,9 @@ void InspectorDatabaseAgent::executeSQL(
 
 InspectorDatabaseResource* InspectorDatabaseAgent::FindByFileName(
     const String& file_name) {
-  for (DatabaseResourcesHeapMap::iterator it = resources_.begin();
-       it != resources_.end(); ++it) {
-    if (it->value->GetDatabase()->FileName() == file_name)
-      return it->value.Get();
+  for (auto& resource : resources_) {
+    if (resource.value->GetDatabase()->FileName() == file_name)
+      return resource.value.Get();
   }
   return nullptr;
 }
