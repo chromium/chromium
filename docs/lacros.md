@@ -50,9 +50,34 @@ The API lives in
 The ash-side implementation lives in
 [//chrome/browser/chromeos/crosapi](https://chromium.googlesource.com/chromium/src.git/+/master/chrome/browser/chromeos/crosapi).
 
-Code can be conditionally compiled into lacros via BUILDFLAG(IS_LACROS).
+Code can be conditionally compiled into lacros via
+BUILDFLAG(IS_CHROMEOS_LACROS).
 
 Lacros bugs can be filed under component: OS>LaCrOs.
+
+## GN var and C++ macros for Lacros
+
+### Desired state
+
+- defined(OS_CHROMEOS) is true in C++ for both ash-chrome and lacros-chrome.
+- BUILDFLAG(IS_CHROMEOS_ASH) in C++ is used for ash-chrome specific part.
+- BUILDFLAG(IS_CHROMEOS_LACROS) in C++ is used for lacros-chrome specific part.
+- GN variable is_chromeos is true for both ash-chrome and lacros-chrome.
+- GN variable is_chromeos is equivalent to is_chromeos_ash || is_chromeos_lacros.
+- GN variable is_chormeos_ash is used for ash-chrome specific part.
+- GN variable is_chromeos_lacros is used for lacros-chrome specific part.
+
+### Current state
+
+OS_CHROMEOS is defined and is_chromeos is set only for ash-chrome at the moment.
+We are migrating defined(OS_CHROMEOS) to BUILDFLAG(IS_CHROMEOS_ASH), see
+[crbug.com/1052397](https://crbug.com/1052397). After the migration, the macros
+and gn variables should be used according to the above desired state.
+
+Googlers:
+- [go/lacros-porting](http://go/lacros-porting) has some tips for build files.
+- [go/lacros-macros](http://go/lacros-macros) describes the steps for the macros migration.
+- [go/lacros-build-config](http://go/lacros-build-config) is the design doc.
 
 ## Testing
 
