@@ -12,12 +12,6 @@
 namespace policy {
 namespace features {
 
-#if defined(OS_APPLE)
-// Feature that controls whether the browser ignores sensitive policies on an
-// unmanaged Mac.
-POLICY_EXPORT extern const base::Feature kIgnoreSensitivePoliciesOnUnmanagedMac;
-#endif
-
 // Feature that controls whether the browser registers for FCM invalidations for
 // Machine Level Policies. If enabled, |kCBCMServiceAccounts| must also be
 // enabled.

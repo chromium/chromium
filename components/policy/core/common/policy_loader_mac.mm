@@ -146,11 +146,8 @@ std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {
   // Load policy for the registered components.
   LoadPolicyForDomain(POLICY_DOMAIN_EXTENSIONS, "extensions", bundle.get());
 
-  if (base::FeatureList::IsEnabled(
-          policy::features::kIgnoreSensitivePoliciesOnUnmanagedMac) &&
-      !ShouldHonorPolicies()) {
+  if (!ShouldHonorPolicies())
     FilterSensitivePolicies(&chrome_policy);
-  }
 
   return bundle;
 }
