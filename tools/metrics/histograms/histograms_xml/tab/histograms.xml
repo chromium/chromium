@@ -151,14 +151,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tab.NewTab" enum="NewTabType" expires_after="M85">
+<histogram name="Tab.NewTab" enum="NewTabType" expires_after="M95">
   <owner>tbergquist@chromium.org</owner>
   <owner>bsep@chromium.org</owner>
   <summary>
-    Tracks the different ways users are opening new tabs. Does not apply to
-    opening existing links or searches in a new tab, only to brand new empty
-    tabs. Note: Currently the &quot;Regular menu option&quot; includes some
-    programmatic actions in addition to user actions.
+    Recorded when a new tab is opened. Tracks the method in which the tab was
+    opened. Does not apply to opening existing links or searches in a new tab,
+    only to brand new empty tabs. Note: Currently the &quot;Regular menu
+    option&quot; includes some programmatic actions in addition to user actions.
   </summary>
 </histogram>
 
