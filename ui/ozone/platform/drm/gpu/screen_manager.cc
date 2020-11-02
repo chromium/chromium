@@ -315,7 +315,7 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
   // comparison on the mode since the refresh rate may have changed.
   if (SameMode(mode, crtc_controller->mode()) &&
       origin == controller->origin()) {
-    if (controller->IsDisabled()) {
+    if (!controller->IsEnabled()) {
       // Even if there is a mirrored display, Modeset the CRTC with its mode in
       // the original controller so that only this CRTC is affected by the mode.
       // Otherwise it could apply a mode with the same resolution and refresh
@@ -449,7 +449,7 @@ ScreenManager::HardwareDisplayControllers::iterator
 ScreenManager::FindActiveDisplayControllerByLocation(const gfx::Rect& bounds) {
   for (auto it = controllers_.begin(); it != controllers_.end(); ++it) {
     gfx::Rect controller_bounds((*it)->origin(), (*it)->GetModeSize());
-    if (controller_bounds == bounds && !(*it)->IsDisabled())
+    if (controller_bounds == bounds && (*it)->IsEnabled())
       return it;
   }
 
@@ -463,7 +463,7 @@ ScreenManager::FindActiveDisplayControllerByLocation(
   for (auto it = controllers_.begin(); it != controllers_.end(); ++it) {
     gfx::Rect controller_bounds((*it)->origin(), (*it)->GetModeSize());
     if ((*it)->GetDrmDevice() == drm && controller_bounds == bounds &&
-        !(*it)->IsDisabled())
+        (*it)->IsEnabled())
       return it;
   }
 
@@ -475,7 +475,7 @@ void ScreenManager::UpdateControllerToWindowMapping() {
   // First create a unique mapping between a window and a controller. Note, a
   // controller may be associated with at most 1 window.
   for (const auto& controller : controllers_) {
-    if (controller->IsDisabled())
+    if (!controller->IsEnabled())
       continue;
 
     DrmWindow* window = FindWindowAt(

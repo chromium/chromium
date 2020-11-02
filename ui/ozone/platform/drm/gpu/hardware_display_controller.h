@@ -104,7 +104,7 @@ class HardwareDisplayController {
   void GetDisableProps(CommitRequest* commit_request);
 
   // Updates state of the controller after modeset/enable/disable is performed.
-  void UpdateState(bool is_enabled, const DrmOverlayPlane* primary_plane);
+  void UpdateState(bool enable_requested, const DrmOverlayPlane* primary_plane);
 
   // Schedules the |overlays|' framebuffers to be displayed on the next vsync
   // event. The event will be posted on the graphics card file descriptor |fd_|
@@ -152,7 +152,7 @@ class HardwareDisplayController {
       uint32_t crtc);
   bool HasCrtc(const scoped_refptr<DrmDevice>& drm, uint32_t crtc) const;
   bool IsMirrored() const;
-  bool IsDisabled() const;
+  bool IsEnabled() const;
   gfx::Size GetModeSize() const;
 
   gfx::Point origin() const { return origin_; }
@@ -206,8 +206,6 @@ class HardwareDisplayController {
   gfx::Point cursor_location_;
   int cursor_frontbuffer_ = 0;
   DrmDumbBuffer* current_cursor_ = nullptr;
-
-  bool is_disabled_;
 
   base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 

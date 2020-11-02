@@ -66,7 +66,7 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
 HardwareDisplayController::HardwareDisplayController(
     std::unique_ptr<CrtcController> controller,
     const gfx::Point& origin)
-    : origin_(origin), is_disabled_(controller->is_disabled()) {
+    : origin_(origin) {
   AddCrtc(std::move(controller));
   AllocateCursorBuffers();
 }
@@ -124,14 +124,10 @@ void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
 }
 
 void HardwareDisplayController::UpdateState(
-    bool is_enabled,
+    bool enable_requested,
     const DrmOverlayPlane* primary_plane) {
-  // TODO(markyacoub): Update how we report the controller state. Right now, the
-  // controller state is independent of its CRTCs; however, it should reflect
-  // its CRTCs active states.
-  is_disabled_ = !is_enabled;
-
-  if (is_enabled) {
+  // Verify that the current state matches the requested state.
+  if (enable_requested && IsEnabled()) {
     DCHECK(primary_plane);
     // TODO(markyacoub): This should be absorbed in the commit request.
     ResetCursor();
@@ -182,7 +178,7 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
     scoped_refptr<PageFlipRequest> page_flip_request,
     std::unique_ptr<gfx::GpuFence>* out_fence) {
   TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
-  DCHECK(!is_disabled_);
+  DCHECK(IsEnabled());
 
   // Ignore requests with no planes to schedule.
   if (plane_list.empty())
@@ -331,8 +327,13 @@ bool HardwareDisplayController::IsMirrored() const {
   return crtc_controllers_.size() > 1;
 }
 
-bool HardwareDisplayController::IsDisabled() const {
-  return is_disabled_;
+bool HardwareDisplayController::IsEnabled() const {
+  bool is_enabled = true;
+
+  for (const auto& controller : crtc_controllers_)
+    is_enabled &= controller->is_enabled();
+
+  return is_enabled;
 }
 
 gfx::Size HardwareDisplayController::GetModeSize() const {

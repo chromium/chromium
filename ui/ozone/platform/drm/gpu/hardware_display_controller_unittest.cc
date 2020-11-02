@@ -250,7 +250,7 @@ bool HardwareDisplayControllerTest::ModesetWithPlane(
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
   controller_->UpdateState(
-      /*enabled=*/true,
+      /*enable_requested=*/true,
       ui::DrmOverlayPlane::GetPrimaryPlane(request_for_update[0].overlays()));
 
   return status;
@@ -262,7 +262,7 @@ bool HardwareDisplayControllerTest::DisableController() {
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  controller_->UpdateState(/*enabled=*/false, nullptr);
+  controller_->UpdateState(/*enable_requested=*/false, nullptr);
 
   return status;
 }

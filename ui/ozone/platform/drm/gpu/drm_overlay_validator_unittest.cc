@@ -88,7 +88,7 @@ class DrmOverlayValidatorTest : public testing::Test {
     bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                                 DRM_MODE_ATOMIC_ALLOW_MODESET);
     controller->UpdateState(
-        /*enabled=*/true,
+        /*enable_requested=*/true,
         ui::DrmOverlayPlane::GetPrimaryPlane(request_for_update[0].overlays()));
 
     return status;

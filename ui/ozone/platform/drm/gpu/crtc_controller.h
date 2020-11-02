@@ -38,7 +38,7 @@ class CrtcController {
   uint32_t crtc() const { return crtc_; }
   uint32_t connector() const { return connector_; }
   const scoped_refptr<DrmDevice>& drm() const { return drm_; }
-  bool is_disabled() const { return !state_.properties.active.value; }
+  bool is_enabled() const { return state_.properties.active.value; }
 
   bool AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
                            const DrmOverlayPlaneList& planes,
