@@ -528,6 +528,9 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Flaky: https://crbug.com/1115238
 #define MAYBE_RecordVisitOnNewOrigin DISABLED_RecordVisitOnNewOrigin
+#elif defined(OS_MAC)
+// Consistently fails: https://crbug.com/1144680
+#define MAYBE_RecordVisitOnNewOrigin DISABLED_RecordVisitOnNewOrigin
 #else
 #define MAYBE_RecordVisitOnNewOrigin RecordVisitOnNewOrigin
 #endif
