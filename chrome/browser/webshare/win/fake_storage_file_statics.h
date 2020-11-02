@@ -12,7 +12,7 @@ namespace webshare {
 
 // Provides an implementation of IStorageFileStatics for use in GTests.
 class __declspec(uuid("70A03B12-27C0-499A-B8AE-18E6060BDEDD"))
-    FakeStorageFileStatics
+    FakeStorageFileStatics final
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           ABI::Windows::Storage::IStorageFileStatics> {

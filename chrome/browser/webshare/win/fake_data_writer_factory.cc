@@ -61,8 +61,7 @@ class FakeDataWriter final
     return E_NOTIMPL;
   }
   IFACEMETHODIMP put_UnicodeEncoding(UnicodeEncoding value) final {
-    NOTREACHED();
-    return E_NOTIMPL;
+    return S_OK;
   }
   IFACEMETHODIMP
   get_ByteOrder(ByteOrder* value) final {
@@ -70,10 +69,7 @@ class FakeDataWriter final
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
-  put_ByteOrder(ByteOrder value) final {
-    NOTREACHED();
-    return E_NOTIMPL;
-  }
+  put_ByteOrder(ByteOrder value) final { return S_OK; }
   IFACEMETHODIMP WriteByte(BYTE value) final {
     NOTREACHED();
     return E_NOTIMPL;

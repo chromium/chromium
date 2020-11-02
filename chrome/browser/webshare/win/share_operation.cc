@@ -98,14 +98,14 @@ HRESULT GetActivationFactory(InterfaceType** factory) {
 }
 
 // Implements FileStreamWriter for an IDataWriter.
-class DataWriterFileStreamWriter : public storage::FileStreamWriter {
+class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
  public:
   explicit DataWriterFileStreamWriter(
       ComPtr<IDataWriter> data_writer,
       scoped_refptr<base::RefCountedData<uint64_t>> file_bytes_shared)
       : data_writer_(data_writer), file_bytes_shared_(file_bytes_shared) {}
 
-  int Cancel(net::CompletionOnceCallback callback) override {
+  int Cancel(net::CompletionOnceCallback callback) final {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     // If there is no async operation in progress, Cancel() should
     // return net::ERR_UNEXPECTED per file_stream_header.h
@@ -142,7 +142,7 @@ class DataWriterFileStreamWriter : public storage::FileStreamWriter {
     return net::OK;
   }
 
-  int Flush(net::CompletionOnceCallback callback) override {
+  int Flush(net::CompletionOnceCallback callback) final {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     DCHECK(flush_callback_.is_null());
     DCHECK_EQ(flush_operation_, nullptr);
@@ -163,7 +163,7 @@ class DataWriterFileStreamWriter : public storage::FileStreamWriter {
 
   int Write(net::IOBuffer* buf,
             int buf_len,
-            net::CompletionOnceCallback callback) override {
+            net::CompletionOnceCallback callback) final {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     DCHECK(flush_callback_.is_null());
     DCHECK_EQ(flush_operation_, nullptr);

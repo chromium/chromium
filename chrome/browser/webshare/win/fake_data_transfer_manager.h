@@ -15,7 +15,7 @@ namespace webshare {
 
 // Provides an implementation of IDataTransferManager for use in GTests.
 class __declspec(uuid("53CA4C00-6F19-40C1-A740-F66510E2DB40"))
-    FakeDataTransferManager
+    FakeDataTransferManager final
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           ABI::Windows::ApplicationModel::DataTransfer::IDataTransferManager> {
@@ -53,21 +53,25 @@ class __declspec(uuid("53CA4C00-6F19-40C1-A740-F66510E2DB40"))
   FakeDataTransferManager();
   FakeDataTransferManager(const FakeDataTransferManager&) = delete;
   FakeDataTransferManager& operator=(const FakeDataTransferManager&) = delete;
-  ~FakeDataTransferManager() override;
+  ~FakeDataTransferManager() final;
 
   // ABI::Windows::ApplicationModel::DataTransfer::IDataTransferManager:
   IFACEMETHODIMP add_DataRequested(
-      __FITypedEventHandler_2_Windows__CApplicationModel__CDataTransfer__CDataTransferManager_Windows__CApplicationModel__CDataTransfer__CDataRequestedEventArgs*
-          event_handler,
-      EventRegistrationToken* event_cookie) override;
+      ABI::Windows::Foundation::ITypedEventHandler<
+          ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager*,
+          ABI::Windows::ApplicationModel::DataTransfer::
+              DataRequestedEventArgs*>* event_handler,
+      EventRegistrationToken* event_cookie) final;
   IFACEMETHODIMP
-  remove_DataRequested(EventRegistrationToken event_cookie) override;
+  remove_DataRequested(EventRegistrationToken event_cookie) final;
   IFACEMETHODIMP add_TargetApplicationChosen(
-      __FITypedEventHandler_2_Windows__CApplicationModel__CDataTransfer__CDataTransferManager_Windows__CApplicationModel__CDataTransfer__CTargetApplicationChosenEventArgs*
-          eventHandler,
-      EventRegistrationToken* event_cookie) override;
+      ABI::Windows::Foundation::ITypedEventHandler<
+          ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager*,
+          ABI::Windows::ApplicationModel::DataTransfer::
+              TargetApplicationChosenEventArgs*>* eventHandler,
+      EventRegistrationToken* event_cookie) final;
   IFACEMETHODIMP
-  remove_TargetApplicationChosen(EventRegistrationToken event_cookie) override;
+  remove_TargetApplicationChosen(EventRegistrationToken event_cookie) final;
 
   // Returns a callback that captures a reference to the current DataRequested
   // event handler and, when invoked, triggers that handler.
@@ -89,10 +93,11 @@ class __declspec(uuid("53CA4C00-6F19-40C1-A740-F66510E2DB40"))
     DataRequestedHandlerEntry(DataRequestedHandlerEntry const& other);
     ~DataRequestedHandlerEntry();
 
-    Microsoft::WRL::ComPtr<
-        __FITypedEventHandler_2_Windows__CApplicationModel__CDataTransfer__CDataTransferManager_Windows__CApplicationModel__CDataTransfer__CDataRequestedEventArgs>
-        event_handler_;
-    int64_t token_value_;
+    Microsoft::WRL::ComPtr<ABI::Windows::Foundation::ITypedEventHandler<
+        ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager*,
+        ABI::Windows::ApplicationModel::DataTransfer::DataRequestedEventArgs*>>
+        event_handler;
+    int64_t token_value;
   };
 
   std::vector<DataRequestedHandlerEntry> data_requested_event_handlers_;

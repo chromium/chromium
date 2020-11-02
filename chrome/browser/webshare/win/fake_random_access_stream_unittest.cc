@@ -18,6 +18,7 @@ using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::IAsyncOperationCompletedHandler;
 using ABI::Windows::Foundation::IAsyncOperationWithProgress;
 using ABI::Windows::Foundation::IAsyncOperationWithProgressCompletedHandler;
+using ABI::Windows::Foundation::IClosable;
 using ABI::Windows::Storage::Streams::IBuffer;
 using ABI::Windows::Storage::Streams::IInputStream;
 using ABI::Windows::Storage::Streams::InputStreamOptions;
@@ -32,6 +33,7 @@ TEST(FakeRandomAccessStreamTest, InvalidSeek) {
   auto stream = Make<FakeRandomAccessStream>();
   ASSERT_HRESULT_SUCCEEDED(stream->Seek(0));
   EXPECT_NONFATAL_FAILURE(ASSERT_HRESULT_FAILED(stream->Seek(1)), "Seek");
+  ASSERT_HRESULT_SUCCEEDED(stream->Close());
 }
 
 TEST(FakeRandomAccessStreamTest, UsageAfterClose) {
@@ -183,6 +185,7 @@ TEST(FakeRandomAccessStreamTest, CompetingAsyncCalls) {
                             "in progress");
     run_loop.Run();
   }
+  ASSERT_HRESULT_SUCCEEDED(stream->Close());
 }
 
 TEST(FakeRandomAccessStreamTest, BasicReadWrite) {
@@ -199,6 +202,7 @@ TEST(FakeRandomAccessStreamTest, BasicReadWrite) {
 
     ASSERT_HRESULT_SUCCEEDED(stream->GetInputStreamAt(0, &input_stream));
     ASSERT_HRESULT_SUCCEEDED(stream->GetOutputStreamAt(0, &output_stream));
+    ASSERT_HRESULT_SUCCEEDED(stream->Close());
   }
 
   // Create a filled buffer that reads "abcd"
@@ -278,6 +282,9 @@ TEST(FakeRandomAccessStreamTest, BasicReadWrite) {
             })
             .Get()));
     run_loop.Run();
+    ComPtr<IClosable> closable_stream;
+    ASSERT_HRESULT_SUCCEEDED(output_stream.As(&closable_stream));
+    ASSERT_HRESULT_SUCCEEDED(closable_stream->Close());
   }
 
   // Read the input stream to the buffer
@@ -332,6 +339,9 @@ TEST(FakeRandomAccessStreamTest, BasicReadWrite) {
             })
             .Get()));
     run_loop.Run();
+    ComPtr<IClosable> closable_stream;
+    ASSERT_HRESULT_SUCCEEDED(input_stream.As(&closable_stream));
+    ASSERT_HRESULT_SUCCEEDED(closable_stream->Close());
   }
 
   ASSERT_HRESULT_SUCCEEDED(buffer->get_Length(&length));

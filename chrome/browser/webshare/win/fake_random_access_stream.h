@@ -18,7 +18,7 @@ class StreamData;
 
 // Provides an implementation of IRandomAccessStream for use in GTests.
 class __declspec(uuid("66DAD26A-BEDE-4A54-8316-088838CC65A0"))
-    FakeRandomAccessStream
+    FakeRandomAccessStream final
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           ABI::Windows::Storage::Streams::IRandomAccessStream,

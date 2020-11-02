@@ -44,7 +44,7 @@ namespace webshare {
 
 class ShowShareUIForWindowOperation;
 
-class ShareOperation : content::WebContentsObserver {
+class ShareOperation final : content::WebContentsObserver {
  public:
   static void SetMaxFileBytesForTesting(uint64_t max_file_bytes);
 
@@ -59,7 +59,7 @@ class ShareOperation : content::WebContentsObserver {
                  content::WebContents* web_contents);
   ShareOperation(const ShareOperation&) = delete;
   ShareOperation& operator=(const ShareOperation&) = delete;
-  ~ShareOperation() override;
+  ~ShareOperation() final;
 
   base::WeakPtr<ShareOperation> AsWeakPtr();
 

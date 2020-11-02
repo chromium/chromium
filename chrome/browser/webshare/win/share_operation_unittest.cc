@@ -35,6 +35,7 @@ using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::IAsyncOperationCompletedHandler;
 using ABI::Windows::Foundation::IAsyncOperationWithProgress;
 using ABI::Windows::Foundation::IAsyncOperationWithProgressCompletedHandler;
+using ABI::Windows::Foundation::IClosable;
 using ABI::Windows::Storage::FileAccessMode;
 using ABI::Windows::Storage::IStorageFile;
 using ABI::Windows::Storage::Streams::IBuffer;
@@ -101,6 +102,9 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
 
     ComPtr<IInputStream> input_stream;
     ASSERT_HRESULT_SUCCEEDED(stream->GetInputStreamAt(0, &input_stream));
+    ComPtr<IClosable> closable_stream;
+    ASSERT_HRESULT_SUCCEEDED(stream.As(&closable_stream));
+    ASSERT_HRESULT_SUCCEEDED(closable_stream->Close());
 
     auto buffer = Make<FakeBuffer>(size);
     {
@@ -135,6 +139,11 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
       bytes[i] = raw_buffer[i];
     }
     result = std::string(bytes.begin(), bytes.end());
+
+    // Cleanup
+    ComPtr<IClosable> closable_input_stream;
+    ASSERT_HRESULT_SUCCEEDED(input_stream.As(&closable_input_stream));
+    ASSERT_HRESULT_SUCCEEDED(closable_input_stream->Close());
   }
 
   blink::mojom::SharedFilePtr CreateSharedFile(const std::string& name,

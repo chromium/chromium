@@ -158,6 +158,9 @@ TEST(FakeStorageFileStaticsTest, CreateStreamedFileAsync) {
   ASSERT_HRESULT_SUCCEEDED(opened_stream->GetInputStreamAt(0, &input_stream));
   UINT64 size;
   ASSERT_HRESULT_SUCCEEDED(opened_stream->get_Size(&size));
+  ComPtr<IClosable> closable_opened_stream;
+  ASSERT_HRESULT_SUCCEEDED(opened_stream.As(&closable_opened_stream));
+  ASSERT_HRESULT_SUCCEEDED(closable_opened_stream->Close());
 
   // Read the opened stream
   auto buffer = Make<FakeBuffer>(size);
@@ -194,6 +197,11 @@ TEST(FakeStorageFileStaticsTest, CreateStreamedFileAsync) {
   ASSERT_EQ(raw_buffer[1], 'i');
   ASSERT_EQ(raw_buffer[2], 's');
   ASSERT_EQ(raw_buffer[3], 'h');
+
+  // Cleanup
+  ComPtr<IClosable> closable_input_stream;
+  ASSERT_HRESULT_SUCCEEDED(input_stream.As(&closable_input_stream));
+  ASSERT_HRESULT_SUCCEEDED(closable_input_stream->Close());
 }
 
 }  // namespace webshare

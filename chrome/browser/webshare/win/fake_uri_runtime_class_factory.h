@@ -12,7 +12,7 @@ namespace webshare {
 
 // Provides an implementation of IUriRuntimeClassFactory for use in GTests.
 class __declspec(uuid("93741C10-A511-410F-B2CA-3F0A2B674ECE"))
-    FakeUriRuntimeClassFactory
+    FakeUriRuntimeClassFactory final
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           ABI::Windows::Foundation::IUriRuntimeClassFactory> {

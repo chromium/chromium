@@ -71,6 +71,9 @@ TEST(FakeDataWriterFactoryTest, RacingStoreAsync) {
 
   // Expect a failure from the destructor due to the unflushed data
   EXPECT_NONFATAL_FAILURE(data_writer.Reset(), "FlushAsync");
+
+  // Cleanup
+  ASSERT_HRESULT_SUCCEEDED(stream->Close());
 }
 
 TEST(FakeDataWriterFactoryTest, UnstoredBytes) {
@@ -94,6 +97,9 @@ TEST(FakeDataWriterFactoryTest, UnstoredBytes) {
   EXPECT_NONFATAL_FAILURE(
       EXPECT_NONFATAL_FAILURE(data_writer.Reset(), "pending storage"),
       "FlushAsync");
+
+  // Cleanup
+  ASSERT_HRESULT_SUCCEEDED(stream->Close());
 }
 
 TEST(FakeDataWriterFactoryTest, WriteBytes) {
@@ -210,6 +216,9 @@ TEST(FakeDataWriterFactoryTest, WriteBytes) {
   ASSERT_EQ(raw_buffer[5], 'e');
   ASSERT_EQ(raw_buffer[6], 'r');
   ASSERT_EQ(raw_buffer[7], 'e');
+
+  // Cleanup
+  ASSERT_HRESULT_SUCCEEDED(stream->Close());
 }
 
 }  // namespace webshare

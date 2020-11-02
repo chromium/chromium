@@ -209,7 +209,14 @@ class StreamData final : public base::RefCountedThreadSafe<StreamData> {
  private:
   friend class base::RefCountedThreadSafe<StreamData>;
 
-  virtual ~StreamData() = default;
+  virtual ~StreamData() {
+    EXPECT_FALSE(flush_async_in_progress_)
+        << "StreamData destroyed while flush operation is in progress.";
+    EXPECT_FALSE(read_async_in_progress_)
+        << "StreamData destroyed while read operation is in progress.";
+    EXPECT_FALSE(write_async_in_progress_)
+        << "StreamData destroyed while write operation is in progress.";
+  }
 
   void OnFlushAsync(
       ComPtr<base::win::FakeIAsyncOperation<bool>> fake_iasync_operation) {
@@ -290,7 +297,10 @@ FakeRandomAccessStream::FakeRandomAccessStream() {
   position_ = base::MakeRefCounted<base::RefCountedData<UINT64>>();
   shared_data_ = base::MakeRefCounted<StreamData>();
 }
-FakeRandomAccessStream::~FakeRandomAccessStream() = default;
+FakeRandomAccessStream::~FakeRandomAccessStream() {
+  EXPECT_TRUE(is_closed_)
+      << "FakeRandomAccessStream destroyed without being closed.";
+}
 
 IFACEMETHODIMP FakeRandomAccessStream::get_Size(UINT64* value) {
   if (is_closed_) {
