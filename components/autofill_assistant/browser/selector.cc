@@ -67,6 +67,7 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPickOne:
     case SelectorProto::Filter::kLabelled:
+    case SelectorProto::Filter::kOnTop:
       return false;
 
     case SelectorProto::Filter::kClosest: {
@@ -232,6 +233,7 @@ base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
       case SelectorProto::Filter::kLabelled:
       case SelectorProto::Filter::kClosest:
       case SelectorProto::Filter::kMatchCssSelector:
+      case SelectorProto::Filter::kOnTop:
         VLOG(1) << __func__
                 << " Selector feature not supported by autofill: " << *this;
         return base::nullopt;
@@ -377,6 +379,10 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kMatchCssSelector:
       out << "matches: " << f.css_selector();
+      return out;
+
+    case SelectorProto::Filter::kOnTop:
+      out << "on_top";
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

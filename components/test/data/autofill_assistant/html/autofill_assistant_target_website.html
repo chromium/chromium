@@ -131,6 +131,33 @@ found in the LICENSE file.
         left: 400px;
         top: 400px;
       }
+      #overlay {
+          visibility: hidden;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 9999;
+          background-color: #ff0000;
+      }
+
+      #input1_container {
+          position: relative;
+      }
+      #input1_container > label {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          z-index: 2;
+          background-color: yellow;
+      }
+      #input1_container input:focus + label {
+          top: 100%;
+          margin-top: 0px;
+      }
     </style>
   </head>
 
@@ -184,7 +211,7 @@ found in the LICENSE file.
 
     <div>
       <button id="button" type="button" onclick=
-          "removeButton()">Test Button</button>
+          "removeButton()"><span>Test Button</span></button>
       <br>
     </div>
 
@@ -197,8 +224,8 @@ found in the LICENSE file.
       </select>
     </div>
 
-    <div>
-      <label class="pairs" for="input1">Input1</label>
+    <div id="input1_container">
+      <label class="pairs" for="input1"><b>Input1</b></label>
       <input class="pairs" id="input1" type="text" value="helloworld1" />
     </div>
     <div>
@@ -344,5 +371,9 @@ found in the LICENSE file.
 
     <a id="form_target_website_link" href="form_target_website.html">Link to FormTargetWebsite</a>
     <div id="form_target_navigation_action" onclick="window.location.href='form_target_website.html'">Navigate to FormTargetWebsite</div>
+
+    <div id="overlay">
+      This is an overlay that covers the whole page.
+    </div>
   </body>
 </html>

@@ -148,6 +148,15 @@ TEST(SelectorTest, Comparison_MatchCssSelector) {
   EXPECT_TRUE(a == a);
 }
 
+TEST(SelectorTest, Comparison_OnTop) {
+  Selector a = Selector({"button"});
+  a.proto.add_filters()->mutable_on_top();
+  Selector b = Selector({"button"});
+
+  EXPECT_FALSE(a == b);
+  EXPECT_TRUE(a == a);
+}
+
 TEST(SelectorTest, Comparison_Frames) {
   Selector ab({"a", "b"});
   EXPECT_EQ(ab, ab);

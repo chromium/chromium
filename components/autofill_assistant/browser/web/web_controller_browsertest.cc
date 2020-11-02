@@ -844,6 +844,23 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     std::move(done_callback).Run();
   }
 
+  // Show the overlay in the main page, which covers everything.
+  void ShowOverlay() {
+    EXPECT_TRUE(ExecJs(shell(),
+                       R"(
+document.getElementById("overlay").style.visibility='visible';
+)"));
+  }
+
+  // Show the overlay in the first iframe, which covers the content
+  // of that frame.
+  void ShowOverlayInFrame() {
+    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetAllFrames()[1],
+                       R"(
+document.getElementById("overlay_in_frame").style.visibility='visible';
+)"));
+  }
+
   // Make sure scrolling is necessary for #scroll_container , no matter the
   // screen height
   void SetupScrollContainerHeights() {
@@ -898,7 +915,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     double container_bottom = eval_result.GetList()[4].GetDouble();
 
     // Element is at the desired position. (top is relative to the viewport)
-    EXPECT_NEAR(top, window_height * 0.25, 0.5);
+    EXPECT_NEAR(top, window_height * 0.25, 1);
 
     // Element is within the visible portion of its container.
     EXPECT_GT(bottom, container_top);
@@ -2316,6 +2333,77 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetStringAttribute) {
   ASSERT_EQ(UNEXPECTED_JS_ERROR,
             GetStringAttribute(Selector({"#button"}), bad_access, &value)
                 .proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTop) {
+  Selector button({"#button"});
+  RunLaxElementCheck(button, true);
+
+  button.proto.add_filters()->mutable_on_top();
+  RunLaxElementCheck(button, true);
+
+  ShowOverlay();
+  RunLaxElementCheck(button, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopNeedsScrolling) {
+  TestScrollIntoView(0, 0);
+
+  Selector button({"#scroll_item_5"});
+  RunLaxElementCheck(button, true);
+
+  button.proto.add_filters()->mutable_on_top();
+  RunLaxElementCheck(button, true);
+
+  ShowOverlay();
+  RunLaxElementCheck(button, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ALabelIsNotAnOverlay) {
+  Selector input({"#input1"});
+  RunLaxElementCheck(input, true);
+
+  input.proto.add_filters()->mutable_on_top();
+  RunLaxElementCheck(input, true);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopFindsOverlayInFrame) {
+  Selector button;
+  button.proto.add_filters()->set_css_selector("#iframe");
+  button.proto.add_filters()->mutable_enter_frame();
+  button.proto.add_filters()->set_css_selector("button");
+  button.proto.add_filters()->mutable_on_top();
+  RunLaxElementCheck(button, true);
+
+  ShowOverlayInFrame();
+  RunLaxElementCheck(button, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopFindsOverlayOverFrame) {
+  Selector button;
+  button.proto.add_filters()->set_css_selector("#iframe");
+  button.proto.add_filters()->mutable_on_top();
+  button.proto.add_filters()->mutable_enter_frame();
+  button.proto.add_filters()->set_css_selector("button");
+  RunLaxElementCheck(button, true);
+
+  ShowOverlay();
+  RunLaxElementCheck(button, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, OnTopFindsElementInShadow) {
+  Selector button;
+  button.proto.add_filters()->set_css_selector("#iframe");
+  button.proto.add_filters()->mutable_enter_frame();
+  button.proto.add_filters()->set_css_selector("#shadowsection");
+  button.proto.add_filters()->mutable_enter_frame();
+  button.proto.add_filters()->set_css_selector("#shadowbutton");
+  RunLaxElementCheck(button, true);
+  button.proto.add_filters()->mutable_on_top();
+  RunLaxElementCheck(button, true);
+
+  ShowOverlayInFrame();
+  RunLaxElementCheck(button, false);
 }
 
 }  // namespace autofill_assistant

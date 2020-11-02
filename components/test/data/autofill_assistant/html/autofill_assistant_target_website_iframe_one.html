@@ -54,6 +54,16 @@ found in the LICENSE file.
       #touch_area {
         position: absolute;
       }
+      #overlay_in_frame {
+          visibility: hidden;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 9999;
+          background-color: #ff0000;
+      }
     </style>
   </head>
 
@@ -134,6 +144,11 @@ found in the LICENSE file.
     </div>
 
     <iframe id="iframe" width="100%" height="500" src=
-        "autofill_assistant_target_website_iframe_two.html"></iframe>
+            "autofill_assistant_target_website_iframe_two.html"></iframe>
+
+
+    <div id="overlay_in_frame">
+      This is an overlay that covers the whole frame.
+    </div>
   </body>
 </html>

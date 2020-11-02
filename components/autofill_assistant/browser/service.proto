@@ -1033,6 +1033,37 @@ message SelectorProto {
       // Only keep elements whose computed style match the given filter. This is
       // based on Window.computedStyle()
       CssStyleFilter css_style = 12;
+
+      // Filter out elements whose center point are covered by another element.
+      //
+      // This first calls Element.scrollIntoViewIfNeeded to make sure the
+      // element can be moved to the viewport, then calls
+      // DocumentOrShadowDom.getElementFromPoint and compares the result with
+      // the expected element. If the element at point is not the element, a
+      // descendant of the element or a label of the element, there is an
+      // overlay.
+      //
+      // Note that:
+      //
+      // - this filter will also weed out elements with no bounding box. Check
+      // with bounding_box { } first.
+      //
+      // - this filter will also weed out elements that cannot be scrolled into
+      // the viewport.
+      //
+      // - an element might be covered by an overlay and still be visible if the
+      // overlay is transparent. An element might be covered by an overlay and
+      // still be clickable, if the overlay intercepts and forwards events.
+      // Overlays with pointer-events set to none are ignored.
+      //
+      // - an element might be only partially covered by an overlay. This filter
+      // only checks the center of the element, since this is where the click
+      // action sends its clicks or taps.
+      //
+      // - this filter only detects overlays in the current frame. To detect
+      // overlays that cover the frame element itself, apply this filter on the
+      // frame element before calling enter_frame.
+      EmptyFilter on_top = 13;
     }
   }
 
