@@ -253,6 +253,13 @@ const base::Feature kAutofillTokenPrefixMatching{
 const base::Feature kAutofillUploadThrottling{"AutofillUploadThrottling",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to use the AutofillUseAlternativeStateNameMap for filling
+// of state selection fields, comparison of profiles and sending state votes to
+// the server.
+// TODO(crbug.com/1143516): Remove the feature when the experiment is completed.
+const base::Feature kAutofillUseAlternativeStateNameMap{
+    "AutofillUseAlternativeStateNameMap", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether suggestions' labels use the improved label disambiguation
 // format.
 const base::Feature kAutofillUseImprovedLabelDisambiguation{

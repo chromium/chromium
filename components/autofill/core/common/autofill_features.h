@@ -65,6 +65,7 @@ extern const base::Feature kAutofillSkipComparingInferredLabels;
 extern const base::Feature kAutofillSkipFillingFieldsWithChangedValues;
 extern const base::Feature kAutofillTokenPrefixMatching;
 extern const base::Feature kAutofillUploadThrottling;
+extern const base::Feature kAutofillUseAlternativeStateNameMap;
 extern const base::Feature kAutofillUseImprovedLabelDisambiguation;
 extern const base::Feature kAutofillUseNewSectioningMethod;
 extern const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns;
