@@ -1201,6 +1201,8 @@ component("ash") {
     "system/phonehub/ui_constants.h",
     "system/power/backlights_forced_off_setter.cc",
     "system/power/backlights_forced_off_setter.h",
+    "system/power/battery_image_source.cc",
+    "system/power/battery_image_source.h",
     "system/power/battery_notification.cc",
     "system/power/battery_notification.h",
     "system/power/dual_role_notification.cc",

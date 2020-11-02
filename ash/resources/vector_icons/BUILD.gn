@@ -141,6 +141,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "palette_tray_icon_laser_pointer.icon",
     "palette_tray_icon_magnify.icon",
     "palette_tray_icon_metalayer.icon",
+    "phone_hub_battery_saver.icon",
+    "phone_hub_battery_saver_outline.icon",
     "phone_hub_enable_hotspot_off.icon",
     "phone_hub_enable_hotspot_on.icon",
     "phone_hub_locate_phone_off.icon",

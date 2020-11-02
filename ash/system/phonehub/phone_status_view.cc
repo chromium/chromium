@@ -12,6 +12,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/power/battery_image_source.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
@@ -57,6 +58,43 @@ int GetSignalStrengthAsInt(PhoneStatusModel::SignalStrength signal_strength) {
       return 4;
   }
 }
+
+// ImageSource for the battery icon.
+class PhoneHubBatteryImageSource : public BatteryImageSource {
+ public:
+  PhoneHubBatteryImageSource(const PowerStatus::BatteryImageInfo& info,
+                             int height,
+                             SkColor bg_color,
+                             SkColor fg_color,
+                             bool in_battery_saver_mode)
+      : BatteryImageSource(info, height, bg_color, fg_color),
+        bg_color_(bg_color),
+        in_battery_saver_mode_(in_battery_saver_mode) {}
+
+  ~PhoneHubBatteryImageSource() override = default;
+
+  // BatteryImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    BatteryImageSource::Draw(canvas);
+
+    if (!in_battery_saver_mode_)
+      return;
+
+    SkColor saver_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorWarning);
+
+    gfx::ImageSkia icon = CreateVectorIcon(kBatteryIcon, saver_color);
+    // Draw the solid outline of the battery icon.
+    canvas->DrawImageInt(icon, 0, 0);
+
+    PaintVectorIcon(canvas, kPhoneHubBatterySaverOutlineIcon, bg_color_);
+    PaintVectorIcon(canvas, kPhoneHubBatterySaverIcon, saver_color);
+  }
+
+ private:
+  const SkColor bg_color_;
+  bool in_battery_saver_mode_ = false;
+};
 
 }  // namespace
 
@@ -195,8 +233,14 @@ void PhoneStatusView::UpdateBatteryStatus() {
   const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 
-  battery_icon_->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayIconSize, icon_bg_color, icon_fg_color));
+  bool in_battery_saver_mode = phone_status.battery_saver_state() ==
+                               PhoneStatusModel::BatterySaverState::kOn;
+
+  auto* source = new PhoneHubBatteryImageSource(info, kStatusIconSize.height(),
+                                                icon_bg_color, icon_fg_color,
+                                                in_battery_saver_mode);
+  battery_icon_->SetImage(
+      gfx::ImageSkia(base::WrapUnique(source), source->size()));
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
 }
