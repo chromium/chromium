@@ -2983,9 +2983,22 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
       ChildAvailableSize(), is_new_fc);
 
   scoped_refptr<const NGLayoutResult> result = placeholder.Layout(space);
-  // TODO(crbug.com/1040826): For LayoutNGTextControlSingleLine, we should
-  // compute the placeholder position from the baseline of the last child.
-  container_builder_.AddResult(*result, BorderScrollbarPadding().StartOffset());
+  LogicalOffset offset = BorderScrollbarPadding().StartOffset();
+  if (Node().IsTextArea()) {
+    container_builder_.AddResult(*result, offset);
+    return;
+  }
+  // Another child should provide the baseline.
+  DCHECK(container_builder_.Baseline());
+  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+  // We should apply FirstBaseline() of the placeholder fragment because the
+  // placeholder might have the 'overflow' property, and its LastBaseline()
+  // might be the block-end margin.
+  offset.block_offset =
+      *container_builder_.Baseline() - *fragment.FirstBaseline();
+  container_builder_.AddResult(*result, offset);
+
   // This function doesn't update previous_inflow_position. Other children in
   // this container should ignore |placeholder|.
 }
