@@ -22,7 +22,7 @@
     ],
     "ru" : [
       {
-        "pattern_identifier": "de_street_name",
+        "pattern_identifier": "ru_street_name",
         "positive_pattern": "улица|название.?улицы",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -32,7 +32,7 @@
     ],
     "pt" : [
       {
-        "pattern_identifier": "de_street_name",
+        "pattern_identifier": "pt_street_name",
         "positive_pattern": "rua|avenida|((?<!do |de )endereço)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -41,7 +41,6 @@
       }
     ]
   },
-
   "ADDRESS_HOME_HOUSE_NUMBER":{
     "en": [
       {
@@ -53,7 +52,6 @@
         "match_field_input_types": 1
       }
     ],
-
     "de": [
       {
         "pattern_identifier": "de_house_number",
@@ -85,7 +83,6 @@
       }
     ]
   },
-
   "ATTENTION_IGNORED": {
     "en": [
       {
@@ -254,16 +251,14 @@
         "match_field_attributes": 3,
         "match_field_input_types": 1
       },
-      
-        {
-          "pattern_identifier": "en_address_line_1_label_preserving",
-          "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)",
-          "positive_score": 1.1,
-          "negative_pattern": null,
-          "match_field_attributes": 1,
-          "match_field_input_types": 1
-        }
-
+      {
+        "pattern_identifier": "en_address_line_1_label_preserving",
+        "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 1,
+        "match_field_input_types": 1
+      }
     ],
     "de": [
       {
@@ -413,9 +408,8 @@
         "match_field_attributes": 1,
         "match_field_input_types": 1
       }
-    ] 
+    ]
   },
-
   "ADDRESS_LINE_2": {
     "en": [
       {
@@ -558,7 +552,6 @@
       }
     ]
   },
-  
   "ADDRESS_LINE_EXTRA": {
     "en": [
       {
@@ -1707,33 +1700,30 @@
       }
     ]
   },
-
   "CREDIT_CARD_EXP_MONTH_BEFORE_YEAR": {
     "en": [
-    {
-    "pattern_identifier": "en_card_exp_month_before_year_preserving",
-    "positive_pattern": "^mm$",
-    "positive_score": 1.0,
-    "negative_pattern": null,
-    "match_field_attributes": 3,
-    "match_field_input_types": 205
-    }
+      {
+        "pattern_identifier": "en_card_exp_month_before_year_preserving",
+        "positive_pattern": "^mm$",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 205
+      }
     ]
-    },
-    "CREDIT_CARD_EXP_YEAR_AFTER_MONTH": {
+  },
+  "CREDIT_CARD_EXP_YEAR_AFTER_MONTH": {
     "en": [
-    {
-    "pattern_identifier": "en_card_exp_year_after_month_preserving",
-    "positive_pattern": "^(yy|yyyy)$",
-    "positive_score": 1.0,
-    "negative_pattern": null,
-    "match_field_attributes": 3,
-    "match_field_input_types": 205
-    }
+      {
+        "pattern_identifier": "en_card_exp_year_after_month_preserving",
+        "positive_pattern": "^(yy|yyyy)$",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 205
+      }
     ]
-    },
-
-
+  },
   "GIFT_CARD": {
     "en": [
       {
