@@ -10,6 +10,8 @@ namespace mojom {
 class BatteryInfo;
 class CpuInfo;
 class MemoryInfo;
+class NonInteractiveRoutineUpdate;
+class RoutineUpdate;
 class SystemInfo;
 class TelemetryInfo;
 }  // namespace mojom
@@ -37,6 +39,10 @@ const cros_healthd::mojom::MemoryInfo* GetMemoryInfo(
 // in not present.
 const cros_healthd::mojom::SystemInfo* GetSystemInfo(
     const cros_healthd::mojom::TelemetryInfo& info);
+
+const cros_healthd::mojom::NonInteractiveRoutineUpdate*
+GetNonInteractiveRoutineUpdate(
+    const cros_healthd::mojom::RoutineUpdate& update);
 
 }  // namespace diagnostics
 }  // namespace chromeos

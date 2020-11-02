@@ -1,0 +1,41 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.diagnostics.mojom;
+
+enum RoutineType {
+  kCpuStress,
+};
+
+enum StandardRoutineResult {
+  kTestPassed,
+  kTestFailed,
+  kExecutionError,
+  kUnableToRun,
+};
+
+union RoutineResult {
+  StandardRoutineResult simple_result;
+};
+
+struct RoutineResultInfo {
+  RoutineType type;
+  RoutineResult result;
+};
+
+// Implemented by clients in order to receive the results of a requested
+// routine.
+interface RoutineRunner {
+  // OnRoutineResult is called once to return the result of the routine.
+  OnRoutineResult(RoutineResultInfo info);
+};
+
+// Enables clients to run diagnostic routines to test the status of various
+// components on the system. This API is exposed to the Diagnostics SWA.
+interface SystemRoutineController {
+  // Runs routine |type|. The result is returned via the RoutineRunner |runner|.
+  // If the client closes the |remote|, cancellation of the associated routine
+  // is attempted.
+  RunRoutine(RoutineType type, pending_remote<RoutineRunner> runner);
+};

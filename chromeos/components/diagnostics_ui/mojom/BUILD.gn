@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "system_data_provider.mojom" ]
+  sources = [
+    "system_data_provider.mojom",
+    "system_routine_controller.mojom",
+  ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
 }

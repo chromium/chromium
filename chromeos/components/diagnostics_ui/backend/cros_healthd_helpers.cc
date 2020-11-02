@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace chromeos {
@@ -21,6 +22,11 @@ using cros_healthd::mojom::CpuResultPtr;
 using cros_healthd::mojom::MemoryInfo;
 using cros_healthd::mojom::MemoryResult;
 using cros_healthd::mojom::MemoryResultPtr;
+using cros_healthd::mojom::NonInteractiveRoutineUpdate;
+using cros_healthd::mojom::NonInteractiveRoutineUpdatePtr;
+using cros_healthd::mojom::RoutineUpdate;
+using cros_healthd::mojom::RoutineUpdateUnion;
+using cros_healthd::mojom::RoutineUpdateUnionPtr;
 using cros_healthd::mojom::SystemInfo;
 using cros_healthd::mojom::SystemResult;
 using cros_healthd::mojom::SystemResultPtr;
@@ -86,6 +92,18 @@ const SystemInfo* GetSystemInfo(const TelemetryInfo& info) {
   }
 
   return system_result->get_system_info().get();
+}
+
+const NonInteractiveRoutineUpdate* GetNonInteractiveRoutineUpdate(
+    const RoutineUpdate& update) {
+  const RoutineUpdateUnionPtr& routine_update = update.routine_update_union;
+
+  switch (routine_update->which()) {
+    case RoutineUpdateUnion::Tag::INTERACTIVE_UPDATE:
+      return nullptr;
+    case RoutineUpdateUnion::Tag::NONINTERACTIVE_UPDATE:
+      return routine_update->get_noninteractive_update().get();
+  }
 }
 
 }  // namespace diagnostics
