@@ -36,8 +36,8 @@ class Renderer;
 
 // A mojom::Renderer implementation that use a media::Renderer to render
 // media streams.
-class MEDIA_MOJO_EXPORT MojoRendererService : public mojom::Renderer,
-                                              public RendererClient {
+class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
+                                                    public RendererClient {
  public:
   // Helper function to bind MojoRendererService with a SelfOwendReceiver,
   // which is safely accessible via the returned SelfOwnedReceiverRef.

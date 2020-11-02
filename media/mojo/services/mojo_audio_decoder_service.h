@@ -24,7 +24,8 @@ namespace media {
 class MojoCdmServiceContext;
 class MojoDecoderBufferReader;
 
-class MEDIA_MOJO_EXPORT MojoAudioDecoderService : public mojom::AudioDecoder {
+class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
+    : public mojom::AudioDecoder {
  public:
   MojoAudioDecoderService(MojoCdmServiceContext* mojo_cdm_service_context,
                           std::unique_ptr<media::AudioDecoder> decoder);

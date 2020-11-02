@@ -27,7 +27,7 @@ namespace media {
 
 class CdmFactory;
 
-class MEDIA_MOJO_EXPORT CdmService : public mojom::CdmService {
+class MEDIA_MOJO_EXPORT CdmService final : public mojom::CdmService {
  public:
   class Client {
    public:

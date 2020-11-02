@@ -22,7 +22,7 @@ class RendererFactory;
 class VideoRendererSink;
 
 // Test MojoMediaClient for MediaService.
-class TestMojoMediaClient : public MojoMediaClient {
+class TestMojoMediaClient final : public MojoMediaClient {
  public:
   TestMojoMediaClient();
   ~TestMojoMediaClient() final;

@@ -17,7 +17,7 @@
 namespace media {
 
 // A ProvisionFetcher that proxies to a Remote<mojom::ProvisionFetcher>.
-class MEDIA_MOJO_EXPORT MojoProvisionFetcher : public ProvisionFetcher {
+class MEDIA_MOJO_EXPORT MojoProvisionFetcher final : public ProvisionFetcher {
  public:
   explicit MojoProvisionFetcher(
       mojo::PendingRemote<mojom::ProvisionFetcher> provision_fetcher);

@@ -42,7 +42,7 @@ namespace {
 //     CDMs too early (e.g. during page navigation) which could cause errors
 //     (session closed) on the client side. See https://crbug.com/821171 for
 //     details.
-class CdmFactoryImpl : public DeferredDestroy<mojom::CdmFactory> {
+class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
  public:
   CdmFactoryImpl(CdmService::Client* client,
                  mojo::PendingRemote<mojom::FrameInterfaceFactory> interfaces)

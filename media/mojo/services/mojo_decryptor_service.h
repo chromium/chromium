@@ -26,7 +26,7 @@ class MojoDecoderBufferWriter;
 
 // A mojom::Decryptor implementation that proxies decryptor calls to a
 // media::Decryptor.
-class MEDIA_MOJO_EXPORT MojoDecryptorService : public mojom::Decryptor {
+class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
  public:
   using StreamType = media::Decryptor::StreamType;
   using Status = media::Decryptor::Status;

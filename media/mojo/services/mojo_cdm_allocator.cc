@@ -26,7 +26,7 @@ namespace {
 
 // cdm::Buffer implementation that provides access to mojo shared memory.
 // It owns the memory until Destroy() is called.
-class MojoCdmBuffer : public cdm::Buffer {
+class MojoCdmBuffer final : public cdm::Buffer {
  public:
   static MojoCdmBuffer* Create(
       mojo::ScopedSharedBufferHandle buffer,
@@ -108,7 +108,7 @@ class MojoCdmBuffer : public cdm::Buffer {
 
 // VideoFrameImpl that is able to create a MojoSharedBufferVideoFrame
 // out of the data.
-class MojoCdmVideoFrame : public VideoFrameImpl {
+class MojoCdmVideoFrame final : public VideoFrameImpl {
  public:
   explicit MojoCdmVideoFrame(MojoSharedBufferVideoFrame::MojoSharedBufferDoneCB
                                  mojo_shared_buffer_done_cb)

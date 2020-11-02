@@ -34,7 +34,8 @@ namespace media {
 class CdmFactory;
 class MojoMediaClient;
 
-class InterfaceFactoryImpl : public DeferredDestroy<mojom::InterfaceFactory> {
+class InterfaceFactoryImpl final
+    : public DeferredDestroy<mojom::InterfaceFactory> {
  public:
   InterfaceFactoryImpl(
       mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces,

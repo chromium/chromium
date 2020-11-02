@@ -32,7 +32,8 @@ class CdmFactory;
 
 // A mojom::ContentDecryptionModule implementation backed by a
 // media::ContentDecryptionModule.
-class MEDIA_MOJO_EXPORT MojoCdmService : public mojom::ContentDecryptionModule {
+class MEDIA_MOJO_EXPORT MojoCdmService final
+    : public mojom::ContentDecryptionModule {
  public:
   using CdmServiceCreatedCB =
       base::OnceCallback<void(std::unique_ptr<MojoCdmService> mojo_cdm_service,

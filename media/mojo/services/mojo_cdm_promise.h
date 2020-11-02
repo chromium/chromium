@@ -19,7 +19,7 @@ namespace media {
 // callback can be passed in by value or as const-refs. Find a better solution
 // to handle this.
 template <typename F, typename... T>
-class MojoCdmPromise : public CdmPromiseTemplate<T...> {
+class MojoCdmPromise final : public CdmPromiseTemplate<T...> {
  public:
   using CallbackType = base::OnceCallback<F>;
 

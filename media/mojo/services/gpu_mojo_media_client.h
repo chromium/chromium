@@ -29,7 +29,7 @@ namespace media {
 
 class MediaGpuChannelManager;
 
-class GpuMojoMediaClient : public MojoMediaClient {
+class GpuMojoMediaClient final : public MojoMediaClient {
  public:
   // |media_gpu_channel_manager| must only be used on |gpu_task_runner|, which
   // is expected to be the GPU main thread task runner.

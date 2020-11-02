@@ -12,7 +12,8 @@
 
 namespace media {
 
-class MEDIA_MOJO_EXPORT PlaybackEventsRecorder : public mojom::PlaybackEventsRecorder {
+class MEDIA_MOJO_EXPORT PlaybackEventsRecorder final
+    : public mojom::PlaybackEventsRecorder {
  public:
   static void Create(
       mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver);

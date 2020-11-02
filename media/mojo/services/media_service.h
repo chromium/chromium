@@ -22,7 +22,7 @@ namespace media {
 
 class MojoMediaClient;
 
-class MEDIA_MOJO_EXPORT MediaService : public mojom::MediaService {
+class MEDIA_MOJO_EXPORT MediaService final : public mojom::MediaService {
  public:
   MediaService(std::unique_ptr<MojoMediaClient> mojo_media_client,
                mojo::PendingReceiver<mojom::MediaService> receiver);
