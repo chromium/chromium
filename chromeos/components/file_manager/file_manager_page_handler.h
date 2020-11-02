@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/file_manager/mojom/file_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,6 +25,9 @@ class FileManagerPageHandler : public mojom::PageHandler {
       mojo::PendingRemote<mojom::Page> pending_page);
   ~FileManagerPageHandler() override;
 
+  FileManagerPageHandler(const FileManagerPageHandler&) = delete;
+  FileManagerPageHandler& operator=(const FileManagerPageHandler&) = delete;
+
  private:
   // mojom::PageHandler:
   void GetFoo(GetFooCallback callback) override;
@@ -41,7 +43,6 @@ class FileManagerPageHandler : public mojom::PageHandler {
   std::string foo_;
   base::OneShotTimer barrel_roll_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPageHandler);
 };
 
 }  // namespace file_manager
