@@ -18,6 +18,8 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_prefetch_status.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_probe_result.h"
 #include "chrome/browser/prerender/isolated/prefetched_mainframe_response_container.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,11 +28,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 class IsolatedPrerenderPageLoadMetricsObserver;
+class IsolatedPrerenderPrefetchMetricsCollector;
 class IsolatedPrerenderSubresourceManager;
 class Profile;
 
@@ -72,89 +76,6 @@ class IsolatedPrerenderTabHelper
 
     // Called when a url's eligiblity checks are done and fully processed.
     virtual void OnNewEligiblePrefetchStarted() {}
-  };
-
-  // The various states that a prefetch can go through or terminate with. Used
-  // in UKM logging so don't remove or reorder values. Update
-  // |IsolatedPrerenderPrefetchStatus| in //tools/metrics/histograms/enums.xml
-  // whenever this is changed.
-  enum class PrefetchStatus {
-    // The interceptor used a prefetch.
-    kPrefetchUsedNoProbe = 0,
-
-    // The interceptor used a prefetch after successfully probing the origin.
-    kPrefetchUsedProbeSuccess = 1,
-
-    // The interceptor was not able to use an available prefetch because the
-    // origin probe failed.
-    kPrefetchNotUsedProbeFailed = 2,
-
-    // The url was eligible to be prefetched, but the network request was never
-    // made.
-    kPrefetchNotStarted = 3,
-
-    // The url was not eligible to be prefetched because it is a Google-owned
-    // domain.
-    kPrefetchNotEligibleGoogleDomain = 4,
-
-    // The url was not eligible to be prefetched because the user had cookies
-    // for that origin.
-    kPrefetchNotEligibleUserHasCookies = 5,
-
-    // The url was not eligible to be prefetched because there was a registered
-    // service worker for that origin.
-    kPrefetchNotEligibleUserHasServiceWorker = 6,
-
-    // The url was not eligible to be prefetched because its scheme was not
-    // https://.
-    kPrefetchNotEligibleSchemeIsNotHttps = 7,
-
-    // The url was not eligible to be prefetched because its host was an IP
-    // address.
-    kPrefetchNotEligibleHostIsIPAddress = 8,
-
-    // The url was not eligible to be prefetched because it uses a non-default
-    // storage partition.
-    kPrefetchNotEligibleNonDefaultStoragePartition = 9,
-
-    // The network request was cancelled before it finished. This happens when
-    // there is a new navigation.
-    kPrefetchNotFinishedInTime = 10,
-
-    // The prefetch failed because of a net error.
-    kPrefetchFailedNetError = 11,
-
-    // The prefetch failed with a non-2XX HTTP response code.
-    kPrefetchFailedNon2XX = 12,
-
-    // The prefetch's Content-Type header was not html.
-    kPrefetchFailedNotHTML = 13,
-
-    // The prefetch finished successfully but was never used.
-    kPrefetchSuccessful = 14,
-
-    // The navigation off of the Google SRP was to a url that was not on the
-    // SRP.
-    kNavigatedToLinkNotOnSRP = 15,
-
-    // Variants of the first three statuses with the additional context of a
-    // successfully completed NoStatePrefetch.
-    kPrefetchUsedNoProbeWithNSP = 16,
-    kPrefetchUsedProbeSuccessWithNSP = 17,
-    kPrefetchNotUsedProbeFailedWithNSP = 18,
-
-    // Variants of the first three statuses within the additional context of a
-    // link that was eligible for NoStatePrefetch, but was not started because
-    // the Prerender code denied the request.
-    kPrefetchUsedNoProbeNSPAttemptDenied = 19,
-    kPrefetchUsedProbeSuccessNSPAttemptDenied = 20,
-    kPrefetchNotUsedProbeFailedNSPAttemptDenied = 21,
-
-    // Variants of the first three statuses with in the additional context of a
-    // link that was eligible for NoStatePrefetch that was never started.
-    kPrefetchUsedNoProbeNSPNotStarted = 22,
-    kPrefetchUsedProbeSuccessNSPNotStarted = 23,
-    kPrefetchNotUsedProbeFailedNSPNotStarted = 24,
   };
 
   // Container for several metrics which pertain to prefetching actions
@@ -222,7 +143,7 @@ class IsolatedPrerenderTabHelper
     base::Optional<size_t> clicked_link_srp_position_;
 
     // The status of a prefetch done on the SRP that may have been used here.
-    base::Optional<PrefetchStatus> prefetch_status_;
+    base::Optional<IsolatedPrerenderPrefetchStatus> prefetch_status_;
 
     // The amount of time it took the probe to complete. Set only when a
     // prefetch is used and a probe was required.
@@ -241,7 +162,7 @@ class IsolatedPrerenderTabHelper
   using OnEligibilityResultCallback = base::OnceCallback<void(
       const GURL& url,
       bool eligible,
-      base::Optional<IsolatedPrerenderTabHelper::PrefetchStatus> status)>;
+      base::Optional<IsolatedPrerenderPrefetchStatus> status)>;
   static void CheckEligibilityOfURL(
       Profile* profile,
       const GURL& url,
@@ -269,10 +190,15 @@ class IsolatedPrerenderTabHelper
       const GURL& url);
 
   // Updates |prefetch_status_by_url_|.
-  void OnPrefetchStatusUpdate(const GURL& url, PrefetchStatus usage);
+  void OnPrefetchStatusUpdate(const GURL& url,
+                              IsolatedPrerenderPrefetchStatus usage);
 
   // Called by the URLLoaderInterceptor to update |page_.probe_latency_|.
   void NotifyPrefetchProbeLatency(base::TimeDelta probe_latency);
+
+  // Called by the URLLoaderInterceptor to report the outcome of an origin
+  // probe.
+  void ReportProbeResult(const GURL& url, IsolatedPrerenderProbeResult result);
 
   // When a previously prefetched page is navigated to, any cookies set on that
   // page load should be copied over to the normal profile. While this copy is
@@ -334,8 +260,14 @@ class IsolatedPrerenderTabHelper
     // Only set for pages after a Google SRP.
     std::unique_ptr<AfterSRPMetrics> after_srp_metrics_;
 
+    // Collects metrics on all prefetching. This is a scoped refptr so that it
+    // can also be shared with subresource managers until all pointers to it are
+    // destroyed, at which time it logs UKM.
+    scoped_refptr<IsolatedPrerenderPrefetchMetricsCollector>
+        prefetch_metrics_collector_;
+
     // The status of each prefetch.
-    std::map<GURL, PrefetchStatus> prefetch_status_by_url_;
+    std::map<GURL, IsolatedPrerenderPrefetchStatus> prefetch_status_by_url_;
 
     // A map of all predicted URLs to their original placement in the ordered
     // prediction.
@@ -466,9 +398,9 @@ class IsolatedPrerenderTabHelper
   // information about applicable NoStatePrefetches given |self|. Note: This is
   // done here because the navigation loader interceptor doesn't have visibility
   // itself and can't report it. Static and public to enable testing.
-  PrefetchStatus MaybeUpdatePrefetchStatusWithNSPContext(
+  IsolatedPrerenderPrefetchStatus MaybeUpdatePrefetchStatusWithNSPContext(
       const GURL& url,
-      PrefetchStatus status) const;
+      IsolatedPrerenderPrefetchStatus status) const;
 
   // NavigationPredictorKeyedService::Observer:
   void OnPredictionUpdated(
@@ -476,9 +408,10 @@ class IsolatedPrerenderTabHelper
           prediction) override;
 
   // Used as a callback for when the eligibility of |url| is determined.
-  void OnGotEligibilityResult(const GURL& url,
-                              bool eligible,
-                              base::Optional<PrefetchStatus> status);
+  void OnGotEligibilityResult(
+      const GURL& url,
+      bool eligible,
+      base::Optional<IsolatedPrerenderPrefetchStatus> status);
 
   // Creates a new URL Loader Factory on |page_|'s isolated network context.
   // |isolation_info| may be passed if the factory will be used in the renderer

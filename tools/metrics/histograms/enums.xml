@@ -38580,6 +38580,20 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Fully managed"/>
 </enum>
 
+<enum name="IsolatedPrerenderISPFilteringStatus">
+  <int value="0" label="No probing"/>
+  <int value="1" label="DNS probing success"/>
+  <int value="2" label="DNS probing failure"/>
+  <int value="3" label="TLS probing success"/>
+  <int value="4" label="TLS probing failure"/>
+</enum>
+
+<enum name="IsolatedPrerenderPrefetchResourceType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Mainframe"/>
+  <int value="2" label="Subresource"/>
+</enum>
+
 <enum name="IsolatedPrerenderPrefetchStatus">
   <int value="0" label="Prefetch Used, No Probe">
     The interceptor used a prefetch.
@@ -38679,6 +38693,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     The url was prefetched and eligible for NoStatePrerender but wasn't started
     and the origin probe failed and the prefetch was not used.
   </int>
+  <int value="25" label="Subresource throttled"/>
 </enum>
 
 <enum name="IsPinnedToTaskbarResult">

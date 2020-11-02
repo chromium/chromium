@@ -50,6 +50,22 @@ void ReportProbeLatency(int frame_tree_node_id, base::TimeDelta probe_latency) {
   tab_helper->NotifyPrefetchProbeLatency(probe_latency);
 }
 
+void ReportProbeResult(int frame_tree_node_id,
+                       const GURL& url,
+                       IsolatedPrerenderProbeResult result) {
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  if (!web_contents)
+    return;
+
+  IsolatedPrerenderTabHelper* tab_helper =
+      IsolatedPrerenderTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+
+  tab_helper->ReportProbeResult(url, result);
+}
+
 void RecordCookieWaitTime(base::TimeDelta wait_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime", wait_time,
@@ -211,9 +227,8 @@ void IsolatedPrerenderURLLoaderInterceptor::InterceptPrefetchedNavigation(
 
   NotifyPrefetchStatusUpdate(
       probe_start_time_.has_value()
-          ? IsolatedPrerenderTabHelper::PrefetchStatus::
-                kPrefetchUsedProbeSuccess
-          : IsolatedPrerenderTabHelper::PrefetchStatus::kPrefetchUsedNoProbe);
+          ? IsolatedPrerenderPrefetchStatus::kPrefetchUsedProbeSuccess
+          : IsolatedPrerenderPrefetchStatus::kPrefetchUsedNoProbe);
 
   std::unique_ptr<IsolatedPrerenderFromStringURLLoader> url_loader =
       std::make_unique<IsolatedPrerenderFromStringURLLoader>(
@@ -229,12 +244,13 @@ void IsolatedPrerenderURLLoaderInterceptor::DoNotInterceptNavigation() {
 
 void IsolatedPrerenderURLLoaderInterceptor::OnProbeComplete(
     base::OnceClosure on_success_callback,
-    bool success) {
+    IsolatedPrerenderProbeResult result) {
   DCHECK(probe_start_time_.has_value());
   ReportProbeLatency(frame_tree_node_id_,
                      base::TimeTicks::Now() - probe_start_time_.value());
+  ReportProbeResult(frame_tree_node_id_, url_, result);
 
-  if (success) {
+  if (IsolatedPrerenderProbeResultIsSuccess(result)) {
     std::move(on_success_callback).Run();
     return;
   }
@@ -244,7 +260,7 @@ void IsolatedPrerenderURLLoaderInterceptor::OnProbeComplete(
   NotifySubresourceManagerOfBadProbe(frame_tree_node_id_, url_);
 
   NotifyPrefetchStatusUpdate(
-      IsolatedPrerenderTabHelper::PrefetchStatus::kPrefetchNotUsedProbeFailed);
+      IsolatedPrerenderPrefetchStatus::kPrefetchNotUsedProbeFailed);
   DoNotInterceptNavigation();
 }
 
@@ -264,7 +280,7 @@ IsolatedPrerenderURLLoaderInterceptor::GetPrefetchedResponse(const GURL& url) {
 }
 
 void IsolatedPrerenderURLLoaderInterceptor::NotifyPrefetchStatusUpdate(
-    IsolatedPrerenderTabHelper::PrefetchStatus status) const {
+    IsolatedPrerenderPrefetchStatus status) const {
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   if (!web_contents) {

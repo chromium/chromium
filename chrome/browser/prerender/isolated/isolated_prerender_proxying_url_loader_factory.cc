@@ -20,30 +20,13 @@
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_status_code.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 
 namespace {
 
 const char kAllowedUAClientHint[] = "sec-ch-ua";
 const char kAllowedUAMobileClientHint[] = "sec-ch-ua-mobile";
-
-void RecordSubresourceMetricsDuringPrerender(
-    const network::URLLoaderCompletionStatus& status,
-    base::Optional<int> http_response_code) {
-  base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Subresources.NetError",
-                           std::abs(status.error_code));
-  if (http_response_code) {
-    base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Subresources.RespCode",
-                             *http_response_code);
-  }
-}
-
-void RecordSubresourceMetricsAfterClick(
-    const network::URLLoaderCompletionStatus& status,
-    base::Optional<int> http_response_code) {
-  UMA_HISTOGRAM_BOOLEAN("IsolatedPrerender.AfterClick.Subresources.UsedCache",
-                        status.exists_in_cache);
-}
 
 // Little helper class for
 // |CheckRedirectsBeforeRunningResourceSuccessfulCallback| since size_t can't be
@@ -75,7 +58,7 @@ void SingleURLEligibilityCheckResult(
     scoped_refptr<SuccessCount> success_count,
     const GURL& url,
     bool eligible,
-    base::Optional<IsolatedPrerenderTabHelper::PrefetchStatus> not_used) {
+    base::Optional<IsolatedPrerenderPrefetchStatus> not_used) {
   if (eligible) {
     success_count->Increment();
   }
@@ -183,8 +166,8 @@ void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::
 
 void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::
     OnReceiveResponse(network::mojom::URLResponseHeadPtr head) {
-  if (head && head->headers) {
-    http_response_code_ = head->headers->response_code();
+  if (head) {
+    head_ = head->Clone();
   }
   target_client_->OnReceiveResponse(std::move(head));
 }
@@ -228,7 +211,8 @@ void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::
 void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (on_complete_metrics_callback_) {
-    std::move(on_complete_metrics_callback_).Run(status, http_response_code_);
+    std::move(on_complete_metrics_callback_)
+        .Run(redirect_chain_[0], head_ ? head_->Clone() : nullptr, status);
   }
   MaybeReportResourceLoadSuccess(status);
   target_client_->OnComplete(status);
@@ -247,15 +231,19 @@ void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::
     return;
   }
 
-  if (!http_response_code_) {
+  if (!head_) {
     return;
   }
 
-  if (*http_response_code_ >= 300) {
+  if (!head_->headers) {
     return;
   }
 
-  if (*http_response_code_ < 200) {
+  if (head_->headers->response_code() >= net::HTTP_MULTIPLE_CHOICES) {
+    return;
+  }
+
+  if (head_->headers->response_code() < net::HTTP_OK) {
     return;
   }
 
@@ -319,6 +307,7 @@ void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::
 
 IsolatedPrerenderProxyingURLLoaderFactory::
     IsolatedPrerenderProxyingURLLoaderFactory(
+        ResourceMetricsObserver* metrics_observer,
         int frame_tree_node_id,
         mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
         mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -326,9 +315,12 @@ IsolatedPrerenderProxyingURLLoaderFactory::
         mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory,
         DisconnectCallback on_disconnect,
         ResourceLoadSuccessfulCallback on_resource_load_successful)
-    : frame_tree_node_id_(frame_tree_node_id),
+    : metrics_observer_(metrics_observer),
+      frame_tree_node_id_(frame_tree_node_id),
       on_resource_load_successful_(std::move(on_resource_load_successful)),
       on_disconnect_(std::move(on_disconnect)) {
+  DCHECK(metrics_observer_);
+
   network_process_factory_.Bind(std::move(network_process_factory));
   network_process_factory_.set_disconnect_handler(base::BindOnce(
       &IsolatedPrerenderProxyingURLLoaderFactory::OnNetworkProcessFactoryError,
@@ -381,6 +373,7 @@ void IsolatedPrerenderProxyingURLLoaderFactory::CreateLoaderAndStart(
     // Check if this prerender has exceeded its max number of subresources.
     request_count_++;
     if (request_count_ > IsolatedPrerenderMaxSubresourcesPerPrerender()) {
+      metrics_observer_->OnResourceThrottled(request.url);
       std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
           std::move(loader_receiver), std::move(client));
       // The request will manage its own lifecycle based on the mojo pipes.
@@ -410,7 +403,9 @@ void IsolatedPrerenderProxyingURLLoaderFactory::CreateLoaderAndStart(
         std::move(loader_receiver), routing_id, request_id, options, request,
         std::move(client), traffic_annotation);
     in_progress_request->SetOnCompleteRecordMetricsCallback(
-        base::BindOnce(&RecordSubresourceMetricsAfterClick));
+        base::BindOnce(&IsolatedPrerenderProxyingURLLoaderFactory::
+                           RecordSubresourceMetricsAfterClick,
+                       base::Unretained(this)));
     requests_.insert(std::move(in_progress_request));
   } else {
     // Resource was not cached during the NSP, so load it normally.
@@ -433,7 +428,7 @@ void IsolatedPrerenderProxyingURLLoaderFactory::OnEligibilityResult(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     const GURL& url,
     bool eligible,
-    base::Optional<IsolatedPrerenderTabHelper::PrefetchStatus> not_used) {
+    base::Optional<IsolatedPrerenderPrefetchStatus> status) {
   DCHECK_EQ(request.url, url);
   DCHECK(!previously_cached_subresources_.has_value());
   DCHECK(request.cors_exempt_headers.HasHeader(
@@ -470,6 +465,10 @@ void IsolatedPrerenderProxyingURLLoaderFactory::OnEligibilityResult(
   // not, it must still be put on the wire to avoid privacy attacks but should
   // not be cached or change any cookies.
   if (!eligible) {
+    if (status) {
+      metrics_observer_->OnResourceNotEligible(url, *status);
+    }
+
     isolated_request.load_flags |= net::LOAD_DISABLE_CACHE;
     isolated_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
 
@@ -482,8 +481,35 @@ void IsolatedPrerenderProxyingURLLoaderFactory::OnEligibilityResult(
       std::move(loader_receiver), routing_id, request_id, options,
       isolated_request, std::move(client), traffic_annotation);
   in_progress_request->SetOnCompleteRecordMetricsCallback(
-      base::BindOnce(&RecordSubresourceMetricsDuringPrerender));
+      base::BindOnce(&IsolatedPrerenderProxyingURLLoaderFactory::
+                         RecordSubresourceMetricsDuringPrerender,
+                     base::Unretained(this)));
   requests_.insert(std::move(in_progress_request));
+}
+
+void IsolatedPrerenderProxyingURLLoaderFactory::
+    RecordSubresourceMetricsDuringPrerender(
+        const GURL& url,
+        network::mojom::URLResponseHeadPtr head,
+        const network::URLLoaderCompletionStatus& status) {
+  base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Subresources.NetError",
+                           std::abs(status.error_code));
+  if (head && head->headers) {
+    base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Subresources.RespCode",
+                             head->headers->response_code());
+  }
+
+  metrics_observer_->OnResourceFetchComplete(url, std::move(head), status);
+}
+
+void IsolatedPrerenderProxyingURLLoaderFactory::
+    RecordSubresourceMetricsAfterClick(
+        const GURL& url,
+        network::mojom::URLResponseHeadPtr head,
+        const network::URLLoaderCompletionStatus& status) {
+  UMA_HISTOGRAM_BOOLEAN("IsolatedPrerender.AfterClick.Subresources.UsedCache",
+                        status.exists_in_cache);
+  metrics_observer_->OnResourceUsedFromCache(url);
 }
 
 void IsolatedPrerenderProxyingURLLoaderFactory::Clone(

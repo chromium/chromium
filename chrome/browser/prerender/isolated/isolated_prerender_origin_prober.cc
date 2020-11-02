@@ -143,7 +143,9 @@ class TLSProber {
                       mojo::ScopedDataPipeConsumerHandle receive_stream,
                       mojo::ScopedDataPipeProducerHandle send_stream,
                       const base::Optional<net::SSLInfo>& ssl_info) {
-    std::move(callback_).Run(result == net::OK);
+    std::move(callback_).Run(
+        result == net::OK ? IsolatedPrerenderProbeResult::kTLSProbeSuccess
+                          : IsolatedPrerenderProbeResult::kTLSProbeFailure);
     delete this;
   }
 
@@ -156,7 +158,7 @@ class TLSProber {
   }
 
   void HandleFailure() {
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(IsolatedPrerenderProbeResult::kTLSProbeFailure);
     delete this;
   }
 
@@ -177,7 +179,9 @@ void HTTPProbeHelper(
     std::unique_ptr<AvailabilityProber> prober,
     IsolatedPrerenderOriginProber::OnProbeResultCallback callback,
     bool success) {
-  std::move(callback).Run(success);
+  std::move(callback).Run(success
+                              ? IsolatedPrerenderProbeResult::kTLSProbeSuccess
+                              : IsolatedPrerenderProbeResult::kTLSProbeFailure);
 }
 
 class CanaryCheckDelegate : public AvailabilityProber::Delegate {
@@ -323,7 +327,7 @@ void IsolatedPrerenderOriginProber::OnTLSCanaryCheckComplete(bool success) {
   StartCanaryCheck(dns_canary_check_->AsWeakPtr());
 }
 
-bool IsolatedPrerenderOriginProber::ShouldProbeOrigins() {
+bool IsolatedPrerenderOriginProber::ShouldProbeOrigins() const {
   if (!IsolatedPrerenderProbingEnabled()) {
     return false;
   }
@@ -442,7 +446,7 @@ void IsolatedPrerenderOriginProber::HTTPProbe(const GURL& url,
 
   // Transfer ownership of the prober to the callback so that the class instance
   // is automatically destroyed when the probe is complete.
-  OnProbeResultCallback owning_callback =
+  auto owning_callback =
       base::BindOnce(&HTTPProbeHelper, std::move(prober), std::move(callback));
   prober_ptr->SetOnCompleteCallback(base::BindOnce(std::move(owning_callback)));
 
@@ -460,12 +464,12 @@ void IsolatedPrerenderOriginProber::OnDNSResolved(
 
   // A TLS connection needs the resolved addresses, so it also fails here.
   if (!successful) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(IsolatedPrerenderProbeResult::kDNSProbeFailure);
     return;
   }
 
   if (!also_do_tls_connect) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(IsolatedPrerenderProbeResult::kDNSProbeSuccess);
     return;
   }
 

@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_proxying_url_loader_factory.h"
 #include "components/prerender/browser/prerender_handle.h"
 #include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,11 +33,14 @@ class PrerenderHandle;
 }
 
 class PrefetchedMainframeResponseContainer;
+class IsolatedPrerenderPrefetchMetricsCollector;
 class IsolatedPrerenderProxyingURLLoaderFactory;
 
 // This class manages the isolated prerender of a page and its subresources.
 class IsolatedPrerenderSubresourceManager
-    : public prerender::PrerenderHandle::Observer {
+    : public prerender::PrerenderHandle::Observer,
+      public IsolatedPrerenderProxyingURLLoaderFactory::
+          ResourceMetricsObserver {
  public:
   // A callback to create new URL Loader Factories for subresources.
   using CreateIsolatedLoaderFactoryRepeatingCallback =
@@ -60,6 +64,10 @@ class IsolatedPrerenderSubresourceManager
   const std::set<GURL>& successfully_loaded_subresources() const {
     return successfully_loaded_subresources_;
   }
+
+  // Sets the prefetch metrics collector to report subresource fetches to.
+  void SetPrefetchMetricsCollector(
+      scoped_refptr<IsolatedPrerenderPrefetchMetricsCollector> collector);
 
   // Takes ownership of |mainframe_response_|.
   std::unique_ptr<PrefetchedMainframeResponseContainer> TakeMainframeResponse();
@@ -95,6 +103,16 @@ class IsolatedPrerenderSubresourceManager
   void OnPrerenderStop(prerender::PrerenderHandle* handle) override;
   void OnPrerenderNetworkBytesChanged(
       prerender::PrerenderHandle* handle) override {}
+
+  // IsolatedPrerenderProxyingURLLoaderFactory::ResourceMetricsObserver:
+  void OnResourceFetchComplete(
+      const GURL& url,
+      network::mojom::URLResponseHeadPtr head,
+      const network::URLLoaderCompletionStatus& status) override;
+  void OnResourceNotEligible(const GURL& url,
+                             IsolatedPrerenderPrefetchStatus status) override;
+  void OnResourceThrottled(const GURL& url) override;
+  void OnResourceUsedFromCache(const GURL& url) override;
 
   IsolatedPrerenderSubresourceManager(
       const IsolatedPrerenderSubresourceManager&) = delete;
@@ -138,6 +156,10 @@ class IsolatedPrerenderSubresourceManager
 
   // The mainframe response headers and body.
   std::unique_ptr<PrefetchedMainframeResponseContainer> mainframe_response_;
+
+  // Collects metrics from the implementation of
+  // |IsolatedPrerenderProxyingURLLoaderFactory::ResourceMetricsObserver|.
+  scoped_refptr<IsolatedPrerenderPrefetchMetricsCollector> metrics_collector_;
 
   // State for managing the NoStatePrerender when it is running. If
   // |nsp_handle_| is set, then |on_nsp_done_callback_| is also set and vise

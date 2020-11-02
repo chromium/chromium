@@ -10378,14 +10378,78 @@ be describing additional metrics about the same event.
     <summary>
       The outcome of the prefetch eligibility check and possible attempt to
       prefetch the resource. The prefetched url is always the committed URL of
-      the page. See |IsolatedPrerenderTabHelper.PrefetchStatus| for a mapping of
-      enum values and their meanings.
+      the page. See |IsolatedPrerenderPrefetchStatus| for a mapping of enum
+      values and their meanings.
     </summary>
   </metric>
   <metric name="SRPPrefetchEligibleCount">
     <summary>
       The number of links from the SRP page (the previous page load) that were
       eligible for prefetch. Always set when this event is recorded.
+    </summary>
+  </metric>
+</event>
+
+<event name="PrefetchProxy.PrefetchedResource">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Each event corresponds to a single resource, either mainframe or
+    subresource, that was prefetched during an Isolated Prerender. Logged one or
+    many times on a Google Search Result Page for eligible users.
+  </summary>
+  <metric name="DataLength">
+    <summary>
+      The bucketed number of bytes that transited the network to prefetch this
+      resource. Only set when the resource was prefetched.
+    </summary>
+  </metric>
+  <metric name="FetchDurationMS">
+    <summary>
+      The number of milliseconds that the prefetch took from start to
+      completion. Only set when the resource was prefetched.
+    </summary>
+  </metric>
+  <metric name="ISPFilteringStatus" enum="IsolatedPrerenderISPFilteringStatus">
+    <summary>
+      How ISP filtering interacted with the mainframe resource if it was
+      navigated to. Only set when LinkClicked is true.
+    </summary>
+  </metric>
+  <metric name="LinkClicked" enum="Boolean">
+    <summary>
+      Whether the mainframe was navigated to. Always set when the event is
+      recorded, even on subresources which take the value from their
+      corresponding mainframe.
+    </summary>
+  </metric>
+  <metric name="LinkPosition">
+    <summary>
+      The location in the original navigation prediction of where the mainframe
+      url was. Always set when the event is recorded, even on subresources which
+      take the value from their corresponding mainframe.
+    </summary>
+  </metric>
+  <metric name="NavigationStartToFetchStartMS">
+    <summary>
+      The number of milliseconds between the start of the navigation and the
+      start of the prefetch request. Only set when the resource was attempted to
+      be prefetched.
+    </summary>
+  </metric>
+  <metric name="ResourceType" enum="IsolatedPrerenderPrefetchResourceType">
+    <summary>
+      The type of resource that was prefetched, either mainframe or subresource.
+      Always set when the event is recorded.
+    </summary>
+  </metric>
+  <metric name="Status" enum="IsolatedPrerenderPrefetchStatus">
+    <summary>
+      The outcome of the prefetch eligibility check and possible attempt to
+      prefetch the resource and reuse it. See |IsolatedPrerenderPrefetchStatus|
+      for a mapping of enum values and their meanings. Always set when the event
+      is recorded.
     </summary>
   </metric>
 </event>
