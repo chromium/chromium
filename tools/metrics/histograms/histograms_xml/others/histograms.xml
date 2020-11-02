@@ -12403,7 +12403,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Setup.Install.CumulativeDiskUsage2" units="MB"
-    expires_after="M86">
+    expires_after="never">
+<!-- expires-never: used to monitor memory usage of setup installer.  -->
+
   <owner>etiennep@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -12461,7 +12463,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Setup.Install.PeakPagefileUsage" units="KB"
-    expires_after="M82">
+    expires_after="never">
+<!-- expires-never: used to monitor memory usage of setup installer.  -->
+
   <owner>huangs@chromium.org</owner>
   <summary>
     The peak page file usage by setup.exe in KB during install or uninstall
@@ -12470,7 +12474,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Setup.Install.PeakWorkingSetSize" units="KB"
-    expires_after="M82">
+    expires_after="never">
+<!-- expires-never: used to monitor memory usage of setup installer.  -->
+
   <owner>huangs@chromium.org</owner>
   <summary>
     The peak working set size of setup.exe in KB during install or uninstall
