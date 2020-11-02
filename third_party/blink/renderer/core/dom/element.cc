@@ -3615,33 +3615,32 @@ ShadowRoot& Element::AttachShadowRootInternal(
   GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascadeV1);
 
   if (auto* shadow_root = GetShadowRoot()) {
-    // 5. If shadow host has a non-null shadow root whose "is declarative shadow
-    // root property is true, then remove all of shadow root’s children, in tree
-    // order. Return shadow host’s shadow root.
+    // NEW. If shadow host has a non-null shadow root whose "is declarative
+    // shadow root property is true, then remove all of shadow root’s children,
+    // in tree order. Return shadow host’s shadow root.
     DCHECK(shadow_root->IsDeclarativeShadowRoot());
     shadow_root->RemoveChildren();
     return *shadow_root;
   }
 
-  // 6. Let shadow be a new shadow root whose node document is shadow host’s
-  // node document, host is shadow host, and mode is mode.
-  // 9. Set shadow host’s shadow root to shadow.
+  // 5. Let shadow be a new shadow root whose node document is this’s node
+  // document, host is this, and mode is init’s mode.
   ShadowRoot& shadow_root = CreateAndAttachShadowRoot(type);
-  // 7. Set shadow’s delegates focus to delegates focus.
+  // 6. Set shadow’s delegates focus to init’s delegatesFocus.
   shadow_root.SetDelegatesFocus(focus_delegation ==
                                 FocusDelegation::kDelegateFocus);
-  // 8. Set shadow’s "is declarative shadow root" property to false.
+  // NEW. Set shadow’s "is declarative shadow root" property to false.
   shadow_root.SetIsDeclarativeShadowRoot(false);
 
-  // NEW. If shadow host is a custom element, and if custom element state is
-  // not "precustomized" or "custom", set shadow root's
-  // IsAvailableToElementInternals flag to false. Otherwise, set it to true.
+  // 7. If this’s custom element state is "precustomized" or "custom", then set
+  // shadow’s available to element internals to true.
   shadow_root.SetAvailableToElementInternals(
       !(IsCustomElement() &&
         GetCustomElementState() != CustomElementState::kCustom &&
         GetCustomElementState() != CustomElementState::kPreCustomized));
 
   shadow_root.SetSlotAssignmentMode(slot_assignment_mode);
+  // 8. Set this’s shadow root to shadow.
   return shadow_root;
 }
 

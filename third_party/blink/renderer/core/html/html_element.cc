@@ -1621,6 +1621,8 @@ void HTMLElement::OnXMLLangAttrChanged(
 
 ElementInternals* HTMLElement::attachInternals(
     ExceptionState& exception_state) {
+  // 1. If this's is value is not null, then throw a "NotSupportedError"
+  // DOMException.
   if (IsValue()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -1628,9 +1630,14 @@ ElementInternals* HTMLElement::attachInternals(
     return nullptr;
   }
 
+  // 2. Let definition be the result of looking up a custom element definition
+  // given this's node document, its namespace, its local name, and null as the
+  // is value.
   CustomElementRegistry* registry = CustomElement::Registry(*this);
   auto* definition =
       registry ? registry->DefinitionForName(localName()) : nullptr;
+
+  // 3. If definition is null, then throw an "NotSupportedError" DOMException.
   if (!definition) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -1638,12 +1645,17 @@ ElementInternals* HTMLElement::attachInternals(
     return nullptr;
   }
 
+  // 4. If definition's disable internals is true, then throw a
+  // "NotSupportedError" DOMException.
   if (definition->DisableInternals()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "ElementInternals is disabled by disabledFeature static field.");
     return nullptr;
   }
+
+  // 5. If this's attached internals is true, then throw an "NotSupportedError"
+  // DOMException.
   if (DidAttachInternals()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -1651,24 +1663,21 @@ ElementInternals* HTMLElement::attachInternals(
     return nullptr;
   }
 
-  // If element's custom element state is not "precustomized" or "custom",
-  // throw "NotSupportedError" DOMException.
+  // 6. If this's custom element state is not "precustomized" or "custom", then
+  // throw a "NotSupportedError" DOMException.
   if (GetCustomElementState() != CustomElementState::kCustom &&
       GetCustomElementState() != CustomElementState::kPreCustomized) {
-    if (RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-            GetExecutionContext())) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "The attachInternals() function cannot be called prior to the "
-          "execution of the custom element constructor.");
-      return nullptr;
-    }
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kElementAttachInternalsBeforeConstructor);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The attachInternals() function cannot be called prior to the "
+        "execution of the custom element constructor.");
+    return nullptr;
   }
 
-  UseCounter::Count(GetDocument(), WebFeature::kElementAttachInternals);
+  // 7. Set this's attached internals to true.
   SetDidAttachInternals();
+  // 8. Return a new ElementInternals instance whose target element is this.
+  UseCounter::Count(GetDocument(), WebFeature::kElementAttachInternals);
   return &EnsureElementInternals();
 }
 

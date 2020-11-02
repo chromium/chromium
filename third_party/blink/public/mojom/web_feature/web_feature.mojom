@@ -2794,7 +2794,7 @@ enum WebFeature {
   kCSSContainAllWithoutContentVisibility = 3467,
   kTimerInstallFromBeforeUnload = 3468,
   kTimerInstallFromUnload = 3469,
-  kElementAttachInternalsBeforeConstructor = 3470,
+  kOBSOLETE_ElementAttachInternalsBeforeConstructor = 3470,
   kSMILElementHasRepeatNEventListener = 3471,
   // The above items are available in M86 branch.
 

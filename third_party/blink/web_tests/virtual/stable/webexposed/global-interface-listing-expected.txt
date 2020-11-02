@@ -1861,6 +1861,7 @@ interface ElementInternals
     getter ariaValueText
     getter form
     getter labels
+    getter shadowRoot
     getter validationMessage
     getter validity
     getter willValidate

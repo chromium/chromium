@@ -164,7 +164,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSchemelesslySameSitePostMessage,
           WebFeature::kSchemelesslySameSitePostMessageSecureToInsecure,
           WebFeature::kSchemelesslySameSitePostMessageInsecureToSecure,
-          WebFeature::kElementAttachInternalsBeforeConstructor,
           WebFeature::kAddressSpaceLocalEmbeddedInPrivateSecureContext,
           WebFeature::kAddressSpaceLocalEmbeddedInPrivateNonSecureContext,
           WebFeature::kAddressSpaceLocalEmbeddedInPublicSecureContext,
