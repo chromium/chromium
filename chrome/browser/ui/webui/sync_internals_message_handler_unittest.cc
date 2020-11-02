@@ -210,7 +210,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
   ListValue empty_list;
 
   EXPECT_EQ(0, test_sync_service()->add_observer_count());
-  handler()->HandleRegisterForEvents(&empty_list);
+  handler()->HandleRequestDataAndRegisterForUpdates(&empty_list);
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
 
   EXPECT_EQ(0, test_sync_service()->remove_observer_count());
@@ -225,7 +225,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
   ListValue empty_list;
 
   EXPECT_EQ(0, test_sync_service()->add_observer_count());
-  handler()->HandleRegisterForEvents(&empty_list);
+  handler()->HandleRequestDataAndRegisterForUpdates(&empty_list);
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
 
   EXPECT_EQ(0, test_sync_service()->remove_observer_count());
@@ -244,7 +244,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   ListValue empty_list;
-  handler()->HandleRegisterForEvents(&empty_list);
+  handler()->HandleRequestDataAndRegisterForUpdates(&empty_list);
   handler()->DisallowJavascript();
   // Cannot verify observer methods on sync services were not called, because
   // there is no sync service. Rather, we're just making sure the handler hasn't

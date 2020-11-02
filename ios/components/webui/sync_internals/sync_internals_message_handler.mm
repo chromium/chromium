@@ -58,14 +58,9 @@ void SyncInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRegisterForEvents,
-      base::BindRepeating(&SyncInternalsMessageHandler::HandleRegisterForEvents,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestUpdatedAboutInfo,
+      syncer::sync_ui_util::kRequestDataAndRegisterForUpdates,
       base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestUpdatedAboutInfo,
+          &SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates,
           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
@@ -114,7 +109,7 @@ void SyncInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void SyncInternalsMessageHandler::HandleRegisterForEvents(
+void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
     const base::ListValue* args) {
   DCHECK(args->empty());
 
@@ -129,11 +124,7 @@ void SyncInternalsMessageHandler::HandleRegisterForEvents(
     js_controller_->AddJsEventHandler(this);
     is_registered_ = true;
   }
-}
 
-void SyncInternalsMessageHandler::HandleRequestUpdatedAboutInfo(
-    const base::ListValue* args) {
-  DCHECK(args->empty());
   SendAboutInfoAndEntityCounts();
 }
 

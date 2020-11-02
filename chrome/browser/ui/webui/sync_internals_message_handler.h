@@ -39,13 +39,9 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
-  // Sets up observers to receive events and forward them to the UI.
-  void HandleRegisterForEvents(const base::ListValue* args);
-
-  // Fires an event to send updated info back to the page.
-  // TODO(crbug.com/1138535): Merge this with HandleRegisterForEvents. Same for
-  // the ios/ counterpart.
-  void HandleRequestUpdatedAboutInfo(const base::ListValue* args);
+  // Fires an event to send updated data to the About page and registers
+  // observers to notify the page upon updates.
+  void HandleRequestDataAndRegisterForUpdates(const base::ListValue* args);
 
   // Fires an event to send the list of types back to the page.
   void HandleRequestListOfTypes(const base::ListValue* args);

@@ -222,11 +222,8 @@ cr.define('chrome.sync.about_tab', function() {
       chrome.sync.requestStopClearData();
     });
 
-    // Register to receive a stream of event notifications.
-    chrome.sync.registerForEvents();
-
-    // Request an about info update event to initialize the page.
-    chrome.sync.requestUpdatedAboutInfo();
+    // Request initial data for the page and listen to updates.
+    chrome.sync.requestDataAndRegisterForUpdates();
   }
 
   return {
