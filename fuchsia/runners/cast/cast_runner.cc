@@ -227,7 +227,7 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
 
   // See http://b/141956135.
   params.set_user_agent_product("CrKey");
-  params.set_user_agent_version("1.43.000000");
+  params.set_user_agent_version("1.52.000000");
 
   // When tests require that VULKAN be disabled, DRM must also be disabled.
   if (disable_vulkan_for_test_) {
