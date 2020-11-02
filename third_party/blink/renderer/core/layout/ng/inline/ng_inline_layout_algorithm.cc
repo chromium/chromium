@@ -536,6 +536,7 @@ void NGInlineLayoutAlgorithm::PlaceHyphen(const NGInlineItemResult& item_result,
                                           NGLogicalLineItems* line_box,
                                           NGInlineBoxState* box) {
   DCHECK(item_result.item);
+  DCHECK(item_result.is_hyphenated);
   DCHECK(item_result.hyphen_string);
   DCHECK(item_result.hyphen_shape_result);
   DCHECK_EQ(hyphen_inline_size, item_result.HyphenInlineSize());
@@ -870,7 +871,7 @@ base::Optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
                                               line_info->StartOffset() -
                                               shape_result->StartIndex());
       item_result.inline_size = shape_result->SnappedWidth();
-      if (UNLIKELY(item_result.hyphen_shape_result))
+      if (UNLIKELY(item_result.is_hyphenated))
         item_result.inline_size += item_result.HyphenInlineSize();
       item_result.shape_result = ShapeResultView::Create(shape_result.get());
     } else if (item_result.item->Type() == NGInlineItem::kAtomicInline) {
