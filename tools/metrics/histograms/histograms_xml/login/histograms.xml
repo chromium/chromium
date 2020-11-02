@@ -22,11 +22,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Login.ArcBugReportBackupTime" units="ms"
-    expires_after="2021-04-04">
+    expires_after="2021-10-30">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Tracks the time to backup ARC bug report when starting ARC fails.
+    Tracks the time to execute arc-boot-continue impulse. This is emitted when
+    we fail to upgrade the ARC container from mini to full.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseTime" units="ms"
+    expires_after="2021-10-30">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to backup ARC bug report when starting ARC fails. This is
+    emitted when we upgrade the ARC container from mini to full.
   </summary>
 </histogram>
 
