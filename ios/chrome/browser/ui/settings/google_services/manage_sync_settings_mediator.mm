@@ -42,56 +42,6 @@ using l10n_util::GetNSString;
 
 namespace {
 
-// List of sections.
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  // Section for all the sync settings.
-  SyncDataTypeSectionIdentifier = kSectionIdentifierEnumZero,
-  // Advanced settings.
-  AdvancedSettingsSectionIdentifier,
-  // Sync errors.
-  SyncErrorsSectionIdentifier,
-};
-
-// List of items. For implementation details in
-// ManageSyncSettingsTableViewController, two SyncSwitchItem items should not
-// share the same type. The cell UISwitch tag is used to save the item type, and
-// when the user taps on the switch, this tag is used to retreive the item based
-// on the type.
-typedef NS_ENUM(NSInteger, ItemType) {
-  // SyncDataTypeSectionIdentifier section.
-  // Sync everything item.
-  SyncEverythingItemType = kItemTypeEnumZero,
-  // kSyncAutofill.
-  AutofillDataTypeItemType,
-  // kSyncBookmarks.
-  BookmarksDataTypeItemType,
-  // kSyncOmniboxHistory.
-  HistoryDataTypeItemType,
-  // kSyncOpenTabs.
-  OpenTabsDataTypeItemType,
-  // kSyncPasswords
-  PasswordsDataTypeItemType,
-  // kSyncReadingList.
-  ReadingListDataTypeItemType,
-  // kSyncPreferences.
-  SettingsDataTypeItemType,
-  // Item for kAutofillWalletImportEnabled.
-  AutocompleteWalletItemType,
-  // AdvancedSettingsSectionIdentifier section.
-  // Encryption item.
-  EncryptionItemType,
-  // Google activity controls item.
-  GoogleActivityControlsItemType,
-  // Data from Chrome sync.
-  DataFromChromeSync,
-  // Sync errors.
-  RestartAuthenticationFlowErrorItemType,
-  ReauthDialogAsSyncIsInAuthErrorItemType,
-  ShowPassphraseDialogErrorItemType,
-  SyncNeedsTrustedVaultKeyErrorItemType,
-  SyncDisabledByAdministratorErrorItemType,
-};
-
 // Enterprise icon.
 NSString* kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Sync error icon.
@@ -465,7 +415,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     base::AutoReset<BOOL> autoReset(&_ignoreSyncStateChanges, YES);
     SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
     syncSwitchItem.on = value;
-    ItemType itemType = static_cast<ItemType>(item.type);
+    SyncSettingsItemType itemType =
+        static_cast<SyncSettingsItemType>(item.type);
     switch (itemType) {
       case SyncEverythingItemType:
         self.syncSetupService->SetSyncingAllDataTypes(value);
@@ -520,7 +471,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (void)didSelectItem:(TableViewItem*)item {
-  ItemType itemType = static_cast<ItemType>(item.type);
+  SyncSettingsItemType itemType = static_cast<SyncSettingsItemType>(item.type);
   switch (itemType) {
     case EncryptionItemType:
       if (self.syncSetupService->GetSyncServiceState() ==
@@ -627,7 +578,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (BOOL)updateSyncErrorItems {
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasError = NO;
-  ItemType type;
+  SyncSettingsItemType type;
 
   if (self.isSyncDisabledByAdministrator) {
     type = SyncDisabledByAdministratorErrorItemType;

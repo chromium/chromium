@@ -93,7 +93,7 @@ source_set("constants") {
     "manage_sync_settings_constants.h",
     "manage_sync_settings_constants.mm",
   ]
-  deps = []
+  deps = [ "//ios/chrome/browser/ui/list_model" ]
 }
 
 source_set("eg_app_support+eg2") {
@@ -155,4 +155,30 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "manage_sync_settings_mediator_unittest.mm" ]
+  deps = [
+    ":google_services",
+    "//base/test:test_support",
+    "//components/autofill/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync/driver",
+    "//components/sync/driver:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/web/public/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
 }
