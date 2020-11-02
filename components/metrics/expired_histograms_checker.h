@@ -18,30 +18,31 @@ namespace metrics {
 // to avoid recording expired metrics.
 class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
  public:
-  // Takes sorted in nondecreasing order array of histogram hashes, its size and
-  // list of whitelisted histogram names concatenated as a comma-separated
-  // string.
-  ExpiredHistogramsChecker(const uint64_t* array,
+  // Takes a sorted array of histogram hashes in ascending order, its size and a
+  // list of explicitly allowed histogram names as a comma-separated string.
+  // Histograms in the |allowlist_str| are logged even if their hash is in the
+  // |expired_histograms_hashes|.
+  ExpiredHistogramsChecker(const uint64_t* expired_histogram_hashes,
                            size_t size,
-                           const std::string& whitelist_str);
+                           const std::string& allowlist_str);
   ~ExpiredHistogramsChecker() override;
 
   // Checks if the given |histogram_hash| corresponds to an expired histogram.
   bool ShouldRecord(uint64_t histogram_hash) const override;
 
  private:
-  // Initializes the |whitelist_| array of histogram hashes that should be
+  // Initializes the |allowlist_| array of histogram hashes that should be
   // recorded regardless of their expiration.
-  void InitWhitelist(const std::string& whitelist_str);
+  void InitAllowlist(const std::string& allowlist_str);
 
   // Array of expired histogram hashes.
-  const uint64_t* const array_;
+  const uint64_t* const expired_histogram_hashes_;
 
-  // Size of the |array_|.
+  // Size of the |expired_histogram_hashes_|.
   const size_t size_;
 
-  // List of expired histogram hashes that should be recorded.
-  std::set<uint64_t> whitelist_;
+  // Set of expired histogram hashes that should be recorded.
+  std::set<uint64_t> allowlist_;
 
   DISALLOW_COPY_AND_ASSIGN(ExpiredHistogramsChecker);
 };
