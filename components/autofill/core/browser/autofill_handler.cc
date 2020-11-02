@@ -103,17 +103,11 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms,
     // code would have ignored the cache hit we update the FormStructure's
     // FormSignature.
     // Otherwise, if the experiment disabled, we just ignore the cache hit.
-    //
-    // TODO(crbug.com/1100231) Clean up when experiment is complete.
-    const bool kOldBehavior = !base::FeatureList::IsEnabled(
-        features::kAutofillKeepInitialFormValuesInCache);
     bool update_form_signature = false;
     if (cached_form_structure) {
       for (const FormType& form_type : cached_form_structure->GetFormTypes()) {
         if (form_type != CREDIT_CARD_FORM) {
           update_form_signature = true;
-          if (kOldBehavior)
-            cached_form_structure = nullptr;
           break;
         }
       }
@@ -124,7 +118,7 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms,
       continue;
     DCHECK(form_structure);
 
-    if (update_form_signature && !kOldBehavior)
+    if (update_form_signature)
       form_structure->set_form_signature(CalculateFormSignature(form));
 
     new_forms.push_back(&form);

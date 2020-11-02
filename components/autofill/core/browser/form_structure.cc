@@ -1089,10 +1089,7 @@ void FormStructure::RetrieveFromCache(
     // If the unique renderer id (or the name) is not stable due to some Java
     // Script magic in the website, use the field signature as a fallback
     // solution to find the field in the cached form.
-    // TODO(crbug.com/1125624): Remove feature check once trial ended.
-    if (!cached_field &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillRetrieveFromCacheWithFieldSignatureAsFallback)) {
+    if (!cached_field) {
       // Iterates over the fields to find the field with the same form
       // signature.
       for (size_t i = 0; i < cached_form.field_count(); ++i) {
@@ -1125,13 +1122,7 @@ void FormStructure::RetrieveFromCache(
         field->is_autofilled = cached_field->is_autofilled;
       }
       if (field->form_control_type != "select-one") {
-        bool is_credit_card_field =
-            AutofillType(cached_field->Type().GetStorableType()).group() ==
-            CREDIT_CARD;
-        if (should_keep_cached_value &&
-            (is_credit_card_field ||
-             base::FeatureList::IsEnabled(
-                 features::kAutofillKeepInitialFormValuesInCache))) {
+        if (should_keep_cached_value) {
           field->value = cached_field->value;
           value_from_dynamic_change_form_ = true;
         } else if (field->value == cached_field->value &&
