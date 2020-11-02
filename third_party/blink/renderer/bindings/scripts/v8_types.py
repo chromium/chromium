@@ -593,7 +593,8 @@ def impl_forward_declaration_name(idl_type):
     if element_type:
         return element_type.impl_forward_declaration_name
 
-    if ((idl_type.is_wrapper_type and not idl_type.is_typed_array)
+    if ((idl_type.is_wrapper_type
+         and not idl_type.is_array_buffer_view_or_typed_array)
             or idl_type.is_dictionary):
         return idl_type.implemented_as
     return None
