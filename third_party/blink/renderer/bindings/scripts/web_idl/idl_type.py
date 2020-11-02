@@ -553,6 +553,15 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         return None
 
     @property
+    def typedef_object(self):
+        """
+        Returns an object that represents a typedef definition or None.
+
+        Note that a returned object is not an IdlType.  It's of type Typedef.
+        """
+        return None
+
+    @property
     def union_definition_object(self):
         """
         Returns an object that represents an union or None.
@@ -873,6 +882,10 @@ class TypedefType(IdlType, WithIdentifier):
     @property
     def original_type(self):
         return self._typedef.idl_type
+
+    @property
+    def typedef_object(self):
+        return self._typedef
 
     def _unwrap(self, switches):
         if switches['typedef']:

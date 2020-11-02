@@ -69,6 +69,7 @@ from .operation import Operation
 from .operation import OperationGroup
 from .runtime_enabled_features import RuntimeEnabledFeatures
 from .typedef import Typedef
+from .union import NewUnion
 from .union import Union
 
 

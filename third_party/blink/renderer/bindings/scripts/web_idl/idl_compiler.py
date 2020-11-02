@@ -29,7 +29,8 @@ from .namespace import Namespace
 from .operation import OperationGroup
 from .reference import RefByIdFactory
 from .typedef import Typedef
-from .union import Union
+from .union import BackwardCompatibleUnion
+from .union import NewUnion
 from .user_defined_type import StubUserDefinedType
 from .user_defined_type import UserDefinedType
 from .validator import validate_after_resolve_references
@@ -122,6 +123,7 @@ class IdlCompiler(object):
 
         # Build union API objects.
         self._create_public_unions()
+        self._create_backward_compatible_public_unions()
 
         return Database(self._db)
 
@@ -744,6 +746,39 @@ class IdlCompiler(object):
 
         self._idl_type_factory.for_each(collect_unions)
 
+        grouped_unions = {}  # {unique token: list of union types}
+        for union_type in all_union_types:
+            token = NewUnion.unique_token(union_type)
+            grouped_unions.setdefault(token, []).append(union_type)
+
+        irs = {}  # {token: Union.IR}
+        for token, union_types in grouped_unions.items():
+            irs[token] = NewUnion.IR(token, union_types)
+
+        all_typedefs = self._db.find_by_kind(DatabaseBody.Kind.TYPEDEF)
+        for typedef in all_typedefs.values():
+            if not typedef.idl_type.is_union:
+                continue
+            token = NewUnion.unique_token(typedef.idl_type)
+            irs[token].typedefs.append(typedef)
+
+        for ir_i in irs.values():
+            for ir_j in irs.values():
+                if ir_i.contains(ir_j):
+                    ir_i.sub_union_irs.append(ir_j)
+
+        for ir in sorted(irs.values()):
+            self._db.register(DatabaseBody.Kind.NEW_UNION, NewUnion(ir))
+
+    def _create_backward_compatible_public_unions(self):
+        all_union_types = []  # all instances of UnionType
+
+        def collect_unions(idl_type):
+            if idl_type.is_union:
+                all_union_types.append(idl_type)
+
+        self._idl_type_factory.for_each(collect_unions)
+
         def unique_key(union_type):
             """
             Returns an unique (but meaningless) key.  Returns the same key for
@@ -781,6 +816,6 @@ class IdlCompiler(object):
         for key, union_types in grouped_unions.items():
             self._db.register(
                 DatabaseBody.Kind.UNION,
-                Union(
-                    union_types=union_types,
-                    typedef_backrefs=grouped_typedefs.get(key, [])))
+                BackwardCompatibleUnion(union_types=union_types,
+                                        typedef_backrefs=grouped_typedefs.get(
+                                            key, [])))
