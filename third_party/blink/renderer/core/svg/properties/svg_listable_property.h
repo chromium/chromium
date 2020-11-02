@@ -28,61 +28,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LISTABLE_PROPERTY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LISTABLE_PROPERTY_H_
 
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 
 namespace blink {
 
-void SVGListPropertyBase::Clear() {
-  // Detach all list items as they are no longer part of this list.
-  for (auto& value : values_) {
-    DCHECK_EQ(value->OwnerList(), this);
-    value->SetOwnerList(nullptr);
+class SVGListPropertyBase;
+
+// Subclass of SVGPropertyBase for SVG properties that can reside in lists that
+// are exposed via SVG DOM.
+class SVGListablePropertyBase : public SVGPropertyBase {
+ public:
+  SVGListablePropertyBase(const SVGListablePropertyBase&) = delete;
+  SVGListablePropertyBase& operator=(const SVGListablePropertyBase&) = delete;
+
+  SVGListPropertyBase* OwnerList() const { return owner_list_; }
+
+  void SetOwnerList(SVGListPropertyBase* owner_list) {
+    // Previous owner list must be cleared before setting new owner list.
+    DCHECK((!owner_list && owner_list_) || (owner_list && !owner_list_));
+
+    owner_list_ = owner_list;
   }
-  values_.clear();
-}
 
-void SVGListPropertyBase::Insert(uint32_t index,
-                                 SVGListablePropertyBase* new_item) {
-  values_.insert(index, new_item);
-  new_item->SetOwnerList(this);
-}
+ protected:
+  SVGListablePropertyBase() : owner_list_(nullptr) {}
 
-void SVGListPropertyBase::Remove(uint32_t index) {
-  DCHECK_EQ(values_[index]->OwnerList(), this);
-  values_[index]->SetOwnerList(nullptr);
-  values_.EraseAt(index);
-}
-
-void SVGListPropertyBase::Append(SVGListablePropertyBase* new_item) {
-  values_.push_back(new_item);
-  new_item->SetOwnerList(this);
-}
-
-void SVGListPropertyBase::Replace(uint32_t index,
-                                  SVGListablePropertyBase* new_item) {
-  DCHECK_EQ(values_[index]->OwnerList(), this);
-  values_[index]->SetOwnerList(nullptr);
-  values_[index] = new_item;
-  new_item->SetOwnerList(this);
-}
-
-String SVGListPropertyBase::ValueAsString() const {
-  if (values_.IsEmpty())
-    return String();
-
-  StringBuilder builder;
-
-  auto* it = values_.begin();
-  auto* it_end = values_.end();
-  while (it != it_end) {
-    builder.Append((*it)->ValueAsString());
-    ++it;
-    if (it != it_end)
-      builder.Append(' ');
-  }
-  return builder.ToString();
-}
+ private:
+  // Oilpan: the back reference to the owner should be a Member, but this can
+  // create cycles when SVG properties meet the off-heap InterpolationValue
+  // hierarchy.  Not tracing it is safe, albeit an undesirable state of affairs.
+  // See http://crbug.com/528275 for details.
+  UntracedMember<SVGListPropertyBase> owner_list_;
+};
 
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LISTABLE_PROPERTY_H_

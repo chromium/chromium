@@ -31,10 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_PROPERTY_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -45,6 +44,9 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
  public:
   // Properties do not have a primitive type by default
   typedef void PrimitiveType;
+
+  SVGPropertyBase(const SVGPropertyBase&) = delete;
+  SVGPropertyBase& operator=(const SVGPropertyBase&) = delete;
 
   virtual ~SVGPropertyBase() = default;
 
@@ -77,27 +79,10 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
 
   virtual AnimatedPropertyType GetType() const = 0;
 
-  SVGPropertyBase* OwnerList() const { return owner_list_; }
-
-  void SetOwnerList(SVGPropertyBase* owner_list) {
-    // Previous owner list must be cleared before setting new owner list.
-    DCHECK((!owner_list && owner_list_) || (owner_list && !owner_list_));
-
-    owner_list_ = owner_list;
-  }
-
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
-  SVGPropertyBase() : owner_list_(nullptr) {}
-
- private:
-  // Oilpan: the back reference to the owner should be a Member, but this can
-  // create cycles when SVG properties meet the off-heap InterpolationValue
-  // hierarchy.  Not tracing it is safe, albeit an undesirable state of affairs.
-  // See http://crbug.com/528275 for the detail.
-  UntracedMember<SVGPropertyBase> owner_list_;
-  DISALLOW_COPY_AND_ASSIGN(SVGPropertyBase);
+  SVGPropertyBase() = default;
 };
 
 }  // namespace blink

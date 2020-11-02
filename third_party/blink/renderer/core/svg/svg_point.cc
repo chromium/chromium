@@ -47,6 +47,12 @@ SVGPoint* SVGPoint::Clone() const {
   return MakeGarbageCollected<SVGPoint>(value_);
 }
 
+SVGPropertyBase* SVGPoint::CloneForAnimation(const String& value) const {
+  // SVGPoint is not animated by itself.
+  NOTREACHED();
+  return nullptr;
+}
+
 template <typename CharType>
 SVGParsingError SVGPoint::Parse(const CharType* ptr, const CharType* end) {
   float x = 0;
@@ -90,7 +96,7 @@ String SVGPoint::ValueAsString() const {
 }
 
 void SVGPoint::Add(const SVGPropertyBase* other, const SVGElement*) {
-  // SVGPoint is not animated by itself
+  // SVGPoint is not animated by itself.
   NOTREACHED();
 }
 
@@ -102,13 +108,13 @@ void SVGPoint::CalculateAnimatedValue(
     const SVGPropertyBase* to_value,
     const SVGPropertyBase* to_at_end_of_duration_value,
     const SVGElement*) {
-  // SVGPoint is not animated by itself
+  // SVGPoint is not animated by itself.
   NOTREACHED();
 }
 
 float SVGPoint::CalculateDistance(const SVGPropertyBase* to,
                                   const SVGElement* context_element) const {
-  // SVGPoint is not animated by itself
+  // SVGPoint is not animated by itself.
   NOTREACHED();
   return 0.0f;
 }

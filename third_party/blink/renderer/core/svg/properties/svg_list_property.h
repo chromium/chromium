@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -43,7 +43,7 @@ namespace blink {
 // SVGPointList and SVGTransformList).
 class SVGListPropertyBase : public SVGPropertyBase {
  protected:
-  using ListType = HeapVector<Member<SVGPropertyBase>>;
+  using ListType = HeapVector<Member<SVGListablePropertyBase>>;
 
   uint32_t length() const { return values_.size(); }
   bool IsEmpty() const { return !length(); }
@@ -52,21 +52,21 @@ class SVGListPropertyBase : public SVGPropertyBase {
   const_iterator begin() const { return values_.begin(); }
   const_iterator end() const { return values_.end(); }
 
-  SVGPropertyBase* at(uint32_t index) {
+  SVGListablePropertyBase* at(uint32_t index) {
     DCHECK_LT(index, values_.size());
     DCHECK_EQ(values_[index]->OwnerList(), this);
     return values_[index].Get();
   }
 
-  const SVGPropertyBase* at(uint32_t index) const {
+  const SVGListablePropertyBase* at(uint32_t index) const {
     return const_cast<SVGListPropertyBase*>(this)->at(index);
   }
 
   void Clear();
-  void Insert(uint32_t index, SVGPropertyBase* new_item);
+  void Insert(uint32_t index, SVGListablePropertyBase* new_item);
   void Remove(uint32_t index);
-  void Append(SVGPropertyBase* new_item);
-  void Replace(uint32_t index, SVGPropertyBase* new_item);
+  void Append(SVGListablePropertyBase* new_item);
+  void Replace(uint32_t index, SVGListablePropertyBase* new_item);
 
  public:
   String ValueAsString() const final;

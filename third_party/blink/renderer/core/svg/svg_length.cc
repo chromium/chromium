@@ -87,7 +87,7 @@ SVGLength::SVGLength(const CSSPrimitiveValue& value, SVGLengthMode mode)
 
 void SVGLength::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
-  SVGPropertyBase::Trace(visitor);
+  SVGListablePropertyBase::Trace(visitor);
 }
 
 SVGLength* SVGLength::Clone() const {

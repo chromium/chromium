@@ -21,7 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_TRANSFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_TRANSFORM_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -42,7 +42,7 @@ enum class SVGTransformType {
   kSkewy = 6
 };
 
-class SVGTransform final : public SVGPropertyBase {
+class SVGTransform final : public SVGListablePropertyBase {
  public:
   typedef SVGTransformTearOff TearOffType;
 

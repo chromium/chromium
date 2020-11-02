@@ -43,6 +43,12 @@ SVGNumber* SVGNumber::Clone() const {
   return MakeGarbageCollected<SVGNumber>(value_);
 }
 
+SVGPropertyBase* SVGNumber::CloneForAnimation(const String& value) const {
+  auto* property = MakeGarbageCollected<SVGNumber>();
+  property->SetValueAsString(value);
+  return property;
+}
+
 String SVGNumber::ValueAsString() const {
   return String::Number(value_);
 }
