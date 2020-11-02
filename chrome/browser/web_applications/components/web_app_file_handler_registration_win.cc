@@ -31,8 +31,10 @@ void RegisterFileHandlersWithOsTask(
     const base::FilePath& profile_path,
     const std::set<base::string16>& file_extensions,
     const base::string16& app_name_extension) {
+  const base::FilePath web_app_path =
+      GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL());
   base::Optional<base::FilePath> app_specific_launcher_path =
-      CreateAppLauncherFile(app_id, app_name, app_name_extension, profile_path);
+      CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
   if (!app_specific_launcher_path.has_value())
     return;
 
@@ -42,8 +44,7 @@ void RegisterFileHandlersWithOsTask(
   base::string16 user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
-  base::FilePath icon_path =
-      internals::GetIconFilePath(app_specific_launcher_path.value(), app_name);
+  base::FilePath icon_path = internals::GetIconFilePath(web_app_path, app_name);
 
   bool result = ShellUtil::AddFileAssociations(
       GetProgIdForApp(profile_path, app_id), app_specific_launcher_command,

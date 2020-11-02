@@ -103,8 +103,10 @@ void UpdateAppRegistration(const web_app::AppId& app_id,
   user_visible_app_name.append(app_name_extension);
 
   base::Optional<base::FilePath> app_launcher_path =
-      web_app::CreateAppLauncherFile(app_id, app_name, app_name_extension,
-                                     profile_path);
+      web_app::CreateAppLauncherFile(
+          app_name, app_name_extension,
+          web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path,
+                                                            app_id, GURL()));
   if (!app_launcher_path)
     return;
 
@@ -205,12 +207,9 @@ base::string16 GetProgIdForApp(const base::FilePath& profile_path,
 }
 
 base::Optional<base::FilePath> CreateAppLauncherFile(
-    const AppId& app_id,
     const base::string16& app_name,
     const base::string16& app_name_extension,
-    const base::FilePath& profile_path) {
-  base::FilePath web_app_path =
-      GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL());
+    const base::FilePath& web_app_path) {
   if (!base::CreateDirectory(web_app_path)) {
     DPLOG(ERROR) << "Unable to create web app dir";
     RecordRegistration(RegistrationResult::kFailToCopyFromGenericLauncher);

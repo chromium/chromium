@@ -59,7 +59,8 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
                    const base::string16& app_name_extension,
                    const base::FilePath& profile_path) {
     base::Optional<base::FilePath> launcher_path = CreateAppLauncherFile(
-        app_id, app_name, app_name_extension, profile_path);
+        app_name, app_name_extension,
+        GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL()));
     ASSERT_TRUE(launcher_path.has_value());
 
     base::CommandLine launcher_command =
@@ -225,8 +226,10 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
 
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
   base::string16 app_name_extension = L" extension";
-  base::Optional<base::FilePath> launcher_path = CreateAppLauncherFile(
-      app_id(), app_name(), app_name_extension, profile()->GetPath());
+  base::Optional<base::FilePath> launcher_path =
+      CreateAppLauncherFile(app_name(), app_name_extension,
+                            GetOsIntegrationResourcesDirectoryForApp(
+                                profile()->GetPath(), app_id(), GURL()));
   EXPECT_TRUE(launcher_path.has_value());
   EXPECT_TRUE(base::PathExists(launcher_path.value()));
 

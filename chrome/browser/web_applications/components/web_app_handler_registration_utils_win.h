@@ -33,13 +33,12 @@ base::string16 GetProgIdForApp(const base::FilePath& profile_path,
                                const AppId& app_id);
 
 // Makes an app-specific copy of chrome_pwa_launcher.exe that lives in the web
-// application directory. Returns path of the launcher file if successful,
-// base::nullopt otherwise.
+// application directory |web_app_path|. Returns path of the launcher file if
+// successful, base::nullopt otherwise.
 base::Optional<base::FilePath> CreateAppLauncherFile(
-    const AppId& app_id,
     const base::string16& app_name,
     const base::string16& app_name_extension,
-    const base::FilePath& profile_path);
+    const base::FilePath& web_app_path);
 
 // Checks if there is an installation of this app in another profile that needs
 // to be updated with a profile specific name and executes required update.
