@@ -370,6 +370,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeDatabaseMigrationToV13Failure" units="ms"
+    expires_after="2021-10-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v12 cookie database to v13, in the case
+    when migration fails. Migration occurs upon first startup of a browser
+    version with v13 database code.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.TimeDatabaseMigrationToV13Success" units="ms"
+    expires_after="2021-10-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v12 cookie database to v13, in the case
+    when migration succeeds. Migration occurs upon first startup of a browser
+    version with v13 database code.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeDatabaseMigrationToV9" units="ms"
     expires_after="2018-08-30">
   <owner>erikchen@chromium.org</owner>

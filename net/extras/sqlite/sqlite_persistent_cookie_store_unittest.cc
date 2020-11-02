@@ -1659,11 +1659,39 @@ bool CreateV11Schema(sql::Database* db) {
   return true;
 }
 
-bool AddV11CookiesToDBImpl(sql::Database* db,
-                           const std::vector<CanonicalCookie>& cookies);
+bool CreateV12Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(db, /* version = */ 12,
+                       /* earliest compatible version = */ 12)) {
+    return false;
+  }
 
-// Add a selection of cookies to the DB.
-bool AddV11CookiesToDB(sql::Database* db) {
+  // Version 12 schema
+  std::string stmt(
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL DEFAULT 1,"
+      "is_persistent INTEGER NOT NULL DEFAULT 1,"
+      "priority INTEGER NOT NULL DEFAULT 1,"  // COOKIE_PRIORITY_DEFAULT
+      "encrypted_value BLOB DEFAULT '',"
+      "samesite INTEGER NOT NULL DEFAULT -1,"      // UNSPECIFIED
+      "source_scheme INTEGER NOT NULL DEFAULT 0,"  // CookieSourceScheme::kUnset
+      "UNIQUE (host_key, name, path))");
+  if (!db->Execute(stmt.c_str()))
+    return false;
+
+  return true;
+}
+
+std::vector<CanonicalCookie> CookiesForMigrationTest() {
   static base::Time now = base::Time::Now();
 
   std::vector<CanonicalCookie> cookies;
@@ -1694,11 +1722,11 @@ bool AddV11CookiesToDB(sql::Database* db) {
       CanonicalCookie("C", "B", "example.com", "/path", now, now, now,
                       false /* secure */, false /* httponly */,
                       CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_DEFAULT));
-  return AddV11CookiesToDBImpl(db, cookies);
+  return cookies;
 }
 
-bool AddV11CookiesToDBImpl(sql::Database* db,
-                           const std::vector<CanonicalCookie>& cookies) {
+bool AddV11CookiesToDB(sql::Database* db) {
+  std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
   sql::Statement add_smt(db->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO cookies (creation_utc, host_key, name, value, "
@@ -1745,8 +1773,56 @@ bool AddV11CookiesToDBImpl(sql::Database* db,
   return true;
 }
 
+bool AddV12CookiesToDB(sql::Database* db) {
+  std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
+  sql::Statement add_smt(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO cookies (creation_utc, host_key, name, value, "
+      "encrypted_value, path, expires_utc, is_secure, is_httponly, "
+      "samesite, last_access_utc, has_expires, is_persistent, priority, "
+      "source_scheme)"
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+  if (!add_smt.is_valid())
+    return false;
+  sql::Transaction transaction(db);
+  transaction.Begin();
+  for (const CanonicalCookie& cookie : cookies) {
+    add_smt.Reset(true);
+    add_smt.BindInt64(
+        0, cookie.CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    add_smt.BindString(1, cookie.Domain());
+    add_smt.BindString(2, cookie.Name());
+    add_smt.BindString(3, cookie.Value());
+    add_smt.BindBlob(4, "", 0);  // encrypted_value
+    add_smt.BindString(5, cookie.Path());
+    add_smt.BindInt64(
+        6, cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    add_smt.BindInt(7, cookie.IsSecure());
+    add_smt.BindInt(8, cookie.IsHttpOnly());
+    // Note that this, Priority(), and SourceScheme() below nominally rely on
+    // the enums in sqlite_persistent_cookie_store.cc having the same values as
+    // the ones in ../../cookies/cookie_constants.h.  But nothing in this test
+    // relies on that equivalence, so it's not worth the hassle to guarantee
+    // that.
+    add_smt.BindInt(9, static_cast<int>(cookie.SameSite()));
+    add_smt.BindInt64(
+        10,
+        cookie.LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    add_smt.BindInt(11, cookie.IsPersistent());
+    add_smt.BindInt(12, cookie.IsPersistent());
+    add_smt.BindInt(13, static_cast<int>(cookie.Priority()));
+    add_smt.BindInt(14, static_cast<int>(cookie.SourceScheme()));
+    if (!add_smt.Run())
+      return false;
+  }
+  if (!transaction.Commit())
+    return false;
+
+  return true;
+}
+
 // Confirm the cookie list passed in has the above cookies in it.
-void ConfirmV11CookiesFromDB(
+void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies) {
   std::sort(read_in_cookies.begin(), read_in_cookies.end(), &CompareCookies);
   int i = 0;
@@ -1809,7 +1885,20 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion12) {
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(false, false, &read_in_cookies);
-  ConfirmV11CookiesFromDB(std::move(read_in_cookies));
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies));
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion13) {
+  // Open db
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
+  ASSERT_TRUE(CreateV12Schema(&connection));
+  ASSERT_TRUE(AddV12CookiesToDB(&connection));
+  connection.Close();
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(false, false, &read_in_cookies);
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies));
 }
 
 }  // namespace net
