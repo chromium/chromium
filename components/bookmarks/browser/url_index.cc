@@ -4,6 +4,8 @@
 
 #include "components/bookmarks/browser/url_index.h"
 
+#include <iterator>
+
 #include "base/containers/adapters.h"
 #include "base/guid.h"
 #include "components/bookmarks/browser/url_and_title.h"
@@ -70,9 +72,19 @@ bool UrlIndex::HasBookmarks() const {
   return !nodes_ordered_by_url_set_.empty();
 }
 
-size_t UrlIndex::UrlCount() const {
+UrlIndex::Stats UrlIndex::ComputeStats() const {
   base::AutoLock url_lock(url_lock_);
-  return nodes_ordered_by_url_set_.size();
+  UrlIndex::Stats stats;
+  stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
+  if (stats.total_url_bookmark_count > 1) {
+    auto prev_i = nodes_ordered_by_url_set_.begin();
+    for (auto i = std::next(prev_i); i != nodes_ordered_by_url_set_.end();
+         ++i, ++prev_i) {
+      if ((*prev_i)->url() == (*i)->url())
+        ++stats.duplicate_url_bookmark_count;
+    }
+  }
+  return stats;
 }
 
 bool UrlIndex::IsBookmarked(const GURL& url) {

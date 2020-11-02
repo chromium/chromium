@@ -65,8 +65,15 @@ class UrlIndex : public HistoryBookmarkModel {
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;
 
-  // Returns the number of URL bookmarks stored.
-  size_t UrlCount() const;
+  // Returns some stats about number of URL bookmarks stored, for UMA purposes.
+  struct Stats {
+    // Number of bookmark in the index excluding folders.
+    size_t total_url_bookmark_count = 0;
+    // Number of bookmarks (excluding folders) with a URL that is used by at
+    // least one other bookmark.
+    size_t duplicate_url_bookmark_count = 0;
+  };
+  Stats ComputeStats() const;
 
   // HistoryBookmarkModel:
   bool IsBookmarked(const GURL& url) override;

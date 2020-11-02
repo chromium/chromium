@@ -346,8 +346,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
       histogram_tester()->GetAllSamples("Bookmarks.Count.OnProfileLoad"),
       testing::ElementsAre(base::Bucket(/*min=*/6, /*count=*/1)));
   EXPECT_THAT(histogram_tester()->GetAllSamples(
-                  "Bookmarks.Count.OnProfileLoad.DuplicateUrl"),
-              testing::ElementsAre(base::Bucket(/*min=*/5, /*count=*/1)));
+                  "Bookmarks.Count.OnProfileLoad.DuplicateUrl2"),
+              testing::ElementsAre(base::Bucket(/*min=*/3, /*count=*/1)));
 }
 
 #endif  // !defined(OS_CHROMEOS)

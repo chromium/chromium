@@ -5,7 +5,6 @@
 #include "components/bookmarks/browser/model_loader.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -23,11 +22,6 @@ namespace bookmarks {
 
 namespace {
 
-// TODO(mastiz): Remove this kill switch asap since the UMA metrics entail
-// negligible risks for stability or performance overhead.
-const base::Feature kEmitExperimentalBookmarkLoadUma{
-    "EmitExperimentalBookmarkLoadUma", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Adds node to the model's index, recursing through all children as well.
 void AddBookmarksToIndex(BookmarkLoadDetails* details, BookmarkNode* node) {
   if (node->is_url()) {
@@ -39,46 +33,9 @@ void AddBookmarksToIndex(BookmarkLoadDetails* details, BookmarkNode* node) {
   }
 }
 
-// Helper function to recursively traverse the bookmark tree and count the
-// number of bookmarks (excluding folders) per URL (more precisely, per URL
-// hash).
-void PopulateNumNodesPerUrlHash(
-    const BookmarkNode* node,
-    std::unordered_map<size_t, int>* num_nodes_per_url_hash) {
-  DCHECK(num_nodes_per_url_hash);
-  DCHECK(node);
-
-  if (!node->is_folder())
-    (*num_nodes_per_url_hash)[std::hash<std::string>()(node->url().spec())]++;
-
-  for (const auto& child : node->children())
-    PopulateNumNodesPerUrlHash(child.get(), num_nodes_per_url_hash);
-}
-
-// Computes the number of bookmarks (excluding folders) with a URL that is used
-// by at least one other bookmark.
-int GetNumDuplicateUrls(const BookmarkNode* root) {
-  DCHECK(root);
-
-  // The key is hash of the URL, instead of the full URL, to keep memory usage
-  // low. The value indicates the node count.
-  std::unordered_map<size_t, int> num_nodes_per_url_hash;
-  PopulateNumNodesPerUrlHash(root, &num_nodes_per_url_hash);
-
-  int num_duplicate_urls = 0;
-  for (const auto& url_hash_and_count : num_nodes_per_url_hash) {
-    if (url_hash_and_count.second > 1)
-      num_duplicate_urls += url_hash_and_count.second;
-  }
-  return num_duplicate_urls;
-}
-
 // Loads the bookmarks. This is intended to be called on the background thread.
-// Updates state in |details| based on the load. |emit_experimental_uma|
-// determines whether a few newly introduced and experimental UMA metrics should
-// be logged.
+// Updates state in |details| based on the load.
 void LoadBookmarks(const base::FilePath& path,
-                   bool emit_experimental_uma,
                    BookmarkLoadDetails* details) {
   bool load_index = false;
   bool bookmark_file_exists = base::PathExists(path);
@@ -122,17 +79,14 @@ void LoadBookmarks(const base::FilePath& path,
 
   details->CreateUrlIndex();
 
+  UrlIndex::Stats stats = details->url_index()->ComputeStats();
+
   base::UmaHistogramCounts100000(
       "Bookmarks.Count.OnProfileLoad",
-      base::saturated_cast<int>(details->url_index()->UrlCount()));
-
-  if (emit_experimental_uma && details->root_node()) {
-    const int num_duplicate_urls = GetNumDuplicateUrls(details->root_node());
-    if (num_duplicate_urls > 0) {
-      base::UmaHistogramCounts10000(
-          "Bookmarks.Count.OnProfileLoad.DuplicateUrl", num_duplicate_urls);
-    }
-  }
+      base::saturated_cast<int>(stats.total_url_bookmark_count));
+  base::UmaHistogramCounts100000(
+      "Bookmarks.Count.OnProfileLoad.DuplicateUrl2",
+      base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
 }
 
 }  // namespace
@@ -150,16 +104,10 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  // We plumb the value for kEmitExperimentalBookmarkLoadUma as retrieved on
-  // the UI thread to avoid issues with TSAN bots (in case there are tests that
-  // override feature toggles -not necessarily this one- while bookmark loading
-  // is ongoing, which is problematic due to how feature overriding for tests is
-  // implemented).
   model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ModelLoader::DoLoadOnBackgroundThread, model_loader, profile_path,
-          base::FeatureList::IsEnabled(kEmitExperimentalBookmarkLoadUma),
           std::move(details)),
       std::move(callback));
   return model_loader;
@@ -177,9 +125,8 @@ ModelLoader::~ModelLoader() = default;
 
 std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
     const base::FilePath& profile_path,
-    bool emit_experimental_uma,
     std::unique_ptr<BookmarkLoadDetails> details) {
-  LoadBookmarks(profile_path, emit_experimental_uma, details.get());
+  LoadBookmarks(profile_path, details.get());
   history_bookmark_model_ = details->url_index();
   loaded_signal_.Signal();
   return details;

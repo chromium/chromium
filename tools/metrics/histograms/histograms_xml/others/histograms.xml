@@ -1461,15 +1461,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>aidanday@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
-    The total number of bookmarks a user has saved. Recorded when a profile is
-    opened - precisely, when bookmarks are loaded into storage from disk. The
-    count includes all bookmarks both in the &quot;Bookmarks Bar&quot; and also
-    under &quot;Other Bookmarks&quot;.
+    The total number of bookmarks a user has saved, excluding folders. Recorded
+    when a profile is opened - precisely, when bookmarks are loaded into storage
+    from disk. The count includes all bookmarks both in the &quot;Bookmarks
+    Bar&quot; and also under &quot;Other Bookmarks&quot;.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad.DuplicateUrl" units="bookmarks"
     expires_after="2021-04-04">
+  <obsolete>
+    Replaced with Bookmarks.Count.OnProfileLoad.DuplicateUrl2 as of 11/2020 to
+    provide more granular buckets above 10K duplicates
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1477,6 +1481,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     at least one other bookmark. This excludes folders (which don't have a URL).
     Recorded when bookmarks are loaded into storage from disk if there is at
     least one duplicate.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.DuplicateUrl2" units="bookmarks"
+    expires_after="2021-04-04">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    The number of bookmarks a user has saved with a URL that is also present in
+    at least one other bookmark. This excludes not only folders (which don't
+    have a URL) but it also excludes one bookmark per unique URL (that is, all
+    except one are considered duplicates). Recorded when bookmarks are loaded
+    into storage from disk if there is at least one duplicate.
   </summary>
 </histogram>
 
