@@ -40,6 +40,11 @@ EventGenerator = class {
     }
     EventGenerator.currentlyMidMouseClick = true;
 
+    // chrome.accessibilityPrivate.sendSyntheticMouseEvent only accepts
+    // integers.
+    x = Math.round(x);
+    y = Math.round(y);
+
     let type = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent({type, x, y});
 
