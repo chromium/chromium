@@ -26,14 +26,11 @@ Runtime.evaluate {
     sessionId : <string>
 }
 Runtime.callFunctionOn {
-    id : <number>
-    result : {
-        result : {
-            description : 17
-            type : number
-            value : 17
-        }
+    error : {
+        code : -32000
+        message : Cannot find context with specified id
     }
+    id : <number>
     sessionId : <string>
 }
 
