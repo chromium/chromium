@@ -14,7 +14,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 using extensions::Extension;
 using extensions::ResultCatcher;
@@ -62,13 +62,11 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
 }
 
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPExtension) {
-  std::unique_ptr<net::SpawnedTestServer> test_server(
-      new net::SpawnedTestServer(
-          net::SpawnedTestServer::TYPE_TCP_ECHO,
-          base::FilePath(FILE_PATH_LITERAL("net/data"))));
-  EXPECT_TRUE(test_server->Start());
+  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTP);
+  test_server.AddDefaultHandlers();
+  EXPECT_TRUE(test_server.Start());
 
-  net::HostPortPair host_port_pair = test_server->host_port_pair();
+  net::HostPortPair host_port_pair = test_server.host_port_pair();
   int port = host_port_pair.port();
   ASSERT_GT(port, 0);
 

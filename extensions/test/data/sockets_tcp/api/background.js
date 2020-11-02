@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// net/tools/testserver/testserver.py is picky about the format of what it
-// calls its "echo" messages. One might go so far as to mutter to oneself that
-// it isn't an echo server at all.
-//
-// The response is based on the request but obfuscated using a random key.
-const request = "0100000005320000005hello";
-var expectedResponsePattern = /0100000005320000005.{11}/;
-const http_get = "GET test.html HTTP/1.0\r\n\r\n";
-var expectedHTTPPattern = /HTTP.1.0 200 OK/;
+// Use an HTTP server configured to echo back the request body as the response
+// body.
+const httpPost =
+    "POST /echo HTTP/1.1\r\n" +
+    "Content-Length: 19\r\n\r\n" +
+    "0100000005320000005";
+var expectedResponsePattern = /\n0100000005320000005$/;
 
 var tcp_address;
 var https_address;
@@ -251,7 +249,7 @@ var testSending = function() {
           "lastError=" + chrome.runtime.lastError.message);
     }
 
-    string2ArrayBuffer(request, function(arrayBuffer) {
+    string2ArrayBuffer(httpPost, function(arrayBuffer) {
       echoDataSent = true;
       chrome.sockets.tcp.send(tcp_socketId, arrayBuffer, onSendComplete);
     });
@@ -278,8 +276,8 @@ var testSending = function() {
   }
 
   function onSocketReceiveError(receiveErrorInfo) {
-    // Note: Once we have sent the "echo" message, the echo server sends back
-    // the "echo" response and closes the connection right away. This means
+    // Note: Once we have sent the echo message, the server sends back
+    // the echo response and closes the connection right away. This means
     // we get a "connection closed" error very quickly after sending our
     // message. This is why we ignore errors from that point on.
     if (echoDataSent)
@@ -365,7 +363,7 @@ var testSecure = function () {
 
   function onUnpauseComplete() {
     console.log("HTTPS onUnpauseComplete");
-    string2ArrayBuffer(http_get, function(arrayBuffer) {
+    string2ArrayBuffer(httpPost, function(arrayBuffer) {
       request_sent = true;
       chrome.sockets.tcp.send(https_socketId, arrayBuffer, onSendComplete);
     });
@@ -389,7 +387,7 @@ var testSecure = function () {
       if (succeeded == false) {
         dataAsString = s;  // for waitForBlockingOperation().
         console.log("HTTPS receive: got " + s);
-        var match = !!s.match(expectedHTTPPattern);
+        var match = !!s.match(expectedResponsePattern);
         chrome.test.assertTrue(match, "Received data does not match.");
         console.log("HTTPS response received, closing socket.");
         chrome.sockets.tcp.close(https_socketId, onCloseComplete);
@@ -439,7 +437,7 @@ var onMessageReply = function(message) {
     if (test_type == 'tcp') {
       tcp_address = parts[1];
       tcp_port = parseInt(parts[2]);
-      console.log("Running tests for TCP, echo server " +
+      console.log("Running tests for TCP, server " +
           tcp_address + ":" + tcp_port);
       tests = tests.concat([testSocketCreation, testSending]);
     } else if (test_type == 'https') {
