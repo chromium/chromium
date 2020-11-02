@@ -383,7 +383,7 @@
   {
     "name": "avatar-toolbar-button",
     "owners": [ "droger", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 92
   },
   {
     "name": "back-forward-cache",
