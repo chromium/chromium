@@ -323,14 +323,6 @@ const extensions::Extension* GetExtensionForOrigin(
 #endif
 }
 
-// Returns whether a browser window can be created for the specified profile.
-bool CanCreateBrowserForProfile(Profile* profile) {
-  return IncognitoModePrefs::CanOpenBrowser(profile) &&
-         (!profile->IsGuestSession() || profile->IsOffTheRecord()) &&
-         profile->AllowsBrowserWindows() &&
-         !ProfileManager::IsProfileDirectoryMarkedForDeletion(
-             profile->GetPath());
-}
 bool IsOnKioskSplashScreen() {
 #if defined(OS_CHROMEOS)
   session_manager::SessionManager* session_manager =
@@ -424,13 +416,28 @@ Browser::CreateParams Browser::CreateParams::CreateForDevTools(
 // Browser, Constructors, Creation, Showing:
 
 // static
-Browser* Browser::Create(const CreateParams& params) {
-  if (!CanCreateBrowserForProfile(params.profile))
-    return nullptr;
-  // Disable browser creation on kiosk mode while loading.
-  if (IsOnKioskSplashScreen())
-    return nullptr;
+Browser::BrowserCreationStatus Browser::GetBrowserCreationStatusForProfile(
+    Profile* profile) {
+  if (!g_browser_process || g_browser_process->IsShuttingDown())
+    return BrowserCreationStatus::kErrorNoProcess;
 
+  if (!IncognitoModePrefs::CanOpenBrowser(profile) ||
+      (profile->IsGuestSession() && !profile->IsOffTheRecord()) ||
+      !profile->AllowsBrowserWindows() ||
+      ProfileManager::IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
+    return BrowserCreationStatus::kErrorProfileUnsuitable;
+  }
+
+  if (IsOnKioskSplashScreen())
+    return BrowserCreationStatus::kErrorLoadingKiosk;
+
+  return BrowserCreationStatus::kOk;
+}
+
+// static
+Browser* Browser::Create(const CreateParams& params) {
+  CHECK_EQ(BrowserCreationStatus::kOk,
+           GetBrowserCreationStatusForProfile(params.profile));
   return new Browser(params);
 }
 
@@ -472,12 +479,6 @@ Browser::Browser(const CreateParams& params)
           std::make_unique<extensions::ExtensionBrowserWindowHelper>(this))
 #endif
 {
-  // TODO(crbug.com/967603): remove when root cause is found.
-  CHECK(g_browser_process);
-  CHECK(!g_browser_process->IsShuttingDown());
-
-  CHECK(CanCreateBrowserForProfile(profile_));
-
   tab_strip_model_->AddObserver(this);
 
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(

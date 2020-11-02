@@ -186,6 +186,14 @@ class Browser : public TabStripModelObserver,
   // See WarnBeforeClosingCallback and WarnBeforeClosing() below.
   enum class WarnBeforeClosingResult { kOkToClose, kDoNotClose };
 
+  // Represents the result of a browser creation request.
+  enum class BrowserCreationStatus {
+    kOk,
+    kErrorNoProcess,
+    kErrorProfileUnsuitable,
+    kErrorLoadingKiosk,
+  };
+
   // Callback that receives the result of a user being warned about closing a
   // browser window (for example, if closing the window would interrupt a
   // download). The parameter is whether the close should proceed.
@@ -278,7 +286,7 @@ class Browser : public TabStripModelObserver,
   // Constructors, Creation, Showing //////////////////////////////////////////
 
   // Creates a browser instance with the provided params.
-  // Returns nullptr if the requested browser creation is not allowed.
+  // Crashes if the requested browser creation is not allowed.
   // For example, browser creation will not be allowed for profiles that
   // disallow browsing (like sign-in profile on Chrome OS).
   //
@@ -289,6 +297,10 @@ class Browser : public TabStripModelObserver,
   // If |params.window| or |params.skip_window_init_for_testing| are set, the
   // caller is expected to take the ownership of the created Browser instance.
   static Browser* Create(const CreateParams& params);
+
+  // Returns whether a browser window can be created for the specified profile.
+  static BrowserCreationStatus GetBrowserCreationStatusForProfile(
+      Profile* profile);
 
   ~Browser() override;
 

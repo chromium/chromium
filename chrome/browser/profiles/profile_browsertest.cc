@@ -910,10 +910,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   Profile* otr_profile =
       browser()->profile()->GetOffTheRecordProfile(otr_profile_id);
 
-  EXPECT_EQ(nullptr, Browser::Create(Browser::CreateParams(
-                         otr_profile, /* user_gesture = */ true)));
-  EXPECT_EQ(nullptr, Browser::Create(Browser::CreateParams(
-                         otr_profile, /* user_gesture = */ false)));
+  EXPECT_EQ(Browser::BrowserCreationStatus::kErrorProfileUnsuitable,
+            Browser::GetBrowserCreationStatusForProfile(otr_profile));
 }
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)

@@ -86,17 +86,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, NavigateToOSSettings) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
-  NavigateParams params(MakeNavigateParams());
-  params.url = GetGoogleURL();
-  params.transition = ui::PageTransition::PAGE_TRANSITION_LINK;
-  // Replace profile.
-  params.initiating_profile = chromeos::ProfileHelper::GetSigninProfile();
-  // Delete browser, because there is no browser associated with Signin profile.
-  params.browser = nullptr;
-  Navigate(&params);
-
-  // Expect there is no new browser window created.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(Browser::BrowserCreationStatus::kErrorProfileUnsuitable,
+            Browser::GetBrowserCreationStatusForProfile(
+                chromeos::ProfileHelper::GetSigninProfile()));
 }
 
 // This test verifies that the settings page is opened in a new browser window.
