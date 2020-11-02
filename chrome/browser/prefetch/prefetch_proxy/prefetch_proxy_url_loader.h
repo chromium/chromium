@@ -20,7 +20,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 // An URL loader that allows access to otherwise enclosed state like the
-// URLLoaderFactory for isolated prerendering.
+// URLLoaderFactory for prefetch proxy.
 class PrefetchProxyURLLoader : public network::mojom::URLLoader,
                                public network::mojom::URLLoaderClient {
  public:

@@ -10,7 +10,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 // This is a NetworkContextClient that purposely does nothing so that no extra
-// network traffic can occur during an Isolated Prerender, potentially causing a
+// network traffic can occur during a Prefetch Proxy, potentially causing a
 // privacy leak to the user.
 class PrefetchProxyNetworkContextClient
     : public network::mojom::NetworkContextClient {

@@ -157,8 +157,8 @@ class PrefetchProxyTabHelper
   static content::ServiceWorkerContext* GetServiceWorkerContext(
       Profile* profile);
 
-  // Used to determine if |url| is eligible for isolated prefetching. Also gives
-  // a reason in |status| if one is applicable.
+  // Used to determine if |url| is eligible for prefetch proxy. Also gives a
+  // reason in |status| if one is applicable.
   using OnEligibilityResultCallback = base::OnceCallback<void(
       const GURL& url,
       bool eligible,

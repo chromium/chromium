@@ -984,7 +984,7 @@ TEST_F(PrefetchProxyTabHelperTest, UserSettingDisabled) {
       "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0);
 }
 
-// Verify that isolated prerender is not triggered if the predictions for next
+// Verify that prefetch proxy is not triggered if the predictions for next
 // likely navigations are provided by external Android app.
 TEST_F(PrefetchProxyTabHelperTest, ExternalAndroidApp) {
   base::test::ScopedFeatureList scoped_feature_list;

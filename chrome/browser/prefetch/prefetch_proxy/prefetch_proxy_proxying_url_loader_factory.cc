@@ -74,9 +74,8 @@ void SingleURLEligibilityCheckResult(
 }
 
 // This method checks every url in |resources|, checking if it is eligible to be
-// cached by Isolated Prerender. If every element is eligible, then all urls are
-// run on |callback|. If even a single url is not eligible, |callback| is never
-// run.
+// cached by Prefetch Proxy. If every element is eligible, then all urls are run
+// on |callback|. If even a single url is not eligible, |callback| is never run.
 void CheckRedirectsBeforeRunningResourceSuccessfulCallback(
     Profile* profile,
     const std::vector<GURL>& resources,

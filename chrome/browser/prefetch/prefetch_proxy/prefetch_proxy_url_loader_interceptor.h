@@ -26,7 +26,7 @@ class BrowserContext;
 
 class PrefetchedMainframeResponseContainer;
 
-// Intercepts prerender navigations that are eligible to be isolated.
+// Intercepts prefetch proxy navigations that are eligible to be isolated.
 class PrefetchProxyURLLoaderInterceptor
     : public content::URLLoaderRequestInterceptor {
  public:

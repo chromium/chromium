@@ -24,7 +24,7 @@ namespace content {
 class RenderFrameHost;
 }
 
-// This service owns browser-level objects used in Isolated Prerenders.
+// This service owns browser-level objects used in Prefetch Proxy.
 class PrefetchProxyService : public KeyedService {
  public:
   explicit PrefetchProxyService(Profile* profile);
@@ -74,7 +74,7 @@ class PrefetchProxyService : public KeyedService {
   // The current profile, not owned.
   Profile* profile_;
 
-  // The custom proxy configurator for Isolated Prerenders.
+  // The custom proxy configurator for Prefetch Proxy.
   std::unique_ptr<PrefetchProxyProxyConfigurator> proxy_configurator_;
 
   // The origin prober class which manages all logic for origin probing.

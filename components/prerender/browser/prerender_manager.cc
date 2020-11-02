@@ -912,8 +912,8 @@ void PrerenderManager::SkipPrerenderContentsAndMaybePreconnect(
   histograms_->RecordFinalStatus(origin, final_status);
 
   if (origin == ORIGIN_ISOLATED_PRERENDER) {
-    // Isolated Prerenders should not preconnect since that can't be done in a
-    // fully isolated way.
+    // Prefetch Proxy should not preconnect since that can't be done in a fully
+    // isolated way.
     return;
   }
 

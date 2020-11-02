@@ -67,12 +67,12 @@ void PrefetchProxyURLLoader::BindAndStart(
       net::MutableNetworkTrafficAnnotationTag(
           net::DefineNetworkTrafficAnnotation("prefetch_proxy_loader", R"(
           semantics {
-            sender: "Isolated Prerender Loader"
+            sender: "Prefetch Proxy Loader"
             description:
-              "Loads a webpage resource during an isolated prerender. This is "
-              "a prerender which is done in total isolation from other user "
-              "browsing data like cookies or cache state. Such prerenders will "
-              "be used to prefetch render-blocking content before being "
+              "Loads a webpage resource during a proxied prefetch. This is a "
+              "prefetcher which is done in total isolation from other user "
+              "browsing data like cookies or cache state. Such prefetches "
+              "will be used to prefetch render-blocking content before being "
               "navigated by the user without impacting privacy."
             trigger:
               "Used for sites off of Google SRPs (Search Result Pages) only "

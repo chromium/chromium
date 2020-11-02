@@ -36,7 +36,7 @@ class PrefetchedMainframeResponseContainer;
 class PrefetchProxyPrefetchMetricsCollector;
 class PrefetchProxyProxyingURLLoaderFactory;
 
-// This class manages the isolated prerender of a page and its subresources.
+// This class manages the prefetch proxy of a page and its subresources.
 class PrefetchProxySubresourceManager
     : public prerender::PrerenderHandle::Observer,
       public PrefetchProxyProxyingURLLoaderFactory::ResourceMetricsObserver {
@@ -72,7 +72,7 @@ class PrefetchProxySubresourceManager
   std::unique_ptr<PrefetchedMainframeResponseContainer> TakeMainframeResponse();
 
   // Gives |this| a callback to create the isolated URL Loader factory to use
-  // for Isolated Prerenders.
+  // for Prefetch Proxy.
   void SetCreateIsolatedLoaderFactoryCallback(
       CreateIsolatedLoaderFactoryRepeatingCallback callback);
 

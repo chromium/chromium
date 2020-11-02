@@ -15,7 +15,7 @@
 class AvailabilityProber;
 class Profile;
 
-// This class handles all probing and canary checks for the isolated prerender
+// This class handles all probing and canary checks for the prefetch proxy
 // feature. Calling code should use |ShouldProbeOrigins| to determine if a probe
 // is needed before using prefetched resources and if so, call |Probe|. See
 // http://crbug.com/1109992 for more details.

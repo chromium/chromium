@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "url/gurl.h"
 
-// This command line flag enables NoStatePrefetch on Isolated Prerenders.
+// This command line flag enables NoStatePrefetch on Prefetch Proxy.
 extern const char kIsolatedPrerenderEnableNSPCmdLineFlag[];
 
 // Overrides the value returned by
