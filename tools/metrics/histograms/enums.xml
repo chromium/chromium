@@ -69908,6 +69908,31 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="16" label="Browser crash count"/>
 </enum>
 
+<enum name="StabilityPageLoadType">
+  <summary>
+    Load types included in the &quot;Total pageloads&quot; shown on the
+    stability dashboard.
+  </summary>
+  <int value="0" label="Visible tab - Main frame different document"/>
+  <int value="1" label="Visible tab - Sub frame different document"/>
+  <int value="2" label="Visible tab - Main frame same document"/>
+  <int value="3" label="Visible tab - Sub frame same document"/>
+  <int value="4" label="Visible tab - No commit"/>
+  <int value="5" label="Hidden tab - Main frame different document"/>
+  <int value="6" label="Hidden tab - Sub frame different document"/>
+  <int value="7" label="Hidden tab - Main frame same document"/>
+  <int value="8" label="Hidden tab - Sub frame same document"/>
+  <int value="9" label="Hidden tab - No commit"/>
+  <int value="10" label="Prerender - Main frame different document"/>
+  <int value="11" label="Prerender - Sub frame different document"/>
+  <int value="12" label="Prerender - Main frame same document"/>
+  <int value="13" label="Prerender - Sub frame same document"/>
+  <int value="14" label="Prerender - No commit"/>
+  <int value="15" label="Extension background page"/>
+  <int value="16" label="DevTools"/>
+  <int value="17" label="Unknown"/>
+</enum>
+
 <enum name="StandardActions">
   <summary>
     Standard Activity Actions, as defined by

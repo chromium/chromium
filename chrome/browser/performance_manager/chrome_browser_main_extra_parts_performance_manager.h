@@ -26,6 +26,7 @@ namespace performance_manager {
 class BrowserChildProcessWatcher;
 class Graph;
 class PageLiveStateDecoratorHelper;
+class PageLoadMetricsObserver;
 class PageLoadTrackerDecoratorHelper;
 class PerformanceManager;
 class PerformanceManagerFeatureObserverClient;
@@ -76,6 +77,10 @@ class ChromeBrowserMainExtraPartsPerformanceManager
       browser_child_process_watcher_;
 
   ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+
+  // Needed to record "Pageloads" metrics.
+  std::unique_ptr<performance_manager::PageLoadMetricsObserver>
+      page_load_metrics_observer_;
 
   // Needed to maintain some of the PageLiveStateDecorator' properties.
   std::unique_ptr<performance_manager::PageLiveStateDecoratorHelper>

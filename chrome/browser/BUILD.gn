@@ -1105,6 +1105,8 @@ static_library("browser") {
     "performance_manager/observers/isolation_context_metrics.h",
     "performance_manager/observers/metrics_collector.cc",
     "performance_manager/observers/metrics_collector.h",
+    "performance_manager/observers/page_load_metrics_observer.cc",
+    "performance_manager/observers/page_load_metrics_observer.h",
     "performance_manager/policies/policy_features.cc",
     "performance_manager/policies/policy_features.h",
     "performance_manager/policies/working_set_trimmer_policy.cc",

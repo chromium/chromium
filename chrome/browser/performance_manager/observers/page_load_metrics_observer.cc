@@ -1,0 +1,278 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
+
+#include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
+#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/prerender/browser/prerender_manager.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/process_manager.h"
+#endif
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#else
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/ui/browser_finder.h"
+#endif
+
+namespace performance_manager {
+
+namespace {
+
+enum class WebContentsType {
+  kTab,
+  kPrerender,
+  kExtension,
+  kDevTools,
+  kUnknown,
+};
+
+// Types of navigations that can occur during a "pageload". If multiple
+// navigations occur during the same "pageload", the lowest value is used to
+// determine the type of the "pageload". "Different-document" navigations are
+// first because they consume more resources than "same-document" navigations,
+// and we want to be able to identify resource-consuming "pageloads". Values in
+// this enum are used as offset from *Base values in the LoadType enum below.
+enum class NavigationType {
+  kMainFrameDifferentDocument = 0,
+  kSubFrameDifferentDocument = 1,
+  kMainFrameSameDocument = 2,
+  kSubFrameSameDocument = 3,
+  kNoCommit = 4,
+};
+
+// This enum matches "StabilityPageLoadType" in enums.xml. The ordering
+// of values must match the ordering of values in the NavigationType enum.
+enum class LoadType {
+  kVisibleTabBase = 0,
+  kVisibleTabMainFrameDifferentDocument = 0,
+  kVisibleTabSubFrameDifferentDocument = 1,
+  kVisibleTabMainFrameSameDocument = 2,
+  kVisibleTabSubFrameSameDocument = 3,
+  kVisibleTabNoCommit = 4,
+
+  kHiddenTabBase = 5,
+  kHiddenTabMainFrameDifferentDocument = 5,
+  kHiddenTabSubFrameDifferentDocument = 6,
+  kHiddenTabMainFrameSameDocument = 7,
+  kHiddenTabSubFrameSameDocument = 8,
+  kHiddenTabNoCommit = 9,
+
+  kPrerenderBase = 10,
+  kPrerenderMainFrameDifferentDocument = 10,
+  kPrerenderSubFrameDifferentDocument = 11,
+  kPrerenderMainFrameSameDocument = 12,
+  kPrerenderSubFrameSameDocument = 13,
+  kPrerenderNoCommit = 14,
+
+  kExtension = 15,
+  kDevTools = 16,
+
+  kUnknown = 17,
+
+  kMaxValue = kUnknown,
+};
+
+// Listens to content::WebContentsObserver notifications and records metrics
+// for a given WebContents.
+class PageLoadMetricsWebContentsObserver
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<PageLoadMetricsWebContentsObserver> {
+ public:
+  explicit PageLoadMetricsWebContentsObserver(
+      content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  PageLoadMetricsWebContentsObserver(
+      const PageLoadMetricsWebContentsObserver&) = delete;
+  PageLoadMetricsWebContentsObserver& operator=(
+      const PageLoadMetricsWebContentsObserver&) = delete;
+
+  ~PageLoadMetricsWebContentsObserver() override = default;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+ private:
+  WebContentsType GetWebContentsType();
+
+  bool IsTab() const;
+  bool IsExtension() const;
+  bool IsDevTools() const;
+  bool IsPrerender() const;
+
+  // content::WebContentsObserver:
+  void DidStartLoading() override;
+  void DidStopLoading() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  WebContentsType cached_web_contents_type_ = WebContentsType::kUnknown;
+
+  bool is_loading_ = false;
+  NavigationType navigation_type_ = NavigationType::kNoCommit;
+};
+
+WebContentsType PageLoadMetricsWebContentsObserver::GetWebContentsType() {
+  // The WebContents type cannot change from kTab, kExtension or kDevTools.
+  if (cached_web_contents_type_ == WebContentsType::kTab ||
+      cached_web_contents_type_ == WebContentsType::kExtension ||
+      cached_web_contents_type_ == WebContentsType::kDevTools) {
+    return cached_web_contents_type_;
+  }
+
+  if (IsTab()) {
+    cached_web_contents_type_ = WebContentsType::kTab;
+  } else if (IsExtension()) {
+    cached_web_contents_type_ = WebContentsType::kExtension;
+  } else if (IsDevTools()) {
+    cached_web_contents_type_ = WebContentsType::kDevTools;
+  } else if (IsPrerender()) {
+    cached_web_contents_type_ = WebContentsType::kPrerender;
+  }
+
+  return cached_web_contents_type_;
+}
+
+bool PageLoadMetricsWebContentsObserver::IsTab() const {
+#if defined(OS_ANDROID)
+  return !!TabAndroid::FromWebContents(web_contents());
+#else
+  return !!chrome::FindBrowserWithWebContents(web_contents());
+#endif
+}
+
+bool PageLoadMetricsWebContentsObserver::IsExtension() const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return !!extensions::ProcessManager::Get(web_contents()->GetBrowserContext())
+               ->GetExtensionForWebContents(web_contents());
+#else
+  return false;
+#endif
+}
+
+bool PageLoadMetricsWebContentsObserver::IsPrerender() const {
+  auto* prerender_manager =
+      prerender::PrerenderManagerFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+  if (!prerender_manager)
+    return false;
+  return prerender_manager->IsWebContentsPrerendering(web_contents());
+}
+
+bool PageLoadMetricsWebContentsObserver::IsDevTools() const {
+#if defined(OS_ANDROID)
+  return false;
+#else
+  return DevToolsWindow::IsDevToolsWindow(web_contents());
+#endif
+}
+
+void PageLoadMetricsWebContentsObserver::DidStartLoading() {
+  DCHECK(!is_loading_);
+  DCHECK(web_contents()->IsLoading());
+  is_loading_ = true;
+}
+
+void PageLoadMetricsWebContentsObserver::DidStopLoading() {
+  if (!is_loading_)
+    return;
+
+  const WebContentsType web_contents_type = GetWebContentsType();
+  LoadType load_type;
+
+  switch (web_contents_type) {
+    case WebContentsType::kTab: {
+      if (web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
+        load_type =
+            static_cast<LoadType>(static_cast<int>(LoadType::kVisibleTabBase) +
+                                  static_cast<int>(navigation_type_));
+      } else {
+        load_type =
+            static_cast<LoadType>(static_cast<int>(LoadType::kHiddenTabBase) +
+                                  static_cast<int>(navigation_type_));
+      }
+      break;
+    }
+    case WebContentsType::kPrerender: {
+      load_type =
+          static_cast<LoadType>(static_cast<int>(LoadType::kPrerenderBase) +
+                                static_cast<int>(navigation_type_));
+      break;
+    }
+    case WebContentsType::kExtension: {
+      load_type = LoadType::kExtension;
+      break;
+    }
+    case WebContentsType::kDevTools: {
+      load_type = LoadType::kDevTools;
+      break;
+    }
+    case WebContentsType::kUnknown: {
+      load_type = LoadType::kUnknown;
+      break;
+    }
+  }
+
+  is_loading_ = false;
+  navigation_type_ = NavigationType::kNoCommit;
+
+  base::UmaHistogramEnumeration("Stability.Experimental.PageLoads", load_type);
+}
+
+void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted())
+    return;
+
+  DCHECK(is_loading_);
+
+  NavigationType navigation_type;
+  if (navigation_handle->IsSameDocument()) {
+    if (navigation_handle->IsInMainFrame())
+      navigation_type = NavigationType::kMainFrameSameDocument;
+    else
+      navigation_type = NavigationType::kSubFrameSameDocument;
+  } else {
+    if (navigation_handle->IsInMainFrame())
+      navigation_type = NavigationType::kMainFrameDifferentDocument;
+    else
+      navigation_type = NavigationType::kSubFrameDifferentDocument;
+  }
+
+  // Replace the navigation type of the current load only if the current
+  // navigation has a lower value than previously seen navigations within the
+  // current load.
+  if (navigation_type < navigation_type_)
+    navigation_type_ = navigation_type;
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageLoadMetricsWebContentsObserver)
+
+}  // namespace
+
+PageLoadMetricsObserver::PageLoadMetricsObserver() {
+  PerformanceManager::AddObserver(this);
+}
+
+PageLoadMetricsObserver::~PageLoadMetricsObserver() {
+  PerformanceManager::RemoveObserver(this);
+}
+
+void PageLoadMetricsObserver::OnPageNodeCreatedForWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  PageLoadMetricsWebContentsObserver::CreateForWebContents(web_contents);
+}
+
+}  // namespace performance_manager

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/chrome_browser_main_extra_parts_performance_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
 #include "chrome/browser/performance_manager/observers/isolation_context_metrics.h"
 #include "chrome/browser/performance_manager/observers/metrics_collector.h"
+#include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 #include "chrome/browser/performance_manager/policies/high_pmf_discard_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -178,6 +180,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
   g_browser_process->profile_manager()->AddObserver(this);
 
+  page_load_metrics_observer_ =
+      std::make_unique<performance_manager::PageLoadMetricsObserver>();
   page_live_state_data_helper_ =
       std::make_unique<performance_manager::PageLiveStateDecoratorHelper>();
   page_load_tracker_decorator_helper_ =
@@ -195,6 +199,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
 
   page_load_tracker_decorator_helper_.reset();
   page_live_state_data_helper_.reset();
+  page_load_metrics_observer_.reset();
 
   // There may still be worker hosts, WebContents and RenderProcessHosts with
   // attached user data, retaining WorkerNodes, PageNodes, FrameNodes and
