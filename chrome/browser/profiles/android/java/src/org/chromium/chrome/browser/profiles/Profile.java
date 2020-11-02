@@ -77,17 +77,6 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns the primary OffTheRecord profile.
-     *
-     * @deprecated use {@link #getOffTheRecordProfile(OTRProfileID)} or {@link
-     *         #getPrimaryOTRProfile()} instead.
-     */
-    @Deprecated
-    public Profile getOffTheRecordProfile() {
-        return getPrimaryOTRProfile();
-    }
-
-    /**
      * Returns the OffTheRecord profile with given OTRProfileiD.
      *
      * @param profileID {@link OTRProfileID} object.

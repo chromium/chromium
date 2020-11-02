@@ -1149,7 +1149,7 @@ public class DownloadManagerService implements DownloadController.Observer,
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             Profile profile = info.isOffTheRecord()
-                    ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile()
+                    ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile()
                     : Profile.getLastUsedRegularProfile();
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_COMPLETED);

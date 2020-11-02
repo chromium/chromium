@@ -65,7 +65,7 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
             if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
                 if (Profile.getLastUsedRegularProfile().hasOffTheRecordProfile()) {
                     Profile.getLastUsedRegularProfile()
-                            .getOffTheRecordProfile()
+                            .getPrimaryOTRProfile()
                             .destroyWhenAppropriate();
                 }
             }

@@ -32,7 +32,7 @@ public class DownloadManagerCoordinatorFactoryHelper {
             DownloadManagerUiConfig config, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager) {
         Profile profile = config.isOffTheRecord
-                ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile()
+                ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile()
                 : Profile.getLastUsedRegularProfile();
         LegacyDownloadProvider legacyProvider =
                 config.useNewDownloadPath ? null : new LegacyDownloadProviderImpl();
