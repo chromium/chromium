@@ -4,12 +4,15 @@
 
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 
+#include <random>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 
 namespace blink {
@@ -81,14 +84,40 @@ class ThreadsafeSettingsWrapper {
   base::AtomicFlag initialized_;
 };
 
+// RandGenerator de-biasing implementation stolen from //base/rand_util.h, and
+// adapted to work with passed-in RNGs.
+template <typename G>
+uint64_t RandGenerator(uint64_t range, G& generator) {
+  DCHECK_GT(range, 0u);
+  // We must discard random results above this number, as they would
+  // make the random generator non-uniform (consider e.g. if
+  // MAX_UINT64 was 7 and |range| was 5, then a result of 1 would be twice
+  // as likely as a result of 3 or 4).
+  uint64_t max_acceptable_value =
+      (std::numeric_limits<uint64_t>::max() / range) * range - 1;
+
+  uint64_t value;
+  do {
+    value = generator();
+  } while (value > max_acceptable_value);
+
+  return value % range;
+}
+
 bool DecideSample(int sample_rate) {
+  static base::NoDestructor<base::SequenceLocalStorageSlot<std::mt19937_64>>
+      prng;
+
   if (sample_rate == 0)
     return false;
 
   if (sample_rate == 1)
     return true;
 
-  return base::RandGenerator(sample_rate) == 0;
+  if (!prng->GetValuePointer())
+    prng->emplace(base::RandUint64());
+
+  return RandGenerator(sample_rate, **prng) == 0;
 }
 
 }  // namespace
