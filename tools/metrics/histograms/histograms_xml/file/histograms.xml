@@ -241,15 +241,71 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.Load" units="ms" expires_after="M92">
+<histogram name="FileBrowser.Load{FileBrowserLoad}" units="ms"
+    expires_after="M92">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
     Chrome OS File Browser is an built-in extension without a background page.
     Its main.html file is loaded every time the user opens a File Browser tab or
     a file chooser dialog. The file is fairly large and the initialization is
-    pretty expensive.
+    pretty expensive. {FileBrowserLoad}
   </summary>
+  <token key="FileBrowserLoad">
+    <variant name=""/>
+    <variant name=".BackgroundLaunch"
+        summary="Time from onLaunched event is called to the window is
+                 created."/>
+    <variant name=".BackgroundRestart"
+        summary="Time to create a window on restart."/>
+    <variant name=".BackgroundScript"
+        summary="Time to initialize backend script to wait for events."/>
+    <variant name=".Construct"
+        summary="Time spent constructing the main Javascript object.">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".DOM" summary="Time to initialize DOM.">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".FileSystem"
+        summary="Time to get access to the local file system.">
+      <obsolete>
+        Deprecated as of 9/2013.
+      </obsolete>
+    </variant>
+    <variant name=".ImportElements"
+        summary="Time to initialize the polymer elements."/>
+    <variant name=".InitBackgroundPage"
+        summary="Time to initialize the background page."/>
+    <variant name=".InitDocuments"
+        summary="Time to initialize the background page and the elements."/>
+    <variant name=".InitSettings" summary="Time to restore user settings."/>
+    <variant name=".InitUI"
+        summary="Time to initialize all UI after all elements are
+                 initialized."/>
+    <variant name=".Parse"
+        summary="Time to parse Javascript and CSS (Deprecated).">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".ProcessInitialSearchQuery"
+        summary="Time to process LaunchParam.searchQuery (time to find a
+                 query-matched directory)."/>
+    <variant name=".Roots" summary="Time to enumerate file system roots.">
+      <obsolete>
+        Deprecated as of 12/2016.
+      </obsolete>
+    </variant>
+    <variant name=".Script" summary="Time to parse Javascript and CSS."/>
+    <variant name=".Total"
+        summary="Total load time from the moment the Javascript started
+                 parsing till the moment the empty file list is displayed."/>
+  </token>
 </histogram>
 
 <histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.NonTopLevel"

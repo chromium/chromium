@@ -6505,58 +6505,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="FileBrowser.CrostiniSharedPaths.Depth"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FileBrowserLoad" separator=".">
-  <suffix name="BackgroundLaunch"
-      label="Time from onLaunched event is called to the window is created."/>
-  <suffix name="BackgroundRestart" label="Time to create a window on restart."/>
-  <suffix name="BackgroundScript"
-      label="Time to initialize backend script to wait for events."/>
-  <suffix name="Construct"
-      label="Time spent constructing the main Javascript object.">
-    <obsolete>
-      Deprecated as of 12/2016.
-    </obsolete>
-  </suffix>
-  <suffix name="DOM" label="Time to initialize DOM.">
-    <obsolete>
-      Deprecated as of 12/2016.
-    </obsolete>
-  </suffix>
-  <suffix name="FileSystem"
-      label="Time to get access to the local file system.">
-    <obsolete>
-      Deprecated as of 9/2013.
-    </obsolete>
-  </suffix>
-  <suffix name="ImportElements"
-      label="Time to initialize the polymer elements."/>
-  <suffix name="InitBackgroundPage"
-      label="Time to initialize the background page."/>
-  <suffix name="InitDocuments"
-      label="Time to initialize the background page and the elements."/>
-  <suffix name="InitSettings" label="Time to restore user settings."/>
-  <suffix name="InitUI"
-      label="Time to initialize all UI after all elements are initialized."/>
-  <suffix name="Parse" label="Time to parse Javascript and CSS (Deprecated).">
-    <obsolete>
-      Deprecated as of 12/2016.
-    </obsolete>
-  </suffix>
-  <suffix name="ProcessInitialSearchQuery"
-      label="Time to process LaunchParam.searchQuery (time to find a
-             query-matched directory)."/>
-  <suffix name="Roots" label="Time to enumerate file system roots.">
-    <obsolete>
-      Deprecated as of 12/2016.
-    </obsolete>
-  </suffix>
-  <suffix name="Script" label="Time to parse Javascript and CSS."/>
-  <suffix name="Total"
-      label="Total load time from the moment the Javascript started parsing
-             till the moment the empty file list is displayed."/>
-  <affected-histogram name="FileBrowser.Load"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FileOperations" separator=".">
   <suffix name="DeleteFile.NonRecursive" label=""/>
   <suffix name="DeleteFile.Recursive" label=""/>
