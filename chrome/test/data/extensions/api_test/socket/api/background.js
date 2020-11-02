@@ -9,13 +9,9 @@ const tcpRequest = "POST /echo HTTP/1.1\r\n" +
     "0100000005320000005";
     const tcpExpectedResponsePattern = /\n0100000005320000005$/;
 
-// UDP tests use net/tools/testserver/testserver.py, which is picky about the
-// format of what it calls its UDP "echo" messages. One might go so far as to
-// mutter to oneself that it isn't an echo server at all.
-//
-// The response is based on the request but obfuscated using a random key.
-const udpRequest = "0100000005320000005hello";
-const udpExpectedResponsePattern = /0100000005320000005.{11}/;
+// UDP tests use a server that just echoes back the request.
+const udpRequest = "0100000005320000005";
+const udpExpectedResponsePattern = /^0100000005320000005$/;
 
 const socket = chrome.socket;
 var address;

@@ -543,6 +543,8 @@ source_set("browser_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "api/sockets_udp/test_udp_echo_server.cc",
+    "api/sockets_udp/test_udp_echo_server.h",
     "browsertest_util.cc",
     "browsertest_util.h",
     "preload_check_test_util.cc",

@@ -2145,6 +2145,7 @@ if (!is_android) {
         # should be deleted and this line removed. See the
         # chrome_extensions_browsertests target for more.
         "//extensions:chrome_extensions_browsertests",
+        "//extensions/browser:test_support",
         "//extensions/common/api",
       ]
 

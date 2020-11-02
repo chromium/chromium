@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// net/tools/testserver/testserver.py is picky about the format of what it
-// calls its "echo" messages. One might go so far as to mutter to oneself that
-// it isn't an echo server at all.
-//
-// The response is based on the request but obfuscated using a random key.
 const request = "0100000005320000005hello";
-var expectedResponsePattern = /0100000005320000005.{11}/;
 
 var address;
 var bytesSent = 0;
@@ -141,10 +135,9 @@ var testSending = function() {
     console.log("received bytes on from echo server: " + info.data.byteLength +
       "(" + info.socketId + ")");
     if (localSocketId == info.socketId) {
-      arrayBuffer2String(info.data, function(s) {
-        dataAsString = s;  // save this for error reporting
-        var match = !!s.match(expectedResponsePattern);
-        chrome.test.assertTrue(match, "Received data does not match.");
+      arrayBuffer2String(info.data, function(response) {
+        dataAsString = response;  // save this for error reporting
+        chrome.test.assertEq(request, response);
         chrome.sockets.udp.close(localSocketId, function () {
           chrome.sockets.udp.onReceive.removeListener(onReceive);
           chrome.sockets.udp.onReceiveError.removeListener(onReceiveError);

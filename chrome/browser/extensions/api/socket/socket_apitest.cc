@@ -11,10 +11,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/socket/socket_api.h"
+#include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 
 using extensions::Extension;
 using extensions::ResultCatcher;
@@ -35,13 +35,10 @@ class SocketApiTest : public extensions::ExtensionApiTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
-  std::unique_ptr<net::SpawnedTestServer> test_server(
-      new net::SpawnedTestServer(
-          net::SpawnedTestServer::TYPE_UDP_ECHO,
-          base::FilePath(FILE_PATH_LITERAL("net/data"))));
-  EXPECT_TRUE(test_server->Start());
+  extensions::TestUdpEchoServer udp_echo_server;
+  net::HostPortPair host_port_pair;
+  ASSERT_TRUE(udp_echo_server.Start(&host_port_pair));
 
-  net::HostPortPair host_port_pair = test_server->host_port_pair();
   int port = host_port_pair.port();
   ASSERT_GT(port, 0);
 
