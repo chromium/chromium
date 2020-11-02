@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
@@ -75,7 +74,6 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1143805")
     public void fillFormFieldWithText() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
@@ -106,9 +104,10 @@ public class AutofillAssistantInputActionIntegrationTest {
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_keystrokes)
-                                         .addValue(KeyPress.newBuilder().setText("Keystrokes"))
+                                         .addValue(KeyPress.newBuilder().setText("Keystrokes1"))
                                          .setFillStrategy(
-                                                 KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
+                                                 KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES)
+                                         .setDelayInMillisecond(0))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
@@ -122,16 +121,16 @@ public class AutofillAssistantInputActionIntegrationTest {
                 (SelectorProto) SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input3"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_keystrokes_select)
-                                         .addValue(
-                                                 KeyPress.newBuilder().setText("Keystrokes Select"))
-                                         .setFillStrategy(
-                                                 KeyboardValueFillStrategy
-                                                         .SIMULATE_KEY_PRESSES_SELECT_VALUE))
-                         .build());
+        list.add(
+                (ActionProto) ActionProto.newBuilder()
+                        .setSetFormValue(
+                                SetFormFieldValueProto.newBuilder()
+                                        .setElement(element_keystrokes_select)
+                                        .addValue(KeyPress.newBuilder().setText("Keystrokes2"))
+                                        .setFillStrategy(KeyboardValueFillStrategy
+                                                                 .SIMULATE_KEY_PRESSES_SELECT_VALUE)
+                                        .setDelayInMillisecond(0))
+                        .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Keystrokes with Select")
@@ -144,15 +143,15 @@ public class AutofillAssistantInputActionIntegrationTest {
                 (SelectorProto) SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input4"))
                         .build();
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setSetFormValue(
-                                SetFormFieldValueProto.newBuilder()
-                                        .setElement(element_keystrokes_focus)
-                                        .addValue(KeyPress.newBuilder().setText("Keystrokes Focus"))
-                                        .setFillStrategy(
-                                                KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSetFormValue(
+                                 SetFormFieldValueProto.newBuilder()
+                                         .setElement(element_keystrokes_focus)
+                                         .addValue(KeyPress.newBuilder().setText("Keystrokes3"))
+                                         .setFillStrategy(
+                                                 KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES)
+                                         .setDelayInMillisecond(0))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Keystrokes with Focus")
@@ -175,19 +174,22 @@ public class AutofillAssistantInputActionIntegrationTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Set value"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("Set Value"));
         onView(withText("Continue")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Keystrokes"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("Keystrokes"));
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("Keystrokes1"));
         onView(withText("Continue")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Keystrokes with Select"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "input3"), is("Keystrokes Select"));
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input3"), is("Keystrokes2"));
         onView(withText("Continue")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Keystrokes with Focus"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "input4"), is("Keystrokes Focus"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "input4"), is("Keystrokes3"));
     }
 
     @Test
@@ -268,10 +270,12 @@ public class AutofillAssistantInputActionIntegrationTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Clear value"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is(""));
         onView(withText("Continue")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Clear value Keystrokes"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is(""));
         onView(withText("Continue")).perform(click());
 
@@ -342,10 +346,12 @@ public class AutofillAssistantInputActionIntegrationTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Value Match"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("one"));
         onView(withText("Continue")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Label Match"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
         onView(withText("Continue")).perform(click());
 
@@ -419,10 +425,12 @@ public class AutofillAssistantInputActionIntegrationTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Click"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_one"));
         onView(withText("Continue")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Tap"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_five"));
         onView(withText("Continue")).perform(click());
 
