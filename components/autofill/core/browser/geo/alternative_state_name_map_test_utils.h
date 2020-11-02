@@ -23,18 +23,21 @@ struct TestStateEntry {
 
 using TestStateEntry = internal::TestStateEntry<>;
 
-// Creates a fake |StateEntry|.
-void CreateFakeStateEntry(const TestStateEntry& test_state_entry,
-                          StateEntry* state_entry);
+// Populates |state_entry| with the data in |test_state_entry|.
+void PopulateStateEntry(const TestStateEntry& test_state_entry,
+                        StateEntry* state_entry);
 
 // Clears the map for testing purposes.
 void ClearAlternativeStateNameMapForTesting();
 
-// Inserts a fake |StateEntry| object into AlternativeStateNameMap for testing.
+// Inserts a StateEntry instance into AlternativeStateNameMap for testing.
 void PopulateAlternativeStateNameMapForTesting(
-    std::string country_code = "DE",
-    std::string key = "Bavaria",
-    std::vector<TestStateEntry> test_state_entries = {TestStateEntry()});
+    const std::string& country_code = "DE",
+    const std::string& key = "Bavaria",
+    const std::vector<TestStateEntry>& test_state_entries = {TestStateEntry()});
+
+// Returns a StateEntry instance serialized as string.
+std::string CreateStatesProtoAsString(std::string country_code = "DE");
 
 }  // namespace test
 }  // namespace autofill
