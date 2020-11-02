@@ -57,6 +57,8 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
       return OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()
                  ? TP::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE
                  : TP::COLOR_OMNIBOX_BUBBLE_OUTLINE;
+    case OmniboxPart::RESULTS_BUTTON_BORDER:
+      return TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER;
     default:
       NOTREACHED();
       return -1;

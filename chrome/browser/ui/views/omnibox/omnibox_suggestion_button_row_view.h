@@ -24,8 +24,8 @@ class OmniboxSuggestionButtonRowView : public views::View {
                                           int model_index);
   ~OmniboxSuggestionButtonRowView() override;
 
-  // Called when themes, styles, and visibility is refreshed in result view.
-  void OnStyleRefresh();
+  // Called when results background color is refreshed.
+  void OnOmniboxBackgroundChange(SkColor omnibox_bg_color);
 
   // Updates the suggestion row buttons based on the model.
   void UpdateFromModel();

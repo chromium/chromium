@@ -260,7 +260,8 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   }
 
   if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
-    button_row_->OnStyleRefresh();
+    button_row_->OnOmniboxBackgroundChange(GetOmniboxColor(
+        GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND, GetThemeState()));
   }
 }
 
