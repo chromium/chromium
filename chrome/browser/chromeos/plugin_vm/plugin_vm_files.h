@@ -14,6 +14,8 @@ class Profile;
 
 namespace plugin_vm {
 
+base::FilePath ChromeOSBaseDirectory();
+
 // Ensure default shared dir <cryptohome>/MyFiles/PluginVm exists. Invokes
 // |callback| with dir and true if dir is successfully created or already
 // exists.

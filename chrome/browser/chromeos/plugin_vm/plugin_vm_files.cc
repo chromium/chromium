@@ -136,6 +136,11 @@ void LaunchPluginVmAppImpl(Profile* profile,
 
 }  // namespace
 
+base::FilePath ChromeOSBaseDirectory() {
+  // Forward slashes are converted to backslash during path conversion.
+  return base::FilePath("//ChromeOS");
+}
+
 void EnsureDefaultSharedDirExists(
     Profile* profile,
     base::OnceCallback<void(const base::FilePath&, bool)> callback) {
@@ -161,8 +166,7 @@ void LaunchPluginVmApp(Profile* profile,
                                    "Could not get PluginVmManager");
   }
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
-  // Forward slashes are converted to backslash during path conversion.
-  base::FilePath vm_mount("//ChromeOS");
+  base::FilePath vm_mount = ChromeOSBaseDirectory();
 
   std::vector<std::string> launch_args;
   launch_args.reserve(args.size());
