@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -21,8 +23,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
+import android.app.Activity;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,6 +43,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.autofill_assistant.R;
@@ -44,10 +52,12 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -164,7 +174,7 @@ public class AssistantOnboardingCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testShownFlag() throws Exception {
+    public void testShownFlag() {
         AssistantOnboardingCoordinator coordinator = createCoordinator(/* tab= */ null);
         assertFalse(coordinator.getOnboardingShown());
 
@@ -174,7 +184,7 @@ public class AssistantOnboardingCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testShowDifferentInformationalText() throws Exception {
+    public void testShowDifferentInformationalText() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
 
         HashMap<String, String> parameters = new HashMap();
@@ -198,7 +208,7 @@ public class AssistantOnboardingCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testShowExperimentalInformationalText() throws Exception {
+    public void testShowExperimentalInformationalText() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
 
         HashMap<String, String> parameters = new HashMap();
@@ -222,7 +232,7 @@ public class AssistantOnboardingCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testShowStandardInformationalText() throws Exception {
+    public void testShowStandardInformationalText() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
 
         HashMap<String, String> parameters = new HashMap();
@@ -242,10 +252,139 @@ public class AssistantOnboardingCoordinatorTest {
                 titleView.getText());
     }
 
+    @Test
+    @MediumTest
+    public void testUseOfOutsideStrings() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("ONBOARDING_FETCH_TIMEOUT_MS", "0");
+        AssistantOnboardingCoordinator coordinator =
+                new AssistantOnboardingCoordinator("", parameters, mActivity,
+                        mBottomSheetController, mActivity.getBrowserControlsManager(),
+                        mActivity.getCompositorViewHolder(), mScrimCoordinator);
+
+        String expectedTitle = "Title";
+        String expectedMessage = "Message";
+        String expectedTerms = "Terms <link>Click</link>";
+        String expectedTermsUrl = "https://something.google.com/something";
+
+        coordinator.addEntryToStringMap("onboarding_title", expectedTitle);
+        coordinator.addEntryToStringMap("onboarding_text", expectedMessage);
+        coordinator.addEntryToStringMap("terms_and_conditions", expectedTerms);
+        coordinator.addEntryToStringMap("terms_and_conditions_url", expectedTermsUrl);
+
+        coordinator.disableAnimationForTesting();
+        showOnboardingAndWait(coordinator, mCallback);
+
+        assertEquals(((TextView) mActivity.findViewById(R.id.onboarding_try_assistant)).getText(),
+                expectedTitle);
+        assertEquals(((TextView) mActivity.findViewById(R.id.onboarding_subtitle)).getText(),
+                expectedMessage);
+        TextView termsMessage = mActivity.findViewById(R.id.google_terms_message);
+        assertThat(termsMessage.getText().toString(),
+                allOf(containsString("Terms"), containsString("Click")));
+        Spanned spannedMessage = (Spanned) termsMessage.getText();
+        ClickableSpan[] spans =
+                spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);
+        assertEquals(spans.length, 1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals("Click",
+                    spannedMessage
+                            .subSequence(spannedMessage.getSpanStart(spans[0]),
+                                    spannedMessage.getSpanEnd(spans[0]))
+                            .toString());
+        });
+        spans[0].onClick(termsMessage);
+        waitUntil(() -> getOpenedUrlSpec().equals(expectedTermsUrl));
+    }
+
+    @Test
+    @MediumTest
+    public void testUseOfOutsideStringsRejectsTermsWithoutLink() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("ONBOARDING_FETCH_TIMEOUT_MS", "0");
+        AssistantOnboardingCoordinator coordinator =
+                new AssistantOnboardingCoordinator("", parameters, mActivity,
+                        mBottomSheetController, mActivity.getBrowserControlsManager(),
+                        mActivity.getCompositorViewHolder(), mScrimCoordinator);
+
+        coordinator.addEntryToStringMap("terms_and_conditions", "Bad terms");
+
+        coordinator.disableAnimationForTesting();
+        showOnboardingAndWait(coordinator, mCallback);
+
+        TextView termsMessage = mActivity.findViewById(R.id.google_terms_message);
+        assertEquals(termsMessage.getText().toString(),
+                mActivity.getResources()
+                        .getText(R.string.autofill_assistant_google_terms_description)
+                        .toString()
+                        .replaceAll("<link>", "")
+                        .replaceAll("</link>", ""));
+    }
+
+    @Test
+    @MediumTest
+    public void testUseOfOutsideStringsRejectsNonGoogleSudomainLink() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("ONBOARDING_FETCH_TIMEOUT_MS", "0");
+        AssistantOnboardingCoordinator coordinator =
+                new AssistantOnboardingCoordinator("", parameters, mActivity,
+                        mBottomSheetController, mActivity.getBrowserControlsManager(),
+                        mActivity.getCompositorViewHolder(), mScrimCoordinator);
+
+        coordinator.addEntryToStringMap(
+                "terms_and_conditions_url", "https://www.domain.com/something");
+
+        coordinator.disableAnimationForTesting();
+        showOnboardingAndWait(coordinator, mCallback);
+
+        TextView termsMessage = mActivity.findViewById(R.id.google_terms_message);
+        Spanned spannedMessage = (Spanned) termsMessage.getText();
+        ClickableSpan[] spans =
+                spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);
+        assertEquals(spans.length, 1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals("Learn more",
+                    spannedMessage
+                            .subSequence(spannedMessage.getSpanStart(spans[0]),
+                                    spannedMessage.getSpanEnd(spans[0]))
+                            .toString()
+                            .replaceAll("\\s+", " "));
+        });
+        spans[0].onClick(termsMessage);
+        waitUntil(()
+                          -> getOpenedUrlSpec().equals(
+                                  mActivity.getResources()
+                                          .getText(R.string.autofill_assistant_google_terms_url)
+                                          .toString()));
+    }
+
     /** Trigger onboarding and wait until it is fully displayed. */
     private void showOnboardingAndWait(
             AssistantOnboardingCoordinator coordinator, Callback<Boolean> callback) {
         TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.show(callback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+    }
+
+    // Get the newly opened Activity (through CustomTabActivity.showInfoPage) that happens on
+    // terms click. Return the URL of the current tab on that activity.
+    private String getOpenedUrlSpec() {
+        for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+            if (runningActivity instanceof CustomTabActivity
+                    && ApplicationStatus.getStateForActivity(runningActivity)
+                            == ActivityState.RESUMED) {
+                return ChromeTabUtils
+                        .getUrlOnUiThread(((CustomTabActivity) runningActivity)
+                                                  .getTabModelSelector()
+                                                  .getCurrentTab())
+                        .getSpec();
+            }
+        }
+        return "";
     }
 }
