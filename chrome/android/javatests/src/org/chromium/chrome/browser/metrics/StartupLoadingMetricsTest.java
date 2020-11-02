@@ -50,6 +50,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstNavigationCommit";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
+    private static final String VISIBLE_CONTENT_HISTOGRAM =
+            "Startup.Android.Cold.TimeToVisibleContent";
 
     private static final String TABBED_SUFFIX = ChromeTabbedActivity.STARTUP_UMA_HISTOGRAM_SUFFIX;
     private static final String WEBAPK_SUFFIX =
@@ -111,6 +113,10 @@ public class StartupLoadingMetricsTest {
         Assert.assertEquals(expectedCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix));
+        if (histogramSuffix.equals(TABBED_SUFFIX)) {
+            Assert.assertEquals(expectedCount,
+                    RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
+        }
     }
 
     /**

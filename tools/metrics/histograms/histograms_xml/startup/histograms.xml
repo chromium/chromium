@@ -82,6 +82,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
+    expires_after="2021-04-26">
+  <owner>yashard@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Android: The time from the activity creation point to the moment the content
+    may first appear ready to a user. The intent is to capture readiness of
+    Chrome regardless of whether Chrome is launched into native UI or a web
+    page. The recorded value is the minimum of
+    'Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed' and
+    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metric values.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
     units="ms" expires_after="2021-06-10">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->

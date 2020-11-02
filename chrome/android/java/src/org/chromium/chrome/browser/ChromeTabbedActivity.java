@@ -1542,12 +1542,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
+        assert getActivityTabStartupMetricsTracker() != null;
         StartupPaintPreviewHelper.initialize(this, getTabModelSelector(),
                 shouldShowTabSwitcherOnStart(),
                 ()
                         -> getToolbarManager() == null
                         ? null
-                        : getToolbarManager().getProgressBarCoordinator());
+                        : getToolbarManager().getProgressBarCoordinator(),
+                getActivityTabStartupMetricsTracker()::recordVisibleContent);
     }
 
     @Override

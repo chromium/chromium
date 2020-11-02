@@ -39,6 +39,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private Runnable mOnDismissed;
     private SnackbarManager.SnackbarController mSnackbarController;
     private TabObserver mStartupTabObserver;
+    private Callback<Long> mVisibleContentCallback;
 
     private boolean mFirstMeaningfulPaintHappened;
     private boolean mDidStartRestore;
@@ -54,7 +55,8 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     public StartupPaintPreview(Tab tab,
             BrowserStateBrowserControlsVisibilityDelegate visibilityDelegate,
-            Runnable progressSimulatorCallback, Callback<Boolean> progressPreventionCallback) {
+            Runnable progressSimulatorCallback, Callback<Boolean> progressPreventionCallback,
+            Callback<Long> visibleContentCallback) {
         mTab = tab;
         mMetricsHelper = new StartupPaintPreviewMetrics();
         mTabbedPaintPreview = TabbedPaintPreview.get(mTab);
@@ -63,6 +65,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         mTabbedPaintPreview.setProgressSimulatorNeededCallback(progressSimulatorCallback);
         mStartupTabObserver = new StartupPaintPreviewTabObserver();
         mTab.addObserver(mStartupTabObserver);
+        mVisibleContentCallback = visibleContentCallback;
     }
 
     /**
@@ -203,7 +206,8 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     public void onFirstPaint() {
         if (!mTabbedPaintPreview.isAttached()) return;
 
-        mMetricsHelper.onFirstPaint(mActivityCreationTimestampMs, mShouldRecordFirstPaint);
+        mMetricsHelper.onFirstPaint(
+                mActivityCreationTimestampMs, mShouldRecordFirstPaint, mVisibleContentCallback);
     }
 
     @Override

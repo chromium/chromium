@@ -20,6 +20,8 @@ import org.chromium.content_public.browser.WebContents;
  * startup.
  */
 public class ActivityTabStartupMetricsTracker {
+    private static final String UMA_HISTOGRAM_TABBED_SUFFIX = ".Tabbed";
+
     private final long mActivityStartTimeMs;
 
     // Event duration recorded from the |mActivityStartTimeMs|.
@@ -28,6 +30,7 @@ public class ActivityTabStartupMetricsTracker {
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private PageLoadMetrics.Observer mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
+    private boolean mVisibleContentRecorded;
 
     public ActivityTabStartupMetricsTracker(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
@@ -151,11 +154,31 @@ public class ActivityTabStartupMetricsTracker {
         if (mFirstCommitTimeMs == 0) return;
 
         if (UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground()) {
+            long durationMs = firstContentfulPaintMs - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint" + mHistogramSuffix,
-                    firstContentfulPaintMs - mActivityStartTimeMs);
+                    durationMs);
+            if (mHistogramSuffix.equals(UMA_HISTOGRAM_TABBED_SUFFIX)) {
+                recordVisibleContent(durationMs);
+            }
         }
         // This is the last event we track, so destroy this tracker and remove observers.
         destroy();
+    }
+
+    /**
+     * Record the first Visible Content time.
+     * This metric reports the minimum value of
+     * Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed and
+     * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
+     *
+     * @param durationMs duration in millis.
+     */
+    public void recordVisibleContent(long durationMs) {
+        if (mVisibleContentRecorded) return;
+
+        mVisibleContentRecorded = true;
+        RecordHistogram.recordMediumTimesHistogram(
+                "Startup.Android.Cold.TimeToVisibleContent", durationMs);
     }
 }

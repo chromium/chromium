@@ -8,6 +8,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -64,12 +65,16 @@ public class StartupPaintPreviewMetrics {
         mShownTime = System.currentTimeMillis();
     }
 
-    void onFirstPaint(long activityOnCreateTimestamp, Supplier<Boolean> shouldRecordFirstPaint) {
+    void onFirstPaint(long activityOnCreateTimestamp, Supplier<Boolean> shouldRecordFirstPaint,
+            Callback<Long> visibleContentCallback) {
         mFirstPaintHappened = true;
         if (shouldRecordFirstPaint != null && shouldRecordFirstPaint.get()) {
+            long durationMs = SystemClock.elapsedRealtime() - activityOnCreateTimestamp;
             RecordHistogram.recordLongTimesHistogram(
-                    "Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap",
-                    SystemClock.elapsedRealtime() - activityOnCreateTimestamp);
+                    "Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap", durationMs);
+            if (visibleContentCallback != null) {
+                visibleContentCallback.onResult(durationMs);
+            }
         }
     }
 
