@@ -57172,6 +57172,19 @@
        {}
       ]
      ],
+     "contain-size-replaced-007.html": [
+      "6a17057bdd5b54f5fa53530afc790bdf8bde8277",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-size-scrollbars-001.html": [
       "26f0d81da8ceac6df92325bf33d15d01c0d3d432",
       [
@@ -143120,6 +143133,19 @@
        {}
       ]
      ],
+     "not-default-ns-003.html": [
+      "f5aab27fab48f8f306028aadb3994d9f91fd4bfb",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "not-links.html": [
       "58cef1a282e8e5a2d7ce17d614e9c4b15ce1ccf6",
       [
@@ -169117,7 +169143,7 @@
       []
      ],
      "content-type-and-body.py": [
-      "1c8c4c7ec16129b0c60094262edd456c83a52da1",
+      "9b1e880c2fa06b45aa8b683a679a66a585291b75",
       []
      ],
      "inspect-header.py": [
@@ -257927,7 +257953,7 @@
       []
      ],
      "get-set-cookie.py": [
-      "cdba642fca96f93a8d9d33a909682b4a1d2a7f04",
+      "234280d35300a80ba4511784ded79c4cc048a6eb",
       []
      ],
      "gzip.py": [
@@ -296430,6 +296456,13 @@
         null,
         {}
        ]
+      ],
+      "replaced-element-028.html": [
+       "ece5efbc65d7d688c3e95db36f55b37654e84a7d",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "aspect-ratio-affects-container-width-when-height-changes.html": [
@@ -308219,6 +308252,20 @@
        {}
       ]
      ],
+     "not-complex.html": [
+      "8e092a4ec6cdec85dbe213baebbf3b199f4b39b2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "not-specificity.html": [
+      "d9a2a4ddffad5de8c0896dc23d710f4eb9931ef1",
+      [
+       null,
+       {}
+      ]
+     ],
      "parsing": {
       "parse-attribute.html": [
        "a8fcfb24f5a9b1350adda6e59af814f1111325c1",
@@ -308263,7 +308310,7 @@
        ]
       ],
       "parse-not.html": [
-       "3895683d1c84c1a39a38f2976f7b672a2b06e121",
+       "e96db5a83ce021dde4a3b20de6a80374e7fd4914",
        [
         null,
         {}
@@ -361431,7 +361478,7 @@
         ]
        ],
        "img-aspect-ratio.html": [
-        "eceef92a6418f3d74ffbd13a08d8e648dff42a3f",
+        "af4542e55fde52c4efd316795d1500b35099d3f6",
         [
          null,
          {}
