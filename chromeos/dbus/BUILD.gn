@@ -214,7 +214,6 @@ source_set("unit_tests") {
     "blocking_method_caller_unittest.cc",
     "cec_service_client_unittest.cc",
     "cros_disks_client_unittest.cc",
-    "cryptohome/fake_cryptohome_client_unittest.cc",
     "dbus_thread_manager_unittest.cc",
     "fake_easy_unlock_client_unittest.cc",
     "fake_gnubby_client_unittest.cc",
