@@ -30,6 +30,7 @@
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -473,9 +474,21 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
   ClosePlatformBrowser(browser);
 }
 
+class GuestUkmBrowserTest : public UkmBrowserTest,
+                            public ::testing::WithParamInterface<bool> {
+ public:
+  GuestUkmBrowserTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Make sure that UKM is disabled while a guest profile's window is open.
 #if !defined(OS_ANDROID) && !defined(CHROME_OS)
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
+IN_PROC_BROWSER_TEST_P(GuestUkmBrowserTest, RegularPlusGuestCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
 
@@ -501,6 +514,10 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
   CloseBrowserSynchronously(regular_browser);
 }
 #endif  // !defined(OS_ANDROID) && !defined(CHROME_OS)
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestUkmBrowserTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 // Make sure that UKM is disabled while an non-sync profile's window is open.
 #if !defined(OS_ANDROID)
