@@ -1837,6 +1837,10 @@ void LocalFrame::WasHidden() {
     return;
   hidden_ = true;
 
+  if (content_capture_manager_) {
+    content_capture_manager_->OnFrameWasHidden();
+  }
+
   // An iframe may get a "was hidden" notification before it has been attached
   // to the frame tree; in that case, skip further processing.
   if (!Owner() || IsProvisional())
@@ -1874,6 +1878,10 @@ void LocalFrame::WasShown() {
   hidden_ = false;
   if (LocalFrameView* frame_view = View())
     frame_view->ScheduleAnimation();
+
+  if (content_capture_manager_) {
+    content_capture_manager_->OnFrameWasShown();
+  }
 }
 
 bool LocalFrame::ClipsContent() const {
