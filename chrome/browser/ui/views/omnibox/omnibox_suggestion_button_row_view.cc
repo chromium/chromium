@@ -51,7 +51,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    SetInkDropHighlightOpacity(CalculateInkDropHighlightOpacity());
+    SetInkDropHighlightOpacity(
+        GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
     focus_ring()->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
              popup_contents_view_->model()->selection() == selection_;
@@ -65,7 +66,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   ~OmniboxSuggestionRowButton() override = default;
 
   SkColor GetInkDropBaseColor() const override {
-    return color_utils::GetColorWithMaxContrast(background()->get_color());
+    return color_utils::GetColorWithMaxContrast(omnibox_bg_color_.value());
   }
 
   void OnStyleRefresh() { focus_ring()->SchedulePaint(); }
@@ -119,17 +120,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   const gfx::VectorIcon& icon_;
   OmniboxPopupContentsView* popup_contents_view_;
   OmniboxPopupModel::Selection selection_;
-
-  float CalculateInkDropHighlightOpacity() {
-    // Ink drop highlight opacity is result of mixing a layer with hovered
-    // opacity and a layer with selected opacity. OmniboxPartState::SELECTED
-    // opacity gets the same color as the selected omnibox row background (the
-    // button would be the same color as the row) and overlaying it with
-    // OmniboxPartState::HOVERED opacity makes the hovered button easily visible
-    // in the selected or hovered row.
-    return 1 - (1 - GetOmniboxStateOpacity(OmniboxPartState::HOVERED)) *
-                   (1 - GetOmniboxStateOpacity(OmniboxPartState::SELECTED));
-  }
+  base::Optional<SkColor> omnibox_bg_color_;
 };
 
 OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
