@@ -30,7 +30,7 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedPageSize: {
       type: String,
       notify: true,
@@ -41,7 +41,7 @@ Polymer({
 
   /**
    * @param {chromeos.scanning.mojom.PageSize} pageSize
-   * @return {!string}
+   * @return {string}
    * @private
    */
   getPageSizeString_(pageSize) {

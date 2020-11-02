@@ -48,14 +48,11 @@ Polymer({
   /** @private {?chromeos.scanning.mojom.ScanServiceInterface} */
   scanService_: null,
 
-  /** @private {!Map<!string, !mojoBase.mojom.UnguessableToken>} */
+  /** @private {!Map<string, !mojoBase.mojom.UnguessableToken>} */
   scannerIds_: new Map(),
 
   properties: {
-    /**
-     * @type {!ScannerArr}
-     * @private
-     */
+    /** @private {!ScannerArr} */
     scanners_: {
       type: Array,
       value: () => [],
@@ -67,59 +64,50 @@ Polymer({
       observer: 'onSelectedScannerIdChange_',
     },
 
-    /**
-     * @type {?chromeos.scanning.mojom.ScannerCapabilities}
-     * @private
-     */
+    /** @private {?chromeos.scanning.mojom.ScannerCapabilities} */
     capabilities_: Object,
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedSource: String,
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedFileType: String,
 
     /** @type {string} */
     selectedFilePath: String,
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedColorMode: String,
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedPageSize: String,
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedResolution: String,
 
-    /**
-     * @type {!Array<chromeos.scanning.mojom.PageSize>}
-     * @private
-     */
+    /** @private {!Array<chromeos.scanning.mojom.PageSize>} */
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
       computed: 'computePageSizes_(selectedSource)',
     },
 
-    /**
-     * @type {?string}
-     * @private
-     */
+    /** @private {string} */
     statusText_: String,
 
-    /** @private */
+    /** @private {boolean} */
     settingsDisabled_: {
       type: Boolean,
       value: false,
     },
 
-    /** @private */
+    /** @private {boolean} */
     scanButtonDisabled_: {
       type: Boolean,
       value: true,
     },
 
-    /** @private */
+    /** @private {boolean} */
     loaded_: {
       type: Boolean,
       value: false,
@@ -141,7 +129,7 @@ Polymer({
   },
 
   /**
-   * @param {?string} selectedSource
+   * @param {string} selectedSource
    * @return {!Array<chromeos.scanning.mojom.PageSize>}
    * @private
    */

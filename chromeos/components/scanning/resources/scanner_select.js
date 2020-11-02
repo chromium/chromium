@@ -35,7 +35,7 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedScannerId: {
       type: String,
       notify: true,

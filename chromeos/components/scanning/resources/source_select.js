@@ -30,7 +30,7 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedSource: {
       type: String,
       notify: true,
@@ -40,8 +40,8 @@ Polymer({
   observers: ['onNumOptionsChange(sources.length)'],
 
   /**
-   * @param {number} mojoSourceType
-   * @return {!string}
+   * @param {chromeos.scanning.mojom.SourceType} mojoSourceType
+   * @return {string}
    * @private
    */
   getSourceTypeString_(mojoSourceType) {

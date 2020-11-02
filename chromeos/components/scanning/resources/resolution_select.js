@@ -30,7 +30,7 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedResolution: {
       type: String,
       notify: true,
@@ -41,7 +41,7 @@ Polymer({
 
   /**
    * @param {number} resolution
-   * @return {!string}
+   * @return {string}
    * @private
    */
   getResolutionString_(resolution) {

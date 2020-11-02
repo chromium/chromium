@@ -23,7 +23,7 @@ Polymer({
   behaviors: [I18nBehavior, SelectBehavior],
 
   properties: {
-    /** @type {?string} */
+    /** @type {string} */
     selectedFileType: {
       type: String,
       notify: true,

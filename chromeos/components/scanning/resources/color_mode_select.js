@@ -30,7 +30,7 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {?string} */
+    /** @type {string} */
     selectedColorMode: {
       type: String,
       notify: true,
@@ -40,8 +40,8 @@ Polymer({
   observers: ['onNumOptionsChange(colorModes.length)'],
 
   /**
-   * @param {number} mojoColorMode
-   * @return {!string}
+   * @param {chromeos.scanning.mojom.ColorMode} mojoColorMode
+   * @return {string}
    * @private
    */
   getColorModeString_(mojoColorMode) {

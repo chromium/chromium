@@ -7,7 +7,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 /**
  * Converts a chromeos.scanning.mojom.ColorMode string to the corresponding enum
  * value.
- * @param {!string} colorModeString
+ * @param {string} colorModeString
  * @return {chromeos.scanning.mojom.ColorMode}
  */
 export function colorModeFromString(colorModeString) {
@@ -47,8 +47,8 @@ export function fileTypeFromString(fileTypeString) {
 /**
  * Converts a chromeos.scanning.mojom.ColorMode to a string that can be
  * displayed in the color mode dropdown.
- * @param {number} mojoColorMode
- * @return {!string}
+ * @param {chromeos.scanning.mojom.ColorMode} mojoColorMode
+ * @return {string}
  */
 export function getColorModeString(mojoColorMode) {
   // TODO(jschettler): Replace with finalized i18n strings.
@@ -69,7 +69,7 @@ export function getColorModeString(mojoColorMode) {
  * Converts a chromeos.scanning.mojom.PageSize to a string that can be
  * displayed in the page size dropdown.
  * @param {chromeos.scanning.mojom.PageSize} pageSize
- * @return {!string}
+ * @return {string}
  */
 export function getPageSizeString(pageSize) {
   // TODO(jschettler): Replace with finalized i18n strings.
@@ -89,8 +89,8 @@ export function getPageSizeString(pageSize) {
 /**
  * Converts a chromeos.scanning.mojom.SourceType to a string that can be
  * displayed in the source dropdown.
- * @param {number} mojoSourceType
- * @return {!string}
+ * @param {chromeos.scanning.mojom.SourceType} mojoSourceType
+ * @return {string}
  */
 export function getSourceTypeString(mojoSourceType) {
   // TODO(jschettler): Replace with finalized i18n strings.
@@ -113,7 +113,7 @@ export function getSourceTypeString(mojoSourceType) {
 /**
  * Converts a chromeos.scanning.mojom.PageSize string to the corresponding enum
  * value.
- * @param {!string} pageSizeString
+ * @param {string} pageSizeString
  * @return {chromeos.scanning.mojom.PageSize}
  */
 export function pageSizeFromString(pageSizeString) {
@@ -134,7 +134,7 @@ export function pageSizeFromString(pageSizeString) {
  * Converts an unguessable token to a string by combining the high and low
  * values as strings with a hashtag as the separator.
  * @param {!mojoBase.mojom.UnguessableToken} token
- * @return {!string}
+ * @return {string}
  */
 export function tokenToString(token) {
   return `${token.high.toString()}#${token.low.toString()}`;

@@ -28,6 +28,7 @@ export const SelectBehavior = {
 
     /**
      * The number of options in the select element.
+     * @type {number}
      * @private
      */
     numOptions_: {
