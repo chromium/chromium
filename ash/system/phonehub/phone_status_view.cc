@@ -39,10 +39,13 @@ namespace {
 // Appearance in Dip.
 constexpr int kTitleContainerSpacing = 16;
 constexpr int kStatusSpacing = 4;
-constexpr gfx::Size kStatusIconSize(18, 18);
+constexpr gfx::Size kStatusIconSize(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
 constexpr int kSeparatorHeight = 18;
 constexpr int kPhoneNameLabelWidthMax = 160;
 constexpr gfx::Insets kBorderInsets(0, 16);
+
+// Typograph in dip.
+constexpr int kBatteryLabelFontSize = 11;
 
 int GetSignalStrengthAsInt(PhoneStatusModel::SignalStrength signal_strength) {
   switch (signal_strength) {
@@ -104,7 +107,6 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
       phone_model_(phone_model),
       phone_name_label_(new views::Label),
       signal_icon_(new views::ImageView),
-      mobile_provider_label_(new views::Label),
       battery_icon_(new views::ImageView),
       battery_label_(new views::Label) {
   DCHECK(delegate);
@@ -113,6 +115,9 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
 
+  // Phone name is placed at START container, Settings icon is
+  // placed at END container, other phone states, i.e. battery level,
+  // and Separator are placed at CENTER container.
   ConfigureTriViewContainer(TriView::Container::START);
   ConfigureTriViewContainer(TriView::Container::CENTER);
   ConfigureTriViewContainer(TriView::Container::END);
@@ -124,30 +129,25 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
                            true /* use_unified_theme */);
   style.SetupLabel(phone_name_label_);
   phone_name_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-  AddView(TriView::Container::CENTER, phone_name_label_);
+  AddView(TriView::Container::START, phone_name_label_);
 
-  AddView(TriView::Container::END, signal_icon_);
-
-  mobile_provider_label_->SetAutoColorReadabilityEnabled(false);
-  mobile_provider_label_->SetSubpixelRenderingEnabled(false);
-  mobile_provider_label_->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
-  AddView(TriView::Container::END, mobile_provider_label_);
-
-  AddView(TriView::Container::END, battery_icon_);
+  AddView(TriView::Container::CENTER, signal_icon_);
+  AddView(TriView::Container::CENTER, battery_icon_);
 
   battery_label_->SetAutoColorReadabilityEnabled(false);
   battery_label_->SetSubpixelRenderingEnabled(false);
   battery_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-  AddView(TriView::Container::END, battery_label_);
+  auto default_font = battery_label_->font_list();
+  battery_label_->SetFontList(default_font.DeriveWithSizeDelta(
+      kBatteryLabelFontSize - default_font.GetFontSize()));
+  AddView(TriView::Container::CENTER, battery_label_);
 
-  auto* separator = new views::Separator();
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+  separator_ = new views::Separator();
+  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetPreferredHeight(kSeparatorHeight);
-  AddView(TriView::Container::END, separator);
+  separator_->SetPreferredHeight(kSeparatorHeight);
+  AddView(TriView::Container::CENTER, separator_);
 
   settings_button_ = new TopShortcutButton(
       base::BindRepeating(&Delegate::OpenConnectedDevicesSettings,
@@ -155,7 +155,7 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
       kSystemMenuSettingsIcon, IDS_ASH_STATUS_TRAY_SETTINGS);
   AddView(TriView::Container::END, settings_button_);
 
-  separator->SetVisible(delegate->CanOpenConnectedDeviceSettings());
+  separator_->SetVisible(delegate->CanOpenConnectedDeviceSettings());
   settings_button_->SetVisible(delegate->CanOpenConnectedDeviceSettings());
 
   Update();
@@ -180,6 +180,8 @@ void PhoneStatusView::Update() {
   // disconnected.
   if (!phone_model_->phone_status_model()) {
     ClearExistingStatus();
+    // Hide separator if there is no preceding content.
+    separator_->SetVisible(false);
     return;
   }
 
@@ -211,14 +213,11 @@ void PhoneStatusView::UpdateMobileStatus() {
           network_icon::SignalStrengthImageSource>(
           network_icon::ImageType::BARS, primary_color, kStatusIconSize,
           signal_strength);
-      mobile_provider_label_->SetText(metadata.mobile_provider);
       break;
   }
 
   signal_icon_->SetImage(signal_image);
-  mobile_provider_label_->SetVisible(
-      phone_status.mobile_status() ==
-      PhoneStatusModel::MobileStatus::kSimWithReception);
+  signal_icon_->SetImageSize(kStatusIconSize);
 }
 
 void PhoneStatusView::UpdateBatteryStatus() {
@@ -277,7 +276,6 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
 void PhoneStatusView::ClearExistingStatus() {
   // Clear mobile status.
   signal_icon_->SetImage(gfx::ImageSkia());
-  mobile_provider_label_->SetText(base::string16());
 
   // Clear battery status.
   battery_icon_->SetImage(gfx::ImageSkia());
@@ -289,18 +287,7 @@ void PhoneStatusView::ConfigureTriViewContainer(TriView::Container container) {
 
   switch (container) {
     case TriView::Container::START:
-      FALLTHROUGH;
-    case TriView::Container::END:
-      layout = std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kStatusSpacing);
-      layout->set_main_axis_alignment(
-          views::BoxLayout::MainAxisAlignment::kCenter);
-      layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kCenter);
-      break;
-    case TriView::Container::CENTER:
-      SetFlexForContainer(TriView::Container::CENTER, 1.f);
+      SetFlexForContainer(TriView::Container::START, 1.f);
 
       layout = std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical);
@@ -308,6 +295,23 @@ void PhoneStatusView::ConfigureTriViewContainer(TriView::Container container) {
           views::BoxLayout::MainAxisAlignment::kCenter);
       layout->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kStretch);
+      break;
+    case TriView::Container::CENTER:
+      layout = std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kStatusSpacing);
+      layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kEnd);
+      layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
+      break;
+    case TriView::Container::END:
+      layout = std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal);
+      layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kCenter);
+      layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
       break;
   }
 

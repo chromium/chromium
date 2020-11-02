@@ -14,6 +14,7 @@
 namespace views {
 class ImageView;
 class Label;
+class Separator;
 }  // namespace views
 
 namespace ash {
@@ -62,9 +63,9 @@ class ASH_EXPORT PhoneStatusView
   // Owned by views hierarchy.
   views::Label* phone_name_label_ = nullptr;
   views::ImageView* signal_icon_ = nullptr;
-  views::Label* mobile_provider_label_ = nullptr;
   views::ImageView* battery_icon_ = nullptr;
   views::Label* battery_label_ = nullptr;
+  views::Separator* separator_ = nullptr;
   TopShortcutButton* settings_button_ = nullptr;
 };
 

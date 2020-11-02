@@ -60,36 +60,6 @@ class PhoneStatusViewTest : public AshTestBase,
   bool connected_device_settings_opened_ = false;
 };
 
-TEST_F(PhoneStatusViewTest, MobileProviderVisibility) {
-  PhoneStatusModel::MobileConnectionMetadata metadata = {
-      .signal_strength = PhoneStatusModel::SignalStrength::kZeroBars,
-      .mobile_provider = base::UTF8ToUTF16("Test Provider"),
-  };
-  auto phone_status =
-      PhoneStatusModel(PhoneStatusModel::MobileStatus::kNoSim, metadata,
-                       PhoneStatusModel::ChargingState::kNotCharging,
-                       PhoneStatusModel::BatterySaverState::kOff, 0);
-  phone_model_.SetPhoneStatusModel(phone_status);
-  // Mobile provider should not be shown when there is no sim.
-  EXPECT_FALSE(status_view_->mobile_provider_label_->GetVisible());
-
-  phone_status =
-      PhoneStatusModel(PhoneStatusModel::MobileStatus::kSimButNoReception,
-                       metadata, PhoneStatusModel::ChargingState::kNotCharging,
-                       PhoneStatusModel::BatterySaverState::kOff, 0);
-  phone_model_.SetPhoneStatusModel(phone_status);
-  // Mobile provider should not be shown when there is no connection.
-  EXPECT_FALSE(status_view_->mobile_provider_label_->GetVisible());
-
-  phone_status =
-      PhoneStatusModel(PhoneStatusModel::MobileStatus::kSimWithReception,
-                       metadata, PhoneStatusModel::ChargingState::kNotCharging,
-                       PhoneStatusModel::BatterySaverState::kOff, 0);
-  phone_model_.SetPhoneStatusModel(phone_status);
-  // Mobile provider should be shown when there is a connection.
-  EXPECT_TRUE(status_view_->mobile_provider_label_->GetVisible());
-}
-
 TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
   base::string16 expected_name_text = base::UTF8ToUTF16("Test Phone Name");
   base::string16 expected_provider_text = base::UTF8ToUTF16("Test Provider");
@@ -109,8 +79,6 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
 
   // All labels should display phone's status and information.
   EXPECT_EQ(expected_name_text, status_view_->phone_name_label_->GetText());
-  EXPECT_EQ(expected_provider_text,
-            status_view_->mobile_provider_label_->GetText());
   EXPECT_EQ(expected_battery_text, status_view_->battery_label_->GetText());
 
   expected_name_text = base::UTF8ToUTF16("New Phone Name");
@@ -127,15 +95,12 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
 
   // Changes in the model should be reflected in the labels.
   EXPECT_EQ(expected_name_text, status_view_->phone_name_label_->GetText());
-  EXPECT_EQ(expected_provider_text,
-            status_view_->mobile_provider_label_->GetText());
   EXPECT_EQ(expected_battery_text, status_view_->battery_label_->GetText());
 
   // Simulate phone disconnected with a null |PhoneStatusModel| returned.
   phone_model_.SetPhoneStatusModel(base::nullopt);
 
   // Existing phone status will be cleared to reflect the model change.
-  EXPECT_TRUE(status_view_->mobile_provider_label_->GetText().empty());
   EXPECT_TRUE(status_view_->battery_label_->GetText().empty());
   EXPECT_TRUE(status_view_->battery_icon_->GetImage().isNull());
   EXPECT_TRUE(status_view_->signal_icon_->GetImage().isNull());
