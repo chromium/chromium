@@ -150,7 +150,7 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_FocusFakeBox() throws Exception {
         ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
                                                     .getRootUiCoordinatorForTesting()
@@ -166,6 +166,18 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testRender_SignInPromoLegacy() throws Exception {
+        // Scroll to the sign in promo in case it is not visible.
+        onView(instanceOf(RecyclerView.class))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
+                "sign_in_promo_legacy");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_SignInPromo() throws Exception {
         // Scroll to the sign in promo in case it is not visible.
         onView(instanceOf(RecyclerView.class))
