@@ -6229,3 +6229,9 @@ crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ P
 crbug.com/1143170 http/tests/devtools/quick-open/command-menu.js [ Skip ]
 crbug.com/1143170 http/tests/devtools/a11y-axe-core/sources/source-navigator-snippets-a11y-test.js [ Skip ]
 crbug.com/1143170 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Skip ]
+
+# Eco-Infra Sheriff 2020-11-02
+crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Pass Failure ]
+crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Pass Failure ]
+crbug.com/1144677 external/wpt/infrastructure/reftest/reftest.www.sub.html [ Failure ]
+crbug.com/1144677 external/wpt/paint-timing/fcp-only/fcp-ensure-update-the-rendering-step.html [ Pass Failure ]
