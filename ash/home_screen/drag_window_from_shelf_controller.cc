@@ -397,9 +397,17 @@ void DragWindowFromShelfController::OnDragEnded(
 
     OverviewSession* overview_session = overview_controller->overview_session();
     overview_session->ResetSplitViewDragIndicatorsWindowDraggingStates();
+
+    // No need to reposition overview windows if we are not dropping the dragged
+    // window into overview. Overview will either be exited or unchanged, and
+    // the extra movement from existing window will just add unnecessary
+    // movement which will also slow down our dragged window animation.
+    if (!should_drop_window_in_overview)
+      overview_session->SuspendReposition();
     overview_session->OnWindowDragEnded(
         window_, location_in_screen, should_drop_window_in_overview,
         /*snap=*/snap_position != SplitViewController::NONE);
+    overview_session->ResumeReposition();
   }
 
   SplitViewController* split_view_controller =
