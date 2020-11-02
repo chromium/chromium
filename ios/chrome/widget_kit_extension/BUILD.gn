@@ -29,9 +29,6 @@ compile_entitlements("entitlements") {
   output_name = "$target_gen_dir/widget_kit_extension.appex.entitlements"
   entitlements_templates =
       [ "entitlements/external/widget_kit_extension.appex.entitlements" ]
-  if (ios_chrome_cpe_entitlements_additions != []) {
-    entitlements_templates += ios_chrome_cpe_entitlements_additions
-  }
 }
 
 ios_appex_bundle("widget_kit_extension") {
