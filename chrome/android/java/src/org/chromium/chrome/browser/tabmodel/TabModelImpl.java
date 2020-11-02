@@ -804,17 +804,16 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    protected TabCreator getTabCreator(Profile profile) {
-        // TODO(https://crbug.com/1099642): Update to get the proper tab creator for different OTR
-        // profiles.
-        return profile.isOffTheRecord() ? mIncognitoTabCreator : mRegularTabCreator;
+    protected TabCreator getTabCreator(boolean incognito) {
+        return incognito ? mIncognitoTabCreator : mRegularTabCreator;
     }
 
     @Override
     protected boolean createTabWithWebContents(
             Tab parent, Profile profile, WebContents webContents) {
-        return getTabCreator(profile).createTabWithWebContents(
-                parent, webContents, TabLaunchType.FROM_LONGPRESS_BACKGROUND);
+        return getTabCreator(profile.isOffTheRecord())
+                .createTabWithWebContents(
+                        parent, webContents, TabLaunchType.FROM_LONGPRESS_BACKGROUND);
     }
 
     @Override
@@ -853,10 +852,7 @@ public class TabModelImpl extends TabModelJniBridge {
         loadUrlParams.setVerbatimHeaders(extraHeaders);
         loadUrlParams.setPostData(postData);
         loadUrlParams.setIsRendererInitiated(isRendererInitiated);
-        // TODO(https://crbug.com/1099642): Update to pass the correct OTR profile.
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (incognito) profile = profile.getPrimaryOTRProfile();
-        getTabCreator(profile).createNewTab(
+        getTabCreator(incognito).createNewTab(
                 loadUrlParams, tabLaunchType, persistParentage ? parent : null);
     }
 

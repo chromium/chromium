@@ -109,15 +109,21 @@ public abstract class TabModelJniBridge implements TabModel {
     protected abstract boolean closeTabAt(int index);
 
     /**
-     * Returns a tab creator for this tab model.
-     * @param profile The profile for which TabCreator is returned.
+     * Returns a tab creator for this {@link TabModel}.
+     *
+     * Please note that, the {@link TabCreator} and {@TabModelImpl} are separate instances for
+     * {@link ChromeTabbedActivity} and {@link CustomTabActivity} across both regular and Incognito
+     * modes which allows us to pass the boolean directly.
+     *
+     * @param incognito A boolean to indicate whether to return IncognitoTabCreator or
+     *         RegularTabCreator.
      */
-    protected abstract TabCreator getTabCreator(Profile profile);
+    protected abstract TabCreator getTabCreator(boolean incognito);
 
     /**
      * Creates a Tab with the given WebContents.
      * @param parent      The parent tab that creates the new tab.
-     * @param incognito   Whether or not the tab is incognito.
+     * @param profile     The profile for which to create the new tab.
      * @param webContents A {@link WebContents} object.
      * @return Whether or not the Tab was successfully created.
      */
@@ -136,7 +142,7 @@ public abstract class TabModelJniBridge implements TabModel {
      */
     @CalledByNative
     protected Tab createNewTabForDevTools(String url) {
-        return getTabCreator(Profile.getLastUsedRegularProfile())
+        return getTabCreator(/*incognito=*/false)
                 .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI, null);
     }
 
