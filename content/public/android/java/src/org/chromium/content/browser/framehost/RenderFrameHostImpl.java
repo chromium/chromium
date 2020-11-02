@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.framehost;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.annotations.CalledByNative;
@@ -74,6 +76,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    @Nullable
     public String getLastCommittedURL() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getLastCommittedURL(
@@ -81,6 +84,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    @Nullable
     public Origin getLastCommittedOrigin() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getLastCommittedOrigin(
@@ -134,6 +138,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     /**
      * Return the AndroidOverlay routing token for this RenderFrameHostImpl.
      */
+    @Nullable
     public UnguessableToken getAndroidOverlayRoutingToken() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getAndroidOverlayRoutingToken(

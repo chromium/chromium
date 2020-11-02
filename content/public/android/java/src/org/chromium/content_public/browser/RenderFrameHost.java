@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.services.service_manager.InterfaceProvider;
 import org.chromium.url.Origin;
@@ -15,8 +17,9 @@ public interface RenderFrameHost {
     /**
      * Get the last committed URL of the frame.
      *
-     * @return The last committed URL of the frame.
+     * @return The last committed URL of the frame or null when being destroyed.
      */
+    @Nullable
     String getLastCommittedURL();
 
     /**
@@ -24,8 +27,9 @@ public interface RenderFrameHost {
      * of getLastCommittedURL(), since it can be an "opaque" origin in such cases as, for example,
      * sandboxed frame.
      *
-     * @return The last committed Origin of the frame.
+     * @return The last committed Origin of the frame or null when being destroyed.
      */
+    @Nullable
     Origin getLastCommittedOrigin();
 
     /**

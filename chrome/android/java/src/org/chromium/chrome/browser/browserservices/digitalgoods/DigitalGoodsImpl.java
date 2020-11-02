@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.DigitalGoods;
 import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
@@ -21,26 +23,30 @@ public class DigitalGoodsImpl implements DigitalGoods {
 
     /** A Delegate that provides the current URL. */
     public interface Delegate {
+        /** @return The current URL or null when the frame is being destroyed. */
+        @Nullable
         String getUrl();
     }
 
     /** Constructs the object with a given adapter and delegate. */
-    public DigitalGoodsImpl(DigitalGoodsAdapter adapter,
-            Delegate delegate) {
+    public DigitalGoodsImpl(DigitalGoodsAdapter adapter, Delegate delegate) {
         mAdapter = adapter;
         mDelegate = delegate;
     }
 
     @Override
     public void getDetails(String[] itemIds, GetDetailsResponse callback) {
-        mAdapter.getDetails(Uri.parse(mDelegate.getUrl()), itemIds, callback);
+        String url = mDelegate.getUrl();
+        if (url != null) mAdapter.getDetails(Uri.parse(url), itemIds, callback);
     }
 
     @Override
-    public void acknowledge(String purchaseToken, boolean makeAvailableAgain,
-            AcknowledgeResponse callback) {
-        mAdapter.acknowledge(
-                Uri.parse(mDelegate.getUrl()), purchaseToken, makeAvailableAgain,callback);
+    public void acknowledge(
+            String purchaseToken, boolean makeAvailableAgain, AcknowledgeResponse callback) {
+        String url = mDelegate.getUrl();
+        if (url != null) {
+            mAdapter.acknowledge(Uri.parse(url), purchaseToken, makeAvailableAgain, callback);
+        }
     }
 
     @Override

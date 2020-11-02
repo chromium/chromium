@@ -124,7 +124,6 @@ public class PaymentRequestService {
      * A test-only observer for the PaymentRequest service implementation.
      */
     public interface PaymentRequestServiceObserverForTest {
-
         /**
          * Called when an abort request was denied.
          */
@@ -213,6 +212,13 @@ public class PaymentRequestService {
         assert renderFrameHost != null;
         assert browserPaymentRequestFactory != null;
         assert onClosedListener != null;
+
+        if (renderFrameHost.getLastCommittedOrigin() == null
+                || renderFrameHost.getLastCommittedURL() == null) {
+            abortBeforeInstantiation(/*client=*/null, /*journeyLogger=*/null, ErrorStrings.NO_FRAME,
+                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            return null;
+        }
 
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
         if (webContents == null || webContents.isDestroyed()) {
@@ -334,16 +340,12 @@ public class PaymentRequestService {
             PaymentMethodData[] methodData, PaymentDetails details,
             boolean googlePayBridgeEligible) {
         mBrowserPaymentRequest = factory.createBrowserPaymentRequest(this);
-        mJourneyLogger.recordCheckoutStep(
-                org.chromium.components.payments.CheckoutFunnelStep.INITIATED);
+        mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
 
         if (!UrlUtil.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
-            Log.d(TAG, org.chromium.components.payments.ErrorStrings.PROHIBITED_ORIGIN);
-            Log.d(TAG,
-                    org.chromium.components.payments.ErrorStrings
-                            .PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
-            mJourneyLogger.setAborted(
-                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN);
+            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
                     ErrorStrings.PROHIBITED_ORIGIN,
                     PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
@@ -356,11 +358,8 @@ public class PaymentRequestService {
         String rejectShowErrorMessage = mDelegate.getInvalidSslCertificateErrorMessage();
         if (!TextUtils.isEmpty(rejectShowErrorMessage)) {
             Log.d(TAG, rejectShowErrorMessage);
-            Log.d(TAG,
-                    org.chromium.components.payments.ErrorStrings
-                            .PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
-            mJourneyLogger.setAborted(
-                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(rejectShowErrorMessage,
                     PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
             return false;
