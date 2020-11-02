@@ -54,7 +54,7 @@ class CORE_EXPORT SettingsDelegate {
     kStyleChange,
     kViewportDescriptionChange,
     kViewportRuleChange,
-    kViewportScrollbarChange,
+    kViewportPaintPropertiesChange,
     kDNSPrefetchingChange,
     kImageLoadingChange,
     kTextAutosizingChange,

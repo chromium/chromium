@@ -413,6 +413,7 @@
     {
       name: "mainFrameClipsContent",
       initial: true,
+      invalidate: "ViewportPaintProperties",
     },
 
     // For android.webkit.WebSettings.setUseWideViewport()
@@ -835,7 +836,7 @@
     {
       name: "hideScrollbars",
       initial: false,
-      invalidate: "ViewportScrollbar",
+      invalidate: "ViewportPaintProperties",
     },
 
     // Spellchecking is enabled by default for elements that do not specify it explicitly

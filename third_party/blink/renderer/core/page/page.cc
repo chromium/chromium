@@ -644,8 +644,13 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         TextAutosizer::UpdatePageInfoInAllFrames(MainFrame());
       }
       break;
-    case SettingsDelegate::kViewportScrollbarChange:
+    case SettingsDelegate::kViewportPaintPropertiesChange:
+      GetVisualViewport().SetNeedsPaintPropertyUpdate();
       GetVisualViewport().InitializeScrollbars();
+      if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
+        if (LocalFrameView* view = local_frame->View())
+          view->SetNeedsPaintPropertyUpdate();
+      }
       break;
     case SettingsDelegate::kDNSPrefetchingChange:
       for (Frame* frame = MainFrame(); frame;

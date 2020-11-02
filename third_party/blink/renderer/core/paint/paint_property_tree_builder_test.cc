@@ -6436,7 +6436,6 @@ TEST_P(PaintPropertyTreeBuilderTest, TableColOpacity) {
 // Test the WebView API that allows rendering the whole page. In this case, we
 // shouldn't create a clip node for the main frame.
 TEST_P(PaintPropertyTreeBuilderTest, MainFrameDoesntClipContent) {
-  GetPage().GetSettings().SetMainFrameClipsContent(false);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -6448,11 +6447,18 @@ TEST_P(PaintPropertyTreeBuilderTest, MainFrameDoesntClipContent) {
     </style>
   )HTML");
 
-  EXPECT_FALSE(GetDocument()
-                   .GetLayoutView()
-                   ->FirstFragment()
-                   .PaintProperties()
-                   ->OverflowClip());
+  EXPECT_TRUE(
+      GetLayoutView().FirstFragment().PaintProperties()->OverflowClip());
+
+  GetPage().GetSettings().SetMainFrameClipsContent(false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      GetLayoutView().FirstFragment().PaintProperties()->OverflowClip());
+
+  GetPage().GetSettings().SetMainFrameClipsContent(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      GetLayoutView().FirstFragment().PaintProperties()->OverflowClip());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPath) {
