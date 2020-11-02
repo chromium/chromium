@@ -1390,11 +1390,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-cros-virtual-keyboard-floating-resizable",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "enable-data-reduction-proxy-server-experiment",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.
