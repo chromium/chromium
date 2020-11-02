@@ -470,7 +470,8 @@ if (current_toolchain == default_toolchain) {
 
   if (ios_enable_widget_kit_extension) {
     bundle_data("widget_kit_extension_bundle") {
-      _widget_extension_target = "//ios/chrome/widget_kit_extension"
+      _widget_extension_target =
+          "//ios/chrome/widget_kit_extension(${current_toolchain}_14_0)"
       public_deps = [ _widget_extension_target ]
       sources = [ get_label_info(_widget_extension_target, "root_out_dir") +
                   "/widget_kit_extension.appex" ]
