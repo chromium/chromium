@@ -1356,7 +1356,7 @@ void ContentSettingGeolocationBubbleModel::CommitChanges() {
   if (show_system_geolocation_bubble_)
     return;
 
-  ContentSettingBubbleModel::CommitChanges();
+  ContentSettingSingleRadioGroup::CommitChanges();
 }
 
 void ContentSettingGeolocationBubbleModel::
