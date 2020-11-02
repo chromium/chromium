@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFactory;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -669,7 +669,7 @@ public class IntentHandler {
             return null;
         }
         String query = results.get(0);
-        String url = AutocompleteCoordinatorFactory.qualifyPartialURLQuery(query);
+        String url = AutocompleteCoordinator.qualifyPartialURLQuery(query);
         if (url == null) {
             List<String> urls = IntentUtils.safeGetStringArrayListExtra(
                     intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);

@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
@@ -231,8 +230,8 @@ public class LocationBarLayout
                 return mIsTablet ? LocationBarLayout.this : null;
             }
         };
-        mAutocompleteCoordinator = AutocompleteCoordinatorFactory.createAutocompleteCoordinator(
-                this, this, embedder, mUrlCoordinator);
+        mAutocompleteCoordinator =
+                new AutocompleteCoordinator(this, this, embedder, mUrlCoordinator);
         addUrlFocusChangeListener(mAutocompleteCoordinator);
         mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
 

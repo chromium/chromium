@@ -22,7 +22,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
@@ -56,20 +58,13 @@ import java.util.List;
 /**
  * Coordinator that handles the interactions with the autocomplete system.
  */
-public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
+public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextChangeListener {
     private final ViewGroup mParent;
     private OmniboxQueryTileCoordinator mQueryTileCoordinator;
     private AutocompleteMediator mMediator;
-
     private OmniboxSuggestionsDropdown mDropdown;
 
-    /**
-     * See {@link AutocompleteCoordinatorFactory#createAutocompleteCoordinator}.
-     *
-     * Keep this constructor protected so clients use the factory instead.
-     */
-    @VisibleForTesting
-    protected AutocompleteCoordinatorImpl(ViewGroup parent, AutocompleteDelegate delegate,
+    public AutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
             OmniboxSuggestionsDropdown.Embedder dropdownEmbedder,
             UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
         mParent = parent;
@@ -99,7 +94,9 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
         updateSuggestionListLayoutDirection();
     }
 
-    @Override
+    /**
+     * Clean up resources used by this class.
+     */
     public void destroy() {
         mQueryTileCoordinator.destroy();
         mQueryTileCoordinator = null;
@@ -214,83 +211,133 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
         mMediator.onUrlAnimationFinished(hasFocus);
     }
 
-    @Override
+    /**
+     * Provides data and state for the toolbar component.
+     * @param locationBarDataProvider The data provider.
+     */
     public void setLocationBarDataProvider(LocationBarDataProvider locationBarDataProvider) {
         mMediator.setLocationBarDataProvider(locationBarDataProvider);
     }
 
-    @Override
+    /**
+     * @param layoutStateProvider A means of accessing the current Layout state and a way to
+     *         listen to state changes.
+     */
     public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
         mMediator.setLayoutStateProvider(layoutStateProvider);
     }
 
-    @Override
+    /**
+     * Updates the profile used for generating autocomplete suggestions.
+     * @param profile The profile to be used.
+     */
     public void setAutocompleteProfile(Profile profile) {
         mMediator.setAutocompleteProfile(profile);
         mQueryTileCoordinator.setProfile(profile);
     }
 
-    @Override
+    /**
+     * Set the WindowAndroid instance associated with the containing Activity.
+     */
     public void setWindowAndroid(WindowAndroid windowAndroid) {
         mMediator.setWindowAndroid(windowAndroid);
     }
 
-    @Override
+    /**
+     * @param provider A means of accessing the activity's tab.
+     */
     public void setActivityTabProvider(ActivityTabProvider provider) {
         mMediator.setActivityTabProvider(provider);
     }
 
-    @Override
+    /**
+     * @param shareDelegateSupplier A means of accessing the sharing feature.
+     */
     public void setShareDelegateSupplier(Supplier<ShareDelegate> shareDelegateSupplier) {
         mMediator.setShareDelegateSupplier(shareDelegateSupplier);
     }
 
-    @Override
+    /**
+     * Whether omnibox autocomplete should currently be prevented from generating suggestions.
+     */
     public void setShouldPreventOmniboxAutocomplete(boolean prevent) {
         mMediator.setShouldPreventOmniboxAutocomplete(prevent);
     }
 
-    @Override
+    /**
+     * @return The number of current autocomplete suggestions.
+     */
     public int getSuggestionCount() {
         return mMediator.getSuggestionCount();
     }
 
-    @Override
+    /**
+     * Retrieve the omnibox suggestion at the specified index.  The index represents the ordering
+     * in the underlying model.  The index does not represent visibility due to the current scroll
+     * position of the list.
+     *
+     * @param index The index of the suggestion to fetch.
+     * @return The suggestion at the given index.
+     */
     public OmniboxSuggestion getSuggestionAt(int index) {
         return mMediator.getSuggestionAt(index);
     }
 
-    @Override
+    /**
+     * Signals that native initialization has completed.
+     */
     public void onNativeInitialized() {
         mMediator.onNativeInitialized();
     }
 
-    @Override
+    /**
+     * @see AutocompleteController#onVoiceResults(List)
+     */
     public void onVoiceResults(@Nullable List<VoiceRecognitionHandler.VoiceResult> results) {
         mMediator.onVoiceResults(results);
     }
 
-    @Override
+    /**
+     * @return The current native pointer to the autocomplete results.
+     * TODO(ender): Figure out how to remove this.
+     */
     public long getCurrentNativeAutocompleteResult() {
         return mMediator.getCurrentNativeAutocompleteResult();
     }
 
-    @Override
+    /**
+     * Update the layout direction of the suggestion list based on the parent layout direction.
+     */
     public void updateSuggestionListLayoutDirection() {
         mMediator.setLayoutDirection(ViewCompat.getLayoutDirection(mParent));
     }
 
-    @Override
+    /**
+     * Update the visuals of the autocomplete UI.
+     * @param useDarkColors Whether dark colors should be applied to the UI.
+     * @param isIncognito Whether the UI is for incognito mode or not.
+     */
     public void updateVisualsForState(boolean useDarkColors, boolean isIncognito) {
         mMediator.updateVisualsForState(useDarkColors, isIncognito);
     }
 
-    @Override
+    /**
+     * Sets to show cached zero suggest results. This will start both caching zero suggest results
+     * in shared preferences and also attempt to show them when appropriate without needing native
+     * initialization.
+     * @param showCachedZeroSuggestResults Whether cached zero suggest should be shown.
+     */
     public void setShowCachedZeroSuggestResults(boolean showCachedZeroSuggestResults) {
         mMediator.setShowCachedZeroSuggestResults(showCachedZeroSuggestResults);
     }
 
-    @Override
+    /**
+     * Handle the key events associated with the suggestion list.
+     *
+     * @param keyCode The keycode representing what key was interacted with.
+     * @param event The key event containing all meta-data associated with the event.
+     * @return Whether the key event was handled.
+     */
     public boolean handleKeyEvent(int keyCode, KeyEvent event) {
         boolean isShowingList = mDropdown != null && mDropdown.getViewGroup().isShown();
 
@@ -314,37 +361,56 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
         mMediator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
     }
 
-    @Override
+    /**
+     * Trigger autocomplete for the given query.
+     */
     public void startAutocompleteForQuery(String query) {
         mMediator.startAutocompleteForQuery(query);
     }
 
-    @Override
-    public String qualifyPartialURLQuery(String query) {
+    /**
+     * Given a search query, this will attempt to see if the query appears to be portion of a
+     * properly formed URL.  If it appears to be a URL, this will return the fully qualified
+     * version (i.e. including the scheme, etc...).  If the query does not appear to be a URL,
+     * this will return null.
+     *
+     * TODO(crbug.com/966424): Fix the dependency issue and remove this method.
+     *
+     * @param query The query to be expanded into a fully qualified URL if appropriate.
+     * @return The fully qualified URL or null.
+     */
+    @Deprecated
+    public static String qualifyPartialURLQuery(String query) {
         return AutocompleteControllerJni.get().qualifyPartialURLQuery(query);
     }
 
-    @Override
+    /**
+     * Sends a zero suggest request to the server in order to pre-populate the result cache.
+     */
     public void prefetchZeroSuggestResults() {
         AutocompleteControllerJni.get().prefetchZeroSuggestResults();
     }
 
-    @Override
+    /** @return Suggestions Dropdown view, showing the list of suggestions. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public OmniboxSuggestionsDropdown getSuggestionsDropdownForTest() {
         return mDropdown;
     }
 
-    @Override
+    /** @param controller The instance of AutocompleteController to be used. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setAutocompleteControllerForTest(AutocompleteController controller) {
         mMediator.setAutocompleteControllerForTest(controller);
     }
 
-    @Override
+    /** @return The current receiving OnSuggestionsReceived events. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public OnSuggestionsReceivedListener getSuggestionsReceivedListenerForTest() {
         return mMediator;
     }
 
-    @Override
+    /** @return The ModelList for the currently shown suggestions. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public ModelList getSuggestionModelListForTest() {
         return mMediator.getSuggestionModelListForTest();
     }

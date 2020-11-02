@@ -1117,8 +1117,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxTheme.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteController.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteCoordinator.java",
-  "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteCoordinatorFactory.java",
-  "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteCoordinatorImpl.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteDelegate.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteMediator.java",
   "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteResult.java",

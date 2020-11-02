@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
@@ -298,10 +297,10 @@ public class VoiceRecognitionHandlerTest {
     }
 
     /**
-     * TODO(crbug.com/962527): Remove this dependency on {@link AutocompleteCoordinatorImpl}.
+     * TODO(crbug.com/962527): Remove this dependency on {@link AutocompleteCoordinator}.
      */
-    private class TestAutocompleteCoordinatorImpl extends AutocompleteCoordinatorImpl {
-        public TestAutocompleteCoordinatorImpl(ViewGroup parent, AutocompleteDelegate delegate,
+    private class TestAutocompleteCoordinator extends AutocompleteCoordinator {
+        public TestAutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
                 OmniboxSuggestionsDropdown.Embedder dropdownEmbedder,
                 UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider);
@@ -325,8 +324,7 @@ public class VoiceRecognitionHandlerTest {
             ViewGroup parent =
                     (ViewGroup) mActivityTestRule.getActivity().findViewById(android.R.id.content);
             Assert.assertNotNull(parent);
-            mAutocompleteCoordinator =
-                    new TestAutocompleteCoordinatorImpl(parent, null, null, null);
+            mAutocompleteCoordinator = new TestAutocompleteCoordinator(parent, null, null, null);
         }
 
         @Override

@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorImpl;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.NavsuggestTile;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionBuilderForTest;
@@ -85,7 +85,7 @@ public class MostVisitedTilesTest {
     private UrlBar mUrlBar;
     private LocationBarLayout mLocationBarLayout;
     private TestAutocompleteController mController;
-    private AutocompleteCoordinatorImpl mAutocomplete;
+    private AutocompleteCoordinator mAutocomplete;
     private EmbeddedTestServer mTestServer;
     private Tab mTab;
     private BaseCarouselSuggestionView mCarousel;
@@ -100,8 +100,7 @@ public class MostVisitedTilesTest {
         mActivity = sActivityTestRule.getActivity();
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mUrlBar = mActivity.findViewById(R.id.url_bar);
-        mAutocomplete =
-                (AutocompleteCoordinatorImpl) mLocationBarLayout.getAutocompleteCoordinator();
+        mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
         mTab = mActivity.getActivityTab();
 
         ChromeTabUtils.waitForInteractable(mTab);

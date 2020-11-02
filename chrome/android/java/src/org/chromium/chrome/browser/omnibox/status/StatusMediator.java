@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFactory;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
@@ -39,12 +39,12 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     @VisibleForTesting
     @MockedInTests
     class StatusMediatorDelegate {
-        /** @see {@link AutocompleteCoordinatorFactory#qualifyPartialURLQuery} */
+        /** @see {@link AutocompleteCoordinator#qualifyPartialURLQuery} */
         boolean isUrlValid(String partialUrl) {
             if (TextUtils.isEmpty(partialUrl)) return false;
 
             return BrowserStartupController.getInstance().isFullBrowserStarted()
-                    && AutocompleteCoordinatorFactory.qualifyPartialURLQuery(partialUrl) != null;
+                    && AutocompleteCoordinator.qualifyPartialURLQuery(partialUrl) != null;
         }
 
         /** @see {@link SearchEngineLogoUtils#getSearchEngineLogoFavicon} */

@@ -269,7 +269,7 @@ public class VoiceRecognitionHandler {
                 return;
             }
 
-            String url = autocompleteCoordinator.qualifyPartialURLQuery(topResultQuery);
+            String url = AutocompleteCoordinator.qualifyPartialURLQuery(topResultQuery);
             if (url == null) {
                 url = TemplateUrlServiceFactory.get()
                               .getUrlForVoiceSearchQuery(topResultQuery)
@@ -319,9 +319,6 @@ public class VoiceRecognitionHandler {
         // Langues is optional, so only check the size when it's non-null.
         if (languages != null && languages.size() != strings.size()) return null;
 
-        AutocompleteCoordinator autocompleteCoordinator = mDelegate.getAutocompleteCoordinator();
-        assert autocompleteCoordinator != null;
-
         List<VoiceResult> results = new ArrayList<>();
         for (int i = 0; i < strings.size(); ++i) {
             // Remove any spaces in the voice search match when determining whether it
@@ -331,7 +328,7 @@ public class VoiceRecognitionHandler {
             // If the string appears to be a URL, then use it instead of the string returned from
             // the voice engine.
             String culledString = strings.get(i).replaceAll(" ", "");
-            String url = autocompleteCoordinator.qualifyPartialURLQuery(culledString);
+            String url = AutocompleteCoordinator.qualifyPartialURLQuery(culledString);
             String language = languages == null ? null : languages.get(i);
             results.add(new VoiceResult(
                     url == null ? strings.get(i) : culledString, confidences[i], language));

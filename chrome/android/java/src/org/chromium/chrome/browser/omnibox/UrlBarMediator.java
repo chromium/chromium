@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFactory;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.base.Clipboard;
@@ -399,7 +399,7 @@ class UrlBarMediator
 
     private void recordPasteMetrics(String text) {
         boolean isUrl = BrowserStartupController.getInstance().isFullBrowserStarted()
-                && AutocompleteCoordinatorFactory.qualifyPartialURLQuery(text) != null;
+                && AutocompleteCoordinator.qualifyPartialURLQuery(text) != null;
 
         long age = System.currentTimeMillis() - Clipboard.getInstance().getLastModifiedTimeMs();
         RecordHistogram.recordCustomTimesHistogram("MobileOmnibox.LongPressPasteAge", age,
