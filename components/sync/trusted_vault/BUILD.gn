@@ -18,8 +18,8 @@ static_library("trusted_vault") {
     "trusted_vault_connection.h",
     "trusted_vault_connection_impl.cc",
     "trusted_vault_connection_impl.h",
-    "vault_service_api_call_flow.cc",
-    "vault_service_api_call_flow.h",
+    "trusted_vault_request.cc",
+    "trusted_vault_request.h",
   ]
   public_deps = [
     "//base",

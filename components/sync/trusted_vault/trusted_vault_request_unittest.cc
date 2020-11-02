@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/trusted_vault/vault_service_api_call_flow.h"
+#include "components/sync/trusted_vault/trusted_vault_request.h"
 
 #include <memory>
 #include <string>
@@ -17,7 +17,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -73,28 +72,27 @@ class FakeTrustedVaultAccessTokenFetcher
   const base::Optional<std::string> access_token_;
 };
 
-class VaultServiceApiCallFlowTest : public testing::Test {
+class TrustedVaultRequestTest : public testing::Test {
  public:
-  VaultServiceApiCallFlowTest()
+  TrustedVaultRequestTest()
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
-  std::unique_ptr<VaultServiceApiCallFlow> StartNewFlowWithAccessToken(
+  std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessToken(
       const base::Optional<std::string>& access_token,
-      VaultServiceApiCallFlow::HttpMethod http_method,
+      TrustedVaultRequest::HttpMethod http_method,
       const base::Optional<std::string>& request_body,
-      VaultServiceApiCallFlow::CompletionCallback completion_callback) {
+      TrustedVaultRequest::CompletionCallback completion_callback) {
     const CoreAccountId account_id = CoreAccountId::FromEmail("user@gmail.com");
     FakeTrustedVaultAccessTokenFetcher access_token_fetcher(access_token);
 
-    auto flow = std::make_unique<VaultServiceApiCallFlow>(
-        http_method, GURL(kRequestUrl), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
-        request_body);
-    flow->FetchAccessTokenAndStartFlow(account_id, shared_url_loader_factory_,
-                                       &access_token_fetcher,
-                                       std::move(completion_callback));
-    return flow;
+    auto request = std::make_unique<TrustedVaultRequest>(
+        http_method, GURL(kRequestUrl), request_body);
+    request->FetchAccessTokenAndSendRequest(
+        account_id, shared_url_loader_factory_, &access_token_fetcher,
+        std::move(completion_callback));
+    return request;
   }
 
   bool RespondToHttpRequest(
@@ -126,11 +124,11 @@ class VaultServiceApiCallFlowTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(VaultServiceApiCallFlowTest, ShouldSendGetRequestAndHandleSuccess) {
-  base::MockCallback<VaultServiceApiCallFlow::CompletionCallback>
+TEST_F(TrustedVaultRequestTest, ShouldSendGetRequestAndHandleSuccess) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
-  std::unique_ptr<VaultServiceApiCallFlow> flow = StartNewFlowWithAccessToken(
-      kAccessToken, VaultServiceApiCallFlow::HttpMethod::kGet,
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/base::nullopt, completion_callback.Get());
 
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -148,12 +146,12 @@ TEST_F(VaultServiceApiCallFlowTest, ShouldSendGetRequestAndHandleSuccess) {
   EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
 }
 
-TEST_F(VaultServiceApiCallFlowTest,
+TEST_F(TrustedVaultRequestTest,
        ShouldSendPostRequestWithoutPayloadAndHandleSuccess) {
-  base::MockCallback<VaultServiceApiCallFlow::CompletionCallback>
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
-  std::unique_ptr<VaultServiceApiCallFlow> flow = StartNewFlowWithAccessToken(
-      kAccessToken, VaultServiceApiCallFlow::HttpMethod::kPost,
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kPost,
       /*request_body=*/base::nullopt, completion_callback.Get());
 
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -171,13 +169,13 @@ TEST_F(VaultServiceApiCallFlowTest,
   EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
 }
 
-TEST_F(VaultServiceApiCallFlowTest,
+TEST_F(TrustedVaultRequestTest,
        ShouldSendPostRequestWithPayloadAndHandleSuccess) {
-  base::MockCallback<VaultServiceApiCallFlow::CompletionCallback>
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
   const std::string kRequestBody = "Request body";
-  std::unique_ptr<VaultServiceApiCallFlow> flow = StartNewFlowWithAccessToken(
-      kAccessToken, VaultServiceApiCallFlow::HttpMethod::kPost, kRequestBody,
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kPost, kRequestBody,
       completion_callback.Get());
 
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -195,11 +193,11 @@ TEST_F(VaultServiceApiCallFlowTest,
   EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
 }
 
-TEST_F(VaultServiceApiCallFlowTest, ShouldHandleNetworkFailures) {
-  base::MockCallback<VaultServiceApiCallFlow::CompletionCallback>
+TEST_F(TrustedVaultRequestTest, ShouldHandleNetworkFailures) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
-  std::unique_ptr<VaultServiceApiCallFlow> flow = StartNewFlowWithAccessToken(
-      kAccessToken, VaultServiceApiCallFlow::HttpMethod::kGet,
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/base::nullopt, completion_callback.Get());
 
   // |completion_callback| should be called after receiving response.
@@ -208,11 +206,11 @@ TEST_F(VaultServiceApiCallFlowTest, ShouldHandleNetworkFailures) {
                                    /*response_body=*/std::string()));
 }
 
-TEST_F(VaultServiceApiCallFlowTest, ShouldHandleHttpErrors) {
-  base::MockCallback<VaultServiceApiCallFlow::CompletionCallback>
+TEST_F(TrustedVaultRequestTest, ShouldHandleHttpErrors) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
-  std::unique_ptr<VaultServiceApiCallFlow> flow = StartNewFlowWithAccessToken(
-      kAccessToken, VaultServiceApiCallFlow::HttpMethod::kGet,
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/base::nullopt, completion_callback.Get());
 
   // |completion_callback| should be called after receiving response.
@@ -221,14 +219,14 @@ TEST_F(VaultServiceApiCallFlowTest, ShouldHandleHttpErrors) {
                                    /*response_body=*/""));
 }
 
-TEST_F(VaultServiceApiCallFlowTest, ShouldHandleAccessTokenFetchingFailures) {
-  base::MockCallback<VaultServiceApiCallFlow::CompletionCallback>
+TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
   // Access token fetching failure propagated immediately in this test, so
   // |completion_callback| should be called immediately as well.
   EXPECT_CALL(completion_callback, Run(/*success=*/false, _));
-  std::unique_ptr<VaultServiceApiCallFlow> flow = StartNewFlowWithAccessToken(
-      /*access_token=*/base::nullopt, VaultServiceApiCallFlow::HttpMethod::kGet,
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      /*access_token=*/base::nullopt, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/base::nullopt, completion_callback.Get());
 }
 

@@ -339,6 +339,7 @@ Refer to README.md for content description and update process.
  <item id="tethering_handler_socket" added_in_milestone="65" hash_code="113065062" type="0" content_hash_code="986296" os_list="linux,windows" file_path="content/browser/devtools/protocol/tethering_handler.cc"/>
  <item id="thumbnail_source" added_in_milestone="62" hash_code="135251783" type="0" deprecated="2018-11-27" content_hash_code="31086298" file_path=""/>
  <item id="translate_url_fetcher" added_in_milestone="62" hash_code="137116619" type="0" content_hash_code="104217506" os_list="linux,windows" file_path="components/translate/core/browser/translate_url_fetcher.cc"/>
+ <item id="trusted_vault_request" added_in_milestone="88" hash_code="30516662" type="0" content_hash_code="121167791" os_list="linux,windows" file_path="components/sync/trusted_vault/trusted_vault_request.cc"/>
  <item id="ui_devtools_server" added_in_milestone="66" hash_code="4986170" type="0" content_hash_code="62670263" os_list="linux,windows" file_path="components/ui_devtools/devtools_server.cc"/>
  <item id="undefined" added_in_milestone="62" hash_code="45578882" type="0" reserved="1" os_list="linux,windows" file_path=""/>
  <item id="unwanted_software_report" added_in_milestone="70" hash_code="43759504" type="0" content_hash_code="59154788" os_list="windows" file_path="chrome/chrome_cleaner/logging/reporter_logging_service.cc"/>

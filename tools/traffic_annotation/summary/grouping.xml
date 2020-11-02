@@ -414,6 +414,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="sync_http_bridge"/>
       <traffic_annotation unique_id="sync_stop_reporter"/>
       <traffic_annotation unique_id="sync_clipboard_service"/>
+      <traffic_annotation unique_id="trusted_vault_request"/>
     </sender>
     <sender name="Assist Rank">
       <traffic_annotation unique_id="ranker_url_fetcher"/>
