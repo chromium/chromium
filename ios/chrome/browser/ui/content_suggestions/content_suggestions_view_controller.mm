@@ -533,8 +533,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     ContentSuggestionsDiscoverHeaderCell* discoverFeedHeader =
         base::mac::ObjCCastStrict<ContentSuggestionsDiscoverHeaderCell>(cell);
     [discoverFeedHeader.menuButton addTarget:self
-                                      action:@selector(openDiscoverFeedMenu:)
+                                      action:@selector(openDiscoverFeedMenu)
                             forControlEvents:UIControlEventTouchUpInside];
+    [self.audience discoverHeaderMenuButtonShown:discoverFeedHeader.menuButton];
   }
   return cell;
 }
@@ -945,8 +946,8 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 }
 
 // Opens top-level feed menu when pressing |menuButton|.
-- (void)openDiscoverFeedMenu:(id)menuButton {
-  [self.discoverFeedMenuHandler openDiscoverFeedMenu:menuButton];
+- (void)openDiscoverFeedMenu {
+  [self.discoverFeedMenuHandler openDiscoverFeedMenu];
 }
 
 // Evaluates whether or not another set of Discover feed articles should be

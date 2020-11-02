@@ -2378,6 +2378,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
+      [_ntpCoordinatorsForWebStates[webState]
+          constrainDiscoverHeaderMenuButtonNamedGuide];
+      [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
     } else {
       self.browserContainerViewController.contentView =
           [self viewForWebState:webState];
@@ -4872,14 +4875,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
     newTabPageCoordinator.webState = webState;
     _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
-    [newTabPageCoordinator.viewController
-        willMoveToParentViewController:self.browserContainerViewController];
-    [self.browserContainerViewController
-        addChildViewController:newTabPageCoordinator.viewController];
-    [self.browserContainerViewController.view
-        addSubview:newTabPageCoordinator.viewController.view];
-    [newTabPageCoordinator.viewController
-        didMoveToParentViewController:self.browserContainerViewController];
   } else {
     NewTabPageCoordinator* newTabPageCoordinator =
         _ntpCoordinatorsForWebStates[webState];

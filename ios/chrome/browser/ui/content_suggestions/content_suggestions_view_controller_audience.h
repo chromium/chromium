@@ -11,6 +11,10 @@
 // Notifies the audience that the promo has been shown.
 - (void)promoShown;
 
+// Notifies the audience that the Discover feed header menu has been shown, and
+// provides a reference to the button.
+- (void)discoverHeaderMenuButtonShown:(UIView*)menuButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
