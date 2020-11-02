@@ -23,8 +23,10 @@ namespace holding_space_metrics {
 // shelf. Note that these values are persisted to histograms so existing values
 // should remain unchanged and new values should be added to the end.
 enum class PodAction {
-  kClick = 0,
-  kMaxValue = kClick,
+  // kClick (Deprecated) = 0,
+  kShow = 1,
+  kClose = 2,
+  kMaxValue = kClose,
 };
 
 // Records the specified `action` taken on the holding space pod in the shelf.

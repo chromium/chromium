@@ -72,9 +72,6 @@ void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
 }
 
 bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
-  holding_space_metrics::RecordPodAction(
-      holding_space_metrics::PodAction::kClick);
-
   if (bubble_) {
     CloseBubble();
     return true;
@@ -98,6 +95,9 @@ void HoldingSpaceTray::CloseBubble() {
   if (!bubble_)
     return;
 
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kClose);
+
   widget_observer_.RemoveAll();
 
   bubble_.reset();
@@ -107,6 +107,9 @@ void HoldingSpaceTray::CloseBubble() {
 void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   if (bubble_)
     return;
+
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kShow);
 
   DCHECK(tray_container());
 
