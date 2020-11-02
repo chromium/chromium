@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL The first-contentful-paint timestamp should be same as the last RAF assert_approx_equals: One of the past requestAnimationFrame should have the same timestamp as paint entry expected 38.878 +/- 1 but got 44.549999999617285
+
+assert_approx_equals: One of the past requestAnimationFrame should have the same timestamp as paint entry expected 31.528 +/- 1 but got 44.549999999617285
+Harness: the test ran to completion.
+

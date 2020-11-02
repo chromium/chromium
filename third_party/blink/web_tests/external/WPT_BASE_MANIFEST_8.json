@@ -70,7 +70,16 @@
        null,
        {}
       ]
-     ]
+     ],
+     "content-visibility": {
+      "content-visibility-form-controls-crash.html": [
+       "6c9634dc1f3605ff20e68241d1f50ff93c8268b2",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     },
     "css-flexbox": {
      "fixedpos-video-in-abspos-quirk-crash.html": [
@@ -50736,6 +50745,32 @@
        {}
       ]
      ],
+     "border-radius-clip-001.html": [
+      "585b62677f4c439deb077a5ab4aba96559366c72",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/border-radius-clipping-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "border-radius-clip-002.htm": [
+      "c6aa0c6a3e10b639673541d7a16e1c7a43ac8fd2",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/border-radius-clip-002-ref.htm",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-radius-clipping-002.html": [
       "eea0ee104fc2610a722f5bbae200c8f6d1ac9823",
       [
@@ -50743,19 +50778,6 @@
        [
         [
          "/css/reference/ref-nothing-below.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "border-radius-clipping.html": [
-      "331bc61f20392a7f815014b738a7e01ea92db850",
-      [
-       null,
-       [
-        [
-         "/css/css-backgrounds/reference/border-radius-clipping-ref.html",
          "=="
         ]
        ],
@@ -51055,6 +51077,71 @@
        [
         [
          "/css/css-backgrounds/reference/box-shadow-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-029.html": [
+      "aa0fbfd6ddfd976fb1254d0f7df8ef2ccad9698c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-039.html": [
+      "c3badbc211b7995aa8bd4db165d3667eb61848c9",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/box-shadow-039-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-040.html": [
+      "dea5d5bfaf443ca11c0e1619931a5e929e3e3571",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/box-shadow-040-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-041.html": [
+      "907ca82a6df5ab070b7531a5893b965ddcc6dcfa",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/box-shadow-041-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-042.html": [
+      "ec9212e5b6c9ace7787a5d0321dfa6be17f7ae75",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/box-shadow-042-ref.html",
          "=="
         ]
        ],
@@ -90556,6 +90643,19 @@
        {}
       ]
      ],
+     "first-line-with-inline-block.html": [
+      "12e11a3d2e4344b57c755b8a7e749115b299e549",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/first-line-with-inline-block-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-line-with-out-of-flow-and-nested-div.html": [
       "e277e9ce1cb69bcc1c7a61c8a100585e077bd359",
       [
@@ -105706,6 +105806,19 @@
         {}
        ]
       ],
+      "text-align-justify-shy-001.html": [
+       "3d15488024eb693f7799a2e8322d0e777dcfa236",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/reference/text-align-justify-shy-ref-001.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-last-010.html": [
        "d41edceae84d6b4a611b956ef2c34bffff54fb25",
        [
@@ -113869,6 +113982,19 @@
       ]
      ],
      "animation": {
+      "rotate-transform-equivalent.html": [
+       "7474c79e7e6d974133abd226368ec636f0e4f49c",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/rotate-transform-equivalent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "transform-interpolation-matrix.html": [
        "b5f9c3cd3084024756ef95e46e85d0110273cab5",
        [
@@ -158890,6 +159016,19 @@
        {}
       ]
      ],
+     "reftest.www.sub.html": [
+      "ccffd98f43b73b067e88f7ce5d851876d4934236",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "reftest_fuzzy_1.html": [
       "1930fe0ae8fb1aee30e91e691fe6a73ccfc87d0e",
       [
@@ -179560,8 +179699,12 @@
        "22c5f4dfb8b40fddeb3eeb0af52056dfebf623e1",
        []
       ],
+      "border-radius-clip-002-ref.htm": [
+       "2a68ea3587a23e6eef1dce22511a7f14ffc0d3a3",
+       []
+      ],
       "border-radius-clipping-ref.html": [
-       "344cd01c7a1b339cb7edbd8cd050b2180507abc9",
+       "2aeef90eb05afc930b3836c50d97e2e3484d95db",
        []
       ],
       "border-radius-horizontal-value-is-zero-ref.html": [
@@ -179578,6 +179721,22 @@
       ],
       "box-shadow-005-ref.html": [
        "81a5cbf6b8e06f6435bc133287f128ed6af8ed62",
+       []
+      ],
+      "box-shadow-039-ref.html": [
+       "6f364d09a2b2a33a085af99c9ea92c83e1d07a39",
+       []
+      ],
+      "box-shadow-040-ref.html": [
+       "14159cfcdf5d06021d98e04d0ee6367d16cdeda7",
+       []
+      ],
+      "box-shadow-041-ref.html": [
+       "8b93bbdf112e09c3a5e4242b8905d01afda6297a",
+       []
+      ],
+      "box-shadow-042-ref.html": [
+       "ccc209a02d281b9aa05b590ca9292328e2f60f12",
        []
       ],
       "box-shadow-body-ref.html": [
@@ -195012,6 +195171,10 @@
        "17d69f306d77411f2ef0a7dab682b119c5b59e50",
        []
       ],
+      "first-line-with-inline-block-ref.html": [
+       "31717d4171bad4c98b272e4ce70ee6578780b10b",
+       []
+      ],
       "placeholder-excluded-properties-ref.html": [
        "0e573cb3d6cbac837c9e10552e360aa713fee60b",
        []
@@ -199015,6 +199178,10 @@
         "05531186ba8a5e78dda0218f835eedd86c092f18",
         []
        ],
+       "text-align-justify-shy-ref-001.html": [
+        "e7148ece536ea8928219464581e22e598a73b11e",
+        []
+       ],
        "text-align-justifyall-ref-001.html": [
         "bf55ad2252e4ef360927e29e326884418fc2044c",
         []
@@ -200692,8 +200859,16 @@
        "c3140b465ef1b222b9fa1b8e9278b43caaefb025",
        []
       ],
+      "rotate-composition-expected.txt": [
+       "6c4d6399d0f01f4939ea36744460578bf673dcaa",
+       []
+      ],
       "rotate-interpolation-expected.txt": [
-       "6952453f7a3e8fbf8d15286d6d914ea18707cf32",
+       "510166f232853fbb0c168a0fefcf415161523976",
+       []
+      ],
+      "rotate-transform-equivalent-ref.html": [
+       "e95e62be888216d9bcd2487c54c1da602973de75",
        []
       ],
       "scale-interpolation-expected.txt": [
@@ -200706,10 +200881,6 @@
         []
        ]
       },
-      "transform-interpolation-001-expected.txt": [
-       "dd58e6a649dfd745225f2f84b1214187e1ca4405",
-       []
-      ],
       "transform-interpolation-animated-ref.html": [
        "0930a7469a87fc8f6515e9f6ff442b6f7988ed4c",
        []
@@ -208584,7 +208755,7 @@
       []
      ],
      "interpolation-testcommon.js": [
-      "16a1c0e7f7fb83f52b3b5d55fda4d49462fa9fe6",
+      "999a1e0542858689f66c2afac50f43fd742476f8",
       []
      ],
      "numeric-testcommon.js": [
@@ -216736,6 +216907,10 @@
      "8f261de6141c5b9a74ede23340cb3bb90ffe4a61",
      []
     ],
+    "idlharness.https.window-expected.txt": [
+     "906d5c6d455cdcb9e3e0b8cc72a6194d7182aad1",
+     []
+    ],
     "idlharness.window-expected.txt": [
      "906d5c6d455cdcb9e3e0b8cc72a6194d7182aad1",
      []
@@ -224513,22 +224688,6 @@
         "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
         []
        ],
-       "no-coop-coep.https.any-expected.txt": [
-        "9cad9da2de8f1c713518a6bd43adcb52ff0777c9",
-        []
-       ],
-       "no-coop-coep.https.any.serviceworker-expected.txt": [
-        "11ccabce6e4bd36ed6744f4c3b3429bca52aefc9",
-        []
-       ],
-       "no-coop-coep.https.any.sharedworker-expected.txt": [
-        "11ccabce6e4bd36ed6744f4c3b3429bca52aefc9",
-        []
-       ],
-       "no-coop-coep.https.any.worker-expected.txt": [
-        "11ccabce6e4bd36ed6744f4c3b3429bca52aefc9",
-        []
-       ],
        "no-transferring.https.html.headers": [
         "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
         []
@@ -231533,7 +231692,7 @@
      []
     ],
     "gamepad.idl": [
-     "c8a2fc590a84937912f873a15ef666ab55013c77",
+     "e8252e2a85b3867fe0390706449ea3269762b7d7",
      []
     ],
     "generic-sensor.idl": [
@@ -250339,7 +250498,7 @@
        []
       ],
       "wpttest.py": [
-       "e21041b6430a2661e437f3e4a9a73def63ee6f1b",
+       "ed9184ef5ecc69b42b2c4050ea07ccf471a312b1",
        []
       ]
      },
@@ -251741,7 +251900,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "bf24d1a7043289c1f074f94876b706989c93be91",
+       "d9a60f3c6494e437a02371d362d804c6d473d3e9",
        []
       ],
       "addition-per-property-001-expected.txt": [
@@ -251749,7 +251908,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "0128b400618853bda7beddecec1ca064156cad98",
+       "09a6e1c3868b8a2c05e875404453d7d0a8be24fd",
        []
       ],
       "interpolation-per-property-001-expected.txt": [
@@ -251757,7 +251916,7 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "d26b6eaab38e3b193acef42d68cbd907542b7225",
+       "ecf94a6d89d10fb1ead81b3af5dfeaee95e0a8a0",
        []
       ],
       "property-list.js": [
@@ -292534,6 +292693,20 @@
        {}
       ]
      ],
+     "getclientrects-000.html": [
+      "be11ba99493c12d75e8dd42ed55ca998bbe66001",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getclientrects-001.html": [
+      "630e5ee0f77166a14a911dbf11c68ec41aeabc68",
+      [
+       null,
+       {}
+      ]
+     ],
      "going-out-of-flow-after-spanner.html": [
       "2fe0e42a7522647b7eca4db1e6f710a9975faaa4",
       [
@@ -299842,7 +300015,7 @@
        ]
       ],
       "rotate-composition.html": [
-       "fa0118d50f457b3021a28a7e12a21c96c1c5a23c",
+       "f9a4527342ffb44cf389cf9ab5ded0e59492b9e3",
        [
         null,
         {}
@@ -304995,6 +305168,13 @@
      ],
      "CSSStyleSheet-modify-after-removal.html": [
       "010c0b93281f3afdfabf4ff764e3c4abd95729b0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "CSSStyleSheet-template-adoption.html": [
+      "8fecbd83f7f99226f10175492e7629d2fc6e477b",
       [
        null,
        {}
@@ -336876,10 +337056,10 @@
       }
      ]
     ],
-    "idlharness.window.js": [
+    "idlharness.https.window.js": [
      "0bbb0b3c701515743c24ca8ca67a96b5c61fa3cc",
      [
-      "gamepad/idlharness.window.html",
+      "gamepad/idlharness.https.window.html",
       {
        "script_metadata": [
         [
@@ -380241,6 +380421,13 @@
     ]
    },
    "mediacapture-fromelement": {
+    "HTMLCanvasElement-getImageData-noframe.html": [
+     "48d445f897d7f80b013204f78f52670e31da1c1c",
+     [
+      null,
+      {}
+     ]
+    ],
     "capture.html": [
      "74858737f13f818ed4f52d71221580957302676f",
      [
@@ -386693,6 +386880,13 @@
      ],
      "fcp-canvas-context.html": [
       "726e4516ee7838bd6b3840dfbb6c2e76d877c9f3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "fcp-ensure-update-the-rendering-step.html": [
+      "700707de33a6ada29220d3c914000d1868edd36e",
       [
        null,
        {}
@@ -402393,7 +402587,7 @@
       ]
      ],
      "scroll-timeline-cssom.tentative.html": [
-      "d9e4cc08cbe1649ed8c60697f28fd43b86053584",
+      "1e6f581992f239f863e6a0afea27654d142ee291",
       [
        null,
        {}
@@ -424065,6 +424259,13 @@
       ],
       "audiobuffersource-channels.html": [
        "f3f16c4c648166dfdb394a41881d4a515d097e86",
+       [
+        null,
+        {}
+       ]
+      ],
+      "audiobuffersource-duration-loop.html": [
+       "5fb8536b137ea7c18ff6d77bc29855e772e669f6",
        [
         null,
         {}
@@ -449359,20 +449560,6 @@
      ],
      "border-radius-applies-to-017.htm": [
       "2e10d125f1db2cefca2f911be75423d401dccec3",
-      [
-       null,
-       {}
-      ]
-     ],
-     "border-radius-clip-001.htm": [
-      "bf754be90ff0cf3ee2d65e68c758d88686506787",
-      [
-       null,
-       {}
-      ]
-     ],
-     "border-radius-clip-002.htm": [
-      "c8eba29fe9d34d3b5a6b34b9745a03a1c639aa18",
       [
        null,
        {}

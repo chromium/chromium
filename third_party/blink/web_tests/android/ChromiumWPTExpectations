@@ -2153,7 +2153,7 @@ crbug.com/1050754 external/wpt/fullscreen/api/document-fullscreen-enabled-cross-
 crbug.com/1050754 external/wpt/fullscreen/api/document-fullscreen-enabled.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/fullscreen/api/element-request-fullscreen-options.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/fullscreen/api/historical.html [ Failure ]
-crbug.com/1050754 external/wpt/gamepad/idlharness.window.html [ Failure Pass ]
+crbug.com/1050754 external/wpt/gamepad/idlharness.https.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/generic-sensor/generic-sensor-permission.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/geolocation-API/getCurrentPosition_IDL.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Timeout ]
