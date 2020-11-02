@@ -22,8 +22,8 @@ namespace {
 
 namespace mojo_ipc = scanning::mojom;
 
-// Path to the user's "My files" folder.
-constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
+// Path to the active user's "My files" folder.
+constexpr char kActiveUserMyFilesPath[] = "/home/chronos/user/MyFiles";
 
 }  // namespace
 
@@ -156,13 +156,11 @@ void ScanService::OnScanCompleted(ScanCallback callback, bool success) {
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {
-  // TODO(jschettler): Remove this check once the path is selected by the user.
-  if (file_path == base::FilePath(kMyFilesPath))
-    return true;
-
-  if (!file_path.ReferencesParent() &&
-      (file_path == my_files_path_ || my_files_path_.IsParent(file_path) ||
-       google_drive_path_.IsParent(file_path))) {
+  if (file_path == base::FilePath(kActiveUserMyFilesPath) ||
+      file_path == my_files_path_ ||
+      (!file_path.ReferencesParent() &&
+       (my_files_path_.IsParent(file_path) ||
+        google_drive_path_.IsParent(file_path)))) {
     return true;
   }
 
