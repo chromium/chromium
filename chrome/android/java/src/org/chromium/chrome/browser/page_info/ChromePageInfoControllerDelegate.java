@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsClient;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
 import org.chromium.components.content_settings.CookieControlsBridge;
@@ -294,7 +295,10 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         Resources resources = mContext.getResources();
         int size = resources.getDimensionPixelSize(R.dimen.page_info_favicon_size);
         new FaviconHelper().getLocalFaviconImageForURL(mProfile, url, size, (image, iconUrl) -> {
-            if (image != null) {
+            if (isShowingPreview()) {
+                callback.onResult(SettingsUtils.getTintedIcon(mContext,
+                        R.drawable.preview_pin_round, R.color.infobar_icon_drawable_color));
+            } else if (image != null) {
                 callback.onResult(new BitmapDrawable(resources, image));
             } else if (UrlUtilities.isInternalScheme(new GURL(url))) {
                 callback.onResult(
@@ -303,6 +307,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 callback.onResult(null);
             }
         });
+    }
+
+    @Override
+    public Drawable getPreviewUiIcon() {
+        return SettingsUtils.getTintedIcon(mContext,
+            R.drawable.preview_pin_round, R.color.infobar_icon_drawable_color);
     }
 
     @VisibleForTesting

@@ -38,22 +38,6 @@
             android:layout_width="match_parent"/>
     </LinearLayout>
 
-    <View
-        android:id="@+id/page_info_preview_separator"
-        android:layout_marginTop="16dp"
-        style="@style/HorizontalDivider"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/page_info_preview_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
-        android:layout_marginTop="@dimen/page_info_popup_padding_vertical"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:text="@string/page_info_preview_message"
-        android:visibility="gone" />
-
     <TextView
         android:id="@+id/page_info_preview_load_original"
         android:layout_width="match_parent"

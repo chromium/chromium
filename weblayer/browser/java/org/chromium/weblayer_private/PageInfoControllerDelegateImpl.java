@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
@@ -125,6 +126,12 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
                         callback.onResult(null);
                     }
                 }));
+    }
+
+    @Override
+    @Nullable
+    public Drawable getPreviewUiIcon() {
+        return null;
     }
 
     private static boolean isHttpOrHttps(GURL url) {

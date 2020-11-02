@@ -232,4 +232,9 @@ public abstract class PageInfoControllerDelegate {
      * The UI will use a fallback icon if null is supplied.
      */
     public abstract void getFavicon(String url, Callback<Drawable> callback);
+
+    /**
+     * @return Returns the drawable for the Preview UI.
+     */
+    public abstract Drawable getPreviewUiIcon();
 }

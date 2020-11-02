@@ -32,6 +32,10 @@ public class PageInfoContainer extends FrameLayout {
         public int urlOriginLength;
         // The URL to show in truncated state.
         public String truncatedUrl;
+        // If the page has preview UI shown.
+        public boolean previewUIShown;
+        // The icon used for preview UI.
+        public Drawable previewUIIcon;
 
         public Runnable urlTitleClickCallback;
         public Runnable urlTitleLongClickCallback;
@@ -39,6 +43,7 @@ public class PageInfoContainer extends FrameLayout {
     }
     private PageInfoView.ElidedUrlTextView mUrlTitle;
     private TextView mTruncatedUrlTitle;
+    private TextView mPreviewMessage;
 
     private final ViewGroup mWrapper;
     private final ViewGroup mContent;
@@ -71,6 +76,13 @@ public class PageInfoContainer extends FrameLayout {
 
         View urlWrapper = findViewById(R.id.page_info_url_wrapper);
         urlWrapper.setVisibility(params.urlTitleShown ? VISIBLE : GONE);
+
+        mPreviewMessage = findViewById(R.id.page_info_preview_message);
+        mPreviewMessage.setText(R.string.page_info_preview_message);
+        mPreviewMessage.setCompoundDrawablesRelative(params.previewUIIcon, null, null, null);
+
+        View previewWrapper = findViewById(R.id.page_info_preview_message_wrapper);
+        previewWrapper.setVisibility(params.previewUIShown ? VISIBLE : GONE);
 
         ChromeImageButton backButton = findViewById(R.id.subpage_back_button);
         backButton.setOnClickListener(v -> params.backButtonClickCallback.run());

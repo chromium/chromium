@@ -263,6 +263,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
             containerParams.urlTitleShown = viewParams.urlTitleShown;
+            containerParams.previewUIShown = viewParams.previewUIShown;
+            containerParams.previewUIIcon = mDelegate.getPreviewUiIcon();
             mContainer.setParams(containerParams);
             mDelegate.getFavicon(mFullUrl, favicon -> {
                 if (favicon != null) {
