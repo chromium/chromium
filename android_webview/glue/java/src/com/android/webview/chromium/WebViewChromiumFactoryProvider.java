@@ -104,9 +104,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static WebViewChromiumFactoryProvider sSingleton;
     // Used to indicate if WebLayer and WebView are running in the same process.
     private static boolean sWebLayerRunningInSameProcess;
-    // Used to detect if we enter initialization for a second time, e.g. because an app caught and
-    // discarded an exception thrown by a previous failed initialization attempt.
-    private static volatile boolean sInitAlreadyStarted;
 
     private final WebViewChromiumRunQueue mRunQueue = new WebViewChromiumRunQueue(
             () -> { return WebViewChromiumFactoryProvider.this.mAwInit.hasStarted(); });
@@ -248,10 +245,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         long startTime = SystemClock.elapsedRealtime();
         try (ScopedSysTraceEvent e1 =
                         ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initialize")) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.Startup.InitAlreadyStarted", sInitAlreadyStarted);
-            sInitAlreadyStarted = true;
-
             PackageInfo packageInfo;
             try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                          "WebViewChromiumFactoryProvider.getLoadedPackageInfo")) {

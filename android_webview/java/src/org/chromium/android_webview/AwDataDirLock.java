@@ -15,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 
 import java.io.File;
@@ -86,7 +85,6 @@ abstract class AwDataDirLock {
                 if (sExclusiveFileLock != null) {
                     // We got the lock; write out info for debugging.
                     writeCurrentProcessInfo(sLockFile);
-                    recordLockAttempts(attempts);
                     return;
                 }
 
@@ -108,8 +106,6 @@ abstract class AwDataDirLock {
                 throw new RuntimeException(error);
             } else {
                 Log.w(TAG, error);
-                // Record an attempt count of 0 to indicate that we proceeded without the lock.
-                recordLockAttempts(0);
             }
         }
     }
@@ -124,14 +120,6 @@ abstract class AwDataDirLock {
             // Don't crash just because something failed here, as it's only for debugging.
             Log.w(TAG, "Failed to write info to lock file", e);
         }
-    }
-
-    private static void recordLockAttempts(int attempts) {
-        // We log values from [0, LOCK_RETRIES]. Histogram samples are expected to be [0, max).
-        // 0 just goes to the underflow bucket, so min=1 and max=LOCK_RETRIES+1.
-        // To get bucket width 1, buckets must be max-min+2
-        RecordHistogram.recordLinearCountHistogram("Android.WebView.Startup.DataDirLockAttempts",
-                attempts, 1, LOCK_RETRIES + 1, LOCK_RETRIES + 2);
     }
 
     private static String getLockFailureReason(final RandomAccessFile file) {
