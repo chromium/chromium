@@ -35,7 +35,7 @@ class CONTENT_EXPORT ProvisionFetcherImpl
   ~ProvisionFetcherImpl() override;
 
   // media::mojom::ProvisionFetcher implementation.
-  void Retrieve(const std::string& default_url,
+  void Retrieve(const GURL& default_url,
                 const std::string& request_data,
                 RetrieveCallback callback) final;
 

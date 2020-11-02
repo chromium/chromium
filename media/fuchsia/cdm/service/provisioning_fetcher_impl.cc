@@ -64,7 +64,7 @@ void ProvisioningFetcherImpl::Fetch(
 
   retrieve_in_progress_ = true;
   fetcher_->Retrieve(
-      request.default_provisioning_server_url.value(), request_str,
+      GURL(request.default_provisioning_server_url.value()), request_str,
       base::BindRepeating(&ProvisioningFetcherImpl::OnRetrieveComplete,
                           base::Unretained(this),
                           base::Passed(std::move(callback))));

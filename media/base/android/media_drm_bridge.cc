@@ -689,10 +689,11 @@ void MediaDrmBridge::OnProvisionRequest(
 
   std::string request_data;
   JavaByteArrayToString(env, j_request_data, &request_data);
+  std::string default_url;
+  ConvertJavaStringToUTF8(env, j_default_url, &default_url);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MediaDrmBridge::SendProvisioningRequest,
-                                weak_factory_.GetWeakPtr(),
-                                ConvertJavaStringToUTF8(env, j_default_url),
+                                weak_factory_.GetWeakPtr(), GURL(default_url),
                                 std::move(request_data)));
 }
 
@@ -944,7 +945,7 @@ void MediaDrmBridge::NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto) {
            IsSecureCodecRequired());
 }
 
-void MediaDrmBridge::SendProvisioningRequest(const std::string& default_url,
+void MediaDrmBridge::SendProvisioningRequest(const GURL& default_url,
                                              const std::string& request_data) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(1) << __func__;

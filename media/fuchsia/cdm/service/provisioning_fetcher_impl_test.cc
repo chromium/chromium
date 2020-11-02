@@ -27,7 +27,7 @@ using ::testing::Invoke;
 using ::testing::WithArgs;
 using MockProvisionFetcher = ::media::testing::MockProvisionFetcher;
 
-constexpr char kTestDefaultUrl[] = "http://test_default_url.com";
+constexpr char kTestDefaultUrl[] = "http://test_default_url.com/";
 constexpr char kTestRequest[] = "test_request_message";
 constexpr char kTestResponse[] = "test_response_message";
 

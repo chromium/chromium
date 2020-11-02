@@ -287,7 +287,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   void NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto);
 
   // Sends HTTP provisioning request to a provisioning server.
-  void SendProvisioningRequest(const std::string& default_url,
+  void SendProvisioningRequest(const GURL& default_url,
                                const std::string& request_data);
 
   // Process the data received by provisioning server.

@@ -29,7 +29,7 @@ class MockProvisionFetcher : public ProvisionFetcher {
 
   MOCK_METHOD(void,
               Retrieve,
-              (const std::string& default_url,
+              (const GURL& default_url,
                const std::string& request_data,
                ResponseCB response_cb),
               (override));

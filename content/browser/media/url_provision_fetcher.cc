@@ -29,7 +29,7 @@ URLProvisionFetcher::URLProvisionFetcher(
 URLProvisionFetcher::~URLProvisionFetcher() {}
 
 void URLProvisionFetcher::Retrieve(
-    const std::string& default_url,
+    const GURL& default_url,
     const std::string& request_data,
     media::ProvisionFetcher::ResponseCB response_cb) {
   // For testing, don't actually do provisioning if the feature is enabled,
@@ -42,7 +42,7 @@ void URLProvisionFetcher::Retrieve(
   response_cb_ = std::move(response_cb);
 
   const std::string request_string =
-      default_url + "&signedRequest=" + request_data;
+      default_url.spec() + "&signedRequest=" + request_data;
   DVLOG(1) << __func__ << ": request:" << request_string;
 
   DCHECK(!simple_url_loader_);

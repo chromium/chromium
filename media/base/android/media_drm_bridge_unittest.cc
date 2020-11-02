@@ -66,7 +66,7 @@ class ProvisionFetcherWrapper : public ProvisionFetcher {
       : provision_fetcher_(provision_fetcher) {}
 
   // ProvisionFetcher implementation.
-  void Retrieve(const std::string& default_url,
+  void Retrieve(const GURL& default_url,
                 const std::string& request_data,
                 ResponseCB response_cb) override {
     provision_fetcher_->Retrieve(default_url, request_data,
@@ -96,7 +96,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
   // ProvisionFetcher implementation. Done as a mock method so we can properly
   // check if |media_drm_bridge_| invokes it or not.
   MOCK_METHOD3(Retrieve,
-               void(const std::string& default_url,
+               void(const GURL& default_url,
                     const std::string& request_data,
                     ResponseCB response_cb));
 

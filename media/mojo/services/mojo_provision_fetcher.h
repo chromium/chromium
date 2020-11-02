@@ -24,7 +24,7 @@ class MEDIA_MOJO_EXPORT MojoProvisionFetcher : public ProvisionFetcher {
   ~MojoProvisionFetcher() final;
 
   // ProvisionFetcher implementation:
-  void Retrieve(const std::string& default_url,
+  void Retrieve(const GURL& default_url,
                 const std::string& request_data,
                 ResponseCB response_cb) final;
 
