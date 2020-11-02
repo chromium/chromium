@@ -105,7 +105,8 @@ public class PiiElider {
             start = matcher.start();
             int end = matcher.end();
             String url = buffer.substring(start, end);
-            if (!likelyToBeAppNamespace(url) && !likelyToBeSystemNamespace(url)) {
+            if (!likelyToBeAppNamespace(url) && !likelyToBeSystemNamespace(url)
+                    && !likelyToBeClassOrMethodName(url)) {
                 buffer.replace(start, end, URL_ELISION);
                 end = start + URL_ELISION.length();
                 matcher = WEB_URL.matcher(buffer);
@@ -113,6 +114,25 @@ public class PiiElider {
             start = end;
         }
         return buffer.toString();
+    }
+
+    private static boolean likelyToBeClassOrMethodName(String url) {
+        if (isClassName(url)) return true;
+
+        // Since the suspected URL could actually be a method name, check if the portion preceding
+        // the last subdomain is a class name.
+        int indexOfLastPeriod = url.lastIndexOf(".");
+        if (indexOfLastPeriod == -1) return false;
+        return isClassName(url.substring(0, indexOfLastPeriod));
+    }
+
+    private static boolean isClassName(String url) {
+        try {
+            Class.forName(url, false, ContextUtils.getApplicationContext().getClassLoader());
+            return true;
+        } catch (ClassNotFoundException e) {
+        }
+        return false;
     }
 
     private static boolean likelyToBeAppNamespace(String url) {

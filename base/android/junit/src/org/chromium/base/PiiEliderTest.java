@@ -133,4 +133,12 @@ public class PiiEliderTest {
                 + "HTTP://WEBADDRESS.ELIDED";
         assertEquals(expected, PiiElider.sanitizeStacktrace(original));
     }
+
+    @Test
+    public void testDoesNotElideMethodNameInStacktrace() {
+        String original = "java.lang.NullPointerException: Attempt to invoke virtual method 'int "
+                + "androidx.fragment.app.FragmentManager.getBackStackEntryCount()' on a null "
+                + "object reference";
+        assertEquals(original, PiiElider.sanitizeStacktrace(original));
+    }
 }
