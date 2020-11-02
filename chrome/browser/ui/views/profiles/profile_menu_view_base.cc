@@ -485,7 +485,10 @@ void ProfileMenuViewBase::ShowBubble(
     bubble = new ProfileMenuView(anchor_button, browser);
   }
 
-  views::BubbleDialogDelegateView::CreateBubble(bubble)->Show();
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ax_widget_observer_ =
+      std::make_unique<AXMenuWidgetObserver>(bubble, widget);
+  widget->Show();
   if (is_source_keyboard)
     bubble->FocusButtonOnKeyboardOpen();
 }
@@ -987,11 +990,10 @@ void ProfileMenuViewBase::OnThemeChanged() {
 }
 
 ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
-  // Return |ax::mojom::Role::kDialog| which will make screen readers announce
-  // the following in the listed order:
-  // the title of the dialog, labels (if any), the focused View within the
-  // dialog (if any)
-  return ax::mojom::Role::kDialog;
+  // Return |ax::mojom::Role::kMenuBar|, because it fits better the kind of UI
+  // contained in this dialog. The top-level container in this dialog uses a
+  // kMenu role to match.
+  return ax::mojom::Role::kMenuBar;
 }
 
 bool ProfileMenuViewBase::HandleContextMenu(
@@ -1028,3 +1030,31 @@ void ProfileMenuViewBase::UpdateSyncInfoContainerBackground() {
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::EMPHASIS_HIGH)));
 }
+
+// Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave
+// like a menu from the accessibility POV because it fits better with a menu UX.
+// The dialog exposes the kMenuBar role, and the top-level container is kMenu.
+// This class is responsible for emitting menu accessible events when the dialog
+// is activated or deactivated.
+class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
+ public:
+  AXMenuWidgetObserver(ProfileMenuViewBase* owner, views::Widget* widget)
+      : owner_(owner) {
+    observer_.Add(widget);
+  }
+  ~AXMenuWidgetObserver() override = default;
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuStart, true);
+      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+    } else {
+      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
+      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
+    }
+  }
+
+ private:
+  ProfileMenuViewBase* owner_;
+  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
+};

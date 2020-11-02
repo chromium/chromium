@@ -169,6 +169,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   }
 
  private:
+  class AXMenuWidgetObserver;
+
   friend class ProfileMenuViewExtensionsTest;
 
   void Reset();
@@ -221,6 +223,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   // Actual heading string would be set by children classes.
   base::string16 profile_mgmt_heading_;
+
+  std::unique_ptr<AXMenuWidgetObserver> ax_widget_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileMenuViewBase);
 };
