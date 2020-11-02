@@ -18,19 +18,12 @@ GURL GetSubresourceURLForURL(const GURL& original_url) {
   DCHECK(original_url.is_valid());
 
   GURL compressed_url = GetSubresourceRedirectOrigin().GetURL();
-  std::string origin_hash = base::ToLowerASCII(base32::Base32Encode(
-      crypto::SHA256HashString(
-          original_url.scheme() + "://" + original_url.host() + ":" +
-          base::NumberToString(original_url.EffectiveIntPort())),
-      base32::Base32EncodePolicy::OMIT_PADDING));
-  std::string host_str = origin_hash + "." + compressed_url.host();
   std::string query_str =
       "u=" + net::EscapeQueryParamValue(original_url.GetAsReferrer().spec(),
                                         true /* use_plus */);
   std::string ref_str = original_url.ref();
 
   GURL::Replacements replacements;
-  replacements.SetHostStr(host_str);
   replacements.SetPathStr("/i");
   replacements.SetQueryStr(query_str);
   if (!ref_str.empty())
