@@ -9,8 +9,8 @@
 namespace ui {
 namespace internal_onedevice {
 struct alignas(16) FixedAllocations {
-  float alloc0[132];
-  float alloc1[123];
+  float alloc0[117];
+  float alloc1[115];
   int32_t shape0[2];
 };
 
