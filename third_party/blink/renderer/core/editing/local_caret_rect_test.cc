@@ -445,13 +445,10 @@ TEST_P(ParameterizedLocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodes) {
           PositionWithAffinity(after_c, TextAffinity::kDownstream)));
 
   const Position before_d(text_d, 0);
-  // TODO(xiaochengh): Should return the same result for legacy and LayoutNG.
-  EXPECT_EQ(LayoutNGEnabled() ? LocalCaretRect(text_c->GetLayoutObject(),
-                                               PhysicalRect(29, 0, 1, 10))
-                              : LocalCaretRect(text_d->GetLayoutObject(),
-                                               PhysicalRect(0, 10, 1, 10)),
-            LocalCaretRectOfPosition(
-                PositionWithAffinity(before_d, TextAffinity::kUpstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kUpstream)));
   EXPECT_EQ(
       LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
       LocalCaretRectOfPosition(
@@ -487,13 +484,10 @@ TEST_P(ParameterizedLocalCaretRectTest,
           PositionWithAffinity(after_c, TextAffinity::kDownstream)));
 
   const Position before_d(text_d, 0);
-  // TODO(xiaochengh): Should return the same result for legacy and LayoutNG.
-  EXPECT_EQ(LayoutNGEnabled() ? LocalCaretRect(text_c->GetLayoutObject(),
-                                               PhysicalRect(0, 0, 1, 10))
-                              : LocalCaretRect(text_d->GetLayoutObject(),
-                                               PhysicalRect(29, 10, 1, 10)),
-            LocalCaretRectOfPosition(
-                PositionWithAffinity(before_d, TextAffinity::kUpstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(29, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(before_d, TextAffinity::kUpstream)));
   EXPECT_EQ(
       LocalCaretRect(text_d->GetLayoutObject(), PhysicalRect(29, 10, 1, 10)),
       LocalCaretRectOfPosition(

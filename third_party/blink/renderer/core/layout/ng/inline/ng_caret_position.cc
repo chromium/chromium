@@ -271,6 +271,8 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
   NGInlineCursor cursor(context);
 
   NGCaretPosition candidate;
+  if (layout_text && layout_text->HasInlineFragments())
+    cursor.MoveTo(*layout_text);
   for (; cursor; cursor.MoveToNext()) {
     const CaretPositionResolution resolution =
         TryResolveCaretPositionWithFragment(cursor, offset, affinity);
@@ -321,7 +323,8 @@ NGCaretPosition ComputeNGCaretPosition(
 
   const LayoutText* const layout_text =
       position.IsOffsetInAnchor() && IsA<Text>(position.AnchorNode())
-          ? To<Text>(position.AnchorNode())->GetLayoutObject()
+          ? ToLayoutText(AssociatedLayoutObjectOf(
+                *position.AnchorNode(), position.OffsetInContainerNode()))
           : nullptr;
 
   const unsigned offset = *maybe_offset;
