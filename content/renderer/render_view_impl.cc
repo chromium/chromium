@@ -496,19 +496,9 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       blink_popup_widget_host_receiver =
           blink_popup_widget_host.InitWithNewEndpointAndPassReceiver();
 
-  // Do a synchronous IPC to obtain a routing ID.
-  int32_t widget_routing_id = MSG_ROUTING_NONE;
-  bool success =
-      RenderFrameImpl::FromWebFrame(creator)
-          ->GetFrameHost()
-          ->CreateNewPopupWidget(std::move(blink_popup_widget_host_receiver),
-                                 std::move(blink_widget_host_receiver),
-                                 std::move(blink_widget), &widget_routing_id);
-  if (!success) {
-    // When the renderer is being killed the mojo message will fail.
-    return nullptr;
-  }
-
+  RenderFrameImpl::FromWebFrame(creator)->GetFrameHost()->CreateNewPopupWidget(
+      std::move(blink_popup_widget_host_receiver),
+      std::move(blink_widget_host_receiver), std::move(blink_widget));
   RenderWidget* opener_render_widget =
       RenderFrameImpl::FromWebFrame(creator)->GetLocalRootRenderWidget();
 

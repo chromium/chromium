@@ -431,11 +431,10 @@ interface FrameHost {
   // Similar to CreateNewWindow, except used for sub-widgets, like <select>
   // dropdowns. Upon return, the renderer side popup will be owned by the
   // PopupWidgetHost.
-  [Sync] CreateNewPopupWidget(
+  CreateNewPopupWidget(
          pending_associated_receiver<blink.mojom.PopupWidgetHost> popup_host,
          pending_associated_receiver<blink.mojom.WidgetHost> blink_widget_host,
-         pending_associated_remote<blink.mojom.Widget> blink_widget)
-      => (int32 routing_id);
+         pending_associated_remote<blink.mojom.Widget> blink_widget);
 
   // Creates and returns a KeepAliveHandle.
   IssueKeepAliveHandle(pending_receiver<KeepAliveHandle> keep_alive_handle);

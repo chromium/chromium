@@ -125,28 +125,13 @@ class MockFrameHost : public mojom::FrameHost {
     return true;
   }
 
-  bool CreateNewPopupWidget(
-      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
-          blink_popup_widget_host,
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-          blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-      int32_t* out_routing_id) override {
-    MockRenderThread* mock_render_thread =
-        static_cast<MockRenderThread*>(RenderThread::Get());
-    *out_routing_id = mock_render_thread->GetNextRoutingID();
-    return true;
-  }
-
   void CreateNewPopupWidget(
       mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
           blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-      CreateNewPopupWidgetCallback callback) override {
-    std::move(callback).Run(MSG_ROUTING_NONE);
-  }
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
+      override {}
 
   void CreatePortal(mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
                     mojo::PendingAssociatedRemote<blink::mojom::PortalClient>,

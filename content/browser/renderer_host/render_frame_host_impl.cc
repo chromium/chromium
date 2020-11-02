@@ -5343,10 +5343,11 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-    CreateNewPopupWidgetCallback callback) {
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+  // We still need to allocate a widget routing id. Even though the renderer
+  // doesn't receive it, the browser side still uses routing ids to track
+  // widgets in various global tables.
   int32_t widget_route_id = GetProcess()->GetNextRoutingID();
-  std::move(callback).Run(widget_route_id);
   RenderWidgetHostImpl* widget = delegate_->CreateNewPopupWidget(
       agent_scheduling_group_, widget_route_id,
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
