@@ -20,7 +20,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Promise;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,7 +27,7 @@ import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.chrome.browser.uid.UuidBasedUniqueIdentificationGenerator;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -52,7 +51,7 @@ import java.util.concurrent.Callable;
 /**
  * TestRule for common functionality between sync tests.
  */
-public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
+public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private static final String TAG = "SyncTestBase";
 
     private static final String CLIENT_ID = "Client_ID";
@@ -142,9 +141,7 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
         ProfileSyncService.resetForTests();
     }
 
-    public SyncTestRule() {
-        super(ChromeActivity.class);
-    }
+    public SyncTestRule() {}
 
     /**Getters for Test variables */
     public Context getTargetContext() {
