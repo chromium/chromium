@@ -93,7 +93,6 @@ source_set("chromeos") {
     "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:common",
     "//chrome/browser/web_applications:web_applications_on_extensions",
     "//chrome/browser/web_applications/components",
     "//chrome/browser/web_applications/extensions:extensions",
@@ -398,7 +397,6 @@ source_set("chromeos") {
     "//chrome/browser/extensions",
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:common",
     "//chrome/browser/web_applications/components",
   ]
 

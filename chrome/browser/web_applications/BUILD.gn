@@ -9,62 +9,21 @@ group("web_app_group") {
 group("web_app_test_group") {
 }
 
-# Implementations that are common to both BMO/Extensions backends.
-# TODO(alancutter): Migrate sources from :web_applications into here where
-# possible.
-# TODO(https://crbug.com/877898): Merge this into :web_applications once all
-# Extension codepaths have been removed.
-source_set("common") {
+source_set("web_applications") {
   sources = [
     "daily_metrics_helper.cc",
     "daily_metrics_helper.h",
     "extension_status_utils.h",
-    "manifest_update_manager.cc",
-    "manifest_update_manager.h",
-    "manifest_update_task.cc",
-    "manifest_update_task.h",
-    "system_web_app_manager.cc",
-    "system_web_app_manager.h",
-    "web_app_tab_helper.cc",
-    "web_app_tab_helper.h",
-  ]
-
-  deps = [
-    ":web_app_group",
-    "//base/util/values:values_util",
-    "//chrome/browser/web_applications/components",
-    "//chrome/common",
-    "//components/content_settings/core/browser",
-    "//components/pref_registry",
-    "//content/public/browser",
-    "//services/metrics/public/cpp:ukm_builders",
-    "//skia",
-  ]
-
-  if (is_chromeos) {
-    deps += [
-      "//ash/public/cpp",
-      "//chromeos/components/camera_app_ui",
-      "//chromeos/components/connectivity_diagnostics",
-      "//chromeos/components/diagnostics_ui",
-      "//chromeos/components/help_app_ui",
-      "//chromeos/components/media_app_ui",
-      "//chromeos/components/print_management",
-      "//chromeos/components/scanning",
-      "//chromeos/constants",
-      "//chromeos/strings",
-    ]
-  }
-}
-
-source_set("web_applications") {
-  sources = [
     "external_web_app_manager.cc",
     "external_web_app_manager.h",
     "external_web_app_utils.cc",
     "external_web_app_utils.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
+    "manifest_update_manager.cc",
+    "manifest_update_manager.h",
+    "manifest_update_task.cc",
+    "manifest_update_task.h",
     "pending_app_install_task.cc",
     "pending_app_install_task.h",
     "pending_app_manager_impl.cc",
@@ -73,6 +32,8 @@ source_set("web_applications") {
     "pending_app_registration_task.h",
     "preinstalled_web_apps.cc",
     "preinstalled_web_apps.h",
+    "system_web_app_manager.cc",
+    "system_web_app_manager.h",
     "web_app.cc",
     "web_app.h",
     "web_app_database.cc",
@@ -102,24 +63,34 @@ source_set("web_applications") {
     "web_app_sync_bridge.cc",
     "web_app_sync_bridge.h",
     "web_app_sync_install_delegate.h",
+    "web_app_tab_helper.cc",
+    "web_app_tab_helper.h",
   ]
 
   deps = [
-    ":common",
     ":web_app_group",
     "//chrome/browser/web_applications/components",
     "//chrome/common",
+    "//components/content_settings/core/browser",
     "//components/performance_manager",
+    "//components/pref_registry",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/sync",
     "//content/public/browser",
     "//extensions/browser",
+    "//services/metrics/public/cpp:ukm_builders",
     "//skia",
   ]
 
   if (is_chromeos) {
     deps += [
+      "//ash/public/cpp",
+      "//chromeos/components/camera_app_ui",
+      "//chromeos/components/connectivity_diagnostics",
+      "//chromeos/components/help_app_ui",
+      "//chromeos/components/media_app_ui",
       "//chromeos/constants",
+      "//chromeos/strings",
       "//components/arc:arc_base",
       "//components/arc/mojom",
     ]
@@ -189,7 +160,6 @@ source_set("web_applications_test_support") {
   ]
 
   deps = [
-    ":common",
     ":web_app_test_group",
     ":web_applications",
     "//base/test:test_support",
@@ -225,7 +195,6 @@ source_set("web_applications_unit_tests") {
   ]
 
   deps = [
-    ":common",
     ":web_app_test_group",
     ":web_applications",
     ":web_applications_on_extensions_test_support",
@@ -279,7 +248,6 @@ source_set("web_applications_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    ":common",
     ":web_applications",
     ":web_applications_on_extensions",
     ":web_applications_on_extensions_test_support",
@@ -320,7 +288,6 @@ source_set("web_applications_on_extensions") {
   ]
 
   deps = [
-    ":common",
     ":web_app_group",
     ":web_applications",
     "//chrome/browser/web_applications/components",
@@ -346,7 +313,6 @@ source_set("web_applications_on_extensions_test_support") {
   ]
 
   deps = [
-    ":common",
     ":web_app_test_group",
     ":web_applications",
     ":web_applications_on_extensions",
@@ -364,7 +330,6 @@ group("unit_tests") {
   testonly = true
 
   deps = [
-    ":common",
     ":web_app_test_group",
     ":web_applications_unit_tests",
     "//chrome/browser/web_applications/components:unit_tests",
