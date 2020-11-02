@@ -63,6 +63,8 @@ component("lib") {
     sources += [
       "assistant_device_settings_delegate.cc",
       "assistant_device_settings_delegate.h",
+      "assistant_manager_controller.cc",
+      "assistant_manager_controller.h",
       "assistant_manager_service_delegate.h",
       "assistant_manager_service_delegate_impl.cc",
       "assistant_manager_service_delegate_impl.h",

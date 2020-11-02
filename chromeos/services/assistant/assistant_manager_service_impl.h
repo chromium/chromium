@@ -58,10 +58,11 @@ namespace chromeos {
 namespace assistant {
 
 class AssistantMediaSession;
+class AssistantDeviceSettingsDelegate;
+class AssistantManagerController;
+class AssistantManagerServiceDelegate;
 class CrosPlatformApi;
 class ServiceContext;
-class AssistantManagerServiceDelegate;
-class AssistantDeviceSettingsDelegate;
 
 // Enumeration of Assistant query response type, also recorded in histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -211,12 +212,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnAndroidAppListRefreshed(
       const std::vector<AndroidAppInfo>& apps_info) override;
 
-  assistant_client::AssistantManager* assistant_manager() {
-    return assistant_manager_.get();
-  }
-  assistant_client::AssistantManagerInternal* assistant_manager_internal() {
-    return assistant_manager_internal_;
-  }
+  assistant_client::AssistantManager* assistant_manager();
+  assistant_client::AssistantManagerInternal* assistant_manager_internal();
   CrosPlatformApi* platform_api() { return platform_api_.get(); }
 
   // assistant_client::MediaManager::Listener overrides:
@@ -246,9 +243,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   }
 
  private:
-  void StartAssistantInternal(const base::Optional<UserInfo>& user,
-                              const std::string& locale);
+  void InitAssistant(const base::Optional<UserInfo>& user,
+                     const std::string& locale);
   void PostInitAssistant();
+  bool IsInitialized() const;
 
   // Update device id, type and locale
   void UpdateDeviceSettings();
@@ -304,6 +302,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
+  CrosDisplayConnection* display_connection();
+  AssistantManagerController* assistant_manager_controller();
+
   void SetStateAndInformObservers(State new_state);
 
   State state_ = State::STOPPED;
@@ -311,25 +312,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<CrosPlatformApi> platform_api_;
   std::unique_ptr<action::CrosActionModule> action_module_;
   ChromiumApiDelegate chromium_api_delegate_;
-  // NOTE: |display_connection_| is used by |assistant_manager_| and must be
-  // declared before so it will be destructed after.
-  std::unique_ptr<CrosDisplayConnection> display_connection_;
-  // Similar to |new_asssistant_manager_|, created on |background_thread_| then
-  // posted to main thread to finish initialization then move to
-  // |display_connection_|.
-  std::unique_ptr<CrosDisplayConnection> new_display_connection_;
-  std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
-  // |new_assistant_manager_| is created on |background_thread_| then posted to
-  // main thread to finish initialization then move to |assistant_manager_|.
-  std::unique_ptr<assistant_client::AssistantManager> new_assistant_manager_;
-  // Same ownership as |new_assistant_manager_|.
-  assistant_client::AssistantManagerInternal* new_assistant_manager_internal_ =
-      nullptr;
-  base::Lock new_assistant_manager_lock_;
-  // same ownership as |assistant_manager_|.
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+
+  std::unique_ptr<AssistantManagerController> assistant_manager_controller_;
+
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
   mojo::Remote<media_session::mojom::MediaController> media_controller_;
 
