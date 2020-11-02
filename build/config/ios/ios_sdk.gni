@@ -16,6 +16,7 @@ declare_args() {
   ios_sdk_version = ""
   ios_sdk_platform = ""
   ios_sdk_platform_path = ""
+  ios_toolchains_path = ""
   xcode_version = ""
   xcode_version_int = 0
   xcode_build = ""
@@ -163,6 +164,7 @@ if (ios_sdk_path == "") {
   ios_sdk_platform_path = _ios_sdk_result.sdk_platform_path
   ios_sdk_version = _ios_sdk_result.sdk_version
   ios_sdk_build = _ios_sdk_result.sdk_build
+  ios_toolchains_path = _ios_sdk_result.toolchains_path
   xcode_version = _ios_sdk_result.xcode_version
   xcode_version_int = _ios_sdk_result.xcode_version_int
   xcode_build = _ios_sdk_result.xcode_build

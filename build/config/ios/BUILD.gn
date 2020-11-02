@@ -166,7 +166,25 @@ config("ios_dynamic_flags") {
     "-Wl,-objc_abi_version,2",
   ]
 
-  lib_dirs = [ "$ios_sdk_path/usr/lib/swift" ]
+  # The path to the Swift compatibility libraries (required to run code built
+  # with version N of the SDK on older version of the OS) is relative to the
+  # toolchains directory and changes with the environment.
+  _swift_compatibility_libs_dir_prefix = "$ios_toolchains_path/usr/lib/swift"
+  if (target_environment == "simulator") {
+    _swift_compatibility_libs_dir =
+        "$_swift_compatibility_libs_dir_prefix/iphonesimulator"
+  } else if (target_environment == "device") {
+    _swift_compatibility_libs_dir =
+        "$_swift_compatibility_libs_dir_prefix/iphoneos"
+  } else if (target_environment == "catalyst") {
+    _swift_compatibility_libs_dir =
+        "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+  }
+
+  lib_dirs = [
+    "$ios_sdk_path/usr/lib/swift",
+    _swift_compatibility_libs_dir,
+  ]
 }
 
 config("ios_shared_library_flags") {

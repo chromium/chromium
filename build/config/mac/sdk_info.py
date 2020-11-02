@@ -108,6 +108,10 @@ def FillSDKPathAndVersion(settings, platform, xcode_version):
   settings['sdk_build'] = subprocess.check_output(
       ['xcrun', '-sdk', platform,
        '--show-sdk-build-version']).decode('UTF-8').strip()
+  settings['toolchains_path'] = os.path.join(
+      subprocess.check_output(['xcode-select',
+                               '-print-path']).decode('UTF-8').strip(),
+      'Toolchains/XcodeDefault.xctoolchain')
 
 
 def CreateXcodeSymlinkAt(src, dst):
