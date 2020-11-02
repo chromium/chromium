@@ -306,18 +306,18 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
-    _base_perftests(10),
+    _base_perftests(200),
     _load_library_perf_tests(),
     _media_perftests(),
     _performance_browser_tests(165),
-    _tracing_perftests(),
+    _tracing_perftests(5),
 ])
 _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(10),
+    _base_perftests(300),
     _dawn_perf_tests(330),
     _media_perftests(),
     _performance_browser_tests(190),
@@ -342,8 +342,8 @@ _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ])
 _WIN_10_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(20),
-    _components_perftests(),
+    _base_perftests(200),
+    _components_perftests(125),
     _dawn_perf_tests(600),
     _media_perftests(),
     _views_perftests(),
@@ -382,9 +382,9 @@ _ANDROID_NEXUS_5_BENCHMARK_CONFIGS = PerfSuite([
     'system_health.webview_startup',
 ]).Abridge(['loading.mobile', 'startup.mobile', 'system_health.common_mobile'])
 _ANDROID_NEXUS_5_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(),
-    _gpu_perftests(),
-    _tracing_perftests(),
+    _components_perftests(100),
+    _gpu_perftests(45),
+    _tracing_perftests(55),
 ])
 _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -396,8 +396,8 @@ _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
 _ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING.Remove(
     ['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(),
-    _media_perftests(),
+    _components_perftests(60),
+    _media_perftests(75),
 ])
 _ANDROID_PIXEL2_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
