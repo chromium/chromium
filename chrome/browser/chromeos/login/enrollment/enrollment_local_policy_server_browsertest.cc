@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/async_method_caller.h"
@@ -64,6 +65,16 @@ std::string GetDmTokenFromPolicy(const std::string& blob) {
   enterprise_management::PolicyData policy_data;
   CHECK(policy_data.ParseFromString(policy.policy_data()));
   return policy_data.request_token();
+}
+
+void AllowlistSimpleChallengeSigningKey() {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignSimpleChallengeKey(
+          /*username=*/"",
+          chromeos::attestation::GetKeyNameForProfile(
+              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
+              ""));
 }
 
 }  // namespace
@@ -593,6 +604,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, DeviceDisabled) {
 
 // Attestation enrollment.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, Attestation) {
+  AllowlistSimpleChallengeSigningKey();
   policy_server_.SetFakeAttestationFlow();
   EXPECT_TRUE(policy_server_.SetDeviceStateRetrievalResponse(
       state_keys_broker(),
@@ -803,6 +815,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, ZeroTouchForcedAttestationFail) {
 
 IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
                        ZeroTouchForcedAttestationSuccess) {
+  AllowlistSimpleChallengeSigningKey();
   policy_server_.SetupZeroTouchForcedEnrollment();
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);

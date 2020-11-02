@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chromeos/assistant/buildflags.h"
+#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/update_engine_client.h"
@@ -816,6 +817,13 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
   ~OobeZeroTouchInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
+    chromeos::AttestationClient::Get()
+        ->GetTestInterface()
+        ->AllowlistSignSimpleChallengeKey(
+            /*username=*/"", chromeos::attestation::GetKeyNameForProfile(
+                                 chromeos::attestation::
+                                     PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
+                                 ""));
     OobeInteractiveUITest::SetUpOnMainThread();
     policy_server_.ConfigureFakeStatisticsForZeroTouch(
         &fake_statistics_provider_);

@@ -33,6 +33,8 @@
 #include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -76,8 +78,7 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
       policy_manager_(policy_manager),
       attestation_flow_(std::move(attestation_flow)),
       statistics_provider_(statistics_provider),
-      signing_service_(std::make_unique<TpmEnrollmentKeySigningService>(
-          async_method_caller)) {}
+      signing_service_(std::make_unique<TpmEnrollmentKeySigningService>()) {}
 
 void DeviceCloudPolicyInitializer::SetSigningServiceForTesting(
     std::unique_ptr<policy::SigningService> signing_service) {
@@ -370,38 +371,38 @@ bool DeviceCloudPolicyInitializer::GetMachineFlag(const std::string& key,
 }
 
 DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::
-    TpmEnrollmentKeySigningService(
-        cryptohome::AsyncMethodCaller* async_method_caller)
-    : async_method_caller_(async_method_caller) {}
+    TpmEnrollmentKeySigningService() = default;
 
 DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::
-    ~TpmEnrollmentKeySigningService() {}
+    ~TpmEnrollmentKeySigningService() = default;
 
 void DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::SignData(
     const std::string& data,
     SigningCallback callback) {
   const chromeos::attestation::AttestationCertificateProfile cert_profile =
       chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
-  const cryptohome::Identification identification;
-  async_method_caller_->TpmAttestationSignSimpleChallenge(
-      chromeos::attestation::AttestationFlow::GetKeyTypeForProfile(
-          cert_profile),
-      identification,
-      chromeos::attestation::GetKeyNameForProfile(cert_profile, ""), data,
-      base::BindOnce(&DeviceCloudPolicyInitializer::
-                         TpmEnrollmentKeySigningService::OnDataSigned,
-                     weak_ptr_factory_.GetWeakPtr(), data,
-                     std::move(callback)));
+  ::attestation::SignSimpleChallengeRequest request;
+  request.set_username("");
+  request.set_key_label(
+      chromeos::attestation::GetKeyNameForProfile(cert_profile, ""));
+  request.set_challenge(data);
+  chromeos::AttestationClient::Get()->SignSimpleChallenge(
+      request, base::BindOnce(&DeviceCloudPolicyInitializer::
+                                  TpmEnrollmentKeySigningService::OnDataSigned,
+                              weak_ptr_factory_.GetWeakPtr(), data,
+                              std::move(callback)));
 }
 
 void DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::OnDataSigned(
     const std::string& data,
     SigningCallback callback,
-    bool success,
-    const std::string& signed_data) {
+    const ::attestation::SignSimpleChallengeReply& reply) {
   enterprise_management::SignedData em_signed_data;
   chromeos::attestation::SignedData att_signed_data;
-  if (success && (success = att_signed_data.ParseFromString(signed_data))) {
+  const bool success =
+      reply.status() == ::attestation::STATUS_SUCCESS &&
+      att_signed_data.ParseFromString(reply.challenge_response());
+  if (success) {
     em_signed_data.set_data(att_signed_data.data());
     em_signed_data.set_signature(att_signed_data.signature());
     em_signed_data.set_extra_data_bytes(att_signed_data.data().size() -

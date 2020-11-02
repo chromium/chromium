@@ -27,7 +27,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -311,6 +313,14 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestSkipUpdate) {
 }
 
 IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestEnrollUsingToken) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignSimpleChallengeKey(
+          /*username=*/"",
+          chromeos::attestation::GetKeyNameForProfile(
+              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
+              ""));
+
   policy_server_.SetUpdateDeviceAttributesPermission(false);
   policy_server_.SetFakeAttestationFlow();
 
