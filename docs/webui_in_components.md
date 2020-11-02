@@ -31,6 +31,7 @@ WebUI resources in `components/` will be added in your specific project folder. 
  <link rel="stylesheet" href="hello_world.css">
  <script src="chrome://resources/js/cr.js"></script>
  <script src="chrome://resources/js/load_time_data.js"></script>
+ <script src="chrome://resources/js/assert.js"></script>
  <script src="chrome://resources/js/util.js"></script>
  <script src="strings.js"></script>
  <script src="hello_world.js"></script>

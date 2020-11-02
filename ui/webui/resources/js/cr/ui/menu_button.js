@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="../../assert.js">
-
 // #import {assert} from '../../assert.m.js';
 // #import {isWindows} from '../../cr.m.js';
 // #import {EventTracker} from '../../event_tracker.m.js'

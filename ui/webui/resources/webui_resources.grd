@@ -360,8 +360,7 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_JS_CR_UI_JS"
                  file="js/cr/ui.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL_JS"
-                 file="js/cr/ui/array_data_model.js"
-                 type="chrome_html" flattenhtml="true" />
+                 file="js/cr/ui/array_data_model.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_CR_UI_BUBBLE_JS"
                  file="js/cr/ui/bubble.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_CR_UI_BUBBLE_BUTTON_JS"
@@ -434,8 +433,7 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_JS_EVENT_TRACKER_JS"
                  file="js/event_tracker.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_ICON_JS"
-                 file="js/icon.js" type="chrome_html"
-                 flattenhtml="true" />
+                 file="js/icon.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_I18N_TEMPLATE_NO_PROCESS_JS"
                  file="js/i18n_template_no_process.js"
                  type="chrome_html" />
@@ -446,8 +444,7 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_JS_TEST_LOADER_JS"
                  file="js/test_loader.js" type="chrome_html"/>
       <structure name="IDR_WEBUI_JS_UTIL_JS"
-                 file="js/util.js" type="chrome_html"
-                 flattenhtml="true" />
+                 file="js/util.js" type="chrome_html" preprocess="true"/>
       <structure name="IDR_WEBUI_JS_WEBUI_RESOURCE_TEST_JS"
                  file="js/webui_resource_test.js" type="chrome_html" />
 

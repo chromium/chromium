@@ -32,6 +32,7 @@ InterventionsInternalsUITest.prototype = {
   extraLibraries: [
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
+    '//ui/webui/resources/js/assert.js',
     '//ui/webui/resources/js/promise_resolver.js',
     '//ui/webui/resources/js/util.js',
     '//chrome/test/data/webui/test_browser_proxy.js',

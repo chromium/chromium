@@ -6,13 +6,6 @@
  * @fileoverview This is a data model representin
  */
 
-// The include directives are put into Javascript-style comments to prevent
-// parsing errors in non-flattened mode. The flattener still sees them.
-// Note that this makes the flattener to comment out the first line of the
-// included file but that's all right since any javascript file should start
-// with a copyright comment anyway.
-
-// <include src="../../assert.js">
 // #import {assert} from '../../assert.m.js';
 // #import {NativeEventTarget as EventTarget} from '../event_target.m.js'
 

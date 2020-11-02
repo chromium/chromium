@@ -4,7 +4,6 @@
 
 // #import {assertInstanceof} from './assert.m.js';
 // #import {dispatchSimpleEvent} from './cr.m.js';
-// <include src="assert.js">
 
 /**
  * Alias for document.getElementById. Found elements must be HTMLElements.

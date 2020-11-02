@@ -36,6 +36,7 @@ PolymerTest.prototype = {
    */
   extraLibraries: [
     '//ui/webui/resources/js/cr.js',
+    '//ui/webui/resources/js/assert.js',
     '//ui/webui/resources/js/promise_resolver.js',
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
