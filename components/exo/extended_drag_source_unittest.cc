@@ -77,12 +77,12 @@ class TestExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
 
   bool ShouldLockCursor() const override { return lock_cursor_; }
 
-  void OnSwallowed(std::string mime_type) override {
+  void OnSwallowed(const std::string& mime_type) override {
     ASSERT_FALSE(swallowed_);
     swallowed_ = true;
   }
 
-  void OnUnswallowed(std::string mime_type,
+  void OnUnswallowed(const std::string& mime_type,
                      const gfx::Vector2d& offset) override {
     ASSERT_TRUE(swallowed_);
     swallowed_ = false;

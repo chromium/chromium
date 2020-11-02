@@ -48,12 +48,12 @@ class ZcrExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
     return settings_ & ZCR_EXTENDED_DRAG_V1_OPTIONS_LOCK_CURSOR;
   }
 
-  void OnSwallowed(std::string mime_type) override {
+  void OnSwallowed(const std::string& mime_type) override {
     zcr_extended_drag_source_v1_send_swallow(resource_, mime_type.c_str());
     wl_client_flush(wl_resource_get_client(resource_));
   }
 
-  void OnUnswallowed(std::string mime_type,
+  void OnUnswallowed(const std::string& mime_type,
                      const gfx::Vector2d& offset) override {
     zcr_extended_drag_source_v1_send_unswallow(resource_, mime_type.c_str(),
                                                offset.x(), offset.y());

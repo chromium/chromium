@@ -42,8 +42,8 @@ class ExtendedDragSource : public DataSourceObserver,
    public:
     virtual bool ShouldAllowDropAnywhere() const = 0;
     virtual bool ShouldLockCursor() const = 0;
-    virtual void OnSwallowed(std::string mime_type) = 0;
-    virtual void OnUnswallowed(std::string mime_type,
+    virtual void OnSwallowed(const std::string& mime_type) = 0;
+    virtual void OnUnswallowed(const std::string& mime_type,
                                const gfx::Vector2d& offset) = 0;
     virtual void OnDataSourceDestroying() = 0;
 
