@@ -629,6 +629,8 @@ if (enable_remoting_host) {
       sources += [
         "setup/host_starter.cc",
         "setup/host_starter.h",
+        "setup/host_stopper.cc",
+        "setup/host_stopper.h",
         "setup/start_host_main.cc",
         "setup/start_host_main.h",
       ]

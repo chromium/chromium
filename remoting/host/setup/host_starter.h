@@ -14,6 +14,7 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/setup/daemon_controller.h"
+#include "remoting/host/setup/host_stopper.h"
 #include "remoting/host/setup/service_client.h"
 
 namespace network {
@@ -85,15 +86,18 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
 
   HostStarter(std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
               std::unique_ptr<remoting::ServiceClient> service_client,
-              scoped_refptr<remoting::DaemonController> daemon_controller);
+              scoped_refptr<remoting::DaemonController> daemon_controller,
+              std::unique_ptr<remoting::HostStopper> host_stopper);
 
   void StartHostProcess();
 
+  void OnLocalHostStopped();
   void OnHostStarted(DaemonController::AsyncResult result);
 
   std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
   std::unique_ptr<remoting::ServiceClient> service_client_;
   scoped_refptr<remoting::DaemonController> daemon_controller_;
+  std::unique_ptr<remoting::HostStopper> host_stopper_;
   gaia::OAuthClientInfo oauth_client_info_;
   std::string host_name_;
   std::string host_pin_;

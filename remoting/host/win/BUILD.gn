@@ -350,6 +350,8 @@ shared_library("remoting_core") {
     "//remoting/host/it2me/it2me_native_messaging_host_main.h",
     "//remoting/host/setup/host_starter.cc",
     "//remoting/host/setup/host_starter.h",
+    "//remoting/host/setup/host_stopper.cc",
+    "//remoting/host/setup/host_stopper.h",
     "//remoting/host/setup/me2me_native_messaging_host_main.cc",
     "//remoting/host/setup/me2me_native_messaging_host_main.h",
     "//remoting/host/setup/start_host_main.cc",

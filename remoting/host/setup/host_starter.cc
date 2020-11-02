@@ -27,10 +27,12 @@ namespace remoting {
 HostStarter::HostStarter(
     std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
     std::unique_ptr<remoting::ServiceClient> service_client,
-    scoped_refptr<remoting::DaemonController> daemon_controller)
+    scoped_refptr<remoting::DaemonController> daemon_controller,
+    std::unique_ptr<remoting::HostStopper> host_stopper)
     : oauth_client_(std::move(oauth_client)),
       service_client_(std::move(service_client)),
       daemon_controller_(daemon_controller),
+      host_stopper_(std::move(host_stopper)),
       consent_to_data_collection_(false),
       unregistering_host_(false) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
@@ -41,10 +43,13 @@ HostStarter::~HostStarter() = default;
 
 std::unique_ptr<HostStarter> HostStarter::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  auto controller = remoting::DaemonController::Create();
   return base::WrapUnique(new HostStarter(
       std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory),
-      std::make_unique<remoting::ServiceClient>(url_loader_factory),
-      remoting::DaemonController::Create()));
+      std::make_unique<remoting::ServiceClient>(url_loader_factory), controller,
+      std::make_unique<remoting::HostStopper>(
+          std::make_unique<remoting::ServiceClient>(url_loader_factory),
+          controller)));
 }
 
 void HostStarter::StartHost(const std::string& host_id,
@@ -138,19 +143,12 @@ void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
       std::move(on_done_).Run(OAUTH_ERROR);
       return;
     }
-
-    // Now register the host with the Directory.
-    if (host_id_.empty())
-      host_id_ = base::GenerateGUID();
-    key_pair_ = RsaKeyPair::Generate();
-
-    std::string host_client_id;
-    host_client_id = google_apis::GetOAuth2ClientID(
-        google_apis::CLIENT_REMOTING_HOST);
-
-    service_client_->RegisterHost(host_id_, host_name_,
-                                  key_pair_->GetPublicKey(), host_client_id,
-                                  directory_access_token_, this);
+    // If the host is already running, stop it; then register a new host with
+    // with the directory.
+    host_stopper_->StopLocalHost(
+        directory_access_token_,
+        base::BindOnce(&HostStarter::OnLocalHostStopped,
+                       base::Unretained(this)));
   } else {
     // This is the second callback, with the service account credentials.
     // This email is the service account's email, used to login to XMPP.
@@ -203,6 +201,19 @@ void HostStarter::StartHostProcess() {
   daemon_controller_->SetConfigAndStart(
       std::move(config), consent_to_data_collection_,
       base::BindOnce(&HostStarter::OnHostStarted, base::Unretained(this)));
+}
+
+void HostStarter::OnLocalHostStopped() {
+  if (host_id_.empty())
+    host_id_ = base::GenerateGUID();
+  key_pair_ = RsaKeyPair::Generate();
+
+  std::string host_client_id;
+  host_client_id =
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
+
+  service_client_->RegisterHost(host_id_, host_name_, key_pair_->GetPublicKey(),
+                                host_client_id, directory_access_token_, this);
 }
 
 void HostStarter::OnHostStarted(DaemonController::AsyncResult result) {
