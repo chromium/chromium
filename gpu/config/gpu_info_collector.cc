@@ -35,11 +35,14 @@
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"                 // nogncheck
+#include "ui/ozone/public/ozone_platform.h"           // nogncheck
+#include "ui/ozone/public/platform_gl_egl_utility.h"  // nogncheck
+#endif
+
 #if defined(USE_X11)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
-#include "ui/gfx/switches.h"
-#include "ui/gl/gl_visual_picker_glx.h"
+#include "ui/gl/gl_utils.h"
 #endif
 
 namespace {
@@ -502,42 +505,19 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
     }
   }
 
-#if defined(USE_X11)
-  if (features::IsUsingOzonePlatform())
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    const auto* const egl_utility =
+        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+    if (egl_utility)
+      egl_utility->CollectGpuExtraInfo(prefs.enable_native_gpu_memory_buffers,
+                                       *gpu_extra_info);
     return true;
-  // Create the GLVisualPickerGLX singleton now while the GbmSupportX11
-  // singleton is busy being created on another thread.
-  gl::GLVisualPickerGLX* visual_picker;
-  if (gl::GetGLImplementation() == gl::kGLImplementationDesktopGL)
-    visual_picker = gl::GLVisualPickerGLX::GetInstance();
-
-  // TODO(https://crbug.com/1031269): Enable by default.
-  if (prefs.enable_native_gpu_memory_buffers) {
-    gpu_extra_info->gpu_memory_buffer_support_x11 =
-        ui::GpuMemoryBufferSupportX11::GetInstance()->supported_configs();
   }
-
-  if (gl::GetGLImplementation() == gl::kGLImplementationDesktopGL) {
-    gpu_extra_info->system_visual =
-        static_cast<uint32_t>(visual_picker->system_visual());
-    gpu_extra_info->rgba_visual =
-        static_cast<uint32_t>(visual_picker->rgba_visual());
-
-    // With GLX, only BGR(A) buffer formats are supported.  EGL does not have
-    // this restriction.
-    gpu_extra_info->gpu_memory_buffer_support_x11.erase(
-        std::remove_if(gpu_extra_info->gpu_memory_buffer_support_x11.begin(),
-                       gpu_extra_info->gpu_memory_buffer_support_x11.end(),
-                       [&](gfx::BufferUsageAndFormat usage_and_format) {
-                         return visual_picker->GetFbConfigForFormat(
-                                    usage_and_format.format) ==
-                                x11::Glx::FbConfig{};
-                       }),
-        gpu_extra_info->gpu_memory_buffer_support_x11.end());
-  } else if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    // ANGLE does not yet support EGL_EXT_image_dma_buf_import[_modifiers].
-    gpu_extra_info->gpu_memory_buffer_support_x11.clear();
-  }
+#endif
+#if defined(USE_X11)
+  gl::CollectX11GpuExtraInfo(prefs.enable_native_gpu_memory_buffers,
+                             *gpu_extra_info);
 #endif
 
   return true;

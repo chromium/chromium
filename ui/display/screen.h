@@ -144,7 +144,8 @@ class DISPLAY_EXPORT Screen {
 
   // Returns human readable description of the window manager, desktop, and
   // other system properties related to the compositing.
-  virtual base::Value GetGpuInfo(const gfx::GpuExtraInfo& gpu_extra_info);
+  virtual base::Value GetGpuExtraInfoAsListValue(
+      const gfx::GpuExtraInfo& gpu_extra_info);
 
  private:
   friend class ScopedDisplayForNewWindows;

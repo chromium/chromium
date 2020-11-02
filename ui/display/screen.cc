@@ -112,7 +112,8 @@ std::string Screen::GetCurrentWorkspace() {
   return {};
 }
 
-base::Value Screen::GetGpuInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
+base::Value Screen::GetGpuExtraInfoAsListValue(
+    const gfx::GpuExtraInfo& gpu_extra_info) {
   return base::Value(base::Value::Type::LIST);
 }
 

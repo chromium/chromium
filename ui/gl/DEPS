@@ -6,6 +6,7 @@ include_rules = [
   "+ui/events",
   "+ui/base/x",
   "+ui/gfx",
+  "+ui/ozone/buildflags.h",
 ]
 
 specific_include_rules = {

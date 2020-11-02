@@ -47,7 +47,8 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
-  base::Value GetGpuInfo(const gfx::GpuExtraInfo& gpu_extra_info) override;
+  base::Value GetGpuExtraInfoAsListValue(
+      const gfx::GpuExtraInfo& gpu_extra_info) override;
 
   // Returns the NativeWindow associated with the AcceleratedWidget.
   virtual gfx::NativeWindow GetNativeWindowFromAcceleratedWidget(

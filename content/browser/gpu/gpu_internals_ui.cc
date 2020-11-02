@@ -155,11 +155,13 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   return rt;
 }
 
-base::Value GetGpuInfoLines(const gfx::GpuExtraInfo& gpu_extra_info) {
+base::Value GpuExtraInfoToListValue(const gfx::GpuExtraInfo& gpu_extra_info) {
   base::Value gpu_info_lines(base::Value::Type::LIST);
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return display::Screen::GetScreen()->GetGpuInfo(gpu_extra_info);
+  if (features::IsUsingOzonePlatform()) {
+    return display::Screen::GetScreen()->GetGpuExtraInfoAsListValue(
+        gpu_extra_info);
+  }
 #endif
 #if defined(USE_X11)
   gpu_info_lines = ui::GpuExtraInfoAsListValue(gpu_extra_info.system_visual,
@@ -283,17 +285,20 @@ std::unique_ptr<base::ListValue> BasicGpuInfoAsListValue(
   basic_info->Append(NewDescriptionValuePair("Window system binding extensions",
                                              gpu_info.gl_ws_extensions));
 
-  base::Value gpu_info_lines = GetGpuInfoLines(gpu_extra_info);
-  DCHECK(gpu_info_lines.is_list());
   {
-    auto pairs = gpu_info_lines.TakeList();
-    for (auto& pair : pairs) {
-      if (pair.FindStringKey("description") == nullptr ||
-          pair.FindKey("value") == nullptr) {
-        LOG(WARNING) << "Unexpected item format: should have a string "
-                        "description and a value.";
+    base::Value gpu_extra_info_as_list_value =
+        GpuExtraInfoToListValue(gpu_extra_info);
+    DCHECK(gpu_extra_info_as_list_value.is_list());
+    {
+      auto pairs = gpu_extra_info_as_list_value.TakeList();
+      for (auto& pair : pairs) {
+        if (pair.FindStringKey("description") == nullptr ||
+            pair.FindKey("value") == nullptr) {
+          LOG(WARNING) << "Unexpected item format: should have a string "
+                          "description and a value.";
+        }
+        basic_info->Append(std::move(pair));
       }
-      basic_info->Append(std::move(pair));
     }
   }
 

@@ -244,6 +244,10 @@ component("gl") {
     ]
   }
 
+  if (use_ozone) {
+    deps += [ "//ui/ozone:buildflags" ]
+  }
+
   if (use_x11 || ozone_platform_x11) {
     sources += [
       "gl_image_egl_pixmap.cc",
@@ -260,6 +264,7 @@ component("gl") {
       "//ui/base:features",
       "//ui/base/x",
       "//ui/events/platform/x11:x11",
+      "//ui/gfx/linux:gpu_memory_buffer_support_x11",
     ]
 
     assert(use_egl)
