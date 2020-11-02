@@ -6417,7 +6417,7 @@ grit("dev_ui_browser_resources") {
     "//chrome/browser/resources/web_app_internals:components",
     "//chrome/browser/ui/webui/internals/web_app:mojo_bindings_js",
     "//chrome/browser/ui/webui/interventions_internals:mojo_bindings_js",
-    "//components/site_engagement/core/mojom:mojo_bindings_js",
+    "//components/site_engagement/core/mojom:mojo_bindings_webui_js",
   ]
   if (is_android) {
     deps += [ "//chrome/browser/ui/webui/feed_internals:mojo_bindings_js" ]

@@ -5,12 +5,14 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [ ":site_engagement" ]
+  closure_flags = mojom_js_args
 }
 
 js_library("site_engagement") {
   deps = [
-    "//components/site_engagement/core/mojom:mojo_bindings_js_library_for_compile",
+    "//components/site_engagement/core/mojom:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util",
   ]

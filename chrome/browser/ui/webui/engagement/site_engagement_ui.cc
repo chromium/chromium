@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
 
@@ -85,11 +86,12 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
   // Set up the chrome://site-engagement/ source.
   std::unique_ptr<content::WebUIDataSource> source(
       content::WebUIDataSource::Create(chrome::kChromeUISiteEngagementHost));
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
   source->AddResourcePath("site_engagement.js", IDR_SITE_ENGAGEMENT_JS);
-  source->AddResourcePath(
-      "components/site_engagement/core/mojom/"
-      "site_engagement_details.mojom-lite.js",
-      IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_LITE_JS);
+  source->AddResourcePath("site_engagement_details.mojom-webui.js",
+                          IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS);
   source->SetDefaultResource(IDR_SITE_ENGAGEMENT_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source.release());
 }

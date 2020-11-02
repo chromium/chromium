@@ -207,10 +207,17 @@ _SHARED_MODULE_PREFIX = 'chrome://resources/mojo'
 
 
 def _GetWebUiModulePath(module):
+  """Returns the path to a WebUI module, from the perspective of a WebUI page
+  that makes it available. This is based on the corresponding mojom target's
+  webui_module_path value. Returns None if the target specifies no module
+  path. Otherwise, returned paths always end in a '/' and begin with either
+  `_SHARED_MODULE_PREFIX` or a '/'."""
   path = module.metadata.get('webui_module_path')
-  if path is None:
-    return None
-  return path.strip('/')
+  if path is None or path == '/':
+    return path
+  if path.startswith(_SHARED_MODULE_PREFIX):
+    return path.rstrip('/') + '/'
+  return '/{}/'.format(path.strip('/'))
 
 
 def JavaScriptPayloadSize(packed):
@@ -329,6 +336,7 @@ class Generator(generator.Generator):
         "field_type_in_js_module": self._GetFieldTypeInJsModule,
         "get_relative_url": GetRelativeUrl,
         "has_callbacks": mojom.HasCallbacks,
+        "imports_for_kind": self._GetImportsForKind,
         "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
         "is_array_kind": mojom.IsArrayKind,
         "is_associated_interface_kind": mojom.IsAssociatedInterfaceKind,
@@ -358,7 +366,6 @@ class Generator(generator.Generator):
         "lite_js_import_name": self._LiteJavaScriptImportName,
         "method_passes_associated_kinds": mojom.MethodPassesAssociatedKinds,
         "namespace_declarations": self._NamespaceDeclarations,
-        "name_in_js_module": self._GetNameInJsModule,
         "closure_type_with_nullability": self._ClosureTypeWithNullability,
         "lite_closure_param_type": self._LiteClosureParamType,
         "lite_closure_type": self._LiteClosureType,
@@ -665,6 +672,27 @@ class Generator(generator.Generator):
     if kind.parent_kind:
       qualifier += kind.parent_kind.name + '.'
     return (qualifier + kind.name).replace('.', '_')
+
+  def _GetImportsForKind(self, kind):
+    qualified_name = self._GetNameInJsModule(kind)
+
+    def make_import(name, suffix=''):
+      class ImportInfo(object):
+        def __init__(self, name, alias):
+          self.name = name
+          self.alias = alias
+
+      return ImportInfo(name + suffix, qualified_name + suffix)
+
+    if (mojom.IsEnumKind(kind) or mojom.IsStructKind(kind)
+        or mojom.IsUnionKind(kind)):
+      return [make_import(kind.name), make_import(kind.name, 'Spec')]
+    if mojom.IsInterfaceKind(kind):
+      return [
+          make_import(kind.name, 'Remote'),
+          make_import(kind.name, 'PendingReceiver')
+      ]
+    assert False, kind.name
 
   def _JavaScriptType(self, kind):
     name = []
@@ -1007,24 +1035,31 @@ class Generator(generator.Generator):
 
   def _GetJsModuleImports(self, for_webui_module=False):
     this_module_path = _GetWebUiModulePath(self.module)
-    if this_module_path:
-      this_module_is_shared = this_module_path.startswith(_SHARED_MODULE_PREFIX)
+    this_module_is_shared = bool(
+        this_module_path and this_module_path.startswith(_SHARED_MODULE_PREFIX))
     imports = dict()
     for spec, kind in self.module.imported_kinds.items():
       if for_webui_module:
+        assert this_module_path is not None
         base_path = _GetWebUiModulePath(kind.module)
         assert base_path is not None
-        import_path = '{}/{}-webui.js'.format(
-            base_path, os.path.basename(kind.module.path))
+        import_path = '{}{}-webui.js'.format(base_path,
+                                             os.path.basename(kind.module.path))
         import_module_is_shared = import_path.startswith(_SHARED_MODULE_PREFIX)
         if import_module_is_shared == this_module_is_shared:
           # Either we're a non-shared resource importing another non-shared
           # resource, or we're a shared resource importing another shared
           # resource. In both cases, we assume a relative import path will
           # suffice.
+          def strip_prefix(s, prefix):
+            if s.startswith(prefix):
+              return s[len(prefix):]
+            return s
+
           import_path = urllib_request.pathname2url(
-              os.path.relpath(import_path.lstrip(_SHARED_MODULE_PREFIX),
-                              this_module_path.lstrip(_SHARED_MODULE_PREFIX)))
+              os.path.relpath(
+                  strip_prefix(import_path, _SHARED_MODULE_PREFIX),
+                  strip_prefix(this_module_path, _SHARED_MODULE_PREFIX)))
           if (not import_path.startswith('.')
               and not import_path.startswith('/')):
             import_path = './' + import_path

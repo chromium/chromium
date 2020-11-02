@@ -68,7 +68,7 @@ This file specifies browser resources for developer-facing chrome:// pages
 
       <include name="IDR_SITE_ENGAGEMENT_HTML" file="resources\engagement\site_engagement.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_SITE_ENGAGEMENT_JS" file="resources\engagement\site_engagement.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_LITE_JS" file="${root_gen_dir}\components\site_engagement\core\mojom\site_engagement_details.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\components\site_engagement\core\mojom\site_engagement_details.mojom-webui.js" use_base_dir="false" type="BINDATA" />
 
       <if expr="is_android">
         <include name="IDR_FEED_INTERNALS_HTML" file="resources\feed_internals\feed_internals.html" allowexternalscript="true" type="BINDATA" />

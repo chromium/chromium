@@ -353,7 +353,6 @@ if (include_js_tests) {
     sources = [
       "bluetooth_internals_browsertest.js",
       "cr_components/cr_components_mojo_browsertest.js",
-      "engagement/site_engagement_browsertest.js",
       "interventions_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
       "media/media_feeds_webui_browsertest.js",
@@ -385,7 +384,10 @@ if (include_js_tests) {
 
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
-    sources = [ "downloads/downloads_browsertest.js" ]
+    sources = [
+      "downloads/downloads_browsertest.js",
+      "engagement/site_engagement_browsertest.js",
+    ]
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]
     }

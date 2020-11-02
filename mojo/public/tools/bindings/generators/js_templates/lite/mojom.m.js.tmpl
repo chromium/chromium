@@ -9,9 +9,11 @@ import {mojo} from '{{bindings_library_path}}';
 {% for path, kinds in js_module_imports.items() -%}
 import {
 {%- for kind in kinds %}
-  {{kind.mojom_name}} as {{kind|name_in_js_module}},
-  {{kind.mojom_name}}Spec as {{kind|name_in_js_module}}Spec
-{%- if not loop.last -%}, {% endif -%}
+{%-   for item in kind|imports_for_kind %}
+  {{item.name}} as {{item.alias}}
+{%-     if not loop.last -%},{% endif -%}
+{%-   endfor %}
+{%- if not loop.last -%},{% endif -%}
 {%- endfor %}
 } from '{{path}}';
 
