@@ -304,6 +304,7 @@ class ASH_EXPORT ShelfLayoutManager
   friend class ShelfLayoutManagerTestBase;
   friend class ShelfLayoutManagerWindowDraggingTest;
   friend class NotificationTrayTest;
+  friend class UnifiedSystemTrayTest;
   friend class Shelf;
 
   struct State {

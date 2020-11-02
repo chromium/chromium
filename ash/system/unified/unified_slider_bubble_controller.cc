@@ -44,11 +44,13 @@ UnifiedSliderBubbleController::UnifiedSliderBubbleController(
     : tray_(tray) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
   tray_->model()->AddObserver(this);
+  tray_->shelf()->AddObserver(this);
 }
 
 UnifiedSliderBubbleController::~UnifiedSliderBubbleController() {
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
   tray_->model()->RemoveObserver(this);
+  tray_->shelf()->RemoveObserver(this);
   autoclose_.Stop();
   slider_controller_.reset();
   if (bubble_widget_)
@@ -109,6 +111,11 @@ void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(bool by_user) {
 
 void UnifiedSliderBubbleController::OnAudioSettingsButtonClicked() {
   tray_->ShowAudioDetailedViewBubble();
+}
+
+void UnifiedSliderBubbleController::OnShelfWorkAreaInsetsChanged() {
+  if (bubble_view_)
+    bubble_view_->ChangeAnchorRect(tray_->shelf()->GetSystemTrayAnchorRect());
 }
 
 void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {

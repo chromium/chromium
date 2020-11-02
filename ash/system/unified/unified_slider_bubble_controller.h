@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_BUBBLE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -23,7 +24,8 @@ class ASH_EXPORT UnifiedSliderBubbleController
     : public TrayBubbleView::Delegate,
       public chromeos::CrasAudioHandler::AudioObserver,
       public UnifiedSystemTrayModel::Observer,
-      public UnifiedVolumeSliderController::Delegate {
+      public UnifiedVolumeSliderController::Delegate,
+      public ShelfObserver {
  public:
   enum SliderType {
     SLIDER_TYPE_VOLUME = 0,
@@ -58,6 +60,9 @@ class ASH_EXPORT UnifiedSliderBubbleController
 
   // UnifiedVolumeSliderController::Delegate:
   void OnAudioSettingsButtonClicked() override;
+
+  // ShelfObserver:
+  void OnShelfWorkAreaInsetsChanged() override;
 
  private:
   friend class UnifiedSystemTrayTest;
