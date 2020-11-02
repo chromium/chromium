@@ -432,20 +432,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const std::string& key_name_for_spkac,
       AsyncMethodCallback callback) = 0;
 
-  // Asynchronously signs a simple challenge with the key specified by
-  // |key_type| and |key_name|.  |challenge| can be any set of arbitrary bytes.
-  // A nonce will be appended to the challenge before signing; this method
-  // cannot be used to sign arbitrary data.  The |callback| will be called when
-  // the dbus call completes.  When the operation completes, the
-  // AsyncCallStatusWithDataHandler signal handler is called.  If |key_type| is
-  // KEY_USER, a |id| must be provided.  Otherwise |id| is ignored.
-  virtual void TpmAttestationSignSimpleChallenge(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      const std::string& challenge,
-      AsyncMethodCallback callback) = 0;
-
   // Asynchronously gets the underlying TPM version information and passes it to
   // the given callback.
   virtual void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) = 0;

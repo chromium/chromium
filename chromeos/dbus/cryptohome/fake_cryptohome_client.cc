@@ -31,10 +31,6 @@ namespace chromeos {
 
 namespace {
 
-// Signature nonces are twenty bytes. This matches the attestation code.
-constexpr char kTwentyBytesNonce[] = "+addtwentybytesnonce";
-// A symbolic signature.
-constexpr char kSignature[] = "signed";
 // Interval to update the progress of MigrateToDircrypto in milliseconds.
 constexpr int kDircryptoMigrationUpdateIntervalMs = 200;
 // The number of updates the MigrateToDircrypto will send before it completes.
@@ -448,18 +444,6 @@ void FakeCryptohomeClient::TpmAttestationSignEnterpriseChallenge(
     const std::string& key_name_for_spkac,
     AsyncMethodCallback callback) {
   ReturnAsyncMethodData(std::move(callback), std::string());
-}
-
-void FakeCryptohomeClient::TpmAttestationSignSimpleChallenge(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    const std::string& challenge,
-    AsyncMethodCallback callback) {
-  chromeos::attestation::SignedData signed_data;
-  signed_data.set_data(challenge + kTwentyBytesNonce);
-  signed_data.set_signature(kSignature);
-  ReturnAsyncMethodData(std::move(callback), signed_data.SerializeAsString());
 }
 
 void FakeCryptohomeClient::TpmGetVersion(

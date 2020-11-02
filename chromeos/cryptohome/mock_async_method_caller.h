@@ -63,12 +63,6 @@ class MockAsyncMethodCaller : public AsyncMethodCaller {
                     const std::string& challenge,
                     const std::string& key_name_for_spkac,
                     DataCallback callback));
-  MOCK_METHOD5(TpmAttestationSignSimpleChallenge,
-               void(chromeos::attestation::AttestationKeyType key_type,
-                    const Identification& user_id,
-                    const std::string& key_name,
-                    const std::string& challenge,
-                    DataCallback callback));
 
  private:
   bool success_;

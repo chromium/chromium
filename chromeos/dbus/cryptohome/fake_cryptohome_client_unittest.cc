@@ -53,32 +53,4 @@ class FakeCryptohomeClientTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(FakeCryptohomeClientTest);
 };
 
-TEST_F(FakeCryptohomeClientTest, SignSimpleChallenge) {
-  constexpr char kChallenge[] = "challenge";
-
-  TestObserver observer;
-  ScopedObserver<CryptohomeClient, CryptohomeClient::Observer> scoped_observer(
-      &observer);
-  scoped_observer.Add(&fake_cryptohome_client_);
-
-  cryptohome::AccountIdentifier cryptohome_id;
-  bool called = false;
-  fake_cryptohome_client_.TpmAttestationSignSimpleChallenge(
-      attestation::AttestationKeyType::KEY_DEVICE, cryptohome_id, "key_name",
-      kChallenge,
-      base::BindOnce(
-          [](bool* called, base::Optional<int> async_id) { *called = true; },
-          &called));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(called);
-  EXPECT_TRUE(observer.return_status());
-
-  chromeos::attestation::SignedData signed_data;
-  ASSERT_TRUE(signed_data.ParseFromString(observer.data()));
-  ASSERT_EQ(static_cast<size_t>(20),
-            signed_data.data().size() - sizeof(kChallenge) + 1 /* for '\0' */);
-  EXPECT_EQ(kChallenge,
-            signed_data.data().substr(0, signed_data.data().size() - 20));
-}
-
 }  // namespace chromeos
