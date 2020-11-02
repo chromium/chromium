@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.toolbar.load_progress;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -38,8 +38,7 @@ public class LoadProgressMediator {
                     return;
                 }
 
-                if (NativePageFactory.isNativePageUrl(
-                            navigation.getUrlString(), tab.isIncognito())) {
+                if (NativePage.isNativePageUrl(navigation.getUrlString(), tab.isIncognito())) {
                     finishLoadProgress(false);
                     return;
                 }
@@ -64,8 +63,7 @@ public class LoadProgressMediator {
             @Override
             public void onLoadProgressChanged(Tab tab, float progress) {
                 if (UrlUtilities.isNTPUrl(tab.getUrlString())
-                        || NativePageFactory.isNativePageUrl(
-                                tab.getUrlString(), tab.isIncognito())) {
+                        || NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito())) {
                     return;
                 }
 
@@ -122,7 +120,7 @@ public class LoadProgressMediator {
         }
 
         if (tab.isLoading()) {
-            if (NativePageFactory.isNativePageUrl(tab.getUrlString(), tab.isIncognito())) {
+            if (NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito())) {
                 finishLoadProgress(false);
             } else {
                 startLoadProgress();

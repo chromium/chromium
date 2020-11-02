@@ -29,7 +29,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
+import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider.ThemeColorObserver;
@@ -86,6 +86,7 @@ public abstract class ToolbarLayout
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
+    private Runnable mTabOrModelChangeRunnable;
 
     /**
      * Basic constructor for {@link ToolbarLayout}.
@@ -117,10 +118,12 @@ public abstract class ToolbarLayout
      */
     @CallSuper
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
+            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
+            Runnable tabOrModelChangeRunnable) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mTabOrModelChangeRunnable = tabOrModelChangeRunnable;
     }
 
     /** @param overlay The coordinator for the texture version of the top toolbar. */
@@ -266,8 +269,8 @@ public abstract class ToolbarLayout
             }
 
             @Override
-            public NewTabPage getNewTabPageForCurrentTab() {
-                return null;
+            public NewTabPageDelegate getNewTabPageDelegate() {
+                return NewTabPageDelegate.EMPTY;
             }
 
             @Override
@@ -520,11 +523,7 @@ public abstract class ToolbarLayout
      * not guarantee that the model's current tab is non-null.
      */
     void onTabOrModelChanged() {
-        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
-        if (ntp != null) {
-            getLocationBar().onTabLoadingNTP(ntp);
-        }
-
+        mTabOrModelChangeRunnable.run();
         getLocationBar().updateMicButtonState();
     }
 
@@ -575,8 +574,7 @@ public abstract class ToolbarLayout
      * Triggered when the content view for the specified tab has changed.
      */
     void onTabContentViewChanged() {
-        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
-        if (ntp != null) getLocationBar().onTabLoadingNTP(ntp);
+        mTabOrModelChangeRunnable.run();
     }
 
     boolean isReadyForTextureCapture() {
@@ -822,8 +820,7 @@ public abstract class ToolbarLayout
     /**
      * @return {@link HomeButton} this {@link ToolbarLayout} contains.
      */
-    @VisibleForTesting
-    public HomeButton getHomeButtonForTesting() {
+    public HomeButton getHomeButton() {
         return null;
     }
 }

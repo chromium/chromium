@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.native_page;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.net.Uri;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
@@ -32,13 +30,10 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
@@ -123,53 +118,6 @@ public class NativePageFactory {
         }
     }
 
-    @IntDef({NativePageType.NONE, NativePageType.CANDIDATE, NativePageType.NTP,
-            NativePageType.BOOKMARKS, NativePageType.RECENT_TABS, NativePageType.DOWNLOADS,
-            NativePageType.HISTORY, NativePageType.EXPLORE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NativePageType {
-        int NONE = 0;
-        int CANDIDATE = 1;
-        int NTP = 2;
-        int BOOKMARKS = 3;
-        int RECENT_TABS = 4;
-        int DOWNLOADS = 5;
-        int HISTORY = 6;
-        int EXPLORE = 7;
-    }
-
-    private static @NativePageType int nativePageType(
-            String url, NativePage candidatePage, boolean isIncognito) {
-        if (url == null) return NativePageType.NONE;
-
-        Uri uri = Uri.parse(url);
-        if (!UrlConstants.CHROME_NATIVE_SCHEME.equals(uri.getScheme())
-                && !UrlConstants.CHROME_SCHEME.equals(uri.getScheme())) {
-            return NativePageType.NONE;
-        }
-
-        String host = uri.getHost();
-        if (candidatePage != null && candidatePage.getHost().equals(host)) {
-            return NativePageType.CANDIDATE;
-        }
-
-        if (UrlConstants.NTP_HOST.equals(host)) {
-            return NativePageType.NTP;
-        } else if (UrlConstants.BOOKMARKS_HOST.equals(host)) {
-            return NativePageType.BOOKMARKS;
-        } else if (UrlConstants.DOWNLOADS_HOST.equals(host)) {
-            return NativePageType.DOWNLOADS;
-        } else if (UrlConstants.HISTORY_HOST.equals(host)) {
-            return NativePageType.HISTORY;
-        } else if (UrlConstants.RECENT_TABS_HOST.equals(host) && !isIncognito) {
-            return NativePageType.RECENT_TABS;
-        } else if (ExploreSitesPage.isExploreSitesHost(host)) {
-            return NativePageType.EXPLORE;
-        } else {
-            return NativePageType.NONE;
-        }
-    }
-
     /**
      * Returns a NativePage for displaying the given URL if the URL is a valid chrome-native URL,
      * or null otherwise. If candidatePage is non-null and corresponds to the URL, it will be
@@ -189,7 +137,7 @@ public class NativePageFactory {
             String url, NativePage candidatePage, Tab tab, boolean isIncognito) {
         NativePage page;
 
-        switch (nativePageType(url, candidatePage, isIncognito)) {
+        switch (NativePage.nativePageType(url, candidatePage, isIncognito)) {
             case NativePageType.NONE:
                 return null;
             case NativePageType.CANDIDATE:
@@ -223,14 +171,14 @@ public class NativePageFactory {
 
     /**
      * Returns whether the URL would navigate to a native page.
-     *
+     * TODO(crbug.com/1127732): Use NativePage.isNativePageUrl directly.
      * @param url The URL to be checked.
      * @param isIncognito Whether the page will be displayed in incognito mode.
      * @return Whether the host and the scheme of the passed in URL matches one of the supported
      *         native pages.
      */
     public static boolean isNativePageUrl(String url, boolean isIncognito) {
-        return nativePageType(url, null, isIncognito) != NativePageType.NONE;
+        return NativePage.isNativePageUrl(url, isIncognito);
     }
 
     @VisibleForTesting

@@ -77,14 +77,14 @@ public class LocationBarModelTest {
 
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext());
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
             setTab(tab, /*incognito=*/true);
         }
     }
 
     private static class TestRegularLocationBarModel extends LocationBarModel {
         public TestRegularLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext());
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
             setTab(tab, /*incognito=*/false);
         }
     }

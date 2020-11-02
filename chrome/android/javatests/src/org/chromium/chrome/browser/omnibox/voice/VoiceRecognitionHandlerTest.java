@@ -33,7 +33,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -48,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceRe
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -222,8 +222,8 @@ public class VoiceRecognitionHandlerTest {
         }
 
         @Override
-        public NewTabPage getNewTabPageForCurrentTab() {
-            return null;
+        public NewTabPageDelegate getNewTabPageDelegate() {
+            return NewTabPageDelegate.EMPTY;
         }
 
         @Override

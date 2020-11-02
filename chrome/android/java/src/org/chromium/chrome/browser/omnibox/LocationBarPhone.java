@@ -270,7 +270,7 @@ class LocationBarPhone extends LocationBarLayout {
         }
 
         // On non-NTP pages, there will always be an icon when unfocused.
-        if (mLocationBarDataProvider.getNewTabPageForCurrentTab() == null) return 0;
+        if (!mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) return 0;
 
         // This offset is only required when the focus animation is running.
         if (!hasFocus) return 0;

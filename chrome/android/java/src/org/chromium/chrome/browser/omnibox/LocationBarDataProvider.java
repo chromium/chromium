@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /**
@@ -46,9 +46,9 @@ public interface LocationBarDataProvider {
     @NonNull
     String getCurrentUrl();
 
-    /** Returns The NewTabPage shown for the current tab, if one exists. */
+    /** Returns the delegate for the NewTabPage shown for the current tab. */
     @NonNull
-    NewTabPage getNewTabPageForCurrentTab();
+    NewTabPageDelegate getNewTabPageDelegate();
 
     /** Returns whether the currently active page is loading. */
     default boolean isLoading() {

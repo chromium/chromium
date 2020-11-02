@@ -118,7 +118,7 @@ public class LocationBarModelTest {
         private String mUrl;
 
         public TestLocationBarModel() {
-            super(ContextUtils.getApplicationContext());
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
             initializeWithNative();
 
             Tab tab = new MockTab(0, false) {
