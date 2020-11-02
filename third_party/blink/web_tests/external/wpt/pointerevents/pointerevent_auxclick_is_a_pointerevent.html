@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<title>auxclick is a PointerEvent</title>
+<link rel="help" href="https://github.com/w3c/pointerevents/pull/317">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<input id="target" style="margin: 20px">
+
+<script>
+  'use strict';
+  let auxclickTest = async_test("auxclick is a PointerEvent");
+
+  target.addEventListener("auxclick", auxclickTest.step_func_done((e)=>{
+    assert_true(e instanceof PointerEvent, "auxclick should be a PointerEvent");
+  }));
+  let actions = new test_driver.Actions();
+  actions.pointerMove(0,0, {origin:target})
+    .pointerDown({button:actions.ButtonType.MIDDLE})
+    .pointerUp({button:actions.ButtonType.MIDDLE})
+    .send();
+</script>
