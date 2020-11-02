@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prerender/prerender_link_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_link_manager_factory.h"
 
-#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -27,8 +27,8 @@ PrerenderLinkManagerFactory* PrerenderLinkManagerFactory::GetInstance() {
 
 PrerenderLinkManagerFactory::PrerenderLinkManagerFactory()
     : BrowserContextKeyedServiceFactory(
-        "PrerenderLinkmanager",
-        BrowserContextDependencyManager::GetInstance()) {
+          "PrerenderLinkmanager",
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(prerender::PrerenderManagerFactory::GetInstance());
 }
 

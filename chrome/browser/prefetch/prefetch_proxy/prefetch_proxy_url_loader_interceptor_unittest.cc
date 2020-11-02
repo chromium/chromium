@@ -8,9 +8,9 @@
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
-#include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prerender/browser/prerender_handle.h"
 #include "components/prerender/browser/prerender_manager.h"

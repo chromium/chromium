@@ -15,7 +15,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
-#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

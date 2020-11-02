@@ -35,7 +35,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/prerender/prerender_link_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"

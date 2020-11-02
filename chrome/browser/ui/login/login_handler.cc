@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prerender/prerender_tab_helper.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_tab_helper.h"
 
-#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -19,10 +19,9 @@ PrerenderTabHelper::PrerenderTabHelper(content::WebContents* web_contents)
 PrerenderTabHelper::~PrerenderTabHelper() = default;
 
 void PrerenderTabHelper::DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) {
+    content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsErrorPage()) {
+      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return;
   }
 
