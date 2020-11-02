@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 
+#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -630,6 +631,17 @@ void ClearUrlsToCheckForMalwareOfDownloadsForConnectors() {
       MakeListValue({"malware"}));
 }
 
+void SetAnalysisConnector(enterprise_connectors::AnalysisConnector connector,
+                          const std::string& pref_value) {
+  ListPrefUpdate settings_list(g_browser_process->local_state(),
+                               ConnectorPref(connector));
+  DCHECK(settings_list.Get());
+  if (!settings_list->empty())
+    settings_list->Clear();
+
+  settings_list->Append(*base::JSONReader::Read(pref_value));
+}
+
 void SetOnSecurityEventReporting(bool enabled) {
   ListPrefUpdate settings_list(g_browser_process->local_state(),
                                enterprise_connectors::kOnSecurityEventPref);
@@ -645,6 +657,14 @@ void SetOnSecurityEventReporting(bool enabled) {
   } else {
     settings_list->ClearList();
   }
+}
+
+void ClearAnalysisConnector(
+    enterprise_connectors::AnalysisConnector connector) {
+  ListPrefUpdate settings_list(g_browser_process->local_state(),
+                               ConnectorPref(connector));
+  DCHECK(settings_list.Get());
+  settings_list->Clear();
 }
 
 }  // namespace safe_browsing

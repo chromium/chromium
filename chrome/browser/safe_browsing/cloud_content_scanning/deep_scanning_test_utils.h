@@ -170,7 +170,11 @@ void ClearUrlsToCheckComplianceOfUploadsForConnectors();
 void ClearUrlsToCheckForMalwareOfUploadsForConnectors();
 void ClearUrlsToCheckComplianceOfDownloadsForConnectors();
 void ClearUrlsToCheckForMalwareOfDownloadsForConnectors();
+
+void SetAnalysisConnector(enterprise_connectors::AnalysisConnector connector,
+                          const std::string& pref_value);
 void SetOnSecurityEventReporting(bool enabled);
+void ClearAnalysisConnector(enterprise_connectors::AnalysisConnector connector);
 
 }  // namespace safe_browsing
 
