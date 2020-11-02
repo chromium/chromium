@@ -47,44 +47,44 @@
                     android:text="@string/screenshot_edit_title"
                     style="@style/SplitToolbarButton"
                     android:drawableTop="@drawable/edit"
+                    android:drawableTint="@color/default_icon_color_tint_list"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_gravity="end|bottom"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/default_icon_color_tint_list" />
+                    android:background="?attr/selectableItemBackgroundBorderless" />
 
                 <TextView
                     android:id="@+id/delete"
                     android:text="@string/screenshot_delete_title"
                     style="@style/SplitToolbarButton"
                     android:drawableTop="@drawable/delete"
+                    android:drawableTint="@color/default_icon_color_tint_list"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_gravity="center|bottom"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/default_icon_color_tint_list" />
+                    android:background="?attr/selectableItemBackgroundBorderless" />
 
                 <TextView
                     android:id="@+id/save"
                     android:text="@string/screenshot_save_title"
                     style="@style/SplitToolbarButton"
                     android:drawableTop="@drawable/save"
+                    android:drawableTint="@color/default_icon_color_tint_list"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_gravity="center|bottom"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/default_icon_color_tint_list" />
+                    android:background="?attr/selectableItemBackgroundBorderless" />
 
                 <TextView
                     android:id="@+id/share"
                     android:text="@string/screenshot_share_title"
                     style="@style/SplitToolbarButton"
                     android:drawableTop="@drawable/share"
+                    android:drawableTint="@color/default_icon_color_tint_list"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_gravity="start|bottom"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/default_icon_color_tint_list" />
+                    android:background="?attr/selectableItemBackgroundBorderless" />
 
             </LinearLayout>
 
