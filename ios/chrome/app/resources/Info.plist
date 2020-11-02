@@ -93,10 +93,11 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>${CHROMIUM_HANDOFF_ID}</string>
-		<string>OpenInChromeIntent</string>
-		<string>SearchInChromeIntent</string>
-        <string>OpenInChromeIncognitoIntent</string>
 		<string>${IOS_MOVE_TAB_ACTIVITY_TYPE}</string>
+		<string>NSUserActivityTypeBrowsingWeb</string>
+		<string>OpenInChromeIntent</string>
+		<string>OpenInChromeIncognitoIntent</string>
+		<string>SearchInChromeIntent</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
