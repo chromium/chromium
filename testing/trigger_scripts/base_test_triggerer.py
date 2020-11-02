@@ -41,6 +41,8 @@ def _convert_to_go_swarming_args(args):
   i = 0
   while i < len(args):
     current_arg = args[i]
+    if current_arg == '--swarming':
+      current_arg = '--server'
     go_args.append(current_arg)
     i += 1
     if current_arg in map_flags:

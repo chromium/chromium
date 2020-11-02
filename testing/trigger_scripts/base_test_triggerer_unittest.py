@@ -13,15 +13,17 @@ import base_test_triggerer
 class UnitTest(unittest.TestCase):
   def test_convert_to_go_swarming_args(self):
     args = [
-        '--dimension', 'pool', 'ci', '--dimension', 'os', 'linux', '--env',
-        'FOO', 'foo', '--hello', '--cipd-package', 'path:name:123', '--scalar',
-        '42', '--optional-dimension', 'os', 'ubuntu', '60'
+        '--swarming', 'x.apphost.com', '--dimension', 'pool', 'ci',
+        '--dimension', 'os', 'linux', '--env', 'FOO', 'foo', '--hello',
+        '--cipd-package', 'path:name:123', '--scalar', '42',
+        '--optional-dimension', 'os', 'ubuntu', '60'
     ]
     go_args = base_test_triggerer._convert_to_go_swarming_args(args)
     expected = [
-        '--dimension', 'pool=ci', '--dimension', 'os=linux', '--env', 'FOO=foo',
-        '--hello', '--cipd-package', 'path:name=123', '--scalar', '42',
-        '--optional-dimension', 'os=ubuntu:60'
+        '--server', 'x.apphost.com', '--dimension', 'pool=ci', '--dimension',
+        'os=linux', '--env', 'FOO=foo', '--hello', '--cipd-package',
+        'path:name=123', '--scalar', '42', '--optional-dimension',
+        'os=ubuntu:60'
     ]
     self.assertEquals(go_args, expected)
 
