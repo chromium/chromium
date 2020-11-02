@@ -149,6 +149,9 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   if (bubble_)
     return;
 
+  // Attempts a connection to the phone if needed.
+  ui_controller_->MaybeRequestConnection();
+
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();

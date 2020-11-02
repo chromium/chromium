@@ -349,17 +349,23 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
 
+  EXPECT_EQ(0u, GetConnectionScheduler()->num_schedule_connection_now_calls());
+
+  // In error state, clicking the tray button should schedule a connection
+  // attempt.
   ClickTrayButton();
   EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(1u, GetConnectionScheduler()->num_schedule_connection_now_calls());
+
+  // Make sure the testing environment is in disconnected view.
   EXPECT_TRUE(content_view());
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
 
   // Simulates a click on the "Refresh" button.
-  EXPECT_EQ(0u, GetConnectionScheduler()->num_schedule_connection_now_calls());
   ClickOnAndWait(disconnected_refresh_button());
 
   // Clicking "Refresh" button should schedule a connection attempt.
-  EXPECT_EQ(1u, GetConnectionScheduler()->num_schedule_connection_now_calls());
+  EXPECT_EQ(2u, GetConnectionScheduler()->num_schedule_connection_now_calls());
 
   // Clicking "Learn More" button should open the corresponding help center
   // article in a browser tab.

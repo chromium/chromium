@@ -13,6 +13,7 @@
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "base/logging.h"
+#include "chromeos/components/phonehub/connection_scheduler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
@@ -74,6 +75,17 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
       return std::make_unique<PhoneConnectedView>(bubble_view,
                                                   phone_hub_manager_);
   }
+}
+
+void PhoneHubUiController::MaybeRequestConnection() {
+  if (!phone_hub_manager_)
+    return;
+
+  auto feature_status =
+      phone_hub_manager_->GetFeatureStatusProvider()->GetStatus();
+
+  if (feature_status == FeatureStatus::kEnabledButDisconnected)
+    phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
 }
 
 void PhoneHubUiController::AddObserver(Observer* observer) {
