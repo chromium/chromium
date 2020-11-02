@@ -48,11 +48,6 @@ class MockAsyncMethodCaller : public AsyncMethodCaller {
                     const Identification& user_id,
                     const std::string& key_name,
                     DataCallback callback));
-  MOCK_METHOD4(TpmAttestationRegisterKey,
-               void(chromeos::attestation::AttestationKeyType key_type,
-                    const Identification& user_id,
-                    const std::string& key_name,
-                    Callback callback));
   MOCK_METHOD9(TpmAttestationSignEnterpriseChallenge,
                void(chromeos::attestation::AttestationKeyType key_type,
                     const Identification& user_id,

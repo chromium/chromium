@@ -425,14 +425,6 @@ void FakeCryptohomeClient::TpmAttestationGetPublicKey(
       base::BindOnce(std::move(callback), tpm_attestation_public_key_));
 }
 
-void FakeCryptohomeClient::TpmAttestationRegisterKey(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    AsyncMethodCallback callback) {
-  ReturnAsyncMethodResult(std::move(callback));
-}
-
 void FakeCryptohomeClient::TpmAttestationSignEnterpriseChallenge(
     attestation::AttestationKeyType key_type,
     const cryptohome::AccountIdentifier& cryptohome_id,

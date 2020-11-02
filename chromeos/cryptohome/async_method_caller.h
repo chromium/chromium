@@ -78,16 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) AsyncMethodCaller {
       const std::string& key_name,
       DataCallback callback) = 0;
 
-  // Asks cryptohomed to asynchronously register the attestation key specified
-  // by |key_type| and |key_name|.  If |key_type| is KEY_USER, a |user_id| must
-  // be provided.  Otherwise |user_id| is ignored.  For normal GAIA users the
-  // |user_id| is an AccountId-derived string (see AccountId::GetAccountIdKey).
-  virtual void TpmAttestationRegisterKey(
-      chromeos::attestation::AttestationKeyType key_type,
-      const Identification& user_id,
-      const std::string& key_name,
-      Callback callback) = 0;
-
   // Asks cryptohomed to asynchronously sign an enterprise challenge with the
   // key specified by |key_type| and |key_name|.  The |domain| and |device_id|
   // parameters will be included in the challenge response.  |challenge| must be
