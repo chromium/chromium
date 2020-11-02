@@ -11,7 +11,7 @@
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/privacy_budget/sampled_surface_tracker.h"
+#include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -35,36 +35,34 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
   if (!enabled || entry->metrics.empty())
     return false;
 
-  std::vector<blink::IdentifiableSurface> sampled_surfaces;
-  sampled_surfaces.reserve(entry->metrics.size());
+  // Contains newly encountered surfaces in entry->metrics.
+  std::vector<blink::IdentifiableSurface> encountered_surfaces;
+  encountered_surfaces.reserve(entry->metrics.size());
+
   base::EraseIf(entry->metrics, [&](auto metric) {
     const auto surface =
         blink::IdentifiableSurface::FromMetricHash(metric.first);
-    // Exclude the set that are blocked from all measurements.
     if (!blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
       return true;
 
-    // Record the set of surfaces sampled by the site.
-    if (identifiability_study_state_->ShouldRecordSurface(entry->source_id,
-                                                          surface))
-      sampled_surfaces.push_back(surface);
+    if (identifiability_study_state_->ShouldReportEncounteredSurface(
+            entry->source_id, surface)) {
+      encountered_surfaces.push_back(surface);
+    }
 
-    // Exclude the set that are disabled for this user
-    return !identifiability_study_state_->ShouldSampleSurface(surface);
+    return !identifiability_study_state_->ShouldRecordSurface(surface);
   });
 
-  uint64_t sample_idx = 0;
-  for (const auto& v : sampled_surfaces) {
-    // Add entries marking the surfaces that were sampled by the source as
-    // sampled.
+  uint64_t index = 0;
+  for (const auto& v : encountered_surfaces) {
     blink::IdentifiableSurface s = blink::IdentifiableSurface::FromTypeAndToken(
-        blink::IdentifiableSurface::Type::kMeasuredSurface, sample_idx++);
+        blink::IdentifiableSurface::Type::kMeasuredSurface, index++);
     entry->metrics.insert_or_assign(entry->metrics.end(), s.ToUkmMetricHash(),
                                     v.ToUkmMetricHash());
   }
 
   // Identifiability metrics can leak information simply by being measured.
-  // Hence the metrics that are filtered out aren't returning in
+  // Hence the metrics that are filtered out aren't returned in
   // |removed_metric_hashes|.
   return !entry->metrics.empty();
 }

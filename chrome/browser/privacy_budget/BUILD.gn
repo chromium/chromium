@@ -4,10 +4,10 @@
 
 source_set("headers") {
   sources = [
+    "encountered_surface_tracker.h",
     "identifiability_study_state.h",
     "privacy_budget_prefs.h",
     "privacy_budget_ukm_entry_filter.h",
-    "sampled_surface_tracker.h",
   ]
 
   deps = [
@@ -21,10 +21,10 @@ source_set("headers") {
 
 source_set("privacy_budget") {
   sources = [
+    "encountered_surface_tracker.cc",
     "identifiability_study_state.cc",
     "privacy_budget_prefs.cc",
     "privacy_budget_ukm_entry_filter.cc",
-    "sampled_surface_tracker.cc",
   ]
 
   public_deps = [ ":headers" ]
@@ -45,9 +45,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "encountered_surface_tracker_unittest.cc",
     "identifiability_study_state_unittest.cc",
     "privacy_budget_ukm_entry_filter_unittest.cc",
-    "sampled_surface_tracker_unittest.cc",
   ]
 
   deps = [

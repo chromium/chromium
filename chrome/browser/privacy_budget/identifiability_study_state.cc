@@ -77,7 +77,7 @@ int IdentifiabilityStudyState::generation() const {
   return generation_;
 }
 
-bool IdentifiabilityStudyState::ShouldSampleSurface(
+bool IdentifiabilityStudyState::ShouldRecordSurface(
     blink::IdentifiableSurface surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LIKELY(!IsStudyActive()))
@@ -310,14 +310,14 @@ void IdentifiabilityStudyState::ReconcileLoadedPrefs() {
     WriteToPrefs();
 }
 
-bool IdentifiabilityStudyState::ShouldRecordSurface(
+bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
     uint64_t source_id,
     blink::IdentifiableSurface surface) {
   if (!blink::IdentifiabilityStudySettings::Get()->IsTypeAllowed(
           blink::IdentifiableSurface::Type::kMeasuredSurface)) {
     return false;
   }
-  return tracked_surfaces_.ShouldRecord(source_id, surface.ToUkmMetricHash());
+  return tracked_surfaces_.IsNewEncounter(source_id, surface.ToUkmMetricHash());
 }
 
 void IdentifiabilityStudyState::ResetRecordedSurfaces() {

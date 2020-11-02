@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_budget/sampled_surface_tracker.h"
+#include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 
 #include <vector>
 
@@ -28,20 +28,21 @@ uint64_t hash(uint64_t x) {
 
 }  // namespace
 
-const unsigned SampledSurfaceTracker::kMaxTrackedSurfaces;
+const unsigned EncounteredSurfaceTracker::kMaxTrackedSurfaces;
 
-SampledSurfaceTracker::SampledSurfaceTracker() {
+EncounteredSurfaceTracker::EncounteredSurfaceTracker() {
   Reset();
 }
 
-SampledSurfaceTracker::~SampledSurfaceTracker() = default;
+EncounteredSurfaceTracker::~EncounteredSurfaceTracker() = default;
 
-void SampledSurfaceTracker::Reset() {
+void EncounteredSurfaceTracker::Reset() {
   seed_ = base::RandUint64();
   surfaces_.clear();
 }
 
-bool SampledSurfaceTracker::ShouldRecord(uint64_t source_id, uint64_t surface) {
+bool EncounteredSurfaceTracker::IsNewEncounter(uint64_t source_id,
+                                               uint64_t surface) {
   if (blink::IdentifiableSurface::FromMetricHash(surface).GetType() ==
       blink::IdentifiableSurface::Type::kReservedInternal)
     return false;

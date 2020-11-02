@@ -191,9 +191,9 @@ TEST_F(IdentifiabilityStudyStateTest, AllowsActive) {
   auto settings =
       std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(
           pref_service());
-  EXPECT_TRUE(settings->ShouldSampleSurface(kRegularSurface1));
-  EXPECT_TRUE(settings->ShouldSampleSurface(kRegularSurface2));
-  EXPECT_TRUE(settings->ShouldSampleSurface(kRegularSurface3));
+  EXPECT_TRUE(settings->ShouldRecordSurface(kRegularSurface1));
+  EXPECT_TRUE(settings->ShouldRecordSurface(kRegularSurface2));
+  EXPECT_TRUE(settings->ShouldRecordSurface(kRegularSurface3));
   EXPECT_EQ((IdentifiableSurfaceSet{kRegularSurface1, kRegularSurface2,
                                     kRegularSurface3}),
             settings->active_surfaces());
@@ -209,15 +209,15 @@ TEST_F(IdentifiabilityStudyStateTest, BlocksBlocked) {
   auto settings =
       std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(
           pref_service());
-  EXPECT_FALSE(settings->ShouldSampleSurface(kBlockedSurface1));
-  EXPECT_FALSE(settings->ShouldSampleSurface(kBlockedTypeSurface1));
+  EXPECT_FALSE(settings->ShouldRecordSurface(kBlockedSurface1));
+  EXPECT_FALSE(settings->ShouldRecordSurface(kBlockedTypeSurface1));
 }
 
 TEST_F(IdentifiabilityStudyStateTest, UpdatesActive) {
   auto settings =
       std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(
           pref_service());
-  EXPECT_TRUE(settings->ShouldSampleSurface(kRegularSurface1));
+  EXPECT_TRUE(settings->ShouldRecordSurface(kRegularSurface1));
   EXPECT_EQ((IdentifiableSurfaceSet{kRegularSurface1}),
             settings->active_surfaces());
   EXPECT_EQ(SurfaceListString({kRegularSurface1}),
@@ -267,7 +267,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, Disabled) {
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
 
-  EXPECT_FALSE(settings.ShouldSampleSurface(kRegularSurface1));
-  EXPECT_FALSE(settings.ShouldSampleSurface(kRegularSurface2));
-  EXPECT_FALSE(settings.ShouldSampleSurface(kRegularSurface3));
+  EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface1));
+  EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface2));
+  EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface3));
 }

@@ -9,8 +9,8 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
-#include "chrome/browser/privacy_budget/sampled_surface_tracker.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -64,7 +64,7 @@ class IdentifiabilityStudyState {
   // Returns true if metrics collection is enabled for `surface`.
   //
   // Calling this method may alter the state of the study settings.
-  bool ShouldSampleSurface(blink::IdentifiableSurface surface);
+  bool ShouldRecordSurface(blink::IdentifiableSurface surface);
 
   // Should be called from unit-tests if multiple IdentifiabilityStudyState
   // instances are to be constructed.
@@ -72,8 +72,8 @@ class IdentifiabilityStudyState {
 
   // Returns true if tracking metrics should be recorded for this
   // source_id/surface combination.
-  bool ShouldRecordSurface(uint64_t source_id,
-                           blink::IdentifiableSurface surface);
+  bool ShouldReportEncounteredSurface(uint64_t source_id,
+                                      blink::IdentifiableSurface surface);
 
   // Clear the sampled surface state from the state tracker. Ideally this would
   // be called each time a UKM report generated.
@@ -229,7 +229,7 @@ class IdentifiabilityStudyState {
   //
   //   * tracked_surfaces_.GetType() ∩ settings_.blocked_types() = Ø.
   //
-  SampledSurfaceTracker tracked_surfaces_;
+  EncounteredSurfaceTracker tracked_surfaces_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
