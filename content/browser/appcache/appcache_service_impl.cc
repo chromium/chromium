@@ -403,7 +403,7 @@ AppCacheServiceImpl::~AppCacheServiceImpl() {
   pending_helpers_.clear();
   if (quota_client_) {
     GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&AppCacheQuotaClient::NotifyAppCacheDestroyed,
+        FROM_HERE, base::BindOnce(&AppCacheQuotaClient::NotifyServiceDestroyed,
                                   std::move(quota_client_)));
   }
 

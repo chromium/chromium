@@ -310,7 +310,7 @@ void AppCacheStorageImpl::InitTask::RunCompleted() {
   if (storage_->service()->quota_client()) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&AppCacheQuotaClient::NotifyAppCacheReady,
+        base::BindOnce(&AppCacheQuotaClient::NotifyStorageReady,
                        base::RetainedRef(storage_->service()->quota_client())));
   }
 }

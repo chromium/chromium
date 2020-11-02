@@ -57,8 +57,8 @@ class AppCacheQuotaClient : public storage::QuotaClient {
 
  private:
   friend class content::AppCacheQuotaClientTest;
-  friend class AppCacheServiceImpl;  // for NotifyAppCacheIsDestroyed
-  friend class AppCacheStorageImpl;  // for NotifyAppCacheIsReady
+  friend class AppCacheServiceImpl;  // for NotifyServiceDestroyed
+  friend class AppCacheStorageImpl;  // for NotifyStorageReady
 
   ~AppCacheQuotaClient() override;
 
@@ -70,8 +70,15 @@ class AppCacheQuotaClient : public storage::QuotaClient {
   net::CancelableCompletionRepeatingCallback* GetServiceDeleteCallback();
 
   // For use by appcache internals during initialization and shutdown.
-  CONTENT_EXPORT void NotifyAppCacheReady();
-  CONTENT_EXPORT void NotifyAppCacheDestroyed();
+
+  // Called when the AppCacheStorageImpl's storage is fully initialized.
+  //
+  // After this point, calling AppCacheServiceImpl::storage() is guaranteed to
+  // return a non-null value.
+  CONTENT_EXPORT void NotifyStorageReady();
+
+  // Called when the AppCacheServiceImpl passed to the constructor is destroyed.
+  CONTENT_EXPORT void NotifyServiceDestroyed();
 
   // Prior to appcache service being ready, we have to queue
   // up requests and defer acting on them until we're ready.

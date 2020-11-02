@@ -251,7 +251,7 @@ AppCacheQuotaClient::GetServiceDeleteCallback() {
   return service_delete_callback_.get();
 }
 
-void AppCacheQuotaClient::NotifyAppCacheReady() {
+void AppCacheQuotaClient::NotifyStorageReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Can reoccur during reinitialization.
@@ -261,7 +261,7 @@ void AppCacheQuotaClient::NotifyAppCacheReady() {
   }
 }
 
-void AppCacheQuotaClient::NotifyAppCacheDestroyed() {
+void AppCacheQuotaClient::NotifyServiceDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   service_ = nullptr;

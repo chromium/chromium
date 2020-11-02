@@ -126,12 +126,12 @@ class AppCacheQuotaClientTest : public testing::Test {
     return base::MakeRefCounted<AppCacheQuotaClient>(mock_service_.AsWeakPtr());
   }
 
-  void Call_NotifyAppCacheReady(AppCacheQuotaClient& client) {
-    client.NotifyAppCacheReady();
+  void Call_NotifyStorageReady(AppCacheQuotaClient& client) {
+    client.NotifyStorageReady();
   }
 
-  void Call_NotifyAppCacheDestroyed(AppCacheQuotaClient& client) {
-    client.NotifyAppCacheDestroyed();
+  void Call_NotifyServiceDestroyed(AppCacheQuotaClient& client) {
+    client.NotifyServiceDestroyed();
   }
 
   void Call_OnQuotaManagerDestroyed(AppCacheQuotaClient& client) {
@@ -167,14 +167,14 @@ class AppCacheQuotaClientTest : public testing::Test {
 
 TEST_F(AppCacheQuotaClientTest, BasicCreateDestroy) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
   Call_OnQuotaManagerDestroyed(*client);
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, QuotaManagerDestroyedInCallback) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
   client->DeleteOriginData(kOriginA, kTemp,
                            base::BindOnce(
                                [](AppCacheQuotaClientTest* test,
@@ -183,12 +183,12 @@ TEST_F(AppCacheQuotaClientTest, QuotaManagerDestroyedInCallback) {
                                  test->Call_OnQuotaManagerDestroyed(*client);
                                },
                                this, client));
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, EmptyService) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   EXPECT_EQ(0, GetOriginUsage(*client, kOriginA, kTemp));
   EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
@@ -196,14 +196,14 @@ TEST_F(AppCacheQuotaClientTest, EmptyService) {
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             DeleteOriginData(*client, kTemp, kOriginA));
 
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
   Call_OnQuotaManagerDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, NoService) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyStorageReady(*client);
+  Call_NotifyServiceDestroyed(*client);
 
   EXPECT_EQ(0, GetOriginUsage(*client, kOriginA, kTemp));
   EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
@@ -216,19 +216,19 @@ TEST_F(AppCacheQuotaClientTest, NoService) {
 
 TEST_F(AppCacheQuotaClientTest, GetOriginUsage) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   SetUsageMapEntry(kOriginA, 1000);
   EXPECT_EQ(1000, GetOriginUsage(*client, kOriginA, kTemp));
   EXPECT_EQ(0, GetOriginUsage(*client, kOriginB, kTemp));
 
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
   Call_OnQuotaManagerDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, GetOriginsForHost) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   EXPECT_EQ(kOriginA.host(), kOriginB.host());
   EXPECT_NE(kOriginA.host(), kOriginOther.host());
@@ -250,13 +250,13 @@ TEST_F(AppCacheQuotaClientTest, GetOriginsForHost) {
   EXPECT_EQ(1ul, origins.size());
   EXPECT_THAT(origins, testing::Contains(kOriginOther));
 
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
   Call_OnQuotaManagerDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, GetOriginsForType) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
 
@@ -268,13 +268,13 @@ TEST_F(AppCacheQuotaClientTest, GetOriginsForType) {
   EXPECT_THAT(origins, testing::Contains(kOriginA));
   EXPECT_THAT(origins, testing::Contains(kOriginB));
 
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
   Call_OnQuotaManagerDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, DeleteOriginData) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             DeleteOriginData(*client, kTemp, kOriginA));
@@ -287,7 +287,7 @@ TEST_F(AppCacheQuotaClientTest, DeleteOriginData) {
   EXPECT_EQ(2, mock_service_.delete_called_count());
 
   Call_OnQuotaManagerDestroyed(*client);
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, PendingRequests) {
@@ -316,7 +316,7 @@ TEST_F(AppCacheQuotaClientTest, PendingRequests) {
   EXPECT_EQ(0, num_delete_origins_completions_);
 
   // Pending requests should get serviced when the appcache is ready.
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, num_get_origin_usage_completions_);
   EXPECT_EQ(4, num_get_origins_completions_);
@@ -327,7 +327,7 @@ TEST_F(AppCacheQuotaClientTest, PendingRequests) {
   EXPECT_EQ(1ul, origins_.size());
   EXPECT_THAT(origins_, testing::Contains(kOriginOther));
 
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
   Call_OnQuotaManagerDestroyed(*client);
 }
 
@@ -353,7 +353,7 @@ TEST_F(AppCacheQuotaClientTest, DestroyServiceWithPending) {
   EXPECT_EQ(0, num_delete_origins_completions_);
 
   // Kill the service.
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
 
   // All should have been aborted and called completion.
   EXPECT_EQ(2, num_get_origin_usage_completions_);
@@ -389,7 +389,7 @@ TEST_F(AppCacheQuotaClientTest, DestroyQuotaManagerWithPending) {
 
   // Kill the quota manager.
   Call_OnQuotaManagerDestroyed(*client);
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   // Callbacks should be deleted and not called.
   base::RunLoop().RunUntilIdle();
@@ -397,26 +397,26 @@ TEST_F(AppCacheQuotaClientTest, DestroyQuotaManagerWithPending) {
   EXPECT_EQ(0, num_get_origins_completions_);
   EXPECT_EQ(0, num_delete_origins_completions_);
 
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
 }
 
 TEST_F(AppCacheQuotaClientTest, DestroyWithDeleteInProgress) {
   auto client = CreateClient();
-  Call_NotifyAppCacheReady(*client);
+  Call_NotifyStorageReady(*client);
 
   // Start an async delete.
   AsyncDeleteOriginData(*client, kTemp, kOriginB);
   EXPECT_EQ(0, num_delete_origins_completions_);
 
   // Kill the service.
-  Call_NotifyAppCacheDestroyed(*client);
+  Call_NotifyServiceDestroyed(*client);
 
   // Should have been aborted.
   EXPECT_EQ(1, num_delete_origins_completions_);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort, delete_status_);
 
   // A real completion callback from the service should
-  // be dropped if it comes in after NotifyAppCacheDestroyed.
+  // be dropped if it comes in after NotifyServiceDestroyed.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, num_delete_origins_completions_);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort, delete_status_);
