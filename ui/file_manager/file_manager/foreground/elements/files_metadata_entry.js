@@ -85,3 +85,5 @@ const FilesMetadataEntry = Polymer({
     }
   },
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_metadata_entry.js

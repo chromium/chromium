@@ -678,3 +678,5 @@ class PanelItem extends HTMLElement {
 }
 
 window.customElements.define('xf-panel-item', PanelItem);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_panel_item.js

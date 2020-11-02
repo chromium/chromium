@@ -245,3 +245,5 @@ class FilesMessage extends HTMLElement {
 }
 
 customElements.define('files-message', FilesMessage);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_message.js

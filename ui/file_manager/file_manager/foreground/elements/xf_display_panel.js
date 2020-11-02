@@ -466,3 +466,5 @@ class DisplayPanel extends HTMLElement {
 }
 
 window.customElements.define('xf-display-panel', DisplayPanel);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_display_panel.js

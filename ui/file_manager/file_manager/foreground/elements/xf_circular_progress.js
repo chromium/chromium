@@ -245,3 +245,5 @@ class CircularProgress extends HTMLElement {
 }
 
 window.customElements.define('xf-circular-progress', CircularProgress);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_circular_progress.js

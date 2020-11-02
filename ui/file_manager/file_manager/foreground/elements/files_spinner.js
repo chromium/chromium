@@ -82,3 +82,5 @@ class FilesSpinner extends HTMLElement {
 }
 
 customElements.define('files-spinner', FilesSpinner);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_spinner.js

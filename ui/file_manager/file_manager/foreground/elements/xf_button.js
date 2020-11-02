@@ -118,3 +118,5 @@ class PanelButton extends HTMLElement {
 }
 
 window.customElements.define('xf-button', PanelButton);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_button.js

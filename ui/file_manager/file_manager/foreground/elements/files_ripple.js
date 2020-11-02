@@ -7,7 +7,7 @@
  *
  * Circle ripple effect with burst animation.
  */
-var FilesRipple = Polymer({
+const FilesRipple = Polymer({
   is: 'files-ripple',
 
   properties: {
@@ -120,3 +120,5 @@ var FilesRipple = Polymer({
     });
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_ripple.js

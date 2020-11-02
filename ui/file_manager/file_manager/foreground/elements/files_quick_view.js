@@ -292,3 +292,5 @@ const FilesQuickView = Polymer({
     this.fire('close');
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_quick_view.js

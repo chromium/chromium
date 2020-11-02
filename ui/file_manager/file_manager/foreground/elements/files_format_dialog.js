@@ -175,3 +175,5 @@ Polymer({
     this.$.dialog.showModal();
   },
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_format_dialog.js

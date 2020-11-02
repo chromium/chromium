@@ -113,3 +113,5 @@ const FilesSafeMedia = Polymer({
     });
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media.js

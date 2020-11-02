@@ -97,3 +97,5 @@ window.onload = () => {
     content.removeAttribute('hidden');
   }, 500);
 };
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media_webview_content.js

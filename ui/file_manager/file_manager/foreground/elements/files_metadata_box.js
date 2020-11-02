@@ -362,3 +362,5 @@ const FilesMetadataBox = Polymer({
     return result.trimEnd();
   },
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_metadata_box.js

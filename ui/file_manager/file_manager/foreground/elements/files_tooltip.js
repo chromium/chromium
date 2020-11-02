@@ -322,3 +322,5 @@ const FilesTooltip = Polymer({
     this.$.label.className = '';
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js

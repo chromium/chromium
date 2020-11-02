@@ -217,3 +217,5 @@ class FilesPasswordDialog extends HTMLElement {
 FilesPasswordDialog.USER_CANCELLED = new Error('Cancelled by user');
 
 window.customElements.define('files-password-dialog', FilesPasswordDialog);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_password_dialog.js
