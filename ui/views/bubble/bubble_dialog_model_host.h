@@ -14,6 +14,8 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
+// TODO(pbos): Replace GridLayout dependency with either BoxLayout or FlexLayout
+// which permits dynamic adding/removal of rows (DialogModelFields).
 class GridLayout;
 
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
@@ -53,8 +55,35 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void OnFieldAdded(ui::DialogModelField* field) override;
 
  private:
+  // TODO(pbos): Consider externalizing this functionality into a different
+  // format that could feasibly be adopted by LayoutManagers. This is used for
+  // BoxLayouts (but could be others) to agree on columns' preferred width as a
+  // replacement for using GridLayout.
+  class LayoutConsensusView;
+  class LayoutConsensusGroup {
+   public:
+    LayoutConsensusGroup();
+    ~LayoutConsensusGroup();
+
+    void AddView(LayoutConsensusView* view);
+    void RemoveView(LayoutConsensusView* view);
+
+    void InvalidateChildren();
+
+    // Get the union of all preferred sizes within the group.
+    gfx::Size GetMaxPreferredSize() const;
+
+    // Get the union of all minimum sizes within the group.
+    gfx::Size GetMaxMinimumSize() const;
+
+   private:
+    base::flat_set<View*> children_;
+  };
+
   void OnWindowClosing();
 
+  // TODO(pbos): Replace GridLayout with Box/FlexLayout completely. See
+  // kMarginsKey comment in .cc file for removing the final dependency.
   GridLayout* GetGridLayout();
   void ConfigureGridLayout();
 
@@ -79,6 +108,9 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   std::unique_ptr<ui::DialogModel> model_;
   base::flat_map<ui::DialogModelField*, View*> field_to_view_;
   std::vector<PropertyChangedSubscription> property_changed_subscriptions_;
+
+  LayoutConsensusGroup textfield_first_column_group_;
+  LayoutConsensusGroup textfield_second_column_group_;
 };
 
 }  // namespace views

@@ -17,14 +17,15 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 namespace {
-// Note that textfields and comboboxes share column sets.
-constexpr int kTextfieldColumnSetId = 0;
+
 // Column sets used for fields where an individual control spans the entire
 // dialog width.
 constexpr int kSingleColumnSetId = 1;
@@ -73,6 +74,79 @@ std::unique_ptr<View> CreateCheckboxControl(std::unique_ptr<Checkbox> checkbox,
 }
 
 }  // namespace
+
+class BubbleDialogModelHost::LayoutConsensusView : public View {
+ public:
+  LayoutConsensusView(LayoutConsensusGroup* group, std::unique_ptr<View> view)
+      : group_(group) {
+    group->AddView(this);
+    SetLayoutManager(std::make_unique<FillLayout>());
+    AddChildView(std::move(view));
+  }
+
+  ~LayoutConsensusView() override { group_->RemoveView(this); }
+
+  gfx::Size CalculatePreferredSize() const override {
+    const gfx::Size group_preferred_size = group_->GetMaxPreferredSize();
+    DCHECK_EQ(1u, children().size());
+    const gfx::Size child_preferred_size = children()[0]->GetPreferredSize();
+    // TODO(pbos): This uses the max width, but could be configurable to use
+    // either direction.
+    return gfx::Size(group_preferred_size.width(),
+                     child_preferred_size.height());
+  }
+
+  gfx::Size GetMinimumSize() const override {
+    const gfx::Size group_minimum_size = group_->GetMaxMinimumSize();
+    DCHECK_EQ(1u, children().size());
+    const gfx::Size child_minimum_size = children()[0]->GetMinimumSize();
+    // TODO(pbos): This uses the max width, but could be configurable to use
+    // either direction.
+    return gfx::Size(group_minimum_size.width(), child_minimum_size.height());
+  }
+
+ private:
+  LayoutConsensusGroup* const group_;
+};
+
+BubbleDialogModelHost::LayoutConsensusGroup::LayoutConsensusGroup() = default;
+BubbleDialogModelHost::LayoutConsensusGroup::~LayoutConsensusGroup() {
+  DCHECK(children_.empty());
+}
+
+void BubbleDialogModelHost::LayoutConsensusGroup::AddView(
+    LayoutConsensusView* view) {
+  children_.insert(view);
+  // Because this may change the max preferred/min size, invalidate all child
+  // layouts.
+  for (auto* child : children_)
+    child->InvalidateLayout();
+}
+
+void BubbleDialogModelHost::LayoutConsensusGroup::RemoveView(
+    LayoutConsensusView* view) {
+  children_.erase(view);
+}
+
+gfx::Size BubbleDialogModelHost::LayoutConsensusGroup::GetMaxPreferredSize()
+    const {
+  gfx::Size size;
+  for (auto* child : children_) {
+    DCHECK_EQ(1u, child->children().size());
+    size.SetToMax(child->children().front()->GetPreferredSize());
+  }
+  return size;
+}
+
+gfx::Size BubbleDialogModelHost::LayoutConsensusGroup::GetMaxMinimumSize()
+    const {
+  gfx::Size size;
+  for (auto* child : children_) {
+    DCHECK_EQ(1u, child->children().size());
+    size.SetToMax(child->children().front()->GetMinimumSize());
+  }
+  return size;
+}
 
 BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
@@ -269,6 +343,10 @@ void BubbleDialogModelHost::AddInitialFields() {
         padding_margin = 12;
       }
       DCHECK_NE(padding_margin, -1);
+      // TODO(pbos): Replace with kMarginsKey usage as a second pass through the
+      // hierarchy. A View property can be used to tag the View with the
+      // DialogModelField from which the DialogContentType could be derived or
+      // the property could store DialogContentType directly.
       GetGridLayout()->AddPaddingRow(GridLayout::kFixedSize, padding_margin);
     }
 
@@ -329,20 +407,6 @@ GridLayout* BubbleDialogModelHost::GetGridLayout() {
 
 void BubbleDialogModelHost::ConfigureGridLayout() {
   SetLayoutManager(std::make_unique<GridLayout>());
-  LayoutProvider* const provider = LayoutProvider::Get();
-
-  // Set up kTextfieldColumnSetId.
-  ColumnSet* const textfield_column_set =
-      GetGridLayout()->AddColumnSet(kTextfieldColumnSetId);
-  textfield_column_set->AddColumn(GridLayout::LEADING, GridLayout::CENTER,
-                                  GridLayout::kFixedSize,
-                                  GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  textfield_column_set->AddPaddingColumn(
-      GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  textfield_column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
-                                  GridLayout::ColumnSize::kFixed, 0, 0);
-
   // Set up kSingleColumnSetId.
   GetGridLayout()
       ->AddColumnSet(kSingleColumnSetId)
@@ -442,13 +506,20 @@ void BubbleDialogModelHost::AddLabelAndField(const base::string16& label_text,
   constexpr int kFontContext = style::CONTEXT_LABEL;
   constexpr int kFontStyle = style::STYLE_PRIMARY;
 
-  int row_height = LayoutProvider::GetControlHeightForFont(
-      kFontContext, kFontStyle, field_font);
-  GridLayout* const layout = GetGridLayout();
-  layout->StartRow(GridLayout::kFixedSize, kTextfieldColumnSetId, row_height);
-  layout->AddView(
-      std::make_unique<Label>(label_text, kFontContext, kFontStyle));
-  layout->AddView(std::move(field));
+  auto* layout = GetGridLayout();
+  layout->StartRow(1.0, kSingleColumnSetId);
+
+  auto* box_layout = layout->AddView(std::make_unique<BoxLayoutView>());
+  box_layout->SetBetweenChildSpacing(LayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_HORIZONTAL));
+  auto label = std::make_unique<Label>(label_text, kFontContext, kFontStyle);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  box_layout->AddChildView(std::make_unique<LayoutConsensusView>(
+      &textfield_first_column_group_, std::move(label)));
+  box_layout->SetFlexForView(
+      box_layout->AddChildView(std::make_unique<LayoutConsensusView>(
+          &textfield_second_column_group_, std::move(field))),
+      1);
 }
 
 void BubbleDialogModelHost::OnViewCreatedForField(View* view,
