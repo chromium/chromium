@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -46,10 +45,12 @@ AppId InstallTestWebApp(Profile* profile) {
 class WebAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::WebAppProvider::Get(browser()->profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
+
+ private:
+  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 // Test that WebAppUninstallDialog cancels the uninstall if the Window

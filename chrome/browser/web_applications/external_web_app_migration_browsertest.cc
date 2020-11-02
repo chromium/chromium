@@ -92,9 +92,8 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
     SetUpExtensionTestExternalProvider();
 
     InProcessBrowserTest::SetUpOnMainThread();
-    WebAppProvider::Get(browser()->profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandlerOverride(
@@ -217,6 +216,7 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
  private:
   base::Optional<base::AutoReset<bool>> disable_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
+  ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,

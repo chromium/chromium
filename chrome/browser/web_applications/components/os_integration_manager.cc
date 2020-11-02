@@ -4,8 +4,10 @@
 
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
@@ -101,7 +103,7 @@ void OsIntegrationManager::InstallOsHooks(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     InstallOsHooksOptions options) {
   DCHECK(shortcut_manager_);
-  if (suppress_os_hooks_for_testing_ || g_suppress_os_hooks_for_testing_) {
+  if (g_suppress_os_hooks_for_testing_) {
     OsHooksResults os_hooks_results{true};
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_results));
@@ -155,7 +157,7 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             UninstallOsHooksCallback callback) {
   DCHECK(shortcut_manager_);
 
-  if (suppress_os_hooks_for_testing_ || g_suppress_os_hooks_for_testing_) {
+  if (g_suppress_os_hooks_for_testing_) {
     OsHooksResults os_hooks_results{true};
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_results));
@@ -217,7 +219,7 @@ void OsIntegrationManager::UpdateOsHooks(
     const WebApplicationInfo& web_app_info) {
   DCHECK(shortcut_manager_);
 
-  if (suppress_os_hooks_for_testing_ || g_suppress_os_hooks_for_testing_)
+  if (g_suppress_os_hooks_for_testing_)
     return;
 
   // TODO(crbug.com/1079439): Update file handlers.
@@ -291,19 +293,15 @@ FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
   return *file_handler_manager_;
 }
 
-void OsIntegrationManager::GlobalSuppressOsHooksForTesting() {
+ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.
 #if !defined(OS_CHROMEOS)
-  g_suppress_os_hooks_for_testing_ = true;
-#endif
-}
-
-void OsIntegrationManager::SuppressOsHooksForTesting() {
-// Creating OS hooks on ChromeOS doesn't write files to disk, so it's
-// unnecessary to suppress and it provides better crash coverage.
-#if !defined(OS_CHROMEOS)
-  suppress_os_hooks_for_testing_ = true;
+  return std::make_unique<base::AutoReset<bool>>(
+      &g_suppress_os_hooks_for_testing_, true);
+#else
+  return std::make_unique<base::AutoReset<bool>>(
+      &g_suppress_os_hooks_for_testing_, false);
 #endif
 }
 

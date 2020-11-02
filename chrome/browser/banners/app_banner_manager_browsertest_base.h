@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/gurl.h"
 
@@ -45,6 +46,7 @@ class AppBannerManagerBrowserTestBase : public InProcessBrowserTest {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AppBannerManagerBrowserTestBase);
+  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_BROWSERTEST_BASE_H_

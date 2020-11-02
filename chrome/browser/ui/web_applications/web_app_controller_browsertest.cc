@@ -163,7 +163,7 @@ void WebAppControllerBrowserTest::SetUpOnMainThread() {
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
-  provider().os_integration_manager().SuppressOsHooksForTesting();
+  os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 }
 
 }  // namespace web_app

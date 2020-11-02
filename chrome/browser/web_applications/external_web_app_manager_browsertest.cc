@@ -34,9 +34,8 @@ class ExternalWebAppManagerBrowserTest
 
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
-    WebAppProvider::Get(browser()->profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   GURL GetAppUrl() const {
@@ -90,6 +89,9 @@ class ExternalWebAppManagerBrowserTest
   }
 
   ~ExternalWebAppManagerBrowserTest() override = default;
+
+ private:
+  ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,

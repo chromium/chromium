@@ -45,9 +45,10 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
       return result;
     // All of the tests need to have os integration suppressed & the
     // WebAppProvider ready.
+    os_hooks_suppress_ =
+        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::Get(profile);
-      web_app_provider->os_integration_manager().SuppressOsHooksForTesting();
       web_app_provider->install_finalizer()
           .RemoveLegacyInstallFinalizerForTesting();
       base::RunLoop loop;
@@ -166,6 +167,8 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
  private:
+  ScopedOsHooksSuppress os_hooks_suppress_;
+
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsBMOSyncTest);
 };
 

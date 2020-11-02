@@ -106,7 +106,8 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    provider().os_integration_manager().SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 
     // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
     // a stable app_id across tests requires stable origin, whereas
@@ -200,6 +201,7 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTest,

@@ -121,9 +121,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-    web_app::WebAppProvider::Get(browser()->profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 
     pwa_install_view_ =
         BrowserView::GetBrowserViewForBrowser(browser())
@@ -258,6 +257,9 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   banners::TestAppBannerManagerDesktop* app_banner_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PwaInstallViewBrowserTest);
+
+ private:
+  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 // Tests that the plus icon is not shown when an existing app is installed and

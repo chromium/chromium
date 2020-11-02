@@ -30,17 +30,6 @@ class TwoClientWebAppsSyncTest : public SyncTest {
  public:
   TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  bool SetupClients() override {
-    bool result = SyncTest::SetupClients();
-    if (!result)
-      return result;
-    for (Profile* profile : GetAllProfiles()) {
-      auto* web_app_provider = WebAppProvider::Get(profile);
-      web_app_provider->os_integration_manager().SuppressOsHooksForTesting();
-    }
-    return true;
-  }
-
   ~TwoClientWebAppsSyncTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -49,11 +38,8 @@ class TwoClientWebAppsSyncTest : public SyncTest {
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
-    for (Profile* profile : GetAllProfiles()) {
-      WebAppProvider::Get(profile)
-          ->os_integration_manager()
-          .SuppressOsHooksForTesting();
-    }
+    os_hooks_suppress_ =
+        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   AppId InstallApp(const WebApplicationInfo& info, Profile* profile) {
@@ -99,6 +85,8 @@ class TwoClientWebAppsSyncTest : public SyncTest {
   }
 
  private:
+  ScopedOsHooksSuppress os_hooks_suppress_;
+
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsSyncTest);
 };
 

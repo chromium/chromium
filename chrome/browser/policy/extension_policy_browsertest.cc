@@ -190,9 +190,8 @@ class ExtensionPolicyTest : public PolicyTest {
           test_extension_cache_.get());
     }
 
-    web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   extensions::ExtensionCacheFake* extension_cache() {
@@ -372,6 +371,9 @@ class ExtensionPolicyTest : public PolicyTest {
       ignore_content_verifier_;
   extensions::ExtensionUpdater::ScopedSkipScheduledCheckForTest
       skip_scheduled_extension_checks_;
+
+ private:
+  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 }  // namespace

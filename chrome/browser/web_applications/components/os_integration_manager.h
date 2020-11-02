@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_OS_INTEGRATION_MANAGER_H_
 
 #include <bitset>
+#include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -51,6 +53,9 @@ using InstallOsHooksCallback =
 // Callback made after UninstallOsHooks is finished.
 using UninstallOsHooksCallback =
     base::OnceCallback<void(OsHooksResults os_hooks_info)>;
+
+// Used to suppress OS hooks within this object's lifetime.
+using ScopedOsHooksSuppress = std::unique_ptr<base::AutoReset<bool>>;
 
 // OsIntegrationManager is responsible of creating/updating/deleting
 // all OS hooks during Web App lifecycle.
@@ -121,8 +126,7 @@ class OsIntegrationManager {
   // Getter for testing FileHandlerManager
   FileHandlerManager& file_handler_manager_for_testing();
 
-  static void GlobalSuppressOsHooksForTesting();
-  void SuppressOsHooksForTesting();
+  static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 
  protected:
   AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
@@ -162,7 +166,6 @@ class OsIntegrationManager {
   std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;
 
-  bool suppress_os_hooks_for_testing_ = false;
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
 

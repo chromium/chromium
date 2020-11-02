@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/common/web_application_info.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -93,6 +94,8 @@ class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
+
+  ScopedOsHooksSuppress os_hooks_suppress_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAppControllerBrowserTest);
 };

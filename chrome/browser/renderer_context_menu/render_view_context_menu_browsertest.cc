@@ -125,9 +125,8 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    WebAppProviderBase::GetProviderBase(browser()->profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+    os_hooks_suppress_ =
+        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
  protected:
@@ -290,6 +289,9 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
       ASSERT_EQ(expected_size.height(), decoded_bitmap.height());
     }
   }
+
+ private:
+  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {

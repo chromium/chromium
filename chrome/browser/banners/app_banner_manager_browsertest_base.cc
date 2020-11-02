@@ -5,8 +5,6 @@
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
@@ -21,9 +19,8 @@ void AppBannerManagerBrowserTestBase::SetUpOnMainThread() {
 
   InProcessBrowserTest::SetUpOnMainThread();
 
-  web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
-      ->os_integration_manager()
-      .SuppressOsHooksForTesting();
+  os_hooks_suppress_ =
+      web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 }
 
 GURL AppBannerManagerBrowserTestBase::GetBannerURL() {
