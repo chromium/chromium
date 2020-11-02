@@ -63,6 +63,9 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   ConfigureLabel(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
                  kUnifiedFeaturePodSubLabelFontSize);
 
+  sub_label_color_ = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+
   SetEnabled(true /* enabled */);
 
   SetPaintToLayer();
@@ -78,6 +81,13 @@ QuickActionItem::~QuickActionItem() = default;
 
 void QuickActionItem::SetSubLabel(const base::string16& sub_label) {
   sub_label_->SetText(sub_label);
+}
+
+void QuickActionItem::SetSubLabelColor(SkColor color) {
+  if (sub_label_color_ == color)
+    return;
+  sub_label_color_ = color;
+  sub_label_->SetEnabledColor(sub_label_color_);
 }
 
 void QuickActionItem::SetIcon(bool is_on) {
@@ -120,8 +130,7 @@ void QuickActionItem::SetEnabled(bool enabled) {
   } else {
     label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
-    sub_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    sub_label_->SetEnabledColor(sub_label_color_);
   }
 }
 

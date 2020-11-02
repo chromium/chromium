@@ -44,6 +44,9 @@ class ASH_EXPORT QuickActionItem : public views::View,
   // Set the text of sub-label shown below the label.
   void SetSubLabel(const base::string16& sub_label);
 
+  // Set the color of sub-label shown below the label.
+  void SetSubLabelColor(SkColor color);
+
   // Set the icon button to be either |icon_on_| or |icon_off_|.
   void SetIcon(bool is_on);
 
@@ -81,6 +84,9 @@ class ASH_EXPORT QuickActionItem : public views::View,
   const gfx::VectorIcon& icon_off_;
   views::Label* label_ = nullptr;
   views::Label* sub_label_ = nullptr;
+
+  // Enabled color of the sub label.
+  SkColor sub_label_color_;
 };
 
 }  // namespace ash

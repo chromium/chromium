@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,26 +75,34 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
   bool icon_enabled;
   int state_text_id;
   int sub_label_text;
+  SkColor sub_label_color;
   switch (state) {
     case ActionState::kOff:
       icon_enabled = false;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
+      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorSecondary);
       break;
     case ActionState::kConnecting:
       icon_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE;
+      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorSecondary);
       break;
     case ActionState::kConnected:
       icon_enabled = true;
       state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE_TOOLTIP;
       sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE;
+      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPositive);
       break;
   }
 
   item_->SetToggled(icon_enabled);
   item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
+  item_->SetSubLabelColor(sub_label_color);
   base::string16 tooltip_state =
       l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
   item_->SetIconTooltip(
