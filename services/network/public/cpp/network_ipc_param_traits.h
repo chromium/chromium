@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "url/ipc/url_param_traits.h"
 #include "url/origin.h"
@@ -95,9 +96,13 @@ IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::CorsPreflightPolicy,
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::BlockedByResponseReason,
                           network::mojom::BlockedByResponseReason::kMaxValue)
 
+IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::IPAddressSpace,
+                          network::mojom::IPAddressSpace::kMaxValue)
+
 IPC_STRUCT_TRAITS_BEGIN(network::CorsErrorStatus)
   IPC_STRUCT_TRAITS_MEMBER(cors_error)
   IPC_STRUCT_TRAITS_MEMBER(failed_parameter)
+  IPC_STRUCT_TRAITS_MEMBER(resource_address_space)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(network::URLLoaderCompletionStatus)

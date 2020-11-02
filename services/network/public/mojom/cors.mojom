@@ -95,4 +95,8 @@ enum CorsError {
 
   // Cross origin redirect location contains credentials such as 'user:pass'.
   kRedirectContainsCredentials,
+
+  // Request client is not secure and less private than the request target.
+  // See: https://wicg.github.io/cors-rfc1918.
+  kInsecurePrivateNetwork,
 };

@@ -978,15 +978,13 @@ void URLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-int URLLoader::CanConnectToRemoteEndpoint(
-    const net::TransportInfo& info) const {
-  const mojom::IPAddressSpace remote_address_space =
-      IPAddressToIPAddressSpace(info.endpoint.address());
+bool URLLoader::CanConnectToAddressSpace(
+    mojom::IPAddressSpace resource_address_space) const {
   if (options_ & mojom::kURLLoadOptionBlockLocalRequest &&
-      IsLessPublicAddressSpace(remote_address_space,
+      IsLessPublicAddressSpace(resource_address_space,
                                network::mojom::IPAddressSpace::kPublic)) {
     DVLOG(1) << "CORS-RFC1918 check: failed due to loader options.";
-    return net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST;
+    return false;
   }
 
   // Depending on the type of URL request, we source the client security state
@@ -1009,7 +1007,7 @@ int URLLoader::CanConnectToRemoteEndpoint(
 
   if (!security_state) {
     DVLOG(1) << "CORS-RFC1918 check: skipped, missing client security state.";
-    return net::OK;
+    return true;
   }
 
   DVLOG(1) << "CORS-RFC1918 check: running against client security state = { "
@@ -1029,16 +1027,16 @@ int URLLoader::CanConnectToRemoteEndpoint(
       // insecure public websites from making requests to someone's printer, for
       // example.
       if (!security_state->is_web_secure_context &&
-          IsLessPublicAddressSpace(remote_address_space,
+          IsLessPublicAddressSpace(resource_address_space,
                                    security_state->ip_address_space)) {
         DVLOG(1) << "CORS-RFC1918 check: "
                     "failed, blocking insecure private network request.";
-        return net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST;
+        return false;
       }
   }
 
   DVLOG(1) << "CORS-RFC1918 check: success.";
-  return net::OK;
+  return true;
 }
 
 int URLLoader::OnConnected(net::URLRequest* url_request,
@@ -1050,7 +1048,17 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
 
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked by CORS-RFC1918 rules.
-  return CanConnectToRemoteEndpoint(info);
+  mojom::IPAddressSpace resource_address_space =
+      IPAddressToIPAddressSpace(info.endpoint.address());
+  if (!CanConnectToAddressSpace(resource_address_space)) {
+    // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
+    // with it later, then fail the request with the same net error code as
+    // other CORS errors.
+    cors_error_status_ = CorsErrorStatus(resource_address_space);
+    return net::ERR_FAILED;
+  }
+
+  return net::OK;
 }
 
 void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
@@ -1747,6 +1755,7 @@ void URLLoader::NotifyCompleted(int error_code) {
         url_request_->response_info().resolve_error_info;
     if (trust_token_status_)
       status.trust_token_operation_status = *trust_token_status_;
+    status.cors_error_status = cors_error_status_;
 
     if ((options_ & mojom::kURLLoadOptionSendSSLInfoForCertificateError) &&
         net::IsCertStatusError(url_request_->ssl_info().cert_status)) {

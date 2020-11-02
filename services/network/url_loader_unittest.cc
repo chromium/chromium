@@ -1035,7 +1035,9 @@ TEST_F(URLLoaderTest, InsecureRequestToLocalResource) {
   set_factory_client_security_state(std::move(client_security_state));
 
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST));
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, InsecurePublicToLocalIsBlocked) {
@@ -1045,7 +1047,9 @@ TEST_F(URLLoaderTest, InsecurePublicToLocalIsBlocked) {
   set_factory_client_security_state(std::move(client_security_state));
 
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST));
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, InsecurePrivateToLocalIsBlocked) {
@@ -1055,7 +1059,9 @@ TEST_F(URLLoaderTest, InsecurePrivateToLocalIsBlocked) {
   set_factory_client_security_state(std::move(client_security_state));
 
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST));
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, InsecureLocalToLocalIsOk) {
@@ -1078,7 +1084,9 @@ TEST_F(URLLoaderTest, TrustedParamsInsecurePublicToLocalIsBlocked) {
   set_request_client_security_state(std::move(client_security_state));
 
   EXPECT_THAT(Load(test_server()->GetURL("/empty.html")),
-              IsError(net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST));
+              IsError(net::ERR_FAILED));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(mojom::IPAddressSpace::kLocal)));
 }
 
 // Bundles together the inputs to a parameterized private network request test.
@@ -1150,6 +1158,10 @@ TEST_P(URLLoaderFakeTransportInfoTest, PrivateNetworkRequestLoadsCorrectly) {
 
   // Despite its name, IsError(OK) asserts that the matched value is OK.
   EXPECT_THAT(Load(url), IsError(params.expected_result));
+  if (params.expected_result != net::OK) {
+    EXPECT_THAT(client()->completion_status().cors_error_status,
+                Optional(CorsErrorStatus(params.endpoint_address_space)));
+  }
 }
 
 // Lists all combinations we want to test in URLLoaderFakeTransportInfoTest.
@@ -1169,12 +1181,12 @@ constexpr URLLoaderFakeTransportInfoTestParams
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kPrivate,
-            net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST,
+            net::ERR_FAILED,
         },
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kLocal,
-            net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST,
+            net::ERR_FAILED,
         },
         // Client: kPublic
         {
@@ -1190,12 +1202,12 @@ constexpr URLLoaderFakeTransportInfoTestParams
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kPrivate,
-            net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST,
+            net::ERR_FAILED,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kLocal,
-            net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST,
+            net::ERR_FAILED,
         },
         // Client: kPrivate
         {
@@ -1216,7 +1228,7 @@ constexpr URLLoaderFakeTransportInfoTestParams
         {
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kLocal,
-            net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST,
+            net::ERR_FAILED,
         },
         // Client: kLocal
         {

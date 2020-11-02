@@ -63,14 +63,19 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/cors.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
+using testing::Optional;
+using testing::SizeIs;
 
 namespace predictors {
 
@@ -2231,9 +2236,13 @@ IN_PROC_BROWSER_TEST_P(
   // The prefetch should have failed.
   prefetch_manager_observer()->WaitForPrefetchesForNavigation(url);
   auto results = prefetch_manager_observer()->results();
-  ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].status.error_code,
-            net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST);
+  ASSERT_THAT(results, SizeIs(1));
+
+  const auto& status = results[0].status;
+  EXPECT_EQ(status.error_code, net::ERR_FAILED);
+  EXPECT_THAT(status.cors_error_status,
+              Optional(network::CorsErrorStatus(
+                  network::mojom::IPAddressSpace::kLocal)));
 }
 
 // This fixture is for disabling prefetching via test suite instantiation to

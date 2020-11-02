@@ -4,30 +4,45 @@
 
 #include "services/network/public/cpp/cors/cors_error_status.h"
 
+#include <ostream>
+
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 
 namespace network {
 
-// Note: |cors_error| is initialized to kLast to keep the value inside the
-// valid enum value range. The value is meaningless and should be overriden
-// immediately by IPC desrtialization code.
-CorsErrorStatus::CorsErrorStatus()
-    : CorsErrorStatus(mojom::CorsError::kMaxValue) {}
+CorsErrorStatus::CorsErrorStatus() = default;
 
-CorsErrorStatus::CorsErrorStatus(const CorsErrorStatus& status) = default;
+CorsErrorStatus::CorsErrorStatus(const CorsErrorStatus&) = default;
+CorsErrorStatus& CorsErrorStatus::operator=(const CorsErrorStatus&) = default;
+CorsErrorStatus::CorsErrorStatus(CorsErrorStatus&&) = default;
+CorsErrorStatus& CorsErrorStatus::operator=(CorsErrorStatus&&) = default;
 
-CorsErrorStatus::CorsErrorStatus(mojom::CorsError error) : cors_error(error) {}
+CorsErrorStatus::CorsErrorStatus(mojom::CorsError cors_error)
+    : cors_error(cors_error) {}
 
-CorsErrorStatus::CorsErrorStatus(mojom::CorsError error,
+CorsErrorStatus::CorsErrorStatus(mojom::CorsError cors_error,
                                  const std::string& failed_parameter)
-    : cors_error(error), failed_parameter(failed_parameter) {}
+    : cors_error(cors_error), failed_parameter(failed_parameter) {}
+
+CorsErrorStatus::CorsErrorStatus(mojom::IPAddressSpace resource_address_space)
+    : cors_error(mojom::CorsError::kInsecurePrivateNetwork),
+      resource_address_space(resource_address_space) {}
 
 CorsErrorStatus::~CorsErrorStatus() = default;
 
 bool CorsErrorStatus::operator==(const CorsErrorStatus& rhs) const {
   return cors_error == rhs.cors_error &&
-         failed_parameter == rhs.failed_parameter;
+         failed_parameter == rhs.failed_parameter &&
+         resource_address_space == rhs.resource_address_space;
+}
+
+std::ostream& operator<<(std::ostream& os, const CorsErrorStatus& status) {
+  return os << "CorsErrorStatus{ cors_error = " << status.cors_error
+            << ", failed_parameter = " << status.failed_parameter
+            << ", resource_address_space = " << status.resource_address_space
+            << " }";
 }
 
 }  // namespace network

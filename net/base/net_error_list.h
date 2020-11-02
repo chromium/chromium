@@ -127,11 +127,6 @@ NET_ERROR(BLOCKED_BY_CSP, -30)
 // The request was blocked because of no H/2 or QUIC session.
 NET_ERROR(H2_OR_QUIC_REQUIRED, -31)
 
-// The request was blocked because it is a private network request coming from
-// an insecure context in a less private IP address space. This is used to
-// enforce CORS-RFC1918: https://wicg.github.io/cors-rfc1918.
-NET_ERROR(INSECURE_PRIVATE_NETWORK_REQUEST, -32)
-
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
 

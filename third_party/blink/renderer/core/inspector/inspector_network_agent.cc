@@ -475,6 +475,9 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
 
     case network::mojom::CorsError::kRedirectContainsCredentials:
       return protocol::Network::CorsErrorEnum::RedirectContainsCredentials;
+
+    case network::mojom::CorsError::kInsecurePrivateNetwork:
+      return protocol::Network::CorsErrorEnum::InsecurePrivateNetwork;
   }
 }
 

@@ -13105,6 +13105,7 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="kMethodDisallowedByPreflightResponse"/>
   <int value="22" label="kHeaderDisallowedByPreflightResponse"/>
   <int value="23" label="kRedirectContainsCredentials"/>
+  <int value="24" label="kInsecurePrivateNetwork"/>
 </enum>
 
 <enum name="CorsAccessCheckResult">

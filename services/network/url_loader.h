@@ -29,11 +29,13 @@
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -345,15 +347,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void StartReading();
   void OnOriginPolicyManagerRetrieveDone(const OriginPolicy& origin_policy);
 
-  // Checks if the request initiator should be allowed to make requests to the
-  // remote endpoint, as described in |info|.
-  //
-  // Returns a net error code.
+  // Returns whether the request initiator should be allowed to make requests to
+  // an endpoint in |resource_address_space|.
   //
   // See the CORS-RFC1918 spec: https://wicg.github.io/cors-rfc1918.
   //
   // Helper for OnConnected().
-  int CanConnectToRemoteEndpoint(const net::TransportInfo& info) const;
+  bool CanConnectToAddressSpace(
+      mojom::IPAddressSpace resource_address_space) const;
 
   net::URLRequestContext* url_request_context_;
   mojom::NetworkServiceClient* network_service_client_;
@@ -397,6 +398,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // True if there's a URLRequest::Read() call in progress.
   bool read_in_progress_ = false;
+
+  // Stores any CORS error encountered while processing |url_request_|.
+  base::Optional<CorsErrorStatus> cors_error_status_;
 
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.

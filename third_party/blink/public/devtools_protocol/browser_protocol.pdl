@@ -4523,6 +4523,7 @@ domain Network
       MethodDisallowedByPreflightResponse
       HeaderDisallowedByPreflightResponse
       RedirectContainsCredentials
+      InsecurePrivateNetwork
 
   type CorsErrorStatus extends object
     properties
