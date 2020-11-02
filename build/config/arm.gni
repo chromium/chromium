@@ -4,6 +4,13 @@
 
 import("//build/config/v8_target_cpu.gni")
 
+declare_args() {
+  # The ARM floating point mode. This is either the string "hard", "soft", or
+  # "softfp". An empty string means to use the default one for the
+  # arm_version.
+  arm_float_abi = ""
+}
+
 # These are primarily relevant in current_cpu == "arm" contexts, where
 # ARM code is being compiled.  But they can also be relevant in the
 # other contexts when the code will change its behavior based on the
@@ -21,11 +28,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # The ARM floating point hardware. This will be a string like "neon" or
     # "vfpv3". An empty string means to use the default for the arm_version.
     arm_fpu = ""
-
-    # The ARM floating point mode. This is either the string "hard", "soft", or
-    # "softfp". An empty string means to use the default one for the
-    # arm_version.
-    arm_float_abi = ""
 
     # The ARM variant-specific tuning mode. This will be a string like "armv6"
     # or "cortex-a15". An empty string means to use the default for the
