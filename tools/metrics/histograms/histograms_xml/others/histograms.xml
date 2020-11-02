@@ -10552,10 +10552,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.CacheControlNoTransform.BlockedPreview"
-    enum="PreviewsType" expires_after="2020-12-12">
-  <owner>dougarnett@chromium.org</owner>
+    enum="PreviewsType" expires_after="2021-03-31">
+  <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
-  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <owner>src/components/previews/OWNERS</owner>
   <summary>
     Blocked previews due to Cache-Control:no-transform directive.
   </summary>
@@ -10696,9 +10696,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Previews.Triggered.EffectiveConnectionType2"
     enum="NQEEffectiveConnectionType" expires_after="2020-12-12">
+  <obsolete>
+    Obsolete as of 11/2020.
+  </obsolete>
   <owner>dougarnett@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
-  <owner>src/components/data_reduction_proxy/OWNERS</owner>
+  <owner>src/components/previews/OWNERS</owner>
   <summary>
     Records the effective connection type of a navigation that triggers a
     preview. This is captured at commit time but uses the effective connection

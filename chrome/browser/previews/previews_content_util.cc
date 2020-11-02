@@ -116,18 +116,6 @@ blink::PreviewsState DetermineAllowedClientPreviewsState(
   return previews_state;
 }
 
-void LogCommittedPreview(previews::PreviewsUserData* previews_data,
-                         PreviewsType type) {
-  net::EffectiveConnectionType navigation_ect = previews_data->navigation_ect();
-  UMA_HISTOGRAM_ENUMERATION("Previews.Triggered.EffectiveConnectionType2",
-                            navigation_ect,
-                            net::EFFECTIVE_CONNECTION_TYPE_LAST);
-  base::UmaHistogramEnumeration(
-      base::StringPrintf("Previews.Triggered.EffectiveConnectionType2.%s",
-                         GetStringNameForType(type).c_str()),
-      navigation_ect, net::EFFECTIVE_CONNECTION_TYPE_LAST);
-}
-
 // Records the result of the coin flip in PreviewsUserData and UKM. This may be
 // called multiple times during a navigation (like on redirects), but once
 // called with one |result|, that value is not expected to change.
@@ -259,7 +247,6 @@ blink::PreviewsState DetermineCommittedClientPreviewsState(
     if (previews_decider && previews_decider->ShouldCommitPreview(
                                 previews_data, navigation_handle,
                                 previews::PreviewsType::DEFER_ALL_SCRIPT)) {
-      LogCommittedPreview(previews_data, PreviewsType::DEFER_ALL_SCRIPT);
       return blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON;
     }
     // Remove DEFER_ALL_SCRIPT_ON from |previews_state| since we decided not to
@@ -275,7 +262,6 @@ blink::PreviewsState DetermineCommittedClientPreviewsState(
         previews_decider->ShouldCommitPreview(
             previews_data, navigation_handle,
             previews::PreviewsType::RESOURCE_LOADING_HINTS)) {
-      LogCommittedPreview(previews_data, PreviewsType::RESOURCE_LOADING_HINTS);
       return blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON;
     }
     // Remove RESOURCE_LOADING_HINTS_ON from |previews_state| since we decided
@@ -290,7 +276,6 @@ blink::PreviewsState DetermineCommittedClientPreviewsState(
     if (previews_decider && previews_decider->ShouldCommitPreview(
                                 previews_data, navigation_handle,
                                 previews::PreviewsType::NOSCRIPT)) {
-      LogCommittedPreview(previews_data, PreviewsType::NOSCRIPT);
       return blink::PreviewsTypes::NOSCRIPT_ON;
     }
     // Remove NOSCRIPT_ON from |previews_state| since we decided not to

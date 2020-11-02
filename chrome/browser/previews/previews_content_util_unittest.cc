@@ -255,7 +255,6 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
       std::string());
   PreviewsUserData user_data(1);
   user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-  base::HistogramTester histogram_tester;
 
   // DeferAllScript has precedence over NoScript and ResourceLoadingHints.
   EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
@@ -265,11 +264,6 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
                     blink::PreviewsTypes::NOSCRIPT_ON |
                     blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
                 enabled_previews_decider(), nullptr));
-  histogram_tester.ExpectBucketCount(
-      "Previews.Triggered.EffectiveConnectionType2.DeferAllScript",
-      static_cast<int>(net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G), 1);
-  histogram_tester.ExpectTotalCount(
-      "Previews.Triggered.EffectiveConnectionType2", 1);
 
   // RESOURCE_LOADING_HINTS has precedence over NoScript.
   EXPECT_EQ(blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
@@ -278,11 +272,6 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
                 blink::PreviewsTypes::NOSCRIPT_ON |
                     blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
                 enabled_previews_decider(), nullptr));
-  histogram_tester.ExpectBucketCount(
-      "Previews.Triggered.EffectiveConnectionType2.ResourceLoadingHints",
-      static_cast<int>(net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G), 1);
-  histogram_tester.ExpectTotalCount(
-      "Previews.Triggered.EffectiveConnectionType2", 2);
 
   // Only NoScript:
   EXPECT_EQ(blink::PreviewsTypes::NOSCRIPT_ON,
@@ -299,7 +288,6 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsStateForHttp) {
       std::string());
   PreviewsUserData user_data(1);
   user_data.set_navigation_ect(net::EFFECTIVE_CONNECTION_TYPE_2G);
-  base::HistogramTester histogram_tester;
 
   // Verify that these previews do now commit on HTTP.
   EXPECT_EQ(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
@@ -309,8 +297,6 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsStateForHttp) {
                     blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON |
                     blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,
                 enabled_previews_decider(), nullptr));
-  histogram_tester.ExpectTotalCount(
-      "Previews.Triggered.EffectiveConnectionType2", 1);
 
   EXPECT_EQ(blink::PreviewsTypes::RESOURCE_LOADING_HINTS_ON,
             previews::DetermineCommittedClientPreviewsState(
