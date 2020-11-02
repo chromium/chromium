@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
-import org.chromium.chrome.modules.image_editor.ImageEditorProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.module_installer.engine.InstallListener;
@@ -90,14 +89,6 @@ public class ScreenshotCoordinatorTest {
     @Mock
     private Tab mTab;
 
-    // FakeImageEditorProviderImpl returns a mock, so we may stub out launchEditor().
-    private class FakeImageEditorProviderImpl implements ImageEditorProvider {
-        @Override
-        public ImageEditorDialogCoordinator getImageEditorDialogCoordinator() {
-            return mImageEditorDialogCoordinatorMock;
-        }
-    }
-
     // Bitmap used for successful screenshot capture requests.
     private Bitmap mBitmap;
 
@@ -110,20 +101,19 @@ public class ScreenshotCoordinatorTest {
 
         when(mActivity.getSupportFragmentManager()).thenReturn(mFragmentManagerMock);
 
-        when(mImageEditorModuleProviderMock.getImageEditorProvider())
-                .thenReturn(new FakeImageEditorProviderImpl());
+        when(mImageEditorModuleProviderMock.getImageEditorDialogCoordinator())
+                .thenReturn(mImageEditorDialogCoordinatorMock);
         doNothing()
                 .when(mImageEditorDialogCoordinatorMock)
                 .launchEditor(mActivity, mBitmap, mTab, mChromeOptionShareCallback);
 
         mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
 
-        ImageEditorModuleProvider.setInstanceForTesting(mImageEditorModuleProviderMock);
-
         // Instantiate the object under test.
-        mScreenshotCoordinator = new ScreenshotCoordinator(mActivity, mTab,
-                new FakeEditorScreenshotTask(), mScreenshotShareSheetDialogMock,
-                mChromeOptionShareCallback, mBottomSheetControllerMock);
+        mScreenshotCoordinator =
+                new ScreenshotCoordinator(mActivity, mTab, new FakeEditorScreenshotTask(),
+                        mScreenshotShareSheetDialogMock, mChromeOptionShareCallback,
+                        mBottomSheetControllerMock, mImageEditorModuleProviderMock);
     }
 
     @Test

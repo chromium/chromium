@@ -15,6 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -311,7 +312,8 @@ public class ShareDelegateImpl implements ShareDelegate {
                         new ShareSheetPropertyModelBuilder(controller,
                                 ContextUtils.getApplicationContext().getPackageManager()),
                         printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                        new SettingsLauncherImpl(), isSyncEnabled);
+                        new SettingsLauncherImpl(), isSyncEnabled,
+                        AppHooks.get().getImageEditorModuleProvider());
                 // TODO(crbug/1009124): open custom share sheet.
                 coordinator.showShareSheet(params, chromeShareExtras, shareStartTime);
             } else {

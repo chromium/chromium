@@ -167,7 +167,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.addtohomescreen.AddToHomescreenCoordinator;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -1385,8 +1384,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             VrModuleProvider.getDelegate().onNewIntentWithNative(this, getIntent());
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)) {
-            ImageEditorModuleProvider.get().maybeInstallModuleDeferred();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)
+                && AppHooks.get().getImageEditorModuleProvider() != null) {
+            AppHooks.get().getImageEditorModuleProvider().maybeInstallModuleDeferred();
         }
 
         super.finishNativeInitialization();

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -63,6 +64,7 @@ class ChromeProvidedSharingOptionsProvider {
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private ScreenshotCoordinator mScreenshotCoordinator;
     private final String mUrl;
+    private final ImageEditorModuleProvider mImageEditorModuleProvider;
 
     /**
      * Constructs a new {@link ChromeProvidedSharingOptionsProvider}.
@@ -78,13 +80,15 @@ class ChromeProvidedSharingOptionsProvider {
      * @param shareStartTime The start time of the current share.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
      * Chrome-provided sharing options.
+     * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      */
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
             ChromeShareExtras chromeShareExtras, Callback<Tab> printTab,
             SettingsLauncher settingsLauncher, boolean isSyncEnabled, long shareStartTime,
-            ChromeOptionShareCallback chromeOptionShareCallback) {
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            ImageEditorModuleProvider imageEditorModuleProvider) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -94,6 +98,7 @@ class ChromeProvidedSharingOptionsProvider {
         mSettingsLauncher = settingsLauncher;
         mIsSyncEnabled = isSyncEnabled;
         mShareStartTime = shareStartTime;
+        mImageEditorModuleProvider = imageEditorModuleProvider;
         mOrderedFirstPartyOptions = new ArrayList<>();
         initializeFirstPartyOptionsInOrder();
         mChromeOptionShareCallback = chromeOptionShareCallback;
@@ -254,7 +259,8 @@ class ChromeProvidedSharingOptionsProvider {
                     RecordUserAction.record("SharingHubAndroid.ScreenshotSelected");
                     recordTimeToShare(mShareStartTime);
                     mScreenshotCoordinator = new ScreenshotCoordinator(mActivity,
-                            mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController);
+                            mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController,
+                            mImageEditorModuleProvider);
                     // Capture a screenshot once the bottom sheet is fully hidden. The
                     // observer will then remove itself.
                     mBottomSheetController.addObserver(mSheetObserver);

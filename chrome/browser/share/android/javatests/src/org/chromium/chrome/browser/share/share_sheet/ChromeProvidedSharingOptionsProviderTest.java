@@ -378,7 +378,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /*TabPrinterDelegate=*/null,
                         /*settingsLauncher=*/null,
                         /*syncState=*/false,
-                        /*shareStartTime=*/0, mShareSheetCoordinator);
+                        /*shareStartTime=*/0, mShareSheetCoordinator,
+                        /*imageEditorModuleProvider*/ null);
     }
 
     private void assertCorrectModelsAreInTheRightOrder(

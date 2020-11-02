@@ -12,7 +12,6 @@ import(
     "//chrome/android/modules/cablev2_authenticator/cablev2_authenticator_module.gni")
 import("//chrome/android/modules/chime/chime_module.gni")
 import("//chrome/android/modules/extra_icu/extra_icu_module.gni")
-import("//chrome/android/modules/image_editor/image_editor_module.gni")
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -60,9 +59,6 @@ if (dfmify_dev_ui) {
 }
 if (use_chime_android_sdk) {
   chrome_modern_module_descs += [ chime_module_desc ]
-}
-if (enable_image_editor) {
-  chrome_modern_module_descs += [ image_editor_module_desc ]
 }
 
 # Modules shipped in Monochrome (Android N+).

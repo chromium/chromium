@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -50,6 +51,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final Callback<Tab> mPrintTabCallback;
     private final SettingsLauncher mSettingsLauncher;
     private final boolean mIsSyncEnabled;
+    private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
@@ -71,12 +73,14 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * changes.
      * @param tabProvider Supplier for the current activity tab.
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
+     * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
-            LargeIconBridge iconBridge, SettingsLauncher settingsLauncher, boolean isSyncEnabled) {
+            LargeIconBridge iconBridge, SettingsLauncher settingsLauncher, boolean isSyncEnabled,
+            ImageEditorModuleProvider imageEditorModuleProvider) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -85,6 +89,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mPrintTabCallback = printTab;
         mSettingsLauncher = settingsLauncher;
         mIsSyncEnabled = isSyncEnabled;
+        mImageEditorModuleProvider = imageEditorModuleProvider;
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetContentChanged(BottomSheetContent bottomSheet) {
@@ -168,7 +173,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
                 mTabProvider, mBottomSheetController, mBottomSheet, shareParams, chromeShareExtras,
-                mPrintTabCallback, mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this);
+                mPrintTabCallback, mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this,
+                mImageEditorModuleProvider);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(

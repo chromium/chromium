@@ -8,7 +8,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/modules/image_editor/ImageEditorModuleProvider.java" ]
 
   deps = [
-    "//chrome/android/modules/image_editor/public:java",
+    "//chrome/browser/image_editor/public:java",
     "//components/module_installer/android:module_installer_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
