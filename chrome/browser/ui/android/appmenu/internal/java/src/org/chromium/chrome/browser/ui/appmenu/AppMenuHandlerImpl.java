@@ -358,4 +358,16 @@ class AppMenuHandlerImpl
     AppMenuPropertiesDelegate getDelegateForTests() {
         return mDelegate;
     }
+
+    /**
+     * Record the user selections if users make selected similar MenuItems.
+     *
+     * @param previousMenuItemId The previous selected MenuItem Id.
+     * @param currentMenuItemId The current selected MenuItem Id.
+     * @return Whether the selections is recorded.
+     */
+    boolean recordAppMenuSimilarSelectionIfNeeded(int previousMenuItemId, int currentMenuItemId) {
+        return mDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                previousMenuItemId, currentMenuItemId);
+    }
 }

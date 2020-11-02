@@ -3106,6 +3106,17 @@ Unknown properties are collapsed to zero. -->
   <int value="18" label="Printing turned off"/>
 </enum>
 
+<enum name="AppMenuSimilarSelectionType">
+  <int value="0"
+      label="selected adding to bookmarks, and then selected all bookmarks"/>
+  <int value="1"
+      label="selected all bookmarks, and then selected adding to bookmarks"/>
+  <int value="2"
+      label="selected downloading the page, and then selected all downloads"/>
+  <int value="3"
+      label="selected all downloads, and then selected downloading the page"/>
+</enum>
+
 <enum name="AppPromoAction">
   <int value="0" label="PROMO_LAUNCH_APP"/>
   <int value="1" label="PROMO_LAUNCH_WEB_STORE"/>

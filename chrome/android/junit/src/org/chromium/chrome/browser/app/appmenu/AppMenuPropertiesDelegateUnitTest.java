@@ -37,6 +37,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.AppMenuSimilarSelectionType;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
@@ -692,6 +693,110 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
         Assert.assertEquals("Stop image descriptions",
                 menu.findItem(R.id.get_image_descriptions_id).getTitle());
+    }
+
+    @Test
+    public void testMenuItems_AppMenuSimilarSelectionChecker() {
+        Assert.assertEquals("No match for bookmark page then all bookmarks",
+                AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.bookmark_this_page_id, R.id.all_bookmarks_menu_id));
+        Assert.assertEquals("No match for bookmark page then all bookmarks",
+                AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.bookmark_this_page_chip_id, R.id.all_bookmarks_menu_id));
+        Assert.assertEquals("No match for bookmark page then all bookmarks",
+                AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.add_to_bookmarks_menu_id, R.id.all_bookmarks_menu_id));
+        Assert.assertTrue("Should return true for bookmark page then all bookmarks",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.bookmark_this_page_id, R.id.all_bookmarks_menu_id));
+        Assert.assertTrue("Should return true for bookmark page then all bookmarks",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.bookmark_this_page_chip_id, R.id.all_bookmarks_menu_id));
+        Assert.assertTrue("Should return true for bookmark page then all bookmarks",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.add_to_bookmarks_menu_id, R.id.all_bookmarks_menu_id));
+
+        Assert.assertEquals("No match for all bookmarks then bookmark page",
+                AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.all_bookmarks_menu_id, R.id.bookmark_this_page_id));
+        Assert.assertEquals("No match for all bookmarks then bookmark page",
+                AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.all_bookmarks_menu_id, R.id.bookmark_this_page_chip_id));
+        Assert.assertEquals("No match for all bookmarks then bookmark page",
+                AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.all_bookmarks_menu_id, R.id.add_to_bookmarks_menu_id));
+        Assert.assertTrue("Should return true for all bookmarks then bookmark page",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.all_bookmarks_menu_id, R.id.bookmark_this_page_id));
+        Assert.assertTrue("Should return true for all bookmarks then bookmark page",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.all_bookmarks_menu_id, R.id.bookmark_this_page_chip_id));
+        Assert.assertTrue("Should return true for all bookmarks then bookmark page",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.all_bookmarks_menu_id, R.id.add_to_bookmarks_menu_id));
+
+        Assert.assertEquals("No match for download page then all downloads",
+                AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.offline_page_id, R.id.downloads_menu_id));
+        Assert.assertEquals("No match for download page then all downloads",
+                AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.offline_page_chip_id, R.id.downloads_menu_id));
+        Assert.assertEquals("No match for download page then all downloads",
+                AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.add_to_downloads_menu_id, R.id.downloads_menu_id));
+        Assert.assertTrue("Should return true for download page then all downloads",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.offline_page_id, R.id.downloads_menu_id));
+        Assert.assertTrue("Should return true for download page then all downloads",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.offline_page_chip_id, R.id.downloads_menu_id));
+        Assert.assertTrue("Should return true for download page then all downloads",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.add_to_downloads_menu_id, R.id.downloads_menu_id));
+
+        Assert.assertEquals("No match for all downloads then download page",
+                AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.downloads_menu_id, R.id.offline_page_id));
+        Assert.assertEquals("No match for all downloads then download page",
+                AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.downloads_menu_id, R.id.offline_page_chip_id));
+        Assert.assertEquals("No match for all downloads then download page",
+                AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.downloads_menu_id, R.id.add_to_downloads_menu_id));
+        Assert.assertTrue("Should return true for all downloads then download page",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.downloads_menu_id, R.id.offline_page_id));
+        Assert.assertTrue("Should return true for all downloads then download page",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.downloads_menu_id, R.id.offline_page_chip_id));
+        Assert.assertTrue("Should return true for all downloads then download page",
+                mAppMenuPropertiesDelegate.recordAppMenuSimilarSelectionIfNeeded(
+                        R.id.downloads_menu_id, R.id.add_to_downloads_menu_id));
+
+        Assert.assertEquals("Should no match for all downloads then all bookmarks",
+                AppMenuSimilarSelectionType.NO_MATCH,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.downloads_menu_id, R.id.all_bookmarks_menu_id));
+        Assert.assertEquals("Should no match for all bookmarks then share",
+                AppMenuSimilarSelectionType.NO_MATCH,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.all_bookmarks_menu_id, R.id.share_menu_button_id));
+        Assert.assertEquals("Should no match for new tab then find in page",
+                AppMenuSimilarSelectionType.NO_MATCH,
+                mAppMenuPropertiesDelegate.findSimilarSelectionPattern(
+                        R.id.new_tab_menu_id, R.id.find_in_page_id));
     }
 
     private void setUpMocksForPageMenu() {

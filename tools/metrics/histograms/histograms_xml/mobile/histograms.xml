@@ -26,6 +26,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".SlowerThanInflation"/>
 </variants>
 
+<histogram name="Mobile.AppMenu.SimilarSelection"
+    enum="AppMenuSimilarSelectionType" expires_after="M95">
+  <owner>gangwu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Android: This metrics is recorded when users made similar selections on app
+    menu within a period of time. ex. a user selected downloading the current
+    page. After 5 seconds, the user opened the app menu again and selected
+    download manager. In this case, we would consider that Download and Download
+    Manager are similar selections.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
     expires_after="M93">
   <owner>gangwu@chromium.org</owner>

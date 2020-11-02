@@ -115,4 +115,13 @@ public interface AppMenuPropertiesDelegate {
      *         should show the icon before the text.
      */
     boolean shouldShowIconBeforeItem();
+
+    /**
+     * Record the user selections if users make selected similar MenuItems.
+     *
+     * @param previousMenuItemId The previous selected MenuItem Id.
+     * @param currentMenuItemId The current selected MenuItem Id.
+     * @return Whether the pattern is recorded.
+     */
+    boolean recordAppMenuSimilarSelectionIfNeeded(int previousMenuItemId, int currentMenuItemId);
 }

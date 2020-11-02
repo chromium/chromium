@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -65,7 +66,12 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
@@ -100,6 +106,13 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private int mAddAppTitleShown;
     private final ModalDialogManager mModalDialogManager;
 
+    // The keys of the Map are menuitem ids, the first elements in the Pair are menuitem ids,
+    // and the second elements in the Pair are AppMenuSimilarSelectionType. If users first
+    // selected the menuitems in the Pair.first, and then selected a menuitem which is the key
+    // if the Map, then users' selection match the pattern Pair.second.
+    private static final Map<Integer, Pair<Set<Integer>, Integer>> sSimilarSelectedMenuItemMap =
+            createSimilarSelectedMap();
+
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
             MenuGroup.START_SURFACE_MODE_MENU, MenuGroup.TABLET_EMPTY_MODE_MENU})
@@ -125,6 +138,23 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         int ACTION_CHIP_VIEW = 1;
         int DESTINATION_CHIP_VIEW = 2;
         int ADD_TO_OPTION = 3;
+    }
+
+    /**
+     * Keep this list sync with AppMenuSimilarSelectionType in enums.xml.
+     */
+    @IntDef({AppMenuSimilarSelectionType.NO_MATCH,
+            AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS,
+            AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE,
+            AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS,
+            AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE})
+    @interface AppMenuSimilarSelectionType {
+        int NO_MATCH = -1;
+        int BOOKMARK_PAGE_THEN_ALL_BOOKMARKS = 0;
+        int ALL_BOOKMARKS_THEN_BOOKMARK_PAGE = 1;
+        int DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS = 2;
+        int ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE = 3;
+        int NUM_ENTRIES = 4;
     }
 
     protected @Nullable OverviewModeBehavior mOverviewModeBehavior;
@@ -968,5 +998,71 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             return R.id.add_to_downloads_menu_id;
         }
         return R.id.offline_page_id;
+    }
+
+    @Override
+    public boolean recordAppMenuSimilarSelectionIfNeeded(
+            int previousMenuItemId, int currentMenuItemId) {
+        @AppMenuSimilarSelectionType
+        int pattern = findSimilarSelectionPattern(previousMenuItemId, currentMenuItemId);
+        if (pattern == AppMenuSimilarSelectionType.NO_MATCH) {
+            return false;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram("Mobile.AppMenu.SimilarSelection", pattern,
+                AppMenuSimilarSelectionType.NUM_ENTRIES);
+        return true;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public @AppMenuSimilarSelectionType int findSimilarSelectionPattern(
+            int previousMenuItemId, int currentMenuItemId) {
+        Pair<Set<Integer>, Integer> menuItemToSelectType =
+                sSimilarSelectedMenuItemMap.get(currentMenuItemId);
+        if (menuItemToSelectType != null
+                && menuItemToSelectType.first.contains(previousMenuItemId)) {
+            return menuItemToSelectType.second;
+        }
+
+        return AppMenuSimilarSelectionType.NO_MATCH;
+    }
+
+    private static Map<Integer, Pair<Set<Integer>, Integer>> createSimilarSelectedMap() {
+        Map<Integer, Pair<Set<Integer>, Integer>> map = new LinkedHashMap<>();
+        map.put(R.id.all_bookmarks_menu_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.bookmark_this_page_id,
+                                R.id.bookmark_this_page_chip_id, R.id.add_to_bookmarks_menu_id)),
+                        AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS));
+        map.put(R.id.bookmark_this_page_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
+                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
+        map.put(R.id.bookmark_this_page_chip_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
+                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
+        map.put(R.id.add_to_bookmarks_menu_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
+                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
+        map.put(R.id.downloads_menu_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.offline_page_id, R.id.offline_page_chip_id,
+                                R.id.add_to_downloads_menu_id)),
+                        AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS));
+        map.put(R.id.offline_page_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
+                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
+        map.put(R.id.offline_page_chip_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
+                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
+        map.put(R.id.add_to_downloads_menu_id,
+                new Pair<Set<Integer>, Integer>(
+                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
+                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
+        return map;
     }
 }
