@@ -60,6 +60,8 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest, MoveTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest, MoveTabAcrossProfiles);
   FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest, MoveTabAcrossWindows);
+  FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest,
+                           RemoveTabIfInvalidContextMenu);
   FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest, UngroupTab);
 
   void HandleCreateNewTab(const base::ListValue* args);

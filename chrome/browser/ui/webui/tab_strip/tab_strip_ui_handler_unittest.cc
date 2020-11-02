@@ -549,3 +549,31 @@ TEST_F(TabStripUIHandlerTest, CloseTab) {
 
   ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
 }
+
+TEST_F(TabStripUIHandlerTest, RemoveTabIfInvalidContextMenu) {
+  AddTab(browser(), GURL("http://foo"));
+
+  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+  AddTab(new_browser.get(), GURL("http://bar"));
+
+  web_ui()->ClearTrackedCalls();
+
+  base::ListValue args;
+  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
+      new_browser->tab_strip_model()->GetWebContentsAt(0)));
+  args.AppendDouble(50);
+  args.AppendDouble(100);
+  handler()->HandleShowTabContextMenu(&args);
+
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+  EXPECT_EQ("tab-removed", call_data.arg1()->GetString());
+  EXPECT_EQ(extensions::ExtensionTabUtil::GetTabId(
+                new_browser->tab_strip_model()->GetWebContentsAt(0)),
+            call_data.arg2()->GetInt());
+
+  // Close all tabs before destructing.
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
+}

@@ -761,7 +761,14 @@ void TabStripUIHandler::HandleShowTabContextMenu(const base::ListValue* args) {
       tab_id, browser_->profile(), true /* include_incognito */, &browser,
       nullptr, nullptr, &tab_index);
   CHECK(got_tab);
-  CHECK_EQ(browser, browser_);
+
+  if (browser != browser_) {
+    // TODO(crbug.com/1141573): Investigate how a context menu is being opened
+    // for a tab that is no longer in the tab strip. Until then, fire a
+    // tab-removed event so the tab is removed from this tab strip.
+    FireWebUIListener("tab-removed", base::Value(tab_id));
+    return;
+  }
 
   DCHECK(embedder_);
   embedder_->ShowContextMenuAtPoint(
