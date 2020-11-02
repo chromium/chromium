@@ -40,12 +40,14 @@ using autofill::ContentAutofillDriver;
 
 namespace {
 
+// Get the visual viewport as a list of values to fill into RectF, that is:
+// left, top, right, bottom.
 const char* const kGetVisualViewport =
     R"({ const v = window.visualViewport;
          [v.pageLeft,
           v.pageTop,
-          v.width,
-          v.height] })";
+          v.pageLeft + v.width,
+          v.pageTop + v.height] })";
 
 // Scrolls to the specified node with top padding. The top padding can
 // be specified through pixels or ratio. Pixels take precedence.

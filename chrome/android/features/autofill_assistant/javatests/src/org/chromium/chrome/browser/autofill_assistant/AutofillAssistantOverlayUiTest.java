@@ -26,7 +26,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -39,7 +38,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayImage;
@@ -187,39 +185,33 @@ public class AutofillAssistantOverlayUiTest {
 
         // Now the partial overlay allows tapping the highlighted touch area.
         tapElement("touch_area_one");
-
         waitForElementRemoved(getWebContents(), "touch_area_one");
 
         runOnUiThreadBlocking(
                 () -> model.set(AssistantOverlayModel.TOUCHABLE_AREA, Collections.emptyList()));
-        tapElement("touch_area_three");
-        assertThat(checkElementExists(getWebContents(), "touch_area_three"), is(true));
+        tapElement("touch_area_four");
+        assertThat(checkElementExists(getWebContents(), "touch_area_four"), is(true));
     }
 
     /** Scrolls a touchable area into view and then taps it. */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.M,
-            message = "Flaky on Lollipop https://crbug.com/1141889")
-    public void
-    testSimpleScrollPartialOverlay() throws Exception {
+    public void testSimpleScrollPartialOverlay() throws Exception {
         AssistantOverlayModel model = new AssistantOverlayModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
-        Rect rect = getBoundingRectForElement(getWebContents(), "touch_area_two");
+        scrollIntoViewIfNeeded("touch_area_five");
+        Rect rect = getBoundingRectForElement(getWebContents(), "touch_area_five");
         Rect viewport = getViewport(getWebContents());
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.PARTIAL);
+            model.set(AssistantOverlayModel.VISUAL_VIEWPORT, new RectF(viewport));
             model.set(AssistantOverlayModel.TOUCHABLE_AREA,
                     Collections.singletonList(new RectF(rect)));
-            model.set(AssistantOverlayModel.VISUAL_VIEWPORT, new RectF(viewport));
         });
-        scrollIntoViewIfNeeded("touch_area_two");
-        Rect newViewport = getViewport(getWebContents());
-        runOnUiThreadBlocking(
-                () -> model.set(AssistantOverlayModel.VISUAL_VIEWPORT, new RectF(newViewport)));
-        tapElement("touch_area_two");
-        waitForElementRemoved(getWebContents(), "touch_area_two");
+        assertScrimDisplayed(true);
+        tapElement("touch_area_five");
+        waitForElementRemoved(getWebContents(), "touch_area_five");
     }
 
     /**
@@ -297,7 +289,8 @@ public class AutofillAssistantOverlayUiTest {
         TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
                 new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
         javascriptHelper.evaluateJavaScriptForTests(getWebContents(),
-                "(function() {" + elementId + ".scrollIntoViewIfNeeded();"
+                "(function() {"
+                        + " document.getElementById('" + elementId + "').scrollIntoViewIfNeeded();"
                         + " return true;"
                         + "})()");
         javascriptHelper.waitUntilHasValue();

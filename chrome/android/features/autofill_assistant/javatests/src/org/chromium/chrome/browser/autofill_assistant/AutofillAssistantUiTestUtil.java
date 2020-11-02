@@ -693,7 +693,10 @@ class AutofillAssistantUiTestUtil {
         javascriptHelper.evaluateJavaScriptForTests(webContents,
                 "(function() {"
                         + " const v = window.visualViewport;"
-                        + " return [v.pageLeft, v.pageTop, v.width, v.height]"
+                        + " return ["
+                        + "   v.pageLeft, v.pageTop,"
+                        + "   v.pageLeft + v.width, v.pageTop + v.height"
+                        + " ];"
                         + "})()");
         javascriptHelper.waitUntilHasValue();
         JSONArray values = new JSONArray(javascriptHelper.getJsonResultAndClear());
