@@ -1256,7 +1256,6 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
 
   // This implements the transferred min/max sizes per
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-  Length h = style_to_use.LogicalHeight();
   if (ShouldComputeLogicalHeightFromAspectRatio()) {
     MinMaxSizes transferred_min_max =
         ComputeMinMaxLogicalWidthFromAspectRatio();
