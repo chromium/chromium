@@ -105,7 +105,7 @@ OSStatus DeleteKeychainItem(SecKeychainItemRef item_ref) {
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecClass, kSecClassCertificate);
+  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitOne);
   CFDictionarySetValue(query, kSecMatchItemList, item_match);
 

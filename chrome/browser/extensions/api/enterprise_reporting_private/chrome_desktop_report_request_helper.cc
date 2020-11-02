@@ -28,8 +28,10 @@
 #endif
 
 #if defined(OS_MAC)
+#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/keychain_data_helper_mac.h"
+#include "chrome/common/chrome_features.h"
 #include "crypto/apple_keychain.h"
 #endif
 
@@ -185,10 +187,20 @@ OSStatus ReadEncryptedSecret(std::string* password, bool force_recreate) {
   OSStatus status = keychain.FindGenericPassword(
       strlen(kServiceName), kServiceName, strlen(kAccountName), kAccountName,
       &password_length, &password_data, item_ref.InitializeInto());
-
   if (status == noErr) {
     *password = std::string(static_cast<char*>(password_data), password_length);
     keychain.ItemFreeContent(password_data);
+
+    if (base::FeatureList::IsEnabled(
+            features::kEnterpriseReportingApiKeychainRecreation)) {
+      bool keep_password;
+      status =
+          RecreateKeychainItemIfNecessary(kServiceName, kAccountName, *password,
+                                          item_ref.get(), &keep_password);
+
+      if (!keep_password)
+        password->clear();
+    }
     return status;
   }
 
