@@ -2035,7 +2035,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromProfiles) {
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseVariationCountryCode);
 
   const std::string expected_country_code = "DE";
   const std::string unepected_country_code = "FR";

@@ -1523,12 +1523,9 @@ const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
   if (default_country_code_.empty())
     default_country_code_ = MostCommonCountryCodeFromProfiles();
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseVariationCountryCode)) {
-    // Failing that, use the country code from variations service.
-    if (default_country_code_.empty())
-      default_country_code_ = variations_country_code_;
-  }
+  // Failing that, use the country code from variations service.
+  if (default_country_code_.empty())
+    default_country_code_ = variations_country_code_;
 
   // Failing that, guess based on system timezone.
   if (default_country_code_.empty())
@@ -1984,7 +1981,7 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
   return !is_opted_in;
 #else
   return false;
-#endif // #if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_WIN) || \
+#endif  // #if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_WIN) || \
        //     defined(OS_APPLE)
 }
 

@@ -103,16 +103,13 @@ bool IsMinimumAddress(const AutofillProfile& profile,
                        << "Country entry in form." << CTag{};
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseVariationCountryCode)) {
-    // As a fallback, use the finch state to get a country code.
-    if (country_code.empty() && !variation_country_code.empty()) {
-      country_code = variation_country_code;
-      if (import_log_buffer && !country_code.empty()) {
-        *import_log_buffer
-            << LogMessage::kImportAddressProfileFromFormCountrySource
-            << "Variations service." << CTag{};
-      }
+  // As a fallback, use the finch state to get a country code.
+  if (country_code.empty() && !variation_country_code.empty()) {
+    country_code = variation_country_code;
+    if (import_log_buffer && !country_code.empty()) {
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormCountrySource
+          << "Variations service." << CTag{};
     }
   }
 

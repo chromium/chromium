@@ -293,13 +293,6 @@ const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns{
     "AutofillUsePageLanguageToSelectFieldParsingPatterns",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether or not autofill utilizes the country code from the Chrome
-// variation service. The country code is used for determining the address
-// requirements for address profile creation and as source for a default country
-// used in a new address profile.
-const base::Feature kAutofillUseVariationCountryCode{
-    "AutofillUseVariationCountryCode", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.
