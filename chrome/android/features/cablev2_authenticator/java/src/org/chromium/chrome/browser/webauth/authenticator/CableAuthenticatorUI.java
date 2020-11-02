@@ -165,8 +165,6 @@ public class CableAuthenticatorUI extends Fragment
     @Override
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
-        mPermissionDelegate = null;
-
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             (new QRScanDialog(this)).show(getFragmentManager(), "dialog");
         }
