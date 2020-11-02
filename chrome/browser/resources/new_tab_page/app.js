@@ -869,10 +869,9 @@ class AppElement extends PolymerElement {
     }
     const onResize = () => {
       const promoElement = $$(this, 'ntp-middle-slot-promo');
-      const hidePromo =
+      promoElement.hidden =
           $$(this, '#mostVisited').getBoundingClientRect().bottom >=
           promoElement.offsetTop;
-      promoElement.style.visibility = hidePromo ? 'hidden' : 'visible';
     };
     this.eventTracker_.add(window, 'resize', onResize);
     onResize();
