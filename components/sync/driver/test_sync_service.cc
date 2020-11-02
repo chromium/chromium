@@ -298,6 +298,9 @@ void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     base::OnceClosure callback) {}
 
-void TestSyncService::Shutdown() {}
+void TestSyncService::Shutdown() {
+  for (auto& observer : observers_)
+    observer.OnSyncShutdown(this);
+}
 
 }  // namespace syncer
