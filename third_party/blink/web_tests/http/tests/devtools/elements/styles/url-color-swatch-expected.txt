@@ -1,6 +1,0 @@
-Tests that url(...) with space-delimited color names as filename segments do not contain color swatches. Bug 106770. Also tests that CSS variables such as var(--blue) do not contain color swatches. Bug 595231.
-
-url(red green blue.jpg)
-[] red
-[] var(--blue)
-

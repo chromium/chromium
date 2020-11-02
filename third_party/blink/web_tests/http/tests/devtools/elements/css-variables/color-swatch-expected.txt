@@ -1,8 +1,0 @@
-Verify that swatches for var() functions are updated as CSS variable is changed.
-Before css Variable editing:
-  "color" swatch:red
-  "background-color" swatch:red
-After css Variable editing:
-  "color" swatch:blue
-  "background-color" swatch:blue
-

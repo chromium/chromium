@@ -17,7 +17,7 @@
 
     TestRunner.runTestSuite([
       function testEditSpectrum(next) {
-        var swatch = sourceFrame.textEditor._codeMirrorElement.querySelector('span[is=color-swatch]');
+        var swatch = sourceFrame.textEditor._codeMirrorElement.querySelector('devtools-color-swatch');
         swatch.shadowRoot.querySelector('.color-swatch-inner').click();
         cssPlugin._spectrum._innerSetColor(
             Common.Color.parse('#008000').hsva(), '', undefined /* colorName */, Common.Color.Format.HEX,
