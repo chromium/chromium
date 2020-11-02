@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -67,8 +68,23 @@ std::unique_ptr<Printer> SpecificsToPrinter(
         MakeAndModel(specifics.manufacturer(), specifics.model()));
   }
 
+  bool result = false;
   std::string message;
-  if (!printer->SetUri(specifics.uri(), &message))
+  Uri uri(specifics.uri());
+  const Uri::ParserStatus uri_error_code = uri.GetLastParsingError().status;
+  if (uri_error_code == Uri::ParserStatus::kNoErrors) {
+    // Versions of Chrome <= R85 saved incorrectly AppSocket printers with a
+    // default IPP path. Here, we have to make sure that URIs of these types of
+    // printers do not contain a path component. It would cause an error in the
+    // printer->SetUri(...) method.
+    if (uri.GetScheme() == "socket")
+      uri.SetPathEncoded("");
+    result = printer->SetUri(uri, &message);
+  } else {
+    message = "Malformed URI, error code: " +
+              base::NumberToString(static_cast<int>(uri_error_code));
+  }
+  if (!result)
     LOG(WARNING) << message;
 
   printer->set_uuid(specifics.uuid());

@@ -57,6 +57,24 @@ TEST(SpecificsTranslationTest, SpecificsToPrinter) {
   EXPECT_FALSE(result->IsIppEverywhere());
 }
 
+TEST(SpecificsTranslationTest, SpecificsToPrinterSocketUriWithPath) {
+  sync_pb::PrinterSpecifics specifics;
+  specifics.set_id(kId);
+  specifics.set_display_name(kDisplayName);
+  specifics.set_description(kDescription);
+  specifics.set_make_and_model(kMakeAndModel);
+  specifics.set_uri("socket://abc.def:1234/path1/path2");
+  specifics.set_uuid(kUuid);
+  specifics.set_updated_timestamp(kUpdateTime.ToJavaTime());
+
+  sync_pb::PrinterPPDReference ppd;
+  ppd.set_effective_make_and_model(kEffectiveMakeAndModel);
+  *specifics.mutable_ppd_reference() = ppd;
+
+  std::unique_ptr<Printer> result = SpecificsToPrinter(specifics);
+  EXPECT_EQ("socket://abc.def:1234", result->uri().GetNormalized());
+}
+
 TEST(SpecificsTranslationTest, PrinterToSpecifics) {
   Printer printer;
   printer.set_id(kId);
