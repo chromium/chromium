@@ -15,5 +15,8 @@ js_type_check("closure_compile") {
 }
 
 js_library("cr_menu_selector") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
+  ]
 }

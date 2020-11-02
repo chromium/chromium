@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
@@ -89,8 +90,8 @@ suite('CrMenuSelectorFocusTest', () => {
     document.body.appendChild(outsideElement);
     outsideElement.focus();
 
-    // Mock item as having been focused by keyboard.
-    element.children[2].matches = selector => selector === ':focus-visible';
+    // Mock document as having been focused by keyboard.
+    FocusOutlineManager.forDocument(document).visible = true;
 
     element.children[2].focus();
     assertEquals(element.children[0], getDeepActiveElement());
@@ -101,8 +102,8 @@ suite('CrMenuSelectorFocusTest', () => {
     document.body.appendChild(outsideElement);
     outsideElement.focus();
 
-    // Mock item as not having been focused by keyboard.
-    element.children[2].matches = selector => selector !== ':focus-visible';
+    // Mock document as not having been focused by keyboard.
+    FocusOutlineManager.forDocument(document).visible = false;
 
     element.children[2].focus();
     assertEquals(element.children[2], getDeepActiveElement());

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 
 /** @extends {HTMLElement} */
 export class CrMenuSelector extends HTMLElement {
@@ -12,6 +13,10 @@ export class CrMenuSelector extends HTMLElement {
 
   constructor() {
     super();
+
+    /** @private {!FocusOutlineManager} */
+    this.focusOutlineManager_;
+
     this.addEventListener(
         'focusin', e => this.onFocusin_(/** @type {!FocusEvent} */ (e)));
     this.addEventListener(
@@ -19,6 +24,7 @@ export class CrMenuSelector extends HTMLElement {
   }
 
   connectedCallback() {
+    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.setAttribute('role', 'menu');
   }
 
@@ -41,8 +47,7 @@ export class CrMenuSelector extends HTMLElement {
     // that is not within this menu, move the focus to the first menu item. This
     // ensures that the first menu item is always the first focused item when
     // focusing into the menu.
-    const focusMovedWithKeyboard =
-        e.target && e.target.matches(':focus-visible');
+    const focusMovedWithKeyboard = this.focusOutlineManager_.visible;
     const focusMovedFromOutside = e.relatedTarget &&
         !this.contains(/** @type {!HTMLElement} */ (e.relatedTarget));
     if (focusMovedWithKeyboard && focusMovedFromOutside) {
