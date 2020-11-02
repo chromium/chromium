@@ -6,14 +6,16 @@
 #define BASE_CONTAINERS_FLAT_SET_H_
 
 #include <functional>
+#include <vector>
 
 #include "base/containers/flat_tree.h"
+#include "base/functional/identity.h"
 #include "base/template_util.h"
 
 namespace base {
 
 // flat_set is a container with a std::set-like interface that stores its
-// contents in a sorted vector.
+// contents in a sorted container, by default a vector.
 //
 // Its implementation mostly tracks the corresponding standardization proposal
 // https://wg21.link/P1222.
@@ -37,7 +39,7 @@ namespace base {
 //
 //  - Iterators are invalidated across mutations.
 //  - If possible, construct a flat_set in one operation by inserting into
-//    a std::vector and moving that vector into the flat_set constructor.
+//    a container and moving that container into the flat_set constructor.
 //  - For multiple removals use base::EraseIf() which is O(n) rather than
 //    O(n * removed_items).
 //
@@ -52,9 +54,9 @@ namespace base {
 //   flat_set(flat_set&&);
 //   flat_set(InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
-//   flat_set(const std::vector<Key>& items,
+//   flat_set(const container_type& items,
 //            const Compare& compare = Compare());
-//   flat_set(std::vector<Key>&& items,
+//   flat_set(container_type&& items,
 //            const Compare& compare = Compare());  // Re-use storage.
 //   flat_set(std::initializer_list<value_type> ilist,
 //            const Compare& comp = Compare());
@@ -64,10 +66,10 @@ namespace base {
 //            InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
 //   flat_set(sorted_unique_t,
-//            const std::vector<Key>& items,
+//            const container_type& items,
 //            const Compare& compare = Compare());
 //   flat_set(sorted_unique_t,
-//            std::vector<Key>&& items,
+//            container_type&& items,
 //            const Compare& compare = Compare());  // Re-use storage.
 //   flat_set(sorted_unique_t,
 //            std::initializer_list<value_type> ilist,
@@ -113,8 +115,8 @@ namespace base {
 //   iterator             emplace_hint(const_iterator, Args&&...);
 //
 // Underlying type functions:
-//   underlying_type      extract() &&;
-//   void                 replace(underlying_type&&);
+//   container_type       extract() &&;
+//   void                 replace(container_type&&);
 //
 // Erase functions:
 //   iterator erase(iterator);
@@ -148,12 +150,11 @@ namespace base {
 //   bool operator>=(const flat_set&, const flat_set);
 //   bool operator<=(const flat_set&, const flat_set);
 //
-template <class Key, class Compare = std::less<>>
-using flat_set = typename ::base::internal::flat_tree<
-    Key,
-    Key,
-    ::base::internal::GetKeyFromValueIdentity<Key>,
-    Compare>;
+template <class Key,
+          class Compare = std::less<>,
+          class Container = std::vector<Key>>
+using flat_set = typename ::base::internal::
+    flat_tree<Key, base::identity, Compare, Container>;
 
 }  // namespace base
 

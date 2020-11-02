@@ -8,6 +8,7 @@
 #include <functional>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
@@ -29,7 +30,7 @@ struct GetKeyFromValuePairFirst {
 }  // namespace internal
 
 // flat_map is a container with a std::map-like interface that stores its
-// contents in a sorted vector.
+// contents in a sorted container, by default a vector.
 //
 // Its implementation mostly tracks the corresponding standardization proposal
 // https://wg21.link/P0429, except that the storage of keys and values is not
@@ -54,7 +55,7 @@ struct GetKeyFromValuePairFirst {
 //
 //  - Iterators are invalidated across mutations.
 //  - If possible, construct a flat_map in one operation by inserting into
-//    a std::vector and moving that vector into the flat_map constructor.
+//    a container and moving that container into the flat_map constructor.
 //
 // QUICK REFERENCE
 //
@@ -67,9 +68,9 @@ struct GetKeyFromValuePairFirst {
 //   flat_map(flat_map&&);
 //   flat_map(InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
-//   flat_map(const std::vector<value_type>& items,
+//   flat_map(const container_type& items,
 //            const Compare& compare = Compare());
-//   flat_map(std::vector<value_type>&& items,
+//   flat_map(container_type&& items,
 //            const Compare& compare = Compare()); // Re-use storage.
 //   flat_map(std::initializer_list<value_type> ilist,
 //            const Compare& comp = Compare());
@@ -79,10 +80,10 @@ struct GetKeyFromValuePairFirst {
 //            InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
 //   flat_map(sorted_unique_t,
-//            const std::vector<Key>& items,
+//            const container_type& items,
 //            const Compare& compare = Compare());
 //   flat_map(sorted_unique_t,
-//            std::vector<Key>&& items,
+//            container_type&& items,
 //            const Compare& compare = Compare());  // Re-use storage.
 //   flat_map(sorted_unique_t,
 //            std::initializer_list<value_type> ilist,
@@ -136,8 +137,8 @@ struct GetKeyFromValuePairFirst {
 //   iterator             try_emplace(const_iterator hint, K&&, Args&&...);
 
 // Underlying type functions:
-//   underlying_type      extract() &&;
-//   void                 replace(underlying_type&&);
+//   container_type       extract() &&;
+//   void                 replace(container_type&&);
 //
 // Erase functions:
 //   iterator erase(iterator);
@@ -171,26 +172,35 @@ struct GetKeyFromValuePairFirst {
 //   bool operator>=(const flat_map&, const flat_map);
 //   bool operator<=(const flat_map&, const flat_map);
 //
-template <class Key, class Mapped, class Compare = std::less<>>
+template <class Key,
+          class Mapped,
+          class Compare = std::less<>,
+          class Container = std::vector<std::pair<Key, Mapped>>>
 class flat_map : public ::base::internal::flat_tree<
                      Key,
-                     std::pair<Key, Mapped>,
                      ::base::internal::GetKeyFromValuePairFirst<Key, Mapped>,
-                     Compare> {
+                     Compare,
+                     Container> {
  private:
   using tree = typename ::base::internal::flat_tree<
       Key,
-      std::pair<Key, Mapped>,
       ::base::internal::GetKeyFromValuePairFirst<Key, Mapped>,
-      Compare>;
-  using underlying_type = typename tree::underlying_type;
+      Compare,
+      Container>;
 
  public:
   using key_type = typename tree::key_type;
   using mapped_type = Mapped;
   using value_type = typename tree::value_type;
+  using reference = typename Container::reference;
+  using const_reference = typename Container::const_reference;
+  using size_type = typename Container::size_type;
+  using difference_type = typename Container::difference_type;
   using iterator = typename tree::iterator;
   using const_iterator = typename tree::const_iterator;
+  using reverse_iterator = typename tree::reverse_iterator;
+  using const_reverse_iterator = typename tree::const_reverse_iterator;
+  using container_type = typename tree::container_type;
 
   // --------------------------------------------------------------------------
   // Lifetime and assignments.
@@ -211,8 +221,8 @@ class flat_map : public ::base::internal::flat_tree<
   flat_map(const flat_map&) = default;
   flat_map(flat_map&&) noexcept = default;
 
-  flat_map(const underlying_type& items, const Compare& comp = Compare());
-  flat_map(underlying_type&& items, const Compare& comp = Compare());
+  flat_map(const container_type& items, const Compare& comp = Compare());
+  flat_map(container_type&& items, const Compare& comp = Compare());
 
   flat_map(std::initializer_list<value_type> ilist,
            const Compare& comp = Compare());
@@ -268,28 +278,29 @@ class flat_map : public ::base::internal::flat_tree<
 // ----------------------------------------------------------------------------
 // Lifetime.
 
-template <class Key, class Mapped, class Compare>
-flat_map<Key, Mapped, Compare>::flat_map(const Compare& comp) : tree(comp) {}
+template <class Key, class Mapped, class Compare, class Container>
+flat_map<Key, Mapped, Compare, Container>::flat_map(const Compare& comp)
+    : tree(comp) {}
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class InputIterator>
-flat_map<Key, Mapped, Compare>::flat_map(InputIterator first,
-                                         InputIterator last,
-                                         const Compare& comp)
+flat_map<Key, Mapped, Compare, Container>::flat_map(InputIterator first,
+                                                    InputIterator last,
+                                                    const Compare& comp)
     : tree(first, last, comp) {}
 
-template <class Key, class Mapped, class Compare>
-flat_map<Key, Mapped, Compare>::flat_map(const underlying_type& items,
-                                         const Compare& comp)
+template <class Key, class Mapped, class Compare, class Container>
+flat_map<Key, Mapped, Compare, Container>::flat_map(const container_type& items,
+                                                    const Compare& comp)
     : tree(items, comp) {}
 
-template <class Key, class Mapped, class Compare>
-flat_map<Key, Mapped, Compare>::flat_map(underlying_type&& items,
-                                         const Compare& comp)
+template <class Key, class Mapped, class Compare, class Container>
+flat_map<Key, Mapped, Compare, Container>::flat_map(container_type&& items,
+                                                    const Compare& comp)
     : tree(std::move(items), comp) {}
 
-template <class Key, class Mapped, class Compare>
-flat_map<Key, Mapped, Compare>::flat_map(
+template <class Key, class Mapped, class Compare, class Container>
+flat_map<Key, Mapped, Compare, Container>::flat_map(
     std::initializer_list<value_type> ilist,
     const Compare& comp)
     : flat_map(std::begin(ilist), std::end(ilist), comp) {}
@@ -297,8 +308,8 @@ flat_map<Key, Mapped, Compare>::flat_map(
 // ----------------------------------------------------------------------------
 // Assignments.
 
-template <class Key, class Mapped, class Compare>
-auto flat_map<Key, Mapped, Compare>::operator=(
+template <class Key, class Mapped, class Compare, class Container>
+auto flat_map<Key, Mapped, Compare, Container>::operator=(
     std::initializer_list<value_type> ilist) -> flat_map& {
   // When https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84782 gets fixed, we
   // need to remember to inherit tree::operator= to prevent
@@ -313,17 +324,18 @@ auto flat_map<Key, Mapped, Compare>::operator=(
 // ----------------------------------------------------------------------------
 // Lookups.
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class K>
-auto flat_map<Key, Mapped, Compare>::at(const K& key) -> mapped_type& {
+auto flat_map<Key, Mapped, Compare, Container>::at(const K& key)
+    -> mapped_type& {
   iterator found = tree::find(key);
   CHECK(found != tree::end());
   return found->second;
 }
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class K>
-auto flat_map<Key, Mapped, Compare>::at(const K& key) const
+auto flat_map<Key, Mapped, Compare, Container>::at(const K& key) const
     -> const mapped_type& {
   const_iterator found = tree::find(key);
   CHECK(found != tree::cend());
@@ -333,8 +345,8 @@ auto flat_map<Key, Mapped, Compare>::at(const K& key) const
 // ----------------------------------------------------------------------------
 // Insert operations.
 
-template <class Key, class Mapped, class Compare>
-auto flat_map<Key, Mapped, Compare>::operator[](const key_type& key)
+template <class Key, class Mapped, class Compare, class Container>
+auto flat_map<Key, Mapped, Compare, Container>::operator[](const key_type& key)
     -> mapped_type& {
   iterator found = tree::lower_bound(key);
   if (found == tree::end() || tree::key_comp()(key, found->first))
@@ -342,8 +354,8 @@ auto flat_map<Key, Mapped, Compare>::operator[](const key_type& key)
   return found->second;
 }
 
-template <class Key, class Mapped, class Compare>
-auto flat_map<Key, Mapped, Compare>::operator[](key_type&& key)
+template <class Key, class Mapped, class Compare, class Container>
+auto flat_map<Key, Mapped, Compare, Container>::operator[](key_type&& key)
     -> mapped_type& {
   iterator found = tree::lower_bound(key);
   if (found == tree::end() || tree::key_comp()(key, found->first))
@@ -351,9 +363,10 @@ auto flat_map<Key, Mapped, Compare>::operator[](key_type&& key)
   return found->second;
 }
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class K, class M>
-auto flat_map<Key, Mapped, Compare>::insert_or_assign(K&& key, M&& obj)
+auto flat_map<Key, Mapped, Compare, Container>::insert_or_assign(K&& key,
+                                                                 M&& obj)
     -> std::pair<iterator, bool> {
   auto result =
       tree::emplace_key_args(key, std::forward<K>(key), std::forward<M>(obj));
@@ -362,11 +375,12 @@ auto flat_map<Key, Mapped, Compare>::insert_or_assign(K&& key, M&& obj)
   return result;
 }
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class K, class M>
-auto flat_map<Key, Mapped, Compare>::insert_or_assign(const_iterator hint,
-                                                      K&& key,
-                                                      M&& obj) -> iterator {
+auto flat_map<Key, Mapped, Compare, Container>::insert_or_assign(
+    const_iterator hint,
+    K&& key,
+    M&& obj) -> iterator {
   auto result = tree::emplace_hint_key_args(hint, key, std::forward<K>(key),
                                             std::forward<M>(obj));
   if (!result.second)
@@ -374,9 +388,10 @@ auto flat_map<Key, Mapped, Compare>::insert_or_assign(const_iterator hint,
   return result.first;
 }
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
-auto flat_map<Key, Mapped, Compare>::try_emplace(K&& key, Args&&... args)
+auto flat_map<Key, Mapped, Compare, Container>::try_emplace(K&& key,
+                                                            Args&&... args)
     -> std::enable_if_t<std::is_constructible<key_type, K&&>::value,
                         std::pair<iterator, bool>> {
   return tree::emplace_key_args(
@@ -385,11 +400,11 @@ auto flat_map<Key, Mapped, Compare>::try_emplace(K&& key, Args&&... args)
       std::forward_as_tuple(std::forward<Args>(args)...));
 }
 
-template <class Key, class Mapped, class Compare>
+template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
-auto flat_map<Key, Mapped, Compare>::try_emplace(const_iterator hint,
-                                                 K&& key,
-                                                 Args&&... args)
+auto flat_map<Key, Mapped, Compare, Container>::try_emplace(const_iterator hint,
+                                                            K&& key,
+                                                            Args&&... args)
     -> std::enable_if_t<std::is_constructible<key_type, K&&>::value, iterator> {
   return tree::emplace_hint_key_args(
              hint, key, std::piecewise_construct,
@@ -401,8 +416,8 @@ auto flat_map<Key, Mapped, Compare>::try_emplace(const_iterator hint,
 // ----------------------------------------------------------------------------
 // General operations.
 
-template <class Key, class Mapped, class Compare>
-void flat_map<Key, Mapped, Compare>::swap(flat_map& other) noexcept {
+template <class Key, class Mapped, class Compare, class Container>
+void flat_map<Key, Mapped, Compare, Container>::swap(flat_map& other) noexcept {
   tree::swap(other);
 }
 
