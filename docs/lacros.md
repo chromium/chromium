@@ -70,14 +70,17 @@ Lacros bugs can be filed under component: OS>LaCrOs.
 ### Current state
 
 OS_CHROMEOS is defined and is_chromeos is set only for ash-chrome at the moment.
-We are migrating defined(OS_CHROMEOS) to BUILDFLAG(IS_CHROMEOS_ASH), see
-[crbug.com/1052397](https://crbug.com/1052397). After the migration, the macros
-and gn variables should be used according to the above desired state.
+We are currently migrating defined(OS_CHROMEOS) to BUILDFLAG(IS_CHROMEOS_ASH),
+see [crbug.com/1052397](https://crbug.com/1052397). Until the migration is
+complete, for parts used by both ash-chrome and lacros-chrome, use
+`BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)` in C++ files and
+`is_chromeos_ash || is_chromeos_lacros` in GN files. After the migration, the
+macros and GN variables should be used according to the above desired state.
 
 Googlers:
-- [go/lacros-porting](http://go/lacros-porting) has some tips for build files.
-- [go/lacros-macros](http://go/lacros-macros) describes the steps for the macros migration.
-- [go/lacros-build-config](http://go/lacros-build-config) is the design doc.
+- [go/lacros-porting](http://go/lacros-porting) has tips on which binary the code should live in.
+- [go/lacros-macros](http://go/lacros-macros) describes the steps for the migration.
+- [go/lacros-build-config](http://go/lacros-build-config) is the original design doc.
 
 ## Testing
 
