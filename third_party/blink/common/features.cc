@@ -238,14 +238,6 @@ const base::Feature kIntensiveWakeUpThrottling{
 const base::Feature kOptOutZeroTimeoutTimersFromThrottling{
     "OptOutZeroTimeoutTimersFromThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled, no throttling is applied to a page when it uses WebRTC.
-//
-// This allows a page to use a timer to do video processing on frames. An
-// event-driven mechanism should be provided to do video processing. When it is
-// available, this feature should be removed. https://crbug.com/1101806
-const base::Feature kOptOutWebRTCFromAllThrottling{
-    "OptOutWebRTCFromAllThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Name of the parameter that controls the grace period during which there is no
 // intensive wake up throttling after a page is hidden. Defined here to allow
 // access from about_flags.cc. The FeatureParam is defined in

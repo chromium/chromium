@@ -153,12 +153,7 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           "FrameScheduler.PreemptedForCooperativeScheduling",
           &tracing_controller_,
           YesNoStateToString),
-      all_throttling_opt_out_count_(0),
       aggressive_throttling_opt_out_count_(0),
-      opted_out_from_all_throttling_(false,
-                                     "FrameScheduler.AllThrottlingDisabled",
-                                     &tracing_controller_,
-                                     YesNoStateToString),
       opted_out_from_aggressive_throttling_(
           false,
           "FrameScheduler.AggressiveThrottlingDisabled",
@@ -232,10 +227,8 @@ FrameSchedulerImpl::~FrameSchedulerImpl() {
   if (parent_page_scheduler_) {
     parent_page_scheduler_->Unregister(this);
 
-    if (opted_out_from_all_throttling() ||
-        opted_out_from_aggressive_throttling()) {
+    if (opted_out_from_aggressive_throttling())
       parent_page_scheduler_->OnThrottlingStatusUpdated();
-    }
   }
 }
 
@@ -652,8 +645,6 @@ void FrameSchedulerImpl::OnStartedUsingFeature(
     const SchedulingPolicy& policy) {
   uint64_t old_mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
 
-  if (policy.disable_all_throttling)
-    OnAddedAllThrottlingOptOut();
   if (policy.disable_aggressive_throttling)
     OnAddedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache) {
@@ -677,8 +668,6 @@ void FrameSchedulerImpl::OnStoppedUsingFeature(
     const SchedulingPolicy& policy) {
   uint64_t old_mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
 
-  if (policy.disable_all_throttling)
-    OnRemovedAllThrottlingOptOut();
   if (policy.disable_aggressive_throttling)
     OnRemovedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache)
@@ -733,23 +722,6 @@ void FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures() {
 base::WeakPtr<FrameSchedulerImpl>
 FrameSchedulerImpl::GetInvalidatingOnBFCacheRestoreWeakPtr() {
   return invalidating_on_bfcache_restore_weak_factory_.GetWeakPtr();
-}
-
-void FrameSchedulerImpl::OnAddedAllThrottlingOptOut() {
-  ++all_throttling_opt_out_count_;
-  opted_out_from_all_throttling_ =
-      static_cast<bool>(all_throttling_opt_out_count_);
-  if (parent_page_scheduler_)
-    parent_page_scheduler_->OnThrottlingStatusUpdated();
-}
-
-void FrameSchedulerImpl::OnRemovedAllThrottlingOptOut() {
-  DCHECK_GT(all_throttling_opt_out_count_, 0);
-  --all_throttling_opt_out_count_;
-  opted_out_from_all_throttling_ =
-      static_cast<bool>(all_throttling_opt_out_count_);
-  if (parent_page_scheduler_)
-    parent_page_scheduler_->OnThrottlingStatusUpdated();
 }
 
 void FrameSchedulerImpl::OnAddedAggressiveThrottlingOptOut() {
@@ -978,8 +950,6 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
   if (!RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled())
     return false;
   if (parent_page_scheduler_->IsAudioPlaying())
-    return false;
-  if (parent_page_scheduler_->OptedOutFromAllThrottling())
     return false;
   if (!parent_page_scheduler_->IsPageVisible())
     return true;

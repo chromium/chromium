@@ -18,12 +18,10 @@ struct PLATFORM_EXPORT SchedulingPolicy {
   using Feature = scheduler::WebSchedulerTrackedFeature;
 
   // List of opt-outs which form a policy.
-  struct DisableAllThrottling {};
   struct DisableAggressiveThrottling {};
   struct RecordMetricsForBackForwardCache {};
 
   struct ValidPolicies {
-    ValidPolicies(DisableAllThrottling);
     ValidPolicies(DisableAggressiveThrottling);
     ValidPolicies(RecordMetricsForBackForwardCache);
   };
@@ -33,9 +31,7 @@ struct PLATFORM_EXPORT SchedulingPolicy {
                 base::trait_helpers::AreValidTraits<ValidPolicies,
                                                     ArgTypes...>::value>>
   constexpr SchedulingPolicy(ArgTypes... args)
-      : disable_all_throttling(
-            base::trait_helpers::HasTrait<DisableAllThrottling, ArgTypes...>()),
-        disable_aggressive_throttling(
+      : disable_aggressive_throttling(
             base::trait_helpers::HasTrait<DisableAggressiveThrottling,
                                           ArgTypes...>()),
         disable_back_forward_cache(
@@ -44,7 +40,6 @@ struct PLATFORM_EXPORT SchedulingPolicy {
 
   SchedulingPolicy() {}
 
-  bool disable_all_throttling = false;
   bool disable_aggressive_throttling = false;
   bool disable_back_forward_cache = false;
 };

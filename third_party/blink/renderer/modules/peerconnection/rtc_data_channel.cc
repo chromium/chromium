@@ -29,9 +29,7 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -669,10 +667,7 @@ void RTCDataChannel::CreateFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          base::FeatureList::IsEnabled(features::kOptOutWebRTCFromAllThrottling)
-              ? SchedulingPolicy{SchedulingPolicy::DisableAllThrottling()}
-              : SchedulingPolicy{
-                    SchedulingPolicy::DisableAggressiveThrottling()});
+          SchedulingPolicy::DisableAggressiveThrottling());
 }
 
 }  // namespace blink

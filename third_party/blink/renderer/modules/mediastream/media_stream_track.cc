@@ -27,9 +27,7 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -845,10 +843,7 @@ void MediaStreamTrack::EnsureFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          base::FeatureList::IsEnabled(features::kOptOutWebRTCFromAllThrottling)
-              ? SchedulingPolicy{SchedulingPolicy::DisableAllThrottling()}
-              : SchedulingPolicy{
-                    SchedulingPolicy::DisableAggressiveThrottling()});
+          SchedulingPolicy::DisableAggressiveThrottling());
 }
 
 }  // namespace blink
