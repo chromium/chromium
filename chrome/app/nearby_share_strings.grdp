@@ -13,6 +13,15 @@
   </message>
 
   <!-- Contact visibility component -->
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_CONTACTS_TITLE" desc="Section title of the contacts list when setting up the device visibility for the Nearby Share feature.">
+    Contacts
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NEARBY_SHARE_OPEN_OTHERS" desc="Describes that nearby devices are visible while the Nearby Share feature is open on their screen.">
+    Devices near you when Nearby Share is open on their device
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NEARBY_SHARE_OPEN_OWN" desc="Describes that the local device is visible to nearby devices while the Nearby Share feature is open on screen on the local device.">
+    Devices near you when Nearby Share is open on your device
+  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_SUBTITLE" desc="Help text shown when there are no available contacts with a Google Account to select from. Nearby Share is the feature name.">
     No contacts are available. To use Nearby Share with your contacts, add the email address linked with their Google Account to your contacts.
   </message>
@@ -20,19 +29,19 @@
     No available contacts
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OTHERS" desc="Describes when nearby devices are visible to this user when using the Nearby Share feature.">
-    People who have chosen to be visible to you when their screen is unlocked and devices near you when Nearby Share is open
+    People who have chosen to be visible to you when their screen is unlocked
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OTHERS_TITLE" desc="Title of the description for which devices the user can share with using the Nearby Share feature.">
     Devices you can share with
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_ALL" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'All contacts'.">
-    All contacts near you when your screen is unlocked and devices near you when Nearby Share is open
+    All contacts near you when your screen is unlocked
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_NONE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Hidden'.">
-    No one unless you open Nearby Share
+    No one unless you open Nearby Share on your device
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Some contacts'.">
-    Selected contacts near you when your screen is unlocked and devices near you when Nearby Share is open
+    Selected contacts near you when your screen is unlocked
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_TITLE" desc="Title of the description for which nearby devices can share with a users device using the Nearby Share feature.">
     Who can share with your device

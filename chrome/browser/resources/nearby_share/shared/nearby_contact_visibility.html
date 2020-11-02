@@ -114,6 +114,12 @@
         margin-block-end: 8px;
       }
 
+      .explanation-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
       .explanation-section {
         display: flex;
         margin-block-end: 8px;
@@ -236,7 +242,12 @@
                 $i18n{nearbyShareContactVisibilityOthersTitle}
               </div>
               <div class="cr-secondary-text">
-                $i18n{nearbyShareContactVisibilityOthers}
+                <ul class="explanation-list">
+                  <li>$i18n{nearbyShareContactVisibilityOthers}</li>
+                  <li>
+                    $i18n{nearbyShareContactVisibilityNearbyShareOpenOthers}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -251,19 +262,31 @@
               <template is="dom-if"
                   if="[[isVisibility_(selectedVisibility,'all')]]">
                 <div class="cr-secondary-text">
-                  $i18n{nearbyShareContactVisibilityOwnAll}
+                  <ul class="explanation-list">
+                    <li>$i18n{nearbyShareContactVisibilityOwnAll}</li>
+                    <li>
+                      $i18n{nearbyShareContactVisibilityNearbyShareOpenOwn}
+                    </li>
+                  </ul>
                 </div>
               </template>
               <template is="dom-if"
                   if="[[isVisibility_(selectedVisibility,'some')]]">
                 <div class="cr-secondary-text">
-                  $i18n{nearbyShareContactVisibilityOwnSome}
+                  <ul class="explanation-list">
+                    <li>$i18n{nearbyShareContactVisibilityOwnSome}</li>
+                    <li>
+                      $i18n{nearbyShareContactVisibilityNearbyShareOpenOwn}
+                    </li>
+                  </ul>
                 </div>
               </template>
               <template is="dom-if"
                   if="[[isVisibility_(selectedVisibility,'none')]]">
                 <div class="cr-secondary-text">
-                  $i18n{nearbyShareContactVisibilityOwnNone}
+                  <ul class="explanation-list">
+                    <li>$i18n{nearbyShareContactVisibilityOwnNone}</li>
+                  </ul>
                 </div>
               </template>
             </div>
@@ -272,6 +295,10 @@
         </div>
 
         <div id="contactsWrapper">
+          <div id="contactsHeading">
+            $i18n{nearbyShareContactVisibilityContactsTitle}
+          </div>
+
           <!-- Show when the user has one or more contacts downloaded. -->
           <template is="dom-if" if="[[inContactsState_(contactsState,
                                       ContactsState.HAS_CONTACTS)]]">
