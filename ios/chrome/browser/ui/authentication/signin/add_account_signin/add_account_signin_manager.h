@@ -23,9 +23,7 @@ class IdentityManager;
 
 // Shows alert modal dialog and interrupts sign-in operation.
 // |error| is the error to be displayed.
-// |identity| is the identity of the account that failed to add.
-- (void)addAccountSigninManagerFailedWithError:(NSError*)error
-                                      identity:(ChromeIdentity*)identity;
+- (void)addAccountSigninManagerFailedWithError:(NSError*)error;
 
 // Completes the sign-in operation.
 // |signinResult| is the state of sign-in at add account flow completion.

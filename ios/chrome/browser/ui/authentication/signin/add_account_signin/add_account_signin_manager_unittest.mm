@@ -172,8 +172,7 @@ TEST_F(AddAccountSigninManagerTest,
   // Verify that completion was called with canceled result state and an error
   // is shown.
   OCMExpect([signin_manager_delegate_
-      addAccountSigninManagerFailedWithError:[OCMArg any]
-                                    identity:fake_identity_]);
+      addAccountSigninManagerFailedWithError:[OCMArg any]]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
@@ -241,8 +240,7 @@ TEST_F(AddAccountSigninManagerTest,
   // Verify that completion was called with canceled result state and an error
   // is shown.
   OCMExpect([signin_manager_delegate_
-      addAccountSigninManagerFailedWithError:[OCMArg any]
-                                    identity:fake_identity_]);
+      addAccountSigninManagerFailedWithError:[OCMArg any]]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];

@@ -160,14 +160,13 @@ using signin_metrics::PromoAction;
 
 #pragma mark - AddAccountSigninManagerDelegate
 
-- (void)addAccountSigninManagerFailedWithError:(NSError*)error
-                                      identity:(ChromeIdentity*)identity {
+- (void)addAccountSigninManagerFailedWithError:(NSError*)error {
   DCHECK(error);
   __weak AddAccountSigninCoordinator* weakSelf = self;
   ProceduralBlock dismissAction = ^{
     [weakSelf addAccountSigninManagerFinishedWithSigninResult:
                   SigninCoordinatorResultCanceledByUser
-                                                     identity:identity];
+                                                     identity:nil];
   };
 
   self.alertCoordinator = ErrorCoordinator(
@@ -204,6 +203,9 @@ using signin_metrics::PromoAction;
                               identity:(ChromeIdentity*)identity {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.userSigninCoordinator);
+  // |identity| is set, only and only if the sign-in is successful.
+  DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
+         ((signinResult != SigninCoordinatorResultSuccess) && !identity));
   self.identityInteractionManager = nil;
   [self runCompletionCallbackWithSigninResult:signinResult
                                      identity:identity

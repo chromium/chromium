@@ -97,8 +97,7 @@
   if (error) {
     // Filter out errors handled internally by ChromeIdentity.
     if (ShouldHandleSigninError(error)) {
-      [self.delegate addAccountSigninManagerFailedWithError:error
-                                                   identity:identity];
+      [self.delegate addAccountSigninManagerFailedWithError:error];
       return;
     }
     signinResult = SigninCoordinatorResultCanceledByUser;
