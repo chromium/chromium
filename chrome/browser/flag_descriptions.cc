@@ -503,15 +503,6 @@ const char kForceEnableDevicesPageDescription[] =
     "content, instead of a warning message. Note: chrome://devices is "
     "no longer supported, and this flag will be permanently removed in M88.";
 
-const char kDisableBestEffortTasksName[] = "Skip best effort tasks";
-const char kDisableBestEffortTasksDescription[] =
-    "With this flag on, tasks of the lowest priority will not be executed "
-    "until shutdown. The queue of low priority tasks can increase memory usage."
-    "Also, while it should be possible to use Chrome almost normally with this "
-    "flag, it is expected that some non-visible operations such as writing "
-    "user data to disk, cleaning caches, reporting metrics or updating "
-    "components won't be performed until shutdown.";
-
 const char kDisallowDocWrittenScriptsUiName[] =
     "Block scripts loaded via document.write";
 const char kDisallowDocWrittenScriptsUiDescription[] =
