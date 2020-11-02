@@ -45,6 +45,8 @@ const char kVirtualChannel[] = "virtual-channel";
 
 const char kLatestUiVersion[] = "latest-ui-version";
 
+const char kExtraInfoKey[] = "extra_info";
+
 typedef std::vector<std::unique_ptr<DumpInfo>> DumpList;
 
 std::unique_ptr<PrefService> CreatePrefService() {
@@ -249,6 +251,9 @@ bool MinidumpUploader::DoWork() {
     }
     if (!dump.params().stadia_session_id.empty()) {
       g.SetParameter("stadia_session_id", dump.params().stadia_session_id);
+    }
+    if (!dump.params().extra_info.empty()) {
+      g.SetParameter(kExtraInfoKey, dump.params().extra_info);
     }
 
     std::string response;
