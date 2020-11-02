@@ -1560,10 +1560,13 @@ void NGLineBreaker::HandleAtomicInline(
   // Doing a full layout for min/max content can also have undesirable
   // side effects when that falls back to legacy layout.
   if (mode_ == NGLineBreakerMode::kContent) {
+    // https://drafts.csswg.org/css-pseudo-4/#first-text-line
+    // > The first line of a table-cell or inline-block cannot be the first
+    // > formatted line of an ancestor element.
     item_result->layout_result =
         NGBlockNode(ToLayoutBox(item.GetLayoutObject()))
             .LayoutAtomicInline(constraint_space_, node_.Style(),
-                                line_info->UseFirstLineStyle());
+                                /* use_first_line_style */ false);
     item_result->inline_size =
         NGFragment(constraint_space_.GetWritingDirection(),
                    item_result->layout_result->PhysicalFragment())
