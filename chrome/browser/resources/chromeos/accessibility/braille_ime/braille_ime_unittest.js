@@ -111,8 +111,7 @@ BrailleImeUnitTest = class extends testing.Test {
 
   activateIme() {
     this.onActivate.dispatch(ENGINE_ID);
-    assertThat(
-        this.port.messages, eqJSON([{type: 'activeState', active: true}]));
+    assertDeepEquals(this.port.messages, [{type: 'activeState', active: true}]);
     this.port.messages.length = 0;
   }
 
@@ -196,10 +195,10 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   expectTrue(this.sendKeyUp('Space'));
   expectTrue(this.sendKeyUp('KeyF'));
 
-  assertThat(this.port.messages, eqJSON([
-               {type: 'brailleDots', dots: 0x03},
-               {type: 'brailleDots', dots: 0x09}, {type: 'brailleDots', dots: 0}
-             ]));
+  assertDeepEquals(this.port.messages, [
+    {type: 'brailleDots', dots: 0x03}, {type: 'brailleDots', dots: 0x09},
+    {type: 'brailleDots', dots: 0}
+  ]);
 });
 
 TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
@@ -210,9 +209,9 @@ TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   assertTrue(this.menuItems[0].checked);
 
   expectEquals(undefined, this.sendKeyDown('Backspace'));
-  assertThat(this.port.messages, eqJSON([
-               {type: 'backspace', requestId: this.lastSentKeyRequestId_ + ''}
-             ]));
+  assertDeepEquals(
+      this.port.messages,
+      [{type: 'backspace', requestId: this.lastSentKeyRequestId_ + ''}]);
   this.port.onMessage.dispatch({
     type: 'keyEventHandled',
     requestId: this.lastSentKeyRequestId_ + '',

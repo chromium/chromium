@@ -1385,46 +1385,6 @@ function runAllActionsAsync(whenTestDone, var_args) {
 }
 
 /**
- * Mock4JS matcher object that matches the actual argument and the expected
- * value iff their JSON representations are same.
- * @param {Object} expectedValue
- * @constructor
- */
-function MatchJSON(expectedValue) {
-  this.expectedValue_ = expectedValue;
-}
-
-MatchJSON.prototype = {
-  /**
-   * Checks that JSON representation of the actual and expected arguments are
-   * same.
-   * @param {Object} actualArgument The argument to match.
-   * @return {boolean} Result of the comparison.
-   */
-  argumentMatches: function(actualArgument) {
-    return JSON.stringify(this.expectedValue_) ===
-        JSON.stringify(actualArgument);
-  },
-
-  /**
-   * Describes the matcher.
-   * @return {string} Description of this Mock4JS matcher.
-   */
-  describe: function() {
-    return 'eqJSON(' + JSON.stringify(this.expectedValue_) + ')';
-  },
-};
-
-/**
- * Builds a MatchJSON argument matcher for a given expected value.
- * @param {Object} expectedValue
- * @return {MatchJSON} Resulting Mock4JS matcher.
- */
-function eqJSON(expectedValue) {
-  return new MatchJSON(expectedValue);
-}
-
-/**
  * Exports assertion methods. All assertion methods delegate to the chai.js
  * assertion library.
  */
@@ -1466,7 +1426,6 @@ function exportExpects() {
 function exportMock4JsHelpers() {
   exports.callFunction = callFunction;
   exports.callFunctionWithSavedArgs = callFunctionWithSavedArgs;
-  exports.eqJSON = eqJSON;
   exports.SaveMockArguments = SaveMockArguments;
 
   // Import the Mock4JS helpers.
