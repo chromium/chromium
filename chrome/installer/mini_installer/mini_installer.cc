@@ -480,11 +480,11 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
           SETUP_PATCH_FAILED_PATH_NOT_FOUND,
           SETUP_PATCH_FAILED_COULD_NOT_CREATE_PROCESS);
     }
-
-    if (!exit_code.IsSuccess())
-      DeleteFile(setup_path->get());
-    else
+    ::DeleteFile(setup_path->get());
+    if (exit_code.IsSuccess())
       setup_path->assign(setup_dest_path);
+    else
+      setup_path->clear();
 
     return exit_code;
   }
@@ -590,8 +590,10 @@ void DeleteExtractedFiles(HMODULE module,
                           const PathString& archive_path,
                           const PathString& setup_path,
                           const PathString& base_path) {
-  ::DeleteFile(archive_path.get());
-  ::DeleteFile(setup_path.get());
+  if (!archive_path.empty())
+    ::DeleteFile(archive_path.get());
+  if (!setup_path.empty())
+    ::DeleteFile(setup_path.get());
 
 #if defined(COMPONENT_BUILD)
   // Delete the modules in a component build extracted for use by setup.exe.
