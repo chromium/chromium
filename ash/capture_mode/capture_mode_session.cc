@@ -394,7 +394,8 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
   if (event->key_code() == ui::VKEY_RETURN) {
     event->StopPropagation();
-    controller_->PerformCapture();  // |this| is destroyed here.
+    if (!IsInCountDownAnimation())
+      controller_->PerformCapture();  // |this| is destroyed here.
     return;
   }
 }
@@ -534,6 +535,14 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
                                         bool is_touch) {
+  // If we're currently in countdown animation, don't further handle any
+  // located events. However we should stop the event propagation here to
+  // prevent other event handlers from handling this event.
+  if (IsInCountDownAnimation()) {
+    event->StopPropagation();
+    return;
+  }
+
   // No need to handle events if the current source is kFullscreen.
   const CaptureModeSource capture_source = controller_->source();
   if (capture_source == CaptureModeSource::kFullscreen)
@@ -1152,6 +1161,12 @@ void CaptureModeSession::UpdateRootWindowDimmers() {
     dimmer->window()->Show();
     root_window_dimmers_.emplace(std::move(dimmer));
   }
+}
+
+bool CaptureModeSession::IsInCountDownAnimation() const {
+  CaptureLabelView* label_view =
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
+  return label_view->IsInCountDownAnimation();
 }
 
 }  // namespace ash

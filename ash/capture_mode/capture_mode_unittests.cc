@@ -995,4 +995,40 @@ TEST_F(CaptureModeTest, RegionDragCursorCompositing) {
   }
 }
 
+// Test that during countdown, capture mode session should not handle any
+// incoming input events.
+TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
+  // We need a non-zero duration to avoid infinite loop on countdown.
+  ui::ScopedAnimationDurationScaleMode animatin_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create 2 windows that overlap with each other.
+  std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindow(gfx::Rect(150, 150, 200, 200)));
+
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kWindow);
+  controller->SetType(CaptureModeType::kVideo);
+  controller->Start();
+  EXPECT_TRUE(controller->IsActive());
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window1.get());
+  auto* capture_mode_session = controller->capture_mode_session();
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
+
+  // Start video recording. Countdown should start at this moment.
+  event_generator->ClickLeftButton();
+
+  // Now move the mouse onto the other window, we should not change the captured
+  // window during countdown.
+  event_generator->MoveMouseToCenterOf(window2.get());
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
+  EXPECT_NE(capture_mode_session->GetSelectedWindow(), window2.get());
+
+  WaitForCountDownToFinish();
+  controller->Stop();
+}
+
 }  // namespace ash

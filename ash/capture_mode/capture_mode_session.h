@@ -184,6 +184,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();
 
+  // Returns true if we are currently in video recording countdown animation.
+  bool IsInCountDownAnimation() const;
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may
