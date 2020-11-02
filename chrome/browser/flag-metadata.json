@@ -145,7 +145,7 @@
   {
     "name": "app-service-intent-handling",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "arc-custom-tabs-experiment",
