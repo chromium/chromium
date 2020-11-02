@@ -230,24 +230,6 @@ void PpapiPluginProcessHost::DidDeleteOutOfProcessInstance(
 }
 
 // static
-void PpapiPluginProcessHost::OnPluginInstanceThrottleStateChange(
-    int plugin_process_id,
-    int32_t pp_instance,
-    bool is_throttled) {
-  for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (iter->process_.get() &&
-        iter->process_->GetData().id == plugin_process_id) {
-      // Found the plugin.
-      iter->host_impl_->OnThrottleStateChanged(pp_instance, is_throttled);
-      return;
-    }
-  }
-  // Note: It's possible that the plugin process has already been deleted by
-  // the time this message is received. For example, it could have crashed.
-  // That's OK, we can just ignore this message.
-}
-
-// static
 void PpapiPluginProcessHost::FindByName(
     const base::string16& name,
     std::vector<PpapiPluginProcessHost*>* hosts) {

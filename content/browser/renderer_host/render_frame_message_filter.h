@@ -102,9 +102,6 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
                                              int32_t pp_instance,
                                              bool is_external);
   void OnOpenChannelToPpapiBroker(int routing_id, const base::FilePath& path);
-  void OnPluginInstanceThrottleStateChange(int plugin_child_id,
-                                           int32_t pp_instance,
-                                           bool is_throttled);
 #endif  // ENABLE_PLUGINS
 
 #if BUILDFLAG(ENABLE_PLUGINS)

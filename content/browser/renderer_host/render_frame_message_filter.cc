@@ -202,8 +202,6 @@ bool RenderFrameMessageFilter::OnMessageReceived(const IPC::Message& message) {
                         OnDidCreateOutOfProcessPepperInstance)
     IPC_MESSAGE_HANDLER(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
                         OnDidDeleteOutOfProcessPepperInstance)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_PluginInstanceThrottleStateChange,
-                        OnPluginInstanceThrottleStateChange)
 #endif  // ENABLE_PLUGINS
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -336,15 +334,6 @@ void RenderFrameMessageFilter::OnDidDeleteOutOfProcessPepperInstance(
     PpapiPluginProcessHost::DidDeleteOutOfProcessInstance(plugin_child_id,
                                                           pp_instance);
   }
-}
-
-void RenderFrameMessageFilter::OnPluginInstanceThrottleStateChange(
-    int plugin_child_id,
-    int32_t pp_instance,
-    bool is_throttled) {
-  // Feature is only implemented for non-external Plugins.
-  PpapiPluginProcessHost::OnPluginInstanceThrottleStateChange(
-      plugin_child_id, pp_instance, is_throttled);
 }
 
 #endif  // ENABLE_PLUGINS

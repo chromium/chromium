@@ -73,7 +73,6 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
-#include "content/browser/plugin_content_origin_allowlist.h"
 #include "content/browser/portal/portal.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -2758,11 +2757,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   CHECK(view_.get());
 
   view_->CreateView(params.context);
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  plugin_content_origin_allowlist_ =
-      std::make_unique<PluginContentOriginAllowlist>(this);
-#endif
 
   registrar_.Add(this,
                  NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED,

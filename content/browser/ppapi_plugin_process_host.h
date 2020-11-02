@@ -85,11 +85,6 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   static void DidDeleteOutOfProcessInstance(int plugin_process_id,
                                             int32_t pp_instance);
 
-  // Notification that a Plugin instance has been throttled or unthrottled.
-  static void OnPluginInstanceThrottleStateChange(int plugin_process_id,
-                                                  int32_t pp_instance,
-                                                  bool is_throttled);
-
   // Returns the instances that match the specified process name.
   // It can only be called on the IO thread.
   static void FindByName(const base::string16& name,
@@ -185,4 +180,3 @@ class PpapiPluginProcessHostIterator
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PPAPI_PLUGIN_PROCESS_HOST_H_
-

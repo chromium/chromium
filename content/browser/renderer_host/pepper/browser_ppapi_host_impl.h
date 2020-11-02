@@ -36,10 +36,6 @@ class CONTENT_EXPORT BrowserPpapiHostImpl : public BrowserPpapiHost {
  public:
   class InstanceObserver {
    public:
-    // Called when the plugin instance is throttled or unthrottled because of
-    // the Plugin Power Saver feature. Invoked on the IO thread.
-    virtual void OnThrottleStateChanged(bool is_throttled) = 0;
-
     // Called right before the instance is destroyed.
     virtual void OnHostDestroyed() = 0;
   };
@@ -92,9 +88,6 @@ class CONTENT_EXPORT BrowserPpapiHostImpl : public BrowserPpapiHost {
   void AddInstanceObserver(PP_Instance instance, InstanceObserver* observer);
   void RemoveInstanceObserver(PP_Instance instance, InstanceObserver* observer);
 
-  void OnThrottleStateChanged(PP_Instance instance, bool is_throttled);
-  bool IsThrottled(PP_Instance instance) const;
-
   scoped_refptr<IPC::MessageFilter> message_filter() {
     return message_filter_;
   }
@@ -130,7 +123,6 @@ class CONTENT_EXPORT BrowserPpapiHostImpl : public BrowserPpapiHost {
     ~InstanceData();
 
     PepperRendererInstanceData renderer_data;
-    bool is_throttled;
 
     base::ObserverList<InstanceObserver>::Unchecked observer_list;
   };

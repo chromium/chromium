@@ -388,10 +388,6 @@ IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
                     unsigned /* action */)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-// Notifies the renderer of updates to the Plugin Power Saver origin allowlist.
-IPC_MESSAGE_ROUTED1(FrameMsg_UpdatePluginContentOriginAllowlist,
-                    std::set<url::Origin> /* origin_allowlist */)
-
 // This message notifies that the frame that the volume of the Pepper instance
 // for |pp_instance| should be changed to |volume|.
 IPC_MESSAGE_ROUTED2(FrameMsg_SetPepperVolume,
@@ -466,13 +462,6 @@ IPC_SYNC_MESSAGE_CONTROL4_3(FrameHostMsg_GetPluginInfo,
                             content::WebPluginInfo /* plugin info */,
                             std::string /* actual_mime_type */)
 
-// A renderer sends this to the browser process when it wants to temporarily
-// whitelist an origin's plugin content as essential. This temporary whitelist
-// is specific to a top level frame, and is cleared when the whitelisting
-// RenderFrame is destroyed.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_PluginContentOriginAllowed,
-                    url::Origin /* content_origin */)
-
 // A renderer sends this to the browser process when it wants to create a ppapi
 // plugin.  The browser will create the plugin process if necessary, and will
 // return a handle to the channel on success.
@@ -537,12 +526,6 @@ IPC_MESSAGE_CONTROL3(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
                      int32_t /* pp_instance */,
                      bool /* is_external */)
 
-// A renderer sends this to the browser process when it throttles or unthrottles
-// a plugin instance for the Plugin Power Saver feature.
-IPC_MESSAGE_CONTROL3(FrameHostMsg_PluginInstanceThrottleStateChange,
-                     int /* plugin_child_id */,
-                     int32_t /* pp_instance */,
-                     bool /* is_throttled */)
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // Indicates that the current frame has finished running its unload handler (if

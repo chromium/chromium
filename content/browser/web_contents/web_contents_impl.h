@@ -107,7 +107,6 @@ class JavaScriptDialogManager;
 class JavaScriptDialogNavigationDeferrer;
 class MediaWebContentsObserver;
 class NFCHost;
-class PluginContentOriginAllowlist;
 class Portal;
 class RenderFrameHost;
 class RenderViewHost;
@@ -1896,12 +1895,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Manages the guest state for browser plugin, if this WebContents is a guest;
   // NULL otherwise.
   std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Manages the allowlist of plugin content origins exempt from power saving.
-  std::unique_ptr<PluginContentOriginAllowlist>
-      plugin_content_origin_allowlist_;
-#endif
 
   // This must be at the end, or else we might get notifications and use other
   // member variables that are gone.

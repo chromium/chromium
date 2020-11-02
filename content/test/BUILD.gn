@@ -2292,7 +2292,6 @@ test("content_unittests") {
 
   if (enable_plugins) {
     sources += [
-      "../browser/plugin_content_origin_allowlist_unittest.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.h",
       "../browser/renderer_host/pepper/pepper_file_system_browser_host_unittest.cc",

@@ -84,7 +84,6 @@ PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
       pending_accept_(false),
       pending_read_size_(0),
       pending_read_pp_error_(PP_OK_COMPLETIONPENDING),
-      pending_read_on_unthrottle_(false),
       pending_write_bytes_written_(0),
       pending_write_pp_error_(PP_OK_COMPLETIONPENDING),
       is_potentially_secure_plugin_context_(
@@ -94,7 +93,6 @@ PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
 
   ++g_num_tcp_filter_instances;
   host_->AddInstanceObserver(instance_, this);
-  is_throttled_ = host_->IsThrottled(instance_);
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
     NOTREACHED();
@@ -219,30 +217,10 @@ int32_t PepperTCPSocketMessageFilter::OnResourceMessageReceived(
   return PP_ERROR_FAILED;
 }
 
-void PepperTCPSocketMessageFilter::OnThrottleStateChanged(bool is_throttled) {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &PepperTCPSocketMessageFilter::ThrottleStateChangedOnUIThread, this,
-          is_throttled));
-}
-
 void PepperTCPSocketMessageFilter::OnHostDestroyed() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   host_->RemoveInstanceObserver(instance_, this);
   host_ = nullptr;
-}
-
-void PepperTCPSocketMessageFilter::ThrottleStateChangedOnUIThread(
-    bool is_throttled) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  is_throttled_ = is_throttled;
-
-  if (pending_read_on_unthrottle_ && !is_throttled) {
-    pending_read_on_unthrottle_ = false;
-    TryRead();
-  }
 }
 
 void PepperTCPSocketMessageFilter::OnComplete(
@@ -285,8 +263,7 @@ void PepperTCPSocketMessageFilter::OnReadError(int net_error) {
   // Complete pending read with the error message if there's a pending read, and
   // the read data pipe has already been closed. If the pipe is still open, need
   // to wait until all data has been read before can start failing reads.
-  if (pending_read_context_.is_valid() && !receive_stream_ &&
-      !pending_read_on_unthrottle_) {
+  if (pending_read_context_.is_valid() && !receive_stream_) {
     TryRead();
   }
 }
@@ -746,12 +723,6 @@ void PepperTCPSocketMessageFilter::TryRead() {
   DCHECK(state_.IsConnected());
   DCHECK(pending_read_context_.is_valid());
   DCHECK_GT(pending_read_size_, 0u);
-  DCHECK(!pending_read_on_unthrottle_);
-
-  if (is_throttled_) {
-    pending_read_on_unthrottle_ = true;
-    return;
-  }
 
   // This loop's body will generally run only once, unless there's a read error,
   // in which case, it will start over, to re-apply the initial logic.

@@ -2316,8 +2316,6 @@ source_set("browser") {
       "media/session/pepper_playback_observer.h",
       "media/session/pepper_player_delegate.cc",
       "media/session/pepper_player_delegate.h",
-      "plugin_content_origin_allowlist.cc",
-      "plugin_content_origin_allowlist.h",
       "plugin_list.cc",
       "plugin_list.h",
       "plugin_private_storage_helper.cc",
