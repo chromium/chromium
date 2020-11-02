@@ -281,6 +281,11 @@ ParentPermissionDialogView::ParentPermissionDialogView(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_PARENT_PERMISSION_PROMPT_CANCEL_BUTTON));
 
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(true);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   identity_manager_ = IdentityManagerFactory::GetForProfile(params_->profile);
 }
 
@@ -311,13 +316,6 @@ base::string16 ParentPermissionDialogView::GetActiveUserFirstName() const {
   user_manager::UserManager* manager = user_manager::UserManager::Get();
   const user_manager::User* user = manager->GetActiveUser();
   return user->GetGivenName();
-}
-
-gfx::Size ParentPermissionDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void ParentPermissionDialogView::AddedToWidget() {
@@ -388,16 +386,8 @@ bool ParentPermissionDialogView::Accept() {
   return false;
 }
 
-bool ParentPermissionDialogView::ShouldShowCloseButton() const {
-  return true;
-}
-
 base::string16 ParentPermissionDialogView::GetAccessibleWindowTitle() const {
   return params_->message;
-}
-
-ui::ModalType ParentPermissionDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 void ParentPermissionDialogView::CreateContents() {

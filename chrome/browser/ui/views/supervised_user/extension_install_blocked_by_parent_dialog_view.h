@@ -18,6 +18,8 @@ class Extension;
 
 // Modal dialog that shows when a child user attempts to install an extension
 // but blocked by their parent.
+// TODO(pbos): Replace DialogDelegateView with View and use a separate
+// DialogDelegate. This no longer overrides any DialogDelegateView methods.
 class ExtensionInstallBlockedByParentDialogView
     : public views::DialogDelegateView {
  public:
@@ -39,10 +41,6 @@ class ExtensionInstallBlockedByParentDialogView
   ~ExtensionInstallBlockedByParentDialogView() override;
 
  private:
-  // views::DialogDelegateView
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-
   void ConfigureTitle();
   void CreateContents();
   base::string16 GetExtensionTypeString();

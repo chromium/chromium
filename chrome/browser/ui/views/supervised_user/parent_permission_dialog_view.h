@@ -86,7 +86,6 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   base::string16 GetActiveUserFirstName() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
 
   // views::DialogDelegate:
@@ -95,8 +94,6 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   // views::WidgetDelegate:
   base::string16 GetAccessibleWindowTitle() const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
 
   // Changes the widget size to accommodate the contents' preferred size.
   void ResizeWidget();

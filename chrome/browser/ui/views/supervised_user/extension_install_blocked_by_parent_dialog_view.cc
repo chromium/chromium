@@ -65,6 +65,10 @@ ExtensionInstallBlockedByParentDialogView::
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, l10n_util::GetStringUTF16(IDS_OK));
   set_draggable(true);
 
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   SetIcon(gfx::CreateVectorIcon(chromeos::kNotificationSupervisedUserIcon,
                                 SK_ColorDKGRAY));
   SetShowIcon(true);
@@ -76,18 +80,6 @@ ExtensionInstallBlockedByParentDialogView::
     ~ExtensionInstallBlockedByParentDialogView() {
   if (done_callback_)
     std::move(done_callback_).Run();
-}
-
-gfx::Size ExtensionInstallBlockedByParentDialogView::CalculatePreferredSize()
-    const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType ExtensionInstallBlockedByParentDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 void ExtensionInstallBlockedByParentDialogView::ConfigureTitle() {
