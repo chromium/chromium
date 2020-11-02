@@ -947,7 +947,11 @@ static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
     auto chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
     UpdateTouchActionRegion(*chunk.hit_test_data, layer_state, chunk_state,
                             layer_offset, touch_action_region);
-    if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+    // TODO(https://crbug.com/841364): Checking for empty rect here is to avoid
+    // costly checks for kWheelEventRegions. This "if" condition will be gone
+    // once kWheelEventRegions feature flag is removed.
+    if (!chunk.hit_test_data->wheel_event_rects.IsEmpty() &&
+        base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
       UpdateWheelEventRegion(*chunk.hit_test_data, layer_state, chunk_state,
                              layer_offset, wheel_event_region);
     }
@@ -956,8 +960,13 @@ static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
         property_tree_manager, non_fast_scrollable_region);
   }
   layer.SetTouchActionRegion(std::move(touch_action_region));
-  if (base::FeatureList::IsEnabled(::features::kWheelEventRegions))
+  // TODO(https://crbug.com/841364): Fist condition in the "if" statement below
+  // is to avoid costly checks for kWheelEventRegions. This "if" condition will
+  // be gone once kWheelEventRegions feature flag is removed.
+  if (wheel_event_region != layer.wheel_event_region() &&
+      base::FeatureList::IsEnabled(::features::kWheelEventRegions))
     layer.SetWheelEventRegion(std::move(wheel_event_region));
+
   layer.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region));
 }
 

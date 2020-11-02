@@ -1321,21 +1321,20 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
   layer->set_may_contain_video(may_contain_video_);
   layer->SetNonFastScrollableRegion(inputs_.non_fast_scrollable_region);
   layer->SetTouchActionRegion(inputs_.touch_action_region);
-  if (!base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
-    // TODO(sunxd): Pass the correct region for wheel event handlers, see
-    // https://crbug.com/841364.
-    EventListenerProperties mouse_wheel_props =
-        layer_tree_host()->event_listener_properties(
-            EventListenerClass::kMouseWheel);
-    if (mouse_wheel_props == EventListenerProperties::kBlocking ||
-        mouse_wheel_props == EventListenerProperties::kBlockingAndPassive) {
-      layer->SetWheelEventHandlerRegion(Region(gfx::Rect(bounds())));
-    } else {
-      layer->SetWheelEventHandlerRegion(Region());
-    }
-  } else {
+
+  // TODO(https://crbug.com/841364): This block is optimized to avoid checks
+  // for kWheelEventRegions. It will be simplified once kWheelEventRegions
+  // feature flag is removed.
+  EventListenerProperties mouse_wheel_props =
+      layer_tree_host()->event_listener_properties(
+          EventListenerClass::kMouseWheel);
+  if ((mouse_wheel_props == EventListenerProperties::kBlocking ||
+       mouse_wheel_props == EventListenerProperties::kBlockingAndPassive) &&
+      !base::FeatureList::IsEnabled(::features::kWheelEventRegions))
+    layer->SetWheelEventHandlerRegion(Region(gfx::Rect(bounds())));
+  else
     layer->SetWheelEventHandlerRegion(inputs_.wheel_event_region);
-  }
+
   layer->SetContentsOpaque(inputs_.contents_opaque);
   layer->SetContentsOpaqueForText(inputs_.contents_opaque_for_text);
   layer->SetShouldCheckBackfaceVisibility(should_check_backface_visibility_);

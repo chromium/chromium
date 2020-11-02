@@ -3012,7 +3012,14 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // PrePaint tree walk to update blocking wheel event handler state.
   void MarkBlockingWheelEventHandlerChanged();
   bool BlockingWheelEventHandlerChanged() const {
-    return bitfields_.BlockingWheelEventHandlerChanged();
+    // TODO(https://crbug.com/841364): This block is optimized to avoid costly
+    // checks for kWheelEventRegions. It will be simplified once
+    // kWheelEventRegions feature flag is removed.
+    if (!bitfields_.BlockingWheelEventHandlerChanged())
+      return false;
+    return base::FeatureList::IsEnabled(::features::kWheelEventRegions)
+               ? bitfields_.BlockingWheelEventHandlerChanged()
+               : false;
   }
   bool DescendantBlockingWheelEventHandlerChanged() const {
     return bitfields_.DescendantBlockingWheelEventHandlerChanged();
@@ -3734,8 +3741,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           effective_allowed_touch_action_changed_(true),
           descendant_effective_allowed_touch_action_changed_(false),
           inside_blocking_wheel_event_handler_(false),
-          blocking_wheel_event_handler_changed_(
-              base::FeatureList::IsEnabled(::features::kWheelEventRegions)),
+          blocking_wheel_event_handler_changed_(true),
           descendant_blocking_wheel_event_handler_changed_(false),
           is_effective_root_scroller_(false),
           is_global_root_scroller_(false),

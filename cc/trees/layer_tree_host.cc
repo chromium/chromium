@@ -1208,28 +1208,26 @@ void LayerTreeHost::SetEventListenerProperties(
   if (event_listener_properties_[index] == properties)
     return;
 
-  if (!base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
-    // If the mouse wheel event listener is blocking, then every layer in the
-    // layer tree sets a wheel event handler region to be its entire bounds,
-    // otherwise it sets it to empty.
-    //
-    // Thus when it changes, we want to request every layer to push properties
-    // and recompute its wheel event handler region, since the computation is
-    // done in PushPropertiesTo.
-    if (event_class == EventListenerClass::kMouseWheel) {
-      bool new_property_is_blocking =
-          properties == EventListenerProperties::kBlocking ||
-          properties == EventListenerProperties::kBlockingAndPassive;
-      EventListenerProperties old_properties =
-          event_listener_properties_[index];
-      bool old_property_is_blocking =
-          old_properties == EventListenerProperties::kBlocking ||
-          old_properties == EventListenerProperties::kBlockingAndPassive;
+  // If the mouse wheel event listener is blocking, then every layer in the
+  // layer tree sets a wheel event handler region to be its entire bounds,
+  // otherwise it sets it to empty.
+  //
+  // Thus when it changes, we want to request every layer to push properties
+  // and recompute its wheel event handler region, since the computation is
+  // done in PushPropertiesTo.
+  if (event_class == EventListenerClass::kMouseWheel &&
+      !base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+    bool new_property_is_blocking =
+        properties == EventListenerProperties::kBlocking ||
+        properties == EventListenerProperties::kBlockingAndPassive;
+    EventListenerProperties old_properties = event_listener_properties_[index];
+    bool old_property_is_blocking =
+        old_properties == EventListenerProperties::kBlocking ||
+        old_properties == EventListenerProperties::kBlockingAndPassive;
 
-      if (old_property_is_blocking != new_property_is_blocking) {
-        for (auto* layer : *this)
-          layer->SetNeedsPushProperties();
-      }
+    if (old_property_is_blocking != new_property_is_blocking) {
+      for (auto* layer : *this)
+        layer->SetNeedsPushProperties();
     }
   }
 
