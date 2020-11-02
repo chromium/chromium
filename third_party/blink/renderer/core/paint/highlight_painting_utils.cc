@@ -233,18 +233,16 @@ HighlightPaintingUtils::HighlightTextDecoration(
     return base::nullopt;
 
   base::Optional<AppliedTextDecoration> highlight_text_decoration =
-      base::nullopt;
+      style_decorations.back();
 
-  if (style_decorations.back().Lines() ==
-      pseudo_style_decorations.back().Lines()) {
+  if (pseudo_style_decorations.size() &&
+      style_decorations.back().Lines() ==
+          pseudo_style_decorations.back().Lines()) {
     highlight_text_decoration = pseudo_style_decorations.back();
-
-    if (style_decorations.size() == pseudo_style_decorations.size()) {
-      highlight_text_decoration.value().SetColor(
-          pseudo_style.VisitedDependentColor(
-              GetCSSPropertyTextDecorationColor()));
-    }
   }
+
+  highlight_text_decoration.value().SetColor(
+      pseudo_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()));
 
   return highlight_text_decoration;
 }
