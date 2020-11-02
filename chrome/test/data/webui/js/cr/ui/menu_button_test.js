@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {MenuButton} from 'chrome://resources/js/cr/ui/menu_button.m.js';
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// clang-format on
 
-/* #export */ function testMenuShowAndHideEvents() {
-  var menu = document.createElement('div');
+function testMenuShowAndHideEvents() {
+  let menu = document.createElement('div');
   cr.ui.decorate(menu, cr.ui.Menu);
+  menu = /** @type {!cr.ui.Menu} */ (menu);
   document.body.appendChild(menu);
 
-  var menuButton = document.createElement('div');
+  let menuButton = document.createElement('div');
   cr.ui.decorate(menuButton, cr.ui.MenuButton);
+  menuButton = /** @type {!cr.ui.MenuButton} */ (menuButton);
   menuButton.menu = menu;
   document.body.appendChild(menuButton);
 
-  var events = [];
+  const events = [];
   menuButton.addEventListener('menushow', function(e) {
     events.push(e);
   });
@@ -55,16 +60,18 @@
   assertFalse(menuButton.classList.contains('using-mouse'));
 }
 
-/* #export */ function testFocusMoves() {
-  var menu = document.createElement('div');
-  var otherButton = document.createElement('button');
+function testFocusMoves() {
+  let menu = document.createElement('div');
+  let otherButton = document.createElement('button');
   cr.ui.decorate(menu, cr.ui.Menu);
+  menu = /** @type {!cr.ui.Menu} */ (menu);
   menu.addMenuItem({});
   document.body.appendChild(menu);
   document.body.appendChild(otherButton);
 
-  var menuButton = document.createElement('div');
+  let menuButton = document.createElement('div');
   cr.ui.decorate(menuButton, cr.ui.MenuButton);
+  menuButton = /** @type {!cr.ui.MenuButton} */ (menuButton);
   // Allow to put focus on the menu button by focus().
   menuButton.tabIndex = 1;
   menuButton.menu = menu;
@@ -85,7 +92,7 @@
   menuButton.dispatchEvent(new MouseEvent('mousedown'));
   assertTrue(menuButton.isMenuShown());
   // Emulate choosing a menu item by mouse click.
-  var menuItem = menu.menuItems[0];
+  const menuItem = menu.menuItems[0];
   menuItem.selected = true;
   menuItem.dispatchEvent(new MouseEvent('mouseup', {buttons: 1}));
   assertFalse(menuButton.isMenuShown());

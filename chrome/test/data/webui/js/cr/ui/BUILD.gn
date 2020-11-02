@@ -109,6 +109,53 @@ js_library("list_test.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("menu_button_test.m") {
+  sources =
+      [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/menu_button_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:menu_button.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("menu_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/menu_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:command.m",
+    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:menu_item.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("position_util_test.m") {
+  sources = [
+    "$root_gen_dir/chrome/test/data/webui/js/cr/ui/position_util_test.m.js",
+  ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:position_util.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("splitter_test.m") {
+  sources =
+      [ "$root_gen_dir/chrome/test/data/webui/js/cr/ui/splitter_test.m.js" ]
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:splitter.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_type_check("closure_compile") {
   uses_js_modules = true
 
@@ -121,5 +168,9 @@ js_type_check("closure_compile") {
     ":list_selection_model_test_util.m",
     ":list_single_selection_model_test.m",
     ":list_test.m",
+    ":menu_button_test.m",
+    ":menu_test.m",
+    ":position_util_test.m",
+    ":splitter_test.m",
   ]
 }

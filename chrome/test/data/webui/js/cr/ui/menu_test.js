@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+// clang-format on
 
 /** @type {cr.ui.Menu} */
 var menu;
@@ -13,6 +16,10 @@ var menu;
 /**
  * @param {number} x The screenX coord of the mouseup event.
  * @param {number} y The screenY coord of the mouseup event.
+ * @return {boolean} The return value is false if event is cancelable and at
+ *     least one of the event handlers which received event called
+ *     Event.preventDefault(). Otherwise it returns true.
+ *     https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
  */
 function mouseUpAt(x, y) {
   var mouseUpEvent = new MouseEvent('mouseup', {
@@ -26,11 +33,12 @@ function mouseUpAt(x, y) {
   return menu.dispatchEvent(mouseUpEvent);
 }
 
-/* #export */ function setUp() {
+function setUp() {
   menu = new cr.ui.Menu;
 }
 
-/* #export */ function testHandleMouseOver() {
+/** @suppress {visibility} Allow test to reach to private properties. */
+function testHandleMouseOver() {
   var called = false;
   menu.findMenuItem_ = function() {
     called = true;
@@ -44,7 +52,7 @@ function mouseUpAt(x, y) {
   assertTrue(called);
 }
 
-/* #export */ function testHandleMouseUp() {
+function testHandleMouseUp() {
   var realNow = Date.now;
   Date.now = function() {
     return 10;
@@ -67,7 +75,7 @@ function mouseUpAt(x, y) {
   Date.now = realNow;
 }
 
-/* #export */ function testShowViaKeyboardIgnoresMouseUps() {
+function testShowViaKeyboardIgnoresMouseUps() {
   menu.show();
   assertTrue(mouseUpAt(0, 0));
 }
@@ -76,7 +84,7 @@ function mouseUpAt(x, y) {
  * Tests that if the command attributes are spacified, they are copied to the
  * corresponding menuitem.
  */
-/* #export */ function testCommandMenuItem() {
+function testCommandMenuItem() {
   // Test 1: The case that the command label is set and other attributes copied.
   var command = new cr.ui.Command();
   command.id = 'the-command';
@@ -140,7 +148,7 @@ function runSeparatorTest(items, hiddenItems, expectedSeparators) {
  * non-separator item on both sides of it. Further, ensure that multiple
  * separators will not be displayed adjacent to each other.
  */
-/* #export */ function testSeparators() {
+function testSeparators() {
   const menuItems = [];
   menu.addSeparator();
   menuItems.push(menu.addMenuItem({label: 'a'}));
@@ -163,7 +171,7 @@ function runSeparatorTest(items, hiddenItems, expectedSeparators) {
 /**
  * Tests that focusSelectedItem() ignores hidden and disabled items.
  */
-/* #export */ function testFocusSelectedItems() {
+function testFocusSelectedItems() {
   const menu = document.createElement('div');
   cr.ui.decorate(menu, cr.ui.Menu);
   const item1 = menu.addMenuItem({label: 'item1'});
@@ -215,7 +223,7 @@ function runSeparatorTest(items, hiddenItems, expectedSeparators) {
 /**
  * Tests that cr.ui.MenuItem defaults to tabindex=-1.
  */
-/* #export */ function testMenuItemTabIndex() {
+function testMenuItemTabIndex() {
   // Defaults to -1.
   const item1 = menu.addMenuItem({label: 'item 1'});
   assertEquals('-1', item1.getAttribute('tabindex'));
