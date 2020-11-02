@@ -5,4 +5,4 @@
 #include "chrome/browser/share/features.h"
 
 const base::Feature kSharingQrCodeAndroid{"SharingQrCodeAndroid",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
