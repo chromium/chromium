@@ -1433,9 +1433,11 @@ AtomicString ComputedStyle::LocaleForLineBreakIterator() const {
 }
 
 Hyphenation* ComputedStyle::GetHyphenation() const {
-  return GetHyphens() == Hyphens::kAuto
-             ? GetFontDescription().LocaleOrDefault().GetHyphenation()
-             : nullptr;
+  if (GetHyphens() != Hyphens::kAuto)
+    return nullptr;
+  if (const LayoutLocale* locale = GetFontDescription().Locale())
+    return locale->GetHyphenation();
+  return nullptr;
 }
 
 const AtomicString& ComputedStyle::HyphenString() const {
