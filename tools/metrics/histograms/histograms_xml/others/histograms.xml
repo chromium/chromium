@@ -17062,7 +17062,7 @@ regressions. -->
 </histogram>
 
 <histogram name="XR.WebXR.ReferenceSpace.Requested" enum="XRReferenceSpaceType"
-    expires_after="2020-12-13">
+    expires_after="2021-03-15">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
