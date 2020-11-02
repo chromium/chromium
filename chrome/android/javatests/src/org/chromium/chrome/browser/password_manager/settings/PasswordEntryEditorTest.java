@@ -111,11 +111,15 @@ public class PasswordEntryEditorTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
 
+        // Masked by default
+        onView(withId(R.id.password_edit)).check(matches(isVisiblePasswordInput(false)));
+
+        // Clicking the unmask button shows the password.
         onView(withId(R.id.password_entry_editor_view_password)).perform(click());
         onView(withId(R.id.password_edit)).check(matches(isVisiblePasswordInput(true)));
 
+        // Clicking the mask button hides the password again.
         onView(withId(R.id.password_entry_editor_view_password)).perform(click());
-
         onView(withId(R.id.password_edit)).check(matches(isVisiblePasswordInput(false)));
     }
 

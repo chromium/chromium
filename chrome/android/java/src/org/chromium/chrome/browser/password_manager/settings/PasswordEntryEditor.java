@@ -16,11 +16,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.textfield.TextInputLayout;
-
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.Toast;
 
@@ -28,16 +25,19 @@ import org.chromium.ui.widget.Toast;
  * Password entry editor that allows editing passwords stored in Chrome.
  */
 public class PasswordEntryEditor extends Fragment {
-    private EditText mSiteText;
-    private EditText mUsernameText;
-    private EditText mPasswordText;
-    private ImageButton mViewPasswordButton;
-    private TextInputLayout mPasswordLabel;
-    private boolean mViewButtonPressed;
     static final String VIEW_BUTTON_PRESSED = "viewButtonPressed";
     public static final String CREDENTIAL_URL = "credentialUrl";
     public static final String CREDENTIAL_NAME = "credentialName";
     public static final String CREDENTIAL_PASSWORD = "credentialPassword";
+
+    private EditText mSiteText;
+    private EditText mUsernameText;
+    private EditText mPasswordText;
+    private TextInputLayout mPasswordLabel;
+
+    private ImageButton mViewPasswordButton;
+
+    private Runnable mPendingAction;
 
     @Override
     public View onCreateView(
@@ -55,24 +55,24 @@ public class PasswordEntryEditor extends Fragment {
         mPasswordText = (EditText) view.findViewById(R.id.password_edit);
         mPasswordLabel = (TextInputLayout) view.findViewById(R.id.password_label);
         mViewPasswordButton = view.findViewById(R.id.password_entry_editor_view_password);
+
         mSiteText.setText(getArguments().getString(CREDENTIAL_URL));
         mUsernameText.setText(getArguments().getString(CREDENTIAL_NAME));
         mPasswordText.setText(getArguments().getString(CREDENTIAL_PASSWORD));
-        if (savedInstanceState != null) {
-            mViewButtonPressed = savedInstanceState.getBoolean(VIEW_BUTTON_PRESSED);
-        } else {
-            mViewButtonPressed = false;
-        }
+        maskPassword();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (ReauthenticationManager.authenticationStillValid(
-                    ReauthenticationManager.ReauthScope.ONE_AT_A_TIME)) {
-            if (mViewButtonPressed) unmaskPassword();
+        boolean hasValidReauth = ReauthenticationManager.authenticationStillValid(
+                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
+        if (!hasValidReauth) {
+            maskPassword();
+        } else if (mPendingAction != null) {
+            mPendingAction.run();
         }
-        mViewPasswordButton.setOnClickListener(this::togglePassswordMasking);
+        mPendingAction = null;
     }
 
     @Override
@@ -95,8 +95,11 @@ public class PasswordEntryEditor extends Fragment {
         mPasswordText.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         mViewPasswordButton.setImageResource(R.drawable.ic_visibility_black);
-        mViewPasswordButton.setContentDescription(
-                getActivity().getString(R.string.password_entry_viewer_view_stored_password));
+        mViewPasswordButton.setOnClickListener(
+                (unusedView)
+                        -> this.performActionAfterReauth(this::unmaskPassword,
+                                R.string.lockscreen_description_view,
+                                R.string.password_entry_view_set_screen_lock));
     }
 
     private void unmaskPassword() {
@@ -106,27 +109,7 @@ public class PasswordEntryEditor extends Fragment {
                 | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         mViewPasswordButton.setImageResource(R.drawable.ic_visibility_off_black);
-        mViewPasswordButton.setContentDescription(
-                getActivity().getString(R.string.password_entry_viewer_hide_stored_password));
-    }
-
-    private void togglePassswordMasking(View view) {
-        if (!ReauthenticationManager.isScreenLockSetUp(getActivity())) {
-            Toast.makeText(getActivity(), R.string.password_entry_viewer_set_lock_screen,
-                         Toast.LENGTH_LONG)
-                    .show();
-        } else if ((mPasswordText.getInputType() & InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
-                == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-            maskPassword();
-        } else if (ReauthenticationManager.authenticationStillValid(
-                           ReauthenticationManager.ReauthScope.ONE_AT_A_TIME)) {
-            unmaskPassword();
-        } else {
-            mViewButtonPressed = true;
-            ReauthenticationManager.displayReauthenticationFragment(
-                    R.string.lockscreen_description_view, R.id.password_entry_editor,
-                    getFragmentManager(), ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
-        }
+        mViewPasswordButton.setOnClickListener((unusedView) -> this.maskPassword());
     }
 
     private void saveChanges() {
@@ -143,10 +126,23 @@ public class PasswordEntryEditor extends Fragment {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean(VIEW_BUTTON_PRESSED, mViewButtonPressed);
+    private void performActionAfterReauth(
+            Runnable action, int reasonString, int noScreenLockMessage) {
+        if (!ReauthenticationManager.isScreenLockSetUp(getActivity().getApplicationContext())) {
+            Toast.makeText(getActivity().getApplicationContext(), noScreenLockMessage,
+                         Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if (ReauthenticationManager.authenticationStillValid(
+                    ReauthenticationManager.ReauthScope.ONE_AT_A_TIME)) {
+            action.run();
+            return;
+        }
+        mPendingAction = action;
+        ReauthenticationManager.displayReauthenticationFragment(reasonString, View.NO_ID,
+                getActivity().getSupportFragmentManager(),
+                ReauthenticationManager.ReauthScope.ONE_AT_A_TIME);
     }
 
     @Override
