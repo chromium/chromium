@@ -1591,7 +1591,7 @@
       'filepath': 'components/search_engines/prepopulated_engines.json',
     },
     'prerender': {
-      'filepath': 'chrome/browser/prefetch/no_state_prefetch/' \
+      'filepath': 'chrome/browser/prerender/' \
                   '|content/browser/prerender/' \
                   '|components/prerender/'
     },

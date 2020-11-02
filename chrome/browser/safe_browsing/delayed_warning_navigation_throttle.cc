@@ -5,7 +5,7 @@
 #include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/prerender/browser/prerender_contents.h"
 #include "components/safe_browsing/core/features.h"

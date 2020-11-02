@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_PRERENDER_TEST_UTILS_H_
-#define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_PRERENDER_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_PRERENDER_PRERENDER_TEST_UTILS_H_
+#define CHROME_BROWSER_PRERENDER_PRERENDER_TEST_UTILS_H_
 
 #include <functional>
 #include <map>
@@ -20,7 +20,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prerender/browser/prerender_contents.h"
@@ -412,4 +412,4 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
 
 }  // namespace prerender
 
-#endif  // CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_PRERENDER_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_PRERENDER_PRERENDER_TEST_UTILS_H_

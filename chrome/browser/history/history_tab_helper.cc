@@ -10,7 +10,7 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_backend.h"

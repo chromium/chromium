@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
+#include "chrome/browser/prerender/prerender_test_utils.h"
 
 #include <memory>
 #include <set>
@@ -16,7 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -588,8 +588,8 @@ PrerenderInProcessBrowserTest::NavigateWithPrerenders(
   CHECK(!expected_final_status_queue.empty());
   std::vector<std::unique_ptr<TestPrerender>> prerenders;
   for (size_t i = 0; i < expected_final_status_queue.size(); i++) {
-    prerenders.push_back(prerender_contents_factory()->ExpectPrerenderContents(
-        expected_final_status_queue[i]));
+    prerenders.push_back(prerender_contents_factory()
+        ->ExpectPrerenderContents(expected_final_status_queue[i]));
   }
 
   // Navigate to the loader URL and then wait for the first prerender to be

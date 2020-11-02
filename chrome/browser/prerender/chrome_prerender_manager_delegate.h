@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
-#define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
+#ifndef CHROME_BROWSER_PRERENDER_CHROME_PRERENDER_MANAGER_DELEGATE_H_
+#define CHROME_BROWSER_PRERENDER_CHROME_PRERENDER_MANAGER_DELEGATE_H_
 
 #include "chrome/browser/net/prediction_options.h"
 #include "components/prerender/browser/prerender_manager_delegate.h"
@@ -38,4 +38,4 @@ class ChromePrerenderManagerDelegate : public PrerenderManagerDelegate {
 
 }  // namespace prerender
 
-#endif  // CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
+#endif  // CHROME_BROWSER_PRERENDER_CHROME_PRERENDER_MANAGER_DELEGATE_H_

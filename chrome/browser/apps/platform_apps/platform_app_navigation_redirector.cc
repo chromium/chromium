@@ -7,7 +7,7 @@
 #include "apps/launcher.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"

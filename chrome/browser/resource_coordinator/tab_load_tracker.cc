@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/stl_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "components/prerender/browser/prerender_contents.h"
 #include "content/public/browser/navigation_controller.h"

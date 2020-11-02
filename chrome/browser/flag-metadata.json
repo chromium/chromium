@@ -1588,17 +1588,17 @@
   },
   {
     "name": "enable-google-srp-isolated-prerender-nsp",
-    "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
+    "owners": [ "//chrome/browser/prerender/OWNERS" ],
     "expiry_milestone": 90
   },
   {
     "name": "enable-google-srp-isolated-prerender-probing",
-    "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
+    "owners": [ "//chrome/browser/prerender/OWNERS" ],
     "expiry_milestone": 90
   },
   {
     "name": "enable-google-srp-isolated-prerenders",
-    "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
+    "owners": [ "//chrome/browser/prerender/OWNERS" ],
     "expiry_milestone": 90
   },
   {

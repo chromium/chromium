@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_manager_delegate.h"
+#include "chrome/browser/prerender/chrome_prerender_manager_delegate.h"
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -94,5 +94,6 @@ ChromePrerenderManagerDelegate::GetPredictionStatus() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return chrome_browser_net::CanPrefetchAndPrerenderUI(profile_->GetPrefs());
 }
+
 
 }  // namespace prerender
