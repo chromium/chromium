@@ -938,6 +938,7 @@ crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/
 crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
 crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-r11f_g11f_b10f-rgb-unsigned_int_10f_11f_11f_rev.html [ RetryOnFailure ]
 crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.
