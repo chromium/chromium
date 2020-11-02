@@ -34,7 +34,7 @@ constexpr base::TimeDelta kHideArtworkDelay =
 UnifiedMediaControlsController::UnifiedMediaControlsController(
     Delegate* delegate)
     : delegate_(delegate) {
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   // Happens in test.
   if (!service)

@@ -361,7 +361,7 @@ MediaControllerImpl::GetMediaSessionController() {
   if (!Shell::HasInstance())
     return nullptr;
 
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return nullptr;

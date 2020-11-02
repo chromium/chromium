@@ -396,7 +396,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   SetArtwork(base::nullopt);
 
   // |service| can be null in tests.
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return;
