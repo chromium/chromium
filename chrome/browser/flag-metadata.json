@@ -821,7 +821,7 @@
   {
     "name": "detect-target-embedding-lookalikes",
     "owners": [ "jdeblasio", "meacer" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "device-discovery-notifications",
@@ -4103,7 +4103,7 @@
   {
     "name": "safety-tips",
     "owners": [ "jdeblasio", "estark", "meacer" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 89
   },
   {
     "name": "same-site-by-default-cookies",
