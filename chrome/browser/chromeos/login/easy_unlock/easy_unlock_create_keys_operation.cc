@@ -38,7 +38,7 @@ const int kSessionKeyByteSize = 16;
 
 const int kEasyUnlockKeyRevision = 1;
 const int kEasyUnlockKeyPrivileges =
-    cryptohome::PRIV_MOUNT | cryptohome::PRIV_ADD | cryptohome::PRIV_REMOVE;
+    cryptohome::PRIV_ADD | cryptohome::PRIV_REMOVE;
 
 }  // namespace
 

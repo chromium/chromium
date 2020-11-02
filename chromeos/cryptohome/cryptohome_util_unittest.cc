@@ -91,7 +91,6 @@ TEST(CryptohomeUtilTest,
   EXPECT_EQ(auth_request.key().data().type(),
             KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
   EXPECT_EQ(auth_request.key().data().label(), kKeyLabel);
-  EXPECT_TRUE(auth_request.key().data().privileges().mount());
   ASSERT_EQ(auth_request.key().data().challenge_response_key_size(), 1);
   EXPECT_EQ(
       auth_request.key().data().challenge_response_key(0).public_key_spki_der(),
@@ -262,25 +261,9 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyDefaultPrivileges) {
   KeyDefinitionToKey(key_def, &key);
   KeyPrivileges privileges = key.data().privileges();
 
-  EXPECT_TRUE(privileges.mount());
   EXPECT_TRUE(privileges.add());
   EXPECT_TRUE(privileges.remove());
   EXPECT_TRUE(privileges.update());
-  EXPECT_FALSE(privileges.authorized_update());
-}
-
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyMountPrivileges) {
-  KeyDefinition key_def;
-  key_def.privileges = PRIV_MOUNT;
-  Key key;
-
-  KeyDefinitionToKey(key_def, &key);
-  KeyPrivileges privileges = key.data().privileges();
-
-  EXPECT_TRUE(privileges.mount());
-  EXPECT_FALSE(privileges.add());
-  EXPECT_FALSE(privileges.remove());
-  EXPECT_FALSE(privileges.update());
   EXPECT_FALSE(privileges.authorized_update());
 }
 
@@ -292,7 +275,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAddPrivileges) {
   KeyDefinitionToKey(key_def, &key);
   KeyPrivileges privileges = key.data().privileges();
 
-  EXPECT_FALSE(privileges.mount());
   EXPECT_TRUE(privileges.add());
   EXPECT_FALSE(privileges.remove());
   EXPECT_FALSE(privileges.update());
@@ -307,7 +289,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyRemovePrivileges) {
   KeyDefinitionToKey(key_def, &key);
   KeyPrivileges privileges = key.data().privileges();
 
-  EXPECT_FALSE(privileges.mount());
   EXPECT_FALSE(privileges.add());
   EXPECT_TRUE(privileges.remove());
   EXPECT_FALSE(privileges.update());
@@ -322,7 +303,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyUpdatePrivileges) {
   KeyDefinitionToKey(key_def, &key);
   KeyPrivileges privileges = key.data().privileges();
 
-  EXPECT_FALSE(privileges.mount());
   EXPECT_FALSE(privileges.add());
   EXPECT_FALSE(privileges.remove());
   EXPECT_TRUE(privileges.update());
@@ -337,7 +317,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAuthorizedUpdatePrivileges) {
   KeyDefinitionToKey(key_def, &key);
   KeyPrivileges privileges = key.data().privileges();
 
-  EXPECT_FALSE(privileges.mount());
   EXPECT_FALSE(privileges.add());
   EXPECT_FALSE(privileges.remove());
   EXPECT_FALSE(privileges.update());
@@ -352,7 +331,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
   KeyDefinitionToKey(key_def, &key);
   KeyPrivileges privileges = key.data().privileges();
 
-  EXPECT_TRUE(privileges.mount());
   EXPECT_TRUE(privileges.add());
   EXPECT_TRUE(privileges.remove());
   EXPECT_TRUE(privileges.update());
@@ -363,7 +341,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
 // the |TYPE_CHALLENGE_RESPONSE| type.
 TEST(CryptohomeUtilTest, KeyDefinitionToKey_ChallengeResponse) {
   using Algorithm = ChallengeResponseKey::SignatureAlgorithm;
-  const int kPrivileges = PRIV_MOUNT;
+  const int kPrivileges = 0;
   const std::string kKey1Spki = "spki1";
   const Algorithm kKey1Algorithm = Algorithm::kRsassaPkcs1V15Sha1;
   const ChallengeSignatureAlgorithm kKey1AlgorithmProto =
@@ -393,7 +371,6 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKey_ChallengeResponse) {
   EXPECT_FALSE(key.has_secret());
   EXPECT_EQ(key.data().type(), KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
   EXPECT_EQ(key.data().label(), kKeyLabel);
-  EXPECT_TRUE(key.data().privileges().mount());
   ASSERT_EQ(key.data().challenge_response_key_size(), 2);
   EXPECT_EQ(key.data().challenge_response_key(0).public_key_spki_der(),
             kKey1Spki);
@@ -572,7 +549,7 @@ TEST(CryptohomeUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
   const KeyDefinition& key_definition = key_definitions.front();
   EXPECT_EQ(KeyDefinition::TYPE_PASSWORD, key_definition.type);
   EXPECT_EQ(kKeyLabel, key_definition.label);
-  EXPECT_EQ(PRIV_MOUNT | PRIV_ADD | PRIV_REMOVE, key_definition.privileges);
+  EXPECT_EQ(PRIV_ADD | PRIV_REMOVE, key_definition.privileges);
   EXPECT_EQ(kKeyRevision, key_definition.revision);
   ASSERT_EQ(1u, key_definition.authorization_data.size());
   EXPECT_EQ(KeyDefinition::AuthorizationData::TYPE_HMACSHA256,

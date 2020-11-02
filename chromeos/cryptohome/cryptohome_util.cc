@@ -62,7 +62,6 @@ void ChallengeResponseKeyToPublicKeyInfo(
 
 void KeyDefPrivilegesToKeyPrivileges(int key_def_privileges,
                                      KeyPrivileges* privileges) {
-  privileges->set_mount(key_def_privileges & PRIV_MOUNT);
   privileges->set_add(key_def_privileges & PRIV_ADD);
   privileges->set_remove(key_def_privileges & PRIV_REMOVE);
   privileges->set_update(key_def_privileges & PRIV_MIGRATE);
@@ -169,8 +168,6 @@ std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
 
     // Extract |privileges|.
     const KeyPrivileges& privileges = it->privileges();
-    if (privileges.mount())
-      key_definition.privileges |= PRIV_MOUNT;
     if (privileges.add())
       key_definition.privileges |= PRIV_ADD;
     if (privileges.remove())

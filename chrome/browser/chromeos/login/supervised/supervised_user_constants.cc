@@ -12,8 +12,8 @@ const char kCryptohomeSupervisedUserKeyLabel[] = "managed";
 const char kLegacyCryptohomeSupervisedUserKeyLabel[] = "default-0";
 
 const int kCryptohomeSupervisedUserKeyPrivileges =
-    cryptohome::PRIV_AUTHORIZED_UPDATE | cryptohome::PRIV_MOUNT;
+    cryptohome::PRIV_AUTHORIZED_UPDATE;
 const int kCryptohomeSupervisedUserIncompleteKeyPrivileges =
-    cryptohome::PRIV_MIGRATE | cryptohome::PRIV_MOUNT;
+    cryptohome::PRIV_MIGRATE;
 
 }  // namespace chromeos

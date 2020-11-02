@@ -203,9 +203,8 @@ void PinStorageCryptohome::SetPin(const UserContext& user_context,
 
   cryptohome::AddKeyRequest request;
   const cryptohome::KeyDefinition key_def =
-      cryptohome::KeyDefinition::CreateForPassword(
-          secret, kCryptohomePinLabel,
-          cryptohome::PRIV_MOUNT | cryptohome::PRIV_MIGRATE);
+      cryptohome::KeyDefinition::CreateForPassword(secret, kCryptohomePinLabel,
+                                                   cryptohome::PRIV_MIGRATE);
   cryptohome::KeyDefinitionToKey(key_def, request.mutable_key());
   request.mutable_key()
       ->mutable_data()
