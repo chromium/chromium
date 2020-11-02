@@ -4,13 +4,15 @@
 
 source_set("link_to_text") {
   sources = [
+    "link_to_text_payload.h",
+    "link_to_text_payload.mm",
     "link_to_text_tab_helper.h",
     "link_to_text_tab_helper.mm",
-    "shared_highlight.h",
   ]
   deps = [
     "//ios/chrome/browser/tabs",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
