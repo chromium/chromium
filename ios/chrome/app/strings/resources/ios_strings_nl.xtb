@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Nieuw tabblad maken.</translation>
 <translation id="1145536944570833626">Bestaande gegevens verwijderen.</translation>
 <translation id="1154690515305205900">Er kan geen link naar de gemarkeerde tekst worden gemaakt.</translation>
+<translation id="1157749421655780457">Locatie toestaan...</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1172898394251786223">Volgend veld</translation>
 <translation id="1176932207622159128">Kan afbeelding niet opslaan</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Geen items</translation>
 <translation id="1692118695553449118">Synchronisatie is ingeschakeld</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> geselecteerd</translation>
+<translation id="1715940067130687605">Je huidige locatie gebruiken</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeren.</translation>
 <translation id="1746815479209538200">Voeg een nieuw tabblad toe als je op het web wilt browsen.</translation>
 <translation id="1752547299766512813">Wachtwoorden opslaan</translation>
@@ -374,6 +376,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive installeren</translation>
 <translation id="5083464117946352670">Kan bestandsgrootte niet bepalen.</translation>
+<translation id="5090832849094901128">Als je dit wachtwoord verwijdert, wordt je account op <ph name="WEBSITE" /> niet verwijderd.</translation>
 <translation id="5094827893301452931">Tweet voltooid.</translation>
 <translation id="5118764316110575523">Uit</translation>
 <translation id="5127805178023152808">Synchronisatie is uitgeschakeld</translation>

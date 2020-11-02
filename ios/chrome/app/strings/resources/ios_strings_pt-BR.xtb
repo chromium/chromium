@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Criar nova guia</translation>
 <translation id="1145536944570833626">Excluir dados já existentes.</translation>
 <translation id="1154690515305205900">Não é possível criar um link para o texto destacado.</translation>
+<translation id="1157749421655780457">Permitir localização…</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Próximo campo</translation>
 <translation id="1176932207622159128">Impossível salvar imagem</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Nenhum item</translation>
 <translation id="1692118695553449118">A sincronização está ativada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
+<translation id="1715940067130687605">Usar seu local atual</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1746815479209538200">Para navegar na Web, adicione uma nova guia.</translation>
 <translation id="1752547299766512813">Salvar senhas</translation>
@@ -374,6 +376,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
 <translation id="5083464117946352670">Não é possível saber o tamanho do arquivo.</translation>
+<translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet concluído.</translation>
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5127805178023152808">A sincronização está desativada</translation>

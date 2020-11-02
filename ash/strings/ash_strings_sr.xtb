@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1351937230027495976">Скупи мени</translation>
 <translation id="1383876407941801731">Претражи</translation>
+<translation id="1390105199421505038">Уклоните дијалог налога за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Укључено</translation>
 <translation id="1407069428457324124">Тамна тема</translation>
 <translation id="1419738280318246476">Откључајте уређај да бисте добили обавештење</translation>
@@ -369,6 +370,7 @@
 <translation id="4477892968187500306">Овај уређај може да садржи апликације које Google није верификовао.</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4481530544597605423">Уређаји чије је упаривање опозвано</translation>
+<translation id="4485060137115666462">Када кликнете десним тастером на неку ставку или је дуго притиснете, Помоћник приказује информације као што су дефиниције, превод или конверзије јединице за оно што сте изабрали.</translation>
 <translation id="4505050298327493054">Активан радни простор.</translation>
 <translation id="4506458088675900627">Промењен је покрет по тачпеду за преглед</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
@@ -597,6 +599,7 @@
 <translation id="6803622936009808957">Није могуће пресликати екране зато што није пронађена ниједна подржана резолуција. Уместо тога, приказује се проширена радна површина.</translation>
 <translation id="6818242057446442178">Реч уназад</translation>
 <translation id="6820676911989879663">Направите паузу!</translation>
+<translation id="6850010208275816200">Актуелна апликација се приказује преко целог екрана. Ако апликација тражи лозинку, прво изађите из приказивања преко целог екрана.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6857811139397017780">Активирај <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
@@ -646,6 +649,7 @@
 <translation id="7398254312354928459">Мрежна веза је промењена</translation>
 <translation id="7405710164030118432">Да бисте откључали уређај, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="741244894080940828">конверзију</translation>
+<translation id="7413851974711031813">Притисните Escape да бисте затворили</translation>
 <translation id="742594950370306541">Камера се користи.</translation>
 <translation id="742608627846767349">Добро јутро,</translation>
 <translation id="743058460480092004">Камера и микрофон се користе.</translation>

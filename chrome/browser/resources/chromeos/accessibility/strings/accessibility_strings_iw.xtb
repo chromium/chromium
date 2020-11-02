@@ -127,7 +127,7 @@
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">תא</translation>
 <translation id="1903683160884433981">ירוק אביבי בינוני</translation>
-<translation id="1905379170753160525">הצג את רשימת הכותרות</translation>
+<translation id="1905379170753160525">הצגת רשימת הכותרות</translation>
 <translation id="1913761808037590218">#ed</translation>
 <translation id="1914424852593176649">גודל <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">צירוף המקשים <ph name="DOT" /></translation>
@@ -205,7 +205,7 @@
 <translation id="2598495320872286378">שגיאת דקדוק</translation>
 <translation id="2603828437139726540">העברת הסמן לתו הבא</translation>
 <translation id="2624431853467395961">פתיחת מצב למידה</translation>
-<translation id="2626530649491650971">clickable</translation>
+<translation id="2626530649491650971">לחיץ</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">ההורדה של <ph name="FILE_NAME" /> נמשכת</translation>
 <translation id="2639750663247012216">‏מקש צירוף של ChromeVox</translation>
@@ -335,7 +335,7 @@
 <translation id="3418936350470374046">אין תא למטה</translation>
 <translation id="344800400831402066">פרו</translation>
 <translation id="3457000393508828486">לחוץ חלקית</translation>
-<translation id="3458865416877308321"><ph name="NAME" />, כבה</translation>
+<translation id="3458865416877308321"><ph name="NAME" />, כיבוי</translation>
 <translation id="3466530247399808663">הקשה על מקש שלא מוגדרת לו פעולה</translation>
 <translation id="3468959318854349468">ללא שם</translation>
 <translation id="3469413619751135069">ירוק חיוור</translation>
@@ -628,7 +628,7 @@
 <translation id="5833044594931167190">‏אין ציוני דרך מסוג ARIA</translation>
 <translation id="5842625257683688671">אין עוד פריטי גרפיקה</translation>
 <translation id="5847883414085148048">הקדשה</translation>
-<translation id="5850707923114094062">הזז לאחור</translation>
+<translation id="5850707923114094062">הזזה לאחור</translation>
 <translation id="5851548754964597211">רשימת כרטיסיות</translation>
 <translation id="5866042630553435010">מסומן חלקית</translation>
 <translation id="5867591286054666064">בזמן השיעור אפשר להקיש על המקשים כדי לשמוע את שמם.</translation>
@@ -740,7 +740,7 @@
 <translation id="6816066673340002913">מטה-זהב חיוור</translation>
 <translation id="6826226459053491773">החלקה מטה עם שתי אצבעות</translation>
 <translation id="6833103209700200188">כותרת תחתונה</translation>
-<translation id="6837853484260746864">בחר קול:</translation>
+<translation id="6837853484260746864">בחירת קול:</translation>
 <translation id="6858047746862060282">פרולוג</translation>
 <translation id="6859876496651143278">החלקה שמאלה עם אצבע אחת</translation>
 <translation id="6865519907510167493">שגיאת איות</translation>

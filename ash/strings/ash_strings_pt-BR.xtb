@@ -49,6 +49,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1346748346194534595">À direita</translation>
 <translation id="1351937230027495976">Recolher menu</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1390105199421505038">Remover caixa de diálogo da conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Ativado</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
@@ -369,6 +370,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4477892968187500306">O dispositivo pode conter apps que não foram verificados pelo Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositvos não pareados</translation>
+<translation id="4485060137115666462">Quando você clica com o botão direito do mouse ou toca na tela e a mantém pressionada, o Assistente mostra informações como a definição, tradução ou conversão de unidades da sua seleção.</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
 <translation id="4506458088675900627">O gesto no touchpad para abrir a Visão geral mudou</translation>
 <translation id="4513946894732546136">Comentários</translation>
@@ -598,6 +600,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6803622936009808957">Não foi possível espelhar os displays porque não foram encontradas resoluções suportadas. Em vez disso, foi ativada a área de trabalho estendida.</translation>
 <translation id="6818242057446442178">Voltar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
+<translation id="6850010208275816200">O app atual está no modo tela cheia. Se o app pedir sua senha, saia da tela cheia antes de digitá-la.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
 <translation id="6857811139397017780">Ativar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>
@@ -647,6 +650,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7398254312354928459">Conexão de rede alterada</translation>
 <translation id="7405710164030118432">Para desbloquear o dispositivo, insira seu código de acesso de pai/mãe do Family Link</translation>
 <translation id="741244894080940828">conversão</translation>
+<translation id="7413851974711031813">Pressione "Esc" para fechar</translation>
 <translation id="742594950370306541">A câmera está em uso.</translation>
 <translation id="742608627846767349">Bom dia,</translation>
 <translation id="743058460480092004">A câmera e o microfone estão em uso.</translation>

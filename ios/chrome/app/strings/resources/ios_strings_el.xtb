@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Δημιουργία νέας καρτέλας.</translation>
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
 <translation id="1154690515305205900">Δεν είναι δυνατή η δημιουργία ενός συνδέσμου προς το επισημασμένο κείμενο.</translation>
+<translation id="1157749421655780457">Να επιτρέπεται η τοποθεσία…</translation>
 <translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1172898394251786223">Επόμενο πεδίο</translation>
 <translation id="1176932207622159128">Αδύνατη αποθ.εικόνας</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Κανένα στοιχείο</translation>
 <translation id="1692118695553449118">Ο συγχρονισμός είναι ενεργοποιημένος</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία επιλεγμένα</translation>
+<translation id="1715940067130687605">Χρήση τρέχουσας τοποθεσίας.</translation>
 <translation id="1740468249224277719">Πατήστε δύο φορές για εγκατάσταση.</translation>
 <translation id="1746815479209538200">Για να περιηγηθείτε στον ιστό, προσθέστε μια νέα καρτέλα.</translation>
 <translation id="1752547299766512813">Απ. κωδ. πρόσβ.</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">ΟΚ</translation>
 <translation id="5062321486222145940">Εγκατάσταση Google Drive</translation>
 <translation id="5083464117946352670">Αδύν.προσδ.μεγέθους αρχείου.</translation>
+<translation id="5090832849094901128">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Το Tweet ολοκληρώθηκε.</translation>
 <translation id="5118764316110575523">Ανενεργό</translation>
 <translation id="5127805178023152808">Ο συγχρονισμός είναι απενεργοποιημένος</translation>

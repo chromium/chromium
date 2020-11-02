@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Унели сте лозинку на сајту којим не управља ваша организација. Да бисте заштитили налог, не користите лозинку поново у другим апликацијама ни на другим сајтовима.</translation>
 <translation id="1263231323834454256">Листа за читање</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Активности које не остају на овом уређају:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Странице које прегледате у овом прозору
+          <ph name="LIST_ITEM" />Колачићи и подаци о сајтовима
+          <ph name="LIST_ITEM" />Информације о налогу (<ph name="LINK_BEGIN" />одјавите се<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Начин преузимања</translation>
 <translation id="1281476433249504884">1. преграда за слагање</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">Обележено</translation>
 <translation id="3209034400446768650">Страница може да наплаћује</translation>
 <translation id="3212581601480735796">Ваше активности на <ph name="HOSTNAME" /> се прате</translation>
+<translation id="3212623355668894776">Затворите све прозоре у режиму госта да би се активности прегледања избрисале са овог уређаја.</translation>
 <translation id="3215092763954878852">Коришћење веб-стандарда WebAuthn није успело</translation>
 <translation id="3218181027817787318">Релативно</translation>
 <translation id="3225919329040284222">Сервер је приказао сертификат који се не подудара са уграђеним очекивањима. Та очекивања су обухваћена за одређене веб-сајтове са јаким безбедносним мерама како би вас заштитила.</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">Спајање у горњем левом углу</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
+<translation id="4675657451653251260">У режиму госта нећете видети никакве информације о Chrome профилу. Можете да се <ph name="LINK_BEGIN" />пријавите<ph name="LINK_END" /> ради приступа информацијама о Google налогу, као што су лозинке и начини плаћања.</translation>
 <translation id="467662567472608290">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат садржи грешке. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> жели да одговара на догађаје приступачности</translation>
 <translation id="467809019005607715">Google презентације</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">Коришћење микрофона</translation>
 <translation id="4764776831041365478">Могуће је да веб-страница на адреси <ph name="URL" /> привремено не функционише или да је трајно премештена на нову веб адресу.</translation>
 <translation id="4766713847338118463">Двоструко спајање на дну</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Активности које остају на овом уређају:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Сви фајлови које преузмете у овом прозору
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Дошло је до непознате грешке.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Искачући прозор је блокиран}one{# искачући прозор је блокиран}few{# искачућа прозора су блокирана}other{# искачућих прозора је блокирано}}</translation>
 <translation id="4780366598804516005">1. поштанско сандуче</translation>
@@ -1396,6 +1412,7 @@
 <translation id="6587923378399804057">Линк који сте копирали</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-ом се не управља</translation>
 <translation id="6596325263575161958">Опције шифровања</translation>
+<translation id="6596892391065203054">Администратор је блокирао штампање овог садржаја.</translation>
 <translation id="6604181099783169992">Сензори за покрет или светло</translation>
 <translation id="6609880536175561541">Prc7 (коверат)</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
@@ -1879,12 +1896,22 @@
 <translation id="8559762987265718583">Није могуће успоставити приватну везу са доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> јер датум и време на уређају (<ph name="DATE_AND_TIME" />) нису тачни.</translation>
 <translation id="8564182942834072828">Одвојени документи/несређене копије</translation>
 <translation id="8564985650692024650">Chromium вам препоручује да ресетујете лозинку за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако сте је користили на другим сајтовима.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Активности које не остају на овом уређају:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Странице које прегледате у овом прозору
+          <ph name="LIST_ITEM" />Колачићи и подаци о сајтовима
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Користите Touch ID за бржу потврду картица</translation>
 <translation id="858637041960032120">Додај тел. број
 </translation>
 <translation id="8589998999637048520">Најбољи квалитет</translation>
 <translation id="860043288473659153">Име власника картице</translation>
 <translation id="8606726445206553943">користи MIDI уређаје</translation>
+<translation id="8612761427948161954">Здраво <ph name="USERNAME" />,
+        <ph name="BR" />
+        Прегледате као гост</translation>
 <translation id="861775596732816396">Величина 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ниједна лозинка се не подудара. Прикажи све сачуване лозинке.</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Google документи</translation>
 <translation id="9183425211371246419">Хост <ph name="HOST_NAME" /> користи неподржани протокол.</translation>
 <translation id="9191834167571392248">Бушење у доњем левом углу</translation>
+<translation id="9199905725844810519">Штампање је блокирано</translation>
 <translation id="9205078245616868884">Подаци се шифрују помоћу приступне фразе за синхронизацију. Унесите је да бисте започели синхронизацију.</translation>
 <translation id="9207861905230894330">Додавање чланка није успело.</translation>
 <translation id="9213433120051936369">Прилагодите изглед</translation>

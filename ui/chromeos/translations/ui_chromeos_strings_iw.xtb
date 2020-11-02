@@ -164,7 +164,7 @@
 <translation id="2771816809568414714">גבינה</translation>
 <translation id="2781645665747935084">בלגית</translation>
 <translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
-<translation id="2787047795752739979">החלף קובץ מקורי</translation>
+<translation id="2787047795752739979">החלפת קובץ מקורי</translation>
 <translation id="2790805296069989825">מקלדת רוסית</translation>
 <translation id="2843806747483486897">שינוי ברירת המחדל...</translation>
 <translation id="2850124913210091882">גבה</translation>
@@ -273,7 +273,7 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3855472144336161447">‏גרמנית - Neo 2</translation>
 <translation id="3858678421048828670">מקלדת איטלקית</translation>
-<translation id="386548886866354912">הוסף לחבילה יחד עם <ph name="EXTENSION_NAME" /></translation>
+<translation id="386548886866354912">הוספה לחבילה יחד עם <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">תיאור</translation>
 <translation id="3910699493603749297">מקלדת חמר</translation>
 <translation id="391445228316373457">מקלדת נפאלית (פונטית)</translation>
@@ -324,7 +324,7 @@
 <translation id="4594543368593301662">מוצגות תוצאות עבור <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">מעתיק את <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">סנסקריט</translation>
-<translation id="4631887759990505102">אמן</translation>
+<translation id="4631887759990505102">אומן</translation>
 <translation id="4656293982926141856">במחשב הזה</translation>
 <translation id="4669606053856530811">אם הפריטים האלה לא ישותפו עם החברים באחסון השיתופי '<ph name="SOURCE_NAME" />', הם יאבדו את הגישה אליהם.</translation>
 <translation id="4690246192099372265">שוודית</translation>
@@ -333,7 +333,7 @@
 <translation id="4697043402264950621">רשימת הקבצים ממוינת לפי <ph name="COLUMN_NAME" /> בסדר עולה.</translation>
 <translation id="4711094779914110278">טורקית</translation>
 <translation id="4712283082407695269">הפתיחה של "<ph name="PATH" />" מתבצעת</translation>
-<translation id="4713544552769165154">‏קובץ זה מיועד למחשב עם תוכנת Macintosh. הוא אינו תואם למכשיר שלך שבו פועלת מערכת ההפעלה של Chrome. חפש ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" /> כדי לאתר יישום חלופי מתאים.<ph name="BEGIN_LINK_HELP" />למידע נוסף<ph name="END_LINK_HELP" /></translation>
+<translation id="4713544552769165154">‏קובץ זה מיועד למחשב עם תוכנת Macintosh. הוא אינו תואם למכשיר שלך שבו פועלת מערכת ההפעלה של Chrome. אפשר לחפש ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" /> אפליקציה חלופית מתאימה.<ph name="BEGIN_LINK_HELP" />למידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> תמונות גובו</translation>
 <translation id="4725511304875193254">קורגי</translation>
 <translation id="4732760563705710320">מצטערים, סרטון וידאו זה אינו נתמך במכשיר ההעברה שלך.</translation>
@@ -362,7 +362,7 @@
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4886021172213954916">‏מקלדת טמילית (Typewriter)</translation>
 <translation id="4900532980794411603">‏שיתוף עם Parallels Desktop</translation>
-<translation id="4905417359854579806">מוכן לגבות <ph name="FILE_COUNT" /></translation>
+<translation id="4905417359854579806">המערכת מוכנה לגיבוי <ph name="FILE_COUNT" /></translation>
 <translation id="4924638091161556692">קבוע</translation>
 <translation id="4935975195727477204">פרח גזניה</translation>
 <translation id="4943368462779413526">פוטבול</translation>
@@ -500,7 +500,7 @@
 <translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
 <translation id="6170470584681422115">כריך</translation>
-<translation id="6189412234224385711">פתח באמצעות <ph name="EXTENSION_NAME" /></translation>
+<translation id="6189412234224385711">פתיחה באמצעות <ph name="EXTENSION_NAME" /></translation>
 <translation id="6199801702437275229">מחכה למידע שטח האחסון...</translation>
 <translation id="6205710420833115353">פעולות מסוימות נמשכות זמן רב מהצפוי. האם ברצונך לבטל אותן?</translation>
 <translation id="6224253798271602650">פירמוט של <ph name="DRIVE_NAME" /></translation>
@@ -642,7 +642,7 @@
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאינך צריך לגשת אליהם יותר במצב לא מקוון<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
-<translation id="7794058097940213561">פרמט את המכשיר</translation>
+<translation id="7794058097940213561">פרמוט המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>
 <translation id="7801354353640549019">‏מכשירי Chromebook</translation>
 <translation id="7805768142964895445">סטטוס</translation>

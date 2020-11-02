@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">नया टैब बनाएं.</translation>
 <translation id="1145536944570833626">मौजूदा डेटा मिटाएं.</translation>
 <translation id="1154690515305205900">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता.</translation>
+<translation id="1157749421655780457">जगह की जानकारी इस्तेमाल करने की अनुमति दें...</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1172898394251786223">अगला फ़ील्‍ड</translation>
 <translation id="1176932207622159128">इमेज नहीं सेव की जा सकती</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">कोई आइटम नहीं</translation>
 <translation id="1692118695553449118">समन्वयन चालू है</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयनित</translation>
+<translation id="1715940067130687605">अपनी मौजूदा जगह की जानकारी का इस्तेमाल करें.</translation>
 <translation id="1740468249224277719">इंस्टॉल करने के लिए दो बार टैप करें.</translation>
 <translation id="1746815479209538200">वेब ब्राउज़ करने के लिए, नया टैब जोड़ें.</translation>
 <translation id="1752547299766512813">पासवर्ड सेव करें</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">ठीक</translation>
 <translation id="5062321486222145940">Google डिस्क इंस्टॉल करें</translation>
 <translation id="5083464117946352670">फ़ाइल आकार तय नहीं हो पा रहा.</translation>
+<translation id="5090832849094901128">इस पासवर्ड को मिटाने से, आपका <ph name="WEBSITE" /> वाला खाता नहीं मिटेगा.</translation>
 <translation id="5094827893301452931">ट्वीट पूरा हुआ.</translation>
 <translation id="5118764316110575523">बंद है</translation>
 <translation id="5127805178023152808">समन्वयन बंद है</translation>

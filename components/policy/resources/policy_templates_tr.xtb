@@ -2230,11 +2230,11 @@ politikayı geçersiz kılamaz.
       Bu ayar devre dışı bırakıldığında <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını platform tarafından sağlanan eski sertifika doğrulayıcıyı kullanarak yerine getirir.
       Bu ayar belirtilmezse yerleşik veya eski sertifika doğrulayıcı kullanılabilir.
 
-      <ph name="PRODUCT_OS_NAME" /> için eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın <ph name="PRODUCT_OS_NAME" /> sürüm 81'de de kaldırılması planlanmıştır.
+      <ph name="PRODUCT_OS_NAME" /> için eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın da <ph name="PRODUCT_OS_NAME" /> sürüm 81'de kaldırılması planlanmıştır.
 
-      Linux'ta eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın Linux sürüm 83 için <ph name="PRODUCT_NAME" /> ürününde de kaldırılması planlanmıştır.
+      Linux'ta eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın da Linux sürüm 83 için <ph name="PRODUCT_NAME" /> ürününde kaldırılması planlanmıştır.
 
-      Mac OS X'te eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın Mac OS X sürüm 91 için<ph name="PRODUCT_NAME" /> ürününde de kaldırılması planlanmıştır.
+      Mac OS X'te eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın da Mac OS X sürüm 91 için <ph name="PRODUCT_NAME" /> ürününde kaldırılması planlanmıştır.
       </translation>
 <translation id="4274691295133617461">Politika 3 değerine ayarlanırsa web siteleri, File System API üzerinden ana makine işletim sisteminin dosya sistemindeki dosya ve dizinlere okuma erişimi isteyebilir. Politikayı 2 değerine ayarlamak erişimi engeller.
 
@@ -2477,7 +2477,7 @@ politikayı geçersiz kılamaz.
 <translation id="4725528134735324213">Android Backup Service'ı etkinleştir</translation>
 <translation id="4725801978265372736">Yerel kullanıcının adı ile uzak erişim ana makinesi sahibinin adının aynı olmasını gerektir</translation>
 <translation id="4733471537137819387">Entegre HTTP kimlik doğrulaması ile ilgili politikalar.</translation>
-<translation id="4739707008209949995">Politika ayarlanırsa yönetici, bir cihazı yuvaya bağlarken MAC (medya erişim denetimi) adresini değiştirebilir. Bazı cihaz modellerine bir yuva bağlandığında, varsayılan olarak cihazın MAC adresi, Ethernet ağında cihazın tanımlanmasına yardımcı olur.
+<translation id="4739707008209949995">Politika ayarlanırsa yönetici, bir cihazı yuvaya bağlarken MAC (medya erişim denetimi) adresini değiştirebilir. Bazı cihaz modellerine bir yuva bağlandığında, varsayılan olarak cihazın atanmış yuvasına ait MAC adresi, Ethernet ağında cihazın tanımlanmasına yardımcı olur.
 
       "DeviceDockMacAddress" seçiliyse veya politika ayarlanmamış olarak bırakılırsa cihazın atanmış yuvasına ait MAC adresi kullanılır.
 

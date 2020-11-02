@@ -49,7 +49,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1346748346194534595">Desno</translation>
 <translation id="1351937230027495976">Sužavanje menija</translation>
 <translation id="1383876407941801731">Traži</translation>
-<translation id="1390105199421505038">Ukloni dijalog računa za <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1390105199421505038">Uklanjanje dijaloškog okvira računa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1419738280318246476">Otključajte uređaj da izvršite radnju obavještenja</translation>
@@ -370,7 +370,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4477892968187500306">Ovaj uređaj može sadržavati aplikacije koje Google nije potvrdio.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Uređaj čije je uparivanje okončano</translation>
-<translation id="4485060137115666462">Ako kliknete desnom tipkom ili dugo zadržite pritisak, Asistent će vam prikazati informacije kao što su definicija, prijevod ili preračunavanje jedinica za vaš odabir.</translation>
+<translation id="4485060137115666462">Desnim klikom ili dugim pritiskom, Asistent vam prikazuje informacije kao što su definicija, prijevod ili pretvaranje mjerne jedinice za vaš odabir.</translation>
 <translation id="4505050298327493054">Aktivna radna površina.</translation>
 <translation id="4506458088675900627">Pokret dodirne podloge za Pregled je promijenjen</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
@@ -599,7 +599,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6803622936009808957">Preslikavanje ekrana nije moguće jer nisu pronađene podržane rezolucije. Umjesto toga, prikazuje se proširena radna površina.</translation>
 <translation id="6818242057446442178">Riječ unazad</translation>
 <translation id="6820676911989879663">Odmori se!</translation>
-<translation id="6850010208275816200">Aplikacija se trenutačno prikazuje na cijelom zaslonu. Ako aplikacija zatraži zaporku, prvo izađite iz prikaza preko cijelog zaslona.</translation>
+<translation id="6850010208275816200">Trenutna aplikacija je prikazana preko cijelog ekrana. Ako vam aplikacija zatraži lozinku, prvo izađite iz prikaza preko cijelog ekrana.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Aktiviraj <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>
@@ -649,7 +649,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7398254312354928459">Mrežna veza je promijenjena</translation>
 <translation id="7405710164030118432">Da otključate uređaj, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="741244894080940828">pretvaranje</translation>
-<translation id="7413851974711031813">Pritisnite tipku escape da biste zatvorili</translation>
+<translation id="7413851974711031813">Pritisak na tipku Escape da zatvorite</translation>
 <translation id="742594950370306541">Kamera se koristi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera i mikrofon su u upotrebi.</translation>

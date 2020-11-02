@@ -1142,6 +1142,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2307462900900812319">Konfigurer nettverket</translation>
 <translation id="230927227160767054">Denne nettsiden ber om å få installere en behandlingssnarvei for en tjeneste.</translation>
 <translation id="2309620859903500144">Bevegelses- og lyssensorene er blokkert fra dette nettstedet.</translation>
+<translation id="2311497964614110326">Få bedre og raskere svar med assistenten</translation>
 <translation id="2312219318583366810">Sidens nettadresse</translation>
 <translation id="2314165183524574721">Den gjeldende synlighetsinnstillingen er skjult</translation>
 <translation id="2314774579020744484">Språket som brukes ved oversetting av sider</translation>
@@ -1255,6 +1256,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="244231003699905658">Ugyldig adresse. Kontrollér adressen og prøv igjen.</translation>
 <translation id="2442916515643169563">Tekstskygge</translation>
+<translation id="2444469058037141906">Bare si eller skriv det du trenger</translation>
 <translation id="2445081178310039857">Det kreves en rotkatalog for utvidelsen</translation>
 <translation id="2445484935443597917">Opprett en ny profil</translation>
 <translation id="2448312741937722512">Type</translation>
@@ -2171,6 +2173,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3514373592552233661">Foretrukne nettverk prioriteres fremfor andre kjente nettverk hvis mer enn ett nettverk er tilgjengelig</translation>
 <translation id="3515983984924808886">Berør sikkerhetsnøkkelen en gang til for å bekrefte tilbakestillingen. All informasjon som er lagret på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet.</translation>
 <translation id="3518985090088779359">Godta og fortsett</translation>
+<translation id="3519564332031442870">Tjenerdeltjeneste for utskrift</translation>
 <translation id="3521606918211282604">Endre diskstørrelsen</translation>
 <translation id="3523642406908660543">Spør når et nettsted ønsker å bruke et programtillegg for å få tilgang til datamaskinen (anbefales)</translation>
 <translation id="3524965460886318643">Eksportér aktivitet</translation>
@@ -2686,6 +2689,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4088095054444612037">Godta for gruppen</translation>
 <translation id="4089235344645910861">Innstillingene er lagret. Synkronisering er startet.</translation>
 <translation id="4090103403438682346">Slå på Bekreftet tilgang</translation>
+<translation id="4090811767089219951">Google-assistenten virker her også</translation>
 <translation id="4090947011087001172">Vil du tilbakestille nettstedstillatelser for <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Profilbilde</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
@@ -2952,6 +2956,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4441124369922430666">Vil du starte denne appen automatisk når maskinen slås på?</translation>
 <translation id="4441147046941420429">For å fortsette, fjern sikkerhetsnøkkelen fra enheten, sett den inn på nytt, og berør den</translation>
 <translation id="444134486829715816">Utvid</translation>
+<translation id="4441928470323187829">Festet av administratoren din</translation>
 <translation id="4442424173763614572">DNS-søk mislyktes</translation>
 <translation id="4443536555189480885">&amp;Hjelp</translation>
 <translation id="4444304522807523469">Få tilgang til dokumentskannere som er tilkoblet via USB eller på det lokale nettverket</translation>
@@ -3675,6 +3680,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
+<translation id="5320112320661303273">Ser ut til at du allerede har konfigurert assistenten på en annen enhet. Få enda mer ut av assistenten ved å slå på denne innstillingen.</translation>
 <translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv igjen senere.</translation>
 <translation id="5324300749339591280">App-liste</translation>
 <translation id="5324780743567488672">Angi tidssonen automatisk ved hjelp av posisjonen din</translation>
@@ -5492,6 +5498,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7475671414023905704">Nettadresse for mistet passord – Netscape</translation>
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
+<translation id="7478362879637727630">Du må registrere denne Chrome Education-enheten på en utdanningskonto. For å registrere en ny konto, gå til https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Kiosk-appen kunne ikke installeres.</translation>
 <translation id="7479221278376295180">Oversikt over bruk av lagring</translation>
 <translation id="7481312909269577407">Frem</translation>
@@ -5616,6 +5623,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7632948528260659758">Kunne ikke oppdatere de følgende kioskappene:</translation>
 <translation id="7633724038415831385">Dette er den eneste gangen du må vente på en oppdatering. På Chromebook skjer programvareoppdateringer i bakgrunnen.</translation>
 <translation id="7634566076839829401">Noe gikk galt. Prøv på nytt.</translation>
+<translation id="7635048370253485243">Festet av administratoren din</translation>
 <translation id="763632859238619983">Ikke tillat at nettsteder installerer betalingsbehandlere</translation>
 <translation id="7636919061354591437">Installer på denne enheten</translation>
 <translation id="7638605456503525968">Serielle porter</translation>

@@ -49,6 +49,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1346748346194534595">Regs</translation>
 <translation id="1351937230027495976">Vou kieslys in</translation>
 <translation id="1383876407941801731">Soek</translation>
+<translation id="1390105199421505038">Verwyder rekeningdialoog vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1419738280318246476">Ontsluit toestel om die kennisgewinghandeling uit te voer</translation>
@@ -370,6 +371,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4477892968187500306">Hierdie toestel kan programme bevat wat nie deur Google geverifieer is nie.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Losgemaakte toestelle</translation>
+<translation id="4485060137115666462">Met 'n regsklik of 'n langdruk wys Assistent inligting soos die definisie, vertaling of eenheidomskakeling van jou keuse.</translation>
 <translation id="4505050298327493054">Aktiewe lessenaar.</translation>
 <translation id="4506458088675900627">Die Oorsig-raakpaneelgebaar het verander</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
@@ -598,6 +600,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6803622936009808957">Kon nie skerms weerspieël nie, omdat daar geen gesteunde resolusies gevind kon word nie. Het eerder by uitgebreide skerm ingegaan.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>
+<translation id="6850010208275816200">Jou huidige program is volskerm. As die program jou wagwoord vra, moet jy volskerm eers verlaat.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6857811139397017780">Aktiveer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Een syfer bly oor}other{# syfers bly oor}}</translation>
@@ -647,6 +650,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7398254312354928459">Het netwerkverbinding gewissel</translation>
 <translation id="7405710164030118432">Voer jou Family Link-ouertoegangskode in om die toestel te ontsluit</translation>
 <translation id="741244894080940828">omskakeling</translation>
+<translation id="7413851974711031813">Druk Escape om toe te maak</translation>
 <translation id="742594950370306541">Kamera word gebruik.</translation>
 <translation id="742608627846767349">Goeiemôre</translation>
 <translation id="743058460480092004">Kamera en mikrofoon word gebruik.</translation>

@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">摺埋選單</translation>
 <translation id="1383876407941801731">搜尋</translation>
+<translation id="1390105199421505038">移除 <ph name="USER_EMAIL_ADDRESS" /> 嘅帳戶對話框</translation>
 <translation id="1391102559483454063">已開啟</translation>
 <translation id="1407069428457324124">深色主題背景</translation>
 <translation id="1419738280318246476">解鎖裝置即可執行有關通知的動作</translation>
@@ -369,6 +370,7 @@
 <translation id="4477892968187500306">此裝置可能包含未經 Google 驗證的的應用程式。</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4481530544597605423">未配對的裝置</translation>
+<translation id="4485060137115666462">按一下或長按右鍵，「Google 助理」即可顯示選取項目的定義、翻譯或單位轉換等相關資料。</translation>
 <translation id="4505050298327493054">用緊嘅桌面。</translation>
 <translation id="4506458088675900627">「概覽」觸控板手勢已變更</translation>
 <translation id="4513946894732546136">意見反映</translation>
@@ -597,6 +599,7 @@
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
+<translation id="6850010208275816200">目前應用程式正處於全螢幕模式。如果應用程式需要您的密碼，請先退出全螢幕模式。</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6857811139397017780">啟用 <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>
@@ -646,6 +649,7 @@
 <translation id="7398254312354928459">已切換網絡連線</translation>
 <translation id="7405710164030118432">如要解鎖裝置，請輸入您的 Family Link 家長存取碼</translation>
 <translation id="741244894080940828">轉換</translation>
+<translation id="7413851974711031813">㩒 Escape 掣就可以閂咗佢</translation>
 <translation id="742594950370306541">相機正在使用中。</translation>
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>

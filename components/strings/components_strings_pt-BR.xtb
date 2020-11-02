@@ -80,6 +80,14 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Você informou sua senha em um site que não é gerenciado pela sua organização. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Atividades que não serão armazenadas no dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Páginas abertas nesta janela
+          <ph name="LIST_ITEM" />Cookies e dados de sites
+          <ph name="LIST_ITEM" />Informações da conta (<ph name="LINK_BEGIN" />sair<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Método de Retirada</translation>
 <translation id="1281476433249504884">Empilhador 1</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
@@ -549,6 +557,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
 <translation id="3212581601480735796">Sua atividade em <ph name="HOSTNAME" /> está sendo monitorada</translation>
+<translation id="3212623355668894776">Feche todas as janelas de visitante para excluir sua atividade de navegação do dispositivo.</translation>
 <translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não coincide com as expectativas incorporadas. Estas expectativas são incluídas para determinados websites de alta segurança com a finalidade de oferecer proteção a você.</translation>
@@ -905,6 +914,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4658638640878098064">Grampo na parte superior direita</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4675657451653251260">Você não verá informações de perfis do Chrome no modo visitante. <ph name="LINK_BEGIN" />Faça login<ph name="LINK_END" /> para acessar informações da sua Conta do Google, como senhas e formas de pagamento.</translation>
 <translation id="467662567472608290">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança contém erros. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> quer responder a eventos de acessibilidade</translation>
 <translation id="467809019005607715">Apresentações Google</translation>
@@ -932,6 +942,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4761104368405085019">Usar microfone</translation>
 <translation id="4764776831041365478">A página <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
 <translation id="4766713847338118463">Dois grampos na parte inferior</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Atividades que serão armazenadas no dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Arquivos transferidos por download nesta janela
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}one{# pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780366598804516005">Caixa de e-mails 1</translation>
@@ -1386,6 +1402,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6587923378399804057">Link que você copiou</translation>
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>
 <translation id="6596325263575161958">Opções de criptografia</translation>
+<translation id="6596892391065203054">Seu administrador bloqueou a opção de imprimir este conteúdo.</translation>
 <translation id="6604181099783169992">Sensores de luz ou movimento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
@@ -1869,12 +1886,22 @@ Mais detalhes:
 <translation id="8559762987265718583">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="8564182942834072828">Documentos separados/Cópias não reunidas</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Atividades que não serão armazenadas no dispositivo:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Páginas abertas nesta janela
+          <ph name="LIST_ITEM" />Cookies e dados de sites
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Use o Touch ID para confirmar seus cartões mais rapidamente</translation>
 <translation id="858637041960032120">Ad. nº. telefone
 </translation>
 <translation id="8589998999637048520">Melhor qualidade</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8606726445206553943">Usar seus dispositivos MIDI</translation>
+<translation id="8612761427948161954">Olá, <ph name="USERNAME" />,
+        <ph name="BR" />
+        Você está navegando como visitante</translation>
 <translation id="861775596732816396">Tamanho 4</translation>
 <translation id="8622948367223941507">Legal extra</translation>
 <translation id="8623885649813806493">Não achamos uma senha. Mostrar todas as senhas salvas.</translation>
@@ -2014,6 +2041,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9183302530794969518">Documentos Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> usa um protocolo incompatível.</translation>
 <translation id="9191834167571392248">Perfuração na parte inferior esquerda</translation>
+<translation id="9199905725844810519">A impressão foi bloqueada</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
 <translation id="9213433120051936369">Personalizar aparência</translation>

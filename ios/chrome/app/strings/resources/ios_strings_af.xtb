@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Skep nuwe oortjie.</translation>
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
 <translation id="1154690515305205900">Kan nie 'n skakel na die gemerkte teks skep nie.</translation>
+<translation id="1157749421655780457">Laat ligging toe …</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1172898394251786223">Volgende veld</translation>
 <translation id="1176932207622159128">Kan nie prent stoor nie</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Geen items nie</translation>
 <translation id="1692118695553449118">Sinkronisering is aan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
+<translation id="1715940067130687605">Gebruik jou huidige ligging.</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
 <translation id="1746815479209538200">Voeg 'n nuwe oortjie by om deur die web te blaai.</translation>
 <translation id="1752547299766512813">Stoor wagwoorde</translation>
@@ -374,6 +376,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installeer Google Drive</translation>
 <translation id="5083464117946352670">Kan nie lêergrootte bepaal nie.</translation>
+<translation id="5090832849094901128">As hierdie wagwoord uitgevee word, sal jou rekening op <ph name="WEBSITE" /> nie uitgevee word nie.</translation>
 <translation id="5094827893301452931">Twiet is voltooi.</translation>
 <translation id="5118764316110575523">Af</translation>
 <translation id="5127805178023152808">Sinkronisering is af</translation>

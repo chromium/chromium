@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ја внесовте лозинката на сајт што не е управуван од организацијата. За да ја заштитите сметката, не користете ја лозинката повторно на други апликации и сајтови.</translation>
 <translation id="1263231323834454256">Список за читање</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Активност што нема да остане на уредов:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />страниците што ги прегледувате во овој прозорец
+          <ph name="LIST_ITEM" />колачињата и податоците за сајтот
+          <ph name="LIST_ITEM" />податоците на сметката (<ph name="LINK_BEGIN" />одјавете се<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Начин на подигнување</translation>
 <translation id="1281476433249504884">Фиока за складирање 1</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3209034400446768650">Страницата може да наплаќа</translation>
 <translation id="3212581601480735796">Вашата активност на <ph name="HOSTNAME" /> се набљудува</translation>
+<translation id="3212623355668894776">Затворете ги сите гостински прозорци за да може активноста од прелистувањето да се избрише од уредов.</translation>
 <translation id="3215092763954878852">Не може да се користи WebAuthn</translation>
 <translation id="3218181027817787318">Релативна</translation>
 <translation id="3225919329040284222">Серверот претстави сертификат што не се совпаѓа со вградените очекувања. Овие очекувања се вклучени за сигурни веб-локации со голема сигурност за да бидете заштитени.</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">Спојување горе лево</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
+<translation id="4675657451653251260">Во режим на гостин нема да гледате податоци за профили на Chrome. Може да се <ph name="LINK_BEGIN" />најавите<ph name="LINK_END" /> за да пристапите до податоците на сметката на Google, како лозинките и начините на плаќање.</translation>
 <translation id="467662567472608290">Серверот не можеше да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат содржи грешки. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> сака да одговара на настани за пристапност</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">Користете го микрофонот</translation>
 <translation id="4764776831041365478">Веб-локацијата на <ph name="URL" /> можеби привремено не работи или можеби е трајно преместена на нова веб-адреса.</translation>
 <translation id="4766713847338118463">Двојно спојување долу</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Активност што ќе остане на уредов:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сите датотеки што ги преземате во овој прозорец
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Се појави непозната грешка.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Скокачкиот прозорец е блокиран}one{# скокачки прозорец е блокиран}other{# скокачки прозорци се блокирани}}</translation>
 <translation id="4780366598804516005">Поштенско сандаче 1</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">Линкот што го копиравте</translation>
 <translation id="6591833882275308647">Вашиот <ph name="DEVICE_TYPE" /> не е управуван</translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
+<translation id="6596892391065203054">Администраторот го блокирал печатењето на содржинава.</translation>
 <translation id="6604181099783169992">Сензори за движење или светлина</translation>
 <translation id="6609880536175561541">Prc7 (плик)</translation>
 <translation id="6612358246767739896">Заштитена содржина</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот уред (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="8564182942834072828">Одделни документи/неподредени примероци</translation>
 <translation id="8564985650692024650">Chromium препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Активност што нема да остане на уредов:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />страниците што ги прегледувате во овој прозорец
+          <ph name="LIST_ITEM" />колачињата и податоците за сајтот
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Користете Touch ID за побрзо потврдување на картичките</translation>
 <translation id="858637041960032120">Додај телефонски број</translation>
 <translation id="8589998999637048520">Најдобар квалитет</translation>
 <translation id="860043288473659153">Име на сопственикот на картичката</translation>
 <translation id="8606726445206553943">Користете ги MIDI уредите</translation>
+<translation id="8612761427948161954">Здраво <ph name="USERNAME" />,
+        <ph name="BR" />
+        Прелистувате како гостин</translation>
 <translation id="861775596732816396">Големина 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Нема лозинки што се совпаѓаат. Прикажи ги сите зачувани лозинки.</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Документи на Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> користи неподдржан протокол.</translation>
 <translation id="9191834167571392248">Дупка долу лево</translation>
+<translation id="9199905725844810519">Печатењето е блокирано</translation>
 <translation id="9205078245616868884">Вашите податоци се шифрирани со лозинката за синхронизирање. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="9207861905230894330">Не успеа да се додаде напис.</translation>
 <translation id="9213433120051936369">Приспособете го изгледот</translation>

@@ -1145,6 +1145,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2307462900900812319">Configura rete</translation>
 <translation id="230927227160767054">Questa pagina vuole installare un gestore di servizi.</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
+<translation id="2311497964614110326">Ricevi risposte migliori e più rapide con l'assistente</translation>
 <translation id="2312219318583366810">URL della pagina</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
 <translation id="2314774579020744484">Lingua usata per la traduzione delle pagine</translation>
@@ -1257,6 +1258,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
 <translation id="244231003699905658">Indirizzo non valido. Verifica l'indirizzo e riprova.</translation>
 <translation id="2442916515643169563">Ombreggiatura testo</translation>
+<translation id="2444469058037141906">Di' o digita ciò che ti serve</translation>
 <translation id="2445081178310039857">La directory principale dell'estensione è obbligatoria.</translation>
 <translation id="2445484935443597917">Crea un nuovo profilo</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -2173,6 +2175,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3514373592552233661">Le reti preferite avranno precedenza su altre reti note se ne sono disponibili più di una</translation>
 <translation id="3515983984924808886">Tocca nuovamente il token di sicurezza per confermare la reimpostazione. Tutte le informazioni memorizzate sul token di sicurezza, nonché il suo PIN, verranno eliminate.</translation>
 <translation id="3518985090088779359">Accetta e continua</translation>
+<translation id="3519564332031442870">Servizio di backend di stampa</translation>
 <translation id="3521606918211282604">Cambia dimensioni disco</translation>
 <translation id="3523642406908660543">Chiedi conferma quando un sito vuole utilizzare un plug-in per accedere al tuo computer (opzione consigliata)</translation>
 <translation id="3524965460886318643">Esporta attività</translation>
@@ -2690,6 +2693,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4088095054444612037">Accetta per gruppo</translation>
 <translation id="4089235344645910861">Impostazioni salvate. Sincronizzazione avviata.</translation>
 <translation id="4090103403438682346">Attiva Accesso verificato</translation>
+<translation id="4090811767089219951">Il tuo Assistente Google funziona anche qui</translation>
 <translation id="4090947011087001172">Reimpostare le autorizzazioni per il sito <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="4093955363990068916">File locale:</translation>
@@ -2956,6 +2960,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4441124369922430666">Vuoi avviare automaticamente questa app all'accensione del computer?</translation>
 <translation id="4441147046941420429">Per continuare, rimuovi il token di sicurezza dal dispositivo, quindi inseriscilo nuovamente e toccalo</translation>
 <translation id="444134486829715816">Espandi...</translation>
+<translation id="4441928470323187829">Bloccata dall'amministratore</translation>
 <translation id="4442424173763614572">Ricerca DNS non riuscita</translation>
 <translation id="4443536555189480885">&amp;Guida</translation>
 <translation id="4444304522807523469">Accesso a scanner di documenti aggiunti tramite USB o sulla rete locale</translation>
@@ -3679,6 +3684,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5315873049536339193">Identità</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319359161174645648">Google consiglia Chrome</translation>
+<translation id="5320112320661303273">Sembra che tu abbia già configurato l'assistente su un altro dispositivo. Utilizza ancora meglio l'assistente attivando la seguente impostazione.</translation>
 <translation id="532247166573571973">Il server potrebbe non essere raggiungibile. Riprova più tardi.</translation>
 <translation id="5324300749339591280">Elenco di app</translation>
 <translation id="5324780743567488672">Imposta automaticamente il fuso orario in base alla posizione</translation>
@@ -5496,6 +5502,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7475671414023905704">URL password persa Netscape</translation>
 <translation id="7476454130948140105">Livello della batteria troppo basso per eseguire l'aggiornamento (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
+<translation id="7478362879637727630">Devi registrare questo dispositivo Chrome Education a un account Education. Per la registrazione a un nuovo account, visita l'indirizzo https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Impossibile installare l'applicazione kiosk.</translation>
 <translation id="7479221278376295180">Panoramica dell'utilizzo dello spazio di archiviazione</translation>
 <translation id="7481312909269577407">Avanti</translation>
@@ -5620,6 +5627,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7632948528260659758">Le seguenti app kiosk non sono state aggiornate:</translation>
 <translation id="7633724038415831385">Questo è il solo aggiornamento che ti richiede di aspettare. Tutti gli altri aggiornamenti software vengono effettuati in background sui Chromebook.</translation>
 <translation id="7634566076839829401">Si è verificato un errore. Riprova.</translation>
+<translation id="7635048370253485243">Bloccata dall'amministratore</translation>
 <translation id="763632859238619983">Non consentire ai siti di installare gestori dei pagamenti</translation>
 <translation id="7636919061354591437">Installa su questo dispositivo</translation>
 <translation id="7638605456503525968">Porte seriali</translation>

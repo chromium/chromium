@@ -159,7 +159,7 @@
 <translation id="2664412712123763093">Dosya konumu</translation>
 <translation id="2672394958563893062">Bir hata oluştu. Baştan başlamak için tıklayın.</translation>
 <translation id="2676946222714718093">Şurada oynatılıyor:</translation>
-<translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> klasöründeki dosyaları değiştirmesi için izin verin</translation>
+<translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="2735698359135166290">Rumence standart klavye</translation>
 <translation id="2771816809568414714">Peynir</translation>
 <translation id="2781645665747935084">Belçika dili</translation>
@@ -617,7 +617,7 @@
 <translation id="7544853251252956727">Karıştır</translation>
 <translation id="7547811415869834682">Felemenkçe</translation>
 <translation id="7551643184018910560">Rafa sabitle</translation>
-<translation id="7553492409867692754">Linux uygulamalarına <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişme izni verin</translation>
+<translation id="7553492409867692754">Linux uygulamalarına <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">Bir saniye bekleyin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> çevrimdışı kullanılabilir hale getiriliyor</translation>

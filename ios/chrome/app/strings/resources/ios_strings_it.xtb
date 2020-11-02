@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
 <translation id="1145536944570833626">Elimina dati esistenti.</translation>
 <translation id="1154690515305205900">Impossibile creare un link al testo evidenziato.</translation>
+<translation id="1157749421655780457">Consenti accesso a posizione…</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1172898394251786223">Campo successivo</translation>
 <translation id="1176932207622159128">Impossibile salvare l'immagine</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Nessun elemento</translation>
 <translation id="1692118695553449118">La sincronizzazione è attiva</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
+<translation id="1715940067130687605">Usa la posizione attuale.</translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
 <translation id="1746815479209538200">Per navigare sul Web, aggiungi una nuova scheda.</translation>
 <translation id="1752547299766512813">Salva password</translation>
@@ -374,6 +376,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
 <translation id="5083464117946352670">Impossibile stabilire le dimensioni del file.</translation>
+<translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">La sincronizzazione è disattivata</translation>

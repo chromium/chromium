@@ -80,6 +80,14 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av organisasjonen din. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
 <translation id="1263231323834454256">Leseliste</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Aktivitet som ikke blir værende på denne enheten:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />sider du åpner i dette vinduet
+          <ph name="LIST_ITEM" />informasjonskapsler og nettstedsdata
+          <ph name="LIST_ITEM" />kontoinformasjon (<ph name="LINK_BEGIN" />logg av<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Hentemåte</translation>
 <translation id="1281476433249504884">Hylle 1</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
@@ -555,6 +563,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3207960819495026254">Bokmerket</translation>
 <translation id="3209034400446768650">Siden kan belaste deg for penger</translation>
 <translation id="3212581601480735796">Aktiviteten din på <ph name="HOSTNAME" /> overvåkes</translation>
+<translation id="3212623355668894776">Lukk alle gjestevinduer, slik at nettleseraktiviteten din slettes fra denne enheten.</translation>
 <translation id="3215092763954878852">Kunne ikke bruke WebAuthn</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3225919329040284222">Tjeneren oppga et sertifikat som ikke samsvarte med innebygde forventninger. Disse forventningene benyttes for visse nettsteder med høy sikkerhet, og brukes for å beskytte deg.</translation>
@@ -916,6 +925,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4658638640878098064">Stift oppe til venstre</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>
+<translation id="4675657451653251260">Du ser ikke informasjon om andre Chrome-profiler i gjestemodus. Du kan <ph name="LINK_BEGIN" />logge på<ph name="LINK_END" /> for å få tilgang til informasjon i Google-kontoen din, som passord og betalingsmåter.</translation>
 <translation id="467662567472608290">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren inneholder feil. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ber om å svare på tilgjengelighetshendelser</translation>
 <translation id="467809019005607715">Google Presentasjoner</translation>
@@ -943,6 +953,12 @@ brukere av denne nettleseren.</translation>
 <translation id="4761104368405085019">bruke mikrofonen din</translation>
 <translation id="4764776831041365478">Det kan hende at nettsiden på <ph name="URL" /> er midlertidig nede eller flyttet permanent til en ny nettadresse.</translation>
 <translation id="4766713847338118463">To stifter bunn</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Aktivitet som blir værende på denne enheten:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />eventuelle filer du laster ned i dette vinduet
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Det har oppstått en ukjent feil.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Et forgrunnsvindu er blokkert}other{# forgrunnsvinduer er blokkert}}</translation>
 <translation id="4780366598804516005">Postkasse 1</translation>
@@ -1397,6 +1413,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>
 <translation id="6596325263575161958">Krypteringsalternativer</translation>
+<translation id="6596892391065203054">Administratoren din har blokkert utskrift av dette innholdet.</translation>
 <translation id="6604181099783169992">Bevegelses- eller lyssensorer</translation>
 <translation id="6609880536175561541">Prc7 (konvolutt)</translation>
 <translation id="6612358246767739896">Beskyttet innhold</translation>
@@ -1879,11 +1896,21 @@ Mer informasjon:
 <translation id="8559762987265718583">En privat tilkobling til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kunne ikke etableres fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) er feil på enheten.</translation>
 <translation id="8564182942834072828">Separate dokumenter / ukollaterte eksemplarer</translation>
 <translation id="8564985650692024650">Chromium anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Aktivitet som ikke blir værende på denne enheten:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />sider du åpner i dette vinduet
+          <ph name="LIST_ITEM" />informasjonskapsler og nettstedsdata
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Bruk Touch ID til å bekrefte kort raskere</translation>
 <translation id="858637041960032120">Legg til telefonnummer</translation>
 <translation id="8589998999637048520">Beste kvalitet</translation>
 <translation id="860043288473659153">Kortinnehavers navn</translation>
 <translation id="8606726445206553943">bruke MIDI-enhetene dine</translation>
+<translation id="8612761427948161954">Hei, <ph name="USERNAME" />
+        <ph name="BR" />
+        Du surfer som gjest</translation>
 <translation id="861775596732816396">Størrelse 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ingen samsvarende passord. Vis alle lagrede passord.</translation>
@@ -2022,6 +2049,7 @@ Mer informasjon:
 <translation id="9183302530794969518">Google Dokumenter</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> bruker en protokoll som ikke støttes.</translation>
 <translation id="9191834167571392248">Hull nede til venstre</translation>
+<translation id="9199905725844810519">Utskrift er blokkert</translation>
 <translation id="9205078245616868884">Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
 <translation id="9213433120051936369">Tilpass utseendet</translation>

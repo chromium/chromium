@@ -12,7 +12,7 @@
 <translation id="1697532407822776718">הכל מוכן!</translation>
 <translation id="1742469581923031760">ההתחברות מתבצעת…</translation>
 <translation id="177096447311351977">‏IP הערוץ של הלקוח: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ערוץ='<ph name="CHANNEL_TYPE" />' חיבור='<ph name="CONNECTION_TYPE" />'.</translation>
-<translation id="1897488610212723051">מחק</translation>
+<translation id="1897488610212723051">מחיקה</translation>
 <translation id="2009755455353575666">החיבור נכשל</translation>
 <translation id="2038229918502634450">מתבצע אתחול של המארח כדי להחיל שינוי במדיניות.</translation>
 <translation id="2078880767960296260">תהליך מארח</translation>
@@ -46,12 +46,12 @@
 <translation id="3197730452537982411">Remote Desktop</translation>
 <translation id="324272851072175193">שליחת ההוראות באימייל</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> מבקש אישור לבצע שינויים.</translation>
-<translation id="3339299787263251426">גש אל המחשב שלך באופן מאובטח דרך האינטרנט</translation>
+<translation id="3339299787263251426">גישה אל המחשב שלך באופן מאובטח דרך האינטרנט</translation>
 <translation id="3385242214819933234">בעלים לא חוקי של המארח.</translation>
 <translation id="3423542133075182604">תהליך תקשורת מרוחקת למפתח אבטחה</translation>
 <translation id="3581045510967524389">לא ניתן היה להתחבר לרשת. בדוק שהמכשיר שלך מקוון.</translation>
 <translation id="3596628256176442606">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chromoting.</translation>
-<translation id="369442766917958684">פועל במצב לא מקוון.</translation>
+<translation id="369442766917958684">במצב לא מקוון.</translation>
 <translation id="3695446226812920698">איך עושים זאת</translation>
 <translation id="3776024066357219166">‏הפעילות של Chrome Remote Desktop הסתיימה.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>

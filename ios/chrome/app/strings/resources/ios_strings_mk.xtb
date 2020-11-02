@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Создај нова картичка.</translation>
 <translation id="1145536944570833626">Избришете ги постоечките податоци.</translation>
 <translation id="1154690515305205900">Не може да се создаде линк до нагласениот текст.</translation>
+<translation id="1157749421655780457">Дозволете ја локацијата…</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следно поле</translation>
 <translation id="1176932207622159128">Не може да се зачува сликата</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Нема ставки</translation>
 <translation id="1692118695553449118">Синхронизацијата е вклучена</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
+<translation id="1715940067130687605">Користете ја тековната локација.</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
 <translation id="1746815479209538200">За прелистување на интернет, додајте нова картичка.</translation>
 <translation id="1752547299766512813">Зачувај лозинки</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">Во ред</translation>
 <translation id="5062321486222145940">Инсталирајте Диск на Google</translation>
 <translation id="5083464117946352670">Не може да утврди големина на датотека.</translation>
+<translation id="5090832849094901128">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Твитот е завршен.</translation>
 <translation id="5118764316110575523">Исклучено</translation>
 <translation id="5127805178023152808">Синхронизацијата е исклучена</translation>

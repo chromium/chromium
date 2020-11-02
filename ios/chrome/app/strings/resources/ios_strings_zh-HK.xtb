@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1154690515305205900">無法建立突顯文字的連結。</translation>
+<translation id="1157749421655780457">允許存取位置…</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1172898394251786223">下一個欄位</translation>
 <translation id="1176932207622159128">無法儲存圖片</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">沒有任何項目</translation>
 <translation id="1692118695553449118">同步處理已開啟</translation>
 <translation id="1700629756560807968">已選取 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
+<translation id="1715940067130687605">使用目前的位置。</translation>
 <translation id="1740468249224277719">輕按兩下即可安裝。</translation>
 <translation id="1746815479209538200">如要瀏覽網頁，請開啟新分頁。</translation>
 <translation id="1752547299766512813">儲存密碼</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
+<translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5127805178023152808">同步處理已停用</translation>

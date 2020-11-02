@@ -80,6 +80,14 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Uneli ste lozinku na sajtu kojim ne upravlja vaša organizacija. Da biste zaštitili nalog, ne koristite lozinku ponovo u drugim aplikacijama ni na drugim sajtovima.</translation>
 <translation id="1263231323834454256">Lista za čitanje</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Aktivnosti koje ne ostaju na ovom uređaju:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Stranice koje pregledate u ovom prozoru
+          <ph name="LIST_ITEM" />Kolačići i podaci o sajtovima
+          <ph name="LIST_ITEM" />Informacije o nalogu (<ph name="LINK_BEGIN" />odjavite se<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Način preuzimanja</translation>
 <translation id="1281476433249504884">1. pregrada za slaganje</translation>
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
@@ -555,6 +563,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3209034400446768650">Stranica može da naplaćuje</translation>
 <translation id="3212581601480735796">Vaše aktivnosti na <ph name="HOSTNAME" /> se prate</translation>
+<translation id="3212623355668894776">Zatvorite sve prozore u režimu gosta da bi se aktivnosti pregledanja izbrisale sa ovog uređaja.</translation>
 <translation id="3215092763954878852">Korišćenje veb-standarda WebAuthn nije uspelo</translation>
 <translation id="3218181027817787318">Relativno</translation>
 <translation id="3225919329040284222">Server je prikazao sertifikat koji se ne podudara sa ugrađenim očekivanjima. Ta očekivanja su obuhvaćena za određene veb-sajtove sa jakim bezbednosnim merama kako bi vas zaštitila.</translation>
@@ -916,6 +925,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4658638640878098064">Spajanje u gornjem levom uglu</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
+<translation id="4675657451653251260">U režimu gosta nećete videti nikakve informacije o Chrome profilu. Možete da se <ph name="LINK_BEGIN" />prijavite<ph name="LINK_END" /> radi pristupa informacijama o Google nalogu, kao što su lozinke i načini plaćanja.</translation>
 <translation id="467662567472608290">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat sadrži greške. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> želi da odgovara na događaje pristupačnosti</translation>
 <translation id="467809019005607715">Google prezentacije</translation>
@@ -943,6 +953,12 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4761104368405085019">Korišćenje mikrofona</translation>
 <translation id="4764776831041365478">Moguće je da veb-stranica na adresi <ph name="URL" /> privremeno ne funkcioniše ili da je trajno premeštena na novu veb adresu.</translation>
 <translation id="4766713847338118463">Dvostruko spajanje na dnu</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Aktivnosti koje ostaju na ovom uređaju:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Svi fajlovi koje preuzmete u ovom prozoru
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Došlo je do nepoznate greške.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Iskačući prozor je blokiran}one{# iskačući prozor je blokiran}few{# iskačuća prozora su blokirana}other{# iskačućih prozora je blokirano}}</translation>
 <translation id="4780366598804516005">1. poštansko sanduče</translation>
@@ -1396,6 +1412,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6587923378399804057">Link koji ste kopirali</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-om se ne upravlja</translation>
 <translation id="6596325263575161958">Opcije šifrovanja</translation>
+<translation id="6596892391065203054">Administrator je blokirao štampanje ovog sadržaja.</translation>
 <translation id="6604181099783169992">Senzori za pokret ili svetlo</translation>
 <translation id="6609880536175561541">Prc7 (koverat)</translation>
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
@@ -1879,12 +1896,22 @@ Dodatni detalji:
 <translation id="8559762987265718583">Nije moguće uspostaviti privatnu vezu sa domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer datum i vreme na uređaju (<ph name="DATE_AND_TIME" />) nisu tačni.</translation>
 <translation id="8564182942834072828">Odvojeni dokumenti/nesređene kopije</translation>
 <translation id="8564985650692024650">Chromium vam preporučuje da resetujete lozinku za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je koristili na drugim sajtovima.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Aktivnosti koje ne ostaju na ovom uređaju:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Stranice koje pregledate u ovom prozoru
+          <ph name="LIST_ITEM" />Kolačići i podaci o sajtovima
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Koristite Touch ID za bržu potvrdu kartica</translation>
 <translation id="858637041960032120">Dodaj tel. broj
 </translation>
 <translation id="8589998999637048520">Najbolji kvalitet</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
 <translation id="8606726445206553943">koristi MIDI uređaje</translation>
+<translation id="8612761427948161954">Zdravo <ph name="USERNAME" />,
+        <ph name="BR" />
+        Pregledate kao gost</translation>
 <translation id="861775596732816396">Veličina 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nijedna lozinka se ne podudara. Prikaži sve sačuvane lozinke.</translation>
@@ -2023,6 +2050,7 @@ Dodatni detalji:
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> koristi nepodržani protokol.</translation>
 <translation id="9191834167571392248">Bušenje u donjem levom uglu</translation>
+<translation id="9199905725844810519">Štampanje je blokirano</translation>
 <translation id="9205078245616868884">Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="9207861905230894330">Dodavanje članka nije uspelo.</translation>
 <translation id="9213433120051936369">Prilagodite izgled</translation>

@@ -1145,6 +1145,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2307462900900812319">Netwerk configureren</translation>
 <translation id="230927227160767054">Deze pagina wil een servicehandler installeren.</translation>
 <translation id="2309620859903500144">Deze site heeft geen toegang tot je bewegings- of lichtsensoren.</translation>
+<translation id="2311497964614110326">Krijg betere, snellere antwoorden met de Assistent</translation>
 <translation id="2312219318583366810">Pagina-URL</translation>
 <translation id="2314165183524574721">Huidige zichtbaarheidsinstelling is 'Verborgen'</translation>
 <translation id="2314774579020744484">Gebruikte taal tijdens het vertalen van pagina's</translation>
@@ -1258,6 +1259,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2440604414813129000">Br&amp;on weergeven</translation>
 <translation id="244231003699905658">Ongeldig adres. Controleer het adres en probeer het opnieuw.</translation>
 <translation id="2442916515643169563">Tekstschaduw</translation>
+<translation id="2444469058037141906">Zeg of typ wat je nodig hebt</translation>
 <translation id="2445081178310039857">Hoofddirectory van extensie is vereist.</translation>
 <translation id="2445484935443597917">Een nieuw profiel maken</translation>
 <translation id="2448312741937722512">Type</translation>
@@ -2174,6 +2176,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3514373592552233661">Voorkeursnetwerken krijgen de voorkeur boven andere netwerken als er meer dan één netwerk beschikbaar is</translation>
 <translation id="3515983984924808886">Tik opnieuw op de beveiligingssleutel om het resetten te bevestigen. Alle informatie die is opgeslagen op de beveiligingssleutel, inclusief de pincode, wordt verwijderd.</translation>
 <translation id="3518985090088779359">Accept. en doorgaan</translation>
+<translation id="3519564332031442870">Backend-service voor afdrukken</translation>
 <translation id="3521606918211282604">Schijfgrootte wijzigen</translation>
 <translation id="3523642406908660543">Goedkeuring vragen wanneer een site een plug-in wil gebruiken om toegang tot je computer te krijgen (aanbevolen)</translation>
 <translation id="3524965460886318643">Activiteiten exporteren</translation>
@@ -2691,6 +2694,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4088095054444612037">Accepteren voor groep</translation>
 <translation id="4089235344645910861">Instellingen opgeslagen. Synchronisatie gestart.</translation>
 <translation id="4090103403438682346">Verified Access inschakelen</translation>
+<translation id="4090811767089219951">De Google Assistent werkt hier ook</translation>
 <translation id="4090947011087001172">Siterechten voor <ph name="SITE" /> resetten?</translation>
 <translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="4093955363990068916">Lokaal bestand:</translation>
@@ -2957,6 +2961,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4441124369922430666">Wil je dat deze app automatisch start wanneer het apparaat wordt ingeschakeld?</translation>
 <translation id="4441147046941420429">Als je wilt doorgaan, verwijder je de beveiligingssleutel uit je apparaat, steek je hem er opnieuw en tik je erop</translation>
 <translation id="444134486829715816">Uitvouwen...</translation>
+<translation id="4441928470323187829">Vastgezet door je beheerder</translation>
 <translation id="4442424173763614572">DNS-lookup mislukt</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
 <translation id="4444304522807523469">Toegang tot documentscanners die zijn aangesloten via USB of die zich op het lokale netwerk bevinden</translation>
@@ -3680,6 +3685,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319359161174645648">Google beveelt Chrome aan</translation>
+<translation id="5320112320661303273">Zo te zien heb je de Assistent al ingesteld op een ander apparaat. Haal nog meer uit de Assistent door de volgende instelling in te schakelen.</translation>
 <translation id="532247166573571973">De server is mogelijk niet bereikbaar. Probeer het later opnieuw.</translation>
 <translation id="5324300749339591280">Lijst met apps</translation>
 <translation id="5324780743567488672">Tijdzone automatisch instellen op basis van je locatie</translation>
@@ -5497,6 +5503,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7475671414023905704">URL van verloren Netscape-wachtwoord</translation>
 <translation id="7476454130948140105">Batterij niet voldoende opgeladen voor update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
+<translation id="7478362879637727630">Je moet dit Chrome Education-apparaat aanmelden bij een onderwijsaccount. Ga naar https://g.co/workspace/edusignup om je aan te melden voor een nieuw account.</translation>
 <translation id="7478485216301680444">Kiosk-app kan niet worden geïnstalleerd.</translation>
 <translation id="7479221278376295180">Gebruikersoverzicht van opslagruimte</translation>
 <translation id="7481312909269577407">Vooruit</translation>
@@ -5621,6 +5628,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
 <translation id="7633724038415831385">Dit is de enige keer dat je moet wachten op een update. Op Chromebooks vinden software-updates in de achtergrond plaats.</translation>
 <translation id="7634566076839829401">Er is iets misgegaan. Probeer het opnieuw.</translation>
+<translation id="7635048370253485243">Vastgezet door je beheerder</translation>
 <translation id="763632859238619983">Niet toestaan dat sites betalingshandlers installeren</translation>
 <translation id="7636919061354591437">Installeren op dit apparaat</translation>
 <translation id="7638605456503525968">Seriële poorten</translation>

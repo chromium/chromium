@@ -49,6 +49,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1346748346194534595">Kulia</translation>
 <translation id="1351937230027495976">Kunja menyu</translation>
 <translation id="1383876407941801731">Tafuta</translation>
+<translation id="1390105199421505038">Ondoa kidirisha cha akaunti ya <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Umewashwa</translation>
 <translation id="1407069428457324124">Mandhari meusi</translation>
 <translation id="1419738280318246476">Fungua kifaa ili utekeleza kitendo cha arifa</translation>
@@ -369,6 +370,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4477892968187500306">Huenda kifaa hiki kina programu ambazo hazijathibitishwa na Google.</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4481530544597605423">Vifaa visivyooanishwa</translation>
+<translation id="4485060137115666462">Ukibofya kulia au ukibonyeza kwa muda mrefu, programu ya Mratibu itaonyesha maelezo kama vile ufafanuzi, ubadilishaji wa vipimo au tafsiri ya chaguo lako.</translation>
 <translation id="4505050298327493054">Eneokazi linalotumika.</translation>
 <translation id="4506458088675900627">Ishara ya padi ya kugusa ya Muhtasari imebadilika</translation>
 <translation id="4513946894732546136">Mwitiko</translation>
@@ -597,6 +599,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6803622936009808957">Haikuweza kuakisi maonyesho kwa kuwa hakuna misongo inayoweza kutumiwa iliyopatikana. Badala yake imeingia eneo-kazi lililopanuliwa.</translation>
 <translation id="6818242057446442178">Rudi nyuma kwa neno moja</translation>
 <translation id="6820676911989879663">Pumzika kidogo!</translation>
+<translation id="6850010208275816200">Programu uliyoifungua sasa inatumia skrini nzima. Programu ikikuomba uweke nenosiri lako, ondoka kwenye skrini nzima kwanza.</translation>
 <translation id="6857725247182211756">sek <ph name="SECONDS" /></translation>
 <translation id="6857811139397017780">Amilisha <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Imesalia tarakimu moja}other{Zimesalia tarakimu #}}</translation>
@@ -646,6 +649,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7398254312354928459">Imebadilisha muunganisho wa mtandao</translation>
 <translation id="7405710164030118432">Ili ufungue kifaa, weka msimbo wa ufikiaji wa mzazi katika Family Link</translation>
 <translation id="741244894080940828">ubadilishaji</translation>
+<translation id="7413851974711031813">Bonyeza kitufe cha "escape" ili ufunge</translation>
 <translation id="742594950370306541">Kamera inatumika.</translation>
 <translation id="742608627846767349">Habari za asubuhi,</translation>
 <translation id="743058460480092004">Kamera na maikrofoni zinatumiwa.</translation>
