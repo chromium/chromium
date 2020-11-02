@@ -2040,17 +2040,11 @@
             ],
             "experiments": [
                 {
-                    "name": "V3EnabledLimited",
+                    "name": "D3D11StableEnabledV2",
                     "enable_features": [
-                        "D3D11PrintCodecOnCrash",
                         "D3D11VideoDecoder",
-                        "D3D11VideoDecoderAllowOverlay",
                         "D3D11VideoDecoderCopyPictures",
                         "D3D11VideoDecoderLimitTo11_0"
-                    ],
-                    "disable_features": [
-                        "D3D11VideoDecoderAlwaysCopy",
-                        "D3D11VideoDecoderSkipMultithreaded"
                     ]
                 }
             ]
