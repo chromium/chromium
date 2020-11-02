@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -107,6 +108,11 @@ class ArcFileSystemBridge
   void OnConnectionClosed() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ArcFileSystemBridgeTest,
+                           GetLinuxVFSPathFromExternalFileURL);
+  FRIEND_TEST_ALL_PREFIXES(ArcFileSystemBridgeTest,
+                           GetLinuxVFSPathForPathOnFileSystemType);
+
   using GenerateVirtualFileIdCallback =
       base::OnceCallback<void(const base::Optional<std::string>& id)>;
 
@@ -138,6 +144,27 @@ class ArcFileSystemBridge
                       OpenFileToReadCallback callback,
                       const std::string& id,
                       base::ScopedFD fd);
+
+  // Used to implement OpenFileToRead(), needs to be testable.
+  //
+  // Decode a percent-encoded externalfile: URL to an absolute path on
+  // the Linux VFS (virtual file system). This returns a non-empty path
+  // for FUSE filesystems (ie. DriveFS, SmbFs, archives) that utilise FD
+  // passing and externalfile: in file_manager::util::ConvertPathToArcUrl().
+  // Returns an empty path for Chrome's virtual filesystems that are not exposed
+  // on the Linux VFS (ie. MTP, FSP).
+  base::FilePath GetLinuxVFSPathFromExternalFileURL(Profile* const profile,
+                                                    const GURL& url);
+
+  // Used to implement OpenFileToRead(), needs to be testable.
+  //
+  // Takes a path within the mount namespace of a specific FileSystemType and
+  // returns the path on the Linux VFS, if it exists, or an empty path
+  // otherwise.
+  base::FilePath GetLinuxVFSPathForPathOnFileSystemType(
+      Profile* const profile,
+      const base::FilePath& path,
+      storage::FileSystemType file_system_type);
 
   // Called when FileStreamForwarder completes read request.
   void OnReadRequestCompleted(const std::string& id,

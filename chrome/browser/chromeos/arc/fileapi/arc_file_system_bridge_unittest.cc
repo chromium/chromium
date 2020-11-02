@@ -14,9 +14,12 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/arc/fileapi/chrome_content_provider_url_util.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/chromeos/file_system_provider/service.h"
 #include "chrome/browser/chromeos/file_system_provider/service_factory.h"
+#include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
+#include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -55,20 +58,19 @@ class ArcFileSystemBridgeTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    Profile* profile =
-        profile_manager_->CreateTestingProfile(kTestingProfileName);
+    profile_ = profile_manager_->CreateTestingProfile(kTestingProfileName);
     auto fake_provider =
         chromeos::file_system_provider::FakeExtensionProvider::Create(
             kExtensionId);
     const auto kProviderId = fake_provider->GetId();
-    auto* service = chromeos::file_system_provider::Service::Get(profile);
+    auto* service = chromeos::file_system_provider::Service::Get(profile_);
     service->RegisterProvider(std::move(fake_provider));
     service->MountFileSystem(kProviderId,
                              chromeos::file_system_provider::MountOptions(
                                  kFileSystemId, "Test FileSystem"));
 
     arc_file_system_bridge_ =
-        std::make_unique<ArcFileSystemBridge>(profile, &arc_bridge_service_);
+        std::make_unique<ArcFileSystemBridge>(profile_, &arc_bridge_service_);
     arc_bridge_service_.file_system()->SetInstance(&fake_file_system_);
     WaitForInstanceReady(arc_bridge_service_.file_system());
   }
@@ -84,6 +86,7 @@ class ArcFileSystemBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  Profile* profile_ = nullptr;
 
   FakeFileSystemInstance fake_file_system_;
   ArcBridgeService arc_bridge_service_;
@@ -259,6 +262,92 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
 
   // ID is released.
   EXPECT_TRUE(arc_file_system_bridge_->HandleIdReleased(kId));
+}
+
+TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathFromExternalFileURL) {
+  storage::ExternalMountPoints* system_mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+
+  // Check: FSPs aren't visible on the VFS so should yield no path.
+  base::FilePath fsp_path =
+      arc_file_system_bridge_->GetLinuxVFSPathFromExternalFileURL(
+          profile_, GURL(kTestUrl));
+  EXPECT_EQ(fsp_path, base::FilePath());
+
+  // SmbFs is visible on the VFS, so should yield a path.
+  constexpr char kSmbFsTestMountName[] = "test-smb";
+  constexpr char kSmbFsTestMountPoint[] = "/dummy/mount";
+  constexpr char kTestPathInsideMount[] = "path/to/file";
+  EXPECT_TRUE(system_mount_points->RegisterFileSystem(
+      kSmbFsTestMountName, storage::FileSystemType::kFileSystemTypeSmbFs, {},
+      base::FilePath(kSmbFsTestMountPoint)));
+
+  base::FilePath smbfs_path_expected(
+      base::FilePath(kSmbFsTestMountPoint).Append(kTestPathInsideMount));
+
+  // Create externalfile: URL as would be encoded inside the
+  // ChromeContentProvider URL.
+  GURL smbfs_url = chromeos::CreateExternalFileURLFromPath(
+      profile_, smbfs_path_expected, true);
+
+  // Check: The path returned matches the path encoded into the URL.
+  base::FilePath smbfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathFromExternalFileURL(profile_,
+                                                                  smbfs_url);
+  EXPECT_EQ(smbfs_path, smbfs_path_expected);
+  system_mount_points->RevokeFileSystem(kSmbFsTestMountName);
+}
+
+TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathForPathOnFileSystemType) {
+  // Check: DriveFS paths are returned as passed in.
+  const base::FilePath filesystem_path("/path/on/filesystem/file");
+  base::FilePath drivefs_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, filesystem_path, storage::kFileSystemTypeDriveFs);
+  EXPECT_EQ(drivefs_vfs_path, filesystem_path);
+
+  // Check: SmbFs paths are returned as passed in.
+  base::FilePath smbfs_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, filesystem_path, storage::kFileSystemTypeSmbFs);
+  EXPECT_EQ(smbfs_vfs_path, filesystem_path);
+
+  // Check: Crostini paths are returned as passed in.
+  const base::FilePath crostini_path =
+      file_manager::util::GetCrostiniMountDirectory(profile_).Append(
+          "path/to/file");
+  base::FilePath crostini_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, crostini_path, storage::kFileSystemTypeNativeLocal);
+  EXPECT_EQ(crostini_vfs_path, crostini_path);
+
+  // Check: fuse-zip and rar2fs paths are returned as passed in.
+  const base::FilePath archive_path =
+      base::FilePath(file_manager::util::kArchiveMountPath)
+          .Append("path/to/file");
+  base::FilePath archive_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, archive_path, storage::kFileSystemTypeNativeLocal);
+  EXPECT_EQ(archive_vfs_path, archive_path);
+
+  // Check: Other kFileSystemTypeNativeLocal paths that are not descendants of
+  // the Crostini, fuse-zip or rar2fs mount points return an empty path.
+  const base::FilePath empty_path,
+      unsupported_local_path = base::FilePath("/path/to/file");
+  base::FilePath unsupported_local_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, unsupported_local_path,
+          storage::kFileSystemTypeNativeLocal);
+  EXPECT_EQ(empty_path, unsupported_local_vfs_path);
+
+  // Check: Paths from unsupported FileSystemTypes return an empty path.
+  const base::FilePath unsupported_filesystem_path =
+      base::FilePath("/special/path");
+  base::FilePath unsupported_filesystem_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, unsupported_filesystem_path,
+          storage::kFileSystemTypeProvided);
+  EXPECT_EQ(empty_path, unsupported_filesystem_vfs_path);
 }
 
 }  // namespace arc
