@@ -37,7 +37,7 @@ struct CONTENT_EXPORT AppCacheInfoCollection
 };
 
 // Exposes a limited interface to the AppCacheService.
-// Call these methods only on the IO thread.
+// Call these methods only on the UI thread.
 class CONTENT_EXPORT AppCacheService {
  public:
   // Populates 'collection' with info about all of the appcaches stored
