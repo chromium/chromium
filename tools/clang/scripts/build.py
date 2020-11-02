@@ -792,8 +792,8 @@ def main():
         # armv7 is A5 and earlier, armv7s is A6+ (2012 and later, before 64-bit
         # iPhones). armv7k is Apple Watch, which we don't need.
         '-DDARWIN_ios_ARCHS=armv7;armv7s;arm64',
-        '-DDARWIN_iossim_ARCHS=i386;x86_64',
-        ])
+        '-DDARWIN_iossim_ARCHS=i386;x86_64;arm64',
+    ])
     if args.bootstrap:
       # mac/arm64 needs MacOSX11.0.sdk. System Xcode (+ SDK) on the chrome bots
       # is something much older.
