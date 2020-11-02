@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher_impl.h"
+#include "components/subresource_filter/content/browser/unindexed_ruleset_stream_generator.h"
 #include "components/subresource_filter/content/common/subresource_filter_messages.h"
 #include "components/subresource_filter/core/browser/copying_file_stream.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -268,10 +269,10 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  base::File unindexed_ruleset_file(
-      unindexed_ruleset_info.ruleset_path,
-      base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!unindexed_ruleset_file.IsValid()) {
+  UnindexedRulesetStreamGenerator unindexed_ruleset_stream_generator(
+      unindexed_ruleset_info);
+
+  if (!unindexed_ruleset_stream_generator.ruleset_stream()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_OPENING_UNINDEXED_RULESET);
     return IndexedRulesetVersion();
@@ -309,7 +310,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   // will prevent this version of the ruleset from ever being indexed again.
 
   RulesetIndexer indexer;
-  if (!(*g_index_ruleset_func)(std::move(unindexed_ruleset_file), &indexer)) {
+  if (!(*g_index_ruleset_func)(&unindexed_ruleset_stream_generator, &indexer)) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_PARSING_UNINDEXED_RULESET);
     return IndexedRulesetVersion();
@@ -335,19 +336,19 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
 }
 
 // static
-bool RulesetService::IndexRuleset(base::File unindexed_ruleset_file,
-                                  RulesetIndexer* indexer) {
+bool RulesetService::IndexRuleset(
+    UnindexedRulesetStreamGenerator* unindexed_ruleset_stream_generator,
+    RulesetIndexer* indexer) {
   SCOPED_UMA_HISTOGRAM_TIMER("SubresourceFilter.IndexRuleset.WallDuration");
   SCOPED_UMA_HISTOGRAM_THREAD_TIMER(
       "SubresourceFilter.IndexRuleset.CPUDuration");
 
-  int64_t unindexed_ruleset_size = unindexed_ruleset_file.GetLength();
+  int64_t unindexed_ruleset_size =
+      unindexed_ruleset_stream_generator->ruleset_size();
   if (unindexed_ruleset_size < 0)
     return false;
-  CopyingFileInputStream copying_stream(std::move(unindexed_ruleset_file));
-  google::protobuf::io::CopyingInputStreamAdaptor zero_copy_stream_adaptor(
-      &copying_stream, 4096 /* buffer_size */);
-  UnindexedRulesetReader reader(&zero_copy_stream_adaptor);
+  UnindexedRulesetReader reader(
+      unindexed_ruleset_stream_generator->ruleset_stream());
 
   size_t num_unsupported_rules = 0;
   url_pattern_index::proto::FilteringRules ruleset_chunk;

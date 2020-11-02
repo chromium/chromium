@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/unindexed_ruleset_stream_generator.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -150,12 +151,14 @@ bool MockFailingReplaceFile(const base::FilePath&,
 }
 
 #if GTEST_HAS_DEATH_TEST
-bool MockCrashingIndexRuleset(base::File, RulesetIndexer*) {
+bool MockCrashingIndexRuleset(UnindexedRulesetStreamGenerator*,
+                              RulesetIndexer*) {
   LOG(FATAL) << "Synthetic crash.";
   return false;
 }
 #else
-bool MockFailingIndexRuleset(base::File, RulesetIndexer*) {
+bool MockFailingIndexRuleset(UnindexedRulesetStreamGenerator*,
+                             RulesetIndexer*) {
   return false;
 }
 #endif

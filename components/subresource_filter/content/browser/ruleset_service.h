@@ -59,6 +59,7 @@ class SequencedTaskRunner;
 namespace subresource_filter {
 
 class RulesetIndexer;
+class UnindexedRulesetStreamGenerator;
 
 // Contains all utility functions that govern how files pertaining to indexed
 // ruleset version should be organized on disk.
@@ -214,10 +215,11 @@ class RulesetService : public base::SupportsWeakPtr<RulesetService> {
       const base::FilePath& indexed_ruleset_base_dir,
       const UnindexedRulesetInfo& unindexed_ruleset_info);
 
-  // Reads the rules from the |unindexed_ruleset_file|, and indexes them using
-  // |indexer|. Returns whether the entire ruleset could be parsed.
-  static bool IndexRuleset(base::File unindexed_ruleset_file,
-                           RulesetIndexer* indexer);
+  // Reads the rules via the |unindexed_ruleset_stream_generator|, and indexes
+  // them using |indexer|. Returns whether the entire ruleset could be parsed.
+  static bool IndexRuleset(
+      UnindexedRulesetStreamGenerator* unindexed_ruleset_stream_generator,
+      RulesetIndexer* indexer);
 
   // Writes all files comprising the given |indexed_version| of the ruleset
   // into the corresponding subdirectory in |indexed_ruleset_base_dir|.

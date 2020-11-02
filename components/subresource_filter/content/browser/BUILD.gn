@@ -41,6 +41,8 @@ static_library("browser") {
     "subresource_filter_safe_browsing_client.h",
     "subresource_filter_safe_browsing_client_request.cc",
     "subresource_filter_safe_browsing_client_request.h",
+    "unindexed_ruleset_stream_generator.cc",
+    "unindexed_ruleset_stream_generator.h",
     "verified_ruleset_dealer.cc",
     "verified_ruleset_dealer.h",
   ]
