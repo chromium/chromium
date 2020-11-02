@@ -62,16 +62,25 @@ std::string HashUsername(base::StringPiece canonicalized_username) {
 }
 
 std::string BucketizeUsername(base::StringPiece canonicalized_username) {
-  static_assert(
-      kUsernameHashPrefixLength % CHAR_BIT == 0,
-      "The prefix length must be a multiple of the number of bits in a char.");
+  // Compute the number of bytes necessary to store `kUsernameHashPrefixLength`
+  // bits.
+  constexpr size_t kPrefixBytes =
+      (kUsernameHashPrefixLength + CHAR_BIT - 1) / CHAR_BIT;
+  // Compute the remainder, and construct a mask that keeps the first
+  // `kPrefixRemainder` bits.
+  constexpr size_t kPrefixRemainder = kUsernameHashPrefixLength % CHAR_BIT;
+  constexpr size_t kPrefixMask = ((1 << kPrefixRemainder) - 1)
+                                 << (CHAR_BIT - kPrefixRemainder);
 
   // Check that |canonicalized_username| is actually canonicalized.
   // Note: We can't use CanonicalizeUsername() again, since it's not idempotent
   // if multiple '@' signs are present in the initial username.
   DCHECK_EQ(base::ToLowerASCII(canonicalized_username), canonicalized_username);
-  return HashUsername(canonicalized_username)
-      .substr(0, kUsernameHashPrefixLength / CHAR_BIT);
+  std::string prefix =
+      HashUsername(canonicalized_username).substr(0, kPrefixBytes);
+  if (kPrefixRemainder != 0)
+    prefix.back() &= kPrefixMask;
+  return prefix;
 }
 
 std::string ScryptHashUsernameAndPassword(

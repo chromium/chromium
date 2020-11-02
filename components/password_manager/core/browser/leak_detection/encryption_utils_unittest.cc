@@ -66,7 +66,7 @@ TEST(EncryptionUtils, HashUsername) {
 
 TEST(EncryptionUtils, BucketizeUsername) {
   EXPECT_THAT(BucketizeUsername("jonsnow"),
-              ElementsAreArray({0x3D, 0x70, 0xD3}));
+              ElementsAreArray({0x3D, 0x70, 0xD3, 0x60}));
 }
 
 TEST(EncryptionUtils, ScryptHashUsernameAndPassword) {

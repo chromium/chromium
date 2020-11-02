@@ -177,7 +177,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenBeforeEncryption) {
               LookupSingleLeak(
                   _, access_token,
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
-                              ElementsAre(-67, 116, -87)),
+                              ElementsAre(0xBD, 0x74, 0xA9, 0x20)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
                               testing::Ne(""))),
                   _));
@@ -211,7 +211,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenAfterEncryption) {
               LookupSingleLeak(
                   _, access_token,
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
-                              ElementsAre(-67, 116, -87)),
+                              ElementsAre(0xBD, 0x74, 0xA9, 0x20)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
                               testing::Ne(""))),
                   _));
