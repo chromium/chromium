@@ -20,8 +20,10 @@ void GLSurfaceGLXX11::RegisterEvents() {
   // Can be null in tests, when we don't care about Exposes.
   if (X11EventSource::HasInstance()) {
     x11::Connection::Get()->ChangeWindowAttributes(
-        {.window = static_cast<x11::Window>(window()),
-         .event_mask = x11::EventMask::Exposure});
+        x11::ChangeWindowAttributesRequest{
+            .window = static_cast<x11::Window>(window()),
+            .event_mask = x11::EventMask::Exposure});
+
     X11EventSource::GetInstance()->AddXEventDispatcher(this);
   }
 }

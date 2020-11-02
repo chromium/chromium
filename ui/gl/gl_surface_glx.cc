@@ -70,7 +70,7 @@ bool CreateDummyWindow(x11::Connection* conn) {
   DCHECK(conn);
   auto parent_window = conn->default_root();
   auto window = conn->GenerateId<x11::Window>();
-  auto create_window = conn->CreateWindow({
+  auto create_window = conn->CreateWindow(x11::CreateWindowRequest{
       .wid = window,
       .parent = parent_window,
       .width = 1,
@@ -318,7 +318,7 @@ class SGIVideoSyncProviderThreadShim {
     DCHECK(connection);
 
     auto window = connection->GenerateId<x11::Window>();
-    auto req = connection->CreateWindow({
+    auto req = connection->CreateWindow(x11::CreateWindowRequest{
         .wid = window,
         .parent = static_cast<x11::Window>(parent_window_),
         .width = 1,
@@ -901,7 +901,7 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 
   auto* conn = x11::Connection::Get();
   window_ = conn->GenerateId<x11::Window>();
-  conn->CreateWindow({
+  conn->CreateWindow(x11::CreateWindowRequest{
                          .depth = g_depth,
                          .wid = window_,
                          .parent = parent_window,
