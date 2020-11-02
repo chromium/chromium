@@ -200,26 +200,6 @@ if (!is_android) {
     output_dir = "$root_gen_dir/chrome"
   }
 
-  grit("read_later_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-    source = "read_later/read_later_resources.grd"
-    deps = [
-      "//chrome/browser/resources/read_later:web_components",
-      "//chrome/browser/ui/webui/read_later:mojo_bindings_js",
-    ]
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/read_later_resources.h",
-      "grit/read_later_resources_map.cc",
-      "grit/read_later_resources_map.h",
-      "read_later_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
   grit("tab_search_resources") {
     grit_flags = [
       "-E",

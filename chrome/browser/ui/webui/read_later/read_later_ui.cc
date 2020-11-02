@@ -21,9 +21,6 @@
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/read_later/";
-
 void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id) {
@@ -37,8 +34,6 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIReadLaterHost);
-  source->AddResourcePath("read_later.mojom-lite.js",
-                          IDR_READ_LATER_MOJO_LITE_JS);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
@@ -52,7 +47,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      kGeneratedPath, IDR_READ_LATER_HTML);
+      /*generated_path=*/std::string(), IDR_READ_LATER_READ_LATER_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

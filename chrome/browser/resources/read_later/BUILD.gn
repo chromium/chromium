@@ -2,8 +2,85 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
+preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
+
+grit("read_later_resources") {
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
+  ]
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  defines +=
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$target_gen_dir/read_later_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/read_later_resources.h",
+    "grit/read_later_resources_map.cc",
+    "grit/read_later_resources_map.h",
+    "read_later_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  input_files = [ "read_later.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [
+    ":preprocess",
+    ":preprocess_mojo",
+    ":preprocess_web_components",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_web_components_manifest",
+    "$target_gen_dir/$preprocess_mojo_manifest",
+  ]
+  grd_prefix = "read_later"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "read_later_api_proxy.js" ]
+}
+
+preprocess_grit("preprocess_mojo") {
+  deps = [ "//chrome/browser/ui/webui/read_later:mojo_bindings_js" ]
+  in_folder = "$root_gen_dir/chrome/browser/ui/webui/read_later/"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
+  in_files = [ "read_later.mojom-lite.js" ]
+}
+
+preprocess_grit("preprocess_web_components") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
+  in_files = [
+    "app.js",
+    "read_later_item.js",
+  ]
+}
 
 js_type_check("closure_compile") {
   is_polymer3 = true

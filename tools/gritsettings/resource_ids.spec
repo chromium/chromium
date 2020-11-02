@@ -165,7 +165,8 @@
     "META": {"sizes": {"includes": [500],}},
     "includes": [1720],
   },
-  "chrome/browser/resources/read_later/read_later_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/read_later/read_later_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
     "includes": [1760],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/chromeos/os_settings_resources.grd": {
