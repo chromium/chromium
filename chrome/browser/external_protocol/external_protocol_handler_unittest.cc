@@ -189,8 +189,12 @@ class ExternalProtocolHandlerTest : public testing::Test {
     ExternalProtocolHandler::SetDelegateForTesting(&delegate_);
     delegate_.set_block_state(block_state);
     delegate_.set_os_state(os_state);
-    int process_id = web_contents_->GetRenderViewHost()->GetProcess()->GetID();
-    int routing_id = web_contents_->GetRenderViewHost()->GetRoutingID();
+    int process_id = web_contents_->GetMainFrame()
+                         ->GetRenderViewHost()
+                         ->GetProcess()
+                         ->GetID();
+    int routing_id =
+        web_contents_->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
     ExternalProtocolHandler::LaunchUrl(url, process_id, routing_id,
                                        ui::PAGE_TRANSITION_LINK, true,
                                        initiating_origin);
