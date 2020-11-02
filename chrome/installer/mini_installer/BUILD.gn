@@ -34,6 +34,8 @@ source_set("lib") {
     "configuration.h",
     "decompress.cc",
     "decompress.h",
+    "delete_with_retry.cc",
+    "delete_with_retry.h",
     "mini_file.cc",
     "mini_file.h",
     "mini_installer.cc",
@@ -73,6 +75,7 @@ source_set("unit_tests") {
   sources = [
     "configuration_test.cc",
     "decompress_test.cc",
+    "delete_with_retry_test.cc",
     "mini_file_test.cc",
     "mini_installer_unittest.cc",
     "mini_string_test.cc",
