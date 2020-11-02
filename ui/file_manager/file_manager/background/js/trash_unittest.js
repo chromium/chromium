@@ -172,8 +172,10 @@ async function testDownloadsHasOwnTrash(done) {
   const file1 = MockFileEntry.create(fs, '/file1', null, new Blob(['f1']));
   const dir2 = MockDirectoryEntry.create(fs, '/Downloads');
   const file2 =
-      MockFileEntry.create(fs, '/Downloads/file2', null, new Blob(['f1']));
-  assertEquals(4, Object.keys(fs.entries).length);
+      MockFileEntry.create(fs, '/Downloads/file2', null, new Blob(['f2']));
+  const file3 =
+      MockFileEntry.create(fs, '/Downloads/file3', null, new Blob(['f3']));
+  assertEquals(5, Object.keys(fs.entries).length);
 
   // Move /file1 to trash.
   await trash.removeFileOrDirectory(volumeManager, file1, deletePermanently);
@@ -182,31 +184,40 @@ async function testDownloadsHasOwnTrash(done) {
   assertTrue(fs.entries['/.Trash/info'].isDirectory);
   assertTrue(fs.entries['/.Trash/files/file1'].isFile);
   assertTrue(fs.entries['/.Trash/info/file1.trashinfo'].isFile);
-  assertEquals(8, Object.keys(fs.entries).length);
+  assertEquals(9, Object.keys(fs.entries).length);
 
-  // Move /files2 (in Downloads to trash.
+  // Move /Downloads/file2 to trash.
   await trash.removeFileOrDirectory(volumeManager, file2, deletePermanently);
   assertTrue(fs.entries['/Downloads/.Trash'].isDirectory);
   assertTrue(fs.entries['/Downloads/.Trash/files'].isDirectory);
   assertTrue(fs.entries['/Downloads/.Trash/info'].isDirectory);
   assertTrue(fs.entries['/Downloads/.Trash/files/file2'].isFile);
   assertTrue(fs.entries['/Downloads/.Trash/info/file2.trashinfo'].isFile);
-  assertEquals(12, Object.keys(fs.entries).length);
+  assertEquals(13, Object.keys(fs.entries).length);
 
   // Delete /Downloads/.Trash/files/file2.
   const file2Trashed = fs.entries['/Downloads/.Trash/files/file2'];
   assertFalse(!!trash.shouldMoveToTrash(volumeManager, file2Trashed));
   await trash.removeFileOrDirectory(
       volumeManager, file2Trashed, deletePermanently);
-  assertEquals(11, Object.keys(fs.entries).length);
+  assertEquals(12, Object.keys(fs.entries).length);
 
   // Delete /Downloads/.Trash.
   const downloadsTrash = fs.entries['/Downloads/.Trash'];
   assertFalse(!!trash.shouldMoveToTrash(volumeManager, downloadsTrash));
   await trash.removeFileOrDirectory(
       volumeManager, downloadsTrash, deletePermanently);
-  assertEquals(7, Object.keys(fs.entries).length);
+  assertFalse(!!fs.entries['/Downloads/.Trash']);
+  assertEquals(8, Object.keys(fs.entries).length);
 
+  // Move /Downloads/file3 to trash, should recreate /Downloads/.Trash.
+  await trash.removeFileOrDirectory(volumeManager, file3, deletePermanently);
+  assertTrue(fs.entries['/Downloads/.Trash'].isDirectory);
+  assertTrue(fs.entries['/Downloads/.Trash/files'].isDirectory);
+  assertTrue(fs.entries['/Downloads/.Trash/info'].isDirectory);
+  assertTrue(fs.entries['/Downloads/.Trash/files/file3'].isFile);
+  assertTrue(fs.entries['/Downloads/.Trash/info/file3.trashinfo'].isFile);
+  assertEquals(12, Object.keys(fs.entries).length);
   done();
 }
 

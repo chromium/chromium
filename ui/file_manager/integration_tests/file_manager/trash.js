@@ -82,6 +82,15 @@ testcase.trashMoveToTrash = async () => {
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(appId, '#file-list [file-name=".Trash"]');
+
+  // Delete photos dir (no dialog),
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="photos"]');
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+
+  // Wait for photos to be removed, and .Trash to be recreated.
+  await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
+  await remoteCall.waitForElement(appId, '#file-list [file-name=".Trash"]');
 };
 
 /**

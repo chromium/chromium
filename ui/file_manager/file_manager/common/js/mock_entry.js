@@ -262,6 +262,7 @@ class MockEntry {
     Promise.resolve().then(() => {
       for (const path in this.filesystem.entries) {
         if (path.startsWith(this.fullPath)) {
+          this.filesystem.entries[path].removed_ = true;
           delete this.filesystem.entries[path];
         }
       }
@@ -446,6 +447,10 @@ class MockDirectoryEntry extends MockEntry {
     // default them to be no-ops to save on checking their validity later.
     onSuccess = onSuccess || (entry => {});  // no-op
     onError = onError || (error => {});      // no-op
+    if (this.removed_) {
+      return onError(
+          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+    }
     option = option || {};
     const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
     const result = this.filesystem.entries[fullPath];

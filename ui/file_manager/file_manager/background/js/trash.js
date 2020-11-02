@@ -36,6 +36,7 @@ class TrashConfig {
    *     this is the user's homedir (/home/<username>).
    */
   constructor(rootType, topDir, trashDir, prefixPathWithRemoteMount = false) {
+    this.id = `${rootType}-${topDir}`;
     this.rootType = rootType;
     this.topDir = topDir;
     this.trashDir = trashDir;
@@ -119,7 +120,14 @@ class Trash {
     if (!permanentlyDelete) {
       const config = this.shouldMoveToTrash(volumeManager, entry);
       if (config) {
-        return this.trashFileOrDirectory_(entry, config);
+        return this.trashFileOrDirectory_(entry, config).catch(error => {
+          console.log(
+              ('Error deleting ' + entry.toURL() +
+               ', will refresh trashdir and try again'),
+              error);
+          delete this.trashDirs_[config.id];
+          return this.trashFileOrDirectory_(entry, config);
+        });
       }
     }
     return this.permanentlyDeleteFileOrDirectory_(entry);
@@ -151,8 +159,7 @@ class Trash {
    * @private
    */
   async getTrashDirs_(entry, config) {
-    const key = `${config.rootType}-${config.topDir}`;
-    let trashDirs = this.trashDirs_[key];
+    let trashDirs = this.trashDirs_[config.id];
     if (trashDirs) {
       return trashDirs;
     }
@@ -169,7 +176,7 @@ class Trash {
     trashDirs = new TrashDirs(trashFiles, trashInfo);
     // Check and remove old items max once per session.
     this.removeOldItems_(trashDirs, Date.now());
-    this.trashDirs_[key] = trashDirs;
+    this.trashDirs_[config.id] = trashDirs;
     return trashDirs;
   }
 
