@@ -1230,54 +1230,5 @@ TEST(ThreadPoolTaskTrackerWaitAllowedTest, WaitAllowed) {
   wait_allowed_test_thread.Join();
 }
 
-// Verify that ThreadPool.TaskLatency.* histograms are correctly recorded
-// when a task runs.
-TEST(ThreadPoolTaskTrackerHistogramTest, TaskLatency) {
-  TaskTracker tracker("Test");
-
-  struct {
-    const TaskTraits traits;
-    const char* const expected_histogram;
-  } static constexpr kTests[] = {
-      {{TaskPriority::BEST_EFFORT},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "BackgroundTaskPriority"},
-      {{MayBlock(), TaskPriority::BEST_EFFORT},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "BackgroundTaskPriority"},
-      {{WithBaseSyncPrimitives(), TaskPriority::BEST_EFFORT},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "BackgroundTaskPriority"},
-      {{TaskPriority::USER_VISIBLE},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "UserVisibleTaskPriority"},
-      {{MayBlock(), TaskPriority::USER_VISIBLE},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "UserVisibleTaskPriority"},
-      {{WithBaseSyncPrimitives(), TaskPriority::USER_VISIBLE},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "UserVisibleTaskPriority"},
-      {{TaskPriority::USER_BLOCKING},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "UserBlockingTaskPriority"},
-      {{MayBlock(), TaskPriority::USER_BLOCKING},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "UserBlockingTaskPriority"},
-      {{WithBaseSyncPrimitives(), TaskPriority::USER_BLOCKING},
-       "ThreadPool.TaskLatencyMicroseconds.Test."
-       "UserBlockingTaskPriority"}};
-
-  for (const auto& test : kTests) {
-    Task task(FROM_HERE, DoNothing(), TimeDelta());
-    ASSERT_TRUE(tracker.WillPostTask(&task, test.traits.shutdown_behavior()));
-
-    HistogramTester tester;
-
-    test::QueueAndRunTaskSource(
-        &tracker, test::CreateSequenceWithTask(std::move(task), test.traits));
-    tester.ExpectTotalCount(test.expected_histogram, 1);
-  }
-}
-
 }  // namespace internal
 }  // namespace base

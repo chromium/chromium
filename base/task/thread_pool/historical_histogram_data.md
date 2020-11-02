@@ -194,3 +194,141 @@ Date: October 2020
 | 50          | 362                       | 418                        |
 | 75          | 1161                      | 1307                       |
 | 95          | > 1 hour                  | > 1 hour                   |
+
+## Task Latency
+
+Time elapsed between when a task is posted and when it starts to run. Recorded
+for each task that runs inside the ThreadPool.
+
+Unit: microseconds
+
+Histogram name: ThreadPool.TaskLatencyMicroseconds.(Browser/Renderer).(UserBlocking/UserVisible/Background)TaskPriority
+Date: October 13, 2020
+
+### Windows
+
+#### Browser process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 11            | 13           | 39          |
+| 50         | 19            | 27           | 386         |
+| 75         | 44            | 60           | 2533        |
+| 95         | 495           | 701          | > 20 ms     |
+| 99         | > 20 ms       | 16705        | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 14%
+- USER_VISIBLE: 72%
+- BEST_EFFORT: 14%
+
+#### Renderer process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 14            | 18           | 151         |
+| 50         | 30            | 39           | 567         |
+| 75         | 65            | 86           | 9145        |
+| 95         | 1102          | 2230         | > 20 ms     |
+| 99         | 7664          | > 20 ms      | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 45%
+- USER_VISIBLE: 54%
+- BEST_EFFORT: 0%
+
+### Mac
+
+#### Browser process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 15            | 15           | 1748        |
+| 50         | 28            | 32           | 4848        |
+| 75         | 99            | 90           | 12492       |
+| 95         | 2101          | 1781         | > 20 ms     |
+| 99         | 13129         | 17192        | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 13%
+- USER_VISIBLE: 81%
+- BEST_EFFORT: 6%
+
+#### Renderer process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 15            | 22           | 108         |
+| 50         | 28            | 36           | 175         |
+| 75         | 66            | 58           | 1783        |
+| 95         | 630           | 684          | > 20 ms     |
+| 99         | 3895          | 6966         | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 45%
+- USER_VISIBLE: 55%
+- BEST_EFFORT: 0%
+
+### Chrome OS
+
+#### Browser process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 38            | 23           | 17          |
+| 50         | 68            | 65           | 28          |
+| 75         | 218           | 198          | 613         |
+| 95         | 2293          | 3615         | > 20 ms     |
+| 99         | 18084         | > 20 ms      | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 7%
+- USER_VISIBLE: 40%
+- BEST_EFFORT: 53%
+
+#### Renderer process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 40            | 48           | 74          |
+| 50         | 111           | 108          | 484         |
+| 75         | 496           | 628          | > 20 ms     |
+| 95         | 5394          | 5866         | > 20 ms     |
+| 99         | > 20 ms       | > 20 ms      | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 68%
+- USER_VISIBLE: 32%
+- BEST_EFFORT: 0%
+
+### Android
+
+#### Browser process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 43            | 37           | 53          |
+| 50         | 86            | 103          | 122         |
+| 75         | 224           | 412          | 648         |
+| 95         | 1719          | > 20 ms      | > 20 ms     |
+| 99         | 10001         | > 20 ms      | > 20 ms     |
+
+Count distribution:
+- USER_BLOCKING: 58%
+- USER_VISIBLE: 39%
+- BEST_EFFORT: 4%
+
+#### Renderer process
+
+| Percentile | USER_BLOCKING | USER_VISIBLE | BEST_EFFORT |
+|------------|---------------|--------------|-------------|
+| 25         | 45            | 63           | 72          |
+| 50         | 90            | 109          | 115         |
+| 75         | 242           | 246          | 235         |
+| 95         | 1635          | 960          | 829         |
+| 99         | 6728          | 3273         | 3273        |
+
+Count distribution:
+- USER_BLOCKING: 35%
+- USER_VISIBLE: 63%
+- BEST_EFFORT: 2%

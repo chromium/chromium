@@ -297,15 +297,6 @@ TaskTracker::TaskTracker(StringPiece histogram_label)
       can_run_policy_(CanRunPolicy::kAll),
       flush_cv_(flush_lock_.CreateConditionVariable()),
       shutdown_lock_(&flush_lock_),
-      task_latency_histograms_{GetLatencyHistogram("TaskLatencyMicroseconds",
-                                                   histogram_label,
-                                                   "BackgroundTaskPriority"),
-                               GetLatencyHistogram("TaskLatencyMicroseconds",
-                                                   histogram_label,
-                                                   "UserVisibleTaskPriority"),
-                               GetLatencyHistogram("TaskLatencyMicroseconds",
-                                                   histogram_label,
-                                                   "UserBlockingTaskPriority")},
       heartbeat_latency_histograms_{
           GetLatencyHistogram("HeartbeatLatencyMicroseconds",
                               histogram_label,
@@ -492,16 +483,6 @@ bool TaskTracker::IsShutdownComplete() const {
   return shutdown_event_ && shutdown_event_->IsSignaled();
 }
 
-void TaskTracker::RecordLatencyHistogram(TaskPriority priority,
-                                         TimeTicks posted_time) const {
-  if (histogram_label_.empty())
-    return;
-
-  const TimeDelta task_latency = TimeTicks::Now() - posted_time;
-  GetHistogramForTaskPriority(priority, task_latency_histograms_)
-      ->AddTimeMicrosecondsGranularity(task_latency);
-}
-
 void TaskTracker::RecordHeartbeatLatencyHistogram(TaskPriority priority,
                                                   TimeTicks posted_time) const {
   if (histogram_label_.empty())
@@ -516,7 +497,6 @@ void TaskTracker::RunTask(Task task,
                           TaskSource* task_source,
                           const TaskTraits& traits) {
   DCHECK(task_source);
-  RecordLatencyHistogram(traits.priority(), task.queue_time);
 
   const auto environment = task_source->GetExecutionEnvironment();
 

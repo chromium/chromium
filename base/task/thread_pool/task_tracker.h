@@ -194,11 +194,6 @@ class BASE_EXPORT TaskTracker {
   // manner.
   void CallFlushCallbackForTesting();
 
-  // Records |Now() - posted_time| to the
-  // ThreadPool.TaskLatencyMicroseconds.[label].[priority] histogram.
-  void RecordLatencyHistogram(TaskPriority priority,
-                              TimeTicks posted_time) const;
-
   // Dummy frames to allow identification of shutdown behavior in a stack trace.
   void RunContinueOnShutdown(Task* task);
   void RunSkipOnShutdown(Task* task);
@@ -254,16 +249,12 @@ class BASE_EXPORT TaskTracker {
   // completes.
   std::unique_ptr<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
 
-  // ThreadPool.TaskLatencyMicroseconds.*,
-  // ThreadPool.HeartbeatLatencyMicroseconds.*, and
-  // ThreadPool.NumTasksRunWhileQueuing.* histograms. The index is a
+  // ThreadPool.HeartbeatLatencyMicroseconds.* histograms. The index is a
   // TaskPriority. Intentionally leaked.
-  // TODO(scheduler-dev): Consider using STATIC_HISTOGRAM_POINTER_GROUP for
-  // these.
+  // TODO(scheduler-dev): Consider using STATIC_HISTOGRAM_POINTER_GROUP.
   using TaskPriorityType = std::underlying_type<TaskPriority>::type;
   static constexpr TaskPriorityType kNumTaskPriorities =
       static_cast<TaskPriorityType>(TaskPriority::HIGHEST) + 1;
-  HistogramBase* const task_latency_histograms_[kNumTaskPriorities];
   HistogramBase* const heartbeat_latency_histograms_[kNumTaskPriorities];
 
   // Ensures all state (e.g. dangling cleaned up workers) is coalesced before
