@@ -100,6 +100,18 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature("RenderTest")
     @Features.DisableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+    public void testPersonalizedSigninPromoInRecentTabsPageLegacy() throws Exception {
+        mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
+                AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
+        mPage = loadRecentTabsPage();
+        mRenderTestRule.render(
+                mPage.getView(), "personalized_signin_promo_recent_tabs_page_legacy");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
     public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
         mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
