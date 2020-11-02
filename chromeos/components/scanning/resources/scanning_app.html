@@ -1,4 +1,42 @@
-<style include="cr-shared-style scanning-shared">
+<style include="cr-shared-style scanning-shared scanning-fonts">
+  #moreSettingsButton {
+    --ink-color: var(--menu-text-color);
+    --paper-ripple-opacity: 0;
+    align-items: center;
+    background: none;
+    border: none;
+    border-radius: initial;
+    box-shadow: none;
+    color: var(--menu-text-color);
+    display: flex;
+    font-weight: unset;
+    height: unset;
+    margin: 18px 0px;
+    padding-inline: 0;
+    text-transform: none;
+    width: 289px;
+  }
+
+  #moreSettingsButton:focus {
+    outline: none;
+  }
+
+  #moreSettingsButton > iron-icon {
+    color: var(--scanning-chevron-icon-color);
+    font-size: var(--scanning-chevron-icon-font-size);
+  }
+
+  #moreSettingsButton > span {
+    flex: 1;
+  }
+
+  #more-settings-line-separator {
+    border-bottom: var(--cr-separator-line);
+    margin-bottom: 8px;
+    margin-top: 16px;
+    width: 289px;
+  }
+
   #scanningContainer {
     box-sizing: border-box;
     display: block;
@@ -38,17 +76,30 @@
       </scan-to-select>
       <file-type-select id="fileTypeSelect" settings-disabled="[[settingsDisabled_]]"
           selected-file-type="{{selectedFileType}}"></file-type-select>
-      <color-mode-select id="colorModeSelect"
-          color-modes="[[capabilities_.colorModes]]"
-          settings-disabled="[[settingsDisabled_]]"
-          selected-color-mode="{{selectedColorMode}}"></color-mode-select>
-      <page-size-select id="pageSizeSelect" page-sizes="[[selectedSourcePageSizes_]]"
-          settings-disabled="[[settingsDisabled_]]"
-          selected-page-size="{{selectedPageSize}}"></page-size-select>
-      <resolution-select id="resolutionSelect"
-          resolutions="[[capabilities_.resolutions]]"
-          settings-disabled="[[settingsDisabled_]]"
-          selected-resolution="{{selectedResolution}}"></resolution-select>
+      <div id="more-settings-line-separator"></div>
+      <cr-button id="moreSettingsButton" on-click="toggleClicked_"
+          aria-expanded$="[[opened]]">
+        <span>[[i18n('moreSettings')]]</span>
+        <iron-icon icon="[[getArrowIcon_(opened)]]">
+        </iron-icon>
+      </cr-button>
+      <iron-collapse id="collapse" opened="{{opened}}">
+        <color-mode-select id="colorModeSelect"
+            color-modes="[[capabilities_.colorModes]]"
+            settings-disabled="[[settingsDisabled_]]"
+            selected-color-mode="{{selectedColorMode}}">
+        </color-mode-select>
+        <page-size-select id="pageSizeSelect"
+            page-sizes="[[selectedSourcePageSizes_]]"
+            settings-disabled="[[settingsDisabled_]]"
+            selected-page-size="{{selectedPageSize}}">
+        </page-size-select>
+        <resolution-select id="resolutionSelect"
+            resolutions="[[capabilities_.resolutions]]"
+            settings-disabled="[[settingsDisabled_]]"
+            selected-resolution="{{selectedResolution}}">
+        </resolution-select>
+      </iron-collapse>
       <!-- TODO(jschettler): Replace button label with finalized i18n string. -->
       <cr-button id="scanButton" on-click="onScanClick_"
           disabled$="[[scanButtonDisabled_]]">

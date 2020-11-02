@@ -510,6 +510,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SELECT_DIALOG_TITLE" desc="The text used as the title of the select dialog used for choosing the folder to save completed scans.">
         Select a folder to save to
       </message>
+      <message name="IDS_SCANNING_APP_MORE_SETTINGS" desc="The text displayed for the button that shows and hides additional settings.">
+        More settings
+      </message>
 
       <!-- Diagnostics App -->
       <!-- TODO(michaelcheco): Update with finalized copies of the strings -->

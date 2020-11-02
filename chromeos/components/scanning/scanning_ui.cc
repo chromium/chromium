@@ -53,6 +53,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"colorModeDropdownLabel", IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
+      {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
       {"myFilesSelectOption", IDS_SCANNING_APP_MY_FILES_SELECT_OPTION},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
       {"pdfOptionText", IDS_SCANNING_APP_PDF_OPTION_TEXT},

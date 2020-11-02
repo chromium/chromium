@@ -189,6 +189,33 @@ suite('ScanningAppTest', () => {
     return fakeScanService_.whenCalled('getScanners');
   }
 
+  /**
+   * Returns the "More settings" button.
+   * @return {!CrButtonElement}
+   */
+  function getMoreSettingsButton() {
+    const button = scanningApp.$$('#moreSettingsButton');
+    assertTrue(!!button);
+    return button;
+  }
+
+  /**
+   * Clicks the "More settings" button.
+   * @return {!Promise}
+   */
+  function clickMoreSettingsButton() {
+    getMoreSettingsButton().click();
+    return flushTasks();
+  }
+
+  /**
+   * Returns whether the "More settings" section is expanded or not.
+   * @return {boolean}
+   */
+  function isSettingsOpen() {
+    return scanningApp.$.collapse.opened;
+  }
+
   test('Scan', () => {
     const firstScannerId = {high: 0, low: 1};
     const firstScannerName = 'Scanner 1';
@@ -310,6 +337,26 @@ suite('ScanningAppTest', () => {
       assertTrue(!!leftPanel);
       assertTrue(!!rightPanel);
     });
+  });
+
+  test('MoreSettingsToggle', () => {
+    const scanners = [];
+    const capabilities = new Map();
+    return initializeScanningApp(scanners, capabilities)
+        .then(() => {
+          // Verify that expandable section is closed by default.
+          assertFalse(isSettingsOpen());
+          // Expand more settings section.
+          return clickMoreSettingsButton();
+        })
+        .then(() => {
+          assertTrue(isSettingsOpen());
+          // Close more settings section.
+          return clickMoreSettingsButton();
+        })
+        .then(() => {
+          assertFalse(isSettingsOpen());
+        });
   });
 });
 

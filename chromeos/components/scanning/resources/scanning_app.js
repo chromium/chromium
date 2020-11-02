@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
@@ -14,6 +17,7 @@ import './resolution_select.js';
 import './scan_preview.js';
 import './scan_to_select.js';
 import './scanner_select.js';
+import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 import './source_select.js';
 
@@ -266,5 +270,19 @@ Polymer({
 
     this.settingsDisabled_ = false;
     this.scanButtonDisabled_ = false;
+  },
+
+  /** @private */
+  toggleClicked_() {
+    this.$.collapse.toggle();
+  },
+
+  /**
+   * @param {boolean} opened Whether the section is expanded or not.
+   * @return {string} Icon name.
+   * @private
+   */
+  getArrowIcon_(opened) {
+    return opened ? 'cr:expand-less' : 'cr:expand-more';
   },
 });
