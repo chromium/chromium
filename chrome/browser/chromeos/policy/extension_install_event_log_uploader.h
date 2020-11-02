@@ -28,6 +28,18 @@ namespace policy {
 // logs and the policy system which uploads them to the management server.
 class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
  public:
+  // Result of trying to build a |ReportQueueConfiguration|.
+  using ReportQueueConfigResult = ::reporting::StatusOr<
+      std::unique_ptr<::reporting::ReportQueueConfiguration>>;
+
+  // Callback for handling a |ReportQueueConfigResult|.
+  using ReportQueueConfigResultCallback =
+      base::OnceCallback<void(ReportQueueConfigResult)>;
+
+  // Callback for getting a |ReportQueueConfiguration|.
+  using GetReportQueueConfigCallback =
+      base::RepeatingCallback<void(ReportQueueConfigResultCallback)>;
+
   // The delegate that event logs will be retrieved from.
   class Delegate {
    public:
@@ -71,15 +83,14 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
   // ReportQueueBuilder builds a ReportQueue and uses |set_report_queue_cb|
   // to set it in the ExtensionInstallEventLogUploader. ReportQueueBuilder
   // ensures that only one ReportQueue is built for ExtensionInstallLogUploader.
+  // TODO: For testing there ideally there would be a way to capture the
+  // ReportQueueConfiguration prior to passing it to the ReportQueue.
   class ReportQueueBuilder : public reporting::TaskRunnerContext<bool> {
    public:
     using SetReportQueueCallback =
         base::OnceCallback<void(std::unique_ptr<reporting::ReportQueue>,
                                 base::OnceCallback<void()>)>;
 
-    using GetReportQueueConfigCallback =
-        base::RepeatingCallback<reporting::StatusOr<
-            std::unique_ptr<reporting::ReportQueueConfiguration>>()>;
 
     ReportQueueBuilder(
         SetReportQueueCallback set_report_queue_cb,
@@ -96,11 +107,18 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
     // Otherwise it will call |BuildReportQueue|.
     void OnStart() override;
 
-    // |BuildReportQueue| will get the |ReportQueueConfiguration| from the
-    // |get_report_queue_config_cb_| and call ReportClient::CreateReportQueue to
-    // generate a ReportQueue. Sets OnReportQueueResult as the completion
-    // callback for |CreateReportQueue|.
-    void BuildReportQueue();
+    // Posts the task for building the ReportQueueConfiguration used to
+    // instantiate the ReportQueue.
+    void BuildReportQueueConfig();
+
+    // Handles the result of the task posted in |BuildReportQueueConfig|.
+    void OnReportQueueConfigResult(ReportQueueConfigResult report_queue_result);
+
+    // |BuildReportQueue| uses the |report_queue_config| to build a ReportQueue
+    // with ReportClient::CreateReportQueue. Sets |OnReportQueueResult| as the
+    // completion callback for |CreateReportQueue|.
+    void BuildReportQueue(std::unique_ptr<::reporting::ReportQueueConfiguration>
+                              report_queue_config);
 
     // |OnReportQueueResult| will evaluate |report_queue_result|. If it is not
     // an OK status, it exits the builder with a |Complete| call. On an OK
@@ -163,9 +181,7 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
   scoped_refptr<base::SequencedTaskRunner> report_queue_builder_task_runner_;
 
   // Callback to generate a ReportQueueConfiguration.
-  base::RepeatingCallback<reporting::StatusOr<
-      std::unique_ptr<reporting::ReportQueueConfiguration>>()>
-      get_report_queue_config_cb_;
+  GetReportQueueConfigCallback get_report_queue_config_cb_;
 
   // ReportQueue for uploading events.
   std::unique_ptr<reporting::ReportQueue> report_queue_;

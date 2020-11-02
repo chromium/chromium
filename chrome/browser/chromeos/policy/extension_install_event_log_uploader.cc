@@ -16,25 +16,39 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace em = enterprise_management;
 
 namespace policy {
 namespace {
 
-base::RepeatingCallback<::reporting::StatusOr<
-    std::unique_ptr<::reporting::ReportQueueConfiguration>>()>
+ExtensionInstallEventLogUploader::GetReportQueueConfigCallback
 CreateReportQueueConfigGetter(Profile* profile) {
-  auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
   return base::BindRepeating(
-      [](DMToken dm_token) {
-        return ::reporting::ReportQueueConfiguration::Create(
-            dm_token, ::reporting::Destination::UPLOAD_EVENTS,
-            ::reporting::Priority::SLOW_BATCH, base::BindRepeating([]() {
-              return ::reporting::Status::StatusOK();
-            }));
+      [](Profile* profile,
+         ExtensionInstallEventLogUploader::ReportQueueConfigResultCallback
+             complete_cb) {
+        auto task = base::BindOnce(
+            [](Profile* profile,
+               base::OnceCallback<void(
+                   ::reporting::StatusOr<std::unique_ptr<
+                       ::reporting::ReportQueueConfiguration>>)> complete_cb) {
+              auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
+              std::move(complete_cb)
+                  .Run(::reporting::ReportQueueConfiguration::Create(
+                      dm_token, ::reporting::Destination::UPLOAD_EVENTS,
+                      ::reporting::Priority::SLOW_BATCH,
+                      base::BindRepeating(
+                          []() { return ::reporting::Status::StatusOK(); })));
+            },
+            profile, std::move(complete_cb));
+
+        base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                       std::move(task));
       },
-      dm_token);
+      profile);
 }
 
 }  // namespace
@@ -99,13 +113,15 @@ void ExtensionInstallEventLogUploader::SetReportQueue(
 void ExtensionInstallEventLogUploader::SetBuildReportQueueConfigurationForTests(
     const std::string& dm_token) {
   get_report_queue_config_cb_ = base::BindRepeating(
-      [](const std::string& dm_token) {
-        return ::reporting::ReportQueueConfiguration::Create(
-            DMToken::CreateValidTokenForTesting(dm_token),
-            ::reporting::Destination::UPLOAD_EVENTS,
-            ::reporting::Priority::SLOW_BATCH, base::BindRepeating([]() {
-              return ::reporting::Status::StatusOK();
-            }));
+      [](const std::string& dm_token,
+         ReportQueueConfigResultCallback complete_cb) {
+        std::move(complete_cb)
+            .Run(::reporting::ReportQueueConfiguration::Create(
+                DMToken::CreateValidTokenForTesting(dm_token),
+                ::reporting::Destination::UPLOAD_EVENTS,
+                ::reporting::Priority::SLOW_BATCH, base::BindRepeating([]() {
+                  return ::reporting::Status::StatusOK();
+                })));
       },
       dm_token);
 }
@@ -118,9 +134,7 @@ ExtensionInstallEventLogUploader::ReportQueueBuilderLeaderTracker::
 ExtensionInstallEventLogUploader::ReportQueueBuilder::ReportQueueBuilder(
     base::OnceCallback<void(std::unique_ptr<::reporting::ReportQueue>,
                             base::OnceCallback<void()>)> set_report_queue_cb,
-    base::RepeatingCallback<::reporting::StatusOr<
-        std::unique_ptr<::reporting::ReportQueueConfiguration>>()>
-        get_report_queue_config_cb,
+    GetReportQueueConfigCallback get_report_queue_config_cb,
     scoped_refptr<ReportQueueBuilderLeaderTracker> leader_tracker,
     base::OnceCallback<void(bool)> completion_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
@@ -143,17 +157,32 @@ void ExtensionInstallEventLogUploader::ReportQueueBuilder::OnStart() {
   }
 
   release_leader_cb_ = std::move(promo_result.ValueOrDie());
-  BuildReportQueue();
+  BuildReportQueueConfig();
 }
 
-void ExtensionInstallEventLogUploader::ReportQueueBuilder::BuildReportQueue() {
-  auto report_queue_config_result = get_report_queue_config_cb_.Run();
+void ExtensionInstallEventLogUploader::ReportQueueBuilder::
+    BuildReportQueueConfig() {
+  std::move(get_report_queue_config_cb_)
+      .Run(base::BindOnce(&ReportQueueBuilder::OnReportQueueConfigResult,
+                          base::Unretained(this)));
+}
+
+void ExtensionInstallEventLogUploader::ReportQueueBuilder::
+    OnReportQueueConfigResult(
+        ReportQueueConfigResult report_queue_config_result) {
   if (!report_queue_config_result.ok()) {
     Complete();
     return;
   }
+  Schedule(&ReportQueueBuilder::BuildReportQueue, base::Unretained(this),
+           std::move(report_queue_config_result.ValueOrDie()));
+}
+
+void ExtensionInstallEventLogUploader::ReportQueueBuilder::BuildReportQueue(
+    std::unique_ptr<::reporting::ReportQueueConfiguration>
+        report_queue_config) {
   ::reporting::ReportingClient::CreateReportQueue(
-      std::move(report_queue_config_result.ValueOrDie()),
+      std::move(report_queue_config),
       base::BindOnce(&ReportQueueBuilder::OnReportQueueResult,
                      base::Unretained(this)));
 }
