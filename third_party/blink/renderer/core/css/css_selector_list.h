@@ -117,6 +117,20 @@ class CORE_EXPORT CSSSelectorList {
   // avoided when possible. Instead iterate from first() and using next().
   unsigned ComputeLength() const;
 
+  // To reduce complexity, we generally do not support ShadowDOM v0 features
+  // and the :not() pseudo class in the same selector. However, for backwards
+  // compatibility, we support this anyway when :not()'s argument is a single
+  // selector that's "sufficiently simple".
+  //
+  // This function returns true when the selector list is "sufficiently simple",
+  // in which case ShadowDOM v0 features will be allowed.
+  //
+  // See SelectorCheckingContext.in_nested_complex_selector (and how it's
+  // used) for more information.
+  //
+  // TODO(crbug.com/937746): Remove this when ShadowDOM v0 is removed.
+  bool TreatAsNonComplexArgumentToNot() const;
+
  private:
   void DeleteSelectorsIfNeeded() {
     if (selector_array_)

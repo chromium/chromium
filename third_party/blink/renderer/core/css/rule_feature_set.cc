@@ -656,8 +656,7 @@ RuleFeatureSet::UpdateInvalidationSetsForComplex(
   InvalidationSetFeatures* sibling_features = nullptr;
 
   const CSSSelector* last_in_compound =
-      ExtractInvalidationSetFeaturesFromCompound(complex, features, position,
-                                                 pseudo_type);
+      ExtractInvalidationSetFeaturesFromCompound(complex, features, position);
 
   bool was_whole_subtree_invalid =
       features.invalidation_flags.WholeSubtreeInvalid();
@@ -720,14 +719,15 @@ void RuleFeatureSet::UpdateRuleSetInvalidation(
 void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     const CSSSelector& simple_selector,
     InvalidationSetFeatures& features,
-    PositionType position,
-    CSSSelector::PseudoType pseudo_type) {
+    PositionType position) {
   AutoRestoreMaxDirectAdjacentSelectors restore_max(&features);
 
   const CSSSelectorList* selector_list = simple_selector.SelectorList();
   if (!selector_list)
     return;
-  DCHECK(SupportsInvalidationWithSelectorList(simple_selector.GetPseudoType()));
+  CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
+
+  DCHECK(SupportsInvalidationWithSelectorList(pseudo_type));
 
   const CSSSelector* sub_selector = selector_list->First();
 
@@ -737,9 +737,9 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
 
   for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
     InvalidationSetFeatures complex_features;
-    if (UpdateInvalidationSetsForComplex(
-            *sub_selector, complex_features, position,
-            simple_selector.GetPseudoType()) == kRequiresSubtreeInvalidation) {
+    if (UpdateInvalidationSetsForComplex(*sub_selector, complex_features,
+                                         position, pseudo_type) ==
+        kRequiresSubtreeInvalidation) {
       features.invalidation_flags.SetWholeSubtreeInvalid(true);
       continue;
     }
@@ -757,8 +757,13 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   // Don't add any features if one of the sub-selectors of does not contain
   // any invalidation set features. E.g. :-webkit-any(*, span).
   //
-  // :not() counts as not having features, since we should invalidate elements
-  // _without_ those features.
+  // For the :not() pseudo class, we should not use the inner features for
+  // invalidation because we should invalidate elements _without_ that
+  // feature. On the other hand, we should still have invalidation sets
+  // for the features since we are able to detect when they change.
+  // That is, ".a" should not have ".b" in its invalidation set for
+  // ".a :not(.b)", but there should be an invalidation set for ".a" in
+  // ":not(.a) .b".
   if (pseudo_type != CSSSelector::kPseudoNot) {
     if (all_sub_selectors_have_features)
       features.NarrowToFeatures(any_features);
@@ -770,8 +775,7 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
 const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     const CSSSelector& compound,
     InvalidationSetFeatures& features,
-    PositionType position,
-    CSSSelector::PseudoType pseudo) {
+    PositionType position) {
   // Extract invalidation set features and return a pointer to the the last
   // simple selector of the compound, or nullptr if one of the selectors
   // requiresSubtreeInvalidation().
@@ -787,17 +791,8 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
       return nullptr;
     }
 
-    // When inside a :not(), we should not use the found features for
-    // invalidation because we should invalidate elements _without_ that
-    // feature. On the other hand, we should still have invalidation sets
-    // for the features since we are able to detect when they change.
-    // That is, ".a" should not have ".b" in its invalidation set for
-    // ".a :not(.b)", but there should be an invalidation set for ".a" in
-    // ":not(.a) .b".
-    if (pseudo != CSSSelector::kPseudoNot) {
-      ExtractInvalidationSetFeaturesFromSimpleSelector(*simple_selector,
-                                                       features);
-    }
+    ExtractInvalidationSetFeaturesFromSimpleSelector(*simple_selector,
+                                                     features);
 
     // Initialize the entry in the invalidation set map for self-
     // invalidation, if supported.
@@ -811,7 +806,7 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     }
 
     ExtractInvalidationSetFeaturesFromSelectorList(*simple_selector, features,
-                                                   position, pseudo);
+                                                   position);
 
     if (features.invalidation_flags.InvalidatesParts())
       metadata_.invalidates_parts = true;

@@ -107,8 +107,6 @@ class CORE_EXPORT CSSParserSelector {
   CSSSelector::RelationType GetImplicitShadowCombinatorForMatching() const;
   bool NeedsImplicitShadowCombinatorForMatching() const;
 
-  bool IsSimple() const;
-
   CSSParserSelector* TagHistory() const { return tag_history_.get(); }
   void SetTagHistory(std::unique_ptr<CSSParserSelector> selector) {
     tag_history_ = std::move(selector);

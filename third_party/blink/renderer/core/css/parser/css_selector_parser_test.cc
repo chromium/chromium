@@ -442,8 +442,8 @@ INSTANTIATE_TEST_SUITE_P(InvalidPseudoIsArguments,
                          testing::ValuesIn(invalid_pseudo_is_argments_data));
 
 // To reduce complexity, ShadowDOM v0 features are not supported in
-// combination with :is/:where.
-static const SelectorTestCase shadow_v0_with_is_where_data[] = {
+// combination with nested complex selectors, e.g. :is/:where.
+static const SelectorTestCase shadow_v0_with_nested_complex_data[] = {
     // clang-format off
     {":is(.a) ::content", ""},
     {":is(.a /deep/ .b)", ":is()"},
@@ -460,12 +460,24 @@ static const SelectorTestCase shadow_v0_with_is_where_data[] = {
     {":.a /deep/ :is(.b)", ""},
     {":where(.a /deep/ .b)", ":where()"},
     {":where(.a) ::shadow", ""},
+    {":not(.a .b)::shadow", ""},
+    {":not(.a .b)::content", ""},
+    {":not(.a .b) ::shadow", ""},
+    {":not(.a .b) ::content", ""},
+    {":not(.a, .b) ::content", ""},
+    {":not(.a .b) /deep/ .c", ""},
+    {":not(.a, .b) /deep/ .c", ""},
+    {".a /deep/ :not(.b .c)", ""},
+    // For backwards compatibility, ShadowDOM v0 features are allowed if
+    // there is a single compound argument to :not().
+    {":not(.a) /deep/ .b", ":not(.a) /deep/ .b"},
+    {":not(.a)::content", ":not(.a)::content"},
     // clang-format on
 };
 
-INSTANTIATE_TEST_SUITE_P(ShadowDomV0WithIsAndWhere,
+INSTANTIATE_TEST_SUITE_P(ShadowDomV0WithNestedComplexSelector,
                          SelectorParseTest,
-                         testing::ValuesIn(shadow_v0_with_is_where_data));
+                         testing::ValuesIn(shadow_v0_with_nested_complex_data));
 
 static const SelectorTestCase is_where_nesting_data[] = {
     // clang-format off

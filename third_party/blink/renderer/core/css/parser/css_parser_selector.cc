@@ -58,37 +58,6 @@ void CSSParserSelector::SetSelectorList(
   selector_->SetSelectorList(std::move(selector_list));
 }
 
-bool CSSParserSelector::IsSimple() const {
-  if (selector_->SelectorList()) {
-    switch (selector_->GetPseudoType()) {
-      case CSSSelector::kPseudoIs:
-      case CSSSelector::kPseudoWhere:
-        break;
-      default:
-        return false;
-    }
-  }
-
-  if (selector_->Match() == CSSSelector::kPseudoElement)
-    return false;
-
-  if (!tag_history_)
-    return true;
-
-  if (selector_->Match() == CSSSelector::kTag) {
-    // We can't check against anyQName() here because namespace may not be
-    // g_null_atom.
-    // Example:
-    //     @namespace "http://www.w3.org/2000/svg";
-    //     svg:not(:root) { ...
-    if (selector_->TagQName().LocalName() ==
-        CSSSelector::UniversalSelectorAtom())
-      return tag_history_->IsSimple();
-  }
-
-  return false;
-}
-
 void CSSParserSelector::AppendTagHistory(
     CSSSelector::RelationType relation,
     std::unique_ptr<CSSParserSelector> selector) {

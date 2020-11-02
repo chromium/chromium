@@ -1567,20 +1567,30 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a + .b, .c) *", ".a + .b *, .c *"},
     {":is(.a + *, .c) *", ".a + * *, .c *"},
     {".a + .b + .c:is(*)", ".a + .b + .c"},
-    // TODO(andruud): At the time of writing these :not() tests, we only
-    // support a single simple selector inside :not(). When a complex selector
-    // list is supported, some refs should be rewritten to be less strange.
+    {".a :not(.b)", ".a *, .b"},
+    {".a :not(.b, .c)", ".a *, .b, .c"},
+    {".a :not(.b, .c .d)", ".a *, .b, .c .d"},
+    {".a :not(.b, .c + .d)", ".a *, .b, .c + .d"},
+    {".a + :not(.b, .c + .d)", ".a + *, .b, .c + .d"},
+    {":not(.a .b) .c", ".a .c, .b .c"},
+    {":not(.a .b, .c) + .d", "* + .d, .a .b + .d, .c + .d"},
+    {":not(.a .b, .c .d) :not(.e + .f, .g + .h)",
+     ".a .b *, .c .d *, :not(.e + .f), :not(.g + .h)"},
+    {":not(.a, .b)", ":not(.a), :not(.b)"},
+    {":not(.a .b, .c)", ":not(.a .b), :not(.c)"},
+    {":not(.a :not(.b + .c), :not(div))", ":not(.a :not(.b + .c)), :not(div)"},
     {":not(:is(.a))", ":not(.a)"},
     {":not(:is(.a, .b))", ":not(.a), :not(.b)"},
-    {":not(:is(.a .b))", ":not(.b), .a .b"},
-    {":not(:is(.a .b, .c + .d))", ":not(.b), :not(.d), .a .b, .c + .d"},
-    {".a :not(:is(.b .c))", ".a :not(.c), .b .c"},
+    {":not(:is(.a .b))", ":not(.a .b)"},
+    {":not(:is(.a .b, .c + .d))", ":not(.a .b, .c + .d)"},
+    {".a :not(:is(.b .c))", ".a :not(.b .c)"},
     {":not(:is(.a)) .b", ":not(.a) .b"},
     {":not(:is(.a .b, .c)) :not(:is(.d + .e, .f))",
-     ":not(.a):not(.b) :not(.f), :not(.a):not(.b) :not(.e),"
-     ":not(.c) :not(.f), .d + .e"},
+     ":not(.a .b, .c) :not(.d + .e, .f)"},
     // We don't have any special support for nested :not(): it's treated
     // as a single :not() level in terms of invalidation:
+    {":not(:not(.a))", ":not(.a)"},
+    {":not(:not(:not(.a)))", ":not(.a)"},
     {".a :not(:is(:not(.b), .c))", ".a :not(.b), .a :not(.c)"},
     {":not(:is(:not(.a), .b)) .c", ":not(.a) .c, :not(.b) .c"},
     {".a :is(:hover)", ".a :hover"},

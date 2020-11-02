@@ -169,6 +169,13 @@ CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
 CSSSelectorList CSSSelectorParser::ConsumeNestedSelectorList(
     CSSParserTokenRange& range) {
   if (inside_compound_pseudo_)
+    return ConsumeCompoundSelectorList(range);
+  return ConsumeComplexSelectorList(range);
+}
+
+CSSSelectorList CSSSelectorParser::ConsumeForgivingNestedSelectorList(
+    CSSParserTokenRange& range) {
+  if (inside_compound_pseudo_)
     return ConsumeForgivingCompoundSelectorList(range);
   return ConsumeForgivingComplexSelectorList(range);
 }
@@ -375,17 +382,12 @@ bool IsSimpleSelectorValidAfterPseudoElement(
   switch (pseudo) {
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
-      // The :is() and :where() pseudo-classes are themselves always valid.
+    case CSSSelector::kPseudoNot:
+      // These pseudo-classes are themselves always valid.
       // CSSSelectorParser::restricting_pseudo_element_ ensures that invalid
       // nested selectors will be dropped if they are invalid according to
       // this function.
       return true;
-    case CSSSelector::kPseudoNot:
-      DCHECK(simple_selector.SelectorList());
-      DCHECK(simple_selector.SelectorList()->First());
-      DCHECK(!simple_selector.SelectorList()->First()->TagHistory());
-      pseudo = simple_selector.SelectorList()->First()->GetPseudoType();
-      break;
     default:
       break;
   }
@@ -691,7 +693,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeNestedSelectorList(block);
+      *selector_list = ConsumeForgivingNestedSelectorList(block);
       if (!block.AtEnd())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
@@ -709,7 +711,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeNestedSelectorList(block);
+      *selector_list = ConsumeForgivingNestedSelectorList(block);
       if (!block.AtEnd())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
@@ -739,15 +741,25 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       return selector;
     }
     case CSSSelector::kPseudoNot: {
+      DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
-      std::unique_ptr<CSSParserSelector> inner_selector =
-          ConsumeCompoundSelector(block);
-      block.ConsumeWhitespace();
-      if (!inner_selector || !inner_selector->IsSimple() || !block.AtEnd())
+
+      std::unique_ptr<CSSSelectorList> selector_list =
+          std::make_unique<CSSSelectorList>();
+      *selector_list = ConsumeNestedSelectorList(block);
+      if (!selector_list->IsValid() || !block.AtEnd())
         return nullptr;
-      Vector<std::unique_ptr<CSSParserSelector>> selector_vector;
-      selector_vector.push_back(std::move(inner_selector));
-      selector->AdoptSelectorVector(selector_vector);
+
+      // The initial implementation of :not() supported a single "simple"
+      // compound selector. For backwards compatibility, we still support
+      // ShadowDOM v0 features in this case.
+      if (!selector_list->TreatAsNonComplexArgumentToNot()) {
+        if (disallow_nested_complex_)
+          return nullptr;
+        disallow_shadow_dom_v0_ = true;
+      }
+
+      selector->SetSelectorList(std::move(selector_list));
       return selector;
     }
     case CSSSelector::kPseudoState: {

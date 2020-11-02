@@ -144,7 +144,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector(
           }
         case kPseudoNot:
           DCHECK(SelectorList());
-          return SelectorList()->First()->Specificity();
+          FALLTHROUGH;
         case kPseudoIs:
           return MaximumSpecificity(SelectorList(), mode);
         // FIXME: PseudoAny should base the specificity on the sub-selectors.

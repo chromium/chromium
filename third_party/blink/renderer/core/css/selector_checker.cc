@@ -760,21 +760,20 @@ bool SelectorChecker::CheckOne(const SelectorCheckingContext& context,
 bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
   const CSSSelector& selector = *context.selector;
-
+  DCHECK(selector.SelectorList());
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
-  DCHECK(selector.SelectorList());
+  sub_context.in_nested_complex_selector =
+      !selector.SelectorList()->TreatAsNonComplexArgumentToNot();
+  sub_context.pseudo_id = kPseudoIdNone;
   for (sub_context.selector = selector.SelectorList()->First();
        sub_context.selector;
-       sub_context.selector = sub_context.selector->TagHistory()) {
-    // :not cannot nest. I don't really know why this is a
-    // restriction in CSS3, but it is, so let's honor it.
-    // the parser enforces that this never occurs
-    DCHECK_NE(sub_context.selector->GetPseudoType(), CSSSelector::kPseudoNot);
-    if (!CheckOne(sub_context, result))
-      return true;
+       sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
+    MatchResult sub_result;
+    if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
+      return false;
   }
-  return false;
+  return true;
 }
 
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,

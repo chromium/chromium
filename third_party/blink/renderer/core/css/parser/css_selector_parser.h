@@ -46,9 +46,10 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList ConsumeComplexSelectorList(CSSParserTokenStream&,
                                              CSSParserObserver*);
   CSSSelectorList ConsumeCompoundSelectorList(CSSParserTokenRange&);
-  // Consumes a forgiving complex selector list if inside_compound_pseudo_ is
-  // false, otherwise consumes a forgiving compound selector list.
+  // Consumes a complex selector list if inside_compound_pseudo_ is false,
+  // otherwise consumes a compound selector list.
   CSSSelectorList ConsumeNestedSelectorList(CSSParserTokenRange&);
+  CSSSelectorList ConsumeForgivingNestedSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
   CSSSelectorList ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
   CSSSelectorList ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);

@@ -128,6 +128,19 @@ TEST(CSSSelector, Specificity_Slotted) {
   EXPECT_EQ(Specificity("::slotted(*)"), Specificity("::first-line"));
 }
 
+TEST(CSSSelector, Specificity_Not) {
+  EXPECT_EQ(Specificity(":not(div)"), Specificity(":is(div)"));
+  EXPECT_EQ(Specificity(":not(.a)"), Specificity(":is(.a)"));
+  EXPECT_EQ(Specificity(":not(div.a)"), Specificity(":is(div.a)"));
+  EXPECT_EQ(Specificity(".a :not(.b, div.c)"),
+            Specificity(".a :is(.b, div.c)"));
+  EXPECT_EQ(Specificity(".a :not(.c#d, .e)"), Specificity(".a :is(.c#d, .e)"));
+  EXPECT_EQ(Specificity(".a :not(.e+.f, .g>.b, .h#i)"),
+            Specificity(".a :is(.e+.f, .g>.b, .h#i)"));
+  EXPECT_EQ(Specificity(":not(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"),
+            Specificity(":is(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"));
+}
+
 TEST(CSSSelector, HasLinkOrVisited) {
   EXPECT_FALSE(HasLinkOrVisited("tag"));
   EXPECT_FALSE(HasLinkOrVisited("visited"));
