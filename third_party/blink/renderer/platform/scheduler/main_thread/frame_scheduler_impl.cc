@@ -943,9 +943,7 @@ bool FrameSchedulerImpl::IsOrdinary() const {
 }
 
 bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
-  // TODO(crbug.com/1078387): Convert the CHECK to a DCHECK once enough time has
-  // passed to confirm that it is correct. (November 2020).
-  CHECK(parent_page_scheduler_);
+  DCHECK(parent_page_scheduler_);
 
   if (!RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled())
     return false;
