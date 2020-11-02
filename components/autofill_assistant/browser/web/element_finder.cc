@@ -176,25 +176,10 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
     }
 
     case SelectorProto::Filter::kLabelled:
-      AddLine(R"(elements = elements.flatMap((e) => {
-  if (e.tagName != 'LABEL') return [];
-  let element = null;
-  const id = e.getAttribute('for');
-  if (id) {
-    element = document.getElementById(id)
-  }
-  if (!element) {
-    element = e.querySelector(
-      'button,input,keygen,meter,output,progress,select,textarea');
-  }
-  if (element) return [element];
-  return [];
-});
-)");
-      // The selector above for the case where there's no "for" corresponds to
-      // the list of labelable elements listed on "W3C's HTML5: Edition for Web
-      // Authors":
-      // https://www.w3.org/TR/2011/WD-html5-author-20110809/forms.html#category-label
+      AddLine("elements = elements.flatMap((e) => {");
+      AddLine(
+          "  return e.tagName === 'LABEL' && e.control ? [e.control] : [];");
+      AddLine("});");
       return true;
 
     case SelectorProto::Filter::kMatchCssSelector:
