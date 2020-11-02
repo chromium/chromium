@@ -1,4 +1,4 @@
-ADDRESS_HOME_STATE | ctl00$CustomerHeader$ddlCountries | CountryClose Please select your location or where you receive credit card billing  statements to see pricing in your local currency.Available Languages: | US | ctl00$CustomerHeader$ddlCountries_1-default
+ADDRESS_HOME_COUNTRY | ctl00$CustomerHeader$ddlCountries | CountryClose Please select your location or where you receive credit card billing  statements to see pricing in your local currency.Available Languages: | US | ctl00$CustomerHeader$ddlCountries_1-default
 UNKNOWN_TYPE | ctl00$CustomerHeader$rdlang | Available Languages: | en-us | ctl00$CustomerHeader$ddlCountries_1-default
 UNKNOWN_TYPE | ctl00$CustomerHeader$rdlang | Available Languages: | es | ctl00$CustomerHeader$ddlCountries_1-default
 UNKNOWN_TYPE | ctl00$CustomerHeader$rdlang | Available Languages: | rd3 | ctl00$CustomerHeader$ddlCountries_1-default

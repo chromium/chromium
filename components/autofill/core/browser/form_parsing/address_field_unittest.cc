@@ -409,10 +409,6 @@ TEST_F(AddressFieldTest, ParseCityStateCountryZipcodeTogether) {
   field.name = ASCIIToUTF16("zip");
   list_.push_back(std::make_unique<AutofillField>(field, ASCIIToUTF16("zip1")));
 
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillUseParseCityStateCountryZipCodeInHeuristic);
-
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
@@ -451,10 +447,6 @@ TEST_F(AddressFieldTest, ParseCountryLabelRegion) {
   list_.push_back(
       std::make_unique<AutofillField>(field, ASCIIToUTF16("country1")));
 
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillUseParseCityStateCountryZipCodeInHeuristic);
-
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
   ASSERT_NE(nullptr, field_.get());
@@ -477,10 +469,6 @@ TEST_F(AddressFieldTest, ParseCountryNameRegion) {
   field.name = ASCIIToUTF16("client_region");
   list_.push_back(
       std::make_unique<AutofillField>(field, ASCIIToUTF16("country1")));
-
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillUseParseCityStateCountryZipCodeInHeuristic);
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);

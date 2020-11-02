@@ -58,10 +58,6 @@ std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
   base::string16 attention_ignored = UTF8ToUTF16(kAttentionIgnoredRe);
   base::string16 region_ignored = UTF8ToUTF16(kRegionIgnoredRe);
 
-  const bool is_enabled_merged_city_state_country_zip =
-      base::FeatureList::IsEnabled(
-          features::kAutofillUseParseCityStateCountryZipCodeInHeuristic);
-
   // Allow address fields to appear in any order.
   size_t begin_trailing_non_labeled_fields = 0;
   bool has_trailing_non_labeled_fields = false;
@@ -79,11 +75,7 @@ std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
                                    {log_manager, "kEmailRe"})) {
       continue;
     } else if (address_field->ParseAddress(scanner) ||
-               (!is_enabled_merged_city_state_country_zip &&
-                (address_field->ParseCityStateZipCode(scanner) ||
-                 address_field->ParseCountry(scanner))) ||
-               (is_enabled_merged_city_state_country_zip &&
-                address_field->ParseCityStateCountryZipCode(scanner)) ||
+               (address_field->ParseCityStateCountryZipCode(scanner)) ||
                address_field->ParseCompany(scanner)) {
       has_trailing_non_labeled_fields = false;
       continue;

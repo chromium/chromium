@@ -264,17 +264,6 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to use the |ParseCityStateCountryZipCode| or not for
-// predicting the heuristic type.
-// |ParseCityStateCountryZipCode| is intended to prevent the misclassification
-// of the country field into |ADDRESS_HOME_STATE| while determining the
-// heuristic type. The misclassification happens sometimes because the regular
-// expression for |ADDRESS_HOME_STATE| contains the term "region" which is also
-// used for country selectors.
-const base::Feature kAutofillUseParseCityStateCountryZipCodeInHeuristic{
-    "AutofillUseParseCityStateCountryZipCodeInHeuristic",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether page language is used to match patterns.
 // TODO(crbug.com/1134496): Remove once launched.
 const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns{
