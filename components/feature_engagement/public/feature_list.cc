@@ -81,6 +81,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordsAccountStorageFeature,
     &kIPHReopenTabFeature,
     &kIPHWebUITabStripFeature,
+    &kIPHDesktopPwaInstallFeature,
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 };

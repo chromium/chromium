@@ -7799,6 +7799,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In product help data saver milestone promo."/>
   <suffix name="IPH_DataSaverPreview"
       label="In product help data saver preview."/>
+  <suffix name="IPH_DesktopPwaInstall"
+      label="In product help for Desktop PWA install icon."/>
   <suffix name="IPH_DesktopTabGroupsNewGroup"
       label="In product help for creating a new tab group."/>
   <suffix name="IPH_DownloadHome" label="In product help download home."/>

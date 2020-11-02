@@ -11,10 +11,13 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/installable/installable_metrics.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -71,11 +74,33 @@ void PwaInstallView::UpdateImpl() {
   else
     ResetSlideAnimation(false);
 
+  if (is_probably_promotable) {
+    FeaturePromoControllerViews* controller =
+        FeaturePromoControllerViews::GetForView(this);
+    if (controller) {
+      FeaturePromoBubbleParams params;
+      params.body_string_specifier = IDS_DESKTOP_PWA_INSTALL_PROMO;
+      params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+      params.feature_command_id = IDC_INSTALL_PWA;
+      params.anchor_view = this;
+
+      controller->MaybeShowPromoWithParams(
+          feature_engagement::kIPHDesktopPwaInstallFeature, params);
+    }
+  }
   SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
 }
 
 void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
+
+  // Close PWA install IPH if it is showing.
+  FeaturePromoControllerViews* controller =
+      FeaturePromoControllerViews::GetForView(this);
+  if (controller) {
+    controller->CloseBubble(feature_engagement::kIPHDesktopPwaInstallFeature);
+  }
+
   web_app::CreateWebAppFromManifest(GetWebContents(),
                                     /*bypass_service_worker_check=*/false,
                                     WebappInstallSource::OMNIBOX_INSTALL_ICON,

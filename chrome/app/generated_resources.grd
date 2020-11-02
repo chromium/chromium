@@ -5961,6 +5961,9 @@ the Bookmarks menu.">
       <message name="IDS_REOPEN_TAB_PROMO" desc="Text shown on promotional UI appearing next to the app menu button">
         Reopen a tab if you accidentally closed it
       </message>
+      <message name="IDS_DESKTOP_PWA_INSTALL_PROMO" desc="Text shown on promotional UI appearing next to the PWA install icon">
+        To get back to here quickly, install this app
+      </message>
       <message name="IDS_REOPEN_TAB_PROMO_SCREENREADER" desc="Text announced encouraging users to reopen a tab with the given shortcut">
         <ph name="SHORTCUT">$1<ex>CTRL+SHIFT+T</ex></ph> can reopen accidentally closed tabs
       </message>
