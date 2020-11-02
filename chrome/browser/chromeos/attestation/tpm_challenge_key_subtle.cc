@@ -557,18 +557,23 @@ void TpmChallengeKeySubtleImpl::StartRegisterKeyStep(
 
   callback_ = std::move(callback);
 
-  cryptohome::AsyncMethodCaller::GetInstance()->TpmAttestationRegisterKey(
-      key_type_, cryptohome::Identification(GetAccountId()), key_name_,
-      base::BindOnce(&TpmChallengeKeySubtleImpl::RegisterKeyCallback,
-                     weak_factory_.GetWeakPtr()));
+  ::attestation::RegisterKeyWithChapsTokenRequest request;
+  request.set_username(cryptohome::Identification(GetAccountId()).id());
+  request.set_key_label(key_name_);
+  request.set_include_certificates(false);
+
+  AttestationClient::Get()->RegisterKeyWithChapsToken(
+      request, base::BindOnce(&TpmChallengeKeySubtleImpl::RegisterKeyCallback,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
-    bool success,
-    cryptohome::MountError return_code) {
+    const ::attestation::RegisterKeyWithChapsTokenReply& reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!success || return_code != cryptohome::MOUNT_ERROR_NONE) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "Failed to call RegisterKeyWithChapsToken; status: "
+               << reply.status();
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kKeyRegistrationFailedError));
     return;

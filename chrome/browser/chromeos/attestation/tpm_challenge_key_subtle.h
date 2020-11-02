@@ -183,7 +183,8 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
 
   void SignChallengeCallback(bool success, const std::string& response);
 
-  void RegisterKeyCallback(bool success, cryptohome::MountError return_code);
+  void RegisterKeyCallback(
+      const ::attestation::RegisterKeyWithChapsTokenReply& reply);
   void MarkCorporateKeyCallback(platform_keys::Status status);
 
   // Returns a trusted value from CrosSettings indicating if the device

@@ -110,7 +110,14 @@ void FakeAttestationClient::Sign(const ::attestation::SignRequest& request,
 void FakeAttestationClient::RegisterKeyWithChapsToken(
     const ::attestation::RegisterKeyWithChapsTokenRequest& request,
     RegisterKeyWithChapsTokenCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::RegisterKeyWithChapsTokenReply reply;
+  if (allowlisted_register_keys_.count(
+          {request.username(), request.key_label()}) == 0) {
+    reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+  } else {
+    reply.set_status(register_key_status_);
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::GetEnrollmentPreparations(
@@ -397,6 +404,16 @@ void FakeAttestationClient::AllowlistSignSimpleChallengeKey(
     const std::string& username,
     const std::string& label) {
   allowlisted_sign_simple_challenge_keys_.insert({username, label});
+}
+
+void FakeAttestationClient::set_register_key_status(
+    ::attestation::AttestationStatus status) {
+  register_key_status_ = status;
+}
+
+void FakeAttestationClient::AllowlistRegisterKey(const std::string& username,
+                                                 const std::string& label) {
+  allowlisted_register_keys_.insert({username, label});
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

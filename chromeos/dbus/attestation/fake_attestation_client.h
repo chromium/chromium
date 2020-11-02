@@ -127,6 +127,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       ::attestation::AttestationStatus status) override;
   void AllowlistSignSimpleChallengeKey(const std::string& username,
                                        const std::string& label) override;
+  void set_register_key_status(
+      ::attestation::AttestationStatus status) override;
+  void AllowlistRegisterKey(const std::string& username,
+                            const std::string& label) override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -183,6 +187,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   // challenge.
   std::set<std::pair<std::string, std::string>>
       allowlisted_sign_simple_challenge_keys_;
+
+  // The status returned by `RegisterKeyWithChapsToken()`.
+  ::attestation::AttestationStatus register_key_status_ =
+      ::attestation::STATUS_SUCCESS;
+  // The table of username-label pairs of which keys can be registered to the
+  // key store.
+  std::set<std::pair<std::string, std::string>> allowlisted_register_keys_;
 };
 
 }  // namespace chromeos

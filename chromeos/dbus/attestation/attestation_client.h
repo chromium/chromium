@@ -146,6 +146,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     // Allowlists the key used to sign simple challenge.
     virtual void AllowlistSignSimpleChallengeKey(const std::string& username,
                                                  const std::string& label) = 0;
+
+    // Sets the status code returned by `RegisterKeyWithChapsToken()`.
+    virtual void set_register_key_status(
+        ::attestation::AttestationStatus status) = 0;
+    // Allowlists the key allowed to be registered to the key store.
+    virtual void AllowlistRegisterKey(const std::string& username,
+                                      const std::string& label) = 0;
   };
 
   // Not copyable or movable.

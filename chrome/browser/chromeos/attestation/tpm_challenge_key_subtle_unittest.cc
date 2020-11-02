@@ -507,10 +507,8 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
       .WillOnce(RunOnceCallback<8>(
           /*success=*/true, /*data=*/GetChallengeResponse()));
 
-  EXPECT_CALL(*mock_async_method_caller_,
-              TpmAttestationRegisterKey(key_type, _, key_name, _))
-      .WillOnce(RunOnceCallback<3>(
-          /*success=*/true, cryptohome::MOUNT_ERROR_NONE));
+  AttestationClient::Get()->GetTestInterface()->AllowlistRegisterKey(
+      /*username=*/"", key_name);
 
   EXPECT_CALL(
       *system_token_key_permissions_manager_,
@@ -566,10 +564,8 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
       .WillOnce(RunOnceCallback<8>(
           /*success=*/true, /*data=*/GetChallengeResponse()));
 
-  EXPECT_CALL(*mock_async_method_caller_,
-              TpmAttestationRegisterKey(key_type, _, key_name, _))
-      .WillOnce(RunOnceCallback<3>(
-          /*success=*/true, cryptohome::MOUNT_ERROR_NONE));
+  AttestationClient::Get()->GetTestInterface()->AllowlistRegisterKey(
+      kTestUserEmail, key_name);
 
   EXPECT_CALL(
       *user_private_token_key_permissions_manager_,
@@ -630,10 +626,8 @@ TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
         TpmChallengeKeyResult::MakeChallengeResponse(GetChallengeResponse()));
   }
 
-  EXPECT_CALL(*mock_async_method_caller_,
-              TpmAttestationRegisterKey(key_type, _, key_name, _))
-      .WillOnce(RunOnceCallback<3>(
-          /*success=*/true, cryptohome::MOUNT_ERROR_NONE));
+  AttestationClient::Get()->GetTestInterface()->AllowlistRegisterKey(
+      kTestUserEmail, key_name);
 
   EXPECT_CALL(
       *user_private_token_key_permissions_manager_,
@@ -660,10 +654,6 @@ TEST_F(TpmChallengeKeySubtleTest, KeyRegistrationFailed) {
       TpmChallengeKeySubtleFactory::CreateForPreparedKey(
           key_type, /*will_register_key=*/true, key_name, GetPublicKey(),
           GetProfile());
-
-  EXPECT_CALL(*mock_async_method_caller_, TpmAttestationRegisterKey)
-      .WillOnce(
-          RunOnceCallback<3>(/*success=*/false, cryptohome::MOUNT_ERROR_NONE));
 
   CallbackObserver callback_observer;
   challenge_key_subtle->StartRegisterKeyStep(callback_observer.GetCallback());
