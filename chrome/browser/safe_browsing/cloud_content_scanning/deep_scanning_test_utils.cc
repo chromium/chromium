@@ -154,7 +154,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
@@ -183,7 +183,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
@@ -213,7 +213,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
@@ -245,7 +245,7 @@ void EventReportValidator::
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
@@ -285,7 +285,7 @@ void EventReportValidator::
   result_ = expected_result;
   dlp_verdict_ = expected_dlp_verdict;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
@@ -322,7 +322,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
         ValidateReport(&report);
@@ -434,7 +434,7 @@ void EventReportValidator::ValidateField(
 }
 
 void EventReportValidator::ExpectNoReport() {
-  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _)).Times(0);
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _)).Times(0);
 }
 
 void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {

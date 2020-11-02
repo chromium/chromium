@@ -305,9 +305,8 @@ class POLICY_EXPORT CloudPolicyClient {
   // Uploads a report containing enterprise connectors real-time security
   // events. As above, the client must be in a registered state.  The |callback|
   // will be called when the operation completes.
-  // TODO(crbug.com/1098437): Pick a more specific name.
-  virtual void UploadRealtimeReport(base::Value report,
-                                    StatusCallback callback);
+  virtual void UploadSecurityEventReport(base::Value report,
+                                         StatusCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in
   // a registered state. The |callback| will be called when the operation

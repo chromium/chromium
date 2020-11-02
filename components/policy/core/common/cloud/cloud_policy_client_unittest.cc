@@ -1508,7 +1508,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
-TEST_F(CloudPolicyClientTest, UploadRealtimeReport) {
+TEST_F(CloudPolicyClientTest, UploadSecurityEventReport) {
   RegisterClient();
 
   ExpectRealtimeReport();
@@ -1517,8 +1517,8 @@ TEST_F(CloudPolicyClientTest, UploadRealtimeReport) {
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
                      base::Unretained(&callback_observer_));
 
-  client_->UploadRealtimeReport(MakeDefaultRealtimeReport(),
-                                std::move(callback));
+  client_->UploadSecurityEventReport(MakeDefaultRealtimeReport(),
+                                     std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,

@@ -235,10 +235,6 @@ class ContentAnalysisDelegateBrowserTest
     CallQuitClosure();
   }
 
-  void ExpectNoReport() {
-    EXPECT_CALL(*client_, UploadRealtimeReport_(_, _)).Times(0);
-  }
-
   policy::MockCloudPolicyClient* client() { return client_.get(); }
 
  private:
@@ -267,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Unauthorized) {
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   // Nothing should be reported for unauthorized users.
-  ExpectNoReport();
+  safe_browsing::EventReportValidator validator(client());
+  validator.ExpectNoReport();
 
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
