@@ -10114,7 +10114,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU" units="PercentCPUUsage"
-    expires_after="M88">
+    expires_after="2021-10-30">
   <owner>fdoray@chromium.org</owner>
   <owner>oysteine@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -10137,7 +10137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PerformanceMonitor.EnergyImpact"
-    units="ScaledUnits" expires_after="2021-07-30">
+    units="ScaledUnits" expires_after="2021-10-30">
   <owner>lgrey@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
@@ -10159,7 +10159,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups" units="WakeupsPerSecond"
-    expires_after="2021-06-03">
+    expires_after="2021-10-30">
   <owner>lgrey@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
@@ -10168,7 +10168,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PerformanceMonitor.PackageExitIdleWakeups"
-    units="WakeupsPerSecond" expires_after="2021-07-03">
+    units="WakeupsPerSecond" expires_after="2021-10-30">
   <owner>lgrey@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
