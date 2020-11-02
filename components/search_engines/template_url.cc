@@ -5,6 +5,7 @@
 #include "components/search_engines/template_url.h"
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/base64.h"
@@ -1311,6 +1312,37 @@ TemplateURL::TemplateURL(const TemplateURLData& data,
 }
 
 TemplateURL::~TemplateURL() {
+}
+
+bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
+    const TemplateURL* other) const {
+  DCHECK(other);
+
+  auto get_sort_key = [](const TemplateURL* engine) {
+    return std::make_tuple(
+        // Policy-created engines always win over non-policy created engines.
+        engine->created_by_policy(),
+        // The integral value of the type enum is used to sort next.
+        // This makes extension-controlled engines win.
+        engine->type(),
+        // For engines with associated extensions; more recently installed
+        // extensions win.
+        engine->extension_info_ ? engine->extension_info_->install_time
+                                : base::Time(),
+        // Prefer engines that CANNOT be auto-replaced.
+        !engine->safe_for_autoreplace(),
+        // More recently modified engines win.
+        engine->last_modified(),
+        // TODO(tommycli): This should be a tie-breaker than provides a total
+        // ordering of all TemplateURLs so that distributed clients resolve
+        // conflicts identically. This sync_guid is not globally unique today,
+        // so we need to fix that before we can resolve conflicts with this.
+        engine->sync_guid());
+  };
+
+  // Although normally sort is done by operator<, in this case, we want the
+  // BETTER engine to be preceding the worse engine.
+  return get_sort_key(this) > get_sort_key(other);
 }
 
 // static

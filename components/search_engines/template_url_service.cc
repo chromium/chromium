@@ -1454,30 +1454,6 @@ void TemplateURLService::Init(const Initializer* initializers,
   }
 }
 
-TemplateURL* TemplateURLService::BestEngineForKeyword(TemplateURL* engine1,
-                                                      TemplateURL* engine2) {
-  CHECK(engine1);
-  CHECK(engine2);
-  CHECK_EQ(engine1->keyword(), engine2->keyword());
-
-  // We should only have overlapping keywords when at least one comes from
-  // an extension.
-  CHECK(IsCreatedByExtension(engine1) || IsCreatedByExtension(engine2));
-
-  if (engine2->type() == engine1->type()) {
-    return engine1->extension_info_->install_time >
-                   engine2->extension_info_->install_time
-               ? engine1
-               : engine2;
-  }
-  if (engine2->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
-    return engine1->type() == TemplateURL::OMNIBOX_API_EXTENSION ? engine1
-                                                                 : engine2;
-  }
-  return engine2->type() == TemplateURL::OMNIBOX_API_EXTENSION ? engine2
-                                                               : engine1;
-}
-
 void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
   const base::string16& keyword = template_url->keyword();
   auto iter = keyword_to_turl_and_length_.find(keyword);
@@ -1492,10 +1468,10 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
     TemplateURL* best_fallback = nullptr;
     for (const auto& turl : template_urls_) {
       if ((turl.get() != template_url) && (turl->keyword() == keyword)) {
-        if (best_fallback)
-          best_fallback = BestEngineForKeyword(best_fallback, turl.get());
-        else
+        if (!best_fallback ||
+            turl->IsBetterThanEngineWithConflictingKeyword(best_fallback)) {
           best_fallback = turl.get();
+        }
       }
     }
     RemoveFromDomainMap(template_url);
@@ -1530,7 +1506,7 @@ void TemplateURLService::AddToMaps(TemplateURL* template_url) {
   } else {
     TemplateURL* existing_url = i->second.first;
     CHECK_NE(existing_url, template_url);
-    if (BestEngineForKeyword(existing_url, template_url) != existing_url) {
+    if (template_url->IsBetterThanEngineWithConflictingKeyword(existing_url)) {
       RemoveFromDomainMap(existing_url);
       AddToMap(template_url);
       AddToDomainMap(template_url);

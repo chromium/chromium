@@ -567,15 +567,19 @@ class TemplateURL {
   using TemplateURLVector = std::vector<TemplateURL*>;
   using OwnedTemplateURLVector = std::vector<std::unique_ptr<TemplateURL>>;
 
+  // These values are not persisted and can be freely changed.
+  // Their integer values are used for choosing the best engine during keyword
+  // conflicts, so their relative ordering should not be changed without careful
+  // thought about what happens during version skew.
   enum Type {
-    // Regular search engine.
-    NORMAL,
+    // Installed only on this device. Should not be synced. This is not common.
+    LOCAL = 0,
+    // Regular search engine. This is the most common.
+    NORMAL = 1,
     // Installed by extension through Override Settings API.
-    NORMAL_CONTROLLED_BY_EXTENSION,
+    NORMAL_CONTROLLED_BY_EXTENSION = 2,
     // The keyword associated with an extension that uses the Omnibox API.
-    OMNIBOX_API_EXTENSION,
-    // Installed only on this device. Should not be synced.
-    LOCAL,
+    OMNIBOX_API_EXTENSION = 3,
   };
 
   // An AssociatedExtensionInfo represents information about the extension that
@@ -611,6 +615,25 @@ class TemplateURL {
               bool wants_to_be_default_engine);
 
   ~TemplateURL();
+
+  // For two engines with the same keyword, |this| and |other|,
+  // returns true if |this| is strictly better than |other|.
+  //
+  // While normal engines must all have distinct keywords, policy-created,
+  // extension-controlled and omnibox API engines may have the same keywords as
+  // each other or as normal engines.  In these cases, policy-create engines
+  // override omnibox API engines, which override extension-controlled engines,
+  // which override normal engines.
+  //
+  // If there is still a conflict after this, compare by safe-for-autoreplace,
+  // then last modified date, then use the sync guid as a tiebreaker.
+  //
+  // TODO(tommycli): I'd like to use this to resolve Sync conflicts in the
+  // future, but we need a total ordering of TemplateURLs. That's not the case
+  // today, because the sync GUIDs are not actually globally unique, so there
+  // can be a genuine tie, which is not good, because then two different clients
+  // could choose to resolve the conflict in two different ways.
+  bool IsBetterThanEngineWithConflictingKeyword(const TemplateURL* other) const;
 
   // Generates a suitable keyword for the specified url, which must be valid.
   // This is guaranteed not to return an empty string, since TemplateURLs should

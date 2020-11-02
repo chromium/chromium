@@ -517,15 +517,6 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   void Init(const Initializer* initializers, int num_initializers);
 
-  // Given two engines with the same keyword, returns which should take
-  // precedence.  While normal engines must all have distinct keywords,
-  // extension-controlled and omnibox API engines may have the same keywords as
-  // each other or as normal engines.  In these cases, omnibox API engines
-  // override extension-controlled engines, which override normal engines; if
-  // there is still a conflict after this, the most recently-added extension
-  // wins.
-  TemplateURL* BestEngineForKeyword(TemplateURL* engine1, TemplateURL* engine2);
-
   // Removes |template_url| from various internal maps
   // (|keyword_to_turl_and_length_|, |keyword_domain_to_turl_and_length_|,
   // |guid_to_turl_|, |provider_map_|).
@@ -658,6 +649,10 @@ class TemplateURLService : public WebDataServiceConsumer,
   //  * |local_turl| is created by policy.
   //  * |prefer_local_default| is true and |local_turl| is the local default
   //    search provider
+  //
+  // TODO(tommycli): Consolidate into using
+  // TemplateURL::IsBetterThanEngineWithConflictingKeyword. Likely we will
+  // eliminate the |prefer_local_default| mechanism.
   bool IsLocalTemplateURLBetter(const TemplateURL* local_turl,
                                 const TemplateURL* sync_turl,
                                 bool prefer_local_default = true) const;
