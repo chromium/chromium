@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TOUCH_TO_FILL_ANDROID;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
@@ -626,7 +625,7 @@ class ManualFillingMediator extends EmptyTabObserver
             case AccessoryTabType.PASSWORDS:
                 return true;
             case AccessoryTabType.TOUCH_TO_FILL:
-                return ChromeFeatureList.isEnabled(TOUCH_TO_FILL_ANDROID);
+                return true;
         }
         return true;
     }

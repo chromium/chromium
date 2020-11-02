@@ -65,7 +65,7 @@ bool IsKeyboardAccessoryEnabled() {
 
 bool IsTouchToFillEnabled() {
 #if defined(OS_ANDROID)
-  return base::FeatureList::IsEnabled(features::kAutofillTouchToFill);
+  return true;
 #else  // !defined(OS_ANDROID)
   return false;
 #endif

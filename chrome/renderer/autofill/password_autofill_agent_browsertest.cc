@@ -434,13 +434,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         password_manager::features::kEnableOverwritingPlaceholderUsernames);
   }
 
-#if defined(OS_ANDROID)
-  void EnableTouchToFillFeature() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kTouchToFillAndroid);
-  }
-#endif
-
   void EnableShowAutofillSignatures() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kShowAutofillSignatures);
@@ -1770,19 +1763,6 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillSuppressesPopups) {
 
 TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillReadonlyPassword) {
   SetElementReadOnly(password_element_, true);
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_FALSE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
-}
-
-TEST_F(PasswordAutofillAgentTest, DontShowTouchToFillOnSecurePageIfParamIsSet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillTouchToFill, {{"insecure-origins-only", "true"}});
-
-  // Reload the page with a secure origin.
-  LoadHTMLWithUrlOverride(kFormHTML, "https://example.com");
   SimulateOnFillPasswordForm(fill_data_);
 
   EXPECT_FALSE(

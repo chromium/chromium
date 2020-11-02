@@ -30,9 +30,6 @@ using password_manager::UiCredential;
 // static
 std::unique_ptr<ChromeBiometricAuthenticator>
 ChromeBiometricAuthenticator::Create(WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(autofill::features::kAutofillTouchToFill))
-    return nullptr;
-
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kBiometricTouchToFill)) {
     return nullptr;

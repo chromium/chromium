@@ -428,7 +428,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TOOLBAR_IPH_ANDROID = "ToolbarIphAndroid";
-    public static final String TOUCH_TO_FILL_ANDROID = "TouchToFillAndroid";
     public static final String TRANSLATE_ASSIST_CONTENT = "TranslateAssistContent";
     public static final String TRANSLATE_INTENT = "TranslateIntent";
     public static final String TRUSTED_WEB_ACTIVITY_LOCATION_DELEGATION =

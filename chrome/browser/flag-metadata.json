@@ -4505,11 +4505,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "touch-to-fill",
-    "owners": [ "jdoerrie" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "touchpad-overscroll-history-navigation",
     "owners": [ "chaopeng", "input-dev" ],
     "expiry_milestone": 76

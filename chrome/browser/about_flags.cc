@@ -5593,12 +5593,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kMouseSubframeNoImplicitCapture)},
 
-#if defined(OS_ANDROID)
-    {"touch-to-fill", flag_descriptions::kAutofillTouchToFillName,
-     flag_descriptions::kAutofillTouchToFillDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillTouchToFill)},
-#endif  // defined(OS_ANDROID)
-
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
     {"global-media-controls", flag_descriptions::kGlobalMediaControlsName,

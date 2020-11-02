@@ -268,10 +268,6 @@ const base::Feature kAutofillSkipFillingFieldsWithChangedValues{
 const base::Feature kAutofillTokenPrefixMatching{
     "AutofillTokenPrefixMatching", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the touch to fill feature for Android.
-const base::Feature kAutofillTouchToFill = {"TouchToFillAndroid",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Autofill upload throttling is used for testing.
 const base::Feature kAutofillUploadThrottling{"AutofillUploadThrottling",
                                               base::FEATURE_ENABLED_BY_DEFAULT};

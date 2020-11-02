@@ -12,8 +12,7 @@ namespace password_manager {
 //       names, e.g. "MyGreatFeature".
 namespace features {
 
-// Enables Biometrics for the Touch To Fill feature. This only effects Android
-// and requires autofill::features::kAutofillTouchToFill to be enabled as well.
+// Enables Biometrics for the Touch To Fill feature. This only effects Android.
 const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
