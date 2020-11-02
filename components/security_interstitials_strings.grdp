@@ -246,7 +246,7 @@
     Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>URLs of some pages you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK">&lt;a id="privacy-link" href="#"&gt;</ph>Privacy policy<ph name="END_PRIVACY_PAGE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE" desc="SafeBrowsing enhanced protection promo message">
-    To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph>.
+    To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph>
   </message>
 
   <!-- Harmful download interstitial -->
