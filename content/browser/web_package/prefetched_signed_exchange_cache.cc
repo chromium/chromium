@@ -703,9 +703,11 @@ PrefetchedSignedExchangeCache::GetInfoListForNavigation(
 
     if (it->second != *exchange->header_integrity()) {
       ++exchanges_it;
+      // TODO(https://crbug.com/993805): Pass in a NetworkIsolationKey.
       auto reporter = SignedExchangeReporter::MaybeCreate(
           exchange->outer_url(), main_exchange.outer_url().spec(),
-          *exchange->outer_response(), frame_tree_node_id);
+          *exchange->outer_response(), net::NetworkIsolationKey::Todo(),
+          frame_tree_node_id);
       if (reporter) {
         reporter->set_cert_server_ip_address(
             exchange->cert_server_ip_address());

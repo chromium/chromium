@@ -43,7 +43,7 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
 
   auto reporter = SignedExchangeReporter::MaybeCreate(
       resource_request.url, resource_request.referrer.spec(), *response_head,
-      frame_tree_node_id);
+      network_isolation_key, frame_tree_node_id);
   auto devtools_proxy = std::make_unique<SignedExchangeDevToolsProxy>(
       resource_request.url, response_head.Clone(), frame_tree_node_id,
       base::nullopt /* devtools_navigation_token */,

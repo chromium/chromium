@@ -882,7 +882,12 @@ void NetworkContext::QueueReport(
 }
 
 void NetworkContext::QueueSignedExchangeReport(
-    mojom::SignedExchangeReportPtr report) {
+    mojom::SignedExchangeReportPtr report,
+    const net::NetworkIsolationKey& network_isolation_key) {
+  // TODO(mmenke): Once all callers have been updated to send a
+  // NetworkIsolationKey, DCHECK network_isolation_key() is not null, when
+  // require_network_isolation_key() is set on the URLRequestContext.
+
   net::URLRequestContext* request_context = url_request_context();
   net::NetworkErrorLoggingService* logging_service =
       request_context->network_error_logging_service();
@@ -893,8 +898,7 @@ void NetworkContext::QueueSignedExchangeReport(
     user_agent = request_context->http_user_agent_settings()->GetUserAgent();
   }
   net::NetworkErrorLoggingService::SignedExchangeReportDetails details;
-  // TODO(chlily): Add NIK to details.
-  details.network_isolation_key = net::NetworkIsolationKey::Todo();
+  details.network_isolation_key = network_isolation_key;
   details.success = report->success;
   details.type = std::move(report->type);
   details.outer_url = std::move(report->outer_url);
@@ -940,7 +944,8 @@ void NetworkContext::QueueReport(
 }
 
 void NetworkContext::QueueSignedExchangeReport(
-    mojom::SignedExchangeReportPtr report) {
+    mojom::SignedExchangeReportPtr report,
+    const net::NetworkIsolationKey& network_isolation_key) {
   NOTREACHED();
 }
 #endif  // BUILDFLAG(ENABLE_REPORTING)

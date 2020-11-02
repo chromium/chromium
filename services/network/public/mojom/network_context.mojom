@@ -1037,7 +1037,12 @@ interface NetworkContext {
               mojo_base.mojom.DictionaryValue body);
 
   // Queues a signed exchange report.
-  QueueSignedExchangeReport(SignedExchangeReport report);
+  //
+  // Note that this queued report will never be delivered if no reporting
+  // endpoint matching is registered for with the provided
+  // |network_isolation_key|.
+  QueueSignedExchangeReport(SignedExchangeReport report,
+                            NetworkIsolationKey network_isolation_key);
 
   // Closes all open connections within this context.
   CloseAllConnections() => ();

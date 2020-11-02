@@ -388,7 +388,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                    const base::Optional<std::string>& user_agent,
                    base::Value body) override;
   void QueueSignedExchangeReport(
-      mojom::SignedExchangeReportPtr report) override;
+      mojom::SignedExchangeReportPtr report,
+      const net::NetworkIsolationKey& network_isolation_key) override;
   void AddDomainReliabilityContextForTesting(
       const GURL& origin,
       const GURL& upload_url,

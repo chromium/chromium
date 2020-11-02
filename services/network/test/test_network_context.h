@@ -104,7 +104,8 @@ class TestNetworkContext : public mojom::NetworkContext {
                    const base::Optional<std::string>& user_agent,
                    base::Value body) override {}
   void QueueSignedExchangeReport(
-      mojom::SignedExchangeReportPtr report) override {}
+      mojom::SignedExchangeReportPtr report,
+      const net::NetworkIsolationKey& network_isolation_key) override {}
   void CloseAllConnections(CloseAllConnectionsCallback callback) override {}
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override {}
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
