@@ -179,10 +179,14 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
   bool image_has_intrinsic_dimensions =
       new_style.Width().IsSpecifiedOrIntrinsic() &&
       new_style.Height().IsSpecifiedOrIntrinsic();
+  bool image_has_dimensions_from_ar =
+      !new_style.AspectRatio().IsAuto() &&
+      (new_style.Width().IsSpecifiedOrIntrinsic() ||
+       new_style.Height().IsSpecifiedOrIntrinsic());
   bool image_has_no_alt_attribute =
       element.getAttribute(html_names::kAltAttr).IsEmpty();
   bool treat_as_replaced =
-      image_has_intrinsic_dimensions &&
+      (image_has_intrinsic_dimensions || image_has_dimensions_from_ar) &&
       (element.GetDocument().InQuirksMode() || image_has_no_alt_attribute);
   if (treat_as_replaced) {
     // https://html.spec.whatwg.org/C/#images-3:
@@ -209,6 +213,8 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
     if (new_style.Display() == EDisplay::kInline) {
       new_style.SetWidth(Length());
       new_style.SetHeight(Length());
+      new_style.SetAspectRatio(
+          ComputedStyleInitialValues::InitialAspectRatio());
     }
     if (ElementRepresentsNothing(element)) {
       // "If the element is an img element that represents nothing and the user

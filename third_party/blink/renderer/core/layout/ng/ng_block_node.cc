@@ -1538,7 +1538,8 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
   // The CSS parser will ensure that this will only be set if the feature
   // is enabled.
   const StyleAspectRatio& ratio = Style().AspectRatio();
-  if (ratio.GetType() == EAspectRatioType::kRatio)
+  if (ratio.GetType() == EAspectRatioType::kRatio ||
+      (ratio.GetType() == EAspectRatioType::kAutoAndRatio && !IsReplaced()))
     return Style().LogicalAspectRatio();
 
   base::Optional<LayoutUnit> computed_inline_size;

@@ -165,6 +165,9 @@ class CORE_EXPORT HTMLElement : public Element {
                            CSSPropertyID,
                            const String& color);
 
+  void ApplyAspectRatioToStyle(const AtomicString& width,
+                               const AtomicString& height,
+                               MutableCSSPropertyValueSet*);
   void ApplyAlignmentAttributeToStyle(const AtomicString&,
                                       MutableCSSPropertyValueSet*);
   void ApplyBorderAttributeToStyle(const AtomicString&,

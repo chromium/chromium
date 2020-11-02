@@ -723,24 +723,6 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
 
   if (!intrinsic_sizing_info.size.IsEmpty())
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
-
-  auto* elem = DynamicTo<Element>(GetNode());
-  if (elem && IsA<HTMLImageElement>(elem) &&
-      intrinsic_sizing_info.aspect_ratio.IsEmpty() &&
-      elem->FastHasAttribute(html_names::kWidthAttr) &&
-      elem->FastHasAttribute(html_names::kHeightAttr)) {
-    const AtomicString& width_str =
-        elem->FastGetAttribute(html_names::kWidthAttr);
-    const AtomicString& height_str =
-        elem->FastGetAttribute(html_names::kHeightAttr);
-    HTMLDimension width_dim, height_dim;
-    if (ParseDimensionValue(width_str, width_dim) &&
-        ParseDimensionValue(height_str, height_dim) && width_dim.IsAbsolute() &&
-        height_dim.IsAbsolute()) {
-      intrinsic_sizing_info.aspect_ratio.SetWidth(width_dim.Value());
-      intrinsic_sizing_info.aspect_ratio.SetHeight(height_dim.Value());
-    }
-  }
 }
 
 static inline LayoutUnit ResolveWidthForRatio(LayoutUnit height,

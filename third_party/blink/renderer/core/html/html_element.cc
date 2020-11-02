@@ -30,9 +30,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -881,6 +884,31 @@ void HTMLElement::setOuterText(const String& text,
   auto* prev_text_node = DynamicTo<Text>(prev);
   if (!exception_state.HadException() && prev && prev->IsTextNode())
     MergeWithNextTextNode(prev_text_node, exception_state);
+}
+
+void HTMLElement::ApplyAspectRatioToStyle(const AtomicString& width,
+                                          const AtomicString& height,
+                                          MutableCSSPropertyValueSet* style) {
+  HTMLDimension width_dim, height_dim;
+  if (!ParseDimensionValue(width, width_dim))
+    return;
+  if (!ParseDimensionValue(height, height_dim))
+    return;
+  if (!width_dim.IsAbsolute() || !height_dim.IsAbsolute())
+    return;
+  CSSValue* width_val = CSSNumericLiteralValue::Create(
+      width_dim.Value(), CSSPrimitiveValue::UnitType::kNumber);
+  CSSValue* height_val = CSSNumericLiteralValue::Create(
+      height_dim.Value(), CSSPrimitiveValue::UnitType::kNumber);
+  CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
+  ratio_list->Append(*width_val);
+  ratio_list->Append(*height_val);
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  list->Append(*ratio_list);
+
+  style->SetProperty(CSSPropertyID::kAspectRatio, *list);
 }
 
 void HTMLElement::ApplyAlignmentAttributeToStyle(
