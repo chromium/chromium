@@ -751,10 +751,10 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
                                        float{source_bitmap.width()}));
   SkBitmap sk_icon = skia::ImageOperations::Resize(
       source_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
-      avatar_badge_height, avatar_badge_width);
+      avatar_badge_width, avatar_badge_height);
 
   // Sanity check - avatars shouldn't be taller than they are wide.
-  DCHECK_GE(avatar_badge_width, avatar_badge_height);
+  DCHECK_GE(sk_icon.width(), sk_icon.height());
 
   // Overlay the avatar on the icon, anchoring it to the bottom-right of the
   // icon.

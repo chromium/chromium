@@ -75,7 +75,7 @@ const int kMaxProfileShortcutFileNameLength = 64;
 // Incrementing this number will cause profile icons to be regenerated on
 // profile startup (it should be incremented whenever the product/avatar icons
 // change, etc).
-const int kCurrentProfileIconVersion = 6;
+const int kCurrentProfileIconVersion = 7;
 
 // Updates the preferences with the current icon version on icon creation
 // success.
