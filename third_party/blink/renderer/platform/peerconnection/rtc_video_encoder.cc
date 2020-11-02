@@ -919,7 +919,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       (metadata.key_frame ? webrtc::VideoFrameType::kVideoFrameKey
                           : webrtc::VideoFrameType::kVideoFrameDelta);
   image.content_type_ = video_content_type_;
-  image._completeFrame = true;
 
   webrtc::CodecSpecificInfo info;
   info.codecType = video_codec_type_;

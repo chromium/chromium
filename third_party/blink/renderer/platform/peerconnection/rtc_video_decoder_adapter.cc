@@ -288,8 +288,8 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_ASH)
   }
 
-  if (missing_frames || !input_image._completeFrame) {
-    DVLOG(2) << "Missing or incomplete frames";
+  if (missing_frames) {
+    DVLOG(2) << "Missing frames";
     // We probably can't handle broken frames. Request a key frame.
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
