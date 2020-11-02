@@ -185,7 +185,7 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
 LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
                                       const LayoutBox& box) {
   const auto* inner_editor = textarea.InnerEditorElement();
-  if (!inner_editor) {
+  if (!inner_editor || !inner_editor->GetLayoutBox()) {
     const LayoutUnit line_height = box.LineHeight(
         true,
         box.StyleRef().IsHorizontalWritingMode() ? kHorizontalLine
@@ -194,7 +194,6 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
 
     return line_height * textarea.rows();
   }
-  DCHECK(inner_editor->GetLayoutBox());
   const LayoutBox& inner_box = *inner_editor->GetLayoutBox();
   const ComputedStyle& inner_style = inner_box.StyleRef();
   // We are able to have a horizontal scrollbar if the overflow style is
