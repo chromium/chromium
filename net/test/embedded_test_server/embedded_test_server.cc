@@ -819,9 +819,7 @@ void EmbeddedTestServer::ServeFilesFromSourceDirectory(
 
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
     const base::FilePath& relative) {
-  base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
-  ServeFilesFromDirectory(test_data_dir.Append(relative));
+  ServeFilesFromDirectory(GetFullPathFromSourceDirectory(relative));
 }
 
 void EmbeddedTestServer::AddDefaultHandlers(const base::FilePath& directory) {
@@ -831,6 +829,13 @@ void EmbeddedTestServer::AddDefaultHandlers(const base::FilePath& directory) {
 
 void EmbeddedTestServer::AddDefaultHandlers() {
   RegisterDefaultHandlers(this);
+}
+
+base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
+    const base::FilePath& relative) {
+  base::FilePath test_data_dir;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  return test_data_dir.Append(relative);
 }
 
 void EmbeddedTestServer::RegisterRequestHandler(
