@@ -62,26 +62,14 @@ constexpr int kButtonFontSizeDelta = 1;
 
 // Manage-Settings button.
 constexpr SkColor kSettingsButtonTextColor = gfx::kGoogleBlue600;
-constexpr char kA11ySettingsButtonDescText[] =
-    "Click to open Google Assistant settings.";
 
 // Accept button.
 constexpr SkColor kAcceptButtonTextColor = gfx::kGoogleGrey200;
-constexpr char kA11yAcceptButtonDescText[] =
-    "Let Assistant show info such as definition, translation or unit "
-    "conversion for your selection.";
 
 // Dogfood button.
 constexpr int kDogfoodButtonMarginDip = 4;
 constexpr int kDogfoodButtonSizeDip = 20;
 constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
-
-// Accessibility.
-// TODO(siabhijeet): Move to grd after finalizing with UX.
-constexpr char kA11yInfoAlertText[] =
-    "New feature available, use Up arrow key to learn more.";
-constexpr char kA11yInfoDescTemplate[] =
-    "%s Use Left or Right arrow keys to manage this feature.";
 
 // Create and return a simple label with provided specs.
 std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
@@ -161,7 +149,8 @@ UserNoticeView::UserNoticeView(const gfx::Rect& anchor_view_bounds,
       reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
 
   // Read out user-consent notice if screen-reader is active.
-  GetViewAccessibility().AnnounceText(base::UTF8ToUTF16(kA11yInfoAlertText));
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
 }
 
 UserNoticeView::~UserNoticeView() = default;
@@ -193,10 +182,10 @@ views::FocusTraversable* UserNoticeView::GetPaneFocusTraversable() {
 void UserNoticeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(title_);
-  auto desc = base::StringPrintf(
-      kA11yInfoDescTemplate,
-      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT)
-          .c_str());
+  auto desc = l10n_util::GetStringFUTF8(
+      IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT));
   node_data->SetDescription(desc);
 }
 
@@ -316,7 +305,8 @@ void UserNoticeView::InitButtonBar() {
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON),
       kSettingsButtonTextColor);
   settings_button->GetViewAccessibility().OverrideDescription(
-      kA11ySettingsButtonDescText);
+      l10n_util::GetStringUTF16(
+          IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_SETTINGS_BUTTON_DESC_TEXT));
   settings_button_ = button_bar->AddChildView(std::move(settings_button));
 
   auto accept_button = std::make_unique<CustomizedLabelButton>(
@@ -326,7 +316,8 @@ void UserNoticeView::InitButtonBar() {
       kAcceptButtonTextColor);
   accept_button->SetProminent(true);
   accept_button->GetViewAccessibility().OverrideDescription(
-      kA11yAcceptButtonDescText);
+      l10n_util::GetStringUTF16(
+          IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_ACCEPT_BUTTON_DESC_TEXT));
   accept_button_ = button_bar->AddChildView(std::move(accept_button));
 }
 
