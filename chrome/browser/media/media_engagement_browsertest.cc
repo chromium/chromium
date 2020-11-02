@@ -256,7 +256,8 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     // need it before the page navigates.
     InjectTimerTaskRunner();
 
-    ui_test_utils::NavigateToURL(browser(), http_server_origin2_.GetURL("/"));
+    ui_test_utils::NavigateToURL(
+        browser(), http_server_origin2_.GetURL("/engagement_test.html"));
   }
 
   const net::EmbeddedTestServer& http_server() const { return http_server_; }
@@ -527,9 +528,6 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Flaky: https://crbug.com/1115238
-#define MAYBE_RecordVisitOnNewOrigin DISABLED_RecordVisitOnNewOrigin
-#elif defined(OS_MAC)
-// Consistently fails: https://crbug.com/1144680
 #define MAYBE_RecordVisitOnNewOrigin DISABLED_RecordVisitOnNewOrigin
 #else
 #define MAYBE_RecordVisitOnNewOrigin RecordVisitOnNewOrigin
