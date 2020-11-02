@@ -3401,7 +3401,7 @@
 <translation id="4997086284911172121">Нет подключения к Интернету.</translation>
 <translation id="4998430619171209993">Включено</translation>
 <translation id="5000922062037820727">Заблокировано (рекомендуется)</translation>
-<translation id="5005498671520578047">Для копирования пароля</translation>
+<translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5006218871145547804">Инструмент adb для Android-приложений в Crostini</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
 <translation id="5008936837313706385">Действие</translation>
@@ -3657,7 +3657,7 @@
 <translation id="532247166573571973">Сервер недоступен. Повторите попытку позже.</translation>
 <translation id="5324300749339591280">Список приложений</translation>
 <translation id="5324780743567488672">Автоматически определять часовой пояс на основе геоданных</translation>
-<translation id="5327248766486351172">Название</translation>
+<translation id="5327248766486351172">Имя</translation>
 <translation id="5327570636534774768">Это устройство находится под управлением другого домена. Отключите это соединение, прежде чем настроить демонстрационный режим.</translation>
 <translation id="532943162177641444">Откройте уведомление на телефоне <ph name="PHONE_NAME" />, чтобы настроить точку доступа, к которой сможет подключиться это устройство.</translation>
 <translation id="5329858601952122676">&amp;Удалить</translation>

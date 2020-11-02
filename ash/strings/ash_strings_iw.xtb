@@ -402,7 +402,7 @@
 <translation id="4890187583552566966">‏Google Assistant הושבתה על-ידי מנהל המערכת.</translation>
 <translation id="4895488851634969361">הסוללה טעונה במלואה.</translation>
 <translation id="490375751687810070">אנכי</translation>
-<translation id="4905614135390995787">מקש הקיצור להפעלה או כיבוי של מצב ניגודיות גבוהה השתנה. השתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
+<translation id="4905614135390995787">מקש הקיצור להפעלה או כיבוי של מצב ניגודיות גבוהה השתנה. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4918086044614829423">אישור</translation>
@@ -680,7 +680,7 @@
 <translation id="79341161159229895">החשבון מנוהל על-ידי <ph name="FIRST_PARENT_EMAIL" /> ועל-ידי <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">‏לצפייה בלוח העריכה, יש ללחוץ על <ph name="SHORTCUT_KEY_NAME" /> + V. בלוח העריכה שמורים חמשת הפריטים האחרונים שהעתקת.</translation>
 <translation id="7955885781510802139">מצב ניגודיות גבוהה</translation>
-<translation id="7977927628060636163">מחפש רשתות סלולריות...</translation>
+<translation id="7977927628060636163">המערכת מחפשת רשתות סלולריות...</translation>
 <translation id="7980780401175799550">‏דרכים חדשות לנווט ב-Chrome OS</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7984197416080286869">יותר מדי ניסיונות טביעת אצבע</translation>
@@ -694,7 +694,7 @@
 <translation id="8048123526339889627">‏הגדרות Bluetooth</translation>
 <translation id="8054466585765276473">מחשב זמן סוללה</translation>
 <translation id="8061464966246066292">ניגודיות גבוהה</translation>
-<translation id="8098591350844501178">הפסק להעביר את המסך אל <ph name="RECEIVER_NAME" /></translation>
+<translation id="8098591350844501178">הפסקת העברת המסך אל <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">מופעל, כל האפליקציות</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>
@@ -731,7 +731,7 @@
 <translation id="8427213022735114808">‏הכתבה שולחת הקלטה של הקול שלך אל Google כדי לאפשר הקלדה קולית בתיבת טקסט כלשהי.</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
-<translation id="8433977262951327081">שינינו את קיצור הדרך להצגה של בועת התפריט של אפשרויות הקלט במדף. השתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8433977262951327081">שינינו את קיצור הדרך להצגת בועת התפריט של אפשרויות הקלט במדף. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">שולחן העבודה <ph name="DESK_TITILE" /> הופעל</translation>
 <translation id="8452135315243592079">‏כרטיס SIM חסר</translation>
 <translation id="8454013096329229812">‏Wi-Fi מופעל.</translation>

@@ -2619,17 +2619,17 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> nicht gemeldet.
       </translation>
-<translation id="4892647988357350237">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie auf <ph name="STANDARD_TOS_DIALOG" /> gesetzt oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
+<translation id="4892647988357350237">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten noch bei weiteren Ausführungen angezeigt. Wenn die Richtlinie auf <ph name="STANDARD_TOS_DIALOG" /> gesetzt oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
 
      – Diese Richtlinie funktioniert nur bei vollständig verwalteten Android-Geräten, die von Unified Endpoint Management-Anbietern konfiguriert werden können.
 
-      – Wenn die Richtlinie <ph name="SKIP_TOS_DIALOG" /> ist, hat die BrowserSignin-Richtlinie keine Auswirkungen.
+      – Wenn die Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, hat die BrowserSignin-Richtlinie keine Auswirkungen.
 
-      – Wenn die Richtlinie <ph name="SKIP_TOS_DIALOG" /> ist, werden keine Messwerte an den Server gesendet.
+      – Wenn die Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, werden keine Messwerte an den Server gesendet.
 
-      – Wenn die Richtlinie <ph name="SKIP_TOS_DIALOG" /> ist, sind die Browserfunktionen eingeschränkt.
+      – Wenn die Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, sind die Browserfunktionen eingeschränkt.
 
-      – Wenn die Richtlinie <ph name="SKIP_TOS_DIALOG" /> ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
+      – Wenn die Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="4894290482695457375">Wenn "<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />" aktiviert und "<ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />" konfiguriert ist, wird <ph name="PRODUCT_NAME" /> unter allen IP-Adressen und nicht nur unter privaten RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
@@ -3880,9 +3880,9 @@ Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf fr
       Hinweis: Bei Windows-Instanzen, die nicht Teil einer <ph name="MS_AD_NAME" />-Domain sind, bleibt die erzwungene Installation auf die im Chrome Web Store aufgeführten Apps und Erweiterungen beschränkt.</translation>
 <translation id="6598235178374410284">Nutzer-Avatarbild</translation>
 <translation id="6603004149426829878">Beim Auflösen der Zeitzone immer verfügbare Standortsignale an den Server senden</translation>
-<translation id="660567106648774919">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+<translation id="660567106648774919">Diese Richtlinie ist veraltet. Bitte verwenden Sie stattdessen die Richtlinie <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
 
-      Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
+      Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten noch bei weiteren Ausführungen angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
 
      – Diese Richtlinie funktioniert nur bei vollständig verwalteten Android-Geräten, die von Unified Endpoint Management-Anbietern konfiguriert werden können.
 

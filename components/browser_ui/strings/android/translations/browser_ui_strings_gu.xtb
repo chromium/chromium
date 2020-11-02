@@ -57,7 +57,7 @@
 <translation id="2434158240863470628">ડાઉનલોડ પૂર્ણ <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">સ્થાન ઍક્સેસ</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
-<translation id="2490684707762498678"><ph name="APP_NAME" /> દ્વારા સંચાલિત</translation>
+<translation id="2490684707762498678"><ph name="APP_NAME" /> દ્વારા મેનેજ થયેલ</translation>
 <translation id="2498359688066513246">સહાય અને પ્રતિસાદ</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 કુકીને બ્લૉક કરેલી છે}one{# કુકીને બ્લૉક કરેલી છે}other{# કુકીને બ્લૉક કરેલી છે}}</translation>
@@ -79,7 +79,7 @@
 <translation id="2968755619301702150">પ્રમાણપત્ર દર્શક</translation>
 <translation id="300526633675317032">આ <ph name="SIZE_IN_KB" /> નું બધું વેબસાઇટ સ્ટોરેજ સાફ કરશે.</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
-<translation id="301521992641321250">આપમેળે અવરોધિત</translation>
+<translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
 <translation id="3114012059975132928">વીડિયો પ્લેયર</translation>
 <translation id="3115898365077584848">માહિતી બતાવો</translation>
 <translation id="3123473560110926937">કેટલીક સાઇટ પર બ્લૉક કરેલ</translation>
@@ -124,7 +124,7 @@
 <translation id="4479647676395637221">સાઇટ્સને તમારા કૅમેરાના ઉપયોગની મંજૂરી આપતાં પહેલાં પૂછો (ભલામણ કરેલ)</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> તમારું માઇક્રોફોન ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ માઇક્રોફોન ચાલુ કરો.</translation>
 <translation id="4570913071927164677">વિગતો</translation>
-<translation id="4645575059429386691">તમારા માતાપિતા દ્વારા સંચાલિત</translation>
+<translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
 <translation id="4708011789095599544">શું તમે ખરેખર આ વેબસાઇટ માટેની કુકી અને અન્ય સાઇટ ડેટા સાફ કરવા માગો છો?</translation>
 <translation id="4751476147751820511">મોશન અથવા લાઇટ સેન્સર</translation>
@@ -160,7 +160,7 @@
 <translation id="5527111080432883924">સાઇટને ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓને વાંચવાની મંજૂરી આપતાં પહેલાં પૂછો (સુઝાવ આપેલ)</translation>
 <translation id="5556459405103347317">ફરિથી લોડ કરો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
-<translation id="5649053991847567735">આપમેળે ડાઉનલોડ્સ</translation>
+<translation id="5649053991847567735">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
 <translation id="5689516760719285838">સ્થાન</translation>
 <translation id="5690795753582697420">Android સેટિંગમાંથી કૅમેરા બંધ કરવામાં આવ્યો છે</translation>
@@ -299,7 +299,7 @@
 <translation id="894871326938397531">છુપો મોડ છોડીએ?</translation>
 <translation id="8958424370300090006">કોઈ ચોક્કસ સાઇટ માટે કુકીને બ્લૉક કરો.</translation>
 <translation id="8959122750345127698">નેવિગેશન બિનપહોંચ યોગ્ય છે: <ph name="URL" /></translation>
-<translation id="9019902583201351841">તમારા માતાપિતા દ્વારા સંચાલિત</translation>
+<translation id="9019902583201351841">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં <ph name="APP_NAME" /> માટે પરવાનગીઓ ચાલુ કરો.</translation>

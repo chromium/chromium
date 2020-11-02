@@ -79,7 +79,7 @@
 <translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોું જરૂરી છે.</translation>
 <translation id="1807938677607439181">બધી ફાઇલો</translation>
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ચેતવણી:<ph name="END_BOLD" />  આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક સ્થાન ખાલી કરવા માટે આપમેળે કાઢી નાંખવામાં આવે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ચેતવણી:<ph name="END_BOLD" />  આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક સ્થાન ખાલી કરવા માટે ઑટોમૅટિક રીતે કાઢી નાખવામાં આવે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">પેન્ગ્વિન</translation>
 <translation id="183183971458492120">માહિતી લોડ કરી રહ્યું છે...</translation>
 <translation id="1838709767668011582">Google સાઇટ</translation>
@@ -728,7 +728,7 @@
 <translation id="872537912056138402">ક્રોએશિયન</translation>
 <translation id="874420130893181774">પરંપરાગત પિનયિન ઇનપુટ પદ્ધતિ</translation>
 <translation id="8770002329960263418">ડચ (નેધરલૅન્ડ), US આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
-<translation id="8775404590947523323">તમારા સંપાદનો આપમેળે સચવાયા છે.<ph name="BREAKS" />મૂળ છબીની કૉપિ રાખવા માટે, "મૂળ પર ઓવરરાઇટ કરો" ને  અનચેક કરો</translation>
+<translation id="8775404590947523323">તમારા ફેરફારો ઑટોમૅટિક રીતે સચવાયા છે.<ph name="BREAKS" />મૂળ છબીની કૉપિ રાખવા માટે, "મૂળ પર ઓવરરાઇટ કરો" ને  અનચેક કરો</translation>
 <translation id="8803496343472038847">રશિયન ધ્વન્યાત્મક કીબોર્ડ</translation>
 <translation id="8808686172382650546">બિલાડી</translation>
 <translation id="8810671769985673465">ઝિપ કરવાનું નિષ્ફળ, આઇટમ અસ્તિત્વમાં છે: "<ph name="FILE_NAME" />"</translation>
