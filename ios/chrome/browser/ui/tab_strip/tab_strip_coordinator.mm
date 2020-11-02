@@ -53,6 +53,7 @@
 }
 
 - (void)stop {
+  [self.mediator disconnect];
   self.mediator = nil;
   self.tabStripViewController = nil;
 }

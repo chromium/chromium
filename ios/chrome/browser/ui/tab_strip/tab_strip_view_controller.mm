@@ -59,4 +59,13 @@ static NSString* const kReuseIdentifier = @"TabView";
   return cell;
 }
 
+#pragma mark - TabStripConsumer
+
+- (void)setTabsCount:(NSUInteger)tabsCount {
+  if (_tabsCount == tabsCount)
+    return;
+  _tabsCount = tabsCount;
+  [self.collectionView reloadData];
+}
+
 @end

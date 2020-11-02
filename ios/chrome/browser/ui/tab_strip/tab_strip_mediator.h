@@ -22,6 +22,11 @@ class WebStateList;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Preprares the receiver for destruction, disconnecting from all services.
+// It is an error for the receiver to dealloc without this having been called
+// first.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_STRIP_TAB_STRIP_MEDIATOR_H_
