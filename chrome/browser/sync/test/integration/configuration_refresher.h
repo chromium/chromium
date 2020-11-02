@@ -27,6 +27,7 @@ class ConfigurationRefresher : public syncer::SyncServiceObserver {
  private:
   // syncer::SyncServiceObserver implementation.
   void OnSyncConfigurationCompleted(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
       scoped_observer_{this};

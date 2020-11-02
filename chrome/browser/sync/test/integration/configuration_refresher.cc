@@ -20,3 +20,7 @@ void ConfigurationRefresher::OnSyncConfigurationCompleted(
   sync_service->TriggerRefresh(syncer::Intersection(
       sync_service->GetActiveDataTypes(), syncer::ProtocolTypes()));
 }
+
+void ConfigurationRefresher::OnSyncShutdown(syncer::SyncService* sync_service) {
+  scoped_observer_.Remove(sync_service);
+}
