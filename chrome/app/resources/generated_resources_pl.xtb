@@ -1141,6 +1141,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2307462900900812319">Skonfiguruj sieć</translation>
 <translation id="230927227160767054">Ta strona chce zainstalować moduł do obsługiwania usługi.</translation>
 <translation id="2309620859903500144">Ta witryna ma zablokowany dostęp do czujników ruchu i oświetlenia.</translation>
+<translation id="2311497964614110326">Lepsze, szybsze odpowiedzi dzięki Asystentowi</translation>
 <translation id="2312219318583366810">URL strony</translation>
 <translation id="2314165183524574721">Bieżące ustawienie widoczności: ukryte</translation>
 <translation id="2314774579020744484">Język używany podczas tłumaczenia stron</translation>
@@ -1254,6 +1255,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2440604414813129000">Wyświetl ź&amp;ródło</translation>
 <translation id="244231003699905658">Nieprawidłowy adres. Sprawdź adres i spróbuj ponownie.</translation>
 <translation id="2442916515643169563">Cień tekstu</translation>
+<translation id="2444469058037141906">Po prostu powiedz lub napisz, czego potrzebujesz</translation>
 <translation id="2445081178310039857">Wymagany jest główny katalog rozszerzenia.</translation>
 <translation id="2445484935443597917">Utwórz nowy profil</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -2170,6 +2172,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3514373592552233661">Jeśli będzie dostępnych więcej sieci, sieci preferowane będą wybierane przed innymi znanymi sieciami</translation>
 <translation id="3515983984924808886">Jeszcze raz dotknij klucza bezpieczeństwa, by potwierdzić resetowanie. Wszystkie informacje zapisane w kluczu, w tym jego kod PIN, zostaną usunięte.</translation>
 <translation id="3518985090088779359">Akceptuj i kontynuuj</translation>
+<translation id="3519564332031442870">Usługa backendu drukowania</translation>
 <translation id="3521606918211282604">Zmień rozmiar dysku</translation>
 <translation id="3523642406908660543">Pytaj, gdy strona chce uzyskać dostęp do komputera przez wtyczkę (zalecane)</translation>
 <translation id="3524965460886318643">Eksportuj aktywność</translation>
@@ -2687,6 +2690,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4088095054444612037">Zaakceptuj dla grupy</translation>
 <translation id="4089235344645910861">Ustawienia zapisane. Synchronizacja rozpoczęta.</translation>
 <translation id="4090103403438682346">Włącz weryfikację dostępu</translation>
+<translation id="4090811767089219951">Asystent Google działa również tutaj</translation>
 <translation id="4090947011087001172">Zresetować uprawnienia witryny <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Zdjęcie profilowe</translation>
 <translation id="4093955363990068916">Plik lokalny:</translation>
@@ -2953,6 +2957,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4441124369922430666">Chcesz, by ta aplikacja była uruchamiana automatycznie po włączeniu urządzenia?</translation>
 <translation id="4441147046941420429">Aby kontynuować, odłącz klucz bezpieczeństwa od urządzenia, a potem podłącz go ponownie i dotknij</translation>
 <translation id="444134486829715816">Rozwiń...</translation>
+<translation id="4441928470323187829">Przypięte przez administratora</translation>
 <translation id="4442424173763614572">Wyszukiwanie DNS nie powiodło się.</translation>
 <translation id="4443536555189480885">&amp;Pomoc</translation>
 <translation id="4444304522807523469">Dostęp do skanerów podłączonych przez USB lub do sieci lokalnej</translation>
@@ -3676,6 +3681,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5315873049536339193">Tożsamość</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5319359161174645648">Google zaleca Chrome</translation>
+<translation id="5320112320661303273">Wygląda na to, że masz już skonfigurowanego Asystenta na innym urządzeniu. Wykorzystaj go jeszcze lepiej, włączając poniższe ustawienie.</translation>
 <translation id="532247166573571973">Serwer może być niedostępny. Spróbuj ponownie później.</translation>
 <translation id="5324300749339591280">Lista aplikacji</translation>
 <translation id="5324780743567488672">Ustaw strefę czasową automatycznie na podstawie lokalizacji</translation>
@@ -4808,7 +4814,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659213950629089752">Powiększenie strony zostało zmienione przez rozszerzenie „<ph name="NAME" />”</translation>
 <translation id="6659594942844771486">Karta</translation>
-<translation id="666099631117081440">Serwery wydruku</translation>
+<translation id="666099631117081440">Serwery druku</translation>
 <translation id="6664237456442406323">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Ta sytuacja uniemożliwia zaktualizowanie systemu operacyjnego Chrome za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na złośliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Podczas otwierania Twojego profilu coś poszło nie tak. Wyloguj się i ponownie zaloguj.</translation>
 <translation id="6670142487971298264">Aplikacja <ph name="APP_NAME" /> jest teraz dostępna</translation>
@@ -5493,6 +5499,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7475671414023905704">Adres URL utraconego hasła firmy Netscape</translation>
 <translation id="7476454130948140105">Poziom naładowania baterii (<ph name="BATTERY_PERCENT" />%) jest za niski, by zainstalować aktualizację</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
+<translation id="7478362879637727630">Musisz zarejestrować to urządzenie Chrome Education na koncie edukacyjnym. Aby założyć nowe konto, wejdź na https://g.co/workspace/edusignup</translation>
 <translation id="7478485216301680444">Nie można zainstalować aplikacji kiosku.</translation>
 <translation id="7479221278376295180">Informacje o użyciu pamięci</translation>
 <translation id="7481312909269577407">Dalej</translation>
@@ -5617,6 +5624,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7632948528260659758">Nie udało się zaktualizować tych aplikacji kiosku:</translation>
 <translation id="7633724038415831385">To jedyny raz, kiedy musisz poczekać na aktualizację. Aktualizacje oprogramowania na Chromebookach są instalowane w tle.</translation>
 <translation id="7634566076839829401">Coś poszło nie tak. Spróbuj ponownie.</translation>
+<translation id="7635048370253485243">Przypięte przez administratora</translation>
 <translation id="763632859238619983">Nie zezwalaj żadnym stronom na instalowanie modułów do obsługi płatności</translation>
 <translation id="7636919061354591437">Zainstaluj na tym urządzeniu</translation>
 <translation id="7638605456503525968">Porty szeregowe</translation>
@@ -6936,7 +6944,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="9121814364785106365">Otwórz jako przypiętą kartę</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> – wstrzymano</translation>
 <translation id="9124003689441359348">Tutaj pojawią się zapisane hasła</translation>
-<translation id="9125387974662074614">Powiadom mnie, gdy Chrome skończy sprawdzać komputer pod kątem występowania szkodliwego oprogramowania</translation>
+<translation id="9125387974662074614">Powiadom mnie, gdy Chrome skończy sprawdzać komputer pod kątem szkodliwego oprogramowania</translation>
 <translation id="9126149354162942022">Kolor kursora</translation>
 <translation id="9128317794749765148">Nie udało się ukończyć konfiguracji</translation>
 <translation id="9128335130883257666">Otwórz stronę ustawień metody wprowadzania: <ph name="INPUT_METHOD_NAME" /></translation>

@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ଆପଣ ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ ଏପରି ଏକ ସାଇଟ୍‌ରେ ଲେଖିଛନ୍ତି ଯାହା ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ଵାରା ପରିଚାଳିତ ନୁହେଁ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, ଅନ୍ୟ ଆପ୍ ଓ ସାଇଟ୍‌ଗୁଡ଼ିକରେ ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ ପୁନଃବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="1263231323834454256">ପଢ଼ିବା ତାଲିକା</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        କାର୍ଯ୍ୟକଳାପ ଯାହା ଏହି ଡିଭାଇସରେ ରହିବ ନାହିଁ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ଆପଣ ଏହି ୱିଣ୍ଡୋରେ ଦେଖିଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକ
+          <ph name="LIST_ITEM" />କୁକୀ ଓ ସାଇଟ୍ ଡାଟା
+          <ph name="LIST_ITEM" />ଆକାଉଣ୍ଟ ସୂଚନା (<ph name="LINK_BEGIN" />ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">ଉଠାଇବା ପଦ୍ଧତି</translation>
 <translation id="1281476433249504884">ଷ୍ଟାକର୍ 1</translation>
 <translation id="1285320974508926690">ଏହି ସାଇଟ୍‍କୁ କଦାପି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
@@ -547,6 +555,7 @@
 <translation id="3207960819495026254">ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
 <translation id="3209034400446768650">ପୃଷ୍ଠା ଶୁଳ୍କ ଲାଗୁ ହୋଇପାରେ</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />ରେ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରାଯାଉଛି</translation>
+<translation id="3212623355668894776">ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଡିଲିଟ୍ କରିବା ପାଇଁ ସମସ୍ତ ଅତିଥି ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="3215092763954878852">WebAuthn ବ୍ୟବହାର କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3218181027817787318">ରିଲେଟିଭ୍</translation>
 <translation id="3225919329040284222">ସର୍ଭର୍ ଏକ ସାର୍ଟିଫିକେଟ୍‌କୁ ଉପସ୍ଥାପନ କରୁଛି, ଯାହା ବିଲ୍ଟ-ଇନ୍ ପ୍ରତ୍ୟାଶା ସହ ମେଳ ଖାଉନାହିଁ। ଏହି ପ୍ରତ୍ୟାଶାଗୁଡ଼ିକ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାକୁ କିଛି ଉଚ୍ଚ ସୁରକ୍ଷା ଥିବା ୱେବ୍‍ସାଇଟ୍‍ଗୁଡ଼ିକ ପାଇଁ ଅନ୍ତର୍ଭୁକ୍ତ କରାଯାଇଛି।</translation>
@@ -902,6 +911,7 @@
 <translation id="4658638640878098064">ଉପର ବାମ ପଟରେ ଷ୍ଟାପଲ୍</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ</translation>
+<translation id="4675657451653251260">ଆପଣ ଅତିଥି ମୋଡରେ କୌଣସି Chrome ପ୍ରୋଫାଇଲ୍ ସୂଚନା ଦେଖିବେ ନାହିଁ। ଆପଣ ପାସୱାର୍ଡ ଏବଂ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକ ପରି ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସୂଚନାକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ <ph name="LINK_BEGIN" />ସାଇନ୍ ଇନ୍<ph name="LINK_END" /> କରିପାରିବେ।</translation>
 <translation id="467662567472608290">ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍‌ରେ ତ୍ରୁଟି ଅଛି। ଏହା ହୁଏତ, ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ଆକ୍ସେସିବିଲିଟୀ ଇଭେଣ୍ଟକୁ ପ୍ରତିକ୍ରିୟା ଦେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="467809019005607715">Google ସ୍ଲାଇଡ୍‍</translation>
@@ -929,6 +939,12 @@
 <translation id="4761104368405085019">ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4764776831041365478"><ph name="URL" />ରେ ଥିବା ୱେବ୍‌ପୃଷ୍ଠାଟି ଅସ୍ଥାୟୀରୂପେ ଡାଉନ୍‌ ଥାଇପାରେ କିମ୍ବା ସ୍ଥାୟୀଭାବେ ଏକ ନୂତନ ୱେବ୍ ଠିକଣାକୁ ସ୍ଥାନାନ୍ତର ହୋଇପାରେ।</translation>
 <translation id="4766713847338118463">ତଳ ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଯାହା ଏହି ଡିଭାଇସରେ ରହେ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ଏହି ୱିଣ୍ଡୋରେ ଆପଣ ଡାଉନଲୋଡ୍ କରିଥିବା ଯେ କୌଣସି ଫାଇଲ୍
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">ଏକ ଅଜ୍ଞାତ ତୃଟି ସଂଘଟିତ ହୋଇଅଛି ।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}other{#ଟି ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
 <translation id="4780366598804516005">ମେଲବକ୍ସ 1</translation>
@@ -1382,6 +1398,7 @@
 <translation id="6587923378399804057">ଆପଣ କପି କରିଥିବା ଲିଙ୍କ୍</translation>
 <translation id="6591833882275308647">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ପରିଚାଳିତ ହେଉ ନାହିଁ</translation>
 <translation id="6596325263575161958">ଏନ୍‌କ୍ରିପ୍ସନ୍ ବିକଳ୍ପ</translation>
+<translation id="6596892391065203054">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଏହି ବିଷୟବସ୍ତୁକୁ ପ୍ରିଣ୍ଟ କରିବାକୁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="6604181099783169992">ମୋସନ୍ କିମ୍ବା ଲାଇଟ୍‌ ସେନ୍ସର୍</translation>
 <translation id="6609880536175561541">Prc7 (ଏନଭଲପ୍)</translation>
 <translation id="6612358246767739896">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
@@ -1865,11 +1882,21 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />କୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ, ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ତାରିଖ ଏବଂ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ ଅଛି।</translation>
 <translation id="8564182942834072828">ଅଲଗା ଡକ୍ୟୁମେଣ୍ଟଗୁଡ଼ିକ/ସଂଗ୍ରହ କରାଯାଇନଥିବା କପିଗୁଡ଼ିକ</translation>
 <translation id="8564985650692024650">ଆପଣ ଯଦି ଆପଣଙ୍କର <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ପାସ୍‌ୱାର୍ଡକୁ ଅନ୍ୟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chromium ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱାର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        କାର୍ଯ୍ୟକଳାପ ଯାହା ଏହି ଡିଭାଇସରେ ରହିବ ନାହିଁ:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ଆପଣ ଏହି ୱିଣ୍ଡୋରେ ଦେଖିଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକ
+          <ph name="LIST_ITEM" />କୁକୀ ଏବଂ ସାଇଟ୍ ଡାଟା
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">କାର୍ଡଗୁଡ଼ିକୁ ଅତି ଶୀଘ୍ର ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ Touch ID ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="858637041960032120">ଫୋନ୍‌ ନମ୍ବର୍‍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8589998999637048520">ଉତ୍ତମ ଗୁଣବତ୍ତା</translation>
 <translation id="860043288473659153">କାର୍ଡହୋଲ୍ଡର୍‌ର ନାମ</translation>
 <translation id="8606726445206553943">ଆପଣଙ୍କର MIDI ଡିଭାଇସ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="8612761427948161954">ନମସ୍କାର <ph name="USERNAME" />,
+        <ph name="BR" />
+        ଆପଣ ଏକ ଅତିଥି ଭାବରେ ବ୍ରାଉଜ୍ କରୁଛନ୍ତି</translation>
 <translation id="861775596732816396">ଆକାର 4</translation>
 <translation id="8622948367223941507">ଲିଗାଲ୍-ଅତିରିକ୍ତ</translation>
 <translation id="8623885649813806493">କୌଣସି ମେଳ ହେଉଥିବା ପାସୱାର୍ଡ ନାହିଁ। ସେଭ୍ କରାଯାଇଥିବା ସମସ୍ତ ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ।</translation>
@@ -2008,6 +2035,7 @@
 <translation id="9183302530794969518">Google ଡକସ୍</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ଗୋଟିଏ ଅସମର୍ଥିତ ପ୍ରୋଟୋକଲ୍‌ ବ୍ୟବହାର କରୁଛନ୍ତି।</translation>
 <translation id="9191834167571392248">ତଳ ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
+<translation id="9199905725844810519">ପ୍ରିଣ୍ଟିଂକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="9205078245616868884">ଆପଣଙ୍କର ଡାଟା ଆପଣଙ୍କ ପାସ୍‌ଫ୍ରେଜ୍ ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହା ଲେଖନ୍ତୁ।</translation>
 <translation id="9207861905230894330">ନିବନ୍ଧ ଯୋଗ କରିହେଲା ନାହିଁ।</translation>
 <translation id="9213433120051936369">ଏପିଏରେନ୍ସ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>

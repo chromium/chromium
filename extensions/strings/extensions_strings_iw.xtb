@@ -3,7 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1135328998467923690">החבילה לא חוקית: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">מצלמה אחורית</translation>
-<translation id="1196338895211115272">נכשל ייצוא מפתח פרטי.</translation>
+<translation id="1196338895211115272">ייצוא המפתח הפרטי נכשל.</translation>
 <translation id="1420684932347524586">‏אוי לא! אירע כשל ביצירת מפתח RSA פרטי אקראי.</translation>
 <translation id="1445572445564823378">תוסף זה מאט את <ph name="PRODUCT_NAME" />. עליך להשבית אותו כדי לשחזר את הביצועים של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL אינו נתמך.</translation>

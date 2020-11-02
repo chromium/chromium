@@ -465,7 +465,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si se define esta política, se especificará qué extensiones están exentas de la lista de extensiones prohibidas. En <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" />, usa el valor <ph name="ALL_EXTENSIONS" /> para prohibir todas las extensiones. De ese modo, los usuarios solo podrán instalar extensiones que estén permitidas de forma explícita. De forma predeterminada, se permiten todas las extensiones. Sin embargo, si has prohibido las extensiones mediante una política, usa la lista de extensiones permitidas para cambiar esa política.</translation>
 <translation id="1781356041596378058">Esta política también controla el acceso a las Opciones para Desarrolladores de Android. Si se asigna el valor true a esta política, los usuarios no podrán acceder a las Opciones para Desarrolladores. Si se le asigna el valor false o no se configura, los usuarios podrán tocar siete veces el número de compilación en la aplicación Ajustes de Android para acceder a esas opciones.</translation>
-<translation id="1787790976045065845">Esta política solo tiene validez si se le asigna el valor <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> a la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> y si un usuario que se autentica mediante una tarjeta inteligente quita dicha tarjeta. Esta política especifica durante cuántos segundos se muestra una notificación que informa al usuario de la acción que tendrá lugar a continuación. La notificación bloquea la pantalla. La acción solo se realizará una vez que caduque la notificación. El usuario puede impedir que se produzca la acción volviendo a insertar la tarjeta inteligente antes de que caduque la notificación. Si se le asigna el valor 0 a esta política, no se mostrará ninguna notificación y la acción ocurrirá inmediatamente.</translation>
+<translation id="1787790976045065845">Esta política solo tiene validez si se le asigna el valor <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> a la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> y si un usuario que se autentica mediante una tarjeta inteligente quita dicha tarjeta. Esta política especifica durante cuántos segundos se muestra una notificación que informa al usuario de la acción que tendrá lugar a continuación. La notificación bloquea la pantalla. La acción solo se realizará una vez que caduque la notificación. El usuario puede impedir que se produzca la acción volviendo a insertar la tarjeta inteligente antes de que caduque la notificación. Si se le asigna el valor cero a esta política, no se mostrará ninguna notificación y la acción ocurrirá inmediatamente.</translation>
 <translation id="1793346220873697538">Inhabilitar la impresión con PIN de forma predeterminada</translation>
 <translation id="179694024208061102">Si se asigna el valor "Habilitada" a esta política, <ph name="PRODUCT_NAME" /> intentará abrir algunas URL en un navegador alternativo, como <ph name="IE_PRODUCT_NAME" />. Esta función se configura a través de las políticas del grupo de <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
@@ -2203,11 +2203,11 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no le asignas ningún valor, el clic automático se inhabilitará al inicio, pero los usuarios podrán habilitarlo en cualquier momento.</translation>
-<translation id="4214536984333857724">Si se habilita esta opción, las solicitudes de autenticación gnubby se enviarán al proxy a mediante una conexión de host remota.
+<translation id="4214536984333857724">Si se habilita esta opción, las solicitudes de autenticación gnubby se enviarán a una conexión de host remota mediante un proxy.
 
           Ten en cuenta que esta función necesita componentes adicionales que solo están disponibles en el entorno de red de Google para funcionar correctamente.
 
-          Si se inhabilita opción, las solicitudes de autenticación gnubby no se enviarán al proxy.</translation>
+          Si se inhabilita esta opción, las solicitudes de autenticación gnubby no se enviarán mediante un proxy.</translation>
 <translation id="4215197846797661927">Define la configuración diaria del modo avanzado de carga de la batería.
 
           Esta política solo se utilizará si se le asigna el valor "true" a la política <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_NAME" />.
@@ -2569,7 +2569,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="4887274746092315609">Habilita una página para cambiar la contraseña dentro de la sesión para usuarios de SAML</translation>
 <translation id="4892647988357350237">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor <ph name="STANDARD_TOS_DIALOG" /> o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
 
-      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que los proveedores de Unified Endpoint Management (administración unificada de puntos finales) puedan configurar.
 
       - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, la política BrowserSignin no tendrá ningún efecto.
 
@@ -3857,9 +3857,9 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6604049565198492174">Establecer esta política permite aplicar una configuración de red para cada usuario en un dispositivo <ph name="PRODUCT_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
 <translation id="660567106648774919">Esta política está obsoleta. Se debe usar la política <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> en su lugar.
 
-      De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor "Inhabilitada" a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor "Habilitada" o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
+      De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor Inhabilitada a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor Habilitada o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
 
-      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que los proveedores de Unified Endpoint Management (administración unificada de puntos finales) puedan configurar.
 
       - Si se inhabilita esta política, la política BrowserSignin no tendrá ningún efecto.
 

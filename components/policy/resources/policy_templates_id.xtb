@@ -155,7 +155,7 @@
 <translation id="1252536192437793850">Izinkan situs meminta pengguna memberikan akses ke port serial</translation>
 <translation id="125655429495551011">Menyetel kebijakan ke string akan memberlakukan string tersebut sebagai hostname perangkat selama permintaan DHCP. String tersebut dapat memiliki variabel <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> yang akan diganti dengan nilai di perangkat sebelum digunakan sebagai hostname. Substitusi yang dihasilkan harus berupa hostname yang valid (sesuai dengan RFC 1035, bagian 3.1).
 
-      Tidak menyetel kebijakan atau nilai setelah substitusi bukan berupa hostname yang valid, tidak ada hostname yang akan disetel dalam permintaan DHCP.</translation>
+      Jika kebijakan tidak disetel atau jika nilai setelah substitusi bukan berupa hostname yang valid, tidak ada hostname yang akan disetel dalam permintaan DHCP.</translation>
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
 <translation id="127264587838521316">Mengaktifkan permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /></translation>
@@ -2710,7 +2710,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
       Jika ditetapkan ke true, nama model CPU, arsitektur, dan kecepatan maksimum jam akan
       dilaporkan untuk setiap CPU.</translation>
-<translation id="5119324103901618897">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+<translation id="5119324103901618897">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk yang ditetapkan. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor yang ditetapkan. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
 
       Model izin USB menggunakan URL peminta dan sematan untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta dapat berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom <ph name="URLS_FIELD_NAME" /> dapat memiliki hingga dua string URL yang dipisahkan dengan koma untuk menentukan URL peminta dan URL sematan masing-masing. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL harus valid. Jika tidak, kebijakan akan diabaikan.
 
@@ -2891,10 +2891,10 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="5315324986365616322">Jika kebijakan disetel ke Aktif, Transisi Cepat akan digunakan saat titik akses nirkabel mendukungnya. Ini berlaku untuk semua pengguna dan antarmuka di perangkat.
 
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, Transisis Cepat tidak akan digunakan.
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, Transisi Cepat tidak akan digunakan.
 
       Catatan: Untuk menggunakan Transisi Cepat, aktifkan juga properti ONC untuk tiap jaringan.</translation>
-<translation id="5315367501385698459">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+<translation id="5315367501385698459">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk yang ditetapkan di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor yang ditetapkan. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
 
       Model izin USB menggunakan URL peminta dan sematan untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta dapat berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom <ph name="URLS_FIELD_NAME" /> dapat memiliki hingga dua string URL yang dipisahkan dengan koma untuk menentukan URL peminta dan URL sematan masing-masing. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL harus valid. Jika tidak, kebijakan akan diabaikan.
 
@@ -3665,7 +3665,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, pengoptimalan WPAD akan dinonaktifkan, yang menyebabkan <ph name="PRODUCT_NAME" /> menunggu lebih lama untuk server WPAD berbasis DNS.
 
-      Meski kebijakan ini disetel atau tidak disetel, pengguna tidak dapat mengubah setelan pengoptimalan WPAD.</translation>
+      Tanpa mempertimbangkan apakah kebijakan ini disetel atau tidak disetel, pengguna tidak dapat mengubah setelan pengoptimalan WPAD.</translation>
 <translation id="6366574325767783825">Jika kebijakan disetel ke True (Benar) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menerima konten web yang ditayangkan sebagai Signed HTTP Exchange.
 
       Jika kebijakan disetel ke Salah (False), Signed HTTP Exchange tidak akan dimuat.</translation>
@@ -5512,7 +5512,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
           Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai domain, bukan URL, jadi Anda tidak perlu menentukan skema atau port.</translation>
 <translation id="8892286064305622118">Perlu ruang disk kosong untuk <ph name="PLUGIN_VM_NAME" /></translation>
-<translation id="8904721489610046109">Menyetel kebijakan akan mengaktifkan atau menonaktifkan throttling jaringan. Hal ini berarti sistem di-throttle agar mencapai kecepatan upload dan download yang tersedia (dalam kbits/detik). Ini berlaku untuk semua pengguna dan antarmuka di perangkat.</translation>
+<translation id="8904721489610046109">Menyetel kebijakan akan mengaktifkan atau menonaktifkan throttling jaringan. Hal ini berarti sistem di-throttle agar mencapai kecepatan upload dan download yang dinyatakan (dalam kbits/detik). Ini berlaku untuk semua pengguna dan antarmuka di perangkat.</translation>
 <translation id="8906768759089290519">Aktifkan mode tamu</translation>
 <translation id="8908294717014659003">Memungkinkan Anda menyetel apakah situs web diizinkan untuk mengakses perangkat tangkap media. Akses ke perangkat tangkap media dapat diizinkan secara default, atau dapat ditanyakan pada pengguna setiap saat situs web ingin mendapatkan akses ke perangkat tangkap media.
 

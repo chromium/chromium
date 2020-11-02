@@ -1068,7 +1068,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2218019600945559112">Sagua eta ukipen-panela</translation>
 <translation id="2218320521449013367">Errore bat gertatu da Chrome-k software kaltegarria kendu bitartean</translation>
 <translation id="2218515861914035131">Itsatsi testu arrunt gisa</translation>
-<translation id="2220409419896228519">Gehitu laster-markak gogokoen dituzun Google aplikazioetan</translation>
+<translation id="2220409419896228519">Gehitu laster-markak gogoko dituzun Google-ren aplikazioetan</translation>
 <translation id="2220529011494928058">Eman arazo baten berri</translation>
 <translation id="2220572644011485463">PIN kodea edo pasahitza</translation>
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
@@ -1542,7 +1542,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2762441749940182211">Kamera blokeatuta dago</translation>
 <translation id="2764786626780673772">VPN konexioaren xehetasunak</translation>
 <translation id="2765217105034171413">Txikia</translation>
-<translation id="2765729904637714153">Ekarri gogora zure oroitzapen gogokoenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
+<translation id="2765729904637714153">Ekarri gogora gehien gustatzen zaizkizun oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
 <translation id="2766006623206032690">It&amp;satsi eta listo</translation>
 <translation id="2766161002040448006">Galdetu guraso bati</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> fitxategia editatzeko baimena izango du webguneko fitxa guztiak ixten dituzun arte</translation>
@@ -1878,7 +1878,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3158033540161634471">Konfiguratu hatz-marka</translation>
 <translation id="3159493096109238499">Beixa</translation>
 <translation id="3159978855457658359">Editatu gailuaren izena</translation>
-<translation id="3160194132051443473">"<ph name="CURRENTKEY" />" tekla esleituta dago dagoeneko. Esleipena kentzeko eta ateratzeko, sakatu "<ph name="CURRENTKEY" />" berriro.</translation>
+<translation id="3160194132051443473">"<ph name="CURRENTKEY" />" tekla esleituta dago dagoeneko. Esleipena kentzeko eta irteteko, sakatu "<ph name="CURRENTKEY" />" berriro.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwarean gordeta)</translation>
 <translation id="3161522574479303604">Hizkuntza guztiak</translation>
 <translation id="3162853326462195145">Ikastetxeko kontua</translation>
@@ -6669,7 +6669,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8814319344131658221">Hobetsitako hizkuntzan oinarritzen dira ortografia-zuzentzailea erabil dezaketen hizkuntzak</translation>
 <translation id="8814644416678422095">Disko gogorra</translation>
 <translation id="8814687660896548945">Itxaron artxiboa aztertu bitartean…</translation>
-<translation id="8814987898367958792">Berresteko eta ateratzeko, sakatu "<ph name="CURRENTKEY" />" berriro.</translation>
+<translation id="8814987898367958792">Berresteko eta irteteko, sakatu "<ph name="CURRENTKEY" />" berriro.</translation>
 <translation id="881782782501875829">Gehitu ataka-zenbakia</translation>
 <translation id="881799181680267069">Ezkutatu besteak</translation>
 <translation id="8818152010000655963">Horma-papera</translation>

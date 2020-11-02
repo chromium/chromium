@@ -110,12 +110,12 @@
 <translation id="4248100235867064564">メニューバー</translation>
 <translation id="4293574643247337246">ページヘッダー</translation>
 <translation id="4360991593054037559">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE_LOW" /> と <ph name="VALID_VALUE_HIGHER" /> です。</translation>
-<translation id="4384249794467006333">この画像にはラベルがありません。画像の説明を取得するには、右上のその他メニューを開いてください。</translation>
+<translation id="4384249794467006333">この画像にはラベルがありません。画像の説明を取得するには、右上のその他のオプションメニューを開いてください。</translation>
 <translation id="4384583879834880242">Q＆A</translation>
 <translation id="4444765639179266822"><ph name="OCR_TEXT" /> というテキストのようです</translation>
 <translation id="4446524499724042288">用語参照</translation>
 <translation id="4522570452068850558">詳細</translation>
-<translation id="4576178047100686001">この画像にはラベルがありません。画像の説明を取得するには、左上のその他メニューを開いてください。</translation>
+<translation id="4576178047100686001">この画像にはラベルがありません。画像の説明を取得するには、左上のその他のオプションメニューを開いてください。</translation>
 <translation id="4597532268155981612">フォーム</translation>
 <translation id="4661075872484491155">ツリー</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」に続く文字列に記号「<ph name="INVALIDCHARACTER" />」を使用しないでください。</translation>

@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="1154690515305205900">ഹൈലൈറ്റ് ചെയ്ത ടെക്‌സ്റ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല.</translation>
+<translation id="1157749421655780457">ലൊക്കേഷൻ അനുവദിക്കുക...</translation>
 <translation id="1165039591588034296">പിശക്</translation>
 <translation id="1172898394251786223">അടുത്ത ഫീൽഡ്</translation>
 <translation id="1176932207622159128">ചിത്രം സംരക്ഷിക്കാൻ കഴിയില്ല.</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">ഇനങ്ങളൊന്നുമില്ല</translation>
 <translation id="1692118695553449118">സമന്വയം ഓണാണ്</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> തിരഞ്ഞെടുത്തു</translation>
+<translation id="1715940067130687605">നിങ്ങളുടെ നിലവിലെ ലൊക്കേഷൻ ഉപയോഗിക്കുക.</translation>
 <translation id="1740468249224277719">ഇൻസ്‌റ്റാൾ ചെയ്യാൻ രണ്ടുതവണ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1746815479209538200">വെബ് ബ്രൗസ് ചെയ്യാൻ, ഒരു പുതിയ ടാബ് ചേർക്കുക.</translation>
 <translation id="1752547299766512813">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">ശരി</translation>
 <translation id="5062321486222145940">Google ഡ്രൈവ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="5083464117946352670">ഫയൽ വലുപ്പം നിർണ്ണയിക്കാനാവില്ല.</translation>
+<translation id="5090832849094901128">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="WEBSITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല.</translation>
 <translation id="5094827893301452931">Tweet പങ്കിടൽ പൂർത്തിയായി.</translation>
 <translation id="5118764316110575523">ഓഫാണ്</translation>
 <translation id="5127805178023152808">സമന്വയം ഓഫാണ്</translation>

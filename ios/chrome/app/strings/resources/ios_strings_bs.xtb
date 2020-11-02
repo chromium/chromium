@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Kreiranje nove kartice.</translation>
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1154690515305205900">Nije moguće kreirati link za istaknuti tekst.</translation>
+<translation id="1157749421655780457">Omogući lokaciju...</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1172898394251786223">Sljedeća rubrika</translation>
 <translation id="1176932207622159128">Nije moguće sačuvati sliku</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Nema stavki</translation>
 <translation id="1692118695553449118">Sinhronizacija je uključena</translation>
 <translation id="1700629756560807968">Odabrano je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">Upotrijebite svoju trenutačnu lokaciju.</translation>
 <translation id="1740468249224277719">Dodirnite dvaput da instalirate.</translation>
 <translation id="1746815479209538200">Dodajte novu karticu da pretražujete web.</translation>
 <translation id="1752547299766512813">Sačuvaj lozinke</translation>
@@ -374,6 +376,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5059136629401106827">UREDU</translation>
 <translation id="5062321486222145940">Instaliraj Google Disk</translation>
 <translation id="5083464117946352670">Nije moguće utvrditi veličinu fajla.</translation>
+<translation id="5090832849094901128">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet je završen.</translation>
 <translation id="5118764316110575523">Isključeno</translation>
 <translation id="5127805178023152808">Sinkronizacija je isključena</translation>

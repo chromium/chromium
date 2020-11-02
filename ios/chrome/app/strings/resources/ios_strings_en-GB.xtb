@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1154690515305205900">A link to the highlighted text cannot be created.</translation>
+<translation id="1157749421655780457">Allow location…</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Next field</translation>
 <translation id="1176932207622159128">Cannot Save Image</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">No items</translation>
 <translation id="1692118695553449118">Sync is on</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
+<translation id="1715940067130687605">Use your current location.</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1746815479209538200">To browse the web, add a new tab.</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
@@ -374,6 +376,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5083464117946352670">Cannot determine file size.</translation>
+<translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completed.</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">Sync is off</translation>

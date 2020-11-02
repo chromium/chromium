@@ -139,7 +139,7 @@
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
 <translation id="2298170939937364391">‏הגדלה של כל המסך הופעלה. כדי להשבית אותה יש להקיש שוב על Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
-<translation id="2303600792989757991">החלף סקירת חלון</translation>
+<translation id="2303600792989757991">החלפת סקירת חלון</translation>
 <translation id="2322173485024759474">אות אחת אחורה</translation>
 <translation id="2339073806695260576">הקשה על לחצן הסטיילוס במדף מאפשרת לכתוב הערות, לצלם את המסך ולהשתמש בסמן הלייזר או בזכוכית המגדלת.</translation>
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
@@ -268,7 +268,7 @@
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3571734092741541777">הגדר</translation>
-<translation id="3573179567135747900">שנה בחזרה ל"<ph name="FROM_LOCALE" />" (דורש הפעלה מחדש)</translation>
+<translation id="3573179567135747900">לשינוי בחזרה ל"<ph name="FROM_LOCALE" />" (נדרשת הפעלה מחדש)</translation>
 <translation id="3576141592585647168">שינוי אזור הזמן</translation>
 <translation id="3593646411856133110">כדי להציג את האפליקציות הפתוחות, מחליקים כלפי מעלה ולוחצים לחיצה ארוכה</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
@@ -323,7 +323,7 @@
 <translation id="4112140312785995938">הרצה לאחור</translation>
 <translation id="4114315158543974537">‏הפעלת Phone Hub</translation>
 <translation id="4121728057981832179">המיקרופון בשימוש על ידי מכונה וירטואלית</translation>
-<translation id="4129129681837227511">כדי להציג הודעות במסך הנעילה, יש לבטל את הנעילה כדי לשנות את ההגדרה</translation>
+<translation id="4129129681837227511">להצגת הודעות במסך הנעילה, יש לבטל את הנעילה כדי לשנות את ההגדרה</translation>
 <translation id="4146833061457621061">השמעת מוזיקה</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> מנוהל על ידי <ph name="DOMAIN" /></translation>
 <translation id="4157822100366708405">הגדרות של עיצוב כהה</translation>
@@ -380,7 +380,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4570957409596482333">לחצן הקראה</translation>
-<translation id="4577274620589681794">הזמן חלף · <ph name="LABEL" /></translation>
+<translation id="4577274620589681794">הזמן נגמר · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">הפסקת העברה במכשיר לא מוכר</translation>
 <translation id="4596144739579517758">עיצוב כהה כבוי.</translation>
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
@@ -413,7 +413,7 @@
 <translation id="4905614135390995787">מקש הקיצור להפעלה או כיבוי של מצב ניגודיות גבוהה השתנה. השתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
 <translation id="4917385247580444890">חזק</translation>
-<translation id="4918086044614829423">אשר</translation>
+<translation id="4918086044614829423">אישור</translation>
 <translation id="4924411785043111640">הפעלה מחדש ואתחול</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="4942878304446937978">מגש סטטוס, שעה <ph name="TIME" />,
@@ -602,7 +602,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
 <translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
-<translation id="6896758677409633944">העתק</translation>
+<translation id="6896758677409633944">העתקה</translation>
 <translation id="6910714959251846841">‏כדי להתקין את העדכון הזה צריך לבצע Powerwash של המכשיר. אפשר לקרוא מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="6945221475159498467">בחירה</translation>
@@ -685,7 +685,7 @@
 <translation id="776344839111254542">לחץ כדי להציג את פרטי העדכון</translation>
 <translation id="7780159184141939021">סיבוב המסך</translation>
 <translation id="7796353162336583443">‏כדי לרשום הערה או לצלם צילום מסך, או כדי להשתמש ב-Google Assistant, בסמן הלייזר או בזכוכית המגדלת, צריך להקיש על לחצן הסטיילוס במדף.</translation>
-<translation id="7798302898096527229">‏הקש על Search או על Shift כדי לבטל.</translation>
+<translation id="7798302898096527229">‏יש להקיש על Search או על Shift כדי לבטל.</translation>
 <translation id="781126011916719498">גישה מהירה לקבצים החשובים שלך. יש ללחוץ לחיצה ימנית או לחיצה ארוכה על קובץ כדי להצמיד אותו.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">אות חזק</translation>

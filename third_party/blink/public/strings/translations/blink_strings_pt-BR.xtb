@@ -26,7 +26,7 @@
 <translation id="1727886345390570319">ocultar menu de closed captions</translation>
 <translation id="1729654308190250600">Insira um endereço de e-mail que não esteja vazio.</translation>
 <translation id="1758486001363313524">Outras...</translation>
-<translation id="1774577460079229490"><ph name="TYPE" /> atual</translation>
+<translation id="1774577460079229490"><ph name="TYPE" /> exata</translation>
 <translation id="1787192514241997742">tempo total: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">grade de árvore</translation>
@@ -70,7 +70,7 @@
 <translation id="2746543609216772311">O valor deve ser <ph name="MINIMUM_DATE_OR_TIME" /> ou posterior.</translation>
 <translation id="2759744352195237655">botão pop-up</translation>
 <translation id="2761667185364618470">Marque esta caixa se deseja continuar.</translation>
-<translation id="2838616441696617235">passo</translation>
+<translation id="2838616441696617235">etapa</translation>
 <translation id="2844350028562914727">detalhes</translation>
 <translation id="2896972712917208084">grupo de rádio</translation>
 <translation id="2908441821576996758">Insira uma lista de endereços de e-mail separados por vírgula.</translation>
@@ -110,12 +110,12 @@
 <translation id="4248100235867064564">barra de menu</translation>
 <translation id="4293574643247337246">título da página</translation>
 <translation id="4360991593054037559">Insira um valor válido. Os dois valores válidos mais próximos são <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4384249794467006333">Esta imagem não tem marcador. Abra o menu "Mais opções" na parte superior direita da tela para ver descrições de imagens.</translation>
+<translation id="4384249794467006333">Esta imagem não tem uma descrição. Abra o menu "Mais opções" na parte superior direita da tela para ver descrições de imagens.</translation>
 <translation id="4384583879834880242">Perguntas e respostas</translation>
 <translation id="4444765639179266822">Parece dizer: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">referência de glossário</translation>
 <translation id="4522570452068850558">Saiba mais</translation>
-<translation id="4576178047100686001">Esta imagem não tem marcador. Abra o menu "Mais opções" na parte superior esquerda da tela para ver descrições de imagens.</translation>
+<translation id="4576178047100686001">Esta imagem não tem uma descrição. Abra o menu "Mais opções" na parte superior esquerda da tela para ver descrições de imagens.</translation>
 <translation id="4597532268155981612">formulário</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">A parte depois de "<ph name="ATSIGN" />" não deve conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>

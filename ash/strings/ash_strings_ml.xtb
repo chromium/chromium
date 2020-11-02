@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> -നുള്ള അക്കൗണ്ട് ഡയലോഗ് നീക്കം ചെയ്യുക</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1419738280318246476">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കുന്നതിന് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
@@ -369,6 +370,7 @@
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
+<translation id="4485060137115666462">വലത്-ക്ലിക്ക് ചെയ്യുകയോ ദീർഘനേരം അമർത്തുകയോ ചെയ്താൽ നിങ്ങൾ തിരഞ്ഞെടുത്തതിനുള്ള നിർവചനമോ വിവർത്തനമോ യൂണിറ്റ് പരിവർത്തനമോ പോലുള്ള വിവരങ്ങൾ Assistant കാണിക്കുന്നു.</translation>
 <translation id="4505050298327493054">സജീവ ഡെസ്‌ക്.</translation>
 <translation id="4506458088675900627">അവലോകനത്തിനായുള്ള ടച്ച്‌പാഡ് വിരൽചലനം മാറ്റി</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
@@ -597,6 +599,7 @@
 <translation id="6803622936009808957">പിന്തുണയ്‌ക്കുന്ന മിഴിവുകൾ കണ്ടെത്താത്തതിനാൽ പ്രദർശനങ്ങൾ പ്രതിഫലിപ്പിക്കാനായില്ല. പകരം വിപുലീകൃത ഡെസ്‌ക്‌ടോപ്പ് നൽകി.</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
+<translation id="6850010208275816200">നിങ്ങളുടെ നിലവിലെ ആപ്പ് പൂർണ്ണ സ്ക്രീനിൽ ആണ്. ആപ്പ് നിങ്ങളുടെ പാസ്‌വേഡ് ആവശ്യപ്പെടുകയാണെങ്കിൽ ആദ്യം പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്ത് കടക്കുക.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> സജീവമാക്കുക</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ഒരു അക്കം ശേഷിക്കുന്നു}other{# അക്കങ്ങൾ ശേഷിക്കുന്നു}}</translation>
@@ -646,6 +649,7 @@
 <translation id="7398254312354928459">നെറ്റ്‌വർക്ക് കണക്ഷൻ മാറ്റി</translation>
 <translation id="7405710164030118432">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="741244894080940828">പരിവർത്തനം</translation>
+<translation id="7413851974711031813">അടയ്ക്കാൻ escape അമർത്തുക</translation>
 <translation id="742594950370306541">ക്യാമറ ഉപയോഗത്തിലാണ്.</translation>
 <translation id="742608627846767349">ഗുഡ്മോണിംഗ്,</translation>
 <translation id="743058460480092004">ക്യാമറയും മൈക്രോഫോണും ഉപയോഗത്തിലാണ്.</translation>

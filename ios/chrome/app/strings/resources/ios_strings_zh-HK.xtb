@@ -513,9 +513,7 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項喺喺接近畫面底部附近。</translation>
 <translation id="648164694371393720">驗證錯誤</translation>
 <translation id="6482629121755362506">已刪除 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
-<translation id="6497772452874122664">如果您信任 <ph name="TIME" />，可使用已儲存的其他網站密碼。
-
-請嘗試為每個網站使用不重複的密碼。</translation>
+<translation id="6497772452874122664">如果您信任 <ph name="TIME" />，可使用已儲存的其他網站密碼。請嘗試在每個網站使用不重複的密碼。</translation>
 <translation id="651505212789431520">要取消同步處理嗎？您可隨時在「設定」中開啟同步功能。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可新增書籤，以便快速返回您認為重要的網頁</translation>

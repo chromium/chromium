@@ -56,6 +56,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1420527829902822813">Capture d'écran effectuée et enregistrée dans le presse-papiers</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
+<translation id="1456407467406159627">Enregistrement d'écran arrêté en raison d'un contenu confidentiel à l'écran.</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="1475439723810528286">Appuyez n'importe où pour effectuer une capture en plein écran</translation>
@@ -150,6 +151,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
 <translation id="2390318262976603432">Options des paramètres régionaux</translation>
 <translation id="2391579633712104609">180°</translation>
+<translation id="240006516586367791">Commandes multimédias</translation>
 <translation id="2405664212338326887">Non connecté</translation>
 <translation id="2408955596600435184">Saisissez votre code.</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
@@ -220,6 +222,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Redémarrer pour mettre à jour</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
+<translation id="3147157020428159854">Enregistrement de l'écran arrêté</translation>
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
@@ -707,6 +710,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7995804128062002838">Échec de la capture d'écran</translation>
 <translation id="8000066093800657092">Aucun réseau détecté</translation>
 <translation id="8004512796067398576">Augmenter</translation>
+<translation id="8029247720646289474">Échec de la connexion au point d'accès</translation>
 <translation id="8029629653277878342">Veuillez saisir le code ou mot de passe pour renforcer la sécurité</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>

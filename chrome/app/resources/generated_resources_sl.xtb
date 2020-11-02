@@ -1145,6 +1145,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2307462900900812319">Konfiguriranje omrežja</translation>
 <translation id="230927227160767054">Ta stran želi namestiti rutino za obravnavo storitev.</translation>
 <translation id="2309620859903500144">Temu spletnemu mestu je onemogočen dostop do tipal gibanja ali svetlobe.</translation>
+<translation id="2311497964614110326">Prejmite boljše, hitrejše odgovore s Pomočnikom</translation>
 <translation id="2312219318583366810">URL strani</translation>
 <translation id="2314165183524574721">Trenutna nastavitev vidnosti je skrita</translation>
 <translation id="2314774579020744484">Jezik, ki se uporablja za prevajanje strani</translation>
@@ -1258,6 +1259,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2440604414813129000">Ogled v&amp;ira</translation>
 <translation id="244231003699905658">Neveljaven naslov. Preverite naslov in poskusite znova.</translation>
 <translation id="2442916515643169563">Senčenje besedila</translation>
+<translation id="2444469058037141906">Izgovorite ali vnesite, kar potrebujete</translation>
 <translation id="2445081178310039857">Potreben je korenski imenik razširitve.</translation>
 <translation id="2445484935443597917">Ustvari nov profil</translation>
 <translation id="2448312741937722512">Vrsta</translation>
@@ -2174,6 +2176,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3514373592552233661">Če je na voljo več kot eno omrežje, bodo pred drugimi znanimi omrežji prednostno izbrana prednostna omrežja</translation>
 <translation id="3515983984924808886">Znova se dotaknite varnostnega ključa, da potrdite ponastavitev. Vsi podatki, shranjeni na varnostnem ključu, vključno s kodo PIN, bodo izbrisani.</translation>
 <translation id="3518985090088779359">Sprejmi in nadaljuj</translation>
+<translation id="3519564332031442870">Zaledna storitev za tiskanje</translation>
 <translation id="3521606918211282604">Spremeni velikost diska</translation>
 <translation id="3523642406908660543">Vprašaj, ko želi spletno mesto z vtičnikom dostopati do računalnika (priporočeno)</translation>
 <translation id="3524965460886318643">Izvoz dejavnosti</translation>
@@ -2691,6 +2694,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4088095054444612037">Sprejmi za skupino</translation>
 <translation id="4089235344645910861">Nastavitve so bile shranjene. Sinhronizacija se je začela.</translation>
 <translation id="4090103403438682346">Omogočanje preverjenega dostopa</translation>
+<translation id="4090811767089219951">Pomočnik Google deluje tudi tu</translation>
 <translation id="4090947011087001172">Ali želite ponastaviti dovoljenja za spletno mesto <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Slika profila</translation>
 <translation id="4093955363990068916">Lokalna datoteka:</translation>
@@ -2957,6 +2961,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4441124369922430666">Ali želite samodejno zagnati to aplikacijo, ko se naprava vklopi?</translation>
 <translation id="4441147046941420429">Če želite nadaljevati, odstranite varnostni ključ iz naprave, nato ga znova vstavite in se ga dotaknite</translation>
 <translation id="444134486829715816">Razširi ...</translation>
+<translation id="4441928470323187829">Pripel skrbnik</translation>
 <translation id="4442424173763614572">Iskanje DNS ni uspelo</translation>
 <translation id="4443536555189480885">&amp;Pomoč</translation>
 <translation id="4444304522807523469">Dostop do optičnih bralnikov, priklopljenih prek USB-ja ali povezanih v lokalno omrežje.</translation>
@@ -3680,6 +3685,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5315873049536339193">Identiteta</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5319359161174645648">Google priporoča Chrome</translation>
+<translation id="5320112320661303273">Videti je, da ste že nastavili Pomočnika v drugi napravi. Še bolje izkoristite Pomočnika tako, da vklopite naslednjo nastavitev.</translation>
 <translation id="532247166573571973">Strežnik morda ni dosegljiv. Poskusite znova pozneje.</translation>
 <translation id="5324300749339591280">Seznam aplikacij</translation>
 <translation id="5324780743567488672">Samodejna nastavitev časovnega pasu na podlagi vaše lokacije</translation>
@@ -5499,6 +5505,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7475671414023905704">Spletni naslov izgubljenega Netscapeovega gesla</translation>
 <translation id="7476454130948140105">Akumulator ima premalo energije za posodobitev (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
+<translation id="7478362879637727630">To napravo za Chrome Education morate včlaniti v račun za Education. Če se želite prijaviti za nov račun, odprite visit https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Aplikacije Kiosk ni bilo mogoče namestiti.</translation>
 <translation id="7479221278376295180">Pregled uporabe shrambe</translation>
 <translation id="7481312909269577407">Naprej</translation>
@@ -5623,6 +5630,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7632948528260659758">Teh aplikacij kioska ni bilo mogoče posodobiti:</translation>
 <translation id="7633724038415831385">Samo tokrat boste čakali na posodobitev. V Chromebookih se posodobitve programske opreme izvajajo v ozadju.</translation>
 <translation id="7634566076839829401">Prišlo je do napake. Poskusite znova.</translation>
+<translation id="7635048370253485243">Pripel skrbnik</translation>
 <translation id="763632859238619983">Nobenemu spletnemu mestu ne dovoli namestitve rutin za obravnavo plačil</translation>
 <translation id="7636919061354591437">Namesti v to napravo</translation>
 <translation id="7638605456503525968">Serijska vrata</translation>

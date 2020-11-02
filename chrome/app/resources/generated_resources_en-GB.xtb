@@ -1145,6 +1145,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
+<translation id="2311497964614110326">Get better, quicker answers with Assistant</translation>
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
@@ -1258,6 +1259,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
 <translation id="2442916515643169563">Text shadow</translation>
+<translation id="2444469058037141906">Just say or type what you need</translation>
 <translation id="2445081178310039857">Extension root directory is required.</translation>
 <translation id="2445484935443597917">Create a New Profile</translation>
 <translation id="2448312741937722512">Types</translation>
@@ -2174,6 +2176,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3514373592552233661">Preferred networks will be preferred over other known networks if more than one is available</translation>
 <translation id="3515983984924808886">Touch your security key again to confirm reset. All information stored on the security key, including its PIN, will be deleted.</translation>
 <translation id="3518985090088779359">Accept &amp; continue</translation>
+<translation id="3519564332031442870">Print backend service</translation>
 <translation id="3521606918211282604">Change disk size</translation>
 <translation id="3523642406908660543">Ask when a site wants to use a plug-in to access your computer (recommended)</translation>
 <translation id="3524965460886318643">Export activities</translation>
@@ -2691,6 +2694,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4088095054444612037">Accept for group</translation>
 <translation id="4089235344645910861">Settings saved. Sync started.</translation>
 <translation id="4090103403438682346">Enable Verified Access</translation>
+<translation id="4090811767089219951">Your Google Assistant works here too</translation>
 <translation id="4090947011087001172">Reset site permissions for <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Profile image</translation>
 <translation id="4093955363990068916">Local file:</translation>
@@ -2957,6 +2961,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4441124369922430666">Do you want to automatically start this app when the machine turns on?</translation>
 <translation id="4441147046941420429">To continue, remove your security key from your device, then reinsert and touch it</translation>
 <translation id="444134486829715816">Expand...</translation>
+<translation id="4441928470323187829">Pinned by your administrator</translation>
 <translation id="4442424173763614572">DNS lookup failed</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
 <translation id="4444304522807523469">Access document scanners attached via USB or on the local network</translation>
@@ -3680,6 +3685,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5315873049536339193">Identity</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
+<translation id="5320112320661303273">Looks like you've already set up Assistant on a different device. Get even more out of your Assistant by turning on the following setting.</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5324300749339591280">Apps list</translation>
 <translation id="5324780743567488672">Set time zone automatically using your location</translation>
@@ -5497,6 +5503,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">Battery too low for update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
+<translation id="7478362879637727630">You must enrol this Chrome Education device into an education account. To sign up for a new account, please visit https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Kiosk application could not be installed.</translation>
 <translation id="7479221278376295180">Storage Usage Overview</translation>
 <translation id="7481312909269577407">Forward</translation>
@@ -5621,6 +5628,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7632948528260659758">The following kiosk apps have been failed for updating:</translation>
 <translation id="7633724038415831385">This is the only time that you’ll wait for an update. On Chromebooks, software updates happen in the background.</translation>
 <translation id="7634566076839829401">Something went wrong. Please try again.</translation>
+<translation id="7635048370253485243">Pinned by your administrator</translation>
 <translation id="763632859238619983">Do not allow any site to install payment handlers</translation>
 <translation id="7636919061354591437">Install on this device</translation>
 <translation id="7638605456503525968">Serial ports</translation>

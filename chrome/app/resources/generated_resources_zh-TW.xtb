@@ -870,7 +870,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
 <translation id="1978006917103730774">日後系統會自動安裝新版軟體和安全性更新。</translation>
-<translation id="1978057560491495741">移除位址</translation>
+<translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
 <translation id="1979280758666859181">你即將變更為較舊版本的 <ph name="PRODUCT_NAME" />。該版本的版本號與你電腦上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
@@ -5795,7 +5795,7 @@
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>
 <translation id="7819992334107904369">Chrome 同步</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
-<translation id="7822187537422052256">確定要移除這個位址嗎？</translation>
+<translation id="7822187537422052256">確定要移除這個地址嗎？</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="7825666486843191125">螢幕處於解鎖狀態時，位於附近的所有聯絡人皆可與你分享內容</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>

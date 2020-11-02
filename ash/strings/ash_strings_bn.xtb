@@ -56,6 +56,7 @@
 <translation id="1420527829902822813">স্ক্রিনশট নিয়ে ক্লিপবোর্ডে সেভ করা হয়েছে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1455242230282523554">ভাষার সেটিংস দেখুন</translation>
+<translation id="1456407467406159627">আপনার স্ক্রিনে গোপনীয় কন্টেন্ট থাকার জন্য স্ক্রিন রেকর্ডিং বন্ধ করে দেওয়া হয়েছে।</translation>
 <translation id="1460620680449458626">ভলিউম মিউট করা আছে।</translation>
 <translation id="1467432559032391204">বামে</translation>
 <translation id="1475439723810528286">ফুল স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ট্যাপ করুন</translation>
@@ -150,6 +151,7 @@
 <translation id="2369165858548251131">চীনা ভাষায় "হ্যালো"</translation>
 <translation id="2390318262976603432">লোকেল সেটিংস</translation>
 <translation id="2391579633712104609">১৮০°</translation>
+<translation id="240006516586367791">মিডিয়া কন্ট্রোল</translation>
 <translation id="2405664212338326887">কানেক্ট করা নেই</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2412593942846481727">আপডেট উপলভ্য</translation>
@@ -220,6 +222,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="3126069444801937830">আপডেট করার জন্য পুনরারম্ভ করুন</translation>
 <translation id="3139942575505304791">ডেস্ক ১</translation>
+<translation id="3147157020428159854">স্ক্রিন রেকর্ডিং করা বন্ধ করা হয়েছে</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3151786313568798007">সজ্জা</translation>
 <translation id="3153444934357957346">একধিক সাইন-ইনে আপনার সর্বাধিক <ph name="MULTI_PROFILE_USER_LIMIT" />টি অ্যাকাউন্ট থাকতে পারে।</translation>
@@ -708,6 +711,7 @@
 <translation id="7995804128062002838">স্ক্রিন ক্যাপচার করা যায়নি</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
+<translation id="8029247720646289474">হটস্পট থেকে কানেক্ট করা যায়নি</translation>
 <translation id="8029629653277878342">আরও নিরাপত্তার জন্য পিন বা পাসওয়ার্ড দিতে হবে</translation>
 <translation id="8030169304546394654">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>

@@ -49,6 +49,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1351937230027495976">Strni meni</translation>
 <translation id="1383876407941801731">Išči</translation>
+<translation id="1390105199421505038">Odstrani pogovorno okno za račun <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Vklopljeno</translation>
 <translation id="1407069428457324124">Temna tema</translation>
 <translation id="1419738280318246476">Odklenite napravo zaradi izvedbe dejanja v obvestilu</translation>
@@ -369,6 +370,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4477892968187500306">Ta naprava morda vsebuje aplikacije, ki jih ni preveril Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Naprave, za katere je bila preklicana seznanitev</translation>
+<translation id="4485060137115666462">Če kliknete z desnim gumbom ali pridržite, vam Pomočnik pokaže informacije, kot je definicija, prevod ali pretvorba enot za izbor.</translation>
 <translation id="4505050298327493054">Aktivno namizje.</translation>
 <translation id="4506458088675900627">Poteza na sledilni ploščici za pregled je spremenjena</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
@@ -597,6 +599,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6803622936009808957">Zaslonov ni bilo mogoče zrcaliti, ker ni bilo najdene nobene podprte ločljivosti. Uporabljeno je razširjeno namizje.</translation>
 <translation id="6818242057446442178">Nazaj po besedo</translation>
 <translation id="6820676911989879663">Čas za odmor!</translation>
+<translation id="6850010208275816200">Trenutna aplikacija je v celozaslonskem načinu. Če aplikacija zahteva geslo, najprej zaprite celozaslonski način.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Aktiviraj <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Še ena števka}one{Še # števka}two{Še # števki}few{Še # števke}other{Še # števk}}</translation>
@@ -646,6 +649,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7398254312354928459">Preklopljena omrežna povezava</translation>
 <translation id="7405710164030118432">Če želite odkleniti napravo, vnesite kodo starša za dostop iz Family Linka.</translation>
 <translation id="741244894080940828">pretvorba</translation>
+<translation id="7413851974711031813">Pritisnite Escape, če želite zapreti</translation>
 <translation id="742594950370306541">Kamera je v uporabi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera in mikrofon sta v uporabi.</translation>

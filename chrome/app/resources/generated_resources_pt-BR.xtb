@@ -242,7 +242,7 @@
 <translation id="1264337193001759725">Os registros de IU de rede podem ser vistos em: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Idioma de tradução:</translation>
 <translation id="126768002343224824">16x</translation>
-<translation id="1270369111467284986">Portal cativo suspeito</translation>
+<translation id="1270369111467284986">Suspeita de portal cativo</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1272293450992660632">Os valores do PIN não correspondem.</translation>
 <translation id="1272978324304772054">Esta conta de usuário não pertence ao domínio no qual o dispositivo está inscrito. Para se inscrever em um domínio diferente, é preciso passar pela recuperação do dispositivo primeiro.</translation>
@@ -3460,7 +3460,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é compatível com os idiomas selecionados</translation>
 <translation id="5052499409147950210">Editar site</translation>
-<translation id="5053688703815372443">Nenhum interruptor atribuído</translation>
+<translation id="5053688703815372443">Não há interruptores atribuídos</translation>
 <translation id="5057110919553308744">Quando você clicar na extensão</translation>
 <translation id="5057403786441168405">Gerencie suas contas conectadas. Sites, apps e extensões no Chrome e no Google Play podem usar essas contas para personalizar sua experiência, dependendo das permissões. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringir o login</translation>

@@ -41,7 +41,7 @@
 <translation id="186476001994626254">‏תוכן מ-Web Smart Paste</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652">%<ph name="NUMBER" /></translation>
-<translation id="1901303067676059328">בחר &amp;הכל</translation>
+<translation id="1901303067676059328">בחירת &amp;הכול</translation>
 <translation id="19085484004813472">זוהי תכונה חדשה</translation>
 <translation id="2006524834898217237">יש לוודא שהמכשיר הזה מחובר לאינטרנט.</translation>
 <translation id="208586643495776849">יש לנסות שוב</translation>
@@ -160,7 +160,7 @@
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6022924867608035986">ניקוי הטקסט בתיבת החיפוש</translation>
 <translation id="6040143037577758943">סגור</translation>
-<translation id="6119846243427417423">הפעל</translation>
+<translation id="6119846243427417423">הפעלה</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6134259848159370930">אפשר לחפש במכשיר, באפליקציות ובאינטרנט.</translation>
 <translation id="6135826906199951471">Del</translation>
@@ -183,12 +183,12 @@
 <translation id="6567071839949112727">לחיצה על אב</translation>
 <translation id="6578407462441924264">ללא שם</translation>
 <translation id="6612467943526193239">‏הקש על Esc כדי לצאת מהכיול.</translation>
-<translation id="6620110761915583480">שמור קובץ</translation>
+<translation id="6620110761915583480">שמירת קובץ</translation>
 <translation id="6699343763173986273">הרצועה הבאה במדיה</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6786750046913594791">סגירת התיקייה</translation>
 <translation id="6808150112686056157">עצור מדיה</translation>
-<translation id="6845383723252244143">בחר תיקייה</translation>
+<translation id="6845383723252244143">בחירת תיקייה</translation>
 <translation id="6845533974506654842">לחיצה</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{נותרה שעה אחת}two{נותרו שעתיים}many{נותרו # שעות}other{נותרו # שעות}}</translation>
 <translation id="688711909580084195">דף אינטרנט ללא כותרת</translation>
@@ -226,7 +226,7 @@
 <translation id="8134065097954893699">טעינה מחדש של הדף הזה</translation>
 <translation id="8144660977431427332">‏החיפושים שלך מופעלים על ידי Google Assistant. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, השלמה אוטומטית</translation>
-<translation id="815598010540052116">גלול למטה</translation>
+<translation id="815598010540052116">גלילה למטה</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">דף למטה</translation>
 <translation id="8245914219290430011">כרטיסייה</translation>

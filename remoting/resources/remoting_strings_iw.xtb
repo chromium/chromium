@@ -25,7 +25,7 @@
 <translation id="225614027745146050">ברוכים הבאים</translation>
 <translation id="2320166752086256636">הסתר מקלדת</translation>
 <translation id="2359808026110333948">המשך</translation>
-<translation id="2366718077645204424">לא ניתן להשיג את המארח. הסיבה לכך יכולה להיות תצורת הרשת שבה אתה משתמש.</translation>
+<translation id="2366718077645204424">לא ניתן להשיג את המארח. הסיבה לכך יכולה להיות תצורת הרשת שבה נעשה שימוש.</translation>
 <translation id="2370754117186920852">המארח <ph name="OPTIONAL_OFFLINE_REASON" /> נראה לאחרונה אונליין <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">מתן הרשאת 'נגישות' ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">בוצעה התחברות אל <ph name="HOSTNAME" /></translation>
@@ -33,7 +33,7 @@
 <translation id="2579271889603567289">המארח קרס או שלא הופעל.</translation>
 <translation id="2599300881200251572">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chrome Remote Desktop.</translation>
 <translation id="2647232381348739934">‏שירות Chromoting</translation>
-<translation id="2676780859508944670">עובד…</translation>
+<translation id="2676780859508944670">בתהליך עבודה…</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">אירעה בעיה באימות. יש להתחבר שוב.</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
@@ -63,11 +63,11 @@
 <translation id="4060747889721220580">הורדת קובץ</translation>
 <translation id="4126409073460786861">כשתהליך ההגדרה יסתיים, צריך יהיה לרענן את הדף ואז אפשר יהיה לבחור את המכשיר שלך ולהזין את קוד האימות כדי לגשת למחשב</translation>
 <translation id="4145029455188493639">התחברת באמצעות חשבון <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="4155497795971509630">חלק מהרכיבים הדרושים חסרים. ודא שהתקנת את הגרסה העדכנית ביותר של התוכנה ונסה שוב.</translation>
+<translation id="4155497795971509630">חלק מהרכיבים הדרושים חסרים. יש לוודא שהתקנת את הגרסה העדכנית ביותר של התוכנה ולנסות שוב.</translation>
 <translation id="4176825807642096119">קוד גישה</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
 <translation id="4240294130679914010">‏מסיר ההתקנה של מארח Chromoting</translation>
-<translation id="4277736576214464567">קוד הגישה אינו חוקי. נסה שוב.</translation>
+<translation id="4277736576214464567">קוד הגישה אינו חוקי. יש לנסות שוב.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4405930547258349619">ספריית ליבה</translation>
 <translation id="443560535555262820">פתיחת העדפות הנגישות</translation>
@@ -113,7 +113,7 @@
 <translation id="6178645564515549384">מארח העברת הודעות ייעודי עבור סיוע מרוחק</translation>
 <translation id="618120821413932081">יש לעדכן את הפתרון המרוחק כך שיתאים לגודל החלון</translation>
 <translation id="6223301979382383752">פתיחת ההעדפות להקלטת מסך</translation>
-<translation id="6284412385303060032">המארח הפועל במסך הכניסה למסוף כבה כדי לתמוך במצב הסתרה על ידי מעבר אל מארח הרץ בפעילות באתר שהיא ספציפית למשתמש.</translation>
+<translation id="6284412385303060032">המארח הפועל במסך הכניסה למסוף כבה כדי לתמוך במצב הסתרה, על ידי מעבר אל מארח הפועל בסשן ספציפי למשתמש.</translation>
 <translation id="6542902059648396432">דיווח על בעיה...</translation>
 <translation id="6583902294974160967">תמיכה</translation>
 <translation id="6612717000975622067">‏שלח Ctrl-Alt-Del</translation>

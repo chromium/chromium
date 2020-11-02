@@ -1145,6 +1145,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2307462900900812319">Konfigurovať sieť</translation>
 <translation id="230927227160767054">Táto stránka chce nainštalovať obslužný nástroj služby.</translation>
 <translation id="2309620859903500144">Tento web má zablokovaný prístup k senzorom pohybu alebo svetla.</translation>
+<translation id="2311497964614110326">Získajte lepšie a rýchlejšie odpovede s Asistentom</translation>
 <translation id="2312219318583366810">Webová adresa stránky</translation>
 <translation id="2314165183524574721">Aktuálne nastavenie viditeľnosti je Skryté</translation>
 <translation id="2314774579020744484">Jazyk použitý pri preklade stránok</translation>
@@ -1257,6 +1258,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2440604414813129000">&amp;Zobraziť zdrojový kód</translation>
 <translation id="244231003699905658">Neplatná adresa. Skontrolujte adresu a skúste to znova.</translation>
 <translation id="2442916515643169563">Tieň textu</translation>
+<translation id="2444469058037141906">Stačí povedať alebo napísať, čo potrebujete</translation>
 <translation id="2445081178310039857">Požaduje sa koreňový adresár rozšírenia.</translation>
 <translation id="2445484935443597917">Vytvoriť nový profil</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -2173,6 +2175,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3514373592552233661">Ak je k dispozícii viac sietí, uprednostní sa preferovaná sieť pred ostatnými známymi sieťami</translation>
 <translation id="3515983984924808886">Resetovanie potvrďte opätovným stlačením bezpečnostného kľúča. Všetky informácie uchované v bezpečnostnom kľúči (vrátane jeho kódu PIN) budú odstránené.</translation>
 <translation id="3518985090088779359">Prijať a pokračovať</translation>
+<translation id="3519564332031442870">Tlačová služba na strane servera</translation>
 <translation id="3521606918211282604">Zmeniť veľkosť na disku</translation>
 <translation id="3523642406908660543">Opýtať sa, keď budú chcieť stránky použiť doplnok na prístup do počítača (odporúčané)</translation>
 <translation id="3524965460886318643">Exportovať aktivity</translation>
@@ -2690,6 +2693,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4088095054444612037">Prijať pozvanie pre skupinu</translation>
 <translation id="4089235344645910861">Nastavenia boli uložené. Synchronizácia sa začala.</translation>
 <translation id="4090103403438682346">Povolí overený prístup</translation>
+<translation id="4090811767089219951">Váš Asistent Google funguje aj tu</translation>
 <translation id="4090947011087001172">Obnoviť povolenia webu <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Profilový obrázok</translation>
 <translation id="4093955363990068916">Miestny súbor:</translation>
@@ -2956,6 +2960,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4441124369922430666">Chcete automaticky spustiť túto aplikáciu po zapnutí zariadenia?</translation>
 <translation id="4441147046941420429">Ak chcete pokračovať, vyberte bezpečnostný kľúč zo svojho zariadenia, potom ho znova vložte a klepnite naň</translation>
 <translation id="444134486829715816">Rozbaliť...</translation>
+<translation id="4441928470323187829">Pripnuté vaším správcom</translation>
 <translation id="4442424173763614572">Vyhľadanie DNS zlyhalo</translation>
 <translation id="4443536555189480885">&amp;Pomocník</translation>
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
@@ -3679,6 +3684,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319359161174645648">Google odporúča Chrome</translation>
+<translation id="5320112320661303273">Asistenta ste už zrejme nastavili v inom zariadení. Ak chcete získať ešte viac funkcií Asistenta, zapnite nasledovné nastavenie.</translation>
 <translation id="532247166573571973">Server môže byť nedostupný. Skúste to znova neskôr.</translation>
 <translation id="5324300749339591280">Zoznam aplikácií</translation>
 <translation id="5324780743567488672">Nastaviť časové pásmo automaticky na základe polohy</translation>
@@ -5496,6 +5502,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7475671414023905704">Netscape – webová adresa pre zabudnuté heslo</translation>
 <translation id="7476454130948140105">Batéria je príliš slabá na aktualizáciu (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7477793887173910789">Ovládajte svoju hudbu, videá a ďalší obsah</translation>
+<translation id="7478362879637727630">Toto zariadenie s licenciou Chrome Education musíte zaregistrovať do školského účtu. Nový účet si zaregistrujete na https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">Aplikáciu pre režim kiosku sa nepodarilo nainštalovať.</translation>
 <translation id="7479221278376295180">Prehľad využitia úložiska</translation>
 <translation id="7481312909269577407">Dopredu</translation>
@@ -5620,6 +5627,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7632948528260659758">Nepodarilo sa aktualizovať nasledujúce aplikácie Kiosku:</translation>
 <translation id="7633724038415831385">Na aktualizáciu budete musieť čakať iba teraz. V Chromebookoch sa softvér aktualizuje na pozadí.</translation>
 <translation id="7634566076839829401">Niečo sa pokazilo. Skúste to znova.</translation>
+<translation id="7635048370253485243">Pripnuté vaším správcom</translation>
 <translation id="763632859238619983">Zakázať všetkým webom inštalovať obslužné nástroje platieb</translation>
 <translation id="7636919061354591437">Nainštalovať v tomto zariadení</translation>
 <translation id="7638605456503525968">Sériové porty</translation>

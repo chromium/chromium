@@ -126,6 +126,7 @@
 <translation id="1136712381129578788">चुकीचा पिन बऱ्याच वेळा एंटर केल्यामुळे, सिक्युरिटी की लॉक झाली आहे. ती अनलॉक करण्यासाठी, ती काढून टाका आणि पुन्हा घाला.</translation>
 <translation id="1137589305610962734">तात्पुरता डेटा</translation>
 <translation id="1137673463384776352">लिंक <ph name="APP" /> मध्ये उघडा</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नवीन सूचना}other{# नवीन सूचना}}</translation>
 <translation id="1139343347646843679">Linux कॉंफिगर करताना एरर आली. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1140351953533677694">तुमची ब्लूटूथ आणि सिरीअल डिव्हाइस ॲक्सेस करा</translation>
 <translation id="114036956334641753">ऑडिओ आणि कॅप्शन</translation>
@@ -1673,6 +1674,7 @@
 <translation id="291056154577034373">न वाचलेले</translation>
 <translation id="2910718431259223434">काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या डिव्हाइसच्या मालकाशी अथवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">कुकी डेटा सेव्ह करणे आणि वाचण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
+<translation id="2915016304249900997">तुम्ही तुमची स्क्रीन शेअर करत असताना तपशील लपवले जातात</translation>
 <translation id="2915102088417824677">ॲक्टिव्हिटी लॉग पहा</translation>
 <translation id="2915873080513663243">ऑटो-स्कॅन</translation>
 <translation id="2916073183900451334">वेबपेजवर टॅब दाबल्याने लिंक हायलाइट होतात, तसेच भाग तयार होतात</translation>
@@ -2444,6 +2446,7 @@
 <translation id="3819257035322786455">बॅक अप</translation>
 <translation id="3819261658055281761">सिस्टमला या डिव्हाइससाठी दीर्घ मुदतीचे API ॲक्सेस टोकन स्टोअर करता आले नाही.</translation>
 <translation id="3819800052061700452">&amp;पूर्ण स्क्रीन</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{दाखवा}other{सर्व दाखवा}}</translation>
 <translation id="3820749202859700794">SECG एल्लिपटिक कर्व्ह secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशनला मंजुरी देण्यात आली आहे}other{# एक्स्टेंशनना मंजुरी देण्यात आली आहे}}</translation>
 <translation id="3822559385185038546">या प्रॉक्सीची अंमलबजावणी तुमच्या ॲडमिनिस्ट्रेटरकडून होते</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">अनपिन</translation>
 <translation id="428565720843367874">या फाईलचे स्कॅनिंग करताना अँटी-व्हायरस सॉफ्टवेअर अनपेक्षितपणे अयशस्वी झाले.</translation>
 <translation id="4287099557599763816">स्क्रीन रीडर</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{दाखवा}other{सर्व दाखवा}}</translation>
 <translation id="4289372044984810120">तुमची खाती येथे व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4295072614469448764">तुमच्या टर्मिनलमध्ये अ‍ॅप उपलब्ध आहे. तुमच्या लाँचरमध्ये आयकन देखील असू शकतो.</translation>
@@ -6143,6 +6147,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="820568752112382238">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नवीन सूचना}other{# नवीन सूचना}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड सुरू आहे}other{डाउनलोड सुरू आहेत}}</translation>
 <translation id="8213449224684199188">फोटो मोड टाकला</translation>
 <translation id="8213577208796878755">एक अन्य उपलब्ध डिव्हाइस.</translation>

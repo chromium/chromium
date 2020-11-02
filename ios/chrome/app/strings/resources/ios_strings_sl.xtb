@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
 <translation id="1154690515305205900">Povezave do označenega besedila ni mogoče ustvariti.</translation>
+<translation id="1157749421655780457">Dovoli lokacijo …</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1172898394251786223">Naslednje polje</translation>
 <translation id="1176932207622159128">Slike ni mog. shran.</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Ni elementov</translation>
 <translation id="1692118695553449118">Sinhroniziranje je vklopljeno</translation>
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">Uporaba trenutne lokacije.</translation>
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
 <translation id="1746815479209538200">Če želite brskati po spletu, dodajte nov zavihek.</translation>
 <translation id="1752547299766512813">Shranjena gesla</translation>
@@ -319,7 +321,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4502566650163919158">Preveri</translation>
 <translation id="4505980578794259603">Nazadnje preverjeno: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
-<translation id="4526249700380860531">Shranjena gesla si lahko ogledate in jih upravljate na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="4526249700380860531">Dostopajte do shranjenih gesel in jih upravljajte na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="457386861538956877">Več ...</translation>
 <translation id="4592368184551360546">Tipkovnica</translation>
@@ -374,6 +376,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5059136629401106827">V redu</translation>
 <translation id="5062321486222145940">Namesti Google Drive</translation>
 <translation id="5083464117946352670">Velikost datoteke ni mogoče določiti.</translation>
+<translation id="5090832849094901128">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tvit je dokončan.</translation>
 <translation id="5118764316110575523">Izklopljeno</translation>
 <translation id="5127805178023152808">Sinhroniziranje je izklopljeno</translation>

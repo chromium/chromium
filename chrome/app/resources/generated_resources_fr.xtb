@@ -242,6 +242,7 @@
 <translation id="1264337193001759725">Pour voir les journaux d'interface utilisateur du réseau, accédez à : <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Langue de traduction :</translation>
 <translation id="126768002343224824">16x</translation>
+<translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1272293450992660632">Les valeurs de code PIN sont différentes.</translation>
 <translation id="1272978324304772054">Ce compte utilisateur n'appartient pas au domaine auprès duquel l'appareil est enregistré. Si vous souhaitez vous enregistrer auprès d'un autre domaine, vous devez d'abord suivre la procédure de récupération de votre appareil.</translation>
@@ -1021,6 +1022,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera une fois que vous aurez quitté les paramètres de synchronisation</translation>
 <translation id="2162838847352058695">Empêcher les sites de télécharger automatiquement plusieurs fichiers</translation>
+<translation id="2163004395084716754">Touche non reconnue. Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2165421703844373933">Accédez à l'Assistant en disant "Ok Google". Pour économiser la batterie, sélectionnez “Activé (recommandé)”. L'Assistant ne répondra que lorsque votre appareil sera branché ou en charge.</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
@@ -1611,6 +1613,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2839032553903800133">Notifications bloquées</translation>
 <translation id="2841013758207633010">Heure</translation>
 <translation id="2841837950101800123">Fournisseur</translation>
+<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a 1 jour.}one{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a {NUM_DAYS} jour.}other{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a {NUM_DAYS} jours.}}</translation>
 <translation id="2844169650293029770">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'avant)</translation>
 <translation id="2844809857160214557">Afficher et gérer les tâches d'impression</translation>
 <translation id="2845382757467349449">Toujours afficher la barre de favoris</translation>
@@ -1706,6 +1709,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="29488703364906173">Un navigateur Internet rapide, simple et sécurisé, conçu pour le Web d'aujourd'hui</translation>
 <translation id="2949289451367477459">Utiliser la localisation. Autoriser les applications et services disposant de l'autorisation d'accéder à la position à utiliser l'emplacement de cet appareil. Nous pouvons recueillir régulièrement des données de localisation et les utiliser de façon anonyme afin d'améliorer la précision de la localisation et les services géolocalisés. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">S'inscrire</translation>
+<translation id="2950809080616865502">Ouvrez une boîte de dialogue pour attribuer une action à une touche</translation>
 <translation id="2956070239128776395">Section imbriquée dans un groupe : <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Interdire à tous les sites de modifier des fichiers ou des dossiers sur votre appareil</translation>
 <translation id="2958721676848865875">Avertissement relatif à la mise en package des extensions</translation>
@@ -1869,10 +1873,12 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3154429428035006212">Hors connexion pendant plus d'un mois</translation>
 <translation id="3155072594963189910">Empêcher les sites de modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="3156531245809797194">Pour utiliser Chrome, veuillez vous connecter</translation>
+<translation id="315738237743207937">Portail captif détecté</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158033540161634471">Configurer votre empreinte digitale</translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="3159978855457658359">Modifier le nom de l'appareil</translation>
+<translation id="3160194132051443473">Une action est déjà associée à la touche <ph name="CURRENTKEY" />. Appuyez de nouveau sur <ph name="CURRENTKEY" /> pour supprimer cette association et quitter.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (matériel requis)</translation>
 <translation id="3161522574479303604">Toutes les langues</translation>
 <translation id="3162853326462195145">Compte scolaire</translation>
@@ -3453,6 +3459,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051836348807686060">La vérification orthographique n'est pas disponible pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
+<translation id="5053688703815372443">Aucune touche n'est associée à une action</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
 <translation id="5057403786441168405">Gérez les comptes auxquels vous êtes connecté. Les sites Web, les applications ainsi que les extensions Chrome et Google Play peuvent utiliser ces comptes pour personnaliser votre expérience, en fonction des autorisations accordées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restreindre les connexions</translation>
@@ -3515,6 +3522,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5127805178023152808">La synchronisation est désactivée.</translation>
 <translation id="5127881134400491887">Gérer les connexions réseau</translation>
 <translation id="512903556749061217">connecté</translation>
+<translation id="5131369589475698152">Les touches ne correspondent pas. Vous avez d'abord appuyé sur <ph name="CURRENTKEY" />, puis sur <ph name="UNEXPECTEDKEY" />. Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="5131591206283983824">Faire glisser à l'aide du pavé tactile</translation>
 <translation id="5133483819862530305">Du coucher au lever du soleil</translation>
 <translation id="5135085122826131075">Accédez à l'Assistant en disant "Ok Google".</translation>
@@ -4041,6 +4049,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5754152670305761216">Autorisé à lire du contenu protégé</translation>
 <translation id="5756163054456765343">C&amp;entre d'aide</translation>
 <translation id="5759728514498647443">Les documents envoyés pour impression via "<ph name="APP_NAME" />" sont lisibles avec "<ph name="APP_NAME" />"</translation>
+<translation id="5760715441271661976">État du portail</translation>
 <translation id="5763751966069581670">Aucun appareil USB détecté</translation>
 <translation id="5764483294734785780">En&amp;registrer le fichier audio sous...</translation>
 <translation id="57646104491463491">Date de modification</translation>
@@ -4651,6 +4660,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6463795194797719782">&amp;Modifier</translation>
 <translation id="6465841119675156448">Sans Internet</translation>
 <translation id="6466988389784393586">&amp;Ouvrir tous les favoris</translation>
+<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a 1 heure.}one{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a {NUM_HOURS} heure.}other{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a {NUM_HOURS} heures.}}</translation>
 <translation id="6467304607960172345">Optimiser les vidéos en plein écran</translation>
 <translation id="6468485451923838994">Polices</translation>
 <translation id="6469557521904094793">Activer le réseau mobile</translation>
@@ -4803,6 +4813,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension "<ph name="NAME" />" sur cette page</translation>
 <translation id="6659594942844771486">Onglet</translation>
+<translation id="666099631117081440">Serveurs d'impression</translation>
 <translation id="6664237456442406323">Malheureusement, votre ordinateur est configuré avec un ID matériel incorrect. Cette défaillance empêche l'installation des derniers correctifs de sécurité sur Chrome OS et rend votre ordinateur <ph name="BEGIN_BOLD" />potentiellement vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Une erreur s'est produite lors de l'ouverture de votre profil. Veuillez vous déconnecter, puis vous connecter de nouveau.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> désormais disponible</translation>
@@ -4905,6 +4916,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6790820461102226165">Ajouter un profil utilisateur…</translation>
 <translation id="6792072150955115067">Une demande de partage du contenu de votre écran avec <ph name="TARGET_NAME" /> a été envoyée depuis <ph name="APP_NAME" />. Sélectionnez les éléments que vous souhaitez partager.</translation>
 <translation id="6793604637258913070">Mettre en surbrillance le curseur lorsqu'il apparaît ou se déplace dans le texte</translation>
+<translation id="6793723358811598107">La touche <ph name="CURRENTKEY" /> est déjà associée à l'action "<ph name="ACTION" />". Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Une erreur s'est produite.</translation>
 <translation id="6798578729981748444">Pour terminer l'importation, fermez toutes les fenêtres Firefox.</translation>
@@ -6130,6 +6142,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8190193592390505034">Connexion à <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gérer vos applications, vos extensions et vos thèmes</translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
+<translation id="8198045463750397705">Veuillez appuyer sur une touche pour lui associer une action.</translation>
 <translation id="8198323535106903877">Nous allons installer ces <ph name="NUMBER_OF_APPS" /> applications pour vous</translation>
 <translation id="8199300056570174101">Propriétés du réseau (service) et de l'appareil</translation>
 <translation id="8200772114523450471">Reprendre</translation>
@@ -6617,6 +6630,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8774379074441005279">Confirmer la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide.</translation>
+<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a 1 minute.}one{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a {NUM_MINS} minute.}other{Chrome n'a détecté aucun logiciel malveillant connu sur votre ordinateur. Dernière vérification : il y a {NUM_MINS} minutes.}}</translation>
 <translation id="8777628254805677039">mot de passe racine</translation>
 <translation id="8780123805589053431">Obtenir des descriptions d'images de Google</translation>
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>
@@ -6657,6 +6671,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8814319344131658221">Les langues utilisées par le correcteur orthographique sont basées sur vos préférences linguistiques</translation>
 <translation id="8814644416678422095">Disque dur</translation>
 <translation id="8814687660896548945">Veuillez patienter. Analyse de l'archive…</translation>
+<translation id="8814987898367958792">Appuyez de nouveau sur la touche <ph name="CURRENTKEY" /> pour confirmer et quitter.</translation>
 <translation id="881782782501875829">Ajouter un numéro de port</translation>
 <translation id="881799181680267069">Masquer les autres</translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
@@ -6926,6 +6941,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> mis en pause</translation>
 <translation id="9124003689441359348">Les mots de passe enregistrés s'afficheront ici</translation>
+<translation id="9125387974662074614">M'avertir lorsque Chrome a terminé de rechercher d'éventuels logiciels malveillants</translation>
 <translation id="9126149354162942022">Couleur du curseur</translation>
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>
 <translation id="9128335130883257666">Accéder aux paramètres pour "<ph name="INPUT_METHOD_NAME" />"</translation>

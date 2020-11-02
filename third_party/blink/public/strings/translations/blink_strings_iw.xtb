@@ -59,7 +59,7 @@
 <translation id="2508569020611168319">רשימת כרטיסיות</translation>
 <translation id="2530182415807757784">ניתן לבחור יותר מאפשרות אחת, לא נבחרה אף אפשרות.</translation>
 <translation id="2561842179657104141">הצג עוד פקדי מדיה</translation>
-<translation id="2572483411312390101">הפעל</translation>
+<translation id="2572483411312390101">הפעלה</translation>
 <translation id="2613802280814924224">יש להזין ערך חוקי. הערך החוקי הקרוב ביותר הוא <ph name="VALID_VALUE" /></translation>
 <translation id="2634240155926812724">הערוץ הירוק</translation>
 <translation id="2653659639078652383">שליחה</translation>
@@ -94,7 +94,7 @@
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" />GB</translation>
 <translation id="3808586225841795776">מונח</translation>
-<translation id="3822383571486410024">הארך טקסט זה ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (אתה משתמש כרגע ב-<ph name="CURRENT_LENGTH" /> תווים).</translation>
+<translation id="3822383571486410024">צריך להאריך את הטקסט הזה ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע הוא באורך <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="383465348367842624">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">יציאה ממסך מלא</translation>
 <translation id="3920932319529768807">סיכום</translation>
@@ -104,7 +104,7 @@
 <translation id="4103419683916926126">אלפיות שנייה</translation>
 <translation id="4151657705144244502">פריט גרפי</translation>
 <translation id="4160057747563657758">טלפון</translation>
-<translation id="4193965531860883258">פתח דבר</translation>
+<translation id="4193965531860883258">מבוא</translation>
 <translation id="4201051445878709314">הצג חודש קודם</translation>
 <translation id="421884353938374759">color picker</translation>
 <translation id="4248100235867064564">שורת תפריטים</translation>
@@ -138,7 +138,7 @@
 <translation id="4992066212339426712">ביטול השתקה</translation>
 <translation id="49969490063480558">יש להזין חלק ואחריו '<ph name="ATSIGN" />'. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
 <translation id="5022314756875057021">קבוצת שורות</translation>
-<translation id="5034860022980953847">סימן ויזואלי להתקדמות</translation>
+<translation id="5034860022980953847">מדד התקדמות</translation>
 <translation id="5090250355906949916">מחוון זמן הסרטון</translation>
 <translation id="5093189678851173835">ציטוט בראש ספר</translation>
 <translation id="509897012892853729">הערוץ הכחול</translation>
@@ -222,7 +222,7 @@
 <translation id="7238347055216017155">דגש</translation>
 <translation id="7263440858009898357">יש לבחור פריט מהרשימה.</translation>
 <translation id="727747134524199931">כותרת עמודה</translation>
-<translation id="7320576522385648310">אגירה</translation>
+<translation id="7320576522385648310">בתהליך אגירת נתונים</translation>
 <translation id="7341556277900466204">דוגמית צבע</translation>
 <translation id="7353453495576941748">קרדיט</translation>
 <translation id="7364796246159120393">בחירת קובץ</translation>

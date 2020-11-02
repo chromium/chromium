@@ -107,7 +107,7 @@
 <translation id="209018056901015185">טען גירסת מחשב שולחני</translation>
 <translation id="2103075008456228677">‏פתח את history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים הועברו</translation>
-<translation id="2118594521750010466">לפתרון הבעיה עכשיו</translation>
+<translation id="2118594521750010466">לפתרון הבעיה</translation>
 <translation id="213900355088104901">כדי לגלוש באופן פרטי יש לפתוח כרטיסיית גלישה בסתר</translation>
 <translation id="2139867232736819575">חיפוש טקסט שהעתקת</translation>
 <translation id="2149973817440762519">ערוך סימניות</translation>
@@ -119,7 +119,7 @@
 <translation id="2257567812274161158">הסנכרון לא פועל.</translation>
 <translation id="225943865679747347">קוד שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">חשבון חדש</translation>
-<translation id="2268044343513325586">צמצם</translation>
+<translation id="2268044343513325586">צמצום</translation>
 <translation id="2273327106802955778">התפריט 'עוד'</translation>
 <translation id="2302742851632557585">שינוי הסיסמה באתר</translation>
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
@@ -161,7 +161,7 @@
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
 <translation id="2764831210418622012">ממש עכשיו</translation>
-<translation id="2773292004659987824">חיפוש במצב גלישה בסתר</translation>
+<translation id="2773292004659987824">חיפוש במצב אנונימי</translation>
 <translation id="277771892408211951">בחירת שפה</translation>
 <translation id="2780046210906776326">אין חשבונות אימייל</translation>
 <translation id="2781331604911854368">מופעל</translation>
@@ -367,8 +367,8 @@
 <translation id="4944543191714094452">חיפוש בדף…</translation>
 <translation id="4945756290001680296">גישה להגדרות הסיסמה</translation>
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
-<translation id="5005498671520578047">העתק סיסמה</translation>
-<translation id="5010803260590204777">פתח כרטיסייה של גלישה בסתר כדי לגלוש בפרטיות באינטרנט.</translation>
+<translation id="5005498671520578047">העתקת הסיסמה</translation>
+<translation id="5010803260590204777">אפשר לפתוח כרטיסיית מצב אנונימי כדי לגלוש בפרטיות באינטרנט.</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">אישור</translation>
@@ -499,7 +499,7 @@
 <translation id="641799622251403418">מחובר בשם <ph name="EMAIL" />.
 
 הנתונים שלך הוצפנו ב-<ph name="TIME" /> באמצעות ביטוי הסיסמה לסינכרון. הזן אותו כדי להתחיל בסינכרון.</translation>
-<translation id="6418346271604475326">‏מכין PDF</translation>
+<translation id="6418346271604475326">‏PDF בהכנה</translation>
 <translation id="6434591244308415567">אירעה שגיאה. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="6439338047467462846">‏מתן הרשאה לכל קובצי ה-cookie</translation>
 <translation id="6445051938772793705">מדינה</translation>
@@ -510,7 +510,7 @@
 <translation id="6464397691496239022">‏אתרים יכולים להשתמש בקובצי cookie כדי לשפר את חוויית הגלישה – למשל כדי למנוע את ניתוקך מהחשבון או כדי לזכור את הפריטים שהוספת לעגלת הקניות.
 
 אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך בין אתרים שונים. למשל לצורך הצגה של מודעות בהתאמה אישית.</translation>
-<translation id="6476800141292307438">הדפדפן מתרגם את הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
+<translation id="6476800141292307438">מתבצע תרגום של הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="648164694371393720">שגיאת אימות</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים נמחקו</translation>
 <translation id="6497772452874122664">אם הכתובת <ph name="TIME" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה באתר אחר.
@@ -550,7 +550,7 @@
 <translation id="6869389390665537774">בדף ההיסטוריה אפשר לראות את הדפים שאליהם נכנסת או למחוק אותם</translation>
 <translation id="6873263987691478642">‏מצב Split View</translation>
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
-<translation id="6896758677409633944">העתק</translation>
+<translation id="6896758677409633944">העתקה</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6914583639806229067">חיפוש תמונה שהעתקת</translation>
 <translation id="6914783257214138813">כל מי שיוכל לגשת אל הקובץ המיוצא יוכל לראות את הסיסמאות שלך.</translation>
@@ -711,7 +711,7 @@
 <translation id="8721297211384281569">התפריט 'כלים'</translation>
 <translation id="8725066075913043281">נסה שוב</translation>
 <translation id="8730621377337864115">בוצע</translation>
-<translation id="8741995161408053644">‏ייתכן שתוכל לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="8741995161408053644">‏ייתכן שיהיה אפשר לגשת לתצורה אחרת של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">הכרטיסיות זמינות כאן</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>
 <translation id="8775144690796719618">כתובת אתר לא חוקית</translation>
@@ -719,13 +719,13 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8840513115188359703">‏פעולה זו לא תוציא אותך מחשבון Google שלך.</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
-<translation id="8881801611828450202">חפש את התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
+<translation id="8881801611828450202">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">שיתוף…</translation>
 <translation id="8917490105272468696">כן, מקובל עלי.</translation>
 <translation id="895541991026785598">דיווח על בעיה</translation>
 <translation id="8976382372951310360">עזרה</translation>
 <translation id="8981454092730389528">‏בחירת הפעילויות ב-Google</translation>
-<translation id="8985320356172329008">‏מחובר ל-Google בשם</translation>
+<translation id="8985320356172329008">‏התחברת ל-Google בשם</translation>
 <translation id="9034759925968272072">‏לא תבוצע יציאה מחשבון Google שלך. ייתכן שיהיה באפשרותך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">הצג מקור</translation>
 <translation id="9039373489628511875">רוחב פס</translation>

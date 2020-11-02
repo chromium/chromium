@@ -65,6 +65,7 @@
 <translation id="158809615184981282">ফেয়ারোইজ কীবোর্ড</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> পিবি</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
+<translation id="1646019627374511909">অফলাইনে দেখার জন্য <ph name="NUMBER_OF_ITEMS" />টি ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="1646136617204068573">হাঙ্গেরিয় কীবোর্ড</translation>
 <translation id="164729547906544836">তামিল কীবোর্ড (আইট্রান্স)</translation>
 <translation id="164969095109328410">Chrome ডিভাইস</translation>
@@ -149,6 +150,7 @@
 <translation id="255937426064304553">মার্কিন আন্তর্জাতিক</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ব্যাঙ</translation>
+<translation id="2572501073504669105">ইন্টারনেট কানেকশন না থাকলে, ফাইল অফলাইনে অ্যাক্সেস করার জন্য আপনি সেগুলি ডাউনলোড করে রাখতে পারেন।</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিও</translation>
 <translation id="2620090360073999360">এই সময়ে Google ড্রাইভে পৌঁছানো যাবে না৷</translation>
 <translation id="2638942478653899953">Google ড্রাইভে পৌঁছানো যাবে না৷ অনুগ্রহ করে <ph name="BEGIN_LINK" />লগ-আউট<ph name="END_LINK" /> করুন এবং আবার লগ-ইন করুন৷</translation>
@@ -157,6 +159,7 @@
 <translation id="2664412712123763093">ফাইলের লোকেশন</translation>
 <translation id="2672394958563893062">একটি ত্রুটি ঘটেছে৷ শুরু থেকে পুনরায় আরম্ভ করতে ক্লিক করুন৷</translation>
 <translation id="2676946222714718093">এতে প্লে হচ্ছে</translation>
+<translation id="2735623501230989521">Parallels Desktop-কে <ph name="FOLDER_NAME" /> ফোল্ডারে ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="2735698359135166290">রোমানিয়ান আদর্শ কীবোর্ড</translation>
 <translation id="2771816809568414714">চিজ</translation>
 <translation id="2781645665747935084">বেলজিয়ান</translation>
@@ -343,6 +346,7 @@
 <translation id="4779136857077979611">ওনিগিরি</translation>
 <translation id="4784330909746505604">PowerPoint presentation</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> কেবি</translation>
+<translation id="4789067489790477934">Parallels Desktop-কে আপনার Google Drive-এ ফাইল অ্যাক্সেস করার অনুমতি দিন। পরিবর্তনগুলি আপনার অন্যান্য ডিভাইসের সাথে সিঙ্ক হয়ে যাবে।</translation>
 <translation id="4801956050125744859">উভয়ই রাখুন</translation>
 <translation id="4804827417948292437">অ্যাভোকাডো</translation>
 <translation id="4823651846660089135">ডিভাইস শুধুমাত্র পঠনযোগ্য</translation>
@@ -608,11 +612,14 @@
 <translation id="7505167922889582512">লুকানো ফাইল দেখুন</translation>
 <translation id="7508545000531937079">স্লাইডশো</translation>
 <translation id="751507702149411736">বেলারুশীয়</translation>
+<translation id="7544830582642184299">Linux অ্যাপকে আপনার Google Drive-এ ফাইল অ্যাক্সেস করার অনুমতি দিন। পরিবর্তনগুলি আপনার অন্যান্য ডিভাইসের সাথে সিঙ্ক হয়ে যাবে।</translation>
 <translation id="7544853251252956727">শাফল করুন</translation>
 <translation id="7547811415869834682">ডাচ</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
+<translation id="7553492409867692754">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="7576032389798113292">৬x৪</translation>
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
+<translation id="7592775719802218421">অফলাইনে দেখার জন্য <ph name="FILE_NAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="7603724359189955920">গ্রিড</translation>
 <translation id="7627790789328695202">ওহো, <ph name="FILE_NAME" /> ইতিমধ্যেই বিদ্যমান রয়েছে৷ এটির পুনঃনামকরণ করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% সম্পূর্ণ হয়েছে।</translation>

@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Vytvoriť novú kartu.</translation>
 <translation id="1145536944570833626">Odstrániť existujúce dáta.</translation>
 <translation id="1154690515305205900">Odkaz na zvýraznený text sa nepodarilo vytvoriť.</translation>
+<translation id="1157749421655780457">Povoliť prístup k polohe…</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1172898394251786223">Ďalšie pole</translation>
 <translation id="1176932207622159128">Obrázok sa nedá uložiť</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Žiadne položky</translation>
 <translation id="1692118695553449118">Synchronizácia je zapnutá.</translation>
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">Používanie aktuálnej polohy</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte inštaláciu.</translation>
 <translation id="1746815479209538200">Ak chcete prehliadať internet, pridajte novú kartu.</translation>
 <translation id="1752547299766512813">Ukladať heslá</translation>
@@ -374,6 +376,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Nainštalovať Disk Google</translation>
 <translation id="5083464117946352670">Nedá sa zistiť veľkosť súboru.</translation>
+<translation id="5090832849094901128">Odstránením tohto hesla nevymažete svoj účet na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet bol uverejnený.</translation>
 <translation id="5118764316110575523">Vypnuté</translation>
 <translation id="5127805178023152808">Synchronizácia je vypnutá.</translation>

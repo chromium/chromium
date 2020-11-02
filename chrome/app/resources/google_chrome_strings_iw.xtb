@@ -12,7 +12,7 @@
 <translation id="1142745911746664600">‏לא ניתן לעדכן את Chrome</translation>
 <translation id="1154147086299354128">‏&amp;פתיחה ב-Chrome</translation>
 <translation id="123620459398936149">‏מערכת ההפעלה של Chrome לא הצליחה לסנכרן את הנתונים שלך. יש לעדכן את משפט הסיסמה שלך לסנכרון.</translation>
-<translation id="1302523850133262269">‏המתן בזמן ש-Chrome מתקין את עדכוני המערכת האחרונים.</translation>
+<translation id="1302523850133262269">‏יש להמתין בזמן ש-Chrome מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="1355000804395496115">‏כדאי להשתמש בפרופילים שונים ב-Chrome כדי להפריד בין גלישה בעבודה וגלישה אישית, או בין אנשים שונים שמשתמשים במכשיר הזה</translation>
 <translation id="137466361146087520">‏גרסת הבטא של Google Chrome</translation>
 <translation id="1399397803214730675">‏במחשב זה מותקנת כבר גרסה עדכנית יותר של Google Chrome. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Google Chrome ולנסות שוב.</translation>
@@ -54,7 +54,7 @@
 <translation id="234869673307233423">‏Chrome לא יכול לבדוק את הסיסמאות שלך. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="2429317896000329049">‏Google Chrome לא הצליח לסנכרן את הנתונים שלך מפני שהסנכרון אינו זמין עבור הדומיין שלך.</translation>
 <translation id="2467438592969358367">‏Google Chrome רוצה לייצא את הסיסמאות שלך. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
-<translation id="2485422356828889247">הסר התקנה</translation>
+<translation id="2485422356828889247">הסרת התקנה</translation>
 <translation id="2534507159460261402">‏Google Pay (‏הועתק ל-Chrome)</translation>
 <translation id="2580411288591421699">‏אין אפשרות להתקין את אותה גרסת Google Chrome הפועלת כעת. סגור את Google Chrome ונסה שוב.</translation>
 <translation id="2586406160782125153">‏הפעולה תמחק את נתוני הגלישה מהמכשיר. כדי לאחזר את הנתונים מאוחר יותר, היכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
@@ -144,7 +144,7 @@
 <translation id="4771048833395599659">‏Chrome‏ חסם את הקובץ הזה כי הוא עלול להיות מסוכן.</translation>
 <translation id="479167709087336770">‏נעשה כאן שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google. אפשר לשנות את ההתנהגות הזו בכל שלב דרך ההגדרות.</translation>
 <translation id="4891791193823137474">‏אפשר ל-Google Chrome לפעול ברקע</translation>
-<translation id="4895437082222824641">‏פתח את הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
+<translation id="4895437082222824641">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
 <translation id="4953650215774548573">‏הגדר את Google Chrome כדפדפן ברירת המחדל</translation>
 <translation id="495931528404527476">‏ב-Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
@@ -226,7 +226,7 @@
 <translation id="7787950393032327779">‏נראה שהפרופיל נמצא בשימוש על ידי תהליך אחר של Google Chrome‏ (<ph name="PROCESS_ID" />) במחשב אחר (<ph name="HOST_NAME" />)‏. Chrome נעל את הפרופיל כדי שלא ייפגם. אם ברור לך שאף תהליך אחר אינו משתמש בפרופיל זה, באפשרותך לבטל את נעילת הפרופיל ולהפעיל את Chrome מחדש.</translation>
 <translation id="7801699035218095297">‏Google Chrome מנסה להעתיק את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="7808348361785373670">‏הסרה מ-Chrome...</translation>
-<translation id="7825851276765848807">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. הורד שוב את Google Chrome.</translation>
+<translation id="7825851276765848807">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. צריך להוריד שוב את Google Chrome.</translation>
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
 <translation id="7890208801193284374">‏כשמשתפים מחשב, חברים ובני משפחה יכולים לגלוש בנפרד ולהגדיר את Chrome בדיוק כפי שהם רוצים.</translation>
 <translation id="7896673875602241923">‏מישהו נכנס בעבר ל-Chrome מהמחשב הזה כ-<ph name="ACCOUNT_EMAIL_LAST" />. צור משתמש חדש ל-Chrome כדי לשמור על הפרדת המידע שלך.</translation>

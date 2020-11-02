@@ -26,6 +26,7 @@
 <translation id="1727886345390570319">ক্লোজড ক্যাপশনের মেনু লুকান</translation>
 <translation id="1729654308190250600">অনুগ্রহ করে একটি খালি না থাকা ইমেল আইডি লিখুন৷</translation>
 <translation id="1758486001363313524">অন্যান্য...</translation>
+<translation id="1774577460079229490">বর্তমান <ph name="TYPE" /></translation>
 <translation id="1787192514241997742">মোট সময়: <ph name="REMAINING_TIME" /></translation>
 <translation id="1806710327868736751">সতর্কতার_ডায়ালগ</translation>
 <translation id="1821985195704844674">ট্রি গ্রিড</translation>
@@ -69,6 +70,7 @@
 <translation id="2746543609216772311">মানকে অবশ্যই <ph name="MINIMUM_DATE_OR_TIME" /> বা পরবর্তী হতে হবে৷</translation>
 <translation id="2759744352195237655">পপ আপ বোতাম</translation>
 <translation id="2761667185364618470">আপনি এগিয়ে যেতে চাইলে এই বাক্সটি পরীক্ষা করুন৷</translation>
+<translation id="2838616441696617235">ধাপ</translation>
 <translation id="2844350028562914727">বিবরণ</translation>
 <translation id="2896972712917208084">রেডিও বোতাম গ্রুপ</translation>
 <translation id="2908441821576996758">অনুগ্রহ করে কমা দিয়ে আলাদা করা ইমেল আইডির তালিকা লিখুন৷</translation>
@@ -108,10 +110,12 @@
 <translation id="4248100235867064564">মেনু বার</translation>
 <translation id="4293574643247337246">পৃষ্ঠার হেডার</translation>
 <translation id="4360991593054037559">দয়া করে একটি বৈধ মান লিখুন৷ দুটি কাছাকাছির বৈধ মান হল <ph name="VALID_VALUE_LOW" /> এবং <ph name="VALID_VALUE_HIGHER" />৷</translation>
+<translation id="4384249794467006333">এই ছবিটি লেবেল করা হয়নি। ছবির বিবরণ পেতে, স্ক্রিনের সবচেয়ে উপরে ডানদিকে 'আরও বিকল্প' মেনু খুলুন।</translation>
 <translation id="4384583879834880242">প্রশ্ন এবং উত্তর</translation>
 <translation id="4444765639179266822">মনে হচ্ছে বলতে চাইছে: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">শব্দকোষের রেফারেন্স</translation>
 <translation id="4522570452068850558">বিশদ বিবরণ</translation>
+<translation id="4576178047100686001">এই ছবিটি লেবেল করা হয়নি। ছবির বিবরণ পেতে, স্ক্রিনের সবচেয়ে উপরে বাঁদিকে 'আরও বিকল্প' মেনু খুলুন।</translation>
 <translation id="4597532268155981612">ফর্ম</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
@@ -127,6 +131,7 @@
 <translation id="4912536737030637138">বিবলিওগ্রাফি এন্ট্রি</translation>
 <translation id="4915360478455618802">সময় বাছাইকারী দেখুন</translation>
 <translation id="492244087561876220">মন্তব্য</translation>
+<translation id="4934662370368414994">আইটেম</translation>
 <translation id="4950364064308314478">স্থানীয় তারিখ ও সময় বাছাইকারী দেখুন</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টি নির্বাচিত</translation>
@@ -171,6 +176,7 @@
 <translation id="6011459053400940133">ভলিউম স্লাইডার</translation>
 <translation id="6015796118275082299">বছর</translation>
 <translation id="6023896073578205740">তালিকা বাক্স</translation>
+<translation id="6131824478727057281">লোকেশন</translation>
 <translation id="6150588977291308318">বিবলিওগ্রাফি</translation>
 <translation id="6164829606128959761">মিটার</translation>
 <translation id="6166809985690652833">পরিশিষ্ট</translation>

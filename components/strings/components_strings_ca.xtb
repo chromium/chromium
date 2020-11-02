@@ -80,6 +80,14 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Has introduït la contrasenya en un lloc web que no està gestionat per la teva organització. Per protegir el teu compte, no facis servir la mateixa contrasenya en altres aplicacions ni llocs web.</translation>
 <translation id="1263231323834454256">Llista de lectura</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Activitat que no es desarà en aquest dispositiu:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Pàgines que consultis en aquesta finestra
+          <ph name="LIST_ITEM" />Galetes i dades de llocs web
+          <ph name="LIST_ITEM" />Informació del compte (<ph name="LINK_BEGIN" />tanca la sessió<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Mètode de recollida</translation>
 <translation id="1281476433249504884">Apiladora 1</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
@@ -549,6 +557,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3209034400446768650">És possible que la pàgina faci un càrrec de diners</translation>
 <translation id="3212581601480735796">La teva activitat a <ph name="HOSTNAME" /> s'està supervisant</translation>
+<translation id="3212623355668894776">Tanca totes les finestres de convidat perquè la teva activitat de navegació se suprimeixi d'aquest dispositiu.</translation>
 <translation id="3215092763954878852">No s'ha pogut utilitzar WebAuthn</translation>
 <translation id="3218181027817787318">Relatiu</translation>
 <translation id="3225919329040284222">El servidor ha presentat un certificat que no coincideix amb les expectatives integrades. Les expectatives s'inclouen perquè determinats llocs web d'alta seguretat us protegeixin.</translation>
@@ -905,6 +914,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4658638640878098064">Grapat a la part superior esquerra</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
+<translation id="4675657451653251260">En mode de convidat, no veuràs informació del perfil de Chrome. Pots <ph name="LINK_BEGIN" />iniciar la sessió<ph name="LINK_END" /> per accedir a la informació del teu Compte de Google, com ara les contrasenyes i les formes de pagament.</translation>
 <translation id="467662567472608290">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat conté errors. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> vol respondre als esdeveniments d'accessibilitat</translation>
 <translation id="467809019005607715">Presentacions de Google</translation>
@@ -932,6 +942,12 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4761104368405085019">Utilitzar el micròfon</translation>
 <translation id="4764776831041365478">És possible que la pàgina web <ph name="URL" /> estigui temporalment fora de servei o s'hagi traslladat permanentment a una adreça web nova.</translation>
 <translation id="4766713847338118463">Grapat doble a la part inferior</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Activitat que es desarà en aquest dispositiu
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Qualsevol fitxer que baixis en aquesta finestra
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">S'ha produït un error desconegut.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Finestra emergent bloquejada}other{# finestres emergents bloquejades}}</translation>
 <translation id="4780366598804516005">Bústia de correu 1</translation>
@@ -1386,6 +1402,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6587923378399804057">Enllaç que has copiat</translation>
 <translation id="6591833882275308647">El dispositiu <ph name="DEVICE_TYPE" /> no està gestionat</translation>
 <translation id="6596325263575161958">Opcions d'encriptació</translation>
+<translation id="6596892391065203054">El teu administrador ha bloquejat la impressió d'aquest contingut.</translation>
 <translation id="6604181099783169992">Sensors de moviment o de llum</translation>
 <translation id="6609880536175561541">Prc7 (sobre)</translation>
 <translation id="6612358246767739896">Contingut protegit</translation>
@@ -1869,11 +1886,21 @@ Detalls addicionals:
 <translation id="8559762987265718583">No es pot establir una connexió privada amb <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perquè la data i l'hora (<ph name="DATE_AND_TIME" />) del dispositiu són incorrectes.</translation>
 <translation id="8564182942834072828">Documents independents / Còpies sense recopilar</translation>
 <translation id="8564985650692024650">Chromium et recomana que restableixis la contrasenya per a <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si l'has fet servir en altres llocs web.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Activitat que no es desarà en aquest dispositiu:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Pàgines que consultis en aquesta finestra
+          <ph name="LIST_ITEM" />Galetes i dades de llocs web
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Fes servir Touch ID per confirmar les targetes més ràpidament</translation>
 <translation id="858637041960032120">Afegeix un número de telèfon</translation>
 <translation id="8589998999637048520">Qualitat òptima</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>
 <translation id="8606726445206553943">Utilitzar els dispositius MIDI</translation>
+<translation id="8612761427948161954">Hola, <ph name="USERNAME" />,
+           <ph name="BR" />
+           Estàs navegant com a convidat</translation>
 <translation id="861775596732816396">Mida 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No hi ha cap contrasenya que coincideixi. Mostra totes les contrasenyes desades.</translation>
@@ -1948,7 +1975,7 @@ Detalls addicionals:
 <translation id="8942355029279167844">L'administrador ha permès que <ph name="APP_NAME" /> reculli dades de diagnòstic per millorar l'experiència amb el producte. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> per obtenir més informació.</translation>
 <translation id="8943282376843390568">Verd llima</translation>
 <translation id="8957210676456822347">Autorització de portals captius</translation>
-<translation id="8962950042226115166">Lloc web sospitós</translation>
+<translation id="8962950042226115166">Aquest lloc web és sospitós</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggeriments:<ph name="MARKUP_2" />Assegureu-vos que teniu connexió de dades<ph name="MARKUP_3" />Torneu a carregar aquesta pàgina web més tard<ph name="MARKUP_4" />Comproveu l'adreça que heu introduït<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
 <translation id="8971063699422889582">El certificat del servidor ha caducat.</translation>
@@ -2012,6 +2039,7 @@ Detalls addicionals:
 <translation id="9183302530794969518">Documents de Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> fa servir un protocol no admès.</translation>
 <translation id="9191834167571392248">Encunyació a la part inferior esquerra</translation>
+<translation id="9199905725844810519">La impressió està bloquejada</translation>
 <translation id="9205078245616868884">Les vostres dades estan encriptades amb la vostra frase de contrasenya de sincronització. Introduïu-la per començar la sincronització.</translation>
 <translation id="9207861905230894330">No s'ha pogut afegir l'article.</translation>
 <translation id="9213433120051936369">Personalitza l'aspecte</translation>

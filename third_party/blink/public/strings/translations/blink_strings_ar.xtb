@@ -110,12 +110,12 @@
 <translation id="4248100235867064564">شريط قوائم</translation>
 <translation id="4293574643247337246">رأس الصفحة</translation>
 <translation id="4360991593054037559">يُرجى إدخال قيمة صالحة. علمًا بأن القيم الصالحة تتراوح بين <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4384249794467006333">هذه الصورة غير مصنَّفة. افتح قائمة "الخيارات الأخرى" في أعلى يسار الصفحة للحصول على أوصاف الصور.</translation>
+<translation id="4384249794467006333">هذه الصورة غير مصنَّفة. افتح قائمة الخيارات الإضافية في أعلى يسار الصفحة للحصول على أوصاف الصور.</translation>
 <translation id="4384583879834880242">سين وجيم</translation>
 <translation id="4444765639179266822">يبدو أنه يقول: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">مرجع مسرد مصطلحات</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
-<translation id="4576178047100686001">هذه الصورة غير مصنَّفة. افتح قائمة "الخيارات الأخرى" في أعلى يمين الصفحة للحصول على أوصاف الصور.</translation>
+<translation id="4576178047100686001">هذه الصورة غير مصنَّفة. افتح قائمة الخيارات الإضافية في أعلى يمين الصفحة للحصول على أوصاف الصور.</translation>
 <translation id="4597532268155981612">نموذج</translation>
 <translation id="4661075872484491155">متفرع</translation>
 <translation id="4664250907885839816">يجب ألا يشتمل الجزء الذي يلي العلامة "<ph name="ATSIGN" />" على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
@@ -177,7 +177,7 @@
 <translation id="6011459053400940133">شريط تمرير مستوى الصوت</translation>
 <translation id="6015796118275082299">عام</translation>
 <translation id="6023896073578205740">مربع القائمة</translation>
-<translation id="6131824478727057281">الموقع</translation>
+<translation id="6131824478727057281">الموقع الجغرافي</translation>
 <translation id="6150588977291308318">قائمة مراجع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>

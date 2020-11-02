@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1351937230027495976">ମେନୁକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="1390105199421505038"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଆକାଉଣ୍ଟ ଡାଏଲଗକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1391102559483454063">ଚାଲୁ</translation>
 <translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1419738280318246476">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
@@ -369,6 +370,7 @@
 <translation id="4477892968187500306">ଏହି ଡିଭାଇସ୍‍‍ରେ ଏପରି ଆପ୍ସ ଥାଇପାରେ ଯାହା Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନାହିଁ।</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4481530544597605423">ଅନ୍‌ପେୟାର୍‌ ହୋ‍ଇଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="4485060137115666462">ଡାହାଣ-କ୍ଲିକ୍ କଲେ କିମ୍ବା ଅଧିକ ସମୟ ଦବାଇ ରଖିଲେ, Assistant ଆପଣଙ୍କ ଚୟନ ପାଇଁ ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ କନଭର୍ସନ୍ ପରି ସୂଚନା ଦେଖାଏ।</translation>
 <translation id="4505050298327493054">ସକ୍ରିୟ ଡେସ୍କ.</translation>
 <translation id="4506458088675900627">ଓଭରଭିଉ ଟଚପ୍ୟାଡ୍ ଜେଶ୍ଚର୍ ବଦଳି ଯାଇଛି</translation>
 <translation id="4513946894732546136">ମତାମତ</translation>
@@ -597,6 +599,7 @@
 <translation id="6803622936009808957">ଏକାପରି ଡିସ୍‌ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ କାରଣ ସମର୍ଥିତ ରିଜୋଲ୍ୟୁଶନ୍ ମିଳିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ବିସ୍ତାରିତ ଡେସ୍କଟପ୍‍ ଲେଖାଯାଇଛି।</translation>
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
+<translation id="6850010208275816200">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଆପ୍ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମୋଡରେ ଅଛି। ଯଦି ଆପ୍ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପଚାରେ ତେବେ ପ୍ରଥମେ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ।</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ସେ</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ଗୋଟିଏ ଅଙ୍କ ବାକି ଅଛି}other{#ଟି ଅଙ୍କ ବାକି ଅଛି}}</translation>
@@ -646,6 +649,7 @@
 <translation id="7398254312354928459">ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ସ୍ୱିଚ୍‌ କରାଗଲା</translation>
 <translation id="7405710164030118432">ଡିଭାଇସ୍‍କୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କ Family Linkର ଅଭିଭାବକଙ୍କ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
+<translation id="7413851974711031813">ବନ୍ଦ କରିବାକୁ Escape କୀ ଦବାନ୍ତୁ</translation>
 <translation id="742594950370306541">କ୍ୟାମେରା ବ୍ୟବହାରରେ ଅଛି।</translation>
 <translation id="742608627846767349">ସୁପ୍ରଭାତ,</translation>
 <translation id="743058460480092004">କ୍ୟାମେରା ଓ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>

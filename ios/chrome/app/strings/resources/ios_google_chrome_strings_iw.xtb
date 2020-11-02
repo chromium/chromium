@@ -52,7 +52,7 @@
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6573431926118603307">‏כרטיסיות שפתחת ב-Chrome במכשירים האחרים שלך יופיעו כאן.</translation>
 <translation id="6600954340915313787">‏הועתק אל Chrome</translation>
-<translation id="6648150602980899529">‏אתה נכנס עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
+<translation id="6648150602980899529">‏נכנסת עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> שמעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="6676840375528380067">‏למחוק את נתוני Chrome שלך מהמכשיר הזה?</translation>
 <translation id="6822673484890854830">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="7124339256045485976">‏Chrome יתעדכן באופן קבוע</translation>
@@ -74,6 +74,6 @@
 <translation id="8160472928944011082">‏אי אפשר לעדכן את Chrome</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="840168496893712993">‏תוספים מסוימים גורמים ל-Chrome לקרוס. נסה להסיר את ההתקנה שלהם.</translation>
-<translation id="8459495907675268833">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים. ייתכן שבכתובת history.google.com תוכל לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>
+<translation id="8459495907675268833">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים. ייתכן שבכתובת history.google.com ניתן יהיה לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 </translationbundle>

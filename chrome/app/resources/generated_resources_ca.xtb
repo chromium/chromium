@@ -1145,6 +1145,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2307462900900812319">Configura la xarxa</translation>
 <translation id="230927227160767054">Aquesta pàgina vol instal·lar un gestor de serveis.</translation>
 <translation id="2309620859903500144">Aquest lloc web no té permís per accedir als sensors de llum o moviment.</translation>
+<translation id="2311497964614110326">Rep millors respostes i més ràpides amb l'Assistent</translation>
 <translation id="2312219318583366810">URL de la pàgina</translation>
 <translation id="2314165183524574721">L'opció de configuració de visibilitat actual és Amagat</translation>
 <translation id="2314774579020744484">Idioma utilitzat per traduir pàgines</translation>
@@ -1257,6 +1258,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2440604414813129000">Visualitza l'&amp;origen</translation>
 <translation id="244231003699905658">L'adreça no és vàlida. Comprova-la i torna-ho a provar.</translation>
 <translation id="2442916515643169563">Ombra del text</translation>
+<translation id="2444469058037141906">Digues o escriu què necessites</translation>
 <translation id="2445081178310039857">El directori arrel de l'extensió és obligatori.</translation>
 <translation id="2445484935443597917">Crea un perfil</translation>
 <translation id="2448312741937722512">Tipus</translation>
@@ -2173,6 +2175,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3514373592552233661">Les xarxes preferides tindran preferència sobre altres xarxes conegudes si n'hi ha més d'una disponible.</translation>
 <translation id="3515983984924808886">Torna a tocar la clau de seguretat per confirmar el restabliment. Se suprimirà tota la informació desada a la clau de seguretat, inclòs el PIN.</translation>
 <translation id="3518985090088779359">Accepta i continua</translation>
+<translation id="3519564332031442870">Servei d'impressió al processador dorsal</translation>
 <translation id="3521606918211282604">Canvia la mida del disc</translation>
 <translation id="3523642406908660543">Pregunta'm quan un lloc vulgui fer servir un connector per accedir a l'ordinador (opció recomanada)</translation>
 <translation id="3524965460886318643">Exporta les activitats</translation>
@@ -2689,6 +2692,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4088095054444612037">Accepta per al grup</translation>
 <translation id="4089235344645910861">La configuració s'ha desat i ha començat la sincronització.</translation>
 <translation id="4090103403438682346">Activa l'accés verificat</translation>
+<translation id="4090811767089219951">El teu Assistent de Google també funciona aquí</translation>
 <translation id="4090947011087001172">Vols restablir els permisos del lloc web <ph name="SITE" />?</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="4093955363990068916">Fitxer local:</translation>
@@ -2955,6 +2959,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4441124369922430666">Voleu que aquesta aplicació s'iniciï automàticament en engegar l'ordinador?</translation>
 <translation id="4441147046941420429">Per continuar, suprimeix la clau de seguretat del dispositiu; tot seguit, torna a inserir-la i toca-la</translation>
 <translation id="444134486829715816">Amplia...</translation>
+<translation id="4441928470323187829">Fixada per l'administrador</translation>
 <translation id="4442424173763614572">La cerca de DNS ha fallat</translation>
 <translation id="4443536555189480885">&amp;Ajuda</translation>
 <translation id="4444304522807523469">Accedir als escàners del document adjunts mitjançant USB o a la xarxa local</translation>
@@ -3679,6 +3684,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5315873049536339193">Identitat</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
+<translation id="5320112320661303273">Sembla que ja has configurat l'Assistent en un altre dispositiu. Treu encara més partit del teu Assistent activant l'opció de configuració següent.</translation>
 <translation id="532247166573571973">És possible que no es pugui accedir al servidor. Torneu-ho a provar més tard.</translation>
 <translation id="5324300749339591280">Llista d'aplicacions</translation>
 <translation id="5324780743567488672">Estableix la zona horària automàticament en funció de la meva ubicació</translation>
@@ -5497,6 +5503,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7475671414023905704">URL de contrasenya perduda de Netscape</translation>
 <translation id="7476454130948140105">No hi ha prou bateria per fer l'actualització (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
+<translation id="7478362879637727630">Has d'inscriure aquest dispositiu Chrome Education en un compte de centre educatiu. Per registrar-te i crear un compte nou, visita https://g.co/workspace/edusignup.</translation>
 <translation id="7478485216301680444">No s'ha pogut instal·lar l'aplicació de quiosc.</translation>
 <translation id="7479221278376295180">Informació general sobre l'ús de l'emmagatzematge</translation>
 <translation id="7481312909269577407">Endavant</translation>
@@ -5621,6 +5628,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7632948528260659758">No s'han pogut actualitzar les aplicacions següents del quiosc:</translation>
 <translation id="7633724038415831385">Aquest és l'únic cop que hauràs d'esperar que es completi una actualització. Als Chromebook, les actualitzacions de programari es duen a terme en segon pla.</translation>
 <translation id="7634566076839829401">S'ha produït un error; torna-ho a provar.</translation>
+<translation id="7635048370253485243">Fixada per l'administrador</translation>
 <translation id="763632859238619983">No permetis que cap lloc web instal·li gestors de pagament</translation>
 <translation id="7636919061354591437">Instal·la en aquest dispositiu</translation>
 <translation id="7638605456503525968">Ports en sèrie</translation>
