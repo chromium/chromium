@@ -15,7 +15,7 @@
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2759453070259087442">הרחבת קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
-<translation id="3328308545011660196">הצעות: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
+<translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}many{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="4133493477912226187">יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="4212246570487010370">המשך הגלישה</translation>

@@ -131,13 +131,13 @@
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
 <translation id="4962975101802056554">ביטול כל ההרשאות בשביל המכשיר</translation>
-<translation id="497421865427891073">המשך קדימה</translation>
+<translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="4996978546172906250">שיתוף באמצעות</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5048398596102334565">התרת גישה של אתרים אל חיישני התנועה (מומלץ)</translation>
 <translation id="5063480226653192405">שימוש</translation>
-<translation id="5100237604440890931">מכווץ - לחץ כדי להרחיב.</translation>
+<translation id="5100237604440890931">מכווץ – יש ללחוץ כדי להרחיב.</translation>
 <translation id="5123685120097942451">כרטיסיית גלישה בסתר</translation>
 <translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="528192093759286357">כדי לצאת ממסך מלא, גרור מלמעלה וגע בלחצן 'הקודם'.</translation>
@@ -184,7 +184,7 @@
 <translation id="6192792657125177640">יוצאי דופן</translation>
 <translation id="6196640612572343990">‏חסום קובצי Cookie של צד שלישי</translation>
 <translation id="6206551242102657620">החיבור מאובטח. פרטי האתר</translation>
-<translation id="6216432067784365534">אפשרויות בשביל <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
@@ -200,7 +200,7 @@
 <translation id="6561560012278703671">הצגת חיווי בסרגל הכתובות (מונע הקפצה של חלוניות הודעה מפריעות)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
-<translation id="662080504995468778">הישאר</translation>
+<translation id="662080504995468778">להמשיך במצב אנונימי</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
@@ -246,7 +246,7 @@
 <translation id="7828557259026017104">‏קובצי cookie נוצרים על ידי האתרים שביקרת בהם. האתרים משתמשים בהם כדי לזכור את ההעדפות שלך. קובצי cookie של צד שלישי נוצרים על-ידי אתרים אחרים. האתרים האלה הם הבעלים של חלק מהתוכן בדף האינטרנט שביקרת בו, למשל מודעות או תמונות.</translation>
 <translation id="7835852323729233924">מדיה פועלת</translation>
 <translation id="783819812427904514">ביטול ההשתקה של הסרטון</translation>
-<translation id="7846076177841592234">בטל את הבחירה</translation>
+<translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7846621471902887024">תתבצע יציאה מכל האתרים.</translation>
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
@@ -266,7 +266,7 @@
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8300705686683892304">מנוהלים על-ידי אפליקציה</translation>
 <translation id="8324158725704657629">לא לשאול שוב</translation>
-<translation id="8372893542064058268">אפשר סנכרון ברקע לאתר ספציפי.</translation>
+<translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
 <translation id="8376384591331888629">‏כולל קובצי cookie של צד שלישי באתר זה</translation>
 <translation id="83792324527827022">אתר כלשהו משתמש במצלמה ובמיקרופון שלך</translation>
 <translation id="8380167699614421159">באתר הזה מוצגות מודעות מפריעות או מטעות</translation>
@@ -280,7 +280,7 @@
 <translation id="851751545965956758">חסימת התחברות של אתרים אל התקנים</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
-<translation id="8609465669617005112">הזז למעלה</translation>
+<translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8676374126336081632">ניקוי קלט</translation>
 <translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8702612070107455751">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>

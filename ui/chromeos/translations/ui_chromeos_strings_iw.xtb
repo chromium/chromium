@@ -71,7 +71,7 @@
 <translation id="1665611772925418501">הקובץ לא ניתן לשינוי.</translation>
 <translation id="1673103856845176271">לא היתה אפשרות לגשת לקובץ מסיבות אבטחה.</translation>
 <translation id="169515659049020177">Shift</translation>
-<translation id="1722487484194605434">מכווץ <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
+<translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
 <translation id="174173592514158117">‏הצגת כל תיקיות Play</translation>
 <translation id="174937106936716857">מספר הקבצים הכולל</translation>
@@ -84,7 +84,7 @@
 <translation id="183183971458492120">טעינת מידע…</translation>
 <translation id="1838709767668011582">‏אתר שנוצר באמצעות Google Sites</translation>
 <translation id="1844692022597038441">קובץ זו אינו זמין במצב לא מקוון.</translation>
-<translation id="184633654410729720">‏מקלדת תאילנדית (Kedmanee)</translation>
+<translation id="184633654410729720">‏מקלדת תאית (Kedmanee)</translation>
 <translation id="1847880352285315359">בוצעה שמירה</translation>
 <translation id="1853795129690976061">‏התיקייה הזו משותפת עם Linux</translation>
 <translation id="1864756863218646478">הקובץ לא נמצא.</translation>
@@ -186,7 +186,7 @@
 <translation id="3003633581067744647">מעבר לתצוגה של תמונות ממוזערות</translation>
 <translation id="3007214526293698309">תיקון היחס</translation>
 <translation id="303198083543495566">גיאוגרפיה</translation>
-<translation id="3057861065630527966">גבה את התמונות והסרטונים</translation>
+<translation id="3057861065630527966">גיבוי התמונות והסרטונים</translation>
 <translation id="3064388234319122767">‏תעתוק (zdravo → здраво)</translation>
 <translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3078461028045006476">שיתוף באמצעות <ph name="EXTENSION_NAME" /></translation>
@@ -206,7 +206,7 @@
 <translation id="3252266817569339921">צרפתית</translation>
 <translation id="3254434849914415189">יש לבחור את יישום ברירת המחדל עבור קובצי <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">הקשר</translation>
-<translation id="3280431534455935878">מכין</translation>
+<translation id="3280431534455935878">הקובץ בהכנה</translation>
 <translation id="3280987981688031357">תקליט</translation>
 <translation id="3296763833017966289">גרוזינית</translation>
 <translation id="3326821416087822643">מתבצע כיווץ של <ph name="FILE_NAME" />...</translation>
@@ -217,7 +217,7 @@
 <translation id="3399597614303179694">מקלדת מקדונית</translation>
 <translation id="3414856743105198592">פרמוט המדיה הנשלפת יגרום למחיקת כל הנתונים. האם ברצונך להמשיך?</translation>
 <translation id="3437801641691368414">שעת יצירה</translation>
-<translation id="3466147780910026086">סורק את מכשיר המדיה...</translation>
+<translation id="3466147780910026086">מתבצעת סריקה של מכשיר המדיה...</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> תמונות גובו ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3470502288861289375">מעתיק...</translation>
 <translation id="3473378059788601120">הועתק אל <ph name="FOLDER_NAME" />.</translation>
@@ -478,7 +478,7 @@
 <translation id="6005282720244019462">מקלדת של אמריקה הלטינית</translation>
 <translation id="6007237601604674381">ההעברה נכשלה. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6012987430370760224">מקלדת מראטהי (פונטית)</translation>
-<translation id="6019169947004469866">חתוך</translation>
+<translation id="6019169947004469866">חיתוך</translation>
 <translation id="60357267506638014">‏צ'כית - QWERTY</translation>
 <translation id="604001903249547235">גיבוי בענן</translation>
 <translation id="6040143037577758943">סגור</translation>
@@ -488,7 +488,7 @@
 <translation id="610101264611565198">מתבצעת העברה של <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
 <translation id="6111770213269631447">‏תעתוק (namaskar → নমস্কার)</translation>
 <translation id="6129953537138746214">רווח</translation>
-<translation id="6133173853026656527">מעביר את <ph name="FILE_NAME" />...</translation>
+<translation id="6133173853026656527">מתבצעת העברה של <ph name="FILE_NAME" />...</translation>
 <translation id="6146563240635539929">סרטונים</translation>
 <translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
@@ -549,7 +549,7 @@
 <translation id="6876155724392614295">אופניים</translation>
 <translation id="6878261347041253038">מקלדת דוונגארי (פונטית)</translation>
 <translation id="6885780034956018177">שבלול</translation>
-<translation id="6896758677409633944">העתק</translation>
+<translation id="6896758677409633944">העתקה</translation>
 <translation id="6898028766943174120">תיקיות משנה נוספות…</translation>
 <translation id="691516599546977041">לא ניתן לשמור בתיקייה <ph name="FOLDER_NAME" />. תמונות ערוכות יישמרו בתיקיית ההורדות.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
@@ -589,7 +589,7 @@
 <translation id="7295662345261934369">שיתוף עם אחרים</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7348749398828259943">‏מקלדת US Workman בינלאומית</translation>
-<translation id="7359359531237882347">מעתיק <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
+<translation id="7359359531237882347">המערכת מעתיקה <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="7375951387215729722">רשימת הקבצים ממוינת לפי <ph name="COLUMN_NAME" /> בסדר יורד.</translation>
 <translation id="7389722738210761877">‏מקלדת תאילנדית (TIS 820-2531)</translation>
 <translation id="7396038720194014279">מקלדת הינדי (פונטית)</translation>
@@ -642,7 +642,7 @@
 <translation id="7825423931463735974">‏מקלדת טמילית (Tamil99)</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
 <translation id="7839804798877833423">הבאת קבצים אלה תשתמש בערך ב-<ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
-<translation id="7846076177841592234">בטל את הבחירה</translation>
+<translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7853966320808728790">‏BÉPO - צרפתית</translation>
 <translation id="7864662577698025113">הוספת שירות חדש</translation>
 <translation id="7873831373602885875">לא ניתן לשמור בתיקייה <ph name="FOLDER_NAME" />. כל העריכות יישמרו בתיקייה<ph name="DOWNLOADS_FOLDER" /> שנמצאת בתיקיית ההורדות.</translation>
@@ -699,7 +699,7 @@
 <translation id="8336153091935557858">אתמול <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">תעתיק נפאלית</translation>
 <translation id="8336579025507394412">מקלדת איסלנדית</translation>
-<translation id="8342318071240498787">קובץ או ספריה עם אותו שם כבר קיימים.</translation>
+<translation id="8342318071240498787">קובץ או ספרייה עם אותו שם כבר קיימים.</translation>
 <translation id="8382450452152102026">בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">‏תעתוק (emandi → ఏమండీ)</translation>
 <translation id="8395901698320285466">מידות</translation>

@@ -31,11 +31,11 @@
 <translation id="2241627712206172106">‏אם אתה משתף מחשב, חברים ובני משפחה יכולים לגלוש בנפרד ולהגדיר את Chromium בדיוק כפי שהם רוצים.</translation>
 <translation id="2294245788148774212">‏אופציונלי: שליחה אוטומטית של נתוני אבחון ושימוש אל Google תעזור לשפר את התכונות ואת הביצועים של Chromium OS.</translation>
 <translation id="2343156876103232566">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chromium בשני המכשירים.</translation>
-<translation id="2347108572062610441">‏התוסף שינה את הדף שמוצג כשאתה מפעיל את Chromium.</translation>
+<translation id="2347108572062610441">‏התוסף שינה את הדף שמוצג כשמפעילים את Chromium.</translation>
 <translation id="2396765026452590966">‏התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג כשאתה מפעיל את Chromium.</translation>
 <translation id="2483889755041906834">‏ב-Chromium</translation>
-<translation id="2485422356828889247">הסר התקנה</translation>
-<translation id="2527042973354814951">‏הפעל מחדש את Chromium כדי להפעיל את <ph name="PLUGIN_NAME" /></translation>
+<translation id="2485422356828889247">הסרת התקנה</translation>
+<translation id="2527042973354814951">‏צריך להפעיל מחדש את Chromium כדי להפעיל את <ph name="PLUGIN_NAME" /></translation>
 <translation id="2535480412977113886">‏מערכת ההפעלה של Chromium לא הצליחה לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>
 <translation id="2560420686485554789">‏Chromium זקוק לגישה לאחסון כדי להוריד קבצים</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -55,7 +55,7 @@
 <translation id="2983934633046890458">‏Chromium מנסה לערוך את הסיסמאות.</translation>
 <translation id="3032706164202344641">‏Chromium לא יכול לבדוק את הסיסמאות שלך. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="3032787606318309379">‏הוספה ל-Chromium</translation>
-<translation id="3068515742935458733">‏עזור לשפר את Chromium על ידי שליחת דוחות קריסה ו-<ph name="UMA_LINK" /> אל Google</translation>
+<translation id="3068515742935458733">‏עזרה בשיפור Chromium על ידי שליחת <ph name="UMA_LINK" /> ודוחות קריסה אל Google</translation>
 <translation id="3086207596048762442">‏Chromium מבצע בדיקה לאיתור תוכנות לא רצויות פעם בשבוע</translation>
 <translation id="3103660991484857065">‏המתקין לא הצליח לבטל את דחיסת הארכיון. הורד שוב את Chromium.</translation>
 <translation id="3130323860337406239">‏Chromium משתמש במיקרופון שלך.</translation>
@@ -120,10 +120,10 @@
 <translation id="5398878173008909840">‏גרסה חדשה של Chromium זמינה כעת.</translation>
 <translation id="5416696090975899932">‏Chromium לא יכול להראות את התצוגה המקדימה של ההדפסה כשמציג ה-PDF המובנה חסר.</translation>
 <translation id="5427571867875391349">‏הגדרת Chromium כדפדפן ברירת המחדל שלך</translation>
-<translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium בגירסת ביטא</translation>
+<translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת בטא</translation>
 <translation id="5479196819031988440">‏מערכת ההפעלה של Chromium אינה יכול לפתוח את הדף הזה.</translation>
 <translation id="5480860683791598150">‏Chromium זקוק לגישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
-<translation id="549669000822060376">‏המתן בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
+<translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}two{‏עדכון של Chromium זמין כבר # ימים}many{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5631814766731275228">‏שם ותמונה ב-Chromium</translation>
@@ -247,7 +247,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8821041990367117597">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>
 <translation id="8880203542552872219">‏אם שינית את הסיסמה הזו, יש לערוך את הסיסמה השמורה ב-Chromium כך שהיא תתאים לסיסמה החדשה שלך.</translation>
-<translation id="8897323336392112261">‏הגדרה זו גם קובעת איזה דף מוצג שאתה מפעיל את Chromium או לוחץ על הלחצן 'דף הבית'.</translation>
+<translation id="8897323336392112261">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium או לוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="8907580949721785412">‏Chromium מנסה להציג סיסמאות. הקלד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="8941642502866065432">‏לא ניתן לעדכן את Chromium</translation>
 <translation id="8974095189086268230">‏מערכת ההפעלה של Chrome התאפשרה באמצעות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת.</translation>

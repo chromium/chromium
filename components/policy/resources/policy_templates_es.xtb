@@ -2648,7 +2648,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       </translation>
 <translation id="4892647988357350237">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor <ph name="STANDARD_TOS_DIALOG" /> o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
 
-      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que los proveedores de Unified Endpoint Management (administración unificada de puntos finales) puedan configurar.
 
       - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, la política BrowserSignin no tendrá ningún efecto.
 
@@ -3915,9 +3915,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se detecta la zona horaria</translation>
 <translation id="660567106648774919">Esta política está obsoleta. Se debe usar la política <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> en su lugar.
 
-      De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor "Inhabilitada" a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor "Habilitada" o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
+      De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor Inhabilitada a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor Habilitada o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
 
-      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que los proveedores de Unified Endpoint Management (administración unificada de puntos finales) puedan configurar.
 
       - Si se inhabilita esta política, la política BrowserSignin no tendrá ningún efecto.
 

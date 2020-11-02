@@ -1941,7 +1941,7 @@ Detalls addicionals:
 <translation id="8942355029279167844">L'administrador ha permès que <ph name="APP_NAME" /> reculli dades de diagnòstic per millorar l'experiència amb el producte. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> per obtenir més informació.</translation>
 <translation id="8943282376843390568">Verd llima</translation>
 <translation id="8957210676456822347">Autorització de portals captius</translation>
-<translation id="8962950042226115166">Lloc web sospitós</translation>
+<translation id="8962950042226115166">Aquest lloc web és sospitós</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggeriments:<ph name="MARKUP_2" />Assegureu-vos que teniu connexió de dades<ph name="MARKUP_3" />Torneu a carregar aquesta pàgina web més tard<ph name="MARKUP_4" />Comproveu l'adreça que heu introduït<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
 <translation id="8971063699422889582">El certificat del servidor ha caducat.</translation>

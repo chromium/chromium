@@ -843,7 +843,7 @@
 <translation id="1944528062465413897">Bluetooth ペア設定コード:</translation>
 <translation id="1944921356641260203">アップデートが見つかりました</translation>
 <translation id="1946577776959096882">アカウントを表示</translation>
-<translation id="1949584741547056205">スピード アンサー</translation>
+<translation id="1949584741547056205">クイック アンサー</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1954597385941141174">サイトが USB デバイスへの接続を要求できるようにする</translation>
 <translation id="1954813140452229842">共有フォルダのマウントエラー。認証情報を確認してもう一度お試しください。</translation>
@@ -2089,7 +2089,7 @@
 <translation id="3440761377721825626">サイトがプラグインを使用してパソコンにアクセスしようとしたときに確認する</translation>
 <translation id="3441653493275994384">画面</translation>
 <translation id="3441663102605358937">もう一度 <ph name="ACCOUNT" /> にログインしてこのアカウントの確認を行ってください</translation>
-<translation id="3445047461171030979">Google アシスタントのスピード アンサー</translation>
+<translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
