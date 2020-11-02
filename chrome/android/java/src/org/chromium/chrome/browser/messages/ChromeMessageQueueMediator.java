@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.messages;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
@@ -24,6 +26,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private BrowserControlsManager mBrowserControlsManager;
     private FullscreenManager mFullscreenManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+    private BrowserControlsObserver mBrowserControlsObserver;
 
     private FullscreenManager.Observer mFullScreenObserver = new Observer() {
         private int mToken = TokenHolder.INVALID_TOKEN;
@@ -55,10 +58,13 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mFullscreenManager = fullscreenManager;
         mQueueController = messageDispatcher;
         mFullscreenManager.addObserver(mFullScreenObserver);
+        mBrowserControlsObserver = new BrowserControlsObserver();
+        mBrowserControlsManager.addObserver(mBrowserControlsObserver);
     }
 
     public void destroy() {
         mFullscreenManager.removeObserver(mFullScreenObserver);
+        mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         mQueueController = null;
         mContainerCoordinator = null;
         mBrowserControlsManager = null;
@@ -67,12 +73,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
 
     @Override
     public void prepareToShow(Runnable runnable) {
-        // TODO(crbug.com/1123947): observe the browser control change to wait until animation
-        //                            is finished.
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
         mContainerCoordinator.showMessageContainer();
-        runnable.run();
+        if (BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager)) {
+            runnable.run();
+        } else {
+            mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(runnable);
+        }
     }
 
     @Override
@@ -97,5 +105,24 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
      */
     void resumeQueue(int token) {
         mQueueController.resume(token);
+    }
+
+    class BrowserControlsObserver implements BrowserControlsStateProvider.Observer {
+        private Runnable mRunOnControlsFullyVisible;
+
+        @Override
+        public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+                int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+            if (mRunOnControlsFullyVisible != null
+                    && BrowserControlsUtils.areBrowserControlsFullyVisible(
+                            mBrowserControlsManager)) {
+                mRunOnControlsFullyVisible.run();
+                mRunOnControlsFullyVisible = null;
+            }
+        }
+
+        void setOneTimeRunnableOnControlsFullyVisible(Runnable runnable) {
+            mRunOnControlsFullyVisible = runnable;
+        }
     }
 }
