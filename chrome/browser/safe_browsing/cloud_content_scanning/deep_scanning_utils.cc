@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace safe_browsing {
@@ -184,44 +183,6 @@ void RecordDeepScanMetrics(
         result.status() !=
             enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
       malware_verdict_success = false;
-    }
-  }
-
-  bool success = dlp_verdict_success && malware_verdict_success;
-  std::string result_value = BinaryUploadServiceResultToString(result, success);
-
-  // Update |success| so non-SUCCESS results don't log the bytes/sec metric.
-  success &= (result == BinaryUploadService::Result::SUCCESS);
-
-  RecordDeepScanMetrics(access_point, duration, total_bytes, result_value,
-                        success);
-}
-
-void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
-                           base::TimeDelta duration,
-                           int64_t total_bytes,
-                           const BinaryUploadService::Result& result,
-                           const DeepScanningClientResponse& response) {
-  // Don't record UMA metrics for this result.
-  if (result == BinaryUploadService::Result::UNAUTHORIZED)
-    return;
-  bool dlp_verdict_success = response.has_dlp_scan_verdict()
-                                 ? response.dlp_scan_verdict().status() ==
-                                       DlpDeepScanningVerdict::SUCCESS
-                                 : true;
-
-  bool malware_verdict_success = true;
-  if (response.has_malware_scan_verdict()) {
-    switch (response.malware_scan_verdict().verdict()) {
-      case MalwareDeepScanningVerdict::VERDICT_UNSPECIFIED:
-      case MalwareDeepScanningVerdict::SCAN_FAILURE:
-        malware_verdict_success = false;
-        break;
-      case MalwareDeepScanningVerdict::MALWARE:
-      case MalwareDeepScanningVerdict::UWS:
-      case MalwareDeepScanningVerdict::CLEAN:
-        malware_verdict_success = true;
-        break;
     }
   }
 

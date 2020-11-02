@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -29,7 +28,7 @@ namespace safe_browsing {
 
 // Access points used to record UMA metrics and specify which code location is
 // initiating a deep scan. Any new caller of
-// DeepScanningDialogDelegate::ShowForWebContents should add an access point
+// ContentAnalysisDelegate::CreateForWebContents should add an access point
 // here instead of re-using an existing value. histograms.xml should also be
 // updated by adding histograms with names
 //   "SafeBrowsing.DeepScan.<access-point>.BytesPerSeconds"
@@ -114,11 +113,6 @@ void RecordDeepScanMetrics(
 void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
                            base::TimeDelta duration,
                            int64_t total_bytes,
-                           const BinaryUploadService::Result& result,
-                           const DeepScanningClientResponse& response);
-void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
-                           base::TimeDelta duration,
-                           int64_t total_bytes,
                            const std::string& result,
                            bool success);
 
@@ -128,10 +122,7 @@ std::array<const base::FilePath::CharType*, 24> SupportedDlpFileTypes();
 // Returns true if the given file type is supported for DLP scanning.
 bool FileTypeSupportedForDlp(const base::FilePath& path);
 
-// Helper function to make DeepScanningClientResponses for tests.
-DeepScanningClientResponse SimpleDeepScanningClientResponseForTesting(
-    base::Optional<bool> dlp_success,
-    base::Optional<bool> malware_success);
+// Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(base::Optional<bool> dlp_success,
                                         base::Optional<bool> malware_success);

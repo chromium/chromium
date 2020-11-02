@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -78,23 +79,22 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   // - A DLP response with SUCCESS
   // - A malware respopnse with MALWARE, UWS, CLEAN
   RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
-                        DeepScanningClientResponse());
-  {
-    DlpDeepScanningVerdict dlp_verdict;
-    dlp_verdict.set_status(DlpDeepScanningVerdict::SUCCESS);
-    DeepScanningClientResponse response;
-    *response.mutable_dlp_scan_verdict() = dlp_verdict;
-
-    RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
-                          response);
-  }
-  for (const auto verdict :
-       {MalwareDeepScanningVerdict::MALWARE, MalwareDeepScanningVerdict::UWS,
-        MalwareDeepScanningVerdict::CLEAN}) {
-    MalwareDeepScanningVerdict malware_verdict;
-    malware_verdict.set_verdict(verdict);
-    DeepScanningClientResponse response;
-    *response.mutable_malware_scan_verdict() = malware_verdict;
+                        enterprise_connectors::ContentAnalysisResponse());
+  RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
+                        SimpleContentAnalysisResponseForTesting(
+                            /*dlp_success*/ true,
+                            /*malware_success*/ base::nullopt));
+  for (const std::string& verdict : {"malware", "uws", "safe"}) {
+    enterprise_connectors::ContentAnalysisResponse response;
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    if (verdict != "safe") {
+      auto* rule = malware_result->add_triggered_rules();
+      rule->set_rule_name("malware");
+      rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    }
 
     RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
                           response);
@@ -129,12 +129,14 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
 
 TEST_P(DeepScanningUtilsUMATest, UnsuccessfulDlpScanVerdicts) {
   // Record metrics for the 2 unsuccessful DLP scan possibilities.
-  for (const auto verdict : {DlpDeepScanningVerdict::FAILURE,
-                             DlpDeepScanningVerdict::STATUS_UNKNOWN}) {
-    DlpDeepScanningVerdict dlp_verdict;
-    dlp_verdict.set_status(verdict);
-    DeepScanningClientResponse response;
-    *response.mutable_dlp_scan_verdict() = dlp_verdict;
+  for (const auto status :
+       {enterprise_connectors::ContentAnalysisResponse::Result::FAILURE,
+        enterprise_connectors::ContentAnalysisResponse::Result::
+            STATUS_UNKNOWN}) {
+    enterprise_connectors::ContentAnalysisResponse response;
+    auto* dlp_result = response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(status);
 
     RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
                           response);
@@ -159,12 +161,14 @@ TEST_P(DeepScanningUtilsUMATest, UnsuccessfulDlpScanVerdicts) {
 
 TEST_P(DeepScanningUtilsUMATest, UnsuccessfulMalwareScanVerdict) {
   // Record metrics for the 2 unsuccessful malware scan possibilities.
-  for (const auto verdict : {MalwareDeepScanningVerdict::VERDICT_UNSPECIFIED,
-                             MalwareDeepScanningVerdict::SCAN_FAILURE}) {
-    MalwareDeepScanningVerdict malware_verdict;
-    malware_verdict.set_verdict(verdict);
-    DeepScanningClientResponse response;
-    *response.mutable_malware_scan_verdict() = malware_verdict;
+  for (const auto status :
+       {enterprise_connectors::ContentAnalysisResponse::Result::FAILURE,
+        enterprise_connectors::ContentAnalysisResponse::Result::
+            STATUS_UNKNOWN}) {
+    enterprise_connectors::ContentAnalysisResponse response;
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(status);
 
     RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
                           response);
@@ -221,7 +225,7 @@ TEST_P(DeepScanningUtilsUMATest, CancelledByUser) {
 
 TEST_P(DeepScanningUtilsUMATest, InvalidDuration) {
   RecordDeepScanMetrics(access_point(), kInvalidDuration, kTotalBytes, result(),
-                        DeepScanningClientResponse());
+                        enterprise_connectors::ContentAnalysisResponse());
   EXPECT_EQ(
       0u,
       histograms().GetTotalCountsForPrefix("SafeBrowsing.DeepScan.").size());
