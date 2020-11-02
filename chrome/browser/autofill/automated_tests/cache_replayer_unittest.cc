@@ -186,7 +186,6 @@ bool WriteJSON(const base::FilePath& file_path,
   // Make json list node that contains all query requests.
   base::Value::DictStorage urls_dict;
   for (const auto& request_response_pair : request_response_pairs) {
-    Value::DictStorage request_response_node;
     std::string serialized_request;
     std::string url;
     if (!MakeSerializedRequest(request_response_pair.first, request_type,
@@ -194,23 +193,25 @@ bool WriteJSON(const base::FilePath& file_path,
       return false;
     }
 
-    request_response_node["SerializedRequest"] =
-        std::make_unique<Value>(std::move(serialized_request));
-    request_response_node["SerializedResponse"] = std::make_unique<Value>(
+    Value::DictStorage request_response_node;
+    request_response_node.emplace("SerializedRequest",
+                                  std::move(serialized_request));
+    request_response_node.emplace(
+        "SerializedResponse",
         MakeSerializedResponse(request_response_pair.second));
     // Populate json dict node that contains Autofill Server requests per URL.
-    if (urls_dict.find(url) == urls_dict.end())
-      urls_dict[url] = std::make_unique<Value>(Value::ListStorage());
-    urls_dict[url]->Append(Value(std::move(request_response_node)));
+    // This will construct an empty list for `url` if it didn't exist already.
+    auto& url_list = urls_dict.emplace(url, Value::Type::LIST).first->second;
+    url_list.Append(Value(std::move(request_response_node)));
   }
 
   // Make json dict node that contains requests per domain.
   base::Value::DictStorage domains_dict;
-  domains_dict[kHostname] = std::make_unique<Value>(std::move(urls_dict));
+  domains_dict.emplace(kHostname, std::move(urls_dict));
 
   // Make json root dict.
   base::Value::DictStorage root_dict;
-  root_dict["Requests"] = std::make_unique<Value>(std::move(domains_dict));
+  root_dict.emplace("Requests", std::move(domains_dict));
 
   // Write content to JSON file.
   return WriteJSONNode(file_path, Value(std::move(root_dict)));
@@ -292,27 +293,27 @@ TEST_P(
   // Put some textual content for HTTP request. Content does not matter because
   // the Query content will be parsed from the URL that corresponds to the
   // dictionary key.
-  request_response_node["SerializedRequest"] =
-      std::make_unique<Value>(base::StrCat(
-          {"GET ", CreateQueryUrl("1234").c_str(), " HTTP/1.1\r\n\r\n"}));
-  request_response_node["SerializedResponse"] =
-      std::make_unique<Value>(MakeSerializedResponse(AutofillQueryResponse()));
+  request_response_node.emplace(
+      "SerializedRequest", base::StrCat({"GET ", CreateQueryUrl("1234").c_str(),
+                                         " HTTP/1.1\r\n\r\n"}));
+  request_response_node.emplace(
+      "SerializedResponse", MakeSerializedResponse(AutofillQueryResponse()));
+
+  base::Value::ListStorage url_list;
+  url_list.emplace_back(std::move(request_response_node));
+
   // Populate json dict node that contains Autofill Server requests per URL.
   base::Value::DictStorage urls_dict;
   // The query parameter in the URL cannot be parsed to a proto because
   // parameter value is in invalid format.
-  std::string invalid_request_url = CreateQueryUrl(GetParam());
-  urls_dict[invalid_request_url] =
-      std::make_unique<Value>(Value::ListStorage());
-  urls_dict[invalid_request_url]->Append(
-      Value(std::move(request_response_node)));
+  urls_dict.emplace(CreateQueryUrl(GetParam()), std::move(url_list));
 
   // Make json dict node that contains requests per domain.
   base::Value::DictStorage domains_dict;
-  domains_dict[kHostname] = std::make_unique<Value>(std::move(urls_dict));
+  domains_dict.emplace(kHostname, std::move(urls_dict));
   // Make json root dict.
   base::Value::DictStorage root_dict;
-  root_dict["Requests"] = std::make_unique<Value>(std::move(domains_dict));
+  root_dict.emplace("Requests", std::move(domains_dict));
   // Write content to JSON file.
   ASSERT_TRUE(WriteJSONNode(file_path, Value(std::move(root_dict))));
 

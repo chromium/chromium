@@ -92,8 +92,13 @@ class Value;
 class BASE_EXPORT Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
-  using DictStorage = flat_map<std::string, std::unique_ptr<Value>>;
   using ListStorage = std::vector<Value>;
+  using DictStorage = flat_map<std::string, Value>;
+
+  // Like `DictStorage`, but with std::unique_ptr in the mapped type. This is
+  // due to legacy reasons, and should be removed once no caller relies on
+  // stability of pointers anymore.
+  using LegacyDictStorage = flat_map<std::string, std::unique_ptr<Value>>;
 
   using ListView = CheckedContiguousRange<ListStorage>;
   using ConstListView = CheckedContiguousConstRange<ListStorage>;
@@ -463,6 +468,11 @@ class BASE_EXPORT Value {
   dict_iterator_proxy DictItems();
   const_dict_iterator_proxy DictItems() const;
 
+  // Transfers ownership of the underlying dict to the caller. Subsequent
+  // calls to DictItems() will return an empty dict.
+  // Note: This requires that type() is Type::DICTIONARY.
+  DictStorage TakeDict();
+
   // Returns the size of the dictionary, if the dictionary is empty, and clears
   // the dictionary. Note: These CHECK that type() is Type::DICTIONARY.
   size_t DictSize() const;
@@ -533,10 +543,16 @@ class BASE_EXPORT Value {
 
  protected:
   // Checked convenience accessors for dict and list.
-  const DictStorage& dict() const { return absl::get<DictStorage>(data_); }
-  DictStorage& dict() { return absl::get<DictStorage>(data_); }
+  const LegacyDictStorage& dict() const {
+    return absl::get<LegacyDictStorage>(data_);
+  }
+  LegacyDictStorage& dict() { return absl::get<LegacyDictStorage>(data_); }
   const ListStorage& list() const { return absl::get<ListStorage>(data_); }
   ListStorage& list() { return absl::get<ListStorage>(data_); }
+
+  // Internal constructors, allowing the simplify the implementation of Clone().
+  explicit Value(const LegacyDictStorage& storage);
+  explicit Value(LegacyDictStorage&& storage) noexcept;
 
  private:
   // Special case for doubles, which are aligned to 8 bytes on some
@@ -567,7 +583,7 @@ class BASE_EXPORT Value {
                 DoubleStorage,
                 std::string,
                 BlobStorage,
-                DictStorage,
+                LegacyDictStorage,
                 ListStorage>
       data_;
 };
@@ -577,15 +593,15 @@ class BASE_EXPORT Value {
 // are |std::string|s and should be UTF-8 encoded.
 class BASE_EXPORT DictionaryValue : public Value {
  public:
-  using const_iterator = DictStorage::const_iterator;
-  using iterator = DictStorage::iterator;
+  using const_iterator = LegacyDictStorage::const_iterator;
+  using iterator = LegacyDictStorage::iterator;
 
   // Returns |value| if it is a dictionary, nullptr otherwise.
   static std::unique_ptr<DictionaryValue> From(std::unique_ptr<Value> value);
 
   DictionaryValue();
-  explicit DictionaryValue(const DictStorage& in_dict);
-  explicit DictionaryValue(DictStorage&& in_dict) noexcept;
+  explicit DictionaryValue(const LegacyDictStorage& in_dict);
+  explicit DictionaryValue(LegacyDictStorage&& in_dict) noexcept;
 
   // Returns true if the current dictionary has a value for the given key.
   // DEPRECATED, use Value::FindKey(key) instead.
@@ -759,7 +775,7 @@ class BASE_EXPORT DictionaryValue : public Value {
 
    private:
     const DictionaryValue& target_;
-    DictStorage::const_iterator it_;
+    LegacyDictStorage::const_iterator it_;
   };
 
   // Iteration.

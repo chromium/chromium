@@ -76,7 +76,7 @@ bool TryCoalesceString(std::vector<base::Value>* buffer,
 
 base::Value CreateEmptyFragment() {
   base::Value::DictStorage storage;
-  storage.try_emplace("type", std::make_unique<base::Value>("fragment"));
+  storage.try_emplace("type", "fragment");
   return base::Value(storage);
 }
 
@@ -115,9 +115,8 @@ LogBuffer& operator<<(LogBuffer& buf, Tag&& tag) {
     return buf;
 
   base::Value::DictStorage storage;
-  storage.try_emplace("type", std::make_unique<base::Value>("element"));
-  storage.try_emplace("value",
-                      std::make_unique<base::Value>(std::move(tag.name)));
+  storage.try_emplace("type", "element");
+  storage.try_emplace("value", std::move(tag.name));
   buf.buffer_.emplace_back(std::move(storage));
   return buf;
 }
@@ -148,8 +147,7 @@ LogBuffer& operator<<(LogBuffer& buf, Attrib&& attrib) {
                        base::Value(std::move(attrib.value)));
   } else {
     base::Value::DictStorage dict;
-    dict.try_emplace(std::move(attrib.name),
-                     std::make_unique<base::Value>(std::move(attrib.value)));
+    dict.try_emplace(std::move(attrib.name), std::move(attrib.value));
     node.SetKey("attributes", base::Value(std::move(dict)));
   }
 
@@ -173,10 +171,10 @@ LogBuffer& operator<<(LogBuffer& buf, base::StringPiece text) {
     return buf;
 
   base::Value::DictStorage storage;
-  storage.try_emplace("type", std::make_unique<base::Value>("text"));
+  storage.try_emplace("type", "text");
   // This text is not HTML escaped because the rest of the frame work takes care
   // of that and it must not be escaped twice.
-  storage.try_emplace("value", std::make_unique<base::Value>(text));
+  storage.try_emplace("value", text);
   base::Value node_to_add(std::move(storage));
   AppendChildToLastNode(&buf.buffer_, std::move(node_to_add));
   return buf;

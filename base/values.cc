@@ -169,7 +169,7 @@ Value::Value(Type type) {
       data_.emplace<BlobStorage>();
       return;
     case Type::DICTIONARY:
-      data_.emplace<DictStorage>();
+      data_.emplace<LegacyDictStorage>();
       return;
     case Type::LIST:
       data_.emplace<ListStorage>();
@@ -221,14 +221,22 @@ Value::Value(base::span<const uint8_t> in_blob)
 Value::Value(BlobStorage&& in_blob) noexcept : data_(std::move(in_blob)) {}
 
 Value::Value(const DictStorage& in_dict)
-    : data_(absl::in_place_type_t<DictStorage>()) {
+    : data_(absl::in_place_type_t<LegacyDictStorage>()) {
+  dict().reserve(in_dict.size());
   for (const auto& it : in_dict) {
     dict().try_emplace(dict().end(), it.first,
-                       std::make_unique<Value>(it.second->Clone()));
+                       std::make_unique<Value>(it.second.Clone()));
   }
 }
 
-Value::Value(DictStorage&& in_dict) noexcept : data_(std::move(in_dict)) {}
+Value::Value(DictStorage&& in_dict) noexcept
+    : data_(absl::in_place_type_t<LegacyDictStorage>()) {
+  dict().reserve(in_dict.size());
+  for (auto& it : in_dict) {
+    dict().try_emplace(dict().end(), std::move(it.first),
+                       std::make_unique<Value>(std::move(it.second)));
+  }
+}
 
 Value::Value(span<const Value> in_list)
     : data_(absl::in_place_type_t<ListStorage>()) {
@@ -240,6 +248,18 @@ Value::Value(span<const Value> in_list)
 Value::Value(ListStorage&& in_list) noexcept : data_(std::move(in_list)) {}
 
 Value& Value::operator=(Value&& that) noexcept = default;
+
+Value::Value(const LegacyDictStorage& storage)
+    : data_(absl::in_place_type_t<LegacyDictStorage>()) {
+  dict().reserve(storage.size());
+  for (const auto& it : storage) {
+    dict().try_emplace(dict().end(), it.first,
+                       std::make_unique<Value>(it.second->Clone()));
+  }
+}
+
+Value::Value(LegacyDictStorage&& storage) noexcept
+    : data_(std::move(storage)) {}
 
 Value::Value(absl::monostate) {}
 
@@ -719,6 +739,18 @@ Value::const_dict_iterator_proxy Value::DictItems() const {
   return const_dict_iterator_proxy(&dict());
 }
 
+Value::DictStorage Value::TakeDict() {
+  DictStorage storage;
+  storage.reserve(dict().size());
+  for (auto& pair : dict()) {
+    storage.try_emplace(storage.end(), std::move(pair.first),
+                        std::move(*pair.second));
+  }
+
+  dict().clear();
+  return storage;
+}
+
 size_t Value::DictSize() const {
   return dict().size();
 }
@@ -913,8 +945,8 @@ bool operator<(const Value& lhs, const Value& rhs) {
       return std::lexicographical_compare(
           std::begin(lhs.dict()), std::end(lhs.dict()), std::begin(rhs.dict()),
           std::end(rhs.dict()),
-          [](const Value::DictStorage::value_type& u,
-             const Value::DictStorage::value_type& v) {
+          [](const Value::LegacyDictStorage::value_type& u,
+             const Value::LegacyDictStorage::value_type& v) {
             return std::tie(u.first, *u.second) < std::tie(v.first, *v.second);
           });
     case Value::Type::LIST:
@@ -1022,9 +1054,12 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
 }
 
 DictionaryValue::DictionaryValue() : Value(Type::DICTIONARY) {}
-DictionaryValue::DictionaryValue(const DictStorage& in_dict) : Value(in_dict) {}
-DictionaryValue::DictionaryValue(DictStorage&& in_dict) noexcept
-    : Value(std::move(in_dict)) {}
+
+DictionaryValue::DictionaryValue(const LegacyDictStorage& storage)
+    : Value(storage) {}
+
+DictionaryValue::DictionaryValue(LegacyDictStorage&& storage) noexcept
+    : Value(std::move(storage)) {}
 
 bool DictionaryValue::HasKey(StringPiece key) const {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));

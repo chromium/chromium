@@ -33,11 +33,6 @@ bool are_equal(InputIterator1 first1,
 
 }  // namespace
 
-TEST(ValueIteratorsTest, SameDictStorage) {
-  static_assert(std::is_same<Value::DictStorage, DictStorage>::value,
-                "DictStorage differs between Value and Value Iterators.");
-}
-
 TEST(ValueIteratorsTest, IsAssignable) {
   static_assert(
       !std::is_assignable<dict_iterator::reference::first_type, std::string>(),

@@ -167,7 +167,7 @@ bool ReadDictionaryValue(const base::Pickle* m,
   if (!ReadParam(m, iter, &size))
     return false;
 
-  std::vector<std::pair<std::string, std::unique_ptr<base::Value>>> entries;
+  std::vector<base::Value::LegacyDictStorage::value_type> entries;
   entries.resize(size);
   for (auto& entry : entries) {
     entry.second = std::make_unique<base::Value>();
@@ -176,7 +176,8 @@ bool ReadDictionaryValue(const base::Pickle* m,
       return false;
   }
 
-  *value = base::DictionaryValue(base::Value::DictStorage(std::move(entries)));
+  *value =
+      base::DictionaryValue(base::Value::LegacyDictStorage(std::move(entries)));
   return true;
 }
 

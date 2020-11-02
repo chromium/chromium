@@ -256,9 +256,9 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     function->set_has_callback(true);
 
     base::Value::DictStorage dict;
-    dict.emplace("appId", std::make_unique<base::Value>(app_id));
-    dict.emplace("tabId", std::make_unique<base::Value>(tab_id_));
-    dict.emplace("origin", std::make_unique<base::Value>(app_id));
+    dict.emplace("appId", app_id);
+    dict.emplace("tabId", tab_id_);
+    dict.emplace("origin", app_id);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
     auto args_list = base::ListValue::From(std::move(args));

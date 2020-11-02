@@ -85,17 +85,14 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
   // move-only types and initializer lists don't mix. Initializer lists can't be
   // modified: thus it's not possible to move.
   std::vector<base::Value::DictStorage::value_type> storage;
-  storage.emplace_back("null", std::make_unique<base::Value>());
-  storage.emplace_back("bool", std::make_unique<base::Value>(false));
-  storage.emplace_back("int", std::make_unique<base::Value>(0));
-  storage.emplace_back("double", std::make_unique<base::Value>(0.0));
-  storage.emplace_back("string", std::make_unique<base::Value>("0"));
-  storage.emplace_back(
-      "binary", std::make_unique<base::Value>(base::Value::BlobStorage({0})));
-  storage.emplace_back(
-      "dictionary", std::make_unique<base::Value>(base::Value::DictStorage()));
-  storage.emplace_back(
-      "list", std::make_unique<base::Value>(base::Value::ListStorage()));
+  storage.emplace_back("null", base::Value());
+  storage.emplace_back("bool", false);
+  storage.emplace_back("int", 0);
+  storage.emplace_back("double", 0.0);
+  storage.emplace_back("string", "0");
+  storage.emplace_back("binary", base::Value::BlobStorage({0}));
+  storage.emplace_back("dictionary", base::Value::DictStorage());
+  storage.emplace_back("list", base::Value::ListStorage());
 
   base::Value in(base::Value::DictStorage(std::move(storage)));
   base::Value out;

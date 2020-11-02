@@ -84,9 +84,8 @@ void FillInSystemEnvironment(base::Value::DictStorage& ds) {
   LOG(WARNING) << "Unknown Processor.";
 #endif
 
-  ds["system"] =
-      std::make_unique<base::Value>(SkiaGoldPixelDiff::GetPlatform());
-  ds["processor"] = std::make_unique<base::Value>(processor);
+  ds["system"] = base::Value(SkiaGoldPixelDiff::GetPlatform());
+  ds["processor"] = base::Value(processor);
 }
 
 // Returns whether image comparison failure should result in Gerrit comments.

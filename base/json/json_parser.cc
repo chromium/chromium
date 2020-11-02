@@ -422,8 +422,7 @@ Optional<Value> JSONParser::ConsumeDictionary() {
       return nullopt;
     }
 
-    dict_storage.emplace_back(key.DestructiveAsString(),
-                              std::make_unique<Value>(std::move(*value)));
+    dict_storage.emplace_back(key.DestructiveAsString(), std::move(*value));
 
     token = GetNextToken();
     if (token == T_LIST_SEPARATOR) {

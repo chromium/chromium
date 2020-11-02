@@ -20,8 +20,8 @@ bool StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value>::Read(
   dict_storage.reserve(view.size());
   for (size_t i = 0; i < view.size(); ++i) {
     base::StringPiece key;
-    auto value = std::make_unique<base::Value>();
-    if (!view.keys().Read(i, &key) || !view.values().Read(i, value.get()))
+    base::Value value;
+    if (!view.keys().Read(i, &key) || !view.values().Read(i, &value))
       return false;
     dict_storage.emplace_back(key.as_string(), std::move(value));
   }
