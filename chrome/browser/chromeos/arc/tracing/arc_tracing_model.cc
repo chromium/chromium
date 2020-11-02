@@ -25,6 +25,8 @@ constexpr char kCpuIdle[] = ": cpu_idle: ";
 constexpr int kCpuIdleLength = sizeof(kCpuIdle) - 1;
 constexpr char kIntelGpuFreqChange[] = ": intel_gpu_freq_change: ";
 constexpr int kIntelGpuFreqChangeLength = sizeof(kIntelGpuFreqChange) - 1;
+constexpr char kMsmGpuFreqChange[] = ": msm_gpu_freq_change: ";
+constexpr int kMsmGpuFreqChangeLength = sizeof(kMsmGpuFreqChange) - 1;
 constexpr char kSchedWakeUp[] = ": sched_wakeup: ";
 constexpr int kSchedWakeUpLength = sizeof(kSchedWakeUp) - 1;
 constexpr char kSchedSwitch[] = ": sched_switch: ";
@@ -594,6 +596,13 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
                         kIntelGpuFreqChangeLength)) {
       if (!HandleGpuFreq(&system_model_.memory_events(), timestamp, line,
                          separator_position + kIntelGpuFreqChangeLength)) {
+        return false;
+      }
+    } else if (!strncmp(&line[separator_position], kMsmGpuFreqChange,
+                        kMsmGpuFreqChangeLength)) {
+      // msm_gpu_freq_change event has same format as intel_gpu_freq_change:
+      if (!HandleGpuFreq(&system_model_.memory_events(), timestamp, line,
+                         separator_position + kMsmGpuFreqChangeLength)) {
         return false;
       }
     }

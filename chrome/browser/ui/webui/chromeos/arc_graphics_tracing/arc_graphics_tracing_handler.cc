@@ -279,6 +279,7 @@ base::trace_event::TraceConfig GetTracingConfig(ArcGraphicsTracingMode mode) {
       // predefined set of events in each category. Limit events to what we
       // actually analyze in ArcTracingModel.
       config.EnableSystraceEvent("i915:intel_gpu_freq_change");
+      config.EnableSystraceEvent("drm_msm_gpu:msm_gpu_freq_change");
       config.EnableSystraceEvent("power:cpu_idle");
       config.EnableSystraceEvent("sched:sched_wakeup");
       config.EnableSystraceEvent("sched:sched_switch");
@@ -289,6 +290,7 @@ base::trace_event::TraceConfig GetTracingConfig(ArcGraphicsTracingMode mode) {
           "-*,exo,viz,toplevel,gpu", base::trace_event::RECORD_CONTINUOUSLY);
       config.EnableSystrace();
       config.EnableSystraceEvent("i915:intel_gpu_freq_change");
+      config.EnableSystraceEvent("drm_msm_gpu:msm_gpu_freq_change");
       return config;
     }
   }
