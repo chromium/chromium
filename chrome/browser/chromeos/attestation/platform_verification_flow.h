@@ -215,20 +215,18 @@ class PlatformVerificationFlow
       scoped_refptr<base::RefCountedData<ChallengeContext>> context);
 
   // A callback called when a challenge signing request has completed.  The
-  // |certificate_chain| is the platform certificate chain for the key which
-  // signed the |challenge|.  The arguments to ChallengePlatformKey are in
-  // |context|. |account_id| identifies the user for which the certificate was
-  // requested. |is_expiring_soon| will be set iff a certificate in the
-  // |certificate_chain| is expiring soon. |operation_success| is true iff the
-  // challenge signing operation was successful.  If it was successful,
-  // |response_data| holds the challenge response and the method will invoke
-  // |context.callback|.
+  // `certificate_chain` is the platform certificate chain for the key which
+  // signed the `challenge`.  The arguments to ChallengePlatformKey are in
+  // `context`. `account_id` identifies the user for which the certificate was
+  // requested. `is_expiring_soon` will be set iff a certificate in the
+  // `certificate_chain` is expiring soon. `reply` is returned from
+  // `AttestationClient`. Upon success, the method will invoke
+  // `context.callback`.
   void OnChallengeReady(ChallengeContext context,
                         const AccountId& account_id,
                         const std::string& certificate_chain,
                         bool is_expiring_soon,
-                        bool operation_success,
-                        const std::string& response_data);
+                        const ::attestation::SignSimpleChallengeReply& reply);
 
   // Checks whether attestation for content protection is allowed by policy.
   bool IsAttestationAllowedByPolicy();

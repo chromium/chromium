@@ -134,6 +134,18 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     virtual ::attestation::GetKeyInfoReply* GetMutableKeyInfoReply(
         const std::string& username,
         const std::string& label) = 0;
+
+    // Verifies if `signed_data` is signed against `challenge`.
+    virtual bool VerifySimpleChallengeResponse(
+        const std::string& challenge,
+        const ::attestation::SignedData& signed_data) = 0;
+
+    // Sets the status code returned by `SignSimpleChallenge()`.
+    virtual void set_sign_simple_challenge_status(
+        ::attestation::AttestationStatus status) = 0;
+    // Allowlists the key used to sign simple challenge.
+    virtual void AllowlistSignSimpleChallengeKey(const std::string& username,
+                                                 const std::string& label) = 0;
   };
 
   // Not copyable or movable.

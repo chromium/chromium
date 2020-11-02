@@ -17,6 +17,8 @@ namespace {
 
 constexpr int kCertificateNotAssigned = 0;
 constexpr char kFakeCertPrefix[] = "fake cert";
+constexpr char kResponseSuffix[] = "_response";
+constexpr char kSignatureSuffix[] = "_signature";
 
 // Posts |callback| on the current thread's task runner, passing it the
 // |response| message.
@@ -234,7 +236,20 @@ void FakeAttestationClient::SignEnterpriseChallenge(
 void FakeAttestationClient::SignSimpleChallenge(
     const ::attestation::SignSimpleChallengeRequest& request,
     SignSimpleChallengeCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::SignSimpleChallengeReply reply;
+  if (allowlisted_sign_simple_challenge_keys_.count(
+          {request.username(), request.key_label()}) == 0) {
+    reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+  } else {
+    reply.set_status(sign_simple_challenge_status_);
+  }
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    ::attestation::SignedData signed_data;
+    signed_data.set_data(request.challenge() + kResponseSuffix);
+    signed_data.set_signature(request.challenge() + kSignatureSuffix);
+    reply.set_challenge_response(signed_data.SerializeAsString());
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::SetKeyPayload(
@@ -364,6 +379,24 @@ void FakeAttestationClient::set_enrollment_id_dbus_error_count(int count) {
   request.set_key_label(label);
   // If there doesn't exist the entry yet, just create a new one.
   return &(key_info_database_[request]);
+}
+
+bool FakeAttestationClient::VerifySimpleChallengeResponse(
+    const std::string& challenge,
+    const ::attestation::SignedData& signed_data) {
+  return signed_data.data() == challenge + kResponseSuffix &&
+         signed_data.signature() == challenge + kSignatureSuffix;
+}
+
+void FakeAttestationClient::set_sign_simple_challenge_status(
+    ::attestation::AttestationStatus status) {
+  sign_simple_challenge_status_ = status;
+}
+
+void FakeAttestationClient::AllowlistSignSimpleChallengeKey(
+    const std::string& username,
+    const std::string& label) {
+  allowlisted_sign_simple_challenge_keys_.insert({username, label});
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

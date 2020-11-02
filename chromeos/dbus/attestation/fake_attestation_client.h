@@ -9,7 +9,9 @@
 
 #include <deque>
 #include <map>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
@@ -118,6 +120,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   ::attestation::GetKeyInfoReply* GetMutableKeyInfoReply(
       const std::string& username,
       const std::string& label) override;
+  bool VerifySimpleChallengeResponse(
+      const std::string& challenge,
+      const ::attestation::SignedData& signed_data) override;
+  void set_sign_simple_challenge_status(
+      ::attestation::AttestationStatus status) override;
+  void AllowlistSignSimpleChallengeKey(const std::string& username,
+                                       const std::string& label) override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -166,6 +175,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
            ::attestation::GetKeyInfoReply,
            GetKeyInfoRequestComparator>
       key_info_database_;
+
+  // The status returned by `SignSimpleChallenge()`.
+  ::attestation::AttestationStatus sign_simple_challenge_status_ =
+      ::attestation::STATUS_SUCCESS;
+  // The table of username-label pairs of which keys can perform simple sign
+  // challenge.
+  std::set<std::pair<std::string, std::string>>
+      allowlisted_sign_simple_challenge_keys_;
 };
 
 }  // namespace chromeos

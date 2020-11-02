@@ -303,13 +303,14 @@ void PlatformVerificationFlow::OnCertificateReady(
   bool is_expiring_soon = (expiry_status == EXPIRY_STATUS_EXPIRING_SOON);
   std::string key_name = kContentProtectionKeyPrefix + context->data.service_id;
   std::string challenge = context->data.challenge;
-  cryptohome::AsyncMethodCaller::DataCallback cryptohome_callback =
-      base::BindOnce(&PlatformVerificationFlow::OnChallengeReady, this,
-                     std::move(*context).data, account_id, certificate_chain,
-                     is_expiring_soon);
-  async_caller_->TpmAttestationSignSimpleChallenge(
-      KEY_USER, cryptohome::Identification(account_id), std::move(key_name),
-      std::move(challenge), std::move(cryptohome_callback));
+  ::attestation::SignSimpleChallengeRequest request;
+  request.set_username(cryptohome::Identification(account_id).id());
+  request.set_key_label(std::move(key_name));
+  request.set_challenge(std::move(challenge));
+  AttestationClient::Get()->SignSimpleChallenge(
+      request, base::BindOnce(&PlatformVerificationFlow::OnChallengeReady, this,
+                              std::move(*context).data, account_id,
+                              certificate_chain, is_expiring_soon));
 }
 
 void PlatformVerificationFlow::OnCertificateTimeout(
@@ -323,15 +324,16 @@ void PlatformVerificationFlow::OnChallengeReady(
     const AccountId& account_id,
     const std::string& certificate_chain,
     bool is_expiring_soon,
-    bool operation_success,
-    const std::string& response_data) {
-  if (!operation_success) {
-    LOG(ERROR) << "PlatformVerificationFlow: Failed to sign challenge.";
+    const ::attestation::SignSimpleChallengeReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "PlatformVerificationFlow: Failed to sign challenge: "
+               << reply.status();
     ReportError(std::move(context).callback, INTERNAL_ERROR);
     return;
   }
   chromeos::attestation::SignedData signed_data_pb;
-  if (response_data.empty() || !signed_data_pb.ParseFromString(response_data)) {
+  if (reply.challenge_response().empty() ||
+      !signed_data_pb.ParseFromString(reply.challenge_response())) {
     LOG(ERROR) << "PlatformVerificationFlow: Failed to parse response data.";
     ReportError(std::move(context).callback, INTERNAL_ERROR);
     return;
