@@ -130,14 +130,16 @@ bool AXMenuListOption::OnNativeClickAction() {
   if (!element_)
     return false;
 
-  // Clicking on an option within a menu list should first select that item,
-  // then toggle whether the menu list is showing.
-  element_->SetSelected(true);
+  if (IsA<AXMenuListPopup>(ParentObject())) {
+    // Clicking on an option within a menu list should first select that item
+    // (which should include firing `input` and `change` events), then toggle
+    // whether the menu list is showing.
+    static_cast<HTMLElement*>(element_)->AccessKeyAction(true);
 
-  // Calling OnNativeClickAction on the parent select element will toggle
-  // it open or closed.
-  if (IsA<AXMenuListPopup>(ParentObject()))
+    // Calling OnNativeClickAction on the parent select element will toggle
+    // it open or closed.
     return ParentObject()->OnNativeClickAction();
+  }
 
   return AXNodeObject::OnNativeClickAction();
 }
