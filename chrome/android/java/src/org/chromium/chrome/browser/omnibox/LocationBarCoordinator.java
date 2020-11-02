@@ -54,11 +54,12 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
      * LocationBarCoordinatorPhone} or {@link LocationBarCoordinatorTablet}, depending on the type
-     * of {@code locationBarLayout}.
+     * of {@code locationBarLayout}; no sub-coordinator is created for other LocationBarLayout
+     * subclasses.
      * {@code LocationBarCoordinator} owns the subcoordinator. Destroying the former destroys the
      * latter.
      *
-     * @param locationBarLayout Inflated {@link LocationBarPhone} or {@link LocationBarTablet}.
+     * @param locationBarLayout Inflated {@link LocationBarLayout}.
      *         {@code LocationBarCoordinator} takes ownership and will destroy this object.
      * @param profileObservableSupplier The supplier of the active profile.
      * @param locationBarDataProvider {@link LocationBarDataProvider} to be used for accessing
@@ -73,8 +74,6 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
      * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
      *         incognito state.
      * @param activityLifecycleDispatcher Allows observation of the activity state.
-     * @throws IllegalArgumentException if the view is neither {@link LocationBarPhone} nor {@link
-     *         LocationBarTablet}.
      */
     public LocationBarCoordinator(View locationBarLayout,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -92,10 +91,6 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
         } else if (locationBarLayout instanceof LocationBarTablet) {
             mSubCoordinator =
                     new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
-        } else {
-            assert false : "Expected LocationBarPhone or LocationBarTablet, got "
-                           + locationBarLayout.getClass();
-            throw new IllegalArgumentException(locationBarLayout.getClass().toString());
         }
 
         mLocationbarDataProvider = locationBarDataProvider;
