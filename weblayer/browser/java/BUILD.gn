@@ -38,6 +38,7 @@ android_resources("weblayer_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/infobars/android:java_resources",
+    "//components/omnibox/browser:java_resources",
     "//components/page_info/android:java_resources",
     "//components/permissions/android:java_resources",
 

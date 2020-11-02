@@ -220,7 +220,7 @@ ChromePageInfoDelegate::GetPageSpecificContentSettingsDelegate() {
 
 #if defined(OS_ANDROID)
 const base::string16 ChromePageInfoDelegate::GetClientApplicationName() {
-  return l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
 }
 #endif
 

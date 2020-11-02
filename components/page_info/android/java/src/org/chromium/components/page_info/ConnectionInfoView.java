@@ -6,6 +6,7 @@ package org.chromium.components.page_info;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -54,6 +55,7 @@ public class ConnectionInfoView implements OnClickListener {
     private Button mResetCertDecisionsButton;
     private String mLinkUrl;
     private VrHandler mVrHandler;
+    private final boolean mIsV2Enabled;
 
     /**
      * Delegate that embeds the ConnectionInfoView. Must call ConnectionInfoView::onDismiss when
@@ -73,6 +75,7 @@ public class ConnectionInfoView implements OnClickListener {
 
     private ConnectionInfoView(Context context, WebContents webContents,
             ConnectionInfoDelegate delegate, VrHandler vrHandler) {
+        mIsV2Enabled = PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2);
         mContext = context;
         mDelegate = delegate;
         mWebContents = webContents;
@@ -82,12 +85,23 @@ public class ConnectionInfoView implements OnClickListener {
 
         mContainer = new LinearLayout(mContext);
         mContainer.setOrientation(LinearLayout.VERTICAL);
-        mPaddingWide =
-                (int) context.getResources().getDimension(R.dimen.connection_info_padding_wide);
-        mPaddingThin =
-                (int) context.getResources().getDimension(R.dimen.connection_info_padding_thin);
-        mContainer.setPadding(
-                mPaddingWide, mPaddingWide, mPaddingWide, mPaddingWide - mPaddingThin);
+        // TODO(crbug.com/1077766): Rename mPaddingWide and mPaddingThin to mPaddingSides and
+        // mPaddingVertical respectively when cleaning up V2 enabled tags
+        if (mIsV2Enabled) {
+            mPaddingWide = (int) context.getResources().getDimension(
+                    R.dimen.page_info_popup_padding_sides);
+            mPaddingThin = (int) context.getResources().getDimension(
+                    R.dimen.page_info_popup_padding_vertical);
+            mContainer.setPadding(mPaddingWide, mPaddingThin, mPaddingThin, mPaddingWide);
+
+        } else {
+            mPaddingWide =
+                    (int) context.getResources().getDimension(R.dimen.connection_info_padding_wide);
+            mPaddingThin =
+                    (int) context.getResources().getDimension(R.dimen.connection_info_padding_thin);
+            mContainer.setPadding(
+                    mPaddingWide, mPaddingWide, mPaddingWide, mPaddingWide - mPaddingThin);
+        }
 
         // This needs to come after other member initialization.
         mNativeConnectionInfoView = ConnectionInfoViewJni.get().init(this, mWebContents);
@@ -99,8 +113,8 @@ public class ConnectionInfoView implements OnClickListener {
      */
     @CalledByNative
     private void addCertificateSection(
-            int iconId, String headline, String description, String label) {
-        View section = addSection(iconId, headline, description);
+            int iconId, String headline, String description, String label, int iconColorId) {
+        View section = addSection(iconId, headline, description, iconColorId);
         assert mCertificateLayout == null;
         mCertificateLayout = (ViewGroup) section.findViewById(R.id.connection_info_text_layout);
         if (label != null && !label.isEmpty()) {
@@ -113,20 +127,29 @@ public class ConnectionInfoView implements OnClickListener {
      * description. Most likely headline for description is empty
      */
     @CalledByNative
-    private void addDescriptionSection(int iconId, String headline, String description) {
-        View section = addSection(iconId, headline, description);
+    private void addDescriptionSection(
+            int iconId, String headline, String description, int iconColorId) {
+        View section = addSection(iconId, headline, description, iconColorId);
         assert mDescriptionLayout == null;
         mDescriptionLayout = section.findViewById(R.id.connection_info_text_layout);
     }
 
-    private View addSection(int iconId, String headline, String description) {
-        View section = LayoutInflater.from(mContext).inflate(R.layout.connection_info, null);
+    private View addSection(int iconId, String headline, String description, int iconColorId) {
+        View section = mIsV2Enabled
+                ? LayoutInflater.from(mContext).inflate(R.layout.connection_info_v2, null)
+                : LayoutInflater.from(mContext).inflate(R.layout.connection_info, null);
         ImageView i = section.findViewById(R.id.connection_info_icon);
         i.setImageResource(iconId);
+        if (mIsV2Enabled) {
+            ApiCompatibilityUtils.setImageTintList(
+                    i, ColorStateList.valueOf(mContext.getResources().getColor(iconColorId)));
+        }
 
-        TextView h = section.findViewById(R.id.connection_info_headline);
-        h.setText(headline);
-        if (TextUtils.isEmpty(headline)) h.setVisibility(View.GONE);
+        if (!mIsV2Enabled) {
+            TextView h = section.findViewById(R.id.connection_info_headline);
+            h.setText(headline);
+            if (TextUtils.isEmpty(headline)) h.setVisibility(View.GONE);
+        }
 
         TextView d = section.findViewById(R.id.connection_info_description);
         d.setText(description);

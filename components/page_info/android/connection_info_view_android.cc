@@ -85,6 +85,8 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
   {
     int icon_id = page_info_client_->GetJavaResourceId(
         PageInfoUI::GetIdentityIconID(identity_info.identity_status));
+    int icon_color_id = page_info_client_->GetJavaResourceId(
+        PageInfoUI::GetIdentityIconColorID(identity_info.identity_status));
 
     // The headline and the certificate dialog link of the site's identity
     // section is only displayed if the site's identity was verified. If the
@@ -110,7 +112,8 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
 
     Java_ConnectionInfoView_addCertificateSection(
         env, popup_jobject_, icon_id, ConvertUTF8ToJavaString(env, headline),
-        description, ConvertUTF16ToJavaString(env, certificate_label));
+        description, ConvertUTF16ToJavaString(env, certificate_label),
+        icon_color_id);
 
     if (identity_info.show_ssl_decision_revoke_button) {
       base::string16 reset_button_label = l10n_util::GetStringUTF16(
@@ -124,11 +127,13 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
   {
     int icon_id = page_info_client_->GetJavaResourceId(
         PageInfoUI::GetConnectionIconID(identity_info.connection_status));
+    int icon_color_id = page_info_client_->GetJavaResourceId(
+        PageInfoUI::GetConnectionIconColorID(identity_info.connection_status));
 
     ScopedJavaLocalRef<jstring> description = ConvertUTF8ToJavaString(
         env, identity_info.connection_status_description);
-    Java_ConnectionInfoView_addDescriptionSection(env, popup_jobject_, icon_id,
-                                                  nullptr, description);
+    Java_ConnectionInfoView_addDescriptionSection(
+        env, popup_jobject_, icon_id, nullptr, description, icon_color_id);
   }
 
   Java_ConnectionInfoView_addMoreInfoLink(

@@ -25,10 +25,12 @@
 // PageInfoUI images, used in ConnectionInfoView
 // Good:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD, R.drawable.pageinfo_good)
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD_V2, R.drawable.omnibox_https_valid)
 // Warnings:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_WARNING_MINOR, R.drawable.pageinfo_warning)
 // Bad:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD, R.drawable.pageinfo_bad)
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD_V2, R.drawable.omnibox_not_secure_warning)
 // Should never occur, use warning just in case:
 // Enterprise managed: ChromeOS only.
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_ENTERPRISE_MANAGED,
@@ -39,3 +41,11 @@ DECLARE_RESOURCE_ID(IDR_PAGEINFO_INFO, R.drawable.pageinfo_warning)
 // Major warning: Used on insecure pages, which don't show the connection info
 // popup.
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_WARNING_MAJOR, R.drawable.pageinfo_warning)
+
+// PageInfoUI colors, used in ConnectionInfoView
+// Good:
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD_COLOR, R.color.default_icon_color)
+// Warning:
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_WARNING_COLOR, R.color.default_icon_color_blue)
+// Bad:
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD_COLOR, R.color.default_text_color_error)

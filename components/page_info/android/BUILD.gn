@@ -49,6 +49,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/pageinfo_warning.png",
     "java/res/drawable/ic_tune_24dp.xml",
     "java/res/layout/connection_info.xml",
+    "java/res/layout/connection_info_v2.xml",
     "java/res/layout/cookie_controls_view.xml",
     "java/res/layout/page_info.xml",
     "java/res/layout/page_info_container.xml",
