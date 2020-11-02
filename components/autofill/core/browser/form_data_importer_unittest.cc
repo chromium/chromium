@@ -1671,37 +1671,6 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   // Set the page language to match the localized country value and try again.
   autofill_client_->GetLanguageState()->SetOriginalLanguage("de");
 
-  // TODO(crbug.com/1075604): Remove test with disabled feature.
-  // Verify that nothing is changed if using the page language feature is not
-  // enabled.
-  scoped_feature_list_.Reset();
-  if (StructuredNames()) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillEnableSupportForMoreStructureInNames},
-        {features::kAutofillUsePageLanguageToTranslateCountryNames});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kAutofillEnableSupportForMoreStructureInNames,
-             features::kAutofillUsePageLanguageToTranslateCountryNames});
-  }
-  ImportAddressProfiles(/*extraction_successful=*/false, form_structure);
-
-  // There should be no imported address profile.
-  ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
-
-  // Enable the feature and to test if the profile can now be imported.
-  scoped_feature_list_.Reset();
-  if (StructuredNames()) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillEnableSupportForMoreStructureInNames,
-         features::kAutofillUsePageLanguageToTranslateCountryNames},
-        {});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillUsePageLanguageToTranslateCountryNames},
-        {features::kAutofillEnableSupportForMoreStructureInNames});
-  }
   ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   // There should be one imported address profile.

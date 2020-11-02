@@ -585,24 +585,20 @@ bool FormDataImporter::ImportAddressProfileForSection(
     // Reject profiles with invalid country information.
     if (server_field_type == ADDRESS_HOME_COUNTRY &&
         candidate_profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty()) {
-      // TODO(crbug.com/1075604): Remove branch with disabled feature.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillUsePageLanguageToTranslateCountryNames)) {
-        // The country code was not successfully determined from the value in
-        // the country field. This can be caused by a localization that does not
-        // match the |app_locale|. Try setting the value again using the
-        // language of the page. Note, there should be a locale associated with
-        // every language code.
-        std::string page_language;
-        const translate::LanguageState* language_state =
-            client_->GetLanguageState();
-        if (language_state)
-          page_language = language_state->original_language();
-        // Retry to set the country of there is known page language.
-        if (!page_language.empty()) {
-          candidate_profile.SetInfoWithVerificationStatus(
-              field_type, value, page_language, VerificationStatus::kObserved);
-        }
+      // The country code was not successfully determined from the value in
+      // the country field. This can be caused by a localization that does not
+      // match the |app_locale|. Try setting the value again using the
+      // language of the page. Note, there should be a locale associated with
+      // every language code.
+      std::string page_language;
+      const translate::LanguageState* language_state =
+          client_->GetLanguageState();
+      if (language_state)
+        page_language = language_state->original_language();
+      // Retry to set the country of there is known page language.
+      if (!page_language.empty()) {
+        candidate_profile.SetInfoWithVerificationStatus(
+            field_type, value, page_language, VerificationStatus::kObserved);
       }
       // Check if the country code was still not determined correctly.
       if (candidate_profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty()) {

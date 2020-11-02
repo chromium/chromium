@@ -283,13 +283,6 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// TODO(crbug.com/1075604): Remove once launched.
-// Controls whether the page language is used as a fall-back locale to translate
-// the country name when a profile is imported from a form.
-const base::Feature kAutofillUsePageLanguageToTranslateCountryNames{
-    "AutofillUsePageLanguageToTranslateCountryNames",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to use the |ParseCityStateCountryZipCode| or not for
 // predicting the heuristic type.
 // |ParseCityStateCountryZipCode| is intended to prevent the misclassification
