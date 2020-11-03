@@ -104,6 +104,7 @@ $ gn gen out/Default
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
   [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
+* Building Chromium for arm Macs requires [additional setup](mac_arm64.md).
 
 
 ### Faster builds
