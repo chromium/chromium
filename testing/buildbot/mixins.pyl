@@ -839,20 +839,6 @@
       },
     },
   },
-  'win10-1803': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-10-17134',
-      },
-    },
-  },
-  'win10-1909': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-10-18363',
-      },
-    },
-  },
   # TODO(crbug.com/1087153): Remove this once the fleet is upgraded to 1909.
   'win10_1803_intel_hd_630': {
     'swarming': {

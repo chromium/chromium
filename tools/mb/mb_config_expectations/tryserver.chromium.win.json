@@ -294,17 +294,6 @@
       "use_goma": true
     }
   },
-  "win10_chromium_x64_1909_fyi_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "win10_chromium_x64_dbg_ng": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
