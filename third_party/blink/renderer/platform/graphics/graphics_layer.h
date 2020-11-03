@@ -203,16 +203,17 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   bool HasLayerState() const { return layer_state_.get(); }
   void SetLayerState(const PropertyTreeStateOrAlias&,
                      const IntPoint& layer_offset);
-  const PropertyTreeStateOrAlias& GetPropertyTreeState() const {
-    return layer_state_->state;
+  PropertyTreeStateOrAlias GetPropertyTreeState() const {
+    return layer_state_->state.GetPropertyTreeState();
   }
   IntPoint GetOffsetFromTransformNode() const { return layer_state_->offset; }
 
   void SetContentsLayerState(const PropertyTreeStateOrAlias&,
                              const IntPoint& layer_offset);
-  const PropertyTreeStateOrAlias& GetContentsPropertyTreeState() const {
-    return contents_layer_state_ ? contents_layer_state_->state
-                                 : GetPropertyTreeState();
+  PropertyTreeStateOrAlias GetContentsPropertyTreeState() const {
+    return contents_layer_state_
+               ? contents_layer_state_->state.GetPropertyTreeState()
+               : GetPropertyTreeState();
   }
   IntPoint GetContentsOffsetFromTransformNode() const {
     return contents_layer_state_ ? contents_layer_state_->offset
@@ -310,7 +311,11 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   IntRect previous_interest_rect_;
 
   struct LayerState {
-    PropertyTreeStateOrAlias state;
+    // In theory, it's unnecessary to use RefCountedPropertyTreeState because
+    // when it's used, the state should always reference current paint property
+    // nodes in ObjectPaintProperties. This is to workaround under-invalidation
+    // of layer state.
+    RefCountedPropertyTreeState state;
     IntPoint offset;
   };
   std::unique_ptr<LayerState> layer_state_;

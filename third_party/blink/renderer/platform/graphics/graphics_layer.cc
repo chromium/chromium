@@ -297,10 +297,11 @@ bool GraphicsLayer::PaintRecursively(
       },
       [&](const GraphicsLayer& layer, cc::Layer& contents_layer) {
         PaintChunkSubsetRecorder subset_recorder(context.GetPaintController());
+        auto contents_state = layer.GetContentsPropertyTreeState();
         RecordForeignLayer(
             context, layer, DisplayItem::kForeignLayerContentsWrapper,
             &contents_layer, layer.GetContentsOffsetFromTransformNode(),
-            &layer.GetContentsPropertyTreeState());
+            &contents_state);
         pre_composited_layers.push_back(
             PreCompositedLayerInfo{subset_recorder.Get()});
       });
@@ -364,8 +365,8 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
   if (!cached) {
     GraphicsContext context(paint_controller);
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-    paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
-                                                       layer_state_->state);
+    paint_controller.UpdateCurrentPaintChunkProperties(
+        nullptr, layer_state_->state.GetPropertyTreeState());
     previous_interest_rect_ = new_interest_rect;
     client_.PaintContents(this, context, painting_phase_, new_interest_rect);
     paint_controller.CommitNewDisplayItems();
@@ -389,9 +390,9 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     auto& raster_invalidator = EnsureRasterInvalidator();
     gfx::Size old_layer_size = raster_invalidator.LayerBounds().size();
     gfx::Rect layer_bounds(layer_state_->offset, Size());
+    PropertyTreeState property_tree_state = GetPropertyTreeState().Unalias();
     EnsureRasterInvalidator().Generate(raster_invalidation_function_, chunks,
-                                       layer_bounds,
-                                       layer_state_->state.Unalias(), this);
+                                       layer_bounds, property_tree_state, this);
 
     base::Optional<RasterUnderInvalidationCheckingParams>
         raster_under_invalidation_params;
@@ -408,7 +409,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     if (raster_invalidated_ || !cc_display_item_list_ ||
         old_layer_size != Size() || raster_under_invalidation_params) {
       cc_display_item_list_ = PaintChunksToCcLayer::Convert(
-          chunks, layer_state_->state.Unalias(),
+          chunks, property_tree_state,
           gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
           cc::DisplayItemList::kTopLevelDisplayItemList,
           base::OptionalOrNullptr(raster_under_invalidation_params));
@@ -682,8 +683,8 @@ void GraphicsLayer::SetLayerState(const PropertyTreeStateOrAlias& layer_state,
     layer_state_->state = layer_state;
     layer_state_->offset = layer_offset;
   } else {
-    layer_state_ =
-        std::make_unique<LayerState>(LayerState{layer_state, layer_offset});
+    layer_state_ = std::make_unique<LayerState>(
+        LayerState{RefCountedPropertyTreeState(layer_state), layer_offset});
   }
 
   CcLayer().SetSubtreePropertyChanged();
@@ -702,8 +703,8 @@ void GraphicsLayer::SetContentsLayerState(
     contents_layer_state_->state = layer_state;
     contents_layer_state_->offset = layer_offset;
   } else {
-    contents_layer_state_ =
-        std::make_unique<LayerState>(LayerState{layer_state, layer_offset});
+    contents_layer_state_ = std::make_unique<LayerState>(
+        LayerState{RefCountedPropertyTreeState(layer_state), layer_offset});
   }
 
   ContentsLayer()->SetSubtreePropertyChanged();
