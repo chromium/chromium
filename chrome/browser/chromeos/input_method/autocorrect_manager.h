@@ -24,7 +24,7 @@ class AutocorrectManager {
  public:
   // Engine is used to interact with the text field, and is assumed to be
   // valid for the entire lifetime of the autocorrect manager.
-  explicit AutocorrectManager(InputMethodEngineBase* engine);
+  explicit AutocorrectManager(InputMethodEngine* engine);
 
   AutocorrectManager(const AutocorrectManager&) = delete;
   AutocorrectManager& operator=(const AutocorrectManager&) = delete;
@@ -35,16 +35,21 @@ class AutocorrectManager {
   void MarkAutocorrectRange(const std::string& corrected_word, int start_index);
   // To hide the underline after enough keypresses, this class intercepts
   // keystrokes.
-  void OnKeyEvent();
+  void OnKeyEvent(const InputMethodEngineBase::KeyboardEvent& event);
   // Indicates a new text field is focused, used to save context ID.
   void OnFocus(int context_id);
+  // To show the undo window when cursor is in an autocorrected word, this class
+  // is notified of surrounding text changes.
+  void OnSurroundingTextChanged(const base::string16& text,
+                                int cursor_pos,
+                                int anchor_pos);
 
  private:
   void ClearUnderline();
 
   int key_presses_until_underline_hide_ = 0;
   int context_id_ = -1;
-  InputMethodEngineBase* const engine_;
+  InputMethodEngine* const engine_;
 };
 
 }  // namespace chromeos

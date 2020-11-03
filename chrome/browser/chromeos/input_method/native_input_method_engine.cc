@@ -256,7 +256,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
       return;
     }
   }
-  autocorrect_manager_->OnKeyEvent();
+  autocorrect_manager_->OnKeyEvent(event);
   auto key_event = ime::mojom::PhysicalKeyEvent::New(
       event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
                               : ime::mojom::KeyEventType::kKeyUp,
@@ -313,6 +313,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     assistive_suggester_->OnSurroundingTextChanged(text, cursor_pos,
                                                    anchor_pos);
   }
+  autocorrect_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
   if (ShouldUseFstMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
     auto selection = ime::mojom::SelectionRange::New();
     selection->anchor = anchor_pos;
