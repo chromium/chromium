@@ -135,11 +135,12 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
   if (dcomp_surface_.Get() == g_current_surface)
     g_current_surface = nullptr;
 
+  HRESULT hr, device_removed_reason;
   if (draw_texture_) {
     draw_texture_.Reset();
     if (dcomp_surface_) {
       TRACE_EVENT0("gpu", "DirectCompositionChildSurfaceWin::EndDraw");
-      HRESULT hr = dcomp_surface_->EndDraw();
+      hr = dcomp_surface_->EndDraw();
       if (FAILED(hr)) {
         DLOG(ERROR) << "EndDraw failed with error " << std::hex << hr;
         return false;
@@ -155,7 +156,6 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
       TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
                    "interval", interval, "dirty_rect",
                    force_full_damage_ ? "full_damage" : swap_rect_.ToString());
-      HRESULT hr;
       if (force_full_damage_) {
         hr = swap_chain_->Present(interval, flags);
       } else {
@@ -204,9 +204,9 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
         if (SUCCEEDED(hr)) {
           event.Wait();
         } else {
+          device_removed_reason = d3d11_device_->GetDeviceRemovedReason();
           base::debug::Alias(&hr);
-          HRESULT reason = d3d11_device_->GetDeviceRemovedReason();
-          base::debug::Alias(&reason);
+          base::debug::Alias(&device_removed_reason);
           base::debug::DumpWithoutCrashing();
         }
       }

@@ -842,10 +842,11 @@ bool SwapChainPresenter::PresentToSwapChain(
     return false;
   }
 
+  HRESULT hr, device_removed_reason;
   if (first_present_) {
     first_present_ = false;
     UINT flags = DXGI_PRESENT_USE_DURATION;
-    HRESULT hr = swap_chain_->Present(0, flags);
+    hr = swap_chain_->Present(0, flags);
     // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
     // that the window is occluded and we can stop rendering.
     if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
@@ -882,9 +883,9 @@ bool SwapChainPresenter::PresentToSwapChain(
     if (SUCCEEDED(hr)) {
       event.Wait();
     } else {
+      device_removed_reason = d3d11_device_->GetDeviceRemovedReason();
       base::debug::Alias(&hr);
-      HRESULT reason = d3d11_device_->GetDeviceRemovedReason();
-      base::debug::Alias(&reason);
+      base::debug::Alias(&device_removed_reason);
       base::debug::DumpWithoutCrashing();
     }
   }
@@ -895,7 +896,7 @@ bool SwapChainPresenter::PresentToSwapChain(
   UINT interval = use_swap_chain_tearing ? 0 : 1;
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
   // that the window is occluded and we can stop rendering.
-  HRESULT hr = swap_chain_->Present(interval, flags);
+  hr = swap_chain_->Present(interval, flags);
   if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
     DLOG(ERROR) << "Present failed with error 0x" << std::hex << hr;
     return false;
