@@ -65165,6 +65165,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Skipped: Unsupported scheme"/>
 </enum>
 
+<enum name="SBDeepScanTriggers">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Advanced Protection Prompt"/>
+  <int value="2" label="Enterprise policy"/>
+</enum>
+
 <enum name="SBDownloadFeedbackUploadResult">
   <int value="0" label="UPLOAD_SUCCESS"/>
   <int value="1" label="UPLOAD_CANCELLED"/>

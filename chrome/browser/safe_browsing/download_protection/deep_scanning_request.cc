@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -151,6 +152,17 @@ EventResult GetEventResult(DownloadCheckResult download_result,
   return EventResult::UNKNOWN;
 }
 
+std::string GetTriggerName(DeepScanningRequest::DeepScanTrigger trigger) {
+  switch (trigger) {
+    case DeepScanningRequest::DeepScanTrigger::TRIGGER_UNKNOWN:
+      return "Unknown";
+    case DeepScanningRequest::DeepScanTrigger::TRIGGER_APP_PROMPT:
+      return "AdvancedProtectionPrompt";
+    case DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY:
+      return "Policy";
+  }
+}
+
 }  // namespace
 
 /* static */
@@ -220,6 +232,8 @@ void DeepScanningRequest::Start() {
     OnScanComplete(BinaryUploadService::Result::UNKNOWN,
                    enterprise_connectors::ContentAnalysisResponse());
   }
+
+  base::UmaHistogramEnumeration("SBClientDownload.DeepScanTrigger", trigger_);
 }
 
 void DeepScanningRequest::PrepareRequest(BinaryUploadService::Request* request,
@@ -251,6 +265,9 @@ void DeepScanningRequest::OnScanComplete(
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (result == BinaryUploadService::Result::SUCCESS) {
     ResponseToDownloadCheckResult(response, &download_result);
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.MalwareDeepScanResult." + GetTriggerName(trigger_),
+        download_result);
   } else if (trigger_ == DeepScanTrigger::TRIGGER_APP_PROMPT &&
              MaybeShowDeepScanFailureModalDialog(
                  base::BindOnce(&DeepScanningRequest::Start,

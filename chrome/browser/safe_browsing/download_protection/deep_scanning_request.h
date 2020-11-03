@@ -24,16 +24,20 @@ class DownloadProtectionService;
 class DeepScanningRequest : public download::DownloadItem::Observer {
  public:
   // Enum representing the trigger of the scan request.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class DeepScanTrigger {
     // The trigger is unknown.
-    TRIGGER_UNKNOWN,
+    TRIGGER_UNKNOWN = 0,
 
     // The trigger is the prompt in the download shelf, shown for Advanced
     // Protection users.
-    TRIGGER_APP_PROMPT,
+    TRIGGER_APP_PROMPT = 1,
 
     // The trigger is the enterprise policy.
-    TRIGGER_POLICY,
+    TRIGGER_POLICY = 2,
+
+    kMaxValue = TRIGGER_POLICY,
   };
 
   // Checks the current policies to determine whether files must be uploaded by
