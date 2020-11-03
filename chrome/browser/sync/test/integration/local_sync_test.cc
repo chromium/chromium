@@ -66,8 +66,8 @@ class LocalSyncTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(LocalSyncTest);
 };
 
-// The local sync backend is currently only supported on Windows.
-#if defined(OS_WIN)
+// The local sync backend is currently only supported on Windows, Mac and Linux.
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   ProfileSyncService* service =
       ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
@@ -106,6 +106,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
   EXPECT_FALSE(send_tab_to_self::IsUserSyncTypeActive(browser()->profile()));
 }
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 }  // namespace

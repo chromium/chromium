@@ -3577,7 +3577,7 @@
   },
 
   "RoamingProfileSupportEnabled": {
-    "os": ["win"],
+    "os": ["win", "linux", "mac"],
     "policy_pref_mapping_test": [
       {
         "policies": {
@@ -3589,7 +3589,7 @@
   },
 
   "RoamingProfileLocation": {
-    "os": ["win"],
+    "os": ["win", "linux", "mac"],
     "policy_pref_mapping_test": [
       {
         "policies": {
