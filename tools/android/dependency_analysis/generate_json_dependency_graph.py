@@ -18,8 +18,6 @@ import package_dependency
 import serialization
 import subprocess_utils
 
-SRC_PATH = pathlib.Path(__file__).resolve().parents[3]  # src/
-JDEPS_PATH = SRC_PATH.joinpath('third_party/jdk/current/bin/jdeps')
 DEFAULT_ROOT_TARGET = 'chrome/android:monochrome_public_bundle'
 
 
@@ -163,9 +161,11 @@ def main():
                             '--target',
                             default=DEFAULT_ROOT_TARGET,
                             help='Root build target.')
+    arg_parser.add_argument('-d',
+                            '--checkout-dir',
+                            help='Path to the chromium checkout directory.')
     arg_parser.add_argument('-j',
                             '--jdeps-path',
-                            default=JDEPS_PATH,
                             help='Path to the jdeps executable.')
     arg_parser.add_argument('-g',
                             '--gn-path',
@@ -173,8 +173,18 @@ def main():
                             help='Path to the gn executable.')
     arguments = arg_parser.parse_args()
 
+    if arguments.checkout_dir:
+        src_path = pathlib.Path(arguments.checkout_dir)
+    else:
+        src_path = pathlib.Path(__file__).resolve().parents[3]
+
+    if arguments.jdeps_path:
+        jdeps_path = pathlib.Path(arguments.jdeps_path)
+    else:
+        jdeps_path = src_path.joinpath('third_party/jdk/current/bin/jdeps')
+
     # gn and git must be run from inside the git checkout.
-    os.chdir(SRC_PATH)
+    os.chdir(src_path)
 
     print('Getting list of dependency jars...')
     gn_desc_output = _run_gn_desc_list_dependencies(arguments.build_output_dir,
@@ -188,8 +198,8 @@ def main():
     jdeps_process_number = math.ceil(multiprocessing.cpu_count() / 2)
     with multiprocessing.Pool(jdeps_process_number) as pool:
         jar_paths = [target_jar for _, target_jar in target_jars]
-        jdeps_outputs = pool.map(
-            functools.partial(_run_jdeps, arguments.jdeps_path), jar_paths)
+        jdeps_outputs = pool.map(functools.partial(_run_jdeps, jdeps_path),
+                                 jar_paths)
 
     print('Parsing jdeps output...')
     jdeps_parser = JavaClassJdepsParser()
