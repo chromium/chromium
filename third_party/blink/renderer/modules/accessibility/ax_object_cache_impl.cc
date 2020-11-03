@@ -373,6 +373,9 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
     new_obj->SetAXObjectID(node_id);
     objects_.Set(node_id, new_obj);
     new_obj->Init();
+    new_obj->SetLastKnownIsIgnoredValue(new_obj->AccessibilityIsIgnored());
+    new_obj->SetLastKnownIsIgnoredButIncludedInTreeValue(
+        new_obj->AccessibilityIsIgnoredButIncludedInTree());
     return new_obj;
   }
 
@@ -561,6 +564,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node) {
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
   node_object_mapping_.Set(node, ax_id);
   new_obj->Init();
+  new_obj->SetLastKnownIsIgnoredValue(new_obj->AccessibilityIsIgnored());
+  new_obj->SetLastKnownIsIgnoredButIncludedInTreeValue(
+      new_obj->AccessibilityIsIgnoredButIncludedInTree());
   MaybeNewRelationTarget(node, new_obj);
 
   return new_obj;
@@ -618,6 +624,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object) {
 
   layout_object_mapping_.Set(layout_object, axid);
   new_obj->Init();
+  new_obj->SetLastKnownIsIgnoredValue(new_obj->AccessibilityIsIgnored());
+  new_obj->SetLastKnownIsIgnoredButIncludedInTreeValue(
+      new_obj->AccessibilityIsIgnoredButIncludedInTree());
   if (node && node->GetLayoutObject() == layout_object) {
     AXID prev_axid = node_object_mapping_.at(node);
     if (prev_axid != 0 && prev_axid != axid) {
@@ -647,18 +656,20 @@ AXObject* AXObjectCacheImpl::GetOrCreate(
 
   inline_text_box_object_mapping_.Set(inline_text_box, axid);
   new_obj->Init();
+  new_obj->SetLastKnownIsIgnoredValue(new_obj->AccessibilityIsIgnored());
+  new_obj->SetLastKnownIsIgnoredButIncludedInTreeValue(
+      new_obj->AccessibilityIsIgnoredButIncludedInTree());
   return new_obj;
 }
 
-AXObject* AXObjectCacheImpl::Create(ax::mojom::blink::Role role,
-                                    AXObject* parent) {
+AXObject* AXObjectCacheImpl::GetOrCreate(ax::mojom::blink::Role role) {
   AXObject* obj = nullptr;
 
   switch (role) {
-    case ax::mojom::blink::Role::kSliderThumb:
+    case ax::mojom::Role::kSliderThumb:
       obj = MakeGarbageCollected<AXSliderThumb>(*this);
       break;
-    case ax::mojom::blink::Role::kMenuListPopup:
+    case ax::mojom::Role::kMenuListPopup:
       DCHECK(use_ax_menu_list_);
       obj = MakeGarbageCollected<AXMenuListPopup>(*this);
       break;
@@ -670,7 +681,6 @@ AXObject* AXObjectCacheImpl::Create(ax::mojom::blink::Role role,
     return nullptr;
 
   GetOrCreateAXID(obj);
-  obj->SetParent(parent);
 
   obj->Init();
   return obj;

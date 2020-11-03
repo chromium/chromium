@@ -180,9 +180,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* ObjectFromAXID(AXID id) const { return objects_.at(id); }
   AXObject* Root();
 
-  // Used for objects without backing DOM nodes, layout objects, etc.
-  AXObject* Create(ax::mojom::blink::Role, AXObject* parent);
-
+  // used for objects without backing elements
+  AXObject* GetOrCreate(ax::mojom::blink::Role);
   AXObject* GetOrCreate(AccessibleNode*);
   AXObject* GetOrCreate(LayoutObject*) override;
   AXObject* GetOrCreate(const Node*);

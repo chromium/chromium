@@ -81,8 +81,9 @@ void AXSlider::AddChildren() {
   have_children_ = true;
 
   AXObjectCacheImpl& cache = AXObjectCache();
-  AXObject* thumb = cache.Create(ax::mojom::blink::Role::kSliderThumb, this);
+  AXObject* thumb = cache.GetOrCreate(ax::mojom::Role::kSliderThumb);
   DCHECK(thumb);
+  thumb->SetParent(this);
 
   // Before actually adding the value indicator to the hierarchy,
   // allow the platform to make a final decision about it.
