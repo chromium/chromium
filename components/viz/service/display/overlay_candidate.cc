@@ -372,6 +372,8 @@ bool OverlayCandidate::FromTextureQuad(
     SurfaceDamageRectList* surface_damage_rect_list,
     const TextureDrawQuad* quad,
     OverlayCandidate* candidate) {
+  if (quad->nearest_neighbor)
+    return false;
   if (quad->background_color != SK_ColorTRANSPARENT &&
       (quad->background_color != SK_ColorBLACK ||
        quad->ShouldDrawWithBlending()))

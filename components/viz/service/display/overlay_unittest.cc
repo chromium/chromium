@@ -1114,6 +1114,29 @@ TEST_F(SingleOverlayOnTopTest, RejectOpacity) {
   EXPECT_EQ(0U, candidate_list.size());
 }
 
+TEST_F(SingleOverlayOnTopTest, RejectNearestNeighbor) {
+  auto pass = CreateRenderPass();
+  CreateFullscreenCandidateQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+  static_cast<TextureDrawQuad*>(pass->quad_list.back())->nearest_neighbor =
+      true;
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
+      &content_bounds_);
+  EXPECT_EQ(0U, candidate_list.size());
+}
+
 TEST_F(SingleOverlayOnTopTest, RejectNonAxisAlignedTransform) {
   auto pass = CreateRenderPass();
   CreateFullscreenCandidateQuad(
