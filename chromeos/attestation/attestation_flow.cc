@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
@@ -50,21 +51,6 @@ constexpr uint16_t kReadyTimeoutInSeconds = 60;
 // attestation.
 constexpr uint16_t kRetryDelayInMilliseconds = 300;
 
-void DBusCertificateMethodCallback(
-    AttestationFlow::CertificateCallback callback,
-    base::Optional<CryptohomeClient::TpmAttestationDataResult> result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Attestation: DBus data operation failed.";
-    std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
-    return;
-  }
-  if (callback) {
-    std::move(callback).Run(
-        result->success ? ATTESTATION_SUCCESS : ATTESTATION_UNSPECIFIED_FAILURE,
-        result->data);
-  }
-}
-
 }  // namespace
 
 AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
@@ -92,7 +78,13 @@ AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
       crypto_key_type_(crypto_key_type),
       ready_timeout_(base::TimeDelta::FromSeconds(kReadyTimeoutInSeconds)),
       retry_delay_(
-          base::TimeDelta::FromMilliseconds(kRetryDelayInMilliseconds)) {}
+          base::TimeDelta::FromMilliseconds(kRetryDelayInMilliseconds)) {
+  // TODO(b/158955123): For now we only make the compiler happy because the
+  // removal of this involves changes to multiple consumers, but eventually we
+  // should get rid of them at one go once `AttestationFlow` doesn't use
+  // cryptohome client and its async method caller.
+  ALLOW_UNUSED_LOCAL(cryptohome_client_);
+}
 
 AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
                                  CryptohomeClient* cryptohome_client,
@@ -272,39 +264,45 @@ void AttestationFlow::StartCertificateRequest(
     return;
   }
 
-  cryptohome_client_->TpmAttestationDoesKeyExist(
-      key_type, cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      key_name,
-      base::BindOnce(&AttestationFlow::OnKeyExistCheckComplete,
-                     weak_factory_.GetWeakPtr(), certificate_profile,
-                     account_id, request_origin, key_name, key_type,
-                     std::move(callback)));
+  ::attestation::GetKeyInfoRequest request;
+  request.set_username(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id)
+          .account_id());
+  request.set_key_label(key_name);
+  attestation_client_->GetKeyInfo(
+      request, base::BindOnce(&AttestationFlow::OnGetKeyInfoComplete,
+                              weak_factory_.GetWeakPtr(), certificate_profile,
+                              account_id, request_origin, key_name, key_type,
+                              std::move(callback)));
 }
 
-void AttestationFlow::OnKeyExistCheckComplete(
+void AttestationFlow::OnGetKeyInfoComplete(
     AttestationCertificateProfile certificate_profile,
     const AccountId& account_id,
     const std::string& request_origin,
     const std::string& key_name,
     AttestationKeyType key_type,
     CertificateCallback callback,
-    base::Optional<bool> result) {
-  if (!result) {
-    LOG(ERROR) << "Attestation: Failed to check for existence of key.";
-    std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
-    return;
-  }
-
-  // If the key already exists, query the existing certificate.
-  if (*result) {
-    GetExistingCertificate(key_type, account_id, key_name, std::move(callback));
+    const ::attestation::GetKeyInfoReply& reply) {
+  // If the key already exists, return the existing certificate.
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    std::move(callback).Run(ATTESTATION_SUCCESS, reply.certificate());
     return;
   }
 
   // If the key does not exist, call this method back with |generate_new_key|
   // set to true.
-  StartCertificateRequest(certificate_profile, account_id, request_origin, true,
-                          key_name, std::move(callback), true);
+  if (reply.status() == ::attestation::STATUS_INVALID_PARAMETER) {
+    StartCertificateRequest(certificate_profile, account_id, request_origin,
+                            /*generate_new_key=*/true, key_name,
+                            std::move(callback), /*enrolled=*/true);
+    return;
+  }
+
+  // Otherwise the key info query fails.
+  LOG(ERROR) << "Attestation: Failed to check for existence of key; status: "
+             << reply.status() << ".";
+  std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
 }
 
 void AttestationFlow::SendCertificateRequestToPCA(
@@ -355,16 +353,6 @@ void AttestationFlow::OnCertRequestFinished(CertificateCallback callback,
     std::move(callback).Run(ATTESTATION_SUCCESS, data);
   else
     std::move(callback).Run(ATTESTATION_SERVER_BAD_REQUEST_FAILURE, data);
-}
-
-void AttestationFlow::GetExistingCertificate(AttestationKeyType key_type,
-                                             const AccountId& account_id,
-                                             const std::string& key_name,
-                                             CertificateCallback callback) {
-  cryptohome_client_->TpmAttestationGetCertificate(
-      key_type, cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      key_name,
-      base::BindOnce(&DBusCertificateMethodCallback, std::move(callback)));
 }
 
 ServerProxy::~ServerProxy() = default;

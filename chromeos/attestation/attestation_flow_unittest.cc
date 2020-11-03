@@ -881,8 +881,10 @@ TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
   StrictMock<cryptohome::MockAsyncMethodCaller> async_caller;
 
   chromeos::FakeCryptohomeClient client;
-  client.SetTpmAttestationUserCertificate(cryptohome::AccountIdentifier(),
-                                          kEnterpriseUserKey, "fake_cert");
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->GetMutableKeyInfoReply("", kEnterpriseUserKey)
+      ->set_certificate("fake_cert");
 
   // We're not expecting any server calls in this case; StrictMock will verify.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());

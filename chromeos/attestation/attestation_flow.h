@@ -214,9 +214,8 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
       CertificateCallback callback,
       bool enrolled);
 
-  // Called with the result of TpmAttestationDoesKeyExist(). Will query the
-  // existing certificate if it exists and otherwise start a new certificate
-  // request.
+  // Called with the reply to `GetKeyInfo()`. Will query the existing
+  // certificate if it exists and otherwise start a new certificate request.
   //
   // Parameters
   //   certificate_profile - Specifies what kind of certificate should be
@@ -227,15 +226,14 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
   //   callback - Called when the operation completes.
-  //   result - Result of TpmAttestationDoesKeyExist().
-  void OnKeyExistCheckComplete(
-      AttestationCertificateProfile certificate_profile,
-      const AccountId& account_id,
-      const std::string& request_origin,
-      const std::string& key_name,
-      AttestationKeyType key_type,
-      CertificateCallback callback,
-      base::Optional<bool> result);
+  //   reply - The reply of `GetKeyInfo()`.
+  void OnGetKeyInfoComplete(AttestationCertificateProfile certificate_profile,
+                            const AccountId& account_id,
+                            const std::string& request_origin,
+                            const std::string& key_name,
+                            AttestationKeyType key_type,
+                            CertificateCallback callback,
+                            const ::attestation::GetKeyInfoReply& reply);
 
   // Called when the attestation daemon has finished creating a certificate
   // request for the Privacy CA.  The request is asynchronously forwarded as-is
@@ -281,18 +279,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   void OnCertRequestFinished(CertificateCallback callback,
                              bool success,
                              const std::string& data);
-
-  // Gets an existing certificate from the attestation daemon.
-  //
-  // Parameters
-  //   key_type - The type of the key for which a certificate is requested.
-  //   account_id - Identifies the active user.
-  //   key_name - The name of the key for which a certificate is requested.
-  //   callback - Called when the operation completes.
-  void GetExistingCertificate(AttestationKeyType key_type,
-                              const AccountId& account_id,
-                              const std::string& key_name,
-                              CertificateCallback callback);
 
   cryptohome::AsyncMethodCaller* async_caller_;
   CryptohomeClient* cryptohome_client_;
