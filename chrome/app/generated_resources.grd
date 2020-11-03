@@ -8613,12 +8613,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_NOTIFICATION_MUTED_TITLE" desc="Title of a notification showing how many new notifications are currently hidden. The number is always greater than zero.">
+        <message name="IDS_NOTIFICATION_MUTED_TITLE" desc="In Title Case: Title of a notification showing how many new notifications are currently hidden. The number is always greater than zero.">
           {MUTED_NOTIFICATIONS_COUNT, plural,
             =1 {New Notification}
             other {# New Notifications}}
         </message>
-        <message name="IDS_NOTIFICATION_MUTED_ACTION_SHOW" desc="Action button text to show the content of previously muted notifications.">
+        <message name="IDS_NOTIFICATION_MUTED_ACTION_SHOW" desc="In Title Case: Action button text to show the content of previously muted notifications.">
           {MUTED_NOTIFICATIONS_COUNT, plural,
             =1 {Show}
             other {Show All}}
