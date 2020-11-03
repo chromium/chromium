@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
 
 /* @type {!Array<!BatteryChargeStatus>} */
 export const fakeBatteryChargeStatus = [
@@ -144,3 +144,12 @@ export const fakeSystemInfoWithoutBattery = {
   total_memory_kib: 128000,
   version: {milestone_version: 'M99'},
 };
+
+/* @type {!Map<RoutineName, StandardRoutineResult} */
+export const fakeRoutineResults = new Map([
+  [RoutineName.kCpuStress, StandardRoutineResult.kTestPassed],
+  [RoutineName.kCpuCache, StandardRoutineResult.kTestPassed],
+  [RoutineName.kFloatingPoint, StandardRoutineResult.kTestFailed],
+  [RoutineName.kPrimeSearch, StandardRoutineResult.kErrorExecuting],
+  [RoutineName.kMemory, StandardRoutineResult.kTestPassed],
+]);
