@@ -139,9 +139,7 @@ public class ChromeActivitySessionTracker {
         updateAcceptLanguages();
         mVariationsSession.start();
         mPowerBroadcastReceiver.onForegroundSessionStart();
-        if (AppHooks.get().getChimeDelegate() != null) {
-            AppHooks.get().getChimeDelegate().startSession();
-        }
+        AppHooks.get().getChimeDelegate().startSession();
 
         // Track the ratio of Chrome startups that are caused by notification clicks.
         // TODO(johnme): Add other reasons (and switch to recordEnumeratedHistogram).

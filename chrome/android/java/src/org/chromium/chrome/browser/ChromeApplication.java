@@ -143,6 +143,7 @@ public class ChromeApplication extends SplitCompatApplication {
             }
 
             BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());
+            AppHooks.get().getChimeDelegate().initialize();
 
             if (!ContextUtils.isIsolatedProcess()) {
                 // Incremental install disables process isolation, so things in this block will

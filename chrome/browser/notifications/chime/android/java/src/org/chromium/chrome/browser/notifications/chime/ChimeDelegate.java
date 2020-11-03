@@ -5,11 +5,16 @@
 package org.chromium.chrome.browser.notifications.chime;
 
 /**
- * Chime interface.
+ * Delegate Chime notification SDK functionalities.
  */
-public interface ChimeDelegate {
-    /*
-     * Start a chime session.
+public class ChimeDelegate {
+    /**
+     * Initializes Chime SDK.
      */
-    public default void startSession() {}
+    public void initialize() {}
+
+    /**
+     * Starts a Chime session.
+     */
+    public void startSession() {}
 }

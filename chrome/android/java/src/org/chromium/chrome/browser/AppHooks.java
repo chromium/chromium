@@ -364,8 +364,8 @@ public abstract class AppHooks {
     /**
      * Returns a Chime Delegate if the chime module is defined.
      */
-    public @Nullable ChimeDelegate getChimeDelegate() {
-        return null;
+    public ChimeDelegate getChimeDelegate() {
+        return new ChimeDelegate();
     }
 
     public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
