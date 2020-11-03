@@ -317,4 +317,29 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, DISABLED_NavigateWithChooserCrossOrigin) {
   EXPECT_FALSE(chrome::IsDeviceChooserShowingForTesting(browser()));
 }
 
+IN_PROC_BROWSER_TEST_F(WebUsbTest, ShowChooserInBackgroundTab) {
+  UseRealChooser();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create a new foreground tab that covers |web_contents|.
+  GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Try to show the chooser in the background tab.
+  EXPECT_EQ("NotFoundError: No device selected.",
+            content::EvalJs(web_contents,
+                            R"((async () => {
+          try {
+            await navigator.usb.requestDevice({ filters: [] });
+            return "Expected error, got success.";
+          } catch (e) {
+            return `${e.name}: ${e.message}`;
+          }
+        })())"));
+}
+
 }  // namespace

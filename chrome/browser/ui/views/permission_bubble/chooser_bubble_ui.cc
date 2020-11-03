@@ -184,6 +184,9 @@ base::OnceClosure ShowDeviceChooserDialog(
   if (!browser)
     return base::DoNothing();
 
+  if (browser->tab_strip_model()->GetActiveWebContents() != contents)
+    return base::DoNothing();
+
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
       browser, contents, std::move(controller));
 
