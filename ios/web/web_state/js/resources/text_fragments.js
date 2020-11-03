@@ -42,15 +42,20 @@ const utils = goog.require(
 
     for (const fragment of fragments) {
       // Process the fragments, then filter out any that evaluate to false.
-      const newMarks = utils.processTextFragmentDirective(fragment)
+      const foundRanges = utils.processTextFragmentDirective(fragment)
           .filter((mark) => { return !!mark });
 
-      if (Array.isArray(newMarks)) {
-        if (newMarks.length > 0) {
+      if (Array.isArray(foundRanges)) {
+        // If length < 1, then nothing was found. If length > 1, then the
+        // fragment in the URL is ambiguous (i.e., it could identify multiple
+        // different places on the page) so we discard it as well.
+        if (foundRanges.length === 1) {
           ++successCount;
+          let newMarks = utils.markRange(foundRanges[0]);
+          if (Array.isArray(newMarks)) {
+            marks.push(...newMarks);
+          }
         }
-
-        marks.push(...newMarks);
       }
     }
 
