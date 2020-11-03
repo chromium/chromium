@@ -51,6 +51,7 @@
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/cpu_affinity.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -300,8 +301,8 @@ void AwMainDelegate::PreSandboxStartup() {
   if (process_type == switches::kRendererProcess) {
     InitResourceBundleRendererSide();
     if (command_line.HasSwitch(switches::kWebViewForceLittleCores)) {
-      base::SetProcessCpuAffinityMode(base::GetCurrentProcessHandle(),
-                                      base::CpuAffinityMode::kLittleCoresOnly);
+      content::EnforceProcessCpuAffinity(
+          base::CpuAffinityMode::kLittleCoresOnly);
     }
   }
 
