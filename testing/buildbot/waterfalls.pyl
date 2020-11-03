@@ -2866,16 +2866,18 @@
         },
       },
       'win10-omaha-tester-rel': {
+        'mixins': [
+          'win10',
+          'x86-64',
+          ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-	  'isolated_scripts': 'updater_isolated_scripts',
+          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
             {
               'integrity': 'high',
-              'os': 'Windows-10',
-              'cpu': 'x86-64',
             }
           ]
         },
@@ -2900,7 +2902,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-	  'isolated_scripts': 'updater_isolated_scripts',
+          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
