@@ -45,7 +45,7 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   gpu::SurfaceHandle GetChildSurfaceHandle();
 #endif
   // SkiaOutputDevice implementation:
-  void PreGrContextSubmit() override;
+  void Submit(base::OnceClosure callback) override;
   bool Reshape(const gfx::Size& size,
                float device_scale_factor,
                const gfx::ColorSpace& color_space,

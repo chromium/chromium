@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/viz_service_export.h"
@@ -19,6 +20,7 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "ui/gl/gl_surface_format.h"
 
 class GURL;
@@ -107,6 +109,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
       gpu::DisplayContext* display_context) = 0;
   virtual void DidLoseContext(gpu::error::ContextLostReason reason,
                               const GURL& active_url) = 0;
+
+  // Called on client thread.
+  virtual base::Optional<SkSurfaceCharacterization>
+  GetRootSurfaceCharacterization() = 0;
 
   virtual base::TimeDelta GetGpuBlockedTimeSinceLastSwap() = 0;
   virtual bool NeedsSupportForExternalStencil() = 0;

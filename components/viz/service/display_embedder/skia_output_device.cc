@@ -14,6 +14,8 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/skia_utils.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/gpu_fence.h"
@@ -46,19 +48,43 @@ void ReportLatency(const gfx::SwapTimings& timings,
 }  // namespace
 
 SkiaOutputDevice::ScopedPaint::ScopedPaint(SkiaOutputDevice* device)
-    : device_(device), sk_surface_(device->BeginPaint(&end_semaphores_)) {
-  DCHECK(sk_surface_);
-}
+    : device_(device), sk_surface_(device->BeginPaint(&end_semaphores_)) {}
 SkiaOutputDevice::ScopedPaint::~ScopedPaint() {
   DCHECK(end_semaphores_.empty());
   device_->EndPaint();
+}
+
+SkCanvas* SkiaOutputDevice::ScopedPaint::GetCanvas() {
+  return device_->GetCanvas(sk_surface_);
+}
+
+GrSemaphoresSubmitted SkiaOutputDevice::ScopedPaint::Flush(
+    VulkanContextProvider* vulkan_context_provider,
+    std::vector<GrBackendSemaphore> end_semaphores,
+    base::OnceClosure on_finished) {
+  return device_->Flush(sk_surface_, vulkan_context_provider,
+                        std::move(end_semaphores), std::move(on_finished));
+}
+
+bool SkiaOutputDevice::ScopedPaint::Wait(
+    int num_semaphores,
+    const GrBackendSemaphore wait_semaphores[],
+    bool delete_semaphores_after_wait) {
+  return device_->Wait(sk_surface_, num_semaphores, wait_semaphores,
+                       delete_semaphores_after_wait);
+}
+
+bool SkiaOutputDevice::ScopedPaint::Draw(
+    sk_sp<const SkDeferredDisplayList> ddl) {
+  return device_->Draw(sk_surface_, std::move(ddl));
 }
 
 SkiaOutputDevice::SkiaOutputDevice(
     GrDirectContext* gr_context,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
-    : did_swap_buffer_complete_callback_(
+    : gr_context_(gr_context),
+      did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       memory_type_tracker_(
           std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
@@ -73,7 +99,10 @@ SkiaOutputDevice::~SkiaOutputDevice() {
     latency_tracker_runner_->DeleteSoon(FROM_HERE, std::move(latency_tracker_));
 }
 
-void SkiaOutputDevice::PreGrContextSubmit() {}
+void SkiaOutputDevice::Submit(base::OnceClosure callback) {
+  gr_context_->submit();
+  std::move(callback).Run();
+}
 
 void SkiaOutputDevice::CommitOverlayPlanes(
     BufferPresentedCallback feedback,
@@ -206,6 +235,38 @@ void SkiaOutputDevice::SwapInfo::CallFeedback() {
         gfx::PresentationFeedback(params_.swap_response.timings.swap_start,
                                   /*interval=*/base::TimeDelta(), flags));
   }
+}
+
+SkCanvas* SkiaOutputDevice::GetCanvas(SkSurface* sk_surface) {
+  return sk_surface->getCanvas();
+}
+
+GrSemaphoresSubmitted SkiaOutputDevice::Flush(
+    SkSurface* sk_surface,
+    VulkanContextProvider* vulkan_context_provider,
+    std::vector<GrBackendSemaphore> end_semaphores,
+    base::OnceClosure on_finished) {
+  GrFlushInfo flush_info = {
+      .fNumSemaphores = end_semaphores.size(),
+      .fSignalSemaphores = end_semaphores.data(),
+  };
+  gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider, &flush_info);
+  if (on_finished)
+    gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
+  return sk_surface->flush(flush_info);
+}
+
+bool SkiaOutputDevice::Wait(SkSurface* sk_surface,
+                            int num_semaphores,
+                            const GrBackendSemaphore wait_semaphores[],
+                            bool delete_semaphores_after_wait) {
+  return sk_surface->wait(num_semaphores, wait_semaphores,
+                          delete_semaphores_after_wait);
+}
+
+bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
+                            sk_sp<const SkDeferredDisplayList> ddl) {
+  return sk_surface->draw(ddl);
 }
 
 }  // namespace viz

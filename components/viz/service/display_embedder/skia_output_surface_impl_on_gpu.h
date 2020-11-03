@@ -234,7 +234,8 @@ class SkiaOutputSurfaceImplOnGpu
 
   void PullTextureUpdates(std::vector<gpu::SyncToken> sync_token);
 
-  void SwapBuffersInternal(OutputSurfaceFrame* frame = nullptr);
+  void SwapBuffersInternal(base::Optional<OutputSurfaceFrame> frame);
+  void PostSubmit(base::Optional<OutputSurfaceFrame> frame);
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
 
@@ -245,10 +246,6 @@ class SkiaOutputSurfaceImplOnGpu
   bool is_using_dawn() const {
     return !!dawn_context_provider_ &&
            gpu_preferences_.gr_context_type == gpu::GrContextType::kDawn;
-  }
-
-  SkSurface* output_sk_surface() const {
-    return scoped_output_device_paint_->sk_surface();
   }
 
   // Schedules a task to check if any skia readback requests have completed

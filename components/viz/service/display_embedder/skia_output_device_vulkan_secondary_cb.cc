@@ -1,0 +1,124 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
+
+#include <utility>
+
+#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "third_party/skia/include/core/SkDeferredDisplayList.h"
+#include "third_party/skia/include/core/SkSurfaceCharacterization.h"
+#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
+#include "ui/gfx/presentation_feedback.h"
+
+namespace viz {
+
+SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
+    VulkanContextProvider* context_provider,
+    gpu::MemoryTracker* memory_tracker,
+    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
+    : SkiaOutputDevice(context_provider->GetGrContext(),
+                       memory_tracker,
+                       std::move(did_swap_buffer_complete_callback)),
+      context_provider_(context_provider) {
+  capabilities_.uses_default_gl_framebuffer = false;
+  capabilities_.max_frames_pending = 1;
+  capabilities_.preserve_buffer_content = false;
+  capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
+  capabilities_.supports_post_sub_buffer = false;
+  capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;
+
+  // Do not set any |capabilities_.sk_color_types|. This requires the
+  // SkSurfaceCharacterization to be overridden with the one obtained from
+  // GrVkSecondaryCBDrawContext instead of being created by SkiaRenderer
+  // from the passed in information. So |sk_color_types| should not be used.
+  // TODO(crbug.com/1144921): Remove this override.
+}
+
+void SkiaOutputDeviceVulkanSecondaryCB::Submit(base::OnceClosure callback) {
+  // Submit the primary command buffer which may render passes.
+  context_provider_->GetGrContext()->submit();
+  context_provider_->EnqueueSecondaryCBPostSubmitTask(std::move(callback));
+}
+
+bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
+    const gfx::Size& size,
+    float device_scale_factor,
+    const gfx::ColorSpace& color_space,
+    gfx::BufferFormat format,
+    gfx::OverlayTransform transform) {
+  // No-op
+  size_ = size;
+  return true;
+}
+
+void SkiaOutputDeviceVulkanSecondaryCB::SwapBuffers(
+    BufferPresentedCallback feedback,
+    std::vector<ui::LatencyInfo> latency_info) {
+  StartSwapBuffers(std::move(feedback));
+  FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK), size_,
+                    std::move(latency_info));
+}
+
+void SkiaOutputDeviceVulkanSecondaryCB::PostSubBuffer(
+    const gfx::Rect& rect,
+    BufferPresentedCallback feedback,
+    std::vector<ui::LatencyInfo> latency_info) {
+  CHECK(false);
+}
+
+SkSurface* SkiaOutputDeviceVulkanSecondaryCB::BeginPaint(
+    std::vector<GrBackendSemaphore>* end_semaphores) {
+  return nullptr;
+}
+
+void SkiaOutputDeviceVulkanSecondaryCB::EndPaint() {}
+
+SkCanvas* SkiaOutputDeviceVulkanSecondaryCB::GetCanvas(SkSurface* sk_surface) {
+  DCHECK(!sk_surface);
+  return context_provider_->GetGrSecondaryCBDrawContext()->getCanvas();
+}
+
+GrSemaphoresSubmitted SkiaOutputDeviceVulkanSecondaryCB::Flush(
+    SkSurface* sk_surface,
+    VulkanContextProvider* vulkan_context_provider,
+    std::vector<GrBackendSemaphore> end_semaphores,
+    base::OnceClosure on_finished) {
+  DCHECK(!sk_surface);
+  DCHECK_EQ(context_provider_, vulkan_context_provider);
+
+  std::vector<VkSemaphore> vk_end_semaphores;
+  for (const GrBackendSemaphore& gr_semaphore : end_semaphores) {
+    vk_end_semaphores.push_back(gr_semaphore.vkSemaphore());
+  }
+  vulkan_context_provider->EnqueueSecondaryCBSemaphores(
+      std::move(vk_end_semaphores));
+  if (on_finished) {
+    vulkan_context_provider->EnqueueSecondaryCBPostSubmitTask(
+        std::move(on_finished));
+  }
+  vulkan_context_provider->GetGrSecondaryCBDrawContext()->flush();
+  return GrSemaphoresSubmitted::kYes;
+}
+
+bool SkiaOutputDeviceVulkanSecondaryCB::Wait(
+    SkSurface* sk_surface,
+    int num_semaphores,
+    const GrBackendSemaphore wait_semaphores[],
+    bool delete_semaphores_after_wait) {
+  DCHECK(!sk_surface);
+  return context_provider_->GetGrSecondaryCBDrawContext()->wait(
+      num_semaphores, wait_semaphores, delete_semaphores_after_wait);
+}
+
+bool SkiaOutputDeviceVulkanSecondaryCB::Draw(
+    SkSurface* sk_surface,
+    sk_sp<const SkDeferredDisplayList> ddl) {
+  DCHECK(!sk_surface);
+  return context_provider_->GetGrSecondaryCBDrawContext()->draw(ddl);
+}
+
+}  // namespace viz

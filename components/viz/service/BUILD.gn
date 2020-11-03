@@ -429,6 +429,8 @@ viz_source_set("gpu_service_dependencies") {
     sources += [
       "display_embedder/skia_output_device_vulkan.cc",
       "display_embedder/skia_output_device_vulkan.h",
+      "display_embedder/skia_output_device_vulkan_secondary_cb.cc",
+      "display_embedder/skia_output_device_vulkan_secondary_cb.h",
     ]
 
     public_deps += [ "//gpu/vulkan" ]

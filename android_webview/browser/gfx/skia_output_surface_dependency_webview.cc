@@ -19,13 +19,19 @@ SkiaOutputSurfaceDependencyWebView::SkiaOutputSurfaceDependencyWebView(
     TaskQueueWebView* task_queue,
     GpuServiceWebView* gpu_service,
     gpu::SharedContextState* shared_context_state,
-    gl::GLSurface* gl_surface)
+    gl::GLSurface* gl_surface,
+    AwVulkanContextProvider* vulkan_context_provider)
     : gl_surface_(gl_surface),
+      vulkan_context_provider_(vulkan_context_provider),
       task_queue_(task_queue),
       gpu_service_(gpu_service),
       workarounds_(
           gpu_service_->gpu_feature_info().enabled_gpu_driver_bug_workarounds),
-      shared_context_state_(shared_context_state) {}
+      shared_context_state_(shared_context_state) {
+  DCHECK(!(shared_context_state_ && vulkan_context_provider_) ||
+         shared_context_state_->vk_context_provider() ==
+             vulkan_context_provider);
+}
 
 SkiaOutputSurfaceDependencyWebView::~SkiaOutputSurfaceDependencyWebView() =
     default;
@@ -140,6 +146,13 @@ base::TimeDelta
 SkiaOutputSurfaceDependencyWebView::GetGpuBlockedTimeSinceLastSwap() {
   // WebView doesn't track how long GPU thread was blocked
   return base::TimeDelta();
+}
+
+base::Optional<SkSurfaceCharacterization>
+SkiaOutputSurfaceDependencyWebView::GetRootSurfaceCharacterization() {
+  if (!vulkan_context_provider_)
+    return base::nullopt;
+  return vulkan_context_provider_->characterization();
 }
 
 void SkiaOutputSurfaceDependencyWebView::ScheduleDelayedGPUTaskFromGPUThread(

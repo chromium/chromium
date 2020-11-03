@@ -11,6 +11,7 @@
 
 namespace android_webview {
 
+class AwVulkanContextProvider;
 class TaskQueueWebView;
 class GpuServiceWebView;
 
@@ -22,7 +23,8 @@ class SkiaOutputSurfaceDependencyWebView
       TaskQueueWebView* task_queue,
       GpuServiceWebView* gpu_service,
       gpu::SharedContextState* shared_context_state,
-      gl::GLSurface* gl_surface);
+      gl::GLSurface* gl_surface,
+      AwVulkanContextProvider* vulkan_context_provider);
   ~SkiaOutputSurfaceDependencyWebView() override;
 
   std::unique_ptr<gpu::SingleTaskSequence> CreateSequence() override;
@@ -51,11 +53,14 @@ class SkiaOutputSurfaceDependencyWebView
   void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
 
+  base::Optional<SkSurfaceCharacterization> GetRootSurfaceCharacterization()
+      override;
   base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
   bool NeedsSupportForExternalStencil() override;
 
  private:
   gl::GLSurface* const gl_surface_;
+  AwVulkanContextProvider* vulkan_context_provider_;
   TaskQueueWebView* task_queue_;
   GpuServiceWebView* gpu_service_;
   gpu::GpuDriverBugWorkarounds workarounds_;

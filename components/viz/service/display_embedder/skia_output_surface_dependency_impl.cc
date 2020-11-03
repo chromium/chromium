@@ -164,6 +164,11 @@ void SkiaOutputSurfaceDependencyImpl::DidLoseContext(
   gpu_service_impl_->DidLoseContext(/*offscreen=*/false, reason, active_url);
 }
 
+base::Optional<SkSurfaceCharacterization>
+SkiaOutputSurfaceDependencyImpl::GetRootSurfaceCharacterization() {
+  return base::nullopt;
+}
+
 base::TimeDelta
 SkiaOutputSurfaceDependencyImpl::GetGpuBlockedTimeSinceLastSwap() {
   return gpu_service_impl_->GetGpuScheduler()->TakeTotalBlockingTime();

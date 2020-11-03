@@ -81,6 +81,7 @@ void OutputSurfaceProviderWebview::InitializeContext() {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
     gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>();
   } else {
+    // TODO(crbug.com/1143279): Should not be needed when vulkan is enabled.
     gl_surface_ = base::MakeRefCounted<AwGLSurface>();
   }
 
@@ -130,7 +131,8 @@ OutputSurfaceProviderWebview::CreateDisplayController() {
   if (renderer_settings_.use_skia_renderer) {
     auto skia_dependency = std::make_unique<SkiaOutputSurfaceDependencyWebView>(
         TaskQueueWebView::GetInstance(), GpuServiceWebView::GetInstance(),
-        shared_context_state_.get(), gl_surface_.get());
+        shared_context_state_.get(), gl_surface_.get(),
+        vulkan_context_provider_);
     return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
         std::move(skia_dependency));
   } else {

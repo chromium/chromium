@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "gpu/config/skia_limits.h"
 #include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -154,6 +155,11 @@ bool AwVulkanContextProvider::Globals::Initialize(
     LOG(ERROR) << "Unable to initialize GrContext.";
     return false;
   }
+  size_t max_resource_cache_bytes;
+  size_t glyph_cache_max_texture_bytes;
+  gpu::DetermineGrCacheLimitsFromAvailableMemory(
+      &max_resource_cache_bytes, &glyph_cache_max_texture_bytes);
+  gr_context->setResourceCacheLimit(max_resource_cache_bytes);
   return true;
 }
 
@@ -215,6 +221,9 @@ void AwVulkanContextProvider::SecondaryCBDrawBegin(
   DCHECK(!draw_context_);
   DCHECK(post_submit_tasks_.empty());
   draw_context_ = draw_context;
+  characterization_.emplace();
+  bool result = draw_context_->characterize(&characterization_.value());
+  CHECK(result);
 }
 
 void AwVulkanContextProvider::SecondaryCMBDrawSubmitted() {
@@ -242,6 +251,8 @@ void AwVulkanContextProvider::SecondaryCMBDrawSubmitted() {
 
   fence_helper->EnqueueFence(vk_fence);
   fence_helper->ProcessCleanupTasks();
+
+  characterization_.reset();
 }
 
 }  // namespace android_webview

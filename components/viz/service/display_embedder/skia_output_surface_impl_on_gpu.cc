@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/skia_helper.h"
 #include "components/viz/common/viz_utils.h"
@@ -49,6 +50,7 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan.h"
+#include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
 #include "gpu/vulkan/vulkan_util.h"
 #endif
 
@@ -509,7 +511,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   // SwapBuffers() is called, because we may need access to output_sk_surface()
   // for CopyOutput().
   scoped_output_device_paint_.emplace(output_device_.get());
-  DCHECK(output_sk_surface());
+  DCHECK(scoped_output_device_paint_);
 
   dependency_->ScheduleGrContextCleanup();
 
@@ -527,14 +529,14 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     promise_image_access_helper_.BeginAccess(
         std::move(image_contexts), &begin_semaphores, &end_semaphores);
     if (!begin_semaphores.empty()) {
-      auto result = output_sk_surface()->wait(
+      auto result = scoped_output_device_paint_->Wait(
           begin_semaphores.size(), begin_semaphores.data(),
           /*deleteSemaphoresAfterWait=*/false);
       DCHECK(result);
     }
 
     // Draw will only fail if the SkSurface and SkDDL are incompatible.
-    bool draw_success = output_sk_surface()->draw(ddl);
+    bool draw_success = scoped_output_device_paint_->Draw(ddl);
     DCHECK(draw_success);
 
     destroy_after_swap_.emplace_back(std::move(ddl));
@@ -551,8 +553,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       sk_sp<SkColorFilter> colorFilter = SkiaHelper::MakeOverdrawColorFilter();
       paint.setColorFilter(colorFilter);
       // TODO(xing.xu): move below to the thread where skia record happens.
-      output_sk_surface()->getCanvas()->drawImage(overdraw_image.get(), 0, 0,
-                                                  &paint);
+      scoped_output_device_paint_->GetCanvas()->drawImage(overdraw_image.get(),
+                                                          0, 0, &paint);
     }
 
     auto end_paint_semaphores =
@@ -560,17 +562,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     end_semaphores.insert(end_semaphores.end(), end_paint_semaphores.begin(),
                           end_paint_semaphores.end());
 
-    GrFlushInfo flush_info = {
-        .fNumSemaphores = end_semaphores.size(),
-        .fSignalSemaphores = end_semaphores.data(),
-    };
-
-    gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
-                                          &flush_info);
-    if (on_finished)
-      gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
-
-    auto result = output_sk_surface()->flush(flush_info);
+    auto result = scoped_output_device_paint_->Flush(vulkan_context_provider_,
+                                                     std::move(end_semaphores),
+                                                     std::move(on_finished));
 
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
@@ -598,12 +592,12 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(
     output_device_->SetDrawTimings(post_task_timestamp, base::TimeTicks::Now());
   }
 
-  SwapBuffersInternal(&frame);
+  SwapBuffersInternal(std::move(frame));
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SwapBuffersInternal();
+  SwapBuffersInternal(base::nullopt);
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
@@ -718,8 +712,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
 
   DCHECK(from_framebuffer ||
          offscreen_surfaces_.find(id) != offscreen_surfaces_.end());
-  auto* surface = from_framebuffer ? output_sk_surface()
-                                   : offscreen_surfaces_[id].surface();
+  SkSurface* surface = from_framebuffer
+                           ? scoped_output_device_paint_->sk_surface()
+                           : offscreen_surfaces_[id].surface();
+  // Do not support reading back from vulkan secondary command buffer.
+  if (!surface)
+    return;
 
   // If a platform doesn't support RGBX_8888 format, we will use RGBA_8888
   // instead. In this case, we need discard alpha channel (modify the alpha
@@ -1221,6 +1219,12 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #endif  // !defined(OS_WIN)
   (void)needs_background_image;
 
+  if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
+    output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
+        vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+    return true;
+  }
   auto output_device = SkiaOutputDeviceVulkan::Create(
       vulkan_context_provider_, dependency_->GetSurfaceHandle(),
       shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback());
@@ -1347,7 +1351,7 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSyncAndPushTextureUpdates(
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
-    OutputSurfaceFrame* frame) {
+    base::Optional<OutputSurfaceFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
@@ -1360,10 +1364,15 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
 
   if (context_is_lost_)
     return;
- 
+
   ResetStateOfImages();
-  output_device_->PreGrContextSubmit();
-  gr_context()->submit();
+  output_device_->Submit(base::BindOnce(&SkiaOutputSurfaceImplOnGpu::PostSubmit,
+                                        base::Unretained(this),
+                                        std::move(frame)));
+}
+
+void SkiaOutputSurfaceImplOnGpu::PostSubmit(
+    base::Optional<OutputSurfaceFrame> frame) {
   promise_image_access_helper_.EndAccess();
   scoped_output_device_paint_.reset();
 

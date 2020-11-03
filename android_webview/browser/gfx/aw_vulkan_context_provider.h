@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
 
@@ -54,6 +56,10 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
 
+  base::Optional<SkSurfaceCharacterization> characterization() const {
+    CHECK(characterization_);
+    return characterization_;
+  }
   VkDevice device() { return globals_->device_queue->GetVulkanDevice(); }
   VkQueue queue() { return globals_->device_queue->GetVulkanQueue(); }
 
@@ -88,6 +94,9 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   sk_sp<GrVkSecondaryCBDrawContext> draw_context_;
   std::vector<base::OnceClosure> post_submit_tasks_;
   std::vector<VkSemaphore> post_submit_semaphores_;
+
+  // Accessed from viz thread.
+  base::Optional<SkSurfaceCharacterization> characterization_;
 
   DISALLOW_COPY_AND_ASSIGN(AwVulkanContextProvider);
 };

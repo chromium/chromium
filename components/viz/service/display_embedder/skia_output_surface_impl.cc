@@ -246,9 +246,18 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
   is_hdr_ = color_space_.IsHDR();
   size_ = size;
   format_ = format;
-  characterization_ = CreateSkSurfaceCharacterization(
-      size, format, false /* mipmap */, color_space_.ToSkColorSpace(),
-      true /* is_root_render_pass */);
+  base::Optional<SkSurfaceCharacterization> characterization_opt =
+      dependency_->GetRootSurfaceCharacterization();
+  if (characterization_opt) {
+    characterization_ = characterization_opt.value();
+    DCHECK(characterization_.isValid());
+    DCHECK_EQ(size.width(), characterization_.width());
+    DCHECK_EQ(size.height(), characterization_.height());
+  } else {
+    characterization_ = CreateSkSurfaceCharacterization(
+        size, format, false /* mipmap */, color_space_.ToSkColorSpace(),
+        true /* is_root_render_pass */);
+  }
   RecreateRootRecorder();
 }
 

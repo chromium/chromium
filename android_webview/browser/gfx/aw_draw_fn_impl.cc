@@ -219,11 +219,13 @@ void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
   // This means context destroyed was not correctly called.
   DCHECK(!vulkan_context_provider_);
   vulkan_context_provider_ = AwVulkanContextProvider::Create(params);
-  render_thread_manager_.SetVulkanContextProviderOnRT(
-      vulkan_context_provider_.get());
+  DCHECK(vulkan_context_provider_);
 
-  if (is_interop_mode_ && vulkan_context_provider_) {
+  if (is_interop_mode_) {
     interop_.emplace(&render_thread_manager_, vulkan_context_provider_.get());
+  } else {
+    render_thread_manager_.SetVulkanContextProviderOnRT(
+        vulkan_context_provider_.get());
   }
 }
 
