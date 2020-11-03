@@ -84,9 +84,12 @@ void LoadBookmarks(const base::FilePath& path,
   base::UmaHistogramCounts100000(
       "Bookmarks.Count.OnProfileLoad",
       base::saturated_cast<int>(stats.total_url_bookmark_count));
-  base::UmaHistogramCounts100000(
-      "Bookmarks.Count.OnProfileLoad.DuplicateUrl2",
-      base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
+
+  if (stats.duplicate_url_bookmark_count != 0) {
+    base::UmaHistogramCounts100000(
+        "Bookmarks.Count.OnProfileLoad.DuplicateUrl2",
+        base::saturated_cast<int>(stats.duplicate_url_bookmark_count));
+  }
 }
 
 }  // namespace
