@@ -132,16 +132,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& key_name,
       DBusMethodCallback<TpmAttestationDataResult> callback) override;
-  void TpmAttestationSignEnterpriseChallenge(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      const std::string& domain,
-      const std::string& device_id,
-      attestation::AttestationChallengeOptions options,
-      const std::string& challenge,
-      const std::string& key_name_for_spkac,
-      AsyncMethodCallback callback) override;
   void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) override;
   void GetKeyDataEx(
       const cryptohome::AccountIdentifier& cryptohome_id,

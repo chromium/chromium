@@ -425,19 +425,6 @@ void FakeCryptohomeClient::TpmAttestationGetPublicKey(
       base::BindOnce(std::move(callback), tpm_attestation_public_key_));
 }
 
-void FakeCryptohomeClient::TpmAttestationSignEnterpriseChallenge(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_name,
-    const std::string& domain,
-    const std::string& device_id,
-    attestation::AttestationChallengeOptions options,
-    const std::string& challenge,
-    const std::string& key_name_for_spkac,
-    AsyncMethodCallback callback) {
-  ReturnAsyncMethodData(std::move(callback), std::string());
-}
-
 void FakeCryptohomeClient::TpmGetVersion(
     DBusMethodCallback<TpmVersionInfo> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

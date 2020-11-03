@@ -78,27 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) AsyncMethodCaller {
       const std::string& key_name,
       DataCallback callback) = 0;
 
-  // Asks cryptohomed to asynchronously sign an enterprise challenge with the
-  // key specified by |key_type| and |key_name|.  The |domain| and |device_id|
-  // parameters will be included in the challenge response.  |challenge| must be
-  // a valid enterprise challenge.  On success, the data sent to |callback| is
-  // the challenge response.  If |key_type| is KEY_USER, a |user_id| must be
-  // provided.  Otherwise |user_id| is ignored.  For normal GAIA users the
-  // |user_id| is an AccountaId-derived string (see AccountId::GetAccountIdKey).
-  // If |key_name_for_spkac| is not empty, then the corresponding key will be
-  // used for SignedPublicKeyAndChallenge, but the challenge response will still
-  // be signed by the key specified by |key_name| (EMK or EUK).
-  virtual void TpmAttestationSignEnterpriseChallenge(
-      chromeos::attestation::AttestationKeyType key_type,
-      const Identification& user_id,
-      const std::string& key_name,
-      const std::string& domain,
-      const std::string& device_id,
-      chromeos::attestation::AttestationChallengeOptions options,
-      const std::string& challenge,
-      const std::string& key_name_for_spkac,
-      DataCallback callback) = 0;
-
   // Creates the global AsyncMethodCaller instance.
   static void Initialize();
 
