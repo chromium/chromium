@@ -14,14 +14,14 @@
     <includes>
       <if expr="is_official_build == false">
         <!-- Privileged app host contents. -->
-        <include name="IDR_FILE_MANAGER_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_MAIN_HTML" file="main.html" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_MAIN_CSS" file="main.css" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_MAIN_JS" file="main.js" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_ICON_192" file="images/icon192.png" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="main.html" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_MAIN_CSS" file="main.css" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_MAIN_JS" file="main.js" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_ICON_192" file="images/icon192.png" type="BINDATA" />
 
         <!-- Mojo resources -->
-        <include name="IDR_FILE_MANAGER_MOJO_LITE_JS"
+        <include name="IDR_FILE_MANAGER_SWA_MOJO_LITE_JS"
           file="$root_gen_dir\chromeos\components\file_manager\mojom\file_manager.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA" />

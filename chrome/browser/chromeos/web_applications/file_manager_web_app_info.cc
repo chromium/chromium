@@ -20,7 +20,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   // TODO(majewski): Fetch from a resource.
   info->title = base::UTF8ToUTF16("File Manager");
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url, {{"icon192.png", 192, IDR_FILE_MANAGER_ICON_192}},
+      info->start_url, {{"icon192.png", 192, IDR_FILE_MANAGER_SWA_ICON_192}},
       *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
