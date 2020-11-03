@@ -60692,6 +60692,32 @@
        {}
       ]
      ],
+     "dynamic-baseline-change-nested.html": [
+      "803b31410dbe07b56d39019de8426dc2575b4e7c",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/dynamic-baseline-change-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "dynamic-baseline-change.html": [
+      "f13b87f0c1431010137bc76d516f92173c7aa1ed",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/dynamic-baseline-change-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "dynamic-bsize-change.html": [
       "7148f26e2770b669dfcc69435e3a506882ffd457",
       [
@@ -112980,6 +113006,19 @@
        {}
       ]
      ],
+     "text-decoration-color-selection-pseudo-01.html": [
+      "0df1d477ef72b6ec521bb7b91eeb4531fc435a8c",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-color-selection-pseudo-01-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-color.html": [
       "1e1353d9fa67ea6ef0019fc499dfeaafae65fe87",
       [
@@ -143094,6 +143133,32 @@
        ]
       ]
      },
+     "is-default-ns-001.html": [
+      "1c9a5a29e559891f8460cacbb35776f5d76825bf",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "is-default-ns-002.html": [
+      "b86337f16793a62e2364f90122daf0b5ccb2cf6a",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "is-default-ns-003.html": [
       "410d1221ec0f0a8baf4f29f9d1ff1e34e26cd854",
       [
@@ -143127,6 +143192,32 @@
        [
         [
          "/css/selectors/is-where-visited-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "not-default-ns-001.html": [
+      "ff8f540bc37d1ddcba81254af0693de891644620",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "not-default-ns-002.html": [
+      "3d70ed0a87ea02291feec22f0a87250216502953",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
          "=="
         ]
        ],
@@ -181710,6 +181801,10 @@
       "ef2d7661beeba5b22d047e2c2e9149fd05aba437",
       []
      ],
+     "dynamic-baseline-change-ref.html": [
+      "af030931ddad15ca5613b29ae6c468f9a04c53db",
+      []
+     ],
      "dynamic-bsize-change-ref.html": [
       "b8db7ea2c7de6443075e04009ff5c979dbb7fed3",
       []
@@ -200547,6 +200642,10 @@
       ],
       "text-decoration-color-selection-001-ref.html": [
        "d9811874eef87fe37bf5173c0dccc380907cf439",
+       []
+      ],
+      "text-decoration-color-selection-pseudo-01-ref.html": [
+       "516b0f83db27177fbc603fabccafbdc7e3211240",
        []
       ],
       "text-decoration-line-010-ref.xht": [
@@ -308146,6 +308245,20 @@
         {}
        ]
       ],
+      "not-001.html": [
+       "db1cf291c7e07f42ba2e40f12ed2d470bfafaa65",
+       [
+        null,
+        {}
+       ]
+      ],
+      "not-002.html": [
+       "811b125f8c1f272221eec0c0e56e3fb4b8bcfbc6",
+       [
+        null,
+        {}
+       ]
+      ],
       "quirks-mode-stylesheet-dynamic-add-001.html": [
        "3d7be982378fe2414f818d1682eca8f38f3575ac",
        [
@@ -308522,6 +308635,13 @@
     ],
     "disconnected-callbacks.html": [
      "7f5a4d0f8e76d495acfdedfe172ef5acfdac75b4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "element-internals-shadowroot.html": [
+     "0afd43dd6371b6f2a649aa07c4a37b7203da3840",
      [
       null,
       {}
@@ -402577,6 +402697,13 @@
        {}
       ]
      ],
+     "at-scroll-timeline-ignored.tentative.html": [
+      "1ea61f44e3fdffe064a02b21bfcab36f911a2747",
+      [
+       null,
+       {}
+      ]
+     ],
      "at-scroll-timeline-inactive-phase.html": [
       "a8db8e63238bc3f547094733e302a659646eefde",
       [
@@ -405742,21 +405869,14 @@
       ]
      ],
      "declarative-shadow-dom-attachment.tentative.html": [
-      "1e1ac7a0561f639bce325224ab512233f32cf0ba",
+      "b78902c4b59dc26ac819fbe24809621201fdc0ca",
       [
        null,
        {}
       ]
      ],
      "declarative-shadow-dom-basic.tentative.html": [
-      "a72cf70ef6679ed9281129436ad7063b7c5227c5",
-      [
-       null,
-       {}
-      ]
-     ],
-     "element-internals-shadowroot.tentative.html": [
-      "aeaa322a31c220d01a19c9a35c01f3537af9d4e6",
+      "92e667fdbcf9c3828e97732795af9d682c59645b",
       [
        null,
        {}
