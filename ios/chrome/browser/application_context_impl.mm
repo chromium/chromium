@@ -155,6 +155,22 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
     browser_policy_connector->Init(GetLocalState(),
                                    GetSharedURLLoaderFactory());
   }
+
+  if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
+    breadcrumb_manager_ = std::make_unique<BreadcrumbManager>();
+    application_breadcrumbs_logger_ =
+        std::make_unique<ApplicationBreadcrumbsLogger>(
+            breadcrumb_manager_.get());
+
+    base::FilePath storage_dir;
+    bool result = base::PathService::Get(ios::DIR_USER_DATA, &storage_dir);
+    DCHECK(result);
+    breadcrumb_persistent_storage_manager_ =
+        std::make_unique<BreadcrumbPersistentStorageManager>(storage_dir);
+
+    application_breadcrumbs_logger_->SetPersistentStorageManager(
+        breadcrumb_persistent_storage_manager_.get());
+  }
 }
 
 void ApplicationContextImpl::StartTearDown() {
@@ -224,22 +240,6 @@ void ApplicationContextImpl::OnAppEnterForeground() {
   ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
   if (ukm_service)
     ukm_service->OnAppEnterForeground();
-
-  if (base::FeatureList::IsEnabled(kLogBreadcrumbs) && !breadcrumb_manager_) {
-    breadcrumb_manager_ = std::make_unique<BreadcrumbManager>();
-    application_breadcrumbs_logger_ =
-        std::make_unique<ApplicationBreadcrumbsLogger>(
-            breadcrumb_manager_.get());
-
-    base::FilePath storage_dir;
-    bool result = base::PathService::Get(ios::DIR_USER_DATA, &storage_dir);
-    DCHECK(result);
-    breadcrumb_persistent_storage_manager_ =
-        std::make_unique<BreadcrumbPersistentStorageManager>(storage_dir);
-
-    application_breadcrumbs_logger_->SetPersistentStorageManager(
-        breadcrumb_persistent_storage_manager_.get());
-  }
 }
 
 void ApplicationContextImpl::OnAppEnterBackground() {
