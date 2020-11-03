@@ -1,33 +1,31 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="/js-test-resources/js-test.js"></script>
 <script src="../resources/pointer-lock/pointer-lock-test-harness.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-  <div id="target1"></div>
-  <iframe src="../resources/pointer-lock/inner-iframe.html" sandbox="allow-scripts" onload="doNextStepWithUserGesture()"></iframe>
-</div>
 <script>
-    description("Test sandboxed iframe blocks pointer lock.")
-    window.jsTestIsAsync = true;
-
-    targetDiv1 = document.getElementById("target1");
-    iframe = document.getElementsByTagName("iframe")[0];
-
-    todo = [
-      function () {
-          iframe.contentWindow.postMessage(["eval", 'document.body.requestPointerLock()'], "*");
-          window.onmessage = function (messageEvent) {
-              message = messageEvent.data;
-              shouldBeEqualToString("message", "inner-iframe.html onpointerlockerror");
-              window.onmessage = null;
-              doNextStep();
-          }
-      },
-    ];
-    // doNextStep() called by iframe onload handler.
+  promise_test(() => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('message', (event) => {
+        if (event.data == "inner-iframe.html onpointerlockerror") {
+          resolve();
+        } else {
+          reject(event.data);
+        }
+      });
+      function onIframeLoaded() {
+        clickOnElement(iframe);
+      }
+      var iframe = document.createElement('iframe');
+      iframe.sandbox = 'allow-scripts';
+      iframe.onload = onIframeLoaded;
+      iframe.src = '../resources/pointer-lock/inner-iframe.html';
+      document.body.appendChild(iframe);
+    });
+  }, 'Test sandboxed iframe with allow-pointer-lock allows pointer lock.');
 </script>
 </body>
 </html>

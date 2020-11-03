@@ -19,6 +19,7 @@
     targetDiv2 = document.getElementById("target2");
     targetIframe1 = document.getElementById("iframe1");
     targetIframe2 = document.getElementById("iframe2");
+    let error_code;
 
     // Events must not bubble from document.
     function errorIfEventsBubble() {
@@ -75,7 +76,10 @@
             expectNoEvents("Lock targetIframe2.");
             expectNoEvents("Lock targetIframe2 (handler for iframe1).", targetIframe1.contentDocument);
             expectOnlyErrorEvent("Lock targetIframe2 (handler for iframe2).", targetIframe2.contentDocument);
-            targetIframe2.contentDocument.body.requestPointerLock();
+            targetIframe2.contentDocument.body.requestPointerLock().catch(error => {
+                error_code = error.code;
+                shouldBe("error_code", "4", "Should reject with a WrongDocumentError");
+            });
         },
         function () {
             expectNoEvents("Unlock targetIframe2.");
@@ -87,7 +91,9 @@
             shouldBeDefined("testRunner.setPointerLockWillFail");
             testRunner.setPointerLockWillFail();
             expectOnlyErrorEvent("Lock with synchronous failure.");
-            targetDiv1.requestPointerLock();
+            targetDiv1.requestPointerLock().catch(error => {
+                // This is a forced error the type of error returned here is not important.
+            });
         },
         function () {
             shouldBeDefined("testRunner.setPointerLockWillRespondAsynchronously");
@@ -95,7 +101,10 @@
             shouldBeDefined("testRunner.allowPointerLock");
             testRunner.setPointerLockWillRespondAsynchronously();
             expectOnlyErrorEvent("Lock with asynchronous failure.");
-            targetDiv1.requestPointerLock();
+            targetDiv1.requestPointerLock().catch(error => {
+                error_code = error.code;
+                shouldBe("error_code", "0", "Should reject with a forced error");
+            });
             doNextStep();
         },
         function () {

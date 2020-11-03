@@ -1531,6 +1531,7 @@
     {
       name: "PointerLockOptions",
       origin_trial_feature_name: "PointerLockOptions",
+      status: 'experimental',
     },
     {
       name: "PointerRawUpdate",
