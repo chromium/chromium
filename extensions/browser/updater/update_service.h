@@ -61,10 +61,6 @@ class UpdateService : public KeyedService,
   virtual void StartUpdateCheck(const ExtensionUpdateCheckParams& update_params,
                                 base::OnceClosure callback);
 
-  // This function verifies if the current implementation can update
-  // |extension_id|.
-  virtual bool CanUpdate(const std::string& extension_id) const;
-
   // Overriden from |update_client::UpdateClient::Observer|.
   void OnEvent(Events event, const std::string& id) override;
 

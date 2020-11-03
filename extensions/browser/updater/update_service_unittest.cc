@@ -38,7 +38,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -709,104 +708,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_NonOverlapped) {
 
   update_client()->RunDelayedUpdate(1);
   EXPECT_TRUE(executed2);
-}
-
-class UpdateServiceCanUpdateTest : public UpdateServiceTest {
- public:
-  UpdateServiceCanUpdateTest() = default;
-  ~UpdateServiceCanUpdateTest() override = default;
-
-  void SetUp() override {
-    UpdateServiceTest::SetUp();
-
-    store_extension_ =
-        ExtensionBuilder("store_extension")
-            .MergeManifest(
-                DictionaryBuilder()
-                    .Set("update_url",
-                         extension_urls::GetDefaultWebstoreUpdateUrl().spec())
-                    .Build())
-            .Build();
-    offstore_extension_ =
-        ExtensionBuilder("offstore_extension")
-            .MergeManifest(
-                DictionaryBuilder()
-                    .Set("update_url", "http://localhost/test/updates.xml")
-                    .Build())
-            .Build();
-    emptyurl_extension_ = ExtensionBuilder("emptyurl_extension")
-                              .MergeManifest(DictionaryBuilder().Build())
-                              .Build();
-    userscript_extension_ =
-        ExtensionBuilder("userscript_extension")
-            .MergeManifest(DictionaryBuilder()
-                               .Set("converted_from_user_script", true)
-                               .Build())
-            .Build();
-
-    ASSERT_TRUE(store_extension_.get());
-    ASSERT_TRUE(ExtensionRegistry::Get(browser_context())
-                    ->AddEnabled(store_extension_));
-    ASSERT_TRUE(offstore_extension_.get());
-    ASSERT_TRUE(ExtensionRegistry::Get(browser_context())
-                    ->AddEnabled(offstore_extension_));
-    ASSERT_TRUE(emptyurl_extension_.get());
-    ASSERT_TRUE(ExtensionRegistry::Get(browser_context())
-                    ->AddEnabled(emptyurl_extension_));
-    ASSERT_TRUE(userscript_extension_.get());
-    ASSERT_TRUE(ExtensionRegistry::Get(browser_context())
-                    ->AddEnabled(userscript_extension_));
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<const Extension> store_extension_;
-  scoped_refptr<const Extension> offstore_extension_;
-  scoped_refptr<const Extension> emptyurl_extension_;
-  scoped_refptr<const Extension> userscript_extension_;
-};
-
-class UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl
-    : public UpdateServiceCanUpdateTest {
- public:
-  void SetUp() override {
-    UpdateServiceCanUpdateTest::SetUp();
-
-    // Change the webstore update url.
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    // Note: |offstore_extension_|'s update url is the same.
-    command_line->AppendSwitchASCII("apps-gallery-update-url",
-                                    "http://localhost/test2/updates.xml");
-    ExtensionsClient::Get()->InitializeWebStoreUrls(
-        base::CommandLine::ForCurrentProcess());
-  }
-};
-
-TEST_F(UpdateServiceCanUpdateTest, UpdateService_CanUpdate) {
-  // Update service can only update webstore extensions when enabled.
-  EXPECT_TRUE(update_service()->CanUpdate(store_extension_->id()));
-  // ... and extensions with empty update URL.
-  EXPECT_TRUE(update_service()->CanUpdate(emptyurl_extension_->id()));
-  // It can't update off-store extensions.
-  EXPECT_FALSE(update_service()->CanUpdate(offstore_extension_->id()));
-  // ... or extensions with empty update URL converted from user script.
-  EXPECT_FALSE(update_service()->CanUpdate(userscript_extension_->id()));
-  // ... or extensions that don't exist.
-  EXPECT_FALSE(update_service()->CanUpdate(std::string(32, 'a')));
-  // ... or extensions with empty ID (is it possible?).
-  EXPECT_FALSE(update_service()->CanUpdate(""));
-}
-
-TEST_F(UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
-       UpdateService_CanUpdate) {
-  // Update service can update extensions when the default webstore update url
-  // is changed.
-  EXPECT_FALSE(update_service()->CanUpdate(store_extension_->id()));
-  EXPECT_TRUE(update_service()->CanUpdate(emptyurl_extension_->id()));
-  EXPECT_FALSE(update_service()->CanUpdate(offstore_extension_->id()));
-  EXPECT_FALSE(update_service()->CanUpdate(userscript_extension_->id()));
-  EXPECT_FALSE(update_service()->CanUpdate(std::string(32, 'a')));
-  EXPECT_FALSE(update_service()->CanUpdate(""));
 }
 
 }  // namespace

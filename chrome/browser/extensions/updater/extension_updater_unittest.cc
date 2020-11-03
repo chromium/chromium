@@ -68,7 +68,9 @@
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/browser/updater/request_queue_impl.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/verifier_formats.h"
 #include "net/base/backoff_entry.h"
@@ -245,7 +247,6 @@ class MockUpdateService : public UpdateService {
  public:
   MockUpdateService() : UpdateService(nullptr, nullptr) {}
   MOCK_CONST_METHOD0(IsBusy, bool());
-  MOCK_CONST_METHOD1(CanUpdate, bool(const std::string& id));
   MOCK_METHOD3(SendUninstallPing,
                void(const std::string& id,
                     const base::Version& version,
@@ -634,6 +635,11 @@ class ExtensionUpdaterTest : public testing::Test {
   void OverrideUpdateService(ExtensionUpdater* updater,
                              UpdateService* service) {
     updater->update_service_ = service;
+  }
+
+  bool CanUseUpdateService(ExtensionUpdater* updater,
+                           const std::string& extension_id) {
+    return updater->CanUseUpdateService(extension_id);
   }
 
   // Adds a Result with the given data to results.
@@ -2638,12 +2644,8 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingDisabledExtensions) {
       Manifest::INTERNAL);
   ASSERT_EQ(1u, enabled_extensions.size());
   ASSERT_EQ(1u, disabled_extensions.size());
-  const std::string& enabled_id = enabled_extensions[0]->id();
-  const std::string& disabled_id = disabled_extensions[0]->id();
 
   // We expect that both enabled and disabled extensions are auto-updated.
-  EXPECT_CALL(update_service, CanUpdate(enabled_id)).WillOnce(Return(true));
-  EXPECT_CALL(update_service, CanUpdate(disabled_id)).WillOnce(Return(true));
   EXPECT_CALL(update_service,
               StartUpdateCheck(
                   ::testing::Field(&ExtensionUpdateCheckParams::update_info,
@@ -2677,15 +2679,12 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
                                Manifest::INTERNAL);
   ASSERT_EQ(1u, enabled_extensions.size());
   ASSERT_EQ(2u, blocklisted_extensions.size());
-  const std::string& enabled_id = enabled_extensions[0]->id();
   const std::string& remotely_blocklisted_id = blocklisted_extensions[0]->id();
   service.extension_prefs()->AddDisableReason(
       remotely_blocklisted_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
+
   // We expect that both enabled and remotely blocklisted extensions are
   // auto-updated.
-  EXPECT_CALL(update_service, CanUpdate(enabled_id)).WillOnce(Return(true));
-  EXPECT_CALL(update_service, CanUpdate(remotely_blocklisted_id))
-      .WillOnce(Return(true));
   EXPECT_CALL(update_service,
               StartUpdateCheck(
                   ::testing::Field(&ExtensionUpdateCheckParams::update_info,
@@ -2933,6 +2932,108 @@ TEST_F(ExtensionUpdaterTest, TestExtensionPriority) {
       ManifestFetchData::FetchPriority::BACKGROUND);
   TestSingleExtensionDownloadingPriority(
       ManifestFetchData::FetchPriority::FOREGROUND);
+}
+
+class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
+ public:
+  CanUseUpdateServiceTest() = default;
+  ~CanUseUpdateServiceTest() override = default;
+
+  void SetUp() override {
+    ExtensionUpdaterTest::SetUp();
+
+    service_ = std::make_unique<ServiceForDownloadTests>(
+        prefs_.get(), downloader_test_helper_.url_loader_factory());
+    updater_ = std::make_unique<ExtensionUpdater>(
+        service_.get(), service_->extension_prefs(), service_->pref_service(),
+        service_->profile(), kUpdateFrequencySecs, nullptr,
+        service_->GetDownloaderFactory());
+
+    store_extension_ =
+        ExtensionBuilder("store_extension")
+            .SetManifestKey(
+                "update_url",
+                extension_urls::GetDefaultWebstoreUpdateUrl().spec())
+            .Build();
+    offstore_extension_ =
+        ExtensionBuilder("offstore_extension")
+            .SetManifestKey("update_url", "http://localhost/test/updates.xml")
+            .Build();
+    emptyurl_extension_ = ExtensionBuilder("emptyurl_extension").Build();
+    userscript_extension_ =
+        ExtensionBuilder("userscript_extension")
+            .SetManifestKey("converted_from_user_script", true)
+            .Build();
+
+    ASSERT_TRUE(store_extension_.get());
+    ASSERT_TRUE(ExtensionRegistry::Get(service_->profile())
+                    ->AddEnabled(store_extension_));
+    ASSERT_TRUE(offstore_extension_.get());
+    ASSERT_TRUE(ExtensionRegistry::Get(service_->profile())
+                    ->AddEnabled(offstore_extension_));
+    ASSERT_TRUE(emptyurl_extension_.get());
+    ASSERT_TRUE(ExtensionRegistry::Get(service_->profile())
+                    ->AddEnabled(emptyurl_extension_));
+    ASSERT_TRUE(userscript_extension_.get());
+    ASSERT_TRUE(ExtensionRegistry::Get(service_->profile())
+                    ->AddEnabled(userscript_extension_));
+  }
+
+ protected:
+  ExtensionUpdater* updater() { return updater_.get(); }
+
+  ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks_;
+  ExtensionDownloaderTestHelper downloader_test_helper_;
+  std::unique_ptr<ServiceForDownloadTests> service_;
+  std::unique_ptr<ExtensionUpdater> updater_;
+
+  scoped_refptr<const Extension> store_extension_;
+  scoped_refptr<const Extension> offstore_extension_;
+  scoped_refptr<const Extension> emptyurl_extension_;
+  scoped_refptr<const Extension> userscript_extension_;
+};
+
+class UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl
+    : public CanUseUpdateServiceTest {
+ public:
+  void SetUp() override {
+    CanUseUpdateServiceTest::SetUp();
+
+    // Change the webstore update url.
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    // Note: |offstore_extension_|'s update url is the same.
+    command_line->AppendSwitchASCII("apps-gallery-update-url",
+                                    "http://localhost/test2/updates.xml");
+    ExtensionsClient::Get()->InitializeWebStoreUrls(
+        base::CommandLine::ForCurrentProcess());
+  }
+};
+
+TEST_F(CanUseUpdateServiceTest, TestDefaults) {
+  // Update service can only update webstore extensions when enabled.
+  EXPECT_TRUE(CanUseUpdateService(updater(), store_extension_->id()));
+  // ... and extensions with empty update URL.
+  EXPECT_TRUE(CanUseUpdateService(updater(), emptyurl_extension_->id()));
+  // It can't update off-store extensions.
+  EXPECT_FALSE(CanUseUpdateService(updater(), offstore_extension_->id()));
+  // ... or extensions with empty update URL converted from user script.
+  EXPECT_FALSE(CanUseUpdateService(updater(), userscript_extension_->id()));
+  // ... or extensions that don't exist.
+  EXPECT_FALSE(CanUseUpdateService(updater(), std::string(32, 'a')));
+  // ... or extensions with empty ID (is it possible?).
+  EXPECT_FALSE(CanUseUpdateService(updater(), ""));
+}
+
+TEST_F(UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
+       CanUseUpdateServiceFeatureEnabledNonDefaultUpdateUrl) {
+  // Update service can update extensions when the default webstore update url
+  // is changed.
+  EXPECT_FALSE(CanUseUpdateService(updater(), store_extension_->id()));
+  EXPECT_TRUE(CanUseUpdateService(updater(), emptyurl_extension_->id()));
+  EXPECT_FALSE(CanUseUpdateService(updater(), offstore_extension_->id()));
+  EXPECT_FALSE(CanUseUpdateService(updater(), userscript_extension_->id()));
+  EXPECT_FALSE(CanUseUpdateService(updater(), std::string(32, 'a')));
+  EXPECT_FALSE(CanUseUpdateService(updater(), ""));
 }
 
 // TODO(asargent) - (http://crbug.com/12780) add tests for:

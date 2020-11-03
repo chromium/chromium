@@ -28,8 +28,6 @@
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/extension_urls.h"
-#include "extensions/common/manifest_url_handlers.h"
 
 namespace extensions {
 
@@ -84,26 +82,6 @@ void UpdateService::SendUninstallPing(const std::string& id,
   DCHECK(update_client_);
   update_client_->SendUninstallPing(
       id, version, reason, base::BindOnce(&SendUninstallPingCompleteCallback));
-}
-
-bool UpdateService::CanUpdate(const std::string& extension_id) const {
-  // Won't update extensions with empty IDs.
-  if (extension_id.empty())
-    return false;
-
-  // We can only update extensions that have been installed on the system.
-  const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  const Extension* extension = registry->GetInstalledExtension(extension_id);
-  if (extension == nullptr)
-    return false;
-
-  // Furthermore, we can only update extensions that were installed from the
-  // default webstore or extensions with empty update URLs not converted from
-  // user scripts.
-  const GURL& update_url = ManifestURL::GetUpdateURL(extension);
-  if (update_url.is_empty())
-    return !extension->converted_from_user_script();
-  return extension_urls::IsWebstoreUpdateUrl(update_url);
 }
 
 void UpdateService::OnEvent(Events event, const std::string& extension_id) {

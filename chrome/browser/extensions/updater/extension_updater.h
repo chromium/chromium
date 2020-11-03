@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -150,6 +151,9 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   void SetBackoffPolicyForTesting(
       const net::BackoffEntry::Policy* backoff_policy);
 
+  // Always fetch updates via update service, not the extension downloader.
+  static base::AutoReset<bool> GetScopedUseUpdateServiceForTesting();
+
  private:
   friend class ExtensionUpdaterTest;
   friend class ExtensionUpdaterFileHandler;
@@ -261,6 +265,10 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // Deletes the crx file at |crx_path| if ownership is passed.
   void CleanUpCrxFileIfNeeded(const base::FilePath& crx_path,
                               bool file_ownership_passed);
+
+  // This function verifies if |extension_id| can be updated using
+  // UpdateService.
+  bool CanUseUpdateService(const std::string& extension_id) const;
 
   // Whether Start() has been called but not Stop().
   bool alive_ = false;
