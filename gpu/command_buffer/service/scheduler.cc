@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -19,6 +20,17 @@
 #include "gpu/config/gpu_preferences.h"
 
 namespace gpu {
+
+namespace {
+
+uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
+  // Xor with a mask to ensure that the flow id does not collide with non-gpu
+  // tasks.
+  static constexpr uint64_t kMask = base::MD5Hash64Constexpr("gpu::Scheduler");
+  return kMask ^ (sequence_id) ^ (static_cast<uint64_t>(order_num) << 32);
+}
+
+}  // namespace
 
 Scheduler::Task::Task(SequenceId sequence_id,
                       base::OnceClosure closure,
@@ -166,6 +178,9 @@ void Scheduler::Sequence::ContinueTask(base::OnceClosure closure) {
 
 uint32_t Scheduler::Sequence::ScheduleTask(base::OnceClosure closure) {
   uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
+  TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::ScheduleTask",
+                         GetTaskFlowId(sequence_id_.value(), order_num),
+                         TRACE_EVENT_FLAG_FLOW_OUT);
   tasks_.push_back({std::move(closure), order_num});
   return order_num;
 }
@@ -524,7 +539,6 @@ void Scheduler::RunNextTask() {
   SchedulingState state = scheduling_queue_.back();
   scheduling_queue_.pop_back();
 
-  TRACE_EVENT1("gpu", "Scheduler::RunNextTask", "state", state.AsValue());
   base::ElapsedTimer task_timer;
 
   Sequence* sequence = GetSequence(state.sequence_id);
@@ -533,6 +547,10 @@ void Scheduler::RunNextTask() {
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);
   DCHECK_EQ(order_num, state.order_num);
+
+  TRACE_EVENT_WITH_FLOW1("gpu,toplevel.flow", "Scheduler::RunNextTask",
+                         GetTaskFlowId(state.sequence_id.value(), order_num),
+                         TRACE_EVENT_FLAG_FLOW_IN, "state", state.AsValue());
 
   // Begin/FinishProcessingOrderNumber must be called with the lock released
   // because they can renter the scheduler in Enable/DisableSequence.
