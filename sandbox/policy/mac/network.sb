@@ -120,5 +120,5 @@
 )
 (allow file-read*
   (path "/private/etc/krb5.conf")
-  (subpath "/System/Library/KerberosPlugins/KerberosFrameworkPlugins")
+  (subpath "/System/Library/KerberosPlugins") ; https://crbug.com/1134449
 )
