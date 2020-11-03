@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_task_traits.h"

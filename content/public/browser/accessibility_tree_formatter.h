@@ -15,14 +15,13 @@
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/inspect.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace base {
 class CommandLine;
+class DictionaryValue;
 }
 
 namespace ui {

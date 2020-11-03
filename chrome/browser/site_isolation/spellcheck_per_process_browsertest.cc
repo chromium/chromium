@@ -10,6 +10,7 @@
 #include "base/bind_helpers.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"

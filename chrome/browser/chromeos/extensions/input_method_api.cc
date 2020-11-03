@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/extensions/dictionary_event_router.h"

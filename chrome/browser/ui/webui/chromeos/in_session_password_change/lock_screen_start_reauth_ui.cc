@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
 #include "chrome/common/webui_url_constants.h"

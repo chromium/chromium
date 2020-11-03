@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "content/public/browser/web_contents.h"

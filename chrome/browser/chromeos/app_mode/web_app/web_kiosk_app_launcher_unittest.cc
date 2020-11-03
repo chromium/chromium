@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_launcher.h"
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_data.h"

@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_ids_provider.h"

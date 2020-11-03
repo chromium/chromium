@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/utf_string_conversions.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/content_browser_client.h"

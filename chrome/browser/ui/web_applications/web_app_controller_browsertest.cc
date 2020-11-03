@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

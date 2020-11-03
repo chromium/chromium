@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"

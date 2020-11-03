@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commander/apps_command_source.h"
 
 #include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
 #include "url/gurl.h"

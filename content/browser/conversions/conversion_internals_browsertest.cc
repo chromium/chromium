@@ -5,6 +5,7 @@
 #include "content/browser/conversions/conversion_internals_ui.h"
 
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_report.h"

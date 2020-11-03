@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

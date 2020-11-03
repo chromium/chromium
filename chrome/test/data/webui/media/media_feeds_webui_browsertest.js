@@ -9,6 +9,7 @@
 const EXAMPLE_URL_1 = 'https://example.com/feed.json';
 
 GEN('#include "base/run_loop.h"');
+GEN('#include "base/strings/utf_string_conversions.h"');
 GEN('#include "chrome/browser/media/feeds/media_feeds_service.h"');
 GEN('#include "chrome/browser/media/feeds/media_feeds_service_factory.h"');
 GEN('#include "chrome/browser/media/history/media_history_keyed_service.h"');

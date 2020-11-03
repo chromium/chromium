@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/navigation_controller.h"
@@ -76,6 +75,10 @@ struct LoadStateWithParam;
 
 namespace service_manager {
 class InterfaceProvider;
+}
+
+namespace ui {
+struct AXPropertyFilter;
 }
 
 namespace content {

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

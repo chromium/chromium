@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service_test_factory.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"

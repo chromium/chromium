@@ -8,6 +8,7 @@
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
