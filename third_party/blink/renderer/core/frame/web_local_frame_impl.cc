@@ -2370,15 +2370,19 @@ bool WebLocalFrameImpl::WillStartNavigation(const WebNavigationInfo& info) {
 }
 
 void WebLocalFrameImpl::SendOrientationChangeEvent() {
-  if (!GetFrame())
+  // Speculative fix for https://crbug.com/1143380.
+  // TODO(https://crbug.com/838348): It's a logic bug that this function is
+  // being called when either the LocalFrame or LocalDOMWindow are null, but
+  // there is a bug where the browser can inadvertently detach the main frame of
+  // a WebView that is still active.
+  if (!GetFrame() || !GetFrame()->DomWindow())
     return;
 
   // Screen Orientation API
   CoreInitializer::GetInstance().NotifyOrientationChanged(*GetFrame());
 
   // Legacy window.orientation API
-  if (RuntimeEnabledFeatures::OrientationEventEnabled() &&
-      GetFrame()->DomWindow())
+  if (RuntimeEnabledFeatures::OrientationEventEnabled())
     GetFrame()->DomWindow()->SendOrientationChangeEvent();
 }
 
