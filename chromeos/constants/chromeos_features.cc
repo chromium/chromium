@@ -201,7 +201,7 @@ const base::Feature kCryptAuthV2DeviceActivityStatus{
 // flag, v1 DeviceSync will continue to operate until it is disabled via the
 // feature flag kDisableCryptAuthV1DeviceSync.
 const base::Feature kCryptAuthV2DeviceSync{"CryptAuthV2DeviceSync",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the CryptAuth v2 Enrollment flow.
 const base::Feature kCryptAuthV2Enrollment{"CryptAuthV2Enrollment",
@@ -488,7 +488,7 @@ const base::Feature kPrintSaveToDrive{"PrintSaveToDrive",
 
 // Allows print servers to be selected when beyond a specified limit.
 const base::Feature kPrintServerScaling{"PrintServerScaling",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable quick answers.
 const base::Feature kQuickAnswers{"QuickAnswers",
