@@ -404,7 +404,15 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
   if (url.is_empty() || url == "about:")
     return true;
   std::string error;
-  return ExtensionMayAttachToURL(*extension_, url, profile_, &error);
+  if (!ExtensionMayAttachToURL(*extension_, url, profile_, &error))
+    return false;
+  // For nested URLs, make sure ExtensionMayAttachToURL() allows both
+  // the outer and the inner URLs.
+  if (url.inner_url() && !ExtensionMayAttachToURL(*extension_, *url.inner_url(),
+                                                  profile_, &error)) {
+    return false;
+  }
+  return true;
 }
 
 bool ExtensionDevToolsClientHost::MayAttachToBrowser() {
