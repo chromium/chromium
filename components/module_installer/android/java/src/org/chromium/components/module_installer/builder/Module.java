@@ -117,8 +117,14 @@ public class Module<T> {
                 ClassLoader implClassLoader = impl.getClass().getClassLoader();
                 throw new RuntimeException("Failure casting " + mName
                                 + " module class, interface ClassLoader: " + interfaceClassLoader
-                                + ", impl ClassLoader: " + implClassLoader
-                                + ", equal: " + interfaceClassLoader.equals(implClassLoader),
+                                + " (parent " + interfaceClassLoader.getParent() + ")"
+                                + ", impl ClassLoader: " + implClassLoader + " (parent "
+                                + implClassLoader.getParent() + ")"
+                                + ", equal: " + interfaceClassLoader.equals(implClassLoader)
+                                + " (parents equal: "
+                                + interfaceClassLoader.getParent().equals(
+                                        implClassLoader.getParent())
+                                + ")",
                         e);
             }
             return mImpl;
