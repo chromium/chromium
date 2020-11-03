@@ -213,6 +213,7 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1145195")
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);
