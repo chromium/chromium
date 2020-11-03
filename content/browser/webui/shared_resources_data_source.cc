@@ -34,6 +34,7 @@
 #include "skia/grit/skia_resources_map.h"
 #include "ui/base/layout.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_generated_resources_map.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/resources/grit/webui_resources_map.h"
 
@@ -44,10 +45,6 @@
 
 #if defined(OS_WIN)
 #include "base/strings/utf_string_conversions.h"
-#endif
-
-#if !defined(OS_ANDROID)
-#include "ui/resources/grit/webui_generated_resources_map.h"
 #endif
 
 namespace content {
@@ -228,11 +225,9 @@ const ResourcesMap* CreateResourcesMap() {
   AddAliasedResourcesToMap(CreateContentResourceIdToAliasMap(),
                            kMediaInternalsResources,
                            kMediaInternalsResourcesSize, result);
-#if !defined(OS_ANDROID)
   AddGritResourcesToMap(
       base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize),
       result);
-#endif
   AddGritResourcesToMap(
       base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize),
       result);

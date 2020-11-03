@@ -10,30 +10,31 @@ preprocess_folder = "preprocessed"
 
 include_polymer = !is_android && !is_ios
 
-if (include_polymer) {
-  # Note: Currently webui_generated_resources.grd contains only Polymer-related
-  # files so no need to exist where Polymer is not available. This might
-  # change as more files are moved to webui_generated_resources.grd.
-  generate_grd("build_grd") {
-    grd_prefix = "webui_generated"
-    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-    deps = [
+generate_grd("build_grd") {
+  grd_prefix = "webui_generated"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+
+  deps = [ "js/cr/ui:build_grdp" ]
+  grdp_files = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/resources.grdp" ]
+
+  if (include_polymer) {
+    deps += [
       "cr_components:build_grdp",
       "cr_elements:build_grdp",
       "//third_party/polymer/v1_0:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
-    grdp_files = [
+    grdp_files += [
       "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
     ]
+  }
 
-    if (is_chromeos) {
-      deps += [ "//third_party/web-animations-js:build_grdp" ]
-      grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
-    }
+  if (is_chromeos) {
+    deps += [ "//third_party/web-animations-js:build_grdp" ]
+    grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
   }
 }
 
@@ -43,6 +44,7 @@ group("preprocess") {
     ":preprocess_src",
     "cr_components:preprocess",
     "cr_elements:preprocess",
+    "js/cr/ui:preprocess",
   ]
 }
 
@@ -70,13 +72,6 @@ preprocess_grit("preprocess_generated") {
     "js/promise_resolver.m.js",
     "js/util.m.js",
     "js/cr/event_target.m.js",
-    "js/cr/ui/drag_wrapper.m.js",
-    "js/cr/ui/focus_grid.m.js",
-    "js/cr/ui/focus_outline_manager.m.js",
-    "js/cr/ui/focus_row.m.js",
-    "js/cr/ui/keyboard_shortcut_list.m.js",
-    "js/cr/ui/store_client.m.js",
-    "js/cr/ui/store.m.js",
   ]
 
   if (include_polymer) {
@@ -85,8 +80,6 @@ preprocess_grit("preprocess_generated") {
       "js/list_property_update_behavior.m.js",
       "js/search_highlight_utils.m.js",
       "js/web_ui_listener_behavior.m.js",
-      "js/cr/ui/focus_row_behavior.m.js",
-      "js/cr/ui/focus_without_ink.m.js",
     ]
   }
 }

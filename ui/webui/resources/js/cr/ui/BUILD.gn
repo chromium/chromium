@@ -3,8 +3,126 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../../tools/js_modulizer.gni")
 import("../../cr.gni")
+
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js/cr/ui"
+preprocess_src_manifest = "preprocessed_src_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_js_cr_ui"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":preprocess" ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_gen_manifest",
+    "$target_gen_dir/$preprocess_src_manifest",
+  ]
+  resource_path_prefix = "js/cr/ui"
+}
+
+group("preprocess") {
+  public_deps = [
+    ":preprocess_generated",
+    ":preprocess_src",
+  ]
+}
+
+preprocess_grit("preprocess_src") {
+  in_folder = "./"
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  in_files = [
+    "array_data_model.js",
+    "bubble_button.js",
+    "bubble.js",
+    "card_slider.js",
+    "command.js",
+    "context_menu_handler.js",
+    "controlled_indicator.js",
+    "dialogs.js",
+    "drag_wrapper.js",
+    "focus_grid.js",
+    "focus_manager.js",
+    "focus_outline_manager.js",
+    "focus_row.js",
+    "keyboard_shortcut_list.js",
+    "list_item.js",
+    "list.js",
+    "list_selection_controller.js",
+    "list_selection_model.js",
+    "list_single_selection_model.js",
+    "menu_button.js",
+    "menu_item.js",
+    "menu.js",
+    "overlay.js",
+    "position_util.js",
+    "splitter.js",
+    "store_client.js",
+    "store.js",
+    "tabs.js",
+    "touch_handler.js",
+    "tree.js",
+  ]
+
+  if (!is_android) {
+    in_files += [
+      "focus_row_behavior.js",
+      "focus_without_ink.js",
+    ]
+  }
+
+  if (is_chromeos) {
+    in_files += [ "grid.js" ]
+  }
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":modulize" ]
+  in_folder = target_gen_dir
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "drag_wrapper.m.js",
+    "focus_grid.m.js",
+    "focus_outline_manager.m.js",
+    "focus_row.m.js",
+    "keyboard_shortcut_list.m.js",
+    "store_client.m.js",
+    "store.m.js",
+    "tabs.m.js",
+    "tree.m.js",
+  ]
+
+  if (!is_android) {
+    in_files += [
+      "focus_row_behavior.m.js",
+      "focus_without_ink.m.js",
+    ]
+  }
+
+  if (is_chromeos) {
+    in_files += [
+      "array_data_model.m.js",
+      "command.m.js",
+      "context_menu_handler.m.js",
+      "dialogs.m.js",
+      "grid.m.js",
+      "list_item.m.js",
+      "list.m.js",
+      "list_selection_controller.m.js",
+      "list_selection_model.m.js",
+      "list_single_selection_model.m.js",
+      "menu_button.m.js",
+      "menu_item.m.js",
+      "menu.m.js",
+      "position_util.m.js",
+      "splitter.m.js",
+    ]
+  }
+}
 
 group("closure_compile") {
   deps = [

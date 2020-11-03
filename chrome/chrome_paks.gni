@@ -102,6 +102,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/skia/skia_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
+      "$root_gen_dir/ui/resources/webui_generated_resources.pak",
       "$root_gen_dir/ui/resources/webui_resources.pak",
     ]
     deps = [
@@ -145,7 +146,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/tab_search_resources.pak",
         "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
         "$root_gen_dir/headless/headless_lib_resources.pak",
-        "$root_gen_dir/ui/resources/webui_generated_resources.pak",
       ]
       deps += [
         "//chrome/browser/media/kaleidoscope:kaleidoscope_resources",

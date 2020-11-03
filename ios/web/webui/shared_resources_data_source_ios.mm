@@ -12,6 +12,8 @@
 #import "ios/web/public/web_client.h"
 #include "net/base/mime_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_generated_resources.h"
+#include "ui/resources/grit/webui_generated_resources_map.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/resources/grit/webui_resources_map.h"
 
@@ -33,6 +35,10 @@ const GritResourceMap* PathToResource(const std::string& path) {
   for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
     if (path == kWebuiResources[i].name)
       return &kWebuiResources[i];
+  }
+  for (size_t i = 0; i < kWebuiGeneratedResourcesSize; ++i) {
+    if (path == kWebuiGeneratedResources[i].name)
+      return &kWebuiGeneratedResources[i];
   }
   return nullptr;
 }

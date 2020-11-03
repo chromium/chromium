@@ -10,11 +10,9 @@ group("resources") {
   public_deps = [
     ":ui_resources_grd",
     ":ui_unscaled_resources_grd",
+    ":webui_generated_resources_grd",
     ":webui_resources_grd",
   ]
-  if (!is_android && !is_ios) {
-    public_deps += [ ":webui_generated_resources_grd" ]
-  }
 }
 
 grit("ui_resources_grd") {
@@ -58,27 +56,25 @@ grit("webui_resources_grd") {
   ]
 }
 
-if (!is_android && !is_ios) {
-  grit("webui_generated_resources_grd") {
-    enable_input_discovery_for_gn_analyze = false
-    defines = [ "SHARED_INTERMEDIATE_DIR=" +
-                rebase_path(root_gen_dir, root_build_dir) ]
-    source = "$root_gen_dir/ui/webui/resources/webui_generated_resources.grd"
-    deps = [ "//ui/webui/resources:build_grd" ]
+grit("webui_generated_resources_grd") {
+  enable_input_discovery_for_gn_analyze = false
+  defines =
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$root_gen_dir/ui/webui/resources/webui_generated_resources.grd"
+  deps = [ "//ui/webui/resources:build_grd" ]
 
-    outputs = [
-      "grit/webui_generated_resources.h",
-      "grit/webui_generated_resources_map.cc",
-      "grit/webui_generated_resources_map.h",
-      "webui_generated_resources.pak",
-    ]
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-  }
+  outputs = [
+    "grit/webui_generated_resources.h",
+    "grit/webui_generated_resources_map.cc",
+    "grit/webui_generated_resources_map.h",
+    "webui_generated_resources.pak",
+  ]
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
+  ]
 }
 
 if (!is_mac) {

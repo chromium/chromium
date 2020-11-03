@@ -82,54 +82,6 @@ without changes to the corresponding grd file. -->
                file="images/throbber_medium.svg" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_THROBBER_SMALL_SVG"
                file="images/throbber_small.svg" type="BINDATA" />
-      <!-- Web UI JS module resources (used only in ChromeOS). -->
-      <if expr="chromeos">
-        <include name="IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/array_data_model.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_COMMAND_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/command.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_CONTEXT_MENU_HANDLER_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/context_menu_handler.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_DIALOGS_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/dialogs.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_GRID_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/grid.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_MENU_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/menu.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_MENU_BUTTON_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/menu_button.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_MENU_ITEM_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/menu_item.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_LIST_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_LIST_ITEM_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_item.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_CONTROLLER_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_selection_controller.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_MODEL_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_selection_model.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_LIST_SINGLE_SELECTION_MODEL_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_single_selection_model.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_POSITION_UTIL_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/position_util.m.js"
-                 use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_SPLITTER_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/splitter.m.js"
-                 use_base_dir="false" type="BINDATA" />
-      </if>
       <!-- Web UI shared JS module resources. -->
       <include name="IDR_WEBUI_JS_ASSERT_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/assert.m.js"
@@ -139,38 +91,8 @@ without changes to the corresponding grd file. -->
       <include name="IDR_WEBUI_JS_CR_EVENT_TARGET_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/cr/event_target.m.js"
                use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_DRAG_WRAPPER_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/drag_wrapper.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_FOCUS_GRID_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/focus_grid.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_FOCUS_OUTLINE_MANAGER_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/focus_outline_manager.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_FOCUS_ROW_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/focus_row.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_FOCUS_WITHOUT_INK_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/focus_without_ink.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_KEYBOARD_SHORTCUT_LIST_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/keyboard_shortcut_list.m.js"
-               use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBUI_JS_CR_UI_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/cr/ui.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_STORE_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/store.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_STORE_CLIENT_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/store_client.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_TABS_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/tabs.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_TREE_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/tree.m.js"
                use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBUI_JS_EVENT_TRACKER_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/event_tracker.m.js"
@@ -359,77 +281,6 @@ without changes to the corresponding grd file. -->
                  file="js/cr/event_target.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_CR_UI_JS"
                  file="js/cr/ui.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL_JS"
-                 file="js/cr/ui/array_data_model.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_BUBBLE_JS"
-                 file="js/cr/ui/bubble.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_BUBBLE_BUTTON_JS"
-                 file="js/cr/ui/bubble_button.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_CARD_SLIDER_JS"
-                 file="js/cr/ui/card_slider.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_COMMAND_JS"
-                 file="js/cr/ui/command.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_CONTEXT_MENU_HANDLER_JS"
-                 file="js/cr/ui/context_menu_handler.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_CONTROLLED_INDICATOR_JS"
-                 file="js/cr/ui/controlled_indicator.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_DIALOGS_JS"
-                 file="js/cr/ui/dialogs.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_DRAG_WRAPPER_JS"
-                 file="js/cr/ui/drag_wrapper.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_FOCUS_GRID_JS"
-                 file="js/cr/ui/focus_grid.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_FOCUS_MANAGER_JS"
-                 file="js/cr/ui/focus_manager.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_FOCUS_OUTLINE_MANAGER_JS"
-                 file="js/cr/ui/focus_outline_manager.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_FOCUS_ROW_JS"
-                 file="js/cr/ui/focus_row.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_KEYBOARD_SHORTCUT_LIST_JS"
-                 file="js/cr/ui/keyboard_shortcut_list.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_LIST_JS"
-                 file="js/cr/ui/list.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_LIST_ITEM_JS"
-                 file="js/cr/ui/list_item.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_CONTROLLER_JS"
-                 file="js/cr/ui/list_selection_controller.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_MODEL_JS"
-                 file="js/cr/ui/list_selection_model.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_LIST_SINGLE_SELECTION_MODEL_JS"
-                 file="js/cr/ui/list_single_selection_model.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_MENU_JS"
-                 file="js/cr/ui/menu.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_MENU_BUTTON_JS"
-                 file="js/cr/ui/menu_button.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_MENU_ITEM_JS"
-                 file="js/cr/ui/menu_item.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_OVERLAY_JS"
-                 file="js/cr/ui/overlay.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_POSITION_UTIL_JS"
-                 file="js/cr/ui/position_util.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_SPLITTER_JS"
-                 file="js/cr/ui/splitter.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_STORE_JS"
-                 file="js/cr/ui/store.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_STORE_CLENT_JS"
-                 file="js/cr/ui/store_client.js"
-                 type="chrome_html" />
-      <if expr="chromeos">
-        <structure name="IDR_WEBUI_JS_CR_UI_GRID_JS"
-                   file="js/cr/ui/grid.js" type="chrome_html" />
-      </if>
-      <structure name="IDR_WEBUI_JS_CR_UI_TABS_JS"
-                 file="js/cr/ui/tabs.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_TREE_JS"
-                 file="js/cr/ui/tree.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_TOUCH_HANDLER_JS"
-                 file="js/cr/ui/touch_handler.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_EVENT_TRACKER_JS"
                  file="js/event_tracker.js" type="chrome_html" />
       <structure name="IDR_WEBUI_JS_ICON_JS"

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <include name="IDR_WEBUI_JS_CR_UI_FOCUS_ROW_BEHAVIOR_M_JS"
-           file="${root_gen_dir}/ui/webui/resources/js/cr/ui/focus_row_behavior.m.js"
-           use_base_dir="false" type="BINDATA" />
   <include name="IDR_WEBUI_JS_I18N_BEHAVIOR_M_JS"
            file="${root_gen_dir}/ui/webui/resources/js/i18n_behavior.m.js"
            use_base_dir="false" type="BINDATA"
