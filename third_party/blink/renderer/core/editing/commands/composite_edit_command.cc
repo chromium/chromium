@@ -1515,19 +1515,18 @@ void CompositeEditCommand::MoveParagraphs(
   // FIXME: This is an inefficient way to preserve style on nodes in the
   // paragraph to move. It shouldn't matter though, since moved paragraphs will
   // usually be quite small.
-  DocumentFragment* fragment =
-      start_of_paragraph_to_move.DeepEquivalent() !=
-              end_of_paragraph_to_move.DeepEquivalent()
-          ? CreateFragmentFromMarkup(
-                GetDocument(),
-                CreateMarkup(start.ParentAnchoredEquivalent(),
-                             end.ParentAnchoredEquivalent(),
-                             CreateMarkupOptions::Builder()
-                                 .SetShouldConvertBlocksToInlines(true)
-                                 .SetConstrainingAncestor(constraining_ancestor)
-                                 .Build()),
-                "", kDisallowScriptingAndPluginContent)
-          : nullptr;
+  DocumentFragment* fragment = nullptr;
+  if (start_of_paragraph_to_move.DeepEquivalent() !=
+      end_of_paragraph_to_move.DeepEquivalent()) {
+    const String paragraphs_markup = CreateMarkup(
+        start.ParentAnchoredEquivalent(), end.ParentAnchoredEquivalent(),
+        CreateMarkupOptions::Builder()
+            .SetShouldConvertBlocksToInlines(true)
+            .SetConstrainingAncestor(constraining_ancestor)
+            .Build());
+    fragment = CreateSanitizedFragmentFromMarkupWithContext(
+        GetDocument(), paragraphs_markup, 0, paragraphs_markup.length(), "");
+  }
 
   // A non-empty paragraph's style is moved when we copy and move it.  We don't
   // move anything if we're given an empty paragraph, but an empty paragraph can
