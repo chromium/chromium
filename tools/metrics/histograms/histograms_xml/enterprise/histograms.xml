@@ -971,8 +971,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.Policies.IgnoredByPolicyGroup"
-    enum="EnterprisePolicies" expires_after="2020-10-18">
+    enum="EnterprisePolicies" expires_after="2021-11-01">
   <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     A set of enterprise policy rules that are ignored because they do not share
     the highest priority from their policy atomic group. This is recorded at
@@ -982,8 +983,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.Policies.SourceConflicts" enum="PolicyAtomicGroups"
-    expires_after="2020-07-01">
+    expires_after="2021-11-01">
   <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     A set of policy atomic groups that have at least one policy disabled because
     of its source. This is recorded at startup, then every 24 hours. If chrome
