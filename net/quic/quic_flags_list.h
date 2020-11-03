@@ -108,7 +108,7 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_default_on_pto, false)
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_bbr2_limit_inflight_hi, false)
 
 // If true, disable QUIC version h3-T050.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_disable_version_t050, false)
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_disable_version_t050, true)
 
 // If true, default-enable 5RTO blachole detection.
 QUIC_FLAG(
@@ -233,7 +233,7 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_do_not_clip_received_error_code,
 
 // If true, HTTP/3 sesions will report error and close connection upon receiving
 // HTTP/2 only frames.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_reject_spdy_frames, false)
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_reject_spdy_frames, true)
 
 // If true, QuicConnection will initialize its self address to the self address
 // of the first received packet, for all server connections and client
@@ -323,3 +323,12 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_encrypted_control_frames, false)
 // WriteOrBufferData is used to send application data.
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_use_write_or_buffer_data_at_level,
           false)
+
+// When true, use quic::CertificateView to extract X.509 subjects from
+// certificates.
+QUIC_FLAG(
+    FLAGS_quic_reloadable_flag_quic_extract_x509_subject_using_certificate_view,
+    false)
+
+// If true, use ScopedEncryptionLevelContext when sending data.
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_use_encryption_level_context, false)
