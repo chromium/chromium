@@ -705,7 +705,7 @@ public class DownloadNotificationService {
 
     private void cancelOffTheRecordDownloads() {
         boolean cancelActualDownload = BrowserStartupController.getInstance().isFullBrowserStarted()
-                && Profile.getLastUsedRegularProfile().hasOffTheRecordProfile();
+                && Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile();
 
         List<DownloadSharedPreferenceEntry> entries = mDownloadSharedPreferenceHelper.getEntries();
         List<DownloadSharedPreferenceEntry> copies =

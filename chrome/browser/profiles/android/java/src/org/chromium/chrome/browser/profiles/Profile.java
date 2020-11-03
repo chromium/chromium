@@ -103,17 +103,6 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns if primary OffTheRecord profile exists.
-     *
-     * @deprecated use {@link #hasOffTheRecordProfile(OTRProfileID)} or {@link
-     *         #hasPrimaryOTRProfile()} instead.
-     */
-    @Deprecated
-    public boolean hasOffTheRecordProfile() {
-        return hasPrimaryOTRProfile();
-    }
-
-    /**
      * Returns if OffTheRecord profile with given OTRProfileID exists.
      *
      * @param profileID {@link OTRProfileID} object.

@@ -62,7 +62,7 @@ public class IncognitoUtils {
     @SuppressLint("NewApi")
     public static boolean shouldDestroyIncognitoProfileOnStartupInternal(
             boolean selectedTabModelIsIncognito) {
-        if (!Profile.getLastUsedRegularProfile().hasOffTheRecordProfile()) {
+        if (!Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
             return false;
         }
 
