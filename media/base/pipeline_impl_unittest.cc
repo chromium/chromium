@@ -639,6 +639,30 @@ TEST_F(PipelineImplTest, SetVolume) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(PipelineImplTest, SetVolumeDuringStartup) {
+  CreateAudioStream();
+  SetDemuxerExpectations();
+
+  // The audio renderer should receive two calls to SetVolume().
+  float expected = 0.5f;
+  EXPECT_CALL(*renderer_, SetVolume(expected)).Times(2);
+  EXPECT_CALL(callbacks_, OnStart(PIPELINE_OK));
+  EXPECT_CALL(callbacks_, OnMetadata(_))
+      .WillOnce(RunOnceClosure(base::BindOnce(&PipelineImpl::SetVolume,
+                                              base::Unretained(pipeline_.get()),
+                                              expected)));
+  ExpectRendererInitialization();
+  EXPECT_CALL(*renderer_, SetPlaybackRate(0.0));
+  EXPECT_CALL(*renderer_, StartPlayingFrom(start_time_))
+      .WillOnce(SetBufferingState(&renderer_client_, BUFFERING_HAVE_ENOUGH,
+                                  BUFFERING_CHANGE_REASON_UNKNOWN));
+  EXPECT_CALL(callbacks_,
+              OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,
+                                     BUFFERING_CHANGE_REASON_UNKNOWN));
+  StartPipeline();
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(PipelineImplTest, SetPreservesPitch) {
   CreateAudioStream();
   SetDemuxerExpectations();

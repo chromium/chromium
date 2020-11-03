@@ -470,7 +470,7 @@ void PipelineImpl::RendererWrapper::SetVolume(float volume) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   volume_ = volume;
-  if (state_ == kPlaying)
+  if (shared_state_.renderer)
     shared_state_.renderer->SetVolume(volume_);
 }
 
