@@ -399,30 +399,11 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
 
   mojom::SerializeAsMHTMLParamsPtr params(CreateMojoParams());
 
-  // Initialize method of file writing depending on |compute_contents_hash|
-  // flag.
   params->output_handle = mojom::MhtmlOutputHandle::New();
-  if (params_.compute_contents_hash) {
-    // Create and set up the data pipe.
-    mojo::ScopedDataPipeProducerHandle producer;
-    if (mojo::CreateDataPipe(nullptr, &producer, &mhtml_data_consumer_) !=
-        MOJO_RESULT_OK) {
-      DLOG(ERROR) << "Failed to create Mojo Data Pipe.";
-      return mojom::MhtmlSaveStatus::kStreamingError;
-    }
-    MHTMLWriteCompleteCallback write_complete_callback = base::BindRepeating(
-        &Job::DoneWritingToDisk, weak_factory_.GetWeakPtr());
-    download::GetDownloadTaskRunner().get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Job::BeginWatchingHandle, base::Unretained(this),
-                       std::move(write_complete_callback)));
-    waiting_on_data_streaming_ = true;
-    params->output_handle->set_producer_handle(std::move(producer));
-  } else {
-    // File::Duplicate() creates a reference to this file for use in the
-    // Renderer.
-    params->output_handle->set_file_handle(browser_file_.Duplicate());
-  }
+
+  // File::Duplicate() creates a reference to this file for use in the
+  // Renderer.
+  params->output_handle->set_file_handle(browser_file_.Duplicate());
 
   // Send a Mojo request to Renderer to serialize its frame.
   DCHECK_EQ(FrameTreeNode::kFrameTreeNodeInvalidId,
@@ -449,13 +430,6 @@ void MHTMLGenerationManager::Job::BeginWatchingHandle(
   watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
       download::GetDownloadTaskRunner());
-  // It is entirely possible for BeginWatchingHandle to get bound multiple times
-  // if we have to serialize multiple render frames, but we will only ever want
-  // one secure hash instance created.
-  if (params_.compute_contents_hash && !secure_hash_) {
-    secure_hash_ =
-        crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
-  }
 
   // base::Unretained is safe, as |this| owns |mhtml_data_consumer_|, which
   // is responsible for invoking |watcher_| callbacks.

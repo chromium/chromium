@@ -3625,11 +3625,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "on-the-fly-mhtml-hash-computation",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "open-downloads-in-files.app",
     "owners": [ "ewannpv", "gambard", "bling-flags" ],
     "expiry_milestone": 87

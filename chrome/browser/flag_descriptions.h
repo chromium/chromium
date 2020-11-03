@@ -982,9 +982,6 @@ extern const char kOmniboxUISwapTitleAndUrlDescription[];
 extern const char kOmniboxWebUIOmniboxPopupName[];
 extern const char kOmniboxWebUIOmniboxPopupDescription[];
 
-extern const char kOnTheFlyMhtmlHashComputationName[];
-extern const char kOnTheFlyMhtmlHashComputationDescription[];
-
 extern const char kOopRasterizationName[];
 extern const char kOopRasterizationDescription[];
 

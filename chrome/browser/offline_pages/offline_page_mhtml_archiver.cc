@@ -100,8 +100,6 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
   params.remove_popup_overlay = create_archive_params.remove_popup_overlay;
   params.use_page_problem_detectors =
       create_archive_params.use_page_problem_detectors;
-  params.compute_contents_hash =
-      create_archive_params.use_on_the_fly_hash_computation;
 
   web_contents->GenerateMHTMLWithResult(
       params,

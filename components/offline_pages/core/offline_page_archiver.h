@@ -72,9 +72,6 @@ class OfflinePageArchiver {
 
     // Run page problem detectors while generating MTHML if true.
     bool use_page_problem_detectors = false;
-
-    // Whether to enable on-the-fly hash computation.
-    bool use_on_the_fly_hash_computation = false;
   };
 
   // Callback for the final result of an attempt to generate of offline page

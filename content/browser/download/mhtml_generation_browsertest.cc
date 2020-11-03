@@ -274,9 +274,8 @@ class RespondAndDisconnectMockWriter
 
 }  // namespace
 
-class MHTMLGenerationTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class MHTMLGenerationTest : public ContentBrowserTest,
+                            public testing::WithParamInterface<bool> {
  public:
   MHTMLGenerationTest()
       : has_mhtml_callback_run_(false),
@@ -319,8 +318,7 @@ class MHTMLGenerationTest
     base::RunLoop run_loop;
     histogram_tester_.reset(new base::HistogramTester());
 
-    bool use_result_callback;
-    std::tie(params.compute_contents_hash, use_result_callback) = GetParam();
+    bool use_result_callback = GetParam();
 
     if (use_result_callback) {
       shell()->web_contents()->GenerateMHTMLWithResult(
@@ -343,18 +341,11 @@ class MHTMLGenerationTest
     // TODO(crbug.com/997408): Add tests which will let MHTMLGeneration manager
     // fail during file write operation. This will allow us to actually test if
     // we receive a bogus hash instead of a base::nullopt.
-    bool generation_failed = file_size() == -1;
-    if (use_result_callback && !generation_failed &&
-        params.compute_contents_hash) {
-      // File contents write was successful, verify compute contents hash.
-      TestComputeContentsHash(params.file_path);
-    } else {
-      // expect that no hash was produced
-      EXPECT_EQ(base::nullopt, file_digest());
-    }
+    EXPECT_EQ(base::nullopt, file_digest());
 
     // Skip well formedness check if explicitly disabled or there was a
     // generation error.
+    bool generation_failed = file_size() == -1;
     if (!well_formedness_check_ || generation_failed)
       return;
 
@@ -824,121 +815,13 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLWithMultipleFrames) {
     EXPECT_THAT(mhtml, ContainsRegex(regex));
 }
 
-// Tests for the synchronization logic that waits for both the Mojo
-// response and the data pipe closure to consider a frame serialization done.
-// This is only relevant when a Mojo data pipe is being used (hash computation
-// case) and is skipped if writing directly to file.
-namespace {
-class OrderedTaskMockWriter : public MockWriterBase {
- public:
-  explicit OrderedTaskMockWriter(MHTMLGenerationTest::TaskOrder order)
-      : order_(order) {}
-
-  void SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
-                        SerializeAsMHTMLCallback callback) override {
-    DCHECK(params->output_handle->is_producer_handle());
-    DCHECK(params->output_handle->get_producer_handle()->is_valid());
-
-    switch (order_) {
-      case MHTMLGenerationTest::TaskOrder::RespondThenWrite:
-        delayed_callback_ = base::BindOnce(
-            &OrderedTaskMockWriter::WriteDataToProducerPipe,
-            base::Unretained(this),
-            std::move(params->output_handle->get_producer_handle()));
-        SendResponse(std::move(callback));
-        PostClosure();
-        break;
-      case MHTMLGenerationTest::TaskOrder::WriteThenRespond:
-        delayed_callback_ =
-            base::BindOnce(&OrderedTaskMockWriter::SendResponse,
-                           base::Unretained(this), std::move(callback));
-        WriteDataToProducerPipe(
-            std::move(params->output_handle->get_producer_handle()));
-        // For this case, we must post to the download sequence first to
-        // ensure we run the closure after the write operation completes.
-        download::GetDownloadTaskRunner()->PostTask(
-            FROM_HERE, base::BindOnce(&OrderedTaskMockWriter::PostClosure,
-                                      base::Unretained(this)));
-        break;
-    }
-  }
-
-  // Posts the quit closure to the UI thread to unblock the serialization Job
-  // after receiving the first task complete notification.
-  void PostClosure() {
-    GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                        std::move(first_run_loop_closure_));
-  }
-
-  base::OnceClosure first_run_loop_closure_;
-  base::OnceClosure delayed_callback_;
-
- private:
-  MHTMLGenerationTest::TaskOrder order_;
-
-  DISALLOW_COPY_AND_ASSIGN(OrderedTaskMockWriter);
-};
-}  // namespace
-
-void MHTMLGenerationTest::TwoStepSyncTestFor(
-    const MHTMLGenerationTest::TaskOrder order) {
-  OrderedTaskMockWriter mock_writer(order);
-
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
-
-  MHTMLGenerationParams params(path);
-
-  OverrideInterface(&mock_writer);
-
-  base::RunLoop first_run_loop;
-  base::RunLoop second_run_loop;
-
-  params.compute_contents_hash = true;
-  mock_writer.first_run_loop_closure_ = first_run_loop.QuitWhenIdleClosure();
-
-  shell()->web_contents()->GenerateMHTML(
-      params,
-      base::BindOnce(&MHTMLGenerationTest::MHTMLGenerated,
-                     base::Unretained(this), second_run_loop.QuitClosure()));
-
-  // Run serialization pipeline until stalled.
-  first_run_loop.Run();
-  ASSERT_FALSE(has_mhtml_callback_run())
-      << "MHTML generation complete but should be waiting on operation.";
-
-  // Run stalled task and block until MHTML generation completes.
-  DCHECK(mock_writer.delayed_callback_);
-  std::move(mock_writer.delayed_callback_).Run();
-  second_run_loop.Run();
-
-  ASSERT_TRUE(has_mhtml_callback_run())
-      << "MHTML generation has not been complete despite unblocking the Job.";
-
-  // Verify the file has some contents written to it.
-  EXPECT_GT(ReadFileSizeFromDisk(path), 100);
-  // Verify the reported file size matches the file written to disk.
-  EXPECT_EQ(ReadFileSizeFromDisk(path), file_size_);
-}
-
-// These tests do not depend on the parameter declared by the
-// MHTMLGenerationTest test suite, so we only want to run them once.
-IN_PROC_BROWSER_TEST_F(MHTMLGenerationTest, GenerateMHTMLButDelayWrite) {
-  TwoStepSyncTestFor(TaskOrder::RespondThenWrite);
-}
-
-IN_PROC_BROWSER_TEST_F(MHTMLGenerationTest, GenerateMHTMLButDelayResponse) {
-  TwoStepSyncTestFor(TaskOrder::WriteThenRespond);
-}
-
-// We instantiate the MHTML Generation Tests with a matrix of boolean values
-// because we want to test both compute_contents_hash enabled, and using
-// GenerateMHTMLWithResults callback independently.
+// We instantiate the MHTML Generation Tests both using and not using the
+// GenerateMHTMLWithResults callback.
 INSTANTIATE_TEST_SUITE_P(MHTMLGenerationTest,
                          MHTMLGenerationTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 INSTANTIATE_TEST_SUITE_P(MHTMLGenerationSitePerProcessTest,
                          MHTMLGenerationSitePerProcessTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 }  // namespace content
