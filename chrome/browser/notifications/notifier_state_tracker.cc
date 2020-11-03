@@ -92,14 +92,6 @@ bool NotifierStateTracker::IsNotifierEnabled(
       // Disabling Crostini notifications is not supported yet.
       return true;
 #else
-      NOTREACHED();
-      break;
-#endif
-    case message_center::NotifierType::PHONE_HUB:
-#if defined(OS_CHROMEOS)
-      // PhoneHub notifications are controlled in their own settings.
-      return true;
-#else
       break;
 #endif
   }

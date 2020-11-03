@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -35,9 +34,9 @@ namespace ash {
 namespace {
 const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
+const char kNotificationCustomViewType[] = "phonehub";
 const char kPhoneHubInstantTetherNotificationId[] =
     "chrome://phonehub-instant-tether";
-const char kNotificationCustomViewType[] = "phonehub";
 const int kReplyButtonIndex = 0;
 
 // The amount of time the reply button is disabled after sending an inline
@@ -229,8 +228,6 @@ void PhoneHubNotificationController::OnNotificationsAdded(
   for (int64_t id : notification_ids) {
     CreateOrUpdateNotification(manager_->GetNotification(id));
   }
-
-  LogNotificationCount();
 }
 
 void PhoneHubNotificationController::OnNotificationsUpdated(
@@ -249,8 +246,6 @@ void PhoneHubNotificationController::OnNotificationsRemoved(
     it->second->Remove();
     notification_map_.erase(it);
   }
-
-  LogNotificationCount();
 }
 
 void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
@@ -307,19 +302,6 @@ void PhoneHubNotificationController::SendInlineReply(
   manager_->SendInlineReply(notification_id, inline_reply_text);
 }
 
-void PhoneHubNotificationController::LogNotificationCount() {
-  int count = 0;
-
-  auto* message_center = message_center::MessageCenter::Get();
-  for (auto* notification : message_center->GetVisibleNotifications()) {
-    auto notifier_type = notification->notifier_id().type;
-    if (notifier_type == message_center::NotifierType::PHONE_HUB)
-      count++;
-  }
-
-  phone_hub_metrics::LogNotificationCount(count);
-}
-
 void PhoneHubNotificationController::CreateOrUpdateNotification(
     const chromeos::phonehub::Notification* notification) {
   int64_t phone_hub_id = notification->id();
@@ -350,7 +332,7 @@ PhoneHubNotificationController::CreateNotification(
     const std::string& cros_id,
     NotificationDelegate* delegate) {
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::PHONE_HUB, kNotifierId);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);
 
   auto notification_type = message_center::NOTIFICATION_TYPE_CUSTOM;
 

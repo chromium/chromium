@@ -69,9 +69,5 @@ void LogQuickActionClick(QuickAction action) {
   base::UmaHistogramEnumeration("Ash.PhoneHub.QuickActionClicked", action);
 }
 
-void LogNotificationCount(int count) {
-  base::UmaHistogramCounts100("Ash.PhoneHub.NotificationCount", count);
-}
-
 }  // namespace phone_hub_metrics
 }  // namespace ash
