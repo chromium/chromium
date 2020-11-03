@@ -15,8 +15,8 @@ source_set("lib") {
     "audio_focus_request.h",
     "media_controller.cc",
     "media_controller.h",
-    "media_session_service_impl.cc",
-    "media_session_service_impl.h",
+    "media_session_service.cc",
+    "media_session_service.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -36,7 +36,7 @@ source_set("tests") {
   sources = [
     "audio_focus_manager_unittest.cc",
     "media_controller_unittest.cc",
-    "media_session_service_impl_unittest.cc",
+    "media_session_service_unittest.cc",
   ]
 
   deps = [

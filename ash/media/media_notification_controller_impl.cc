@@ -108,7 +108,7 @@ MediaNotificationControllerImpl::MediaNotificationControllerImpl()
   }
 
   // May be null in tests.
-  media_session::MediaSessionService* service =
+  media_session::mojom::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return;

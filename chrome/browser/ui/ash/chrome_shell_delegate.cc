@@ -180,7 +180,7 @@ void ChromeShellDelegate::BindMultiDeviceSetup(
     service->BindMultiDeviceSetup(std::move(receiver));
 }
 
-media_session::MediaSessionService*
+media_session::mojom::MediaSessionService*
 ChromeShellDelegate::GetMediaSessionService() {
   return &content::GetMediaSessionService();
 }
