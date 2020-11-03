@@ -68,6 +68,15 @@ void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
+class CallbackObserver {
+ public:
+  MOCK_METHOD(void, Callback, (bool state));
+
+  auto GetCallback() {
+    return base::BindOnce(&CallbackObserver::Callback, base::Unretained(this));
+  }
+};
+
 }  // namespace
 
 class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
@@ -86,11 +95,11 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     MOCK_NEW_KEY = (1 << 2)        // Configure expecting new key generation.
   };
 
+  bool GetShouldRefreshCert() { return GetParam(); }
+
   // Configures mock expectations according to |mock_options|.  If options
   // require that a certificate exists, |certificate| will be used.
   void SetupMocks(int mock_options, const std::string& certificate) {
-    bool refresh = GetParam();
-
     bool key_exists = (mock_options & MOCK_KEY_EXISTS);
     // Setup expected key / cert queries.
     if (key_exists) {
@@ -103,7 +112,8 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     }
 
     // Setup expected key payload queries.
-    bool key_uploaded = refresh || (mock_options & MOCK_KEY_UPLOADED);
+    bool key_uploaded =
+        GetShouldRefreshCert() || (mock_options & MOCK_KEY_UPLOADED);
     if (key_uploaded) {
       ::attestation::GetKeyInfoReply* key_info =
           AttestationClient::Get()->GetTestInterface()->GetMutableKeyInfoReply(
@@ -116,7 +126,7 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     // during a single run through the uploader only one upload operation occurs
     // (because it is costly) and similarly, that the writing of the uploaded
     // status in the key payload matches the upload operation.
-    bool new_key = refresh || (mock_options & MOCK_NEW_KEY);
+    bool new_key = GetShouldRefreshCert() || (mock_options & MOCK_NEW_KEY);
     if (new_key || !key_uploaded) {
       EXPECT_CALL(policy_client_, UploadEnterpriseMachineCertificate(
                                       new_key ? "fake_cert" : certificate, _))
@@ -137,7 +147,7 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
         &policy_client_, &cryptohome_client_, &attestation_flow_);
     uploader.set_retry_limit(3);
     uploader.set_retry_delay(0);
-    if (GetParam())
+    if (GetShouldRefreshCert())
       uploader.RefreshAndUploadCertificate(base::DoNothing());
     else
       uploader.UploadCertificateIfNeeded(base::DoNothing());
@@ -185,6 +195,70 @@ TEST_P(MachineCertificateUploaderTest, NewCertificate) {
                 ->GetTestInterface()
                 ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
                 ->payload());
+}
+
+TEST_P(MachineCertificateUploaderTest, WaitForUploadComplete) {
+  SetupMocks(MOCK_NEW_KEY, "");
+
+  StrictMock<CallbackObserver> waiting_callback_observer;
+  MachineCertificateUploaderImpl uploader(&policy_client_, &cryptohome_client_,
+                                          &attestation_flow_);
+
+  uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
+  EXPECT_CALL(waiting_callback_observer, Callback(true));
+
+  StrictMock<CallbackObserver> direct_callback_observer;
+  EXPECT_CALL(direct_callback_observer, Callback(true));
+
+  if (GetShouldRefreshCert()) {
+    uploader.RefreshAndUploadCertificate(
+        direct_callback_observer.GetCallback());
+  } else {
+    uploader.UploadCertificateIfNeeded(direct_callback_observer.GetCallback());
+  }
+
+  base::RunLoop().RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(&waiting_callback_observer);
+  EXPECT_CALL(waiting_callback_observer, Callback(true));
+  uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
+
+  EXPECT_EQ(CreatePayload(),
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
+                ->payload());
+}
+
+TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
+      .WillOnce(WithArgs<5>(Invoke(CertCallbackBadRequestFailure)));
+
+  StrictMock<CallbackObserver> waiting_callback_observer;
+  MachineCertificateUploaderImpl uploader(&policy_client_, &cryptohome_client_,
+                                          &attestation_flow_);
+
+  uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
+  EXPECT_CALL(waiting_callback_observer, Callback(false));
+
+  StrictMock<CallbackObserver> direct_callback_observer;
+  EXPECT_CALL(direct_callback_observer, Callback(false));
+
+  if (GetShouldRefreshCert()) {
+    uploader.RefreshAndUploadCertificate(
+        direct_callback_observer.GetCallback());
+  } else {
+    uploader.UploadCertificateIfNeeded(direct_callback_observer.GetCallback());
+  }
+
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&waiting_callback_observer);
+
+  // Consequent calls to `WaitForUploadComplete` will return false until
+  // somebody else retries to upload the cert again.
+  EXPECT_CALL(waiting_callback_observer, Callback(false));
+  uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {

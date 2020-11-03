@@ -12,10 +12,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chromeos/attestation/attestation_ca_client.h"
+#include "chrome/browser/chromeos/attestation/machine_certificate_uploader.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -123,11 +126,21 @@ TpmChallengeKeySubtleImpl::TpmChallengeKeySubtleImpl()
           cryptohome::AsyncMethodCaller::GetInstance(),
           CryptohomeClient::Get(),
           std::make_unique<AttestationCAClient>())),
-      attestation_flow_(default_attestation_flow_.get()) {}
+      attestation_flow_(default_attestation_flow_.get()) {
+  policy::DeviceCloudPolicyManagerChromeOS* manager =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_chromeos()
+          ->GetDeviceCloudPolicyManager();
+  if (manager) {
+    machine_certificate_uploader_ = manager->GetMachineCertificateUploader();
+  }
+}
 
 TpmChallengeKeySubtleImpl::TpmChallengeKeySubtleImpl(
-    AttestationFlow* attestation_flow_for_testing)
-    : attestation_flow_(attestation_flow_for_testing) {}
+    AttestationFlow* attestation_flow_for_testing,
+    MachineCertificateUploader* machine_certificate_uploader_for_testing)
+    : attestation_flow_(attestation_flow_for_testing),
+      machine_certificate_uploader_(machine_certificate_uploader_for_testing) {}
 
 TpmChallengeKeySubtleImpl::~TpmChallengeKeySubtleImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -343,11 +356,24 @@ void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback(
     return;
   }
 
-  PrepareKey();
+  // Only the device challenge depends on the certificate to be uploaded.
+  if ((key_type_ == AttestationKeyType::KEY_DEVICE) &&
+      machine_certificate_uploader_) {
+    machine_certificate_uploader_->WaitForUploadComplete(base::BindOnce(
+        &TpmChallengeKeySubtleImpl::PrepareKey, weak_factory_.GetWeakPtr()));
+  } else {
+    PrepareKey(true);
+  }
 }
 
-void TpmChallengeKeySubtleImpl::PrepareKey() {
+void TpmChallengeKeySubtleImpl::PrepareKey(bool can_continue) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!can_continue) {
+    std::move(callback_).Run(
+        Result::MakeError(ResultCode::kUploadCertificateFailedError));
+    return;
+  }
 
   ::attestation::GetEnrollmentPreparationsRequest request;
   AttestationClient::Get()->GetEnrollmentPreparations(

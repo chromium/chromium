@@ -26,9 +26,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/attestation/mock_machine_certificate_uploader.h"
 #include "chrome/browser/chromeos/attestation/tpm_challenge_key.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
@@ -126,6 +128,7 @@
 
 namespace em = enterprise_management;
 
+using base::test::RunOnceCallback;
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
@@ -1919,6 +1922,7 @@ class SAMLDeviceAttestationTest : public SamlTest {
   StubCrosSettingsProvider* settings_provider_ = nullptr;
 
   cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
+  attestation::MockMachineCertificateUploader mock_cert_uploader_;
   NiceMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
   chromeos::ScopedStubInstallAttributes stub_install_attributes_;
 };
@@ -1940,9 +1944,13 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
   ON_CALL(mock_attestation_flow_, GetCertificate)
       .WillByDefault(WithArgs<5>(Invoke(FakeGetCertificateCallbackTrue)));
 
+  // By default make it reply that the certificate is already uploaded.
+  ON_CALL(mock_cert_uploader_, WaitForUploadComplete)
+      .WillByDefault(RunOnceCallback<0>(/*certificate_uploaded=*/true));
+
   attestation::TpmChallengeKeyFactory::SetForTesting(
       std::make_unique<attestation::TpmChallengeKeyImpl>(
-          &mock_attestation_flow_));
+          &mock_attestation_flow_, &mock_cert_uploader_));
 
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 }

@@ -82,7 +82,9 @@ class TpmChallengeKeyImpl final : public TpmChallengeKey {
   // Use TpmChallengeKeyFactory for creation.
   TpmChallengeKeyImpl();
   // Use only for testing.
-  explicit TpmChallengeKeyImpl(AttestationFlow* attestation_flow_for_testing);
+  explicit TpmChallengeKeyImpl(
+      AttestationFlow* attestation_flow_for_testing,
+      MachineCertificateUploader* certificate_uploader_for_testing);
   TpmChallengeKeyImpl(const TpmChallengeKeyImpl&) = delete;
   TpmChallengeKeyImpl& operator=(const TpmChallengeKeyImpl&) = delete;
   ~TpmChallengeKeyImpl() override;

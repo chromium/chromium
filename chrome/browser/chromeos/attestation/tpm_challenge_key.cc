@@ -58,9 +58,10 @@ TpmChallengeKeyImpl::TpmChallengeKeyImpl() {
 }
 
 TpmChallengeKeyImpl::TpmChallengeKeyImpl(
-    AttestationFlow* attestation_flow_for_testing) {
-  tpm_challenge_key_subtle_ =
-      std::make_unique<TpmChallengeKeySubtleImpl>(attestation_flow_for_testing);
+    AttestationFlow* attestation_flow_for_testing,
+    MachineCertificateUploader* certificate_uploader_for_testing) {
+  tpm_challenge_key_subtle_ = std::make_unique<TpmChallengeKeySubtleImpl>(
+      attestation_flow_for_testing, certificate_uploader_for_testing);
 }
 
 TpmChallengeKeyImpl::~TpmChallengeKeyImpl() {

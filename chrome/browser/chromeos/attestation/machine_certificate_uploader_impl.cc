@@ -141,7 +141,7 @@ MachineCertificateUploaderImpl::~MachineCertificateUploaderImpl() {
 void MachineCertificateUploaderImpl::UploadCertificateIfNeeded(
     UploadCallback callback) {
   refresh_certificate_ = false;
-  callback_ = std::move(callback);
+  callbacks_.push_back(std::move(callback));
   num_retries_ = 0;
   Start();
 }
@@ -149,7 +149,7 @@ void MachineCertificateUploaderImpl::UploadCertificateIfNeeded(
 void MachineCertificateUploaderImpl::RefreshAndUploadCertificate(
     UploadCallback callback) {
   refresh_certificate_ = true;
-  callback_ = std::move(callback);
+  callbacks_.push_back(std::move(callback));
   num_retries_ = 0;
   Start();
 }
@@ -158,6 +158,8 @@ void MachineCertificateUploaderImpl::Start() {
   // We expect a registered CloudPolicyClient.
   if (!policy_client_->is_registered()) {
     LOG(ERROR) << "MachineCertificateUploaderImpl: Invalid CloudPolicyClient.";
+    certificate_uploaded_ = false;
+    RunCallbacks(certificate_uploaded_.value());
     return;
   }
 
@@ -279,6 +281,7 @@ void MachineCertificateUploaderImpl::CheckCertificateExpiry(
 
 void MachineCertificateUploaderImpl::UploadCertificate(
     const std::string& pem_certificate_chain) {
+  certificate_uploaded_.reset();
   policy_client_->UploadEnterpriseMachineCertificate(
       pem_certificate_chain,
       base::BindOnce(&MachineCertificateUploaderImpl::OnUploadComplete,
@@ -297,6 +300,8 @@ void MachineCertificateUploaderImpl::CheckIfUploaded(
   if (!reply.payload().empty() && payload_pb.ParseFromString(reply.payload()) &&
       payload_pb.is_certificate_uploaded()) {
     // Already uploaded... nothing more to do.
+    certificate_uploaded_ = true;
+    RunCallbacks(certificate_uploaded_.value());
     return;
   }
   UploadCertificate(pem_certificate_chain);
@@ -312,7 +317,18 @@ void MachineCertificateUploaderImpl::OnUploadComplete(bool status) {
         request, base::BindOnce(&MachineCertificateUploaderImpl::MarkAsUploaded,
                                 weak_factory_.GetWeakPtr()));
   }
-  std::move(callback_).Run(status);
+  certificate_uploaded_ = status;
+  RunCallbacks(certificate_uploaded_.value());
+}
+
+void MachineCertificateUploaderImpl::WaitForUploadComplete(
+    UploadCallback callback) {
+  if (certificate_uploaded_.has_value()) {
+    std::move(callback).Run(certificate_uploaded_.value());
+    return;
+  }
+
+  callbacks_.push_back(std::move(callback));
 }
 
 void MachineCertificateUploaderImpl::MarkAsUploaded(
@@ -335,10 +351,12 @@ void MachineCertificateUploaderImpl::MarkAsUploaded(
 
 void MachineCertificateUploaderImpl::HandleGetCertificateFailure(
     AttestationStatus status) {
-  if (status != ATTESTATION_SERVER_BAD_REQUEST_FAILURE)
+  if (status != ATTESTATION_SERVER_BAD_REQUEST_FAILURE) {
     Reschedule();
-  else
-    std::move(callback_).Run(false);
+  } else {
+    certificate_uploaded_ = false;
+    RunCallbacks(certificate_uploaded_.value());
+  }
 }
 
 void MachineCertificateUploaderImpl::Reschedule() {
@@ -350,7 +368,19 @@ void MachineCertificateUploaderImpl::Reschedule() {
         base::TimeDelta::FromSeconds(retry_delay_));
   } else {
     LOG(WARNING) << "MachineCertificateUploaderImpl: Retry limit exceeded.";
-    std::move(callback_).Run(false);
+    certificate_uploaded_ = false;
+    RunCallbacks(certificate_uploaded_.value());
+  }
+}
+
+void MachineCertificateUploaderImpl::RunCallbacks(bool status) {
+  while (!callbacks_.empty()) {
+    auto callbacks = std::move(callbacks_);
+    callbacks_.clear();
+
+    for (UploadCallback& callback : callbacks) {
+      std::move(callback).Run(status);
+    }
   }
 }
 

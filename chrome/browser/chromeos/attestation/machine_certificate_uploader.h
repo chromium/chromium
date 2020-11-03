@@ -23,6 +23,11 @@ class MachineCertificateUploader {
 
   // Forces the obtention of a fresh certificate and uploads it.
   virtual void RefreshAndUploadCertificate(UploadCallback callback) = 0;
+
+  // Non-blocking wait for a certificate to be uploaded. Calls the |callback|
+  // immediately if the certificate was already uploaded or wait for the next
+  // attempt to do so.
+  virtual void WaitForUploadComplete(UploadCallback callback) = 0;
 };
 
 }  // namespace attestation

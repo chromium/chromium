@@ -66,6 +66,8 @@ const char TpmChallengeKeyResult::kMarkCorporateKeyFailedErrorMsg[] =
     "Failed to mark key as corporate.";
 const char TpmChallengeKeyResult::kAttestationServiceInternalErrorMsg[] =
     "OS platform service internal error.";
+const char TpmChallengeKeyResult::kUploadCertificateFailedErrorMsg[] =
+    "Failed to upload machine certificate.";
 
 // static
 TpmChallengeKeyResult TpmChallengeKeyResult::MakeChallengeResponse(
@@ -144,6 +146,8 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kMarkCorporateKeyFailedErrorMsg;
     case TpmChallengeKeyResultCode::kAttestationServiceInternalError:
       return kAttestationServiceInternalErrorMsg;
+    case TpmChallengeKeyResultCode::kUploadCertificateFailedError:
+      return kUploadCertificateFailedErrorMsg;
     case TpmChallengeKeyResultCode::kSuccess:
       // Not an error message.
       NOTREACHED();

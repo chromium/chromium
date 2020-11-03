@@ -19,6 +19,7 @@ class MockMachineCertificateUploader : public MachineCertificateUploader {
 
   MOCK_METHOD1(UploadCertificateIfNeeded, void(UploadCallback));
   MOCK_METHOD1(RefreshAndUploadCertificate, void(UploadCallback));
+  MOCK_METHOD1(WaitForUploadComplete, void(UploadCallback));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMachineCertificateUploader);

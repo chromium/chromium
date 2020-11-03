@@ -28,6 +28,8 @@ class Profile;
 namespace chromeos {
 namespace attestation {
 
+class MachineCertificateUploader;
+
 //==================== TpmChallengeKeySubtleFactory ============================
 
 class TpmChallengeKeySubtle;
@@ -127,8 +129,9 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // Use TpmChallengeKeySubtleFactory for creation.
   TpmChallengeKeySubtleImpl();
   // Use only for testing.
-  explicit TpmChallengeKeySubtleImpl(
-      AttestationFlow* attestation_flow_for_testing);
+  TpmChallengeKeySubtleImpl(
+      AttestationFlow* attestation_flow_for_testing,
+      MachineCertificateUploader* certificate_uploader_for_testing);
 
   TpmChallengeKeySubtleImpl(const TpmChallengeKeySubtleImpl&) = delete;
   TpmChallengeKeySubtleImpl& operator=(const TpmChallengeKeySubtleImpl&) =
@@ -174,8 +177,9 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // EmptyAccountId() if GetUser() returns nullptr.
   AccountId GetAccountId() const;
 
-  // Actually prepares a key after all checks are passed.
-  void PrepareKey();
+  // Actually prepares a key after all checks are passed and if |can_continue|
+  // is true.
+  void PrepareKey(bool can_continue);
   // Returns a public key (or an error) via |prepare_key_callback_|.
   void PrepareKeyFinished(
       base::Optional<CryptohomeClient::TpmAttestationDataResult>
@@ -211,6 +215,8 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
 
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   AttestationFlow* attestation_flow_ = nullptr;
+  // Can be nullptr.
+  MachineCertificateUploader* machine_certificate_uploader_ = nullptr;
 
   TpmChallengeKeyCallback callback_;
   // |profile_| may be nullptr if this is an instance that is used device-wide

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/attestation/machine_certificate_uploader.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -44,14 +45,20 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   // Sets the retry delay in seconds; useful in testing.
   void set_retry_delay(int retry_delay) { retry_delay_ = retry_delay; }
 
-  using UploadCallback = base::OnceCallback<void(bool)>;
+  using UploadCallback =
+      base::OnceCallback<void(bool /*certificate_uploaded*/)>;
 
   // Checks if the machine certificate has been uploaded, and if not, do so.
   // A certificate will be obtained if needed.
   void UploadCertificateIfNeeded(UploadCallback callback) override;
 
-  // Refreshs a fresh machine certificate and uploads it.
+  // Refreshes a fresh machine certificate and uploads it.
   void RefreshAndUploadCertificate(UploadCallback callback) override;
+
+  // Non-blocking wait for a certificate to be uploaded. Calls the |callback|
+  // immediately if the certificate was already uploaded or wait for the next
+  // attempt to do so.
+  void WaitForUploadComplete(UploadCallback callback) override;
 
  private:
   // Starts certificate obtention and upload.
@@ -89,15 +96,18 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   // indicates the system is ready to process this task. See crbug.com/256845.
   void Reschedule();
 
-  policy::CloudPolicyClient* policy_client_;
-  CryptohomeClient* cryptohome_client_;
-  AttestationFlow* attestation_flow_;
+  void RunCallbacks(bool status);
+
+  policy::CloudPolicyClient* policy_client_ = nullptr;
+  CryptohomeClient* cryptohome_client_ = nullptr;
+  AttestationFlow* attestation_flow_ = nullptr;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
-  bool refresh_certificate_;
-  UploadCallback callback_;
-  int num_retries_;
-  int retry_limit_;
-  int retry_delay_;
+  bool refresh_certificate_ = false;
+  std::vector<UploadCallback> callbacks_;
+  int num_retries_ = {};
+  int retry_limit_ = {};
+  int retry_delay_ = {};
+  base::Optional<bool> certificate_uploaded_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
