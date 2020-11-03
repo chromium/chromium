@@ -317,6 +317,18 @@ struct QuickAccess {
   double score;
 };
 
+// Reason why this event occurred.
+// TODO(crbug.com/896777): Put this inside ItemEvent once the fix for the linked
+// bug is in libchrome.
+[Extensible]
+enum ItemEventReason {
+  // Due to sync traffic from file transfers.
+  kTransfer,
+  // Due to the user pinning a file.
+  kPin,
+};
+
+// Next MinVersion: 2
 struct ItemEvent {
   enum State {
     kQueued,
@@ -339,6 +351,8 @@ struct ItemEvent {
   // as the sentinel value for unset.
   int64 bytes_transferred = -1;
   int64 bytes_to_transfer = -1;
+
+  [MinVersion=1] ItemEventReason reason = kTransfer;
 };
 
 struct SyncingStatus {
