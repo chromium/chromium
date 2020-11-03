@@ -354,32 +354,18 @@ class DiagnosticsProxy {
 
   /**
    * Runs battery capacity routine.
-   * @param { !Object } message
    * @return { !RunRoutineResponsePromise }
    */
-  async handleRunBatteryCapacityRoutine(message) {
-    const request =
-        /**
-         * @type {!dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest}
-         */
-        (message);
-    return await getOrCreateDiagnosticsService().runBatteryCapacityRoutine(
-        request.lowMah, request.highMah);
+  async handleRunBatteryCapacityRoutine() {
+    return await getOrCreateDiagnosticsService().runBatteryCapacityRoutine();
   };
 
   /**
    * Runs battery health routine.
-   * @param { !Object } message
    * @return { !RunRoutineResponsePromise }
    */
-  async handleRunBatteryHealthRoutine(message) {
-    const request =
-        /**
-         * @type {!dpsl_internal.DiagnosticsRunBatteryHealthRoutineRequest}
-         */
-        (message);
-    return await getOrCreateDiagnosticsService().runBatteryHealthRoutine(
-        request.maximumCycleCount, request.percentBatteryWearAllowed);
+  async handleRunBatteryHealthRoutine() {
+    return await getOrCreateDiagnosticsService().runBatteryHealthRoutine();
   };
 
   /**
@@ -973,14 +959,12 @@ untrustedMessagePipe.registerHandler(
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
-        (message) => diagnosticsProxy.handleRunBatteryCapacityRoutine(message),
-        message));
+        () => diagnosticsProxy.handleRunBatteryCapacityRoutine(), message));
 
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
-        (message) => diagnosticsProxy.handleRunBatteryHealthRoutine(message),
-        message));
+        () => diagnosticsProxy.handleRunBatteryHealthRoutine(), message));
 
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_SMARTCTL_CHECK_ROUTINE,

@@ -42,38 +42,29 @@ interface DiagnosticsService {
       => (RoutineUpdate routine_update);
 
   // Requests that the BatteryCapacity routine is created and started on the
-  // platform. This routine checks the battery's design capacity against the
-  // inputs. The routine will pass iff the design capacity of the battery read
-  // from the platform is inclusively within these bounds. This routine is only
-  // available if GetAvailableRoutines returned kBatteryCapactity.
-  //
-  // The request:
-  // * |low_mah| - lower bound for the battery's design capacity (mAh).
-  // * |high_mah| - upper bound for the battery's design capacity (mAh).
+  // platform. This routine checks the battery's design capacity against inputs
+  // configured in cros_config. If no configuration data is present in
+  // cros_config, the routine will fall back to fleet-wide default values of
+  // [1000, 10000]. The routine will pass iff the design capacity of the battery
+  // read from the platform is inclusively within these bounds. This routine is
+  // only available if GetAvailableRoutines returned kBatteryCapactity.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunBatteryCapacityRoutine(uint32 low_mah, uint32 high_mah)
-      => (RunRoutineResponse response);
+  RunBatteryCapacityRoutine() => (RunRoutineResponse response);
 
   // Requests that the BatteryHealth routine is created and started on the
-  // platform. This routine checks the cycle count and percent wear of the
-  // battery. This routine is only available if GetAvailableRoutines returned
-  // kBatteryHealth.
-  //
-  // The request:
-  // * |maximum_cycle_count| - maximum cycle count allowed for the routine to
-  //                           pass.
-  // * |percent_battery_wear_allowed| - maximum percent battery wear allowed for
-  //                                    the routine to pass.
+  // battery against inputs configured in cros_config. If no configuration data
+  // is present in cros_config, the routine will fall back to fleet-wide default
+  // values of 1000 for the maximum allowable cycle count and 50% for maximum
+  // battery wear percentage allowed. This routine is only available if
+  // GetAvailableRoutines returned kBatteryHealth.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunBatteryHealthRoutine(uint32 maximum_cycle_count,
-                          uint32 percent_battery_wear_allowed)
-      => (RunRoutineResponse response);
+  RunBatteryHealthRoutine() => (RunRoutineResponse response);
 
   // Requests that the SmartctlCheck routine is created and started on the
   // platform. This routine checks available spare NVMe capacity against the

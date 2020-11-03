@@ -117,7 +117,7 @@ UNTRUSTED_TEST(
 UNTRUSTED_TEST(
     'UntrustedDiagnosticsRequestRunBatteryCapacityRoutine', async () => {
       const response =
-          await chromeos.diagnostics.runBatteryCapacityRoutine(3000, 4000);
+          await chromeos.diagnostics.runBatteryCapacityRoutine();
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
 
@@ -125,7 +125,7 @@ UNTRUSTED_TEST(
 UNTRUSTED_TEST(
     'UntrustedDiagnosticsRequestRunBatteryHealthRoutine', async () => {
       const response =
-          await chromeos.diagnostics.runBatteryHealthRoutine(10, 5);
+          await chromeos.diagnostics.runBatteryHealthRoutine();
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
 

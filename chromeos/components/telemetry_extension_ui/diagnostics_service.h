@@ -38,12 +38,8 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
   void RunBatteryCapacityRoutine(
-      uint32_t low_mah,
-      uint32_t high_mah,
       RunBatteryCapacityRoutineCallback callback) override;
   void RunBatteryHealthRoutine(
-      uint32_t maximum_cycle_count,
-      uint32_t percent_battery_wear_allowed,
       RunBatteryHealthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
       RunSmartctlCheckRoutineCallback callback) override;

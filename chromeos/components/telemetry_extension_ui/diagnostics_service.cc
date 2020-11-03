@@ -64,10 +64,7 @@ void DiagnosticsService::GetRoutineUpdate(
           std::move(callback)));
 }
 
-// TODO(b/171327161): Remove |low_mah| and |high_mah| from this routine.
 void DiagnosticsService::RunBatteryCapacityRoutine(
-    uint32_t low_mah,
-    uint32_t high_mah,
     RunBatteryCapacityRoutineCallback callback) {
   GetService()->RunBatteryCapacityRoutine(
       base::BindOnce(
@@ -79,11 +76,7 @@ void DiagnosticsService::RunBatteryCapacityRoutine(
           std::move(callback)));
 }
 
-// TODO(b/171327161): Remove |maximum_cycle_count| and
-// |percent_battery_wear_allowed| from this routine.
 void DiagnosticsService::RunBatteryHealthRoutine(
-    uint32_t maximum_cycle_count,
-    uint32_t percent_battery_wear_allowed,
     RunBatteryHealthRoutineCallback callback) {
   GetService()->RunBatteryHealthRoutine(
       base::BindOnce(
