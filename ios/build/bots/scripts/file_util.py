@@ -1,7 +1,7 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Utility functions related with code coverage."""
+"""Utility functions operating with files."""
 
 import glob
 import os
@@ -26,3 +26,15 @@ def move_raw_coverage_data(udid, isolated_output_dir):
     os.mkdir(profraw_destination_dir)
   for profraw_file in glob.glob(os.path.join(profraw_origin_dir, '*.profraw')):
     shutil.move(profraw_file, profraw_destination_dir)
+
+
+def zip_and_remove_folder(dir_path):
+  """Zips folder storing in the parent folder and then removes original folder.
+
+  Args:
+    dir_path: (str) An absolute path to directory.
+  """
+  shutil.make_archive(
+      os.path.join(os.path.dirname(dir_path), os.path.basename(dir_path)),
+      'zip', dir_path)
+  shutil.rmtree(dir_path)

@@ -12,7 +12,7 @@ import os
 import subprocess
 import time
 
-import coverage_util
+import file_util
 import iossim_util
 import standard_json_util as sju
 import test_apps
@@ -135,11 +135,7 @@ class LaunchCommand(object):
     self.test_results = collections.OrderedDict()
     self.use_clang_coverage = use_clang_coverage
     self.env = env
-    if distutils.version.LooseVersion('11.0') <= distutils.version.LooseVersion(
-        test_runner.get_current_xcode_info()['version']):
-      self._log_parser = xcode_log_parser.Xcode11LogParser()
-    else:
-      self._log_parser = xcode_log_parser.XcodeLogParser()
+    self._log_parser = xcode_log_parser.get_parser()
 
   def summary_log(self):
     """Calculates test summary - how many passed, failed and error tests.
@@ -207,8 +203,8 @@ class LaunchCommand(object):
       if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
         # out_dir of LaunchCommand object is the TestRunner out_dir joined with
         # UDID. Use os.path.dirname to retrieve the TestRunner out_dir.
-        coverage_util.move_raw_coverage_data(self.udid,
-                                             os.path.dirname(self.out_dir))
+        file_util.move_raw_coverage_data(self.udid,
+                                         os.path.dirname(self.out_dir))
       self.test_results['attempts'].append(
           self._log_parser.collect_test_results(outdir_attempt, output))
 

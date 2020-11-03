@@ -9,7 +9,6 @@ import signal
 import sys
 
 import collections
-import distutils.version
 import logging
 import os
 import psutil
@@ -19,11 +18,13 @@ import subprocess
 import threading
 import time
 
-import coverage_util
+import file_util
 import gtest_utils
 import iossim_util
 import standard_json_util as sju
 import test_apps
+import xcode_log_parser
+import xcode_util
 import xctest_utils
 
 LOGGER = logging.getLogger(__name__)
@@ -448,6 +449,33 @@ class TestRunner(object):
       shutil.rmtree(DERIVED_DATA)
       os.mkdir(DERIVED_DATA)
 
+  def process_xcresult_dir(self):
+    """Copies artifacts & diagnostic logs, zips and removes .xcresult dir."""
+    # .xcresult dir only exists when using Xcode 11+ and running as XCTest.
+    if not xcode_util.using_xcode_11_or_higher() or not self.xctest:
+      LOGGER.info('Skip processing xcresult directory.')
+
+    xcresult_paths = []
+    # Warning: This piece of code assumes .xcresult folder is directly under
+    # self.out_dir. This is true for TestRunner subclasses in this file.
+    # xcresult folder path is whatever passed in -resultBundlePath to xcodebuild
+    # command appended with '.xcresult' suffix.
+    for filename in os.listdir(self.out_dir):
+      full_path = os.path.join(self.out_dir, filename)
+      if full_path.endswith('.xcresult') and os.path.isdir(full_path):
+        xcresult_paths.append(full_path)
+
+    log_parser = xcode_log_parser.get_parser()
+    for xcresult in xcresult_paths:
+      # This is what was passed in -resultBundlePath to xcodebuild command.
+      result_bundle_path = os.path.splitext(xcresult)[0]
+      log_parser.copy_artifacts(result_bundle_path)
+      log_parser.export_diagnostic_data(result_bundle_path)
+      # result_bundle_path is a symlink to xcresult directory.
+      if os.path.islink(result_bundle_path):
+        os.unlink(result_bundle_path)
+      file_util.zip_and_remove_folder(xcresult)
+
   def run_tests(self, cmd=None):
     """Runs passed-in tests.
 
@@ -787,7 +815,7 @@ class SimulatorTestRunner(TestRunner):
   def extract_test_data(self):
     """Extracts data emitted by the test."""
     if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
-      coverage_util.move_raw_coverage_data(self.udid, self.out_dir)
+      file_util.move_raw_coverage_data(self.udid, self.out_dir)
 
     # Find the Documents directory of the test app. The app directory names
     # don't correspond with any known information, so we have to examine them
@@ -842,6 +870,8 @@ class SimulatorTestRunner(TestRunner):
     self.retrieve_crash_reports()
     LOGGER.debug('Retrieving derived data.')
     self.retrieve_derived_data()
+    LOGGER.debug('Processing xcresult folder.')
+    self.process_xcresult_dir()
     LOGGER.debug('Making desktop screenshots.')
     self.screenshot_desktop()
     LOGGER.debug('Killing simulators.')
@@ -1037,6 +1067,7 @@ class DeviceTestRunner(TestRunner):
     self.screenshot_desktop()
     self.retrieve_derived_data()
     self.extract_test_data()
+    self.process_xcresult_dir()
     self.retrieve_crash_reports()
     self.uninstall_apps()
 

@@ -12,7 +12,9 @@ import re
 import shutil
 import subprocess
 
+import file_util
 import test_runner
+import xcode_util
 
 
 # Some system errors are reported as failed tests in Xcode test result log in
@@ -21,6 +23,15 @@ import test_runner
 # if all tests pass in re-attempts.
 SYSTEM_ERROR_TEST_NAME_SUFFIXES = ['encountered an error']
 LOGGER = logging.getLogger(__name__)
+
+_XCRESULT_SUFFIX = '.xcresult'
+
+
+def get_parser():
+  """Returns correct parser from version of Xcode installed."""
+  if xcode_util.using_xcode_11_or_higher():
+    return Xcode11LogParser()
+  return XcodeLogParser()
 
 
 def parse_passed_tests_for_interrupted_run(output):
@@ -207,7 +218,7 @@ class Xcode11LogParser(object):
 
   @staticmethod
   def collect_test_results(output_path, output):
-    """Gets test result, diagnostic data & artifacts from xcresult.
+    """Gets XCTest results, diagnostic data & artifacts from xcresult.
 
     Args:
       output_path: (str) An output path passed in --resultBundlePath when
@@ -245,7 +256,7 @@ class Xcode11LogParser(object):
     # is symlink to the `output_path.xcresult` folder.
     # `xcresulttool` with folder/symlink behaves in different way on laptop and
     # on bots. This piece of code uses .xcresult folder.
-    xcresult = output_path + '.xcresult'
+    xcresult = output_path + _XCRESULT_SUFFIX
 
     # |output_path|.xcresult folder is created at the end of tests. If
     # |output_path| folder exists but |output_path|.xcresult folder doesn't
@@ -268,21 +279,23 @@ class Xcode11LogParser(object):
       # For some crashed tests info about error contained only in root node.
       test_results['failed'] = Xcode11LogParser._list_of_failed_tests(root)
       Xcode11LogParser._get_test_statuses(xcresult, test_results)
-    Xcode11LogParser._export_diagnostic_data(xcresult)
-    Xcode11LogParser._copy_artifacts(xcresult)
+    Xcode11LogParser.export_diagnostic_data(xcresult)
+    Xcode11LogParser.copy_artifacts(xcresult)
     # Remove the symbol link file.
     if os.path.islink(output_path):
       os.unlink(output_path)
-    Xcode11LogParser._zip_and_remove_folder(xcresult)
+    file_util.zip_and_remove_folder(xcresult)
     return test_results
 
   @staticmethod
-  def _copy_artifacts(xcresult):
+  def copy_artifacts(output_path):
     """Copy screenshots, crash logs of failed tests to output folder.
 
     Args:
-      xcresult: (str) A path to xcresult directory.
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
     """
+    xcresult = output_path + _XCRESULT_SUFFIX
     if not os.path.exists(xcresult):
       LOGGER.warn('%s does not exist.' % xcresult)
       return
@@ -384,7 +397,7 @@ class Xcode11LogParser(object):
           attachment_index=index)
 
   @staticmethod
-  def _export_diagnostic_data(xcresult):
+  def export_diagnostic_data(output_path):
     """Exports diagnostic data from xcresult to xcresult_diagnostic.zip.
 
     Since Xcode 11 format of result bundles changed, to get diagnostic data
@@ -393,8 +406,10 @@ class Xcode11LogParser(object):
     ./export_folder --path ./RB.xcresult
 
     Args:
-      xcresult: (str) A path to xcresult directory.
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
     """
+    xcresult = output_path + _XCRESULT_SUFFIX
     if not os.path.exists(xcresult):
       LOGGER.warn('%s does not exist.' % xcresult)
       return
@@ -405,7 +420,7 @@ class Xcode11LogParser(object):
       diagnostic_folder = '%s_diagnostic' % xcresult
       Xcode11LogParser._export_data(xcresult, diagnostics_ref, 'directory',
                                     diagnostic_folder)
-      Xcode11LogParser._zip_and_remove_folder(diagnostic_folder)
+      file_util.zip_and_remove_folder(diagnostic_folder)
     except KeyError:
       LOGGER.warn('Did not parse diagnosticsRef from %s!' % xcresult)
 
@@ -429,18 +444,6 @@ class Xcode11LogParser(object):
         '--path', xcresult, '--output-path', output_path
     ]
     subprocess.check_output(export_command).strip()
-
-  @staticmethod
-  def _zip_and_remove_folder(dir_path):
-    """Zips folder to the parent folder and then removes original folder.
-
-    Args:
-      dir_path: (str) A path to directory.
-    """
-    shutil.make_archive(
-        os.path.join(os.path.dirname(dir_path), os.path.basename(dir_path)),
-        'zip', dir_path)
-    shutil.rmtree(dir_path)
 
 
 class XcodeLogParser(object):
@@ -492,7 +495,7 @@ class XcodeLogParser(object):
 
   @staticmethod
   def collect_test_results(output_folder, output):
-    """Gets test result data from Info.plist and copies artifacts.
+    """Gets XCtest result data from Info.plist and copies artifacts.
 
     Args:
       output_folder: (str) A path to output folder.
@@ -560,3 +563,15 @@ class XcodeLogParser(object):
       test_case_folder = os.path.join(output_folder, 'failures', test_case_id)
       copy_screenshots_for_failed_test(failure_summary['Message'],
                                        test_case_folder)
+
+  @staticmethod
+  def copy_artifacts(output_path):
+    """Invokes _copy_screenshots(). To make public methods consistent."""
+    LOGGER.info('Invoking _copy_screenshots call for copy_artifacts in'
+                'XcodeLogParser')
+    XcodeLogParser._copy_screenshots(output_path)
+
+  @staticmethod
+  def export_diagnostic_data(output_path):
+    """No-op. To make parser public methods consistent."""
+    LOGGER.warn('Exporting diagnostic data only supported in Xcode 11+')

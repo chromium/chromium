@@ -385,6 +385,15 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     super(XCode11LogParserTest, self).setUp()
     self.mock(test_runner, 'get_current_xcode_info', lambda: XCODE11_DICT)
 
+  @mock.patch('xcode_util.version', autospec=True)
+  def testGetParser(self, mock_xcode_version):
+    mock_xcode_version.return_value = ('12.0', '12A7209')
+    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__, 'Xcode11LogParser')
+    mock_xcode_version.return_value = ('11.4', '11E146')
+    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__, 'Xcode11LogParser')
+    mock_xcode_version.return_value = ('10.3', '10G8')
+    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__, 'XcodeLogParser')
+
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRoot(self, mock_process):
     mock_process.return_value = '%JSON%'
@@ -430,9 +439,9 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     xcode_log_parser.Xcode11LogParser()._get_test_statuses(OUTPUT_PATH, results)
     self.assertEqual(expected, results['passed'])
 
-  @mock.patch('xcode_log_parser.Xcode11LogParser._zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._copy_artifacts')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._export_diagnostic_data')
+  @mock.patch('file_util.zip_and_remove_folder')
+  @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
   @mock.patch('xcode_log_parser.Xcode11LogParser._list_of_failed_tests')
@@ -468,9 +477,9 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         xcode_log_parser.Xcode11LogParser().collect_test_results(
             OUTPUT_PATH, []))
 
-  @mock.patch('xcode_log_parser.Xcode11LogParser._zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._copy_artifacts')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._export_diagnostic_data')
+  @mock.patch('file_util.zip_and_remove_folder')
+  @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
   def testCollectTestsRanZeroTests(self, mock_root, mock_exist_file, *args):
@@ -524,7 +533,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
                           mock_process):
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
-    xcode_log_parser.Xcode11LogParser()._copy_artifacts(XCRESULT_PATH)
+    xcode_log_parser.Xcode11LogParser().copy_artifacts(OUTPUT_PATH)
     mock_process.assert_any_call([
         'xcresulttool', 'export', '--type', 'file', '--id',
         'SCREENSHOT_REF_ID_IN_FAILURE_SUMMARIES', '--path', XCRESULT_PATH,
@@ -541,7 +550,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     # Ensures screenshots in activitySummaries are not copied.
     self.assertEqual(2, mock_process.call_count)
 
-  @mock.patch('xcode_log_parser.Xcode11LogParser._zip_and_remove_folder')
+  @mock.patch('file_util.zip_and_remove_folder')
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
@@ -549,7 +558,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
                                mock_process, _):
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
-    xcode_log_parser.Xcode11LogParser._export_diagnostic_data(XCRESULT_PATH)
+    xcode_log_parser.Xcode11LogParser.export_diagnostic_data(OUTPUT_PATH)
     mock_process.assert_called_with([
         'xcresulttool', 'export', '--type', 'directory', '--id',
         'DIAGNOSTICS_REF_ID', '--path', XCRESULT_PATH, '--output-path',

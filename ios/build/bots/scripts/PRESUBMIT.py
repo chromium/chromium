@@ -13,7 +13,7 @@ def _RunTestRunnerUnitTests(input_api, output_api):
   # TODO(crbug.com/1056457): Replace the list with regex ".*_test.py" once
   # all test files are fixed.
   files = [
-      'coverage_util_test.py',
+      'file_util_test.py',
       'iossim_util_test.py',
       'result_sink_util_test.py',
       'run_test.py',

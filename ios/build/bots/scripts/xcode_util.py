@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import distutils.version
 import logging
 import subprocess
 
@@ -84,3 +85,9 @@ def version():
   build_version = output[1].decode('UTF-8').split(' ')[2].lower()
 
   return version, build_version
+
+def using_xcode_11_or_higher():
+  """Returns true if using Xcode version 11 or higher."""
+  LOGGER.debug("Checking if Xcode version is 11 or higher")
+  return distutils.version.LooseVersion(
+      '11.0') <= distutils.version.LooseVersion(version()[0])

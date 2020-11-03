@@ -1,18 +1,18 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Tests of coverage_util functions."""
+"""Tests of file_util functions."""
 
 import os
 import shutil
 import unittest
 
-import coverage_util
+import file_util
 import test_runner_test
 
 
 class TestCoverageUtil(test_runner_test.TestCase):
-  """Test cases for coverage_util.py"""
+  """Test cases for file_util.py"""
 
   def create_origin_profraw_file_if_not_exist(self):
     """Creates the profraw file in the correct udid data folder to move if it
@@ -25,7 +25,7 @@ class TestCoverageUtil(test_runner_test.TestCase):
   def setUp(self):
     super(TestCoverageUtil, self).setUp()
 
-    self.test_folder = os.path.join(os.getcwd(), "coverage_util_test_data")
+    self.test_folder = os.path.join(os.getcwd(), "file_util_test_data")
     self.simulators_folder = os.path.join(self.test_folder, "Devices")
     self.existing_udid = "existing-udid"
     self.existing_udid_folder = os.path.join(self.simulators_folder,
@@ -40,8 +40,9 @@ class TestCoverageUtil(test_runner_test.TestCase):
                                                  self.profraw_file_name)
 
     self.not_existing_udid = "not-existing-udid"
-    self.not_existing_udid_data_folder = os.path.join(
-        self.simulators_folder, self.not_existing_udid, "data")
+    self.not_existing_udid_data_folder = os.path.join(self.simulators_folder,
+                                                      self.not_existing_udid,
+                                                      "data")
     if os.path.exists(self.not_existing_udid_data_folder):
       shutil.rmtree(self.not_existing_udid_data_folder)
 
@@ -49,31 +50,31 @@ class TestCoverageUtil(test_runner_test.TestCase):
     if not os.path.exists(self.output_folder):
       os.makedirs(self.output_folder)
 
-    self.expected_profraw_output_path = os.path.join(
-        self.output_folder, "profraw", self.profraw_file_name)
+    self.expected_profraw_output_path = os.path.join(self.output_folder,
+                                                     "profraw",
+                                                     self.profraw_file_name)
 
-    self.mock(coverage_util, 'SIMULATORS_FOLDER', self.simulators_folder)
+    self.mock(file_util, 'SIMULATORS_FOLDER', self.simulators_folder)
 
   def tearDown(self):
     shutil.rmtree(self.test_folder)
 
   def test_move_raw_coverage_data(self):
-    """Tests if coverage_util can correctly move raw coverage data"""
+    """Tests if file_util can correctly move raw coverage data"""
     self.create_origin_profraw_file_if_not_exist()
     self.assertTrue(os.path.exists(self.origin_profraw_file_path))
     self.assertFalse(os.path.exists(self.expected_profraw_output_path))
-    coverage_util.move_raw_coverage_data(self.existing_udid, self.output_folder)
+    file_util.move_raw_coverage_data(self.existing_udid, self.output_folder)
     self.assertFalse(os.path.exists(self.origin_profraw_file_path))
     self.assertTrue(os.path.exists(self.expected_profraw_output_path))
     os.remove(self.expected_profraw_output_path)
 
   def test_move_raw_coverage_data_origin_not_exist(self):
-    """Ensures that coverage_util won't break when raw coverage data folder or
+    """Ensures that file_util won't break when raw coverage data folder or
     file doesn't exist
     """
     # Tests origin directory doesn't exist.
-    coverage_util.move_raw_coverage_data(self.not_existing_udid,
-                                         self.output_folder)
+    file_util.move_raw_coverage_data(self.not_existing_udid, self.output_folder)
     self.assertFalse(os.path.exists(self.expected_profraw_output_path))
 
     # Tests profraw file doesn't exist.
@@ -81,7 +82,7 @@ class TestCoverageUtil(test_runner_test.TestCase):
       os.remove(self.origin_profraw_file_path)
     self.assertFalse(os.path.exists(self.origin_profraw_file_path))
     self.assertFalse(os.path.exists(self.expected_profraw_output_path))
-    coverage_util.move_raw_coverage_data(self.existing_udid, self.output_folder)
+    file_util.move_raw_coverage_data(self.existing_udid, self.output_folder)
     self.assertFalse(os.path.exists(self.expected_profraw_output_path))
 
 
