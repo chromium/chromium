@@ -21,8 +21,6 @@
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -144,13 +142,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   pref_service_factory.set_read_error_callback(
       base::BindRepeating(&HandleReadError));
 
-  base::TimeTicks pref_load_start = base::TimeTicks::Now();
-  auto service = pref_service_factory.Create(pref_registry);
-  base::TimeDelta pref_load_time = base::TimeTicks::Now() - pref_load_start;
-  UmaHistogramCustomTimes("Android.WebView.PrefLoadTime", pref_load_time,
-                          base::TimeDelta::FromMilliseconds(1),
-                          base::TimeDelta::FromMinutes(1), 50);
-  return service;
+  return pref_service_factory.Create(pref_registry);
 }
 
 void AwFeatureListCreator::SetUpFieldTrials() {
