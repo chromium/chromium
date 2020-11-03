@@ -9198,6 +9198,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="AVFoundation is enabled and is loaded succesfully"/>
 </enum>
 
+<enum name="CaptureModeEntryType">
+  <int value="0" label="Partial Screenshot Accelerator"/>
+  <int value="1" label="Window Screenshot Accelerator"/>
+  <int value="2" label="Quick Settings"/>
+  <int value="3" label="Stylus Palette"/>
+</enum>
+
 <enum name="CapturePixelFormat">
   <obsolete>
     Deprecated as of 08/2015.

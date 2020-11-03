@@ -5,6 +5,7 @@
 #include "ash/system/palette/tools/enter_capture_mode.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_histogram_enums.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/palette/palette_ids.h"
@@ -29,7 +30,7 @@ void EnterCaptureMode::OnEnable() {
   CommonPaletteTool::OnEnable();
   delegate()->DisableTool(GetToolId());
   delegate()->HidePaletteImmediately();
-  CaptureModeController::Get()->Start();
+  CaptureModeController::Get()->Start(CaptureModeEntryType::kStylusPalette);
 }
 
 views::View* EnterCaptureMode::CreateView() {

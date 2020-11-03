@@ -17,6 +17,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_histogram_enums.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/debug.h"
 #include "ash/display/display_configuration_controller.h"
@@ -755,29 +756,36 @@ bool CanHandleScreenshot() {
 
 // Tries to enter capture mode image type with |source|. Returns false if
 // unsuccessful (capture mode disabled).
-bool MaybeEnterImageCaptureMode(CaptureModeSource source) {
+bool MaybeEnterImageCaptureMode(CaptureModeSource source,
+                                CaptureModeEntryType entry_type) {
   if (!features::IsCaptureModeEnabled())
     return false;
 
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->SetSource(source);
   capture_mode_controller->SetType(CaptureModeType::kImage);
-  capture_mode_controller->Start();
+  capture_mode_controller->Start(entry_type);
   return true;
 }
 
 void HandleTakeWindowScreenshot() {
   base::RecordAction(UserMetricsAction("Accel_Take_Window_Screenshot"));
-  if (MaybeEnterImageCaptureMode(CaptureModeSource::kWindow))
+  if (MaybeEnterImageCaptureMode(
+          CaptureModeSource::kWindow,
+          CaptureModeEntryType::kAccelTakeWindowScreenshot)) {
     return;
+  }
 
   Shell::Get()->screenshot_controller()->StartWindowScreenshotSession();
 }
 
 void HandleTakePartialScreenshot() {
   base::RecordAction(UserMetricsAction("Accel_Take_Partial_Screenshot"));
-  if (MaybeEnterImageCaptureMode(CaptureModeSource::kRegion))
+  if (MaybeEnterImageCaptureMode(
+          CaptureModeSource::kRegion,
+          CaptureModeEntryType::kAccelTakePartialScreenshot)) {
     return;
+  }
 
   Shell::Get()->screenshot_controller()->StartPartialScreenshotSession(
       /*draw_overlay_immediately=*/true);

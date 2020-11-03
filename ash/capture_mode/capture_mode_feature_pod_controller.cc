@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_histogram_enums.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
@@ -26,7 +27,7 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
 }
 
 void CaptureModeFeaturePodController::OnIconPressed() {
-  CaptureModeController::Get()->Start();
+  CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
 }
 
 SystemTrayItemUmaType CaptureModeFeaturePodController::GetUmaType() const {

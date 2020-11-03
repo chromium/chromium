@@ -22,8 +22,10 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -191,7 +193,7 @@ class CaptureModeTest : public AshTestBase {
     auto* controller = CaptureModeController::Get();
     controller->SetSource(source);
     controller->SetType(type);
-    controller->Start();
+    controller->Start(CaptureModeEntryType::kQuickSettings);
     DCHECK(controller->IsActive());
     return controller;
   }
@@ -235,10 +237,10 @@ class CaptureModeTest : public AshTestBase {
 
 TEST_F(CaptureModeTest, StartStop) {
   auto* controller = CaptureModeController::Get();
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
   // Calling start again is a no-op.
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
   controller->Stop();
   EXPECT_FALSE(controller->IsActive());
@@ -248,7 +250,7 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   controller->SetType(CaptureModeType::kVideo);
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
   EXPECT_FALSE(GetImageToggleButton()->GetToggled());
@@ -263,7 +265,7 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
 
 TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   auto* controller = CaptureModeController::Get();
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
   EXPECT_TRUE(GetImageToggleButton()->GetToggled());
@@ -297,7 +299,7 @@ TEST_F(CaptureModeTest, DISABLED_VideoRecordingUiBehavior) {
   // Start Capture Mode in a fullscreen video recording mode.
   controller->SetSource(CaptureModeSource::kFullscreen);
   controller->SetType(CaptureModeType::kVideo);
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(IsCursorCompositingEnabled());
@@ -491,7 +493,7 @@ TEST_F(CaptureModeTest, CaptureRegionPersistsAfterExit) {
   SelectRegion(region);
 
   controller->Stop();
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_EQ(region, controller->user_capture_region());
 }
 
@@ -725,7 +727,7 @@ TEST_F(CaptureModeTest, WindowCapture) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kWindow);
   controller->SetType(CaptureModeType::kImage);
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kAccelTakeWindowScreenshot);
   EXPECT_TRUE(controller->IsActive());
 
   auto* event_generator = GetEventGenerator();
@@ -1010,7 +1012,7 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kWindow);
   controller->SetType(CaptureModeType::kVideo);
-  controller->Start();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
   auto* event_generator = GetEventGenerator();
@@ -1029,6 +1031,77 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
 
   WaitForCountDownToFinish();
   controller->Stop();
+}
+
+// Tests that metrics are recorded properly for capture mode entry points.
+TEST_F(CaptureModeTest, CaptureModeEntryPointHistograms) {
+  const char kClamshellHistogram[] =
+      "Ash.CaptureModeController.EntryPoint.ClamshellMode";
+  const char kTabletHistogram[] =
+      "Ash.CaptureModeController.EntryPoint.TabletMode";
+  base::HistogramTester histogram_tester;
+
+  auto* controller = CaptureModeController::Get();
+
+  // Test the various entry points in clamshell mode.
+  controller->Start(CaptureModeEntryType::kAccelTakeWindowScreenshot);
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeEntryType::kAccelTakeWindowScreenshot, 1);
+  controller->Stop();
+
+  controller->Start(CaptureModeEntryType::kAccelTakePartialScreenshot);
+  histogram_tester.ExpectBucketCount(
+      kClamshellHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot,
+      1);
+  controller->Stop();
+
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  histogram_tester.ExpectBucketCount(kClamshellHistogram,
+                                     CaptureModeEntryType::kQuickSettings, 1);
+  controller->Stop();
+
+  controller->Start(CaptureModeEntryType::kStylusPalette);
+  histogram_tester.ExpectBucketCount(kClamshellHistogram,
+                                     CaptureModeEntryType::kStylusPalette, 1);
+  controller->Stop();
+
+  // Enter tablet mode and test the various entry points in tablet mode.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+
+  controller->Start(CaptureModeEntryType::kAccelTakeWindowScreenshot);
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeEntryType::kAccelTakeWindowScreenshot, 1);
+  controller->Stop();
+
+  controller->Start(CaptureModeEntryType::kAccelTakePartialScreenshot);
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 1);
+  controller->Stop();
+
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  histogram_tester.ExpectBucketCount(kTabletHistogram,
+                                     CaptureModeEntryType::kQuickSettings, 1);
+  controller->Stop();
+
+  controller->Start(CaptureModeEntryType::kStylusPalette);
+  histogram_tester.ExpectBucketCount(kTabletHistogram,
+                                     CaptureModeEntryType::kStylusPalette, 1);
+  controller->Stop();
+
+  // Check total counts for each histogram to ensure calls aren't counted in
+  // multiple buckets.
+  histogram_tester.ExpectTotalCount(kClamshellHistogram, 4);
+  histogram_tester.ExpectTotalCount(kTabletHistogram, 4);
+
+  // Check that histogram isn't counted if we don't actually enter capture mode.
+  controller->Start(ash::CaptureModeEntryType::kAccelTakePartialScreenshot);
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
+  controller->Start(ash::CaptureModeEntryType::kAccelTakePartialScreenshot);
+  histogram_tester.ExpectBucketCount(
+      kTabletHistogram, CaptureModeEntryType::kAccelTakePartialScreenshot, 2);
 }
 
 }  // namespace ash
