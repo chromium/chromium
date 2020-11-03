@@ -22,11 +22,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
-namespace {
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/tab_search/";
-}
-
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui,
                                     true /* Needed for webui browser tests */),
@@ -68,12 +63,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                     features::kTabSearchTitleToHostnameWeightRatio.Get());
 
   source->AddLocalizedString("close", IDS_CLOSE);
-  source->AddResourcePath("tab_search.mojom-lite.js",
-                          IDR_TAB_SEARCH_MOJO_LITE_JS);
-  source->AddResourcePath("fuse.js", IDR_FUSE_JS);
   webui::SetupWebUIDataSource(
       source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
-      kGeneratedPath, IDR_TAB_SEARCH_PAGE_HTML);
+      /*generated_path=*/std::string(), IDR_TAB_SEARCH_TAB_SEARCH_PAGE_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 

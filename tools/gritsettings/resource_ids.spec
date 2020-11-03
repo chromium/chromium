@@ -181,7 +181,8 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [1850],
   },
-  "chrome/browser/resources/tab_search/tab_search_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_search/tab_search_resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
     "includes": [1880],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip/tab_strip_resources.grd": {

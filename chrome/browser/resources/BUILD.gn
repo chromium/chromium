@@ -199,26 +199,6 @@ if (!is_android) {
     ]
     output_dir = "$root_gen_dir/chrome"
   }
-
-  grit("tab_search_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-    source = "tab_search/tab_search_resources.grd"
-    deps = [
-      "//chrome/browser/resources/tab_search:web_components",
-      "//chrome/browser/ui/webui/tab_search:mojo_bindings_js",
-    ]
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/tab_search_resources.h",
-      "grit/tab_search_resources_map.cc",
-      "grit/tab_search_resources_map.h",
-      "tab_search_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
 }
 
 if (is_chromeos) {
