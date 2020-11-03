@@ -139,6 +139,8 @@ def main():
   if link_only or collect_inputs_only:
     open(args.output, 'w').close()
     open(args.tocfile, 'w').close()
+    if args.dwp:
+      open(args.sofile + '.dwp', 'w').close()
 
   # Instead of linking, records all inputs to a file. This is used by
   # enable_resource_allowlist_generation in order to avoid needing to
