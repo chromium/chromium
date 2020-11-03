@@ -68,11 +68,7 @@ _CONFIG = [
             'base::TimeDelta',
             'base::TimeTicks',
             'base::ThreadTicks',
-            'base::trace_event::MemoryAllocatorDump',
-            'base::trace_event::MemoryDumpArgs',
-            'base::trace_event::MemoryDumpManager',
-            'base::trace_event::MemoryDumpProvider',
-            'base::trace_event::ProcessMemoryDump',
+            'base::trace_event::.*',
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
             'base::UnsafeSharedMemoryRegion',
@@ -410,6 +406,7 @@ _CONFIG = [
             # Third-party libraries that don't depend on non-Blink Chrome code
             # are OK.
             'icu::.+',
+            'perfetto::.+',  # tracing
             'testing::.+',  # googlemock / googletest
             'v8::.+',
             'v8_inspector::.+',

@@ -103,6 +103,7 @@ class CORE_EXPORT AsyncTask {
   ThreadDebugger* debugger_;
   AsyncTaskId* task_;
   bool recurring_;
+  bool tracing_ = false;
 
   // This persistent is safe since the class is STACK_ALLOCATED.
   Persistent<AdTracker> ad_tracker_;

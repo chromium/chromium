@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -83,9 +84,16 @@ AsyncTask::AsyncTask(ExecutionContext* context,
                                    : nullptr),
       task_(task),
       recurring_(step),
+      tracing_(!!task->GetTraceId()),
       ad_tracker_(enabled && ad_tracking_type == AdTrackingType::kReport
                       ? AdTracker::FromExecutionContext(context)
                       : nullptr) {
+  if (tracing_) {
+    TRACE_EVENT_BEGIN("blink", "AsyncTask Run",
+                      [&](perfetto::EventContext ctx) {
+                        ctx.event()->add_flow_ids(task->GetTraceId().value());
+                      });
+  }
   if (recurring_) {
     TRACE_EVENT_FLOW_STEP0("devtools.timeline.async", "AsyncTask",
                            TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
@@ -110,6 +118,10 @@ AsyncTask::~AsyncTask() {
 
   if (ad_tracker_)
     ad_tracker_->DidFinishAsyncTask(task_);
+
+  if (tracing_) {
+    TRACE_EVENT_END("blink");  // "AsyncTask Run"
+  }
 }
 
 void AsyncTaskScheduled(ExecutionContext* context,
@@ -118,6 +130,12 @@ void AsyncTaskScheduled(ExecutionContext* context,
   TRACE_EVENT_FLOW_BEGIN1("devtools.timeline.async", "AsyncTask",
                           TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
                           "data", inspector_async_task::Data(name));
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  task->SetTraceId(trace_id);
+  TRACE_EVENT("blink", "AsyncTask Scheduled", [&](perfetto::EventContext ctx) {
+    ctx.event()->add_flow_ids(trace_id);
+  });
+
   if (!context)
     return;
 
