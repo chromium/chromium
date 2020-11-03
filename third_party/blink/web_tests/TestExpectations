@@ -6228,3 +6228,10 @@ crbug.com/1144537 external/wpt/xhr/responsexml-document-properties.htm [ Pass Fa
 
 # Sheriff 2020-11-03
 crbug.com/1145019 [ Win7 ] fast/events/updateLayoutForHitTest.html [ Failure ]
+
+# Lack of support for reftest fuzzy matching
+# Reftests have minor pixel differences due to antialiasing.
+crbug.com/997202 [ Mac ] external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
+crbug.com/997202 [ Mac ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
+crbug.com/997202 [ Mac ] virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
+crbug.com/997202 [ Mac ] virtual/transform-interop/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
