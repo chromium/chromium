@@ -1766,11 +1766,6 @@ WebViewFrameWidget* WebViewImpl::MainFrameViewWidget() {
   return web_widget_;
 }
 
-void WebViewImpl::SetSuppressFrameRequestsWorkaroundFor704763Only(
-    bool suppress_frame_requests) {
-  page_->Animator().SetSuppressFrameRequestsWorkaroundFor704763Only(
-      suppress_frame_requests);
-}
 void WebViewImpl::BeginFrame(base::TimeTicks last_frame_time) {
   TRACE_EVENT1("blink", "WebViewImpl::beginFrame", "frameTime",
                last_frame_time);
@@ -1817,39 +1812,6 @@ void WebViewImpl::EndUpdateLayers() {
     probe::LayerTreeDidChange(MainFrameImpl()->GetFrame());
   }
   update_layers_start_time_.reset();
-}
-
-void WebViewImpl::RecordStartOfFrameMetrics() {
-  if (!MainFrameImpl())
-    return;
-
-  MainFrameImpl()->GetFrame()->View()->EnsureUkmAggregator().BeginMainFrame();
-}
-
-void WebViewImpl::RecordEndOfFrameMetrics(
-    base::TimeTicks frame_begin_time,
-    cc::ActiveFrameSequenceTrackers trackers) {
-  if (!MainFrameImpl())
-    return;
-
-  MainFrameImpl()
-      ->GetFrame()
-      ->View()
-      ->EnsureUkmAggregator()
-      .RecordEndOfFrameMetrics(frame_begin_time, base::TimeTicks::Now(),
-                               trackers);
-}
-
-std::unique_ptr<cc::BeginMainFrameMetrics>
-WebViewImpl::GetBeginMainFrameMetrics() {
-  if (!MainFrameImpl())
-    return nullptr;
-
-  return MainFrameImpl()
-      ->GetFrame()
-      ->View()
-      ->EnsureUkmAggregator()
-      .GetBeginMainFrameMetrics();
 }
 
 void WebViewImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,

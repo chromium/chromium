@@ -314,12 +314,6 @@ void WebFrameWidgetImpl::UpdateMainFrameLayoutSize() {
   view->SetLayoutSize(WebSize(layout_size));
 }
 
-void WebFrameWidgetImpl::SetSuppressFrameRequestsWorkaroundFor704763Only(
-    bool suppress_frame_requests) {
-  GetPage()->Animator().SetSuppressFrameRequestsWorkaroundFor704763Only(
-      suppress_frame_requests);
-}
-
 void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   TRACE_EVENT1("blink", "WebFrameWidgetImpl::beginFrame", "frameTime",
                last_frame_time);
@@ -401,39 +395,6 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
                                     commit_start_time, base::TimeTicks::Now());
   }
   commit_compositor_frame_start_time_.reset();
-}
-
-void WebFrameWidgetImpl::RecordStartOfFrameMetrics() {
-  if (!LocalRootImpl())
-    return;
-
-  LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().BeginMainFrame();
-}
-
-void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
-    base::TimeTicks frame_begin_time,
-    cc::ActiveFrameSequenceTrackers trackers) {
-  if (!LocalRootImpl())
-    return;
-
-  LocalRootImpl()
-      ->GetFrame()
-      ->View()
-      ->EnsureUkmAggregator()
-      .RecordEndOfFrameMetrics(frame_begin_time, base::TimeTicks::Now(),
-                               trackers);
-}
-
-std::unique_ptr<cc::BeginMainFrameMetrics>
-WebFrameWidgetImpl::GetBeginMainFrameMetrics() {
-  if (!LocalRootImpl())
-    return nullptr;
-
-  return LocalRootImpl()
-      ->GetFrame()
-      ->View()
-      ->EnsureUkmAggregator()
-      .GetBeginMainFrameMetrics();
 }
 
 void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,

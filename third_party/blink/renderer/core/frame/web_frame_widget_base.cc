@@ -1052,6 +1052,45 @@ void WebFrameWidgetBase::RecordDispatchRafAlignedInputTime(
   }
 }
 
+void WebFrameWidgetBase::SetSuppressFrameRequestsWorkaroundFor704763Only(
+    bool suppress_frame_requests) {
+  GetPage()->Animator().SetSuppressFrameRequestsWorkaroundFor704763Only(
+      suppress_frame_requests);
+}
+
+std::unique_ptr<cc::BeginMainFrameMetrics>
+WebFrameWidgetBase::GetBeginMainFrameMetrics() {
+  if (!LocalRootImpl())
+    return nullptr;
+
+  return LocalRootImpl()
+      ->GetFrame()
+      ->View()
+      ->EnsureUkmAggregator()
+      .GetBeginMainFrameMetrics();
+}
+
+void WebFrameWidgetBase::RecordStartOfFrameMetrics() {
+  if (!LocalRootImpl())
+    return;
+
+  LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().BeginMainFrame();
+}
+
+void WebFrameWidgetBase::RecordEndOfFrameMetrics(
+    base::TimeTicks frame_begin_time,
+    cc::ActiveFrameSequenceTrackers trackers) {
+  if (!LocalRootImpl())
+    return;
+
+  LocalRootImpl()
+      ->GetFrame()
+      ->View()
+      ->EnsureUkmAggregator()
+      .RecordEndOfFrameMetrics(frame_begin_time, base::TimeTicks::Now(),
+                               trackers);
+}
+
 bool WebFrameWidgetBase::WillHandleGestureEvent(const WebGestureEvent& event) {
   possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kTouch;
   possible_drag_event_info_.location =
@@ -1250,6 +1289,18 @@ void WebFrameWidgetBase::UpdateSurfaceAndScreenInfo(
 
 void WebFrameWidgetBase::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
   widget_base_->UpdateScreenInfo(new_screen_info);
+}
+
+void WebFrameWidgetBase::UpdateSurfaceAndCompositorRect(
+    const viz::LocalSurfaceId& new_local_surface_id,
+    const gfx::Rect& compositor_viewport_pixel_rect) {
+  widget_base_->UpdateSurfaceAndCompositorRect(new_local_surface_id,
+                                               compositor_viewport_pixel_rect);
+}
+
+void WebFrameWidgetBase::UpdateCompositorViewportRect(
+    const gfx::Rect& compositor_viewport_pixel_rect) {
+  widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
 }
 
 const ScreenInfo& WebFrameWidgetBase::GetScreenInfo() {

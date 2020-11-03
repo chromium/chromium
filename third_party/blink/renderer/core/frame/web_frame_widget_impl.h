@@ -53,7 +53,6 @@
 
 namespace cc {
 class Layer;
-struct BeginMainFrameMetrics;
 }
 
 namespace blink {
@@ -154,13 +153,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
 
   // WidgetBaseClient overrides:
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
-  void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
-  void RecordStartOfFrameMetrics() override;
-  void RecordEndOfFrameMetrics(
-      base::TimeTicks,
-      cc::ActiveFrameSequenceTrackers trackers) override;
-  std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
-      override;
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
   void BeginCommitCompositorFrame() override;

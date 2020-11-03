@@ -73,12 +73,6 @@ void WebViewFrameWidget::Resize(const gfx::Size& size) {
   web_view_->Resize(size);
 }
 
-void WebViewFrameWidget::SetSuppressFrameRequestsWorkaroundFor704763Only(
-    bool suppress_frame_requests) {
-  web_view_->SetSuppressFrameRequestsWorkaroundFor704763Only(
-      suppress_frame_requests);
-}
-
 void WebViewFrameWidget::BeginMainFrame(base::TimeTicks last_frame_time) {
   web_view_->BeginFrame(last_frame_time);
 }
@@ -124,21 +118,6 @@ void WebViewFrameWidget::EndCommitCompositorFrame(
       .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
                                   commit_start_time, base::TimeTicks::Now());
   commit_compositor_frame_start_time_.reset();
-}
-
-void WebViewFrameWidget::RecordStartOfFrameMetrics() {
-  web_view_->RecordStartOfFrameMetrics();
-}
-
-void WebViewFrameWidget::RecordEndOfFrameMetrics(
-    base::TimeTicks frame_begin_time,
-    cc::ActiveFrameSequenceTrackers trackers) {
-  web_view_->RecordEndOfFrameMetrics(frame_begin_time, trackers);
-}
-
-std::unique_ptr<cc::BeginMainFrameMetrics>
-WebViewFrameWidget::GetBeginMainFrameMetrics() {
-  return web_view_->GetBeginMainFrameMetrics();
 }
 
 void WebViewFrameWidget::UpdateLifecycle(WebLifecycleUpdate requested_update,
@@ -591,18 +570,6 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
             widget_base_->VisibleViewportSizeInDIPs()),
         visual_properties.browser_controls_params);
   }
-}
-
-void WebViewFrameWidget::UpdateSurfaceAndCompositorRect(
-    const viz::LocalSurfaceId& new_local_surface_id,
-    const gfx::Rect& compositor_viewport_pixel_rect) {
-  widget_base_->UpdateSurfaceAndCompositorRect(new_local_surface_id,
-                                               compositor_viewport_pixel_rect);
-}
-
-void WebViewFrameWidget::UpdateCompositorViewportRect(
-    const gfx::Rect& compositor_viewport_pixel_rect) {
-  widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
 }
 
 }  // namespace blink

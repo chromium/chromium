@@ -75,7 +75,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace cc {
-struct BeginMainFrameMetrics;
 class ScopedDeferMainFrameUpdate;
 }
 
@@ -539,14 +538,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
-  void SetSuppressFrameRequestsWorkaroundFor704763Only(bool);
   void BeginFrame(base::TimeTicks last_frame_time);
   void BeginUpdateLayers();
   void EndUpdateLayers();
-  void RecordStartOfFrameMetrics();
-  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,
-                               cc::ActiveFrameSequenceTrackers trackers);
-  std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics();
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason);
   void ThemeChanged();

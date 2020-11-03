@@ -112,13 +112,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   // WidgetBaseClient overrides:
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
-  void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
-  void RecordStartOfFrameMetrics() override;
-  void RecordEndOfFrameMetrics(
-      base::TimeTicks frame_begin_time,
-      cc::ActiveFrameSequenceTrackers trackers) override;
-  std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
-      override;
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
   void DidBeginMainFrame() override;
@@ -149,11 +142,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   void Trace(Visitor*) const override;
 
-  void UpdateSurfaceAndCompositorRect(
-      const viz::LocalSurfaceId& new_local_surface_id,
-      const gfx::Rect& compositor_viewport_pixel_rect);
-  void UpdateCompositorViewportRect(
-      const gfx::Rect& compositor_viewport_pixel_rect);
   void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
