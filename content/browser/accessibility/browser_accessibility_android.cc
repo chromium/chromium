@@ -747,41 +747,31 @@ base::string16 BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
-  base::string16 aria_current_state;
-
+  int message_id;
   switch (static_cast<ax::mojom::AriaCurrentState>(
       GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))) {
     case ax::mojom::AriaCurrentState::kPage:
-      aria_current_state =
-          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_PAGE);
+      message_id = IDS_AX_ARIA_CURRENT_PAGE;
       break;
     case ax::mojom::AriaCurrentState::kStep:
-      aria_current_state =
-          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_STEP);
+      message_id = IDS_AX_ARIA_CURRENT_STEP;
       break;
     case ax::mojom::AriaCurrentState::kLocation:
-      aria_current_state =
-          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_LOCATION);
+      message_id = IDS_AX_ARIA_CURRENT_LOCATION;
       break;
     case ax::mojom::AriaCurrentState::kDate:
-      aria_current_state =
-          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_DATE);
+      message_id = IDS_AX_ARIA_CURRENT_DATE;
       break;
     case ax::mojom::AriaCurrentState::kTime:
-      aria_current_state =
-          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_TIME);
+      message_id = IDS_AX_ARIA_CURRENT_TIME;
       break;
     case ax::mojom::AriaCurrentState::kTrue:
     default:
-      aria_current_state =
-          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_TRUE);
+      message_id = IDS_AX_ARIA_CURRENT_TRUE;
       break;
   }
 
-  return base::ReplaceStringPlaceholders(
-      content_client->GetLocalizedString(
-          IDS_AX_ARIA_CURRENT_STATE_DESCRIPTION_BASE),
-      aria_current_state, nullptr);
+  return content_client->GetLocalizedString(message_id);
 }
 
 std::string BrowserAccessibilityAndroid::GetRoleString() const {

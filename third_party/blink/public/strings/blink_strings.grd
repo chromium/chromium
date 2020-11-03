@@ -805,26 +805,23 @@ below:
         <message name="IDS_AX_LIST_BOX_ITEM_STATE_DESCRIPTION" desc="Accessibility state description for an item that is part of a list box">
           in list, item <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
         </message>
-        <message name="IDS_AX_ARIA_CURRENT_STATE_DESCRIPTION_BASE" desc="Accessibility state description for a node that has aria-current value set to something other than false">
-          current <ph name="TYPE">$1<ex>page</ex></ph>
-        </message>
         <message name="IDS_AX_ARIA_CURRENT_PAGE" desc="Accessibility state description for aria-current value of page.">
-          page
+          current page
         </message>
         <message name="IDS_AX_ARIA_CURRENT_STEP" desc="Accessibility state description for aria-current value of step.">
-          step
+          current step
         </message>
         <message name="IDS_AX_ARIA_CURRENT_LOCATION" desc="Accessibility state description for aria-current value of location.">
-          location
+          current location
         </message>
         <message name="IDS_AX_ARIA_CURRENT_DATE" desc="Accessibility state description for aria-current value of date.">
-          date
+          current date
         </message>
         <message name="IDS_AX_ARIA_CURRENT_TIME" desc="Accessibility state description for aria-current value of time.">
-          time
+          current time
         </message>
         <message name="IDS_AX_ARIA_CURRENT_TRUE" desc="Accessibility state description for aria-current value of true.">
-          item
+          current item
         </message>
       </if>
 
