@@ -461,7 +461,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
                                    params.selection_after, segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  return RespondNow(NoArguments());
+  return RespondNow(OneArgument(base::Value(true)));
 }
 
 ExtensionFunction::ResponseAction
