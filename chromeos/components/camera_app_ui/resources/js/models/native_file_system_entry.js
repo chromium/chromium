@@ -78,9 +78,10 @@ export class NativeFileEntry extends NativeFileSystemEntry {
     // TODO(crbug.com/980846): We should write files in-place so that even the
     // app is accidentally closed or hit any unexpected exceptions, the captured
     // video will not be dropped entirely.
-    const doWrite = (blob) => writer.write(blob);
-    return new AsyncWriter(doWrite, {
-      onClosed: () => writer.close(),
+    return new AsyncWriter({
+      write: (blob) => writer.write(blob),
+      seek: (offset) => writer.seek(offset),
+      close: () => writer.close(),
     });
   }
 

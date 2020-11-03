@@ -6,14 +6,24 @@ import {AsyncJobQueue} from '../async_job_queue.js';
 import {assert} from '../chrome_util.js';
 
 /**
+ * Represents a set of operations of a file-like writable stream. The seek and
+ * close operations are optional.
+ * @typedef {{
+ *   write: function(!Blob): !Promise,
+ *   seek: ((function(number): !Promise)|null),
+ *   close: ((function(): !Promise)|null)
+ * }}
+ */
+export let AsyncOps;
+
+/**
  * Asynchronous writer.
  */
 export class AsyncWriter {
   /**
-   * @param {function(!Blob): !Promise} doWrite
-   * @param {{onClosed: ((function(): !Promise)|undefined)}=} callbacks
+   * @param {!AsyncOps} ops
    */
-  constructor(doWrite, {onClosed = (async () => {})} = {}) {
+  constructor(ops) {
     /**
      * @type {!AsyncJobQueue}
      * @private
@@ -21,16 +31,10 @@ export class AsyncWriter {
     this.queue_ = new AsyncJobQueue();
 
     /**
-     * @type {function(!Blob): !Promise}
+     * @type {!AsyncOps}
      * @private
      */
-    this.doWrite_ = doWrite;
-
-    /**
-     * @type {function(): !Promise}
-     * @private
-     */
-    this.onClosed_ = onClosed;
+    this.ops_ = ops;
 
     /**
      * @type {boolean}
@@ -40,13 +44,32 @@ export class AsyncWriter {
   }
 
   /**
+   * Checks whether the writer supports seek operation.
+   * @return {boolean}
+   */
+  seekable() {
+    return this.ops_.seek !== null;
+  }
+
+  /**
    * Writes the blob asynchronously with |doWrite|.
    * @param {!Blob} blob
    * @return {!Promise} Resolved when the data is written.
    */
   async write(blob) {
     assert(!this.closed_);
-    await this.queue_.push(() => this.doWrite_(blob));
+    await this.queue_.push(() => this.ops_.write(blob));
+  }
+
+  /**
+   * Seeks to the specified |offset|.
+   * @param {number} offset
+   * @return {!Promise} Resolved when the seek operation is finished.
+   */
+  async seek(offset) {
+    assert(!this.closed_);
+    assert(this.seekable());
+    await this.queue_.push(() => this.ops_.seek(offset));
   }
 
   /**
@@ -55,8 +78,10 @@ export class AsyncWriter {
    */
   async close() {
     this.closed_ = true;
+    if (this.ops_.close !== null) {
+      this.queue_.push(() => this.ops_.close());
+    }
     await this.queue_.flush();
-    await this.onClosed_();
   }
 
   /**
@@ -66,12 +91,20 @@ export class AsyncWriter {
    * @return {!AsyncWriter} The combined writer.
    */
   static combine(...writers) {
-    const doWrite = (blob) => {
+    const write = (blob) => {
       return Promise.all(writers.map((writer) => writer.write(blob)));
     };
-    const onClosed = () => {
+
+    const allSeekable = writers.every((writer) => writer.seekable());
+    const seekAll = (offset) => {
+      return Promise.all(writers.map((writer) => writer.seek(offset)));
+    };
+    const seek = allSeekable ? seekAll : null;
+
+    const close = () => {
       return Promise.all(writers.map((writer) => writer.close()));
     };
-    return new AsyncWriter(doWrite, {onClosed});
+
+    return new AsyncWriter({write, seek, close});
   }
 }

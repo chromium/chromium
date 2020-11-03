@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {promisify, promisifyWithError} from '../chrome_util.js';
+import {assert, promisify, promisifyWithError} from '../chrome_util.js';
 import {AsyncWriter} from './async_writer.js';
 import {
   AbstractDirectoryEntry,   // eslint-disable-line no-unused-vars
@@ -89,12 +89,16 @@ export class ChromeFileEntry extends ChromeFileSystemEntry {
    */
   async getWriter() {
     const fileWriter = await this.entry_ops_.createWriter();
-    const doWrite = (blob) => new Promise((resolve, reject) => {
+    const write = (blob) => new Promise((resolve, reject) => {
       fileWriter.onwriteend = resolve;
       fileWriter.onerror = reject;
       fileWriter.write(blob);
     });
-    return new AsyncWriter(doWrite);
+    const seek = async (offset) => {
+      fileWriter.seek(offset);
+      assert(fileWriter.position === offset);
+    };
+    return new AsyncWriter({write, seek, close: null});
   }
 
   /**

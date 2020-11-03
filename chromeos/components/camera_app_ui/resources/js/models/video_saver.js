@@ -39,10 +39,11 @@ async function createVideoProcessor(output) {
  * @return {!AsyncWriter}
  */
 function createWriterForIntent(intent) {
-  const doWrite = async (blob) => {
+  const write = async (blob) => {
     await intent.appendData(new Uint8Array(await blob.arrayBuffer()));
   };
-  return new AsyncWriter(doWrite);
+  // TODO(crbug.com/1140852): Supports seek.
+  return new AsyncWriter({write, seek: null, close: null});
 }
 
 /**
