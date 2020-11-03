@@ -73,13 +73,25 @@ TEST(TextFragmentsUtilsTest, AppendFragmentDirectivesURLWithPoundAndValue) {
 
 TEST(TextFragmentsUtilsTest,
      AppendFragmentDirectivesURLWithPoundAndExistingFragment) {
+  GURL base_url("https://www.chromium.org/#:~:text=some%20value");
+  TextFragment test_fragment("only start");
+
+  GURL created_url = AppendFragmentDirectives(base_url, {test_fragment});
+  EXPECT_EQ(
+      "https://www.chromium.org/"
+      "#:~:text=only%20start",
+      created_url.spec());
+}
+
+TEST(TextFragmentsUtilsTest,
+     AppendFragmentDirectivesURLWithPoundAndExistingFragmentAndAnchor) {
   GURL base_url("https://www.chromium.org/#SomeAnchor:~:text=some%20value");
   TextFragment test_fragment("only start");
 
   GURL created_url = AppendFragmentDirectives(base_url, {test_fragment});
   EXPECT_EQ(
       "https://www.chromium.org/"
-      "#SomeAnchor:~:text=some%20value&text=only%20start",
+      "#SomeAnchor:~:text=only%20start",
       created_url.spec());
 }
 
