@@ -18,3 +18,17 @@ java_binary("bytecode_processor") {
   wrapper_script_name = "helper/bytecode_processor"
   enable_bytecode_checks = false
 }
+
+java_binary("fragment_activity_replacer") {
+  sources = [
+    "java/org/chromium/bytecode/ByteCodeRewriter.java",
+    "java/org/chromium/bytecode/FragmentActivityReplacer.java",
+  ]
+  main_class = "org.chromium.bytecode.FragmentActivityReplacer"
+  deps = [
+    "//third_party/android_deps:org_ow2_asm_asm_commons_java",
+    "//third_party/android_deps:org_ow2_asm_asm_java",
+    "//third_party/android_deps:org_ow2_asm_asm_util_java",
+  ]
+  wrapper_script_name = "helper/fragment_activity_replacer"
+}

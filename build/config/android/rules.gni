@@ -4356,6 +4356,7 @@ if (enable_java_templates) {
     # Create android_java_prebuilt target for classes.jar.
     if (_scanned_files.has_classes_jar) {
       _java_library_vars = [
+        "bytecode_rewriter_target",
         "enable_bytecode_checks",
         "enable_jetify",
         "jar_excluded_patterns",

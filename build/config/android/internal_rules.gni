@@ -3921,6 +3921,57 @@ if (enable_java_templates) {
       }
     }  # _has_sources
 
+    if (_is_prebuilt || _build_device_jar || _build_host_jar) {
+      _unprocessed_jar_deps = _full_classpath_deps
+      if (_has_sources) {
+        _unprocessed_jar_deps += [ ":$_compile_java_target" ]
+      }
+    }
+
+    if (defined(invoker.bytecode_rewriter_target)) {
+      assert(_build_host_jar || _build_device_jar,
+             "A host or device jar must be created to use bytecode rewriting")
+
+      _rewritten_jar =
+          string_replace(_unprocessed_jar_path, ".jar", "_rewritten.jar")
+      _rewritten_jar_target_name = "${target_name}__rewritten"
+      _rewriter_path = root_build_dir + "/bin/helper/" +
+                       get_label_info(invoker.bytecode_rewriter_target, "name")
+      _rebased_build_config = rebase_path(_build_config, root_build_dir)
+      action_with_pydeps(_rewritten_jar_target_name) {
+        script = "//build/android/gyp/bytecode_rewriter.py"
+        inputs = [
+          _rewriter_path,
+          _build_config,
+          _unprocessed_jar_path,
+        ]
+        outputs = [ _rewritten_jar ]
+        depfile = "$target_gen_dir/$target_name.d"
+        args = [
+          "--depfile",
+          rebase_path(depfile, root_build_dir),
+          "--script",
+          rebase_path(_rewriter_path, root_build_dir),
+          "--classpath",
+          "@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
+          "--classpath",
+          "@FileArg($_rebased_build_config:android:sdk_jars)",
+          "--input-jar",
+          rebase_path(_unprocessed_jar_path, root_build_dir),
+          "--output-jar",
+          rebase_path(_rewritten_jar, root_build_dir),
+        ]
+        deps = _unprocessed_jar_deps + [
+                 ":$_build_config_target_name",
+                 invoker.bytecode_rewriter_target,
+               ]
+      }
+
+      _unprocessed_jar_deps = []
+      _unprocessed_jar_deps = [ ":$_rewritten_jar_target_name" ]
+      _unprocessed_jar_path = _rewritten_jar
+    }
+
     if (_is_prebuilt) {
       generate_interface_jar(_header_target_name) {
         # Always used the unfiltered .jar to create the interface jar so that
@@ -3934,10 +3985,7 @@ if (enable_java_templates) {
         # target. If we can change compile & desugar steps to use direct
         # interface classpath rather than full interface classpath, then this
         # could just be _non_java_deps.
-        deps = _classpath_deps
-        if (_has_sources) {
-          deps += [ ":$_compile_java_target" ]
-        }
+        deps = _unprocessed_jar_deps
       }
       _public_deps += [ ":$_header_target_name" ]
     }
@@ -3953,10 +4001,7 @@ if (enable_java_templates) {
         build_config = _build_config
         build_config_dep = ":$_build_config_target_name"
         input_jar_path = _unprocessed_jar_path
-        jar_deps = _non_java_deps
-        if (_has_sources) {
-          jar_deps += [ ":$_compile_java_target" ]
-        }
+        jar_deps = _unprocessed_jar_deps
         if (_build_host_jar) {
           host_jar_path = _host_processed_jar_path
         }
@@ -3999,10 +4044,7 @@ if (enable_java_templates) {
         _bytecode_checks_target = "${target_name}__validate_classpath"
         bytecode_processor(_bytecode_checks_target) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
-          deps = _full_classpath_deps
-          if (_has_sources) {
-            deps += [ ":$_compile_java_target" ]
-          }
+          deps = _unprocessed_jar_deps + [ ":$_build_config_target_name" ]
           requires_android = _requires_android
           target_label =
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
