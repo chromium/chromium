@@ -245,11 +245,11 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
   bool ShouldExposeViaManagementAPI() const;
 
   // Get the manifest data associated with the key, or NULL if there is none.
-  // Can only be called after InitValue is finished.
+  // Can only be called after InitFromValue is finished.
   ManifestData* GetManifestData(const std::string& key) const;
 
   // Sets |data| to be associated with the key.
-  // Can only be called before InitValue is finished. Not thread-safe;
+  // Can only be called before InitFromValue is finished. Not thread-safe;
   // all SetManifestData calls should be on only one thread.
   void SetManifestData(const std::string& key,
                        std::unique_ptr<ManifestData> data);
@@ -444,7 +444,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
   using ManifestDataMap = std::map<std::string, std::unique_ptr<ManifestData>>;
   ManifestDataMap manifest_data_;
 
-  // Set to true at the end of InitValue when initialization is finished.
+  // Set to true at the end of InitFromValue when initialization is finished.
   bool finished_parsing_manifest_;
 
   // Ensures that any call to GetManifestData() prior to finishing
