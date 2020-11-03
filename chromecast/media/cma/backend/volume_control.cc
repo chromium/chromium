@@ -16,6 +16,8 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -193,6 +195,9 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     mixer_ = std::make_unique<mixer_service::ControlConnection>();
     mixer_->Connect();
 
+    saved_volumes_writer_ = std::make_unique<base::ImportantFileWriter>(
+        storage_path_, thread_.task_runner(), base::TimeDelta::FromSeconds(1));
+
     double dbfs;
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
@@ -268,7 +273,9 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     }
 
     stored_values_.SetDouble(ContentTypeToDbFSKey(type), dbfs);
-    SerializeJsonToFile(storage_path_, stored_values_);
+    std::string output_js;
+    base::JSONWriter::Write(stored_values_, &output_js);
+    saved_volumes_writer_->WriteNow(std::make_unique<std::string>(output_js));
   }
 
   void SetVolumeMultiplierOnThread(AudioContentType type, float multiplier) {
@@ -364,6 +371,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
 
   std::unique_ptr<SystemVolumeControl> system_volume_control_;
   std::unique_ptr<mixer_service::ControlConnection> mixer_;
+  std::unique_ptr<base::ImportantFileWriter> saved_volumes_writer_;
 
   DISALLOW_COPY_AND_ASSIGN(VolumeControlInternal);
 };
