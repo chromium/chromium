@@ -1,16 +1,19 @@
 <template>
   <style>
     :host {
+      --scanning-helper-text-font-family: "Google Sans", Roboto, sans-serif;
       --scanning-more-settings-font-family: Roboto;
       --scanning-section-title-font-family: "Google Sans", Roboto, sans-serif;
       --scanning-select-font-family: Roboto;
 
       --scanning-chevron-icon-font-size: 20px;
+      --scanning-helper-text-font-size: 16px;
       --scanning-more-settings-font-size: 12px;
       --scanning-section-title-font-size: 22px;
       --scanning-select-font-size: 13px;
 
       --scanning-chevron-icon-color: var(--google-grey-700);
+      --scanning-helper-text-color: var(--google-grey-700);
       --scanning-more-settings-text-color: var(--google-grey-700);
       --scanning-section-title-text-color: var(--google-grey-900);
       --scanning-select-text-color: var(--google-grey-900);
@@ -24,6 +27,11 @@
           font-family: var(--scanning-select-font-family);
           font-size: var(--scanning-select-font-size);
       };
+
+      --scanning-helper-text-font: {
+        font-family: var(--scanning-helper-text-font-family);
+        font-size: var(--scanning-helper-text-font-size);
+      }
     }
   </style>
 </template>

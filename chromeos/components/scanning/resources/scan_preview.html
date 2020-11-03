@@ -1,10 +1,21 @@
-<style include="scanning-shared">
+<style include="scanning-shared scanning-fonts">
+  #helperText {
+    @apply --scanning-helper-text-font;
+    color: var(--scanning-helper-text-color);
+    text-align-last: center;
+    width: 60%;
+  }
   .preview {
+    align-items: center;
     border: 1px solid var(--google-grey-200);
     border-radius: 4px;
+    display: flex;
     /* TODO(michaelcheco): Replace with correct height for
      * preview container. */
     height: 420px;
+    justify-content: center;
   }
 </style>
-<div class="preview"></div>
+<div class="preview">
+  <div id="helperText">[[i18n('scanPreviewHelperText')]]</div>
+</div>
