@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
   FileSystemURL CreateCrackedFileSystemURL(
       const url::Origin& origin,
       FileSystemType type,
-      const base::FilePath& path) const override;
+      const base::FilePath& virtual_path) const override;
 
   // Returns a list of registered MountPointInfos (of <mount_name, path>).
   void AddMountPointInfosTo(std::vector<MountPointInfo>* mount_points) const;

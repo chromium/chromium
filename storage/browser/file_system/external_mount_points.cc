@@ -195,8 +195,8 @@ FileSystemURL ExternalMountPoints::CrackURL(const GURL& url) const {
 FileSystemURL ExternalMountPoints::CreateCrackedFileSystemURL(
     const url::Origin& origin,
     FileSystemType type,
-    const base::FilePath& path) const {
-  return CrackFileSystemURL(FileSystemURL(origin, type, path));
+    const base::FilePath& virtual_path) const {
+  return CrackFileSystemURL(FileSystemURL(origin, type, virtual_path));
 }
 
 void ExternalMountPoints::AddMountPointInfosTo(

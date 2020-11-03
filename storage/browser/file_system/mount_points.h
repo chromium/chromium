@@ -59,14 +59,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
   // from |url|.
   virtual FileSystemURL CrackURL(const GURL& url) const = 0;
 
-  // Creates a FileSystemURL with the given origin, type and path and tries to
-  // crack it as a part of one of the registered mount points.
-  // If the the URL is not valid or does not belong to any of the mount points
+  // Creates a FileSystemURL with the given origin, type and virtual path and
+  // tries to crack it as a part of one of the registered mount points. If the
+  // the URL is not valid or does not belong to any of the mount points
   // registered in this context, returns empty, invalid FileSystemURL.
   virtual FileSystemURL CreateCrackedFileSystemURL(
       const url::Origin& origin,
       FileSystemType type,
-      const base::FilePath& path) const = 0;
+      const base::FilePath& virtual_path) const = 0;
 
   // Returns the mount point root path registered for a given |mount_name|.
   // Returns false if the given |mount_name| is not valid.

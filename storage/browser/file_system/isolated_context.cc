@@ -398,8 +398,8 @@ FileSystemURL IsolatedContext::CrackURL(const GURL& url) const {
 FileSystemURL IsolatedContext::CreateCrackedFileSystemURL(
     const url::Origin& origin,
     FileSystemType type,
-    const base::FilePath& path) const {
-  return CrackFileSystemURL(FileSystemURL(origin, type, path));
+    const base::FilePath& virtual_path) const {
+  return CrackFileSystemURL(FileSystemURL(origin, type, virtual_path));
 }
 
 void IsolatedContext::RevokeFileSystemByPath(const base::FilePath& path_in) {

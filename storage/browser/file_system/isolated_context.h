@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
   FileSystemURL CreateCrackedFileSystemURL(
       const url::Origin& origin,
       FileSystemType type,
-      const base::FilePath& path) const override;
+      const base::FilePath& virtual_path) const override;
 
   // Returns the virtual root path that looks like /<filesystem_id>.
   base::FilePath CreateVirtualRootPath(const std::string& filesystem_id) const;
