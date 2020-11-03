@@ -313,10 +313,30 @@ class CastActivityManagerTest : public testing::Test,
     }
   }
 
-  void LaunchMirroringSession() {
-    CallLaunchSession(kCastStreamingAppId);
+  void LaunchNonSdkMirroringSession() {
+    CallLaunchSession(kCastStreamingAppId, /* app_params */ "",
+                      /* client_id */ "");
+    ResolveMirroringSessionLaunch();
+  }
+
+  void LaunchCastSdkMirroringSession() {
+    CallLaunchSession(kCastStreamingAppId, kAppParams, kClientId);
+    // We expect EnsureConnection() to be called for both the sender client and
+    // |message_handler_.sender_id()|. The latter is captured in
+    // ResolveMirroringSessionLaunch().
+    //
+    // CallLaunchSession() calls VerifyAndClearExpectations() on
+    // |message_handler_|, so this EXPECT_CALL() must come after that.
     EXPECT_CALL(message_handler_,
                 EnsureConnection(kChannelId, "theClientId", "theTransportId",
+                                 cast_channel::VirtualConnectionType::kStrong));
+    ResolveMirroringSessionLaunch();
+  }
+
+  void ResolveMirroringSessionLaunch() {
+    EXPECT_CALL(message_handler_,
+                EnsureConnection(kChannelId, message_handler_.sender_id(),
+                                 "theTransportId",
                                  cast_channel::VirtualConnectionType::kStrong));
     auto response = GetSuccessLaunchResponse();
     SetSessionForTest(route_->media_sink_id(),
@@ -440,7 +460,12 @@ TEST_F(CastActivityManagerTest, LaunchAppSessionWithAppParams) {
 }
 
 TEST_F(CastActivityManagerTest, LaunchMirroringSession) {
-  LaunchMirroringSession();
+  LaunchNonSdkMirroringSession();
+  EXPECT_EQ(RouteControllerType::kMirroring, route_->controller_type());
+}
+
+TEST_F(CastActivityManagerTest, LaunchMirroringSessionViaCastSdk) {
+  LaunchCastSdkMirroringSession();
   EXPECT_EQ(RouteControllerType::kMirroring, route_->controller_type());
 }
 
@@ -453,7 +478,7 @@ TEST_F(CastActivityManagerTest, LaunchSiteInitiatedMirroringSession) {
 }
 
 TEST_F(CastActivityManagerTest, MirroringSessionStopped) {
-  LaunchMirroringSession();
+  LaunchNonSdkMirroringSession();
   ExpectMirroringActivityStoppedTimes(1);
   mirroring_activity_->DidStop();
 }
@@ -624,7 +649,7 @@ TEST_F(CastActivityManagerTest, TerminateSessionFails) {
 }
 
 TEST_F(CastActivityManagerTest, DestructorClosesLocalMirroringSession) {
-  LaunchMirroringSession();
+  LaunchNonSdkMirroringSession();
   ExpectMirroringActivityStoppedTimes(1);
   manager_.reset();
 }

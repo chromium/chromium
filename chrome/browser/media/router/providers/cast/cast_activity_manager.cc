@@ -818,19 +818,31 @@ void CastActivityManager::HandleLaunchSessionResponse(
   }
   RecordLaunchSessionResponseAppType(session->value().FindKey("appType"));
 
-  std::string client_id = cast_source.client_id();
-  // Mirroring sessions do not have |client_id| set here.
-  if (client_id.empty()) {
-    client_id = message_handler_->sender_id();
-  } else {
+  // Cast SDK sessions have a |client_id|, and we ensure a virtual connection
+  // for them. For mirroring sessions, we ensure a strong virtual connection for
+  // |message_handler_|. Mirroring initiated via the Cast SDK will have
+  // EnsureConnection() called for both.
+  const std::string& client_id = cast_source.client_id();
+  if (!client_id.empty()) {
     activity_it->second->SendMessageToClient(
         client_id,
         CreateNewSessionMessage(*session, client_id, sink, hash_token_));
+    message_handler_->EnsureConnection(sink.cast_data().cast_channel_id,
+                                       client_id, session->transport_id(),
+                                       cast_source.connection_type());
     // TODO(jrw): Query media status.
   }
-  message_handler_->EnsureConnection(sink.cast_data().cast_channel_id,
-                                     client_id, session->transport_id(),
-                                     cast_source.connection_type());
+  if (cast_source.ContainsStreamingApp()) {
+    message_handler_->EnsureConnection(
+        sink.cast_data().cast_channel_id, message_handler_->sender_id(),
+        session->transport_id(), cast_channel::VirtualConnectionType::kStrong);
+  } else if (client_id.empty()) {
+    logger_->LogError(
+        mojom::LogCategory::kRoute, kLoggerComponent,
+        "The client ID was unexpectedly empty for a non-mirroring app.",
+        sink.id(), cast_source.source_id(),
+        MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+  }
 
   activity_it->second->SetOrUpdateSession(*session, sink, hash_token_);
   NotifyAllOnRoutesUpdated();
