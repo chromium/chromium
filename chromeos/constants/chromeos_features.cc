@@ -258,8 +258,8 @@ const base::Feature kExoPointerLock{"ExoPointerLock",
 
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
-const base::Feature kFamilyLinkOnSchoolDevice{
-    "FamilyLinkOnSchoolDevice", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the camera folder handling in files app.
 const base::Feature kFilesCameraFolder{"FilesCameraFolder",
