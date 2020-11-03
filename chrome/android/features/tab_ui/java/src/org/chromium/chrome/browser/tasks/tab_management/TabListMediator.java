@@ -233,7 +233,7 @@ class TabListMediator {
                     ()
                             -> TabGroupUtils.maybeShowIPH(
                                     FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
-                                    anchor, null),
+                                    anchor),
                     IPH_DELAY_MS);
         }
     };
