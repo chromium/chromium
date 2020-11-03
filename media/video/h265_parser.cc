@@ -518,7 +518,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
 
   // Equation A-2: Calculate max_dpb_size.
   int max_luma_ps = sps->profile_tier_level.GetMaxLumaPs();
-  int pic_size_in_samples_y = sps->pic_height_in_luma_samples;
+  int pic_size_in_samples_y =
+      sps->pic_height_in_luma_samples * sps->pic_width_in_luma_samples;
   size_t max_dpb_pic_buf = sps->profile_tier_level.GetDpbMaxPicBuf();
   if (pic_size_in_samples_y <= (max_luma_ps >> 2))
     sps->max_dpb_size = std::min(4 * max_dpb_pic_buf, size_t{16});

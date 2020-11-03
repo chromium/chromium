@@ -270,6 +270,15 @@ source_set("common") {
     "vp9_reference_frame_vector.h",
   ]
 
+  if (proprietary_codecs && enable_platform_hevc) {
+    sources += [
+      "h265_decoder.cc",
+      "h265_decoder.h",
+      "h265_dpb.cc",
+      "h265_dpb.h",
+    ]
+  }
+
   visibility = [
     ":gpu",
     "//media/gpu/*",
@@ -498,7 +507,9 @@ source_set("unit_tests") {
     "//ui/gl:test_support",
   ]
   sources = [ "h264_decoder_unittest.cc" ]
-
+  if (proprietary_codecs && enable_platform_hevc) {
+    sources += [ "h265_decoder_unittest.cc" ]
+  }
   if (is_ash && (use_v4l2_codec || use_vaapi)) {
     deps += [ "//media/gpu/chromeos:unit_tests" ]
   }
