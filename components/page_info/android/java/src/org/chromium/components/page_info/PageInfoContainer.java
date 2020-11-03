@@ -41,7 +41,7 @@ public class PageInfoContainer extends FrameLayout {
         public Runnable urlTitleLongClickCallback;
         public Runnable backButtonClickCallback;
     }
-    private PageInfoView.ElidedUrlTextView mUrlTitle;
+    private PageInfoView.ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
     private TextView mPreviewMessage;
 
@@ -62,11 +62,11 @@ public class PageInfoContainer extends FrameLayout {
     }
 
     public void setParams(Params params) {
-        mUrlTitle = findViewById(R.id.page_info_url);
-        initializeUrlView(mUrlTitle, params);
-        mUrlTitle.setUrl(params.url, params.urlOriginLength);
+        mExpandedUrlTitle = findViewById(R.id.page_info_url);
+        initializeUrlView(mExpandedUrlTitle, params);
+        mExpandedUrlTitle.setUrl(params.url, params.urlOriginLength);
         // Adjust the mUrlTitle for displaying the non-truncated URL.
-        mUrlTitle.toggleTruncation();
+        mExpandedUrlTitle.toggleTruncation();
 
         mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         // Use a separate view for truncated URL display.
@@ -101,8 +101,11 @@ public class PageInfoContainer extends FrameLayout {
     }
 
     public void toggleUrlTruncation() {
-        mUrlTitle.setVisibility(mTruncatedUrlTitle.getVisibility());
-        mTruncatedUrlTitle.setVisibility(mUrlTitle.getVisibility() == VISIBLE ? GONE : VISIBLE);
+        boolean showExpanded = mExpandedUrlTitle.getVisibility() != VISIBLE;
+        mExpandedUrlTitle.setVisibility(showExpanded ? VISIBLE : GONE);
+        mTruncatedUrlTitle.setVisibility(showExpanded ? GONE : VISIBLE);
+        announceForAccessibility(getResources().getString(
+                showExpanded ? R.string.page_info_url_expanded : R.string.page_info_url_truncated));
     }
 
     public void setFavicon(Drawable favicon) {

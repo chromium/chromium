@@ -553,6 +553,12 @@
       <message name="IDS_PAGE_INFO_DSE_PERMISSION_BLOCKED" desc="The label used in the Page Info dialog to describe a blocked location permission for the current search engine. Eg: Location - Blocked for current search engine">
         Blocked for current search engine
       </message>
+      <message name="IDS_PAGE_INFO_URL_EXPANDED" desc="Accessibility announcement when the URL in PageInfo switches from truncated to full display">
+        URL expanded
+      </message>
+      <message name="IDS_PAGE_INFO_URL_TRUNCATED" desc="Accessibility announcement when the URL in PageInfo switches from full to truncated display">
+        URL truncated
+      </message>
 
       <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR-LIMIT=32]">
           Cookies
