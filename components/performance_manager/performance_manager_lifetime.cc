@@ -19,6 +19,7 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
 #if !defined(OS_ANDROID)
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
@@ -50,6 +51,9 @@ void DefaultGraphCreatedCallback(
 #if !defined(OS_ANDROID)
   graph->PassToGraph(std::make_unique<SiteDataRecorder>());
 #endif
+
+  // This depends on ExecutionContextRegistry, so must be added afterwards.
+  graph->PassToGraph(std::make_unique<v8_memory::V8ContextTracker>());
 
   // Run graph created callbacks.
   std::move(external_graph_created_callback).Run(graph);

@@ -144,8 +144,6 @@ static_library("performance_manager") {
     "v8_memory/v8_context_tracker_helpers.h",
     "v8_memory/v8_context_tracker_internal.cc",
     "v8_memory/v8_context_tracker_internal.h",
-    "v8_memory/v8_context_tracker_types.cc",
-    "v8_memory/v8_context_tracker_types.h",
     "v8_memory/v8_detailed_memory.cc",
     "v8_memory/web_memory_aggregator.cc",
     "v8_memory/web_memory_aggregator.h",
@@ -290,6 +288,7 @@ source_set("browser_tests") {
     "mechanisms/tab_loading_frame_navigation_scheduler_browsertest.cc",
     "performance_manager_browsertest.cc",
     "render_process_host_proxy_browsertest.cc",
+    "v8_memory/v8_context_tracker_browsertest.cc",
   ]
 
   deps = [

@@ -7,14 +7,13 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/util/type_safety/pass_key.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/v8_memory/v8_context_tracker_types.h"
+#include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -57,7 +56,7 @@ class V8ContextTracker final
     ExecutionContextState() = delete;
     ExecutionContextState(
         const blink::ExecutionContextToken& token,
-        const base::Optional<IframeAttributionData>& iframe_attribution_data);
+        mojom::IframeAttributionDataPtr iframe_attribution_data);
     ExecutionContextState(const ExecutionContextState&) = delete;
     ExecutionContextState& operator=(const ExecutionContextState&) = delete;
     virtual ~ExecutionContextState();
@@ -74,7 +73,7 @@ class V8ContextTracker final
     // This is sometimes only available asynchronously so is optional. Note that
     // this value can change over time, but will generally reflect the most up
     // to date data (with some lag).
-    base::Optional<IframeAttributionData> iframe_attribution_data;
+    mojom::IframeAttributionDataPtr iframe_attribution_data;
 
     // Whether or not the corresponding blink::ExecutionContext has been
     // destroyed. This occurs when the main V8Context associated with this
@@ -85,14 +84,14 @@ class V8ContextTracker final
 
   struct V8ContextState {
     V8ContextState() = delete;
-    V8ContextState(const V8ContextDescription& description,
+    V8ContextState(const mojom::V8ContextDescription& description,
                    ExecutionContextState* execution_context_state);
     V8ContextState(const V8ContextState&) = delete;
     V8ContextState& operator=(const V8ContextState&) = delete;
     virtual ~V8ContextState();
 
     // The full description of this context.
-    const V8ContextDescription description;
+    const mojom::V8ContextDescription description;
 
     // A pointer to the upstream ExecutionContextState that this V8Context is
     // associated with. Note that this can be nullptr for V8Contexts that are
@@ -138,8 +137,8 @@ class V8ContextTracker final
   void OnV8ContextCreated(
       util::PassKey<ProcessNodeImpl> key,
       ProcessNodeImpl* process_node,
-      const V8ContextDescription& description,
-      const base::Optional<IframeAttributionData>& iframe_attribution_data);
+      const mojom::V8ContextDescription& description,
+      mojom::IframeAttributionDataPtr iframe_attribution_data);
 
   // Notifies the tracker that a V8Context is now detached from its associated
   // ExecutionContext (if one was provided during OnV8ContextCreated). If the
@@ -169,7 +168,7 @@ class V8ContextTracker final
       util::PassKey<FrameNodeImpl> key,
       FrameNodeImpl* parent_frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
-      const IframeAttributionData& iframe_attribution_data);
+      mojom::IframeAttributionDataPtr iframe_attribution_data);
 
   // TODO(chrisha): Add OnRemoteIframeAttributesChanged support.
 
@@ -191,7 +190,7 @@ class V8ContextTracker final
   void OnRemoteIframeAttachedForTesting(
       FrameNodeImpl* frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
-      const IframeAttributionData& iframe_attribution_data);
+      mojom::IframeAttributionDataPtr iframe_attribution_data);
 
   void OnRemoteIframeDetachedForTesting(
       FrameNodeImpl* parent_frame_node,
@@ -231,7 +230,7 @@ class V8ContextTracker final
       mojo::ReportBadMessageCallback bad_message_callback,
       FrameNodeImpl* frame_node,
       const blink::RemoteFrameToken& remote_frame_token,
-      const IframeAttributionData& iframe_attribution_data);
+      mojom::IframeAttributionDataPtr iframe_attribution_data);
 
   // To maintain strict ordering with OnRemoteIframeAttached events, detached
   // events also detour through the UI thread to arrive here.

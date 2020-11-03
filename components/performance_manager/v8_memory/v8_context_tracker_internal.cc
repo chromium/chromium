@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/v8_memory/v8_context_tracker_internal.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
 
@@ -17,13 +19,14 @@ namespace internal {
 ExecutionContextData::ExecutionContextData(
     ProcessData* process_data,
     const blink::ExecutionContextToken& token,
-    const base::Optional<IframeAttributionData>& iframe_attribution_data)
-    : ExecutionContextState(token, iframe_attribution_data),
+    mojom::IframeAttributionDataPtr iframe_attribution_data)
+    : ExecutionContextState(token, std::move(iframe_attribution_data)),
       process_data_(process_data) {}
 
 ExecutionContextData::~ExecutionContextData() {
   DCHECK(!IsTracked());
   DCHECK(ShouldDestroy());
+  DCHECK_EQ(0u, main_nondetached_v8_context_count_);
 }
 
 bool ExecutionContextData::IsTracked() const {
@@ -57,6 +60,7 @@ void ExecutionContextData::IncrementV8ContextCount(
 bool ExecutionContextData::DecrementV8ContextCount(
     util::PassKey<V8ContextData>) {
   DCHECK_LT(0u, v8_context_count_);
+  DCHECK_LT(main_nondetached_v8_context_count_, v8_context_count_);
   --v8_context_count_;
   return ShouldDestroy();
 }
@@ -68,12 +72,20 @@ bool ExecutionContextData::MarkDestroyed(util::PassKey<ProcessData>) {
   return true;
 }
 
-bool ExecutionContextData::MarkMainWorldSeen(
+bool ExecutionContextData::MarkMainV8ContextCreated(
     util::PassKey<V8ContextTrackerDataStore>) {
-  if (main_world_seen_)
+  if (main_nondetached_v8_context_count_ >= v8_context_count_)
     return false;
-  main_world_seen_ = true;
+  if (main_nondetached_v8_context_count_ >= 1)
+    return false;
+  ++main_nondetached_v8_context_count_;
   return true;
+}
+
+void ExecutionContextData::MarkMainV8ContextDetached(
+    util::PassKey<V8ContextData>) {
+  DCHECK_LT(0u, main_nondetached_v8_context_count_);
+  --main_nondetached_v8_context_count_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +124,7 @@ bool RemoteFrameData::IsTracked() const {
 // V8ContextData implementation:
 
 V8ContextData::V8ContextData(ProcessData* process_data,
-                             const V8ContextDescription& description,
+                             const mojom::V8ContextDescription& description,
                              ExecutionContextData* execution_context_data)
     : V8ContextState(description, execution_context_data),
       process_data_(process_data) {
@@ -132,6 +144,10 @@ V8ContextData::V8ContextData(ProcessData* process_data,
 V8ContextData::~V8ContextData() {
   DCHECK(!IsTracked());
 
+  // Mark as detached if necessary so that main world counts are appropriately
+  // updated even during tear down code paths.
+  MarkDetachedImpl();
+
   // If this is the last reference keeping alive a tracked ExecutionContextData,
   // then clean it up as well. Untracked ExecutionContextDatas will go out of
   // scope on their own.
@@ -149,11 +165,13 @@ ExecutionContextData* V8ContextData::GetExecutionContextData() const {
   return static_cast<ExecutionContextData*>(execution_context_state);
 }
 
+void V8ContextData::SetWasTracked(util::PassKey<V8ContextTrackerDataStore>) {
+  DCHECK(!was_tracked_);
+  was_tracked_ = true;
+}
+
 bool V8ContextData::MarkDetached(util::PassKey<ProcessData>) {
-  if (detached)
-    return false;
-  detached = true;
-  return true;
+  return MarkDetachedImpl();
 }
 
 bool V8ContextData::IsMainV8Context() const {
@@ -171,8 +189,22 @@ bool V8ContextData::IsMainV8Context() const {
 
   // Only main frames and workers can be "main" contexts.
   auto world_type = description.world_type;
-  return world_type == V8ContextWorldType::kMain ||
-         world_type == V8ContextWorldType::kWorkerOrWorklet;
+  return world_type == mojom::V8ContextWorldType::kMain ||
+         world_type == mojom::V8ContextWorldType::kWorkerOrWorklet;
+}
+
+bool V8ContextData::MarkDetachedImpl() {
+  if (detached)
+    return false;
+  detached = true;
+  // The EC is notified of the main V8 context only when it is passed to the
+  // data store (at which point |was_tracked_| is set to true). Only do the
+  // symmetric operation if the first occurred.
+  if (IsMainV8Context() && was_tracked_) {
+    if (auto* ec_data = GetExecutionContextData())
+      ec_data->MarkMainV8ContextDetached(PassKey());
+  }
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -321,10 +353,11 @@ bool V8ContextTrackerDataStore::Pass(std::unique_ptr<V8ContextData> v8_data) {
   DCHECK(v8_data.get());
   auto* ec_data = v8_data->GetExecutionContextData();
   if (ec_data && v8_data->IsMainV8Context()) {
-    if (!ec_data->MarkMainWorldSeen(PassKey()))
+    if (!ec_data->MarkMainV8ContextCreated(PassKey()))
       return false;
   }
   v8_data->process_data()->Add(PassKey(), v8_data.get());
+  v8_data->SetWasTracked(PassKey());
   auto result = global_v8_context_datas_.insert(std::move(v8_data));
   DCHECK(result.second);
   return true;

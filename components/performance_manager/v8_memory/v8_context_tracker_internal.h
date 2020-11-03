@@ -15,13 +15,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
-#include "base/optional.h"
 #include "base/util/type_safety/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
-#include "components/performance_manager/v8_memory/v8_context_tracker_types.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -66,10 +65,9 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
 
   ExecutionContextData() = delete;
   ExecutionContextData(const ExecutionContextData&) = delete;
-  ExecutionContextData(
-      ProcessData* process_data,
-      const blink::ExecutionContextToken& token,
-      const base::Optional<IframeAttributionData>& iframe_attribution_data);
+  ExecutionContextData(ProcessData* process_data,
+                       const blink::ExecutionContextToken& token,
+                       mojom::IframeAttributionDataPtr iframe_attribution_data);
   ExecutionContextData& operator=(const ExecutionContextData&) = delete;
   ~ExecutionContextData() override;
 
@@ -77,7 +75,9 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   ProcessData* process_data() const { return process_data_; }
   RemoteFrameData* remote_frame_data() { return remote_frame_data_; }
   size_t v8_context_count() const { return v8_context_count_; }
-  bool main_world_seen() const { return main_world_seen_; }
+  size_t main_nondetached_v8_context_count() const {
+    return main_nondetached_v8_context_count_;
+  }
 
   // For consistency, all Data objects have a GetToken() function.
   const blink::ExecutionContextToken& GetToken() const { return token; }
@@ -107,12 +107,13 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   // if it was already destroyed.
   WARN_UNUSED_RESULT bool MarkDestroyed(util::PassKey<ProcessData>);
 
-  // Marks the main world as having been seen. Returns true if the state changed
-  // and false if this had already occurred. This is called when the
-  // V8ContextData is passed to the data store and can prevent it from
-  // succeeding.
-  WARN_UNUSED_RESULT bool MarkMainWorldSeen(
+  // Used for tracking the total number of non-detached "main" V8Contexts
+  // associated with this ExecutionContext. This should always be no more than
+  // 1. A new context may become the main context during a same-document
+  // navigation of a frame.
+  WARN_UNUSED_RESULT bool MarkMainV8ContextCreated(
       util::PassKey<V8ContextTrackerDataStore>);
+  void MarkMainV8ContextDetached(util::PassKey<V8ContextData>);
 
  private:
   ProcessData* const process_data_;
@@ -122,9 +123,12 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   // The count of V8ContextDatas keeping this object alive.
   size_t v8_context_count_ = 0;
 
-  // True if a main world V8Context has been seen for this EC. Can only ever
-  // toggle from false to true.
-  bool main_world_seen_ = false;
+  // The number of non-detached main worlds that are currently associated with
+  // this ExecutionContext. There can be no more than 1 of these. Once
+  // document and frame lifetime semantics have been cleaned up, there will only
+  // be a single main context per ExecutionContext over its lifetime; right now
+  // there can be multiple due to same-document navigations.
+  size_t main_nondetached_v8_context_count_ = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +182,7 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
 
   V8ContextData() = delete;
   V8ContextData(ProcessData* process_data,
-                const V8ContextDescription& description,
+                const mojom::V8ContextDescription& description,
                 ExecutionContextData* execution_context_data);
   V8ContextData(const V8ContextData&) = delete;
   V8ContextData& operator=(const V8ContextData&) = delete;
@@ -198,6 +202,9 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
   // Returns the ExecutionContextData associated with this V8ContextData.
   ExecutionContextData* GetExecutionContextData() const;
 
+  // Marks this context as having been successfully passed into the data store.
+  void SetWasTracked(util::PassKey<V8ContextTrackerDataStore>);
+
   // Marks this context as detached. Returns true if the state changed, false
   // if it was already detached.
   WARN_UNUSED_RESULT bool MarkDetached(util::PassKey<ProcessData>);
@@ -209,7 +216,10 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
   bool IsMainV8Context() const;
 
  private:
+  bool MarkDetachedImpl();
+
   ProcessData* const process_data_;
+  bool was_tracked_ = false;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

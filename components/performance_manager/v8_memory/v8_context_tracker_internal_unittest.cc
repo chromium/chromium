@@ -6,13 +6,12 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
+#include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
-#include "components/performance_manager/v8_memory/v8_context_tracker_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -45,13 +44,15 @@ class V8ContextTrackerInternalTest : public GraphTestHarness {
   MockSinglePageWithMultipleProcessesGraph mock_graph_;
 };
 
-V8ContextDescription MakeMatchingV8ContextDescription(
+mojom::V8ContextDescription MakeMatchingV8ContextDescription(
     ExecutionContextData* ec_data,
     bool main_world = true) {
   DCHECK(ec_data);
-  V8ContextDescription v8_desc;
-  if (!main_world) {
-    v8_desc.world_type = V8ContextWorldType::kIsolated;
+  mojom::V8ContextDescription v8_desc;
+  if (main_world) {
+    v8_desc.world_type = mojom::V8ContextWorldType::kMain;
+  } else {
+    v8_desc.world_type = mojom::V8ContextWorldType::kExtension;
     v8_desc.world_name = kExtensionId;
   }
   v8_desc.execution_context_token = ec_data->GetToken();
@@ -68,7 +69,7 @@ TEST_F(V8ContextTrackerInternalDeathTest,
       static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   EXPECT_TRUE(ec_data->ShouldDestroy());
   EXPECT_DCHECK_DEATH(data_store()->Pass(std::move(ec_data)));
 }
@@ -79,19 +80,19 @@ TEST_F(V8ContextTrackerInternalDeathTest,
       static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   EXPECT_TRUE(ec_data->ShouldDestroy());
-  EXPECT_FALSE(ec_data->main_world_seen());
+  EXPECT_EQ(0u, ec_data->main_nondetached_v8_context_count());
 
-  V8ContextDescription v8_desc;
-  v8_desc.world_type = V8ContextWorldType::kMain;
+  mojom::V8ContextDescription v8_desc;
+  v8_desc.world_type = mojom::V8ContextWorldType::kMain;
   v8_desc.execution_context_token = ec_data->GetToken();
 
   std::unique_ptr<V8ContextData> v8_data =
       std::make_unique<V8ContextData>(process_data, v8_desc, ec_data.get());
   EXPECT_TRUE(v8_data->IsMainV8Context());
   EXPECT_TRUE(data_store()->Pass(std::move(v8_data)));
-  EXPECT_TRUE(ec_data->main_world_seen());
+  EXPECT_EQ(1u, ec_data->main_nondetached_v8_context_count());
 
   v8_desc.token = blink::V8ContextToken();
   v8_data =
@@ -107,7 +108,7 @@ TEST_F(V8ContextTrackerInternalDeathTest, SameProcessRemoteFrameDataExplodes) {
       static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   std::unique_ptr<RemoteFrameData> rf_data;
   EXPECT_DCHECK_DEATH(
       rf_data = std::make_unique<RemoteFrameData>(
@@ -121,7 +122,7 @@ TEST_F(V8ContextTrackerInternalDeathTest, CrossProcessV8ContextDataExplodes) {
       static_cast<ProcessNodeImpl*>(mock_graph_.other_process.get()));
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   std::unique_ptr<V8ContextData> v8_data;
   EXPECT_DCHECK_DEATH(v8_data = std::make_unique<V8ContextData>(
                           other_process_data,
@@ -136,7 +137,7 @@ TEST_F(V8ContextTrackerInternalTest, ExecutionContextDataShouldDestroy) {
   // With no references "ShouldDestroy" should return true.
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   EXPECT_FALSE(ec_data->remote_frame_data());
   EXPECT_EQ(0u, ec_data->v8_context_count());
   EXPECT_TRUE(ec_data->ShouldDestroy());
@@ -193,7 +194,7 @@ TEST_F(V8ContextTrackerInternalTest,
   // Create an ExecutionContextData.
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   auto* raw_ec_data = ec_data.get();
   EXPECT_FALSE(ec_data->IsTracked());
 
@@ -236,7 +237,7 @@ TEST_F(V8ContextTrackerInternalTest,
   // Create an ExecutionContextData.
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   auto* raw_ec_data = ec_data.get();
   EXPECT_FALSE(ec_data->IsTracked());
 
@@ -276,7 +277,7 @@ TEST_F(V8ContextTrackerInternalTest, ContextCounts) {
 
   std::unique_ptr<ExecutionContextData> ec_data =
       std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+          process_data, mock_graph_.frame->frame_token(), nullptr);
   auto* raw_ec_data = ec_data.get();
 
   std::unique_ptr<V8ContextData> v8_data1 = std::make_unique<V8ContextData>(
@@ -365,7 +366,7 @@ class V8ContextTrackerInternalTearDownOrderTest
     // Create an ExecutionContextData.
     std::unique_ptr<ExecutionContextData> ec_data =
         std::make_unique<ExecutionContextData>(
-            process_data_, mock_graph_.frame->frame_token(), base::nullopt);
+            process_data_, mock_graph_.frame->frame_token(), nullptr);
     ec_data_ = ec_data.get();
 
     // Create a RemoteFrameData.

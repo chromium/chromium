@@ -20,6 +20,7 @@
 #include "components/performance_manager/graph/properties.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -58,6 +59,13 @@ class ProcessNodeImpl
 
   // mojom::ProcessCoordinationUnit implementation:
   void SetMainThreadTaskLoadIsLow(bool main_thread_task_load_is_low) override;
+  void OnV8ContextCreated(
+      mojom::V8ContextDescriptionPtr description,
+      mojom::IframeAttributionDataPtr iframe_attribution_data) override;
+  void OnV8ContextDetached(
+      const blink::V8ContextToken& v8_context_token) override;
+  void OnV8ContextDestroyed(
+      const blink::V8ContextToken& v8_context_token) override;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcess(base::Process process, base::Time launch_time);

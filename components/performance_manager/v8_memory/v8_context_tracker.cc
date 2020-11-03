@@ -50,8 +50,9 @@ void FakeReportBadMessageForTesting(const std::string& error) {
 
 V8ContextTracker::ExecutionContextState::ExecutionContextState(
     const blink::ExecutionContextToken& token,
-    const base::Optional<IframeAttributionData>& iframe_attribution_data)
-    : token(token), iframe_attribution_data(iframe_attribution_data) {}
+    mojom::IframeAttributionDataPtr iframe_attribution_data)
+    : token(token),
+      iframe_attribution_data(std::move(iframe_attribution_data)) {}
 
 V8ContextTracker::ExecutionContextState::~ExecutionContextState() = default;
 
@@ -59,7 +60,7 @@ V8ContextTracker::ExecutionContextState::~ExecutionContextState() = default;
 // V8ContextTracker::V8ContextState implementation:
 
 V8ContextTracker::V8ContextState::V8ContextState(
-    const V8ContextDescription& description,
+    const mojom::V8ContextDescription& description,
     ExecutionContextState* execution_context_state)
     : description(description),
       execution_context_state(execution_context_state) {}
@@ -88,8 +89,8 @@ const V8ContextTracker::V8ContextState* V8ContextTracker::GetV8ContextState(
 void V8ContextTracker::OnV8ContextCreated(
     util::PassKey<ProcessNodeImpl> key,
     ProcessNodeImpl* process_node,
-    const V8ContextDescription& description,
-    const base::Optional<IframeAttributionData>& iframe_attribution_data) {
+    const mojom::V8ContextDescription& description,
+    mojom::IframeAttributionDataPtr iframe_attribution_data) {
   DCHECK_ON_GRAPH_SEQUENCE(process_node->graph());
 
   // Validate the |description|.
@@ -136,7 +137,7 @@ void V8ContextTracker::OnV8ContextCreated(
     if (!raw_ec_data) {
       ec_data = std::make_unique<ExecutionContextData>(
           process_data, *description.execution_context_token,
-          iframe_attribution_data);
+          std::move(iframe_attribution_data));
       raw_ec_data = ec_data.get();
     }
   }
@@ -177,13 +178,6 @@ void V8ContextTracker::OnV8ContextDetached(
     mojo::ReportBadMessage("repeated OnV8ContextDetached");
     return;
   }
-
-  // Mark the context as detached. If this is the main context, then mark the
-  // parent ExecutionContext as destroyed as well.
-  if (v8_data->IsMainV8Context()) {
-    auto* ec_data = v8_data->GetExecutionContextData();
-    data_store_->MarkDestroyed(ec_data);
-  }
 }
 
 void V8ContextTracker::OnV8ContextDestroyed(
@@ -205,7 +199,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     util::PassKey<FrameNodeImpl> key,
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
-    const IframeAttributionData& iframe_attribution_data) {
+    mojom::IframeAttributionDataPtr iframe_attribution_data) {
   DCHECK_ON_GRAPH_SEQUENCE(parent_frame_node->graph());
 
   // RemoteFrameTokens are issued by the browser to a renderer, so if we receive
@@ -222,12 +216,12 @@ void V8ContextTracker::OnRemoteIframeAttached(
   struct Data {
     mojo::ReportBadMessageCallback bad_message_callback;
     blink::RemoteFrameToken remote_frame_token;
-    IframeAttributionData iframe_attribution_data;
+    mojom::IframeAttributionDataPtr iframe_attribution_data;
     base::WeakPtr<FrameNode> frame_node;
   };
-  std::unique_ptr<Data> data(new Data{mojo::GetBadMessageCallback(),
-                                      remote_frame_token,
-                                      iframe_attribution_data, nullptr});
+  std::unique_ptr<Data> data(
+      new Data{mojo::GetBadMessageCallback(), remote_frame_token,
+               std::move(iframe_attribution_data), nullptr});
 
   auto on_pm_seq = base::BindOnce([](std::unique_ptr<Data> data, Graph* graph) {
     DCHECK(data);
@@ -238,7 +232,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
       if (auto* tracker = V8ContextTracker::GetFromGraph(graph)) {
         tracker->OnRemoteIframeAttachedImpl(
             std::move(data->bad_message_callback), frame_node,
-            data->remote_frame_token, data->iframe_attribution_data);
+            data->remote_frame_token, std::move(data->iframe_attribution_data));
       }
     }
   });
@@ -313,10 +307,10 @@ void V8ContextTracker::OnRemoteIframeDetached(
 void V8ContextTracker::OnRemoteIframeAttachedForTesting(
     FrameNodeImpl* frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
-    const IframeAttributionData& iframe_attribution_data) {
+    mojom::IframeAttributionDataPtr iframe_attribution_data) {
   OnRemoteIframeAttachedImpl(base::BindOnce(&FakeReportBadMessageForTesting),
                              frame_node, remote_frame_token,
-                             iframe_attribution_data);
+                             std::move(iframe_attribution_data));
 }
 
 void V8ContextTracker::OnRemoteIframeDetachedForTesting(
@@ -456,7 +450,7 @@ void V8ContextTracker::OnRemoteIframeAttachedImpl(
     mojo::ReportBadMessageCallback bad_message_callback,
     FrameNodeImpl* frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
-    const IframeAttributionData& iframe_attribution_data) {
+    mojom::IframeAttributionDataPtr iframe_attribution_data) {
   DCHECK(bad_message_callback);
   DCHECK_ON_GRAPH_SEQUENCE(frame_node->graph());
 
@@ -472,19 +466,19 @@ void V8ContextTracker::OnRemoteIframeAttachedImpl(
   blink::ExecutionContextToken ec_token(frame_node->frame_token());
   auto* raw_ec_data = data_store_->Get(ec_token);
   if (!raw_ec_data) {
-    ec_data = std::make_unique<ExecutionContextData>(process_data, ec_token,
-                                                     base::nullopt);
+    ec_data =
+        std::make_unique<ExecutionContextData>(process_data, ec_token, nullptr);
     raw_ec_data = ec_data.get();
   }
 
   if (raw_ec_data->remote_frame_data() ||
-      raw_ec_data->iframe_attribution_data != base::nullopt) {
+      raw_ec_data->iframe_attribution_data) {
     std::move(bad_message_callback).Run("unexpected OnRemoteIframeAttached");
     return;
   }
 
   // Attach the iframe data to the ExecutionContextData.
-  raw_ec_data->iframe_attribution_data = iframe_attribution_data;
+  raw_ec_data->iframe_attribution_data = std::move(iframe_attribution_data);
 
   // Create the RemoteFrameData reference to this context.
   auto* parent_process_data =

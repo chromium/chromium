@@ -20,9 +20,11 @@ namespace execution_context {
 class ExecutionContext;
 }  // namespace execution_context
 
-namespace v8_memory {
+namespace mojom {
+class V8ContextDescription;
+}  // namespace mojom
 
-struct V8ContextDescription;
+namespace v8_memory {
 
 // Helper function to convert a WorkerToken to an ExecutionContext token.
 // TODO(crbug.com/1126285): There should be automatic type conversion for this
@@ -72,14 +74,14 @@ enum class V8ContextDescriptionStatus {
 
 // Validates the given V8ContextDescription.
 V8ContextDescriptionStatus ValidateV8ContextDescription(
-    const V8ContextDescription& description) WARN_UNUSED_RESULT;
+    const mojom::V8ContextDescription& description) WARN_UNUSED_RESULT;
 
 // Determines whether or not IframeAttributionData is expected to accompany the
 // provided V8ContextDescription. This is not always able to be determined, in
 // which case base::nullopt will be returned. It is assumed that the
 // |description| has previously been validated.
 base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
-    const V8ContextDescription& description,
+    const mojom::V8ContextDescription& description,
     Graph* graph) WARN_UNUSED_RESULT;
 
 // Small helper class for maintaining a count of objects that are optionally

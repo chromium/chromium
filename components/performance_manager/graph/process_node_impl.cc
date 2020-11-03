@@ -10,6 +10,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
 namespace performance_manager {
 
@@ -40,6 +41,27 @@ void ProcessNodeImpl::SetMainThreadTaskLoadIsLow(
     bool main_thread_task_load_is_low) {
   main_thread_task_load_is_low_.SetAndMaybeNotify(this,
                                                   main_thread_task_load_is_low);
+}
+
+void ProcessNodeImpl::OnV8ContextCreated(
+    mojom::V8ContextDescriptionPtr description,
+    mojom::IframeAttributionDataPtr iframe_attribution_data) {
+  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph())) {
+    tracker->OnV8ContextCreated(PassKey(), this, *description,
+                                std::move(iframe_attribution_data));
+  }
+}
+
+void ProcessNodeImpl::OnV8ContextDetached(
+    const blink::V8ContextToken& v8_context_token) {
+  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph()))
+    tracker->OnV8ContextDetached(PassKey(), this, v8_context_token);
+}
+
+void ProcessNodeImpl::OnV8ContextDestroyed(
+    const blink::V8ContextToken& v8_context_token) {
+  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph()))
+    tracker->OnV8ContextDestroyed(PassKey(), this, v8_context_token);
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {

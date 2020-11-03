@@ -8,6 +8,8 @@ import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "components/performance_manager/public/mojom/lifecycle.mojom";
 import "components/performance_manager/public/mojom/web_memory.mojom";
+import "components/performance_manager/public/mojom/v8_contexts.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Any new type here needs to be mirrored between coordination_unit_types.h and
@@ -79,4 +81,36 @@ interface DocumentCoordinationUnit {
 interface ProcessCoordinationUnit {
   // Property signals.
   SetMainThreadTaskLoadIsLow(bool main_thread_task_load_is_low);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // V8 context tracking.
+
+  // Notifies the browser of a V8Context being created in a renderer
+  // process. If the context is associated with an ExecutionContext (EC) then
+  // |description.execution_context_token| will be provided. If the EC is a
+  // frame, and the parent of that frame is also in the same process, then
+  // |iframe_attribution_data| will be provided, otherwise these will be empty.
+  // See the V8ContextWorldType enum for a description of the relationship
+  // between world types, world names and execution contexts (in
+  // v8_contexts.mojom).
+  OnV8ContextCreated(V8ContextDescription description,
+                     IframeAttributionData? iframe_attribution_data);
+
+  // Notifies the browser that a V8Context is now detached from its associated
+  // ExecutionContext (if one was provided during OnV8ContextCreated). If the
+  // context stays detached for a long time this is indicative of a Javascript
+  // leak, with the context being kept alive by a stray reference from another
+  // context. All ExecutionContext-associated V8Contexts will have this method
+  // called before they are destroyed, and it will not be called for other
+  // V8Contexts (they are never considered detached). It is possible that this
+  // is never called for contexts in a renderer processes that crashes or is
+  // otherwise terminated.
+  OnV8ContextDetached(blink.mojom.V8ContextToken v8_context_token);
+
+  // Notifies the browser that a V8Context has been garbage collected. This will
+  // only be called after OnV8ContextDetached if the OnV8ContextCreated had a
+  // non-empty |description.execution_context_token|. It is possible that this
+  // is never called for contexts in a renderer processes that crashes or is
+  // otherwise terminated.
+  OnV8ContextDestroyed(blink.mojom.V8ContextToken v8_context_token);
 };

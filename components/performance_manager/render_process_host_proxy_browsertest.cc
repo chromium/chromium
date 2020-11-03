@@ -7,6 +7,7 @@
 #include "base/bind_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind_test_util.h"
 #include "components/performance_manager/graph/process_node_impl.h"
