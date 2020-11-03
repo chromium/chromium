@@ -98,8 +98,7 @@ class BASE_EXPORT EtwTraceController {
                            const wchar_t* logfile_path,
                            bool realtime = false);
 
-  // Starts a realtime session with some default properties.  |buffer_size| is
-  // in KB.  A default value for |buffer_size| is used if 0 is passed in.
+  // Starts a realtime session with some default properties.
   HRESULT StartRealtimeSession(const wchar_t* session_name, size_t buffer_size);
 
   // Enables "provider" at "level" for this session.
