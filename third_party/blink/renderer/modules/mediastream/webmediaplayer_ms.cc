@@ -1237,8 +1237,7 @@ void WebMediaPlayerMS::ActivateSurfaceLayerForVideo() {
   // TODO(872056): the surface should be activated but for some reason, it
   // does not. It is possible that this will no longer be needed after 872056
   // is fixed.
-  if (client_->DisplayType() ==
-      WebMediaPlayer::DisplayType::kPictureInPicture) {
+  if (client_->GetDisplayType() == DisplayType::kPictureInPicture) {
     OnSurfaceIdUpdated(bridge_->GetSurfaceId());
   }
 }
@@ -1294,8 +1293,7 @@ void WebMediaPlayerMS::OnRotationChanged(media::VideoRotation video_rotation) {
 bool WebMediaPlayerMS::IsInPictureInPicture() const {
   DCHECK(client_);
   return (!client_->IsInAutoPIP() &&
-          client_->DisplayType() ==
-              WebMediaPlayer::DisplayType::kPictureInPicture);
+          client_->GetDisplayType() == DisplayType::kPictureInPicture);
 }
 
 void WebMediaPlayerMS::RepaintInternal() {
@@ -1350,17 +1348,15 @@ void WebMediaPlayerMS::SetMediaStreamRendererFactoryForTesting(
   renderer_factory_ = std::move(renderer_factory);
 }
 
-void WebMediaPlayerMS::OnDisplayTypeChanged(
-    WebMediaPlayer::DisplayType display_type) {
+void WebMediaPlayerMS::OnDisplayTypeChanged(DisplayType display_type) {
   if (!bridge_)
     return;
 
   PostCrossThreadTask(
       *compositor_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &WebMediaPlayerMSCompositor::SetForceSubmit,
-          CrossThreadUnretained(compositor_.get()),
-          display_type == WebMediaPlayer::DisplayType::kPictureInPicture));
+      CrossThreadBindOnce(&WebMediaPlayerMSCompositor::SetForceSubmit,
+                          CrossThreadUnretained(compositor_.get()),
+                          display_type == DisplayType::kPictureInPicture));
 }
 
 void WebMediaPlayerMS::OnNewFramePresentedCallback() {

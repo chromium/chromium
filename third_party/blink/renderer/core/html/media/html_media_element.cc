@@ -4317,9 +4317,8 @@ bool HTMLMediaElement::IsAudioElement() {
   return IsHTMLAudioElement();
 }
 
-WebMediaPlayer::DisplayType HTMLMediaElement::DisplayType() const {
-  return IsFullscreen() ? WebMediaPlayer::DisplayType::kFullscreen
-                        : WebMediaPlayer::DisplayType::kInline;
+DisplayType HTMLMediaElement::GetDisplayType() const {
+  return IsFullscreen() ? DisplayType::kFullscreen : DisplayType::kInline;
 }
 
 gfx::ColorSpace HTMLMediaElement::TargetColorSpace() {

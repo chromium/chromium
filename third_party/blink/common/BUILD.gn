@@ -122,6 +122,8 @@ source_set("common") {
     "manifest/manifest.cc",
     "manifest/manifest_icon_selector.cc",
     "manifest/manifest_util.cc",
+    "media/watch_time_component.cc",
+    "media/watch_time_reporter.cc",
     "mediastream/media_devices.cc",
     "mediastream/media_devices_mojom_traits.cc",
     "mediastream/media_stream_controls.cc",
@@ -177,6 +179,7 @@ source_set("common") {
     ":make_generated_document_policy_features",
     ":make_generated_feature_policy_features",
     "//third_party/blink/common/privacy_budget:privacy_budget",
+    "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",
   ]
 
@@ -259,6 +262,7 @@ source_set("common_unittests_sources") {
     "loader/throttling_url_loader_unittest.cc",
     "manifest/manifest_icon_selector_unittest.cc",
     "manifest/manifest_util_unittest.cc",
+    "media/watch_time_component_unittest.cc",
     "mediastream/media_devices_unittest.cc",
     "messaging/message_port_descriptor_unittest.cc",
     "mime_util/mime_util_unittest.cc",

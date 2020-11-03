@@ -31,6 +31,7 @@
 
 #include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -441,7 +442,7 @@ class CORE_EXPORT HTMLMediaElement
   bool WasAlwaysMuted() final;
   bool HasNativeControls() final;
   bool IsAudioElement() final;
-  WebMediaPlayer::DisplayType DisplayType() const override;
+  DisplayType GetDisplayType() const override;
   WebRemotePlaybackClient* RemotePlaybackClient() final {
     return remote_playback_client_;
   }

@@ -49,6 +49,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
@@ -62,6 +63,7 @@ class WebAudioSourceProviderImpl;
 class WebLocalFrame;
 class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
+class WatchTimeReporter;
 }  // namespace blink
 
 namespace base {
@@ -87,7 +89,6 @@ class MediaLog;
 class MemoryDumpProviderProxy;
 class UrlIndex;
 class VideoFrameCompositor;
-class WatchTimeReporter;
 
 // The canonical implementation of blink::WebMediaPlayer that's backed by
 // Pipeline. Handles normal resource loading, Media Source, and
@@ -239,7 +240,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void SetIsEffectivelyFullscreen(
       blink::WebFullscreenVideoStatus fullscreen_video_status) override;
   void OnHasNativeControlsChanged(bool) override;
-  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType display_type) override;
+  void OnDisplayTypeChanged(blink::DisplayType display_type) override;
 
   // blink::WebMediaPlayerDelegate::Observer implementation.
   void OnFrameHidden() override;
@@ -896,7 +897,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   base::OneShotTimer background_pause_timer_;
 
   // Monitors the watch time of the played content.
-  std::unique_ptr<WatchTimeReporter> watch_time_reporter_;
+  std::unique_ptr<blink::WatchTimeReporter> watch_time_reporter_;
   std::string audio_decoder_name_;
   std::string video_decoder_name_;
 

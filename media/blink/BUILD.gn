@@ -51,10 +51,6 @@ component("blink") {
     "video_decode_stats_reporter.h",
     "video_frame_compositor.cc",
     "video_frame_compositor.h",
-    "watch_time_component.cc",
-    "watch_time_component.h",
-    "watch_time_reporter.cc",
-    "watch_time_reporter.h",
     "webcontentdecryptionmodule_impl.cc",
     "webcontentdecryptionmodule_impl.h",
     "webcontentdecryptionmoduleaccess_impl.cc",
@@ -161,7 +157,6 @@ test("media_blink_unittests") {
     "url_index_unittest.cc",
     "video_decode_stats_reporter_unittest.cc",
     "video_frame_compositor_unittest.cc",
-    "watch_time_component_unittest.cc",
     "watch_time_reporter_unittest.cc",
     "webmediaplayer_impl_unittest.cc",
   ]

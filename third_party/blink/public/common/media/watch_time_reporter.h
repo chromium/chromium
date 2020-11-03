@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BLINK_WATCH_TIME_REPORTER_H_
-#define MEDIA_BLINK_WATCH_TIME_REPORTER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_REPORTER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_REPORTER_H_
 
 #include <vector>
 
@@ -16,16 +16,20 @@
 #include "media/base/media_log.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
-#include "media/blink/media_blink_export.h"
-#include "media/blink/watch_time_component.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/media/display_type.h"
+#include "third_party/blink/public/common/media/watch_time_component.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
 namespace media {
+class WatchTimeReporterTest;
+}
+
+namespace blink {
 
 // Class for monitoring and reporting watch time in response to various state
 // changes during the playback of media. We record metrics for audio only
@@ -56,11 +60,11 @@ namespace media {
 //
 // Each seek event will result in a new watch time metric being started and the
 // old metric finalized as accurately as possible.
-class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
+class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerObserver {
  public:
-  using DisplayType = blink::WebMediaPlayer::DisplayType;
   using GetMediaTimeCB = base::RepeatingCallback<base::TimeDelta(void)>;
-  using GetPipelineStatsCB = base::RepeatingCallback<PipelineStatistics(void)>;
+  using GetPipelineStatsCB =
+      base::RepeatingCallback<media::PipelineStatistics(void)>;
 
   // Constructor for the reporter; all requested metadata should be fully known
   // before attempting construction as incorrect values will result in the wrong
@@ -81,11 +85,11 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   //
   // TODO(dalecurtis): Should we only report when rate == 1.0? Should we scale
   // the elapsed media time instead?
-  WatchTimeReporter(mojom::PlaybackPropertiesPtr properties,
+  WatchTimeReporter(media::mojom::PlaybackPropertiesPtr properties,
                     const gfx::Size& natural_size,
                     GetMediaTimeCB get_media_time_cb,
                     GetPipelineStatsCB get_pipeline_stats_cb,
-                    mojom::MediaMetricsProvider* provider,
+                    media::mojom::MediaMetricsProvider* provider,
                     scoped_refptr<base::SequencedTaskRunner> task_runner,
                     const base::TickClock* tick_clock = nullptr);
   ~WatchTimeReporter() override;
@@ -118,7 +122,7 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   void OnHidden();
 
   // Called when a playback ends in error.
-  void OnError(PipelineStatus status);
+  void OnError(media::PipelineStatus status);
 
   // Indicates a rebuffering event occurred during playback. When watch time is
   // finalized the total watch time for a given category will be divided by the
@@ -144,7 +148,7 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   // Note: Both UMA and UMK watch time will be interrupted if the natural size
   // transitions above/below kMinimumVideoSize.
   void UpdateSecondaryProperties(
-      mojom::SecondaryPlaybackPropertiesPtr secondary_properties);
+      media::mojom::SecondaryPlaybackPropertiesPtr secondary_properties);
 
   // Notifies the autoplay status of the playback. Must not be called multiple
   // times with different values.
@@ -155,16 +159,16 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   void OnDurationChanged(base::TimeDelta duration);
 
  private:
-  friend class WatchTimeReporterTest;
+  friend class media::WatchTimeReporterTest;
 
   // Internal constructor for marking background status.
-  WatchTimeReporter(mojom::PlaybackPropertiesPtr properties,
+  WatchTimeReporter(media::mojom::PlaybackPropertiesPtr properties,
                     bool is_background,
                     bool is_muted,
                     const gfx::Size& natural_size,
                     GetMediaTimeCB get_media_time_cb,
                     GetPipelineStatsCB get_pipeline_stats_cb,
-                    mojom::MediaMetricsProvider* provider,
+                    media::mojom::MediaMetricsProvider* provider,
                     scoped_refptr<base::SequencedTaskRunner> task_runner,
                     const base::TickClock* tick_clock);
 
@@ -175,7 +179,7 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   // and not in terms of elapsed real time.
   void OnPowerStateChange(bool on_battery_power) override;
   void OnNativeControlsChanged(bool has_native_controls);
-  void OnDisplayTypeChanged(blink::WebMediaPlayer::DisplayType display_type);
+  void OnDisplayTypeChanged(DisplayType display_type);
 
   bool ShouldReportWatchTime() const;
   bool ShouldReportingTimerRun() const;
@@ -195,19 +199,19 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   // and a conversion method to get the correct WatchTimeKey.
   std::unique_ptr<WatchTimeComponent<bool>> CreateBaseComponent();
   std::unique_ptr<WatchTimeComponent<bool>> CreatePowerComponent();
-  WatchTimeKey GetPowerKey(bool is_on_battery_power);
+  media::WatchTimeKey GetPowerKey(bool is_on_battery_power);
   std::unique_ptr<WatchTimeComponent<bool>> CreateControlsComponent();
-  WatchTimeKey GetControlsKey(bool has_native_controls);
+  media::WatchTimeKey GetControlsKey(bool has_native_controls);
   std::unique_ptr<WatchTimeComponent<DisplayType>> CreateDisplayTypeComponent();
-  WatchTimeKey GetDisplayTypeKey(DisplayType display_type);
+  media::WatchTimeKey GetDisplayTypeKey(DisplayType display_type);
 
   // Initialized during construction.
-  const mojom::PlaybackPropertiesPtr properties_;
+  const media::mojom::PlaybackPropertiesPtr properties_;
   const bool is_background_;
   const bool is_muted_;
   const GetMediaTimeCB get_media_time_cb_;
   const GetPipelineStatsCB get_pipeline_stats_cb_;
-  mojo::Remote<mojom::WatchTimeRecorder> recorder_;
+  mojo::Remote<media::mojom::WatchTimeRecorder> recorder_;
 
   // The amount of time between each UpdateWatchTime(); this is the frequency by
   // which the watch times are updated. In the event of a process crash or kill
@@ -233,13 +237,13 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   base::TimeDelta total_underflow_duration_;
   struct UnderflowEvent {
     bool reported = false;
-    base::TimeDelta timestamp = kNoTimestamp;
-    base::TimeDelta duration = kNoTimestamp;
+    base::TimeDelta timestamp = media::kNoTimestamp;
+    base::TimeDelta duration = media::kNoTimestamp;
   };
   std::vector<UnderflowEvent> pending_underflow_events_;
 
-  PipelineStatistics initial_stats_;
-  PipelineStatistics last_stats_;
+  media::PipelineStatistics initial_stats_;
+  media::PipelineStatistics last_stats_;
 
   // The various components making up WatchTime. If the |base_component_| is
   // finalized, all reporting will be stopped and finalized using its ending
@@ -264,6 +268,6 @@ class MEDIA_BLINK_EXPORT WatchTimeReporter : base::PowerObserver {
   DISALLOW_COPY_AND_ASSIGN(WatchTimeReporter);
 };
 
-}  // namespace media
+}  // namespace blink
 
-#endif  // MEDIA_BLINK_WATCH_TIME_REPORTER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_REPORTER_H_

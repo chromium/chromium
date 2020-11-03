@@ -148,7 +148,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD0(GetSelectedVideoTrackId, blink::WebMediaPlayer::TrackId());
   MOCK_METHOD0(HasNativeControls, bool());
   MOCK_METHOD0(IsAudioElement, bool());
-  MOCK_CONST_METHOD0(DisplayType, blink::WebMediaPlayer::DisplayType());
+  MOCK_CONST_METHOD0(GetDisplayType, blink::DisplayType());
   MOCK_CONST_METHOD0(IsInAutoPIP, bool());
   MOCK_METHOD1(MediaRemotingStarted, void(const blink::WebString&));
   MOCK_METHOD1(MediaRemotingStopped, void(int));
@@ -2035,9 +2035,8 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   metadata.has_video = true;
   OnMetadata(metadata);
 
-  EXPECT_CALL(client_, DisplayType())
-      .WillRepeatedly(
-          Return(blink::WebMediaPlayer::DisplayType::kPictureInPicture));
+  EXPECT_CALL(client_, GetDisplayType())
+      .WillRepeatedly(Return(blink::DisplayType::kPictureInPicture));
   EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(1);
 
   wmpi_->OnSurfaceIdUpdated(surface_id_);
@@ -2235,9 +2234,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     SetDuration(base::TimeDelta::FromSeconds(GetDurationSec()));
 
     if (IsPictureInPictureOn()) {
-      EXPECT_CALL(client_, DisplayType())
-          .WillRepeatedly(
-              Return(blink::WebMediaPlayer::DisplayType::kPictureInPicture));
+      EXPECT_CALL(client_, GetDisplayType())
+          .WillRepeatedly(Return(blink::DisplayType::kPictureInPicture));
 
       wmpi_->OnSurfaceIdUpdated(surface_id_);
     }

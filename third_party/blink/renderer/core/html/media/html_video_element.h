@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_VIDEO_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_VIDEO_ELEMENT_H_
 
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
@@ -185,7 +186,7 @@ class CORE_EXPORT HTMLVideoElement final
   void MediaRemotingStarted(const WebString& remote_device_friendly_name) final;
   bool SupportsPictureInPicture() const final;
   void MediaRemotingStopped(int error_code) final;
-  WebMediaPlayer::DisplayType DisplayType() const final;
+  DisplayType GetDisplayType() const final;
   bool IsInAutoPIP() const final;
   void RequestEnterPictureInPicture() final;
   void RequestExitPictureInPicture() final;

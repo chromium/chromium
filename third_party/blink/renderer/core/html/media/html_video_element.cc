@@ -314,7 +314,7 @@ void HTMLVideoElement::OnBecamePersistentVideo(bool value) {
   }
 
   if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->OnDisplayTypeChanged(DisplayType());
+    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
 }
 
 bool HTMLVideoElement::IsPersistent() const {
@@ -491,8 +491,7 @@ bool HTMLVideoElement::UsesOverlayFullscreenVideo() const {
 void HTMLVideoElement::DidEnterFullscreen() {
   UpdateControlsVisibility();
 
-  if (DisplayType() == WebMediaPlayer::DisplayType::kPictureInPicture &&
-      !IsInAutoPIP()) {
+  if (GetDisplayType() == DisplayType::kPictureInPicture && !IsInAutoPIP()) {
     PictureInPictureController::From(GetDocument())
         .ExitPictureInPicture(this, nullptr);
   }
@@ -501,7 +500,7 @@ void HTMLVideoElement::DidEnterFullscreen() {
     // FIXME: There is no embedder-side handling in web test mode.
     if (!WebTestSupport::IsRunningWebTest())
       GetWebMediaPlayer()->EnteredFullscreen();
-    GetWebMediaPlayer()->OnDisplayTypeChanged(DisplayType());
+    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
   }
 
   // Cache this in case the player is destroyed before leaving fullscreen.
@@ -519,7 +518,7 @@ void HTMLVideoElement::DidExitFullscreen() {
 
   if (GetWebMediaPlayer()) {
     GetWebMediaPlayer()->ExitedFullscreen();
-    GetWebMediaPlayer()->OnDisplayTypeChanged(DisplayType());
+    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
   }
 
   if (in_overlay_fullscreen_video_) {
@@ -656,16 +655,16 @@ bool HTMLVideoElement::SupportsPictureInPicture() const {
          PictureInPictureController::Status::kEnabled;
 }
 
-WebMediaPlayer::DisplayType HTMLVideoElement::DisplayType() const {
+DisplayType HTMLVideoElement::GetDisplayType() const {
   if (is_auto_picture_in_picture_ ||
       PictureInPictureController::IsElementInPictureInPicture(this)) {
-    return WebMediaPlayer::DisplayType::kPictureInPicture;
+    return DisplayType::kPictureInPicture;
   }
 
   if (is_effectively_fullscreen_)
-    return WebMediaPlayer::DisplayType::kFullscreen;
+    return DisplayType::kFullscreen;
 
-  return HTMLMediaElement::DisplayType();
+  return HTMLMediaElement::GetDisplayType();
 }
 
 bool HTMLVideoElement::IsInAutoPIP() const {
@@ -684,8 +683,7 @@ void HTMLVideoElement::RequestExitPictureInPicture() {
 }
 
 void HTMLVideoElement::OnPictureInPictureStateChange() {
-  if (DisplayType() != WebMediaPlayer::DisplayType::kPictureInPicture ||
-      IsInAutoPIP()) {
+  if (GetDisplayType() != DisplayType::kPictureInPicture || IsInAutoPIP()) {
     return;
   }
 
@@ -708,7 +706,7 @@ void HTMLVideoElement::OnEnteredPictureInPicture() {
     PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
 
   DCHECK(GetWebMediaPlayer());
-  GetWebMediaPlayer()->OnDisplayTypeChanged(DisplayType());
+  GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
 }
 
 void HTMLVideoElement::OnExitedPictureInPicture() {
@@ -719,7 +717,7 @@ void HTMLVideoElement::OnExitedPictureInPicture() {
     PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
 
   if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->OnDisplayTypeChanged(DisplayType());
+    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
 }
 
 void HTMLVideoElement::SetIsEffectivelyFullscreen(
@@ -728,7 +726,7 @@ void HTMLVideoElement::SetIsEffectivelyFullscreen(
       status != blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen;
   if (GetWebMediaPlayer()) {
     GetWebMediaPlayer()->SetIsEffectivelyFullscreen(status);
-    GetWebMediaPlayer()->OnDisplayTypeChanged(DisplayType());
+    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
   }
 }
 

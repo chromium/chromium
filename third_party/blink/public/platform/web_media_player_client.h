@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_CLIENT_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "ui/gfx/color_space.h"
@@ -132,7 +133,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   virtual bool IsAudioElement() = 0;
 
   // Returns the current display type of the media element.
-  virtual WebMediaPlayer::DisplayType DisplayType() const = 0;
+  virtual DisplayType GetDisplayType() const = 0;
 
   // Returns the remote playback client associated with the media element, if
   // any.

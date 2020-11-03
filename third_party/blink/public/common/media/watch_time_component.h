@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BLINK_WATCH_TIME_COMPONENT_H_
-#define MEDIA_BLINK_WATCH_TIME_COMPONENT_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_COMPONENT_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_COMPONENT_H_
 
 #include <vector>
 
@@ -12,10 +12,9 @@
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
-#include "media/blink/media_blink_export.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
 
-namespace media {
+namespace blink {
 
 // Every input used to calculate watch time functions the same way, so we use a
 // common WatchTimeComponent class to avoid lots of copy/paste and enforce rigor
@@ -26,12 +25,14 @@ namespace media {
 // time, flip the actual value, and then start recording from that previous
 // finalize time. They may also clear the pending value flip if the value
 // changes back to the previous value.
+// TODO(https://crbug.com/1116920): Move to renderer/platform/media once its
+// dependencies are moved to Blink.
 template <typename T>
 class WatchTimeComponent {
  public:
   // Callback used to convert |current_value_| into a WatchTimeKey which will be
   // given to WatchTimeRecorder::RecordWatchTime().
-  using ValueToKeyCB = base::RepeatingCallback<WatchTimeKey(T value)>;
+  using ValueToKeyCB = base::RepeatingCallback<media::WatchTimeKey(T value)>;
 
   // Mirror of WatchTimeReporter::GetMediaTimeCB to avoid circular dependency.
   using GetMediaTimeCB = base::RepeatingCallback<base::TimeDelta(void)>;
@@ -47,10 +48,10 @@ class WatchTimeComponent {
   //
   // See WatchTimeReporter constructor for |get_media_time_cb| and |recorder|.
   WatchTimeComponent(T initial_value,
-                     std::vector<WatchTimeKey> keys_to_finalize,
+                     std::vector<media::WatchTimeKey> keys_to_finalize,
                      ValueToKeyCB value_to_key_cb,
                      GetMediaTimeCB get_media_time_cb,
-                     mojom::WatchTimeRecorder* recorder);
+                     media::mojom::WatchTimeRecorder* recorder);
   ~WatchTimeComponent();
 
   // Called when the main WatchTimeReporter timer is started. Reinitializes
@@ -94,7 +95,7 @@ class WatchTimeComponent {
   //
   // E.g., some components may stop reporting upon Finalize() while others want
   // to report to a new key for all watch time going forward.
-  void Finalize(std::vector<WatchTimeKey>* keys_to_finalize);
+  void Finalize(std::vector<media::WatchTimeKey>* keys_to_finalize);
 
   // Returns true if Finalize() should be called.
   bool NeedsFinalize() const;
@@ -106,10 +107,10 @@ class WatchTimeComponent {
 
  private:
   // Initialized during construction. See constructor for details.
-  const std::vector<WatchTimeKey> keys_to_finalize_;
+  const std::vector<media::WatchTimeKey> keys_to_finalize_;
   const ValueToKeyCB value_to_key_cb_;
   const GetMediaTimeCB get_media_time_cb_;
-  mojom::WatchTimeRecorder* const recorder_;
+  media::mojom::WatchTimeRecorder* const recorder_;
 
   // The current value which will be used to select keys for reporting WatchTime
   // during the next RecordWatchTime() call.
@@ -122,14 +123,14 @@ class WatchTimeComponent {
   // The starting and ending timestamps used for reporting watch time. The end
   // timestamp may be kNoTimestamp if reporting is ongoing.
   base::TimeDelta start_timestamp_;
-  base::TimeDelta end_timestamp_ = kNoTimestamp;
+  base::TimeDelta end_timestamp_ = media::kNoTimestamp;
 
   // The last media timestamp seen by RecordWatchTime().
-  base::TimeDelta last_timestamp_ = kNoTimestamp;
+  base::TimeDelta last_timestamp_ = media::kNoTimestamp;
 
   DISALLOW_COPY_AND_ASSIGN(WatchTimeComponent);
 };
 
-}  // namespace media
+}  // namespace blink
 
-#endif  // MEDIA_BLINK_WATCH_TIME_COMPONENT_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_COMPONENT_H_

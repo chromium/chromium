@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/blink/watch_time_reporter.h"
+#include "third_party/blink/public/common/media/watch_time_reporter.h"
 
 #include <numeric>
 
@@ -13,7 +13,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
 
-namespace media {
+namespace blink {
 
 // The minimum width and height of videos to report watch time metrics for.
 constexpr gfx::Size kMinimumVideoSize = gfx::Size(200, 140);
@@ -45,11 +45,11 @@ PropertyAction HandlePropertyChange(T new_value,
 }
 
 WatchTimeReporter::WatchTimeReporter(
-    mojom::PlaybackPropertiesPtr properties,
+    media::mojom::PlaybackPropertiesPtr properties,
     const gfx::Size& natural_size,
     GetMediaTimeCB get_media_time_cb,
     GetPipelineStatsCB get_pipeline_stats_cb,
-    mojom::MediaMetricsProvider* provider,
+    media::mojom::MediaMetricsProvider* provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : WatchTimeReporter(std::move(properties),
@@ -63,13 +63,13 @@ WatchTimeReporter::WatchTimeReporter(
                         tick_clock) {}
 
 WatchTimeReporter::WatchTimeReporter(
-    mojom::PlaybackPropertiesPtr properties,
+    media::mojom::PlaybackPropertiesPtr properties,
     bool is_background,
     bool is_muted,
     const gfx::Size& natural_size,
     GetMediaTimeCB get_media_time_cb,
     GetPipelineStatsCB get_pipeline_stats_cb,
-    mojom::MediaMetricsProvider* provider,
+    media::mojom::MediaMetricsProvider* provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : properties_(std::move(properties)),
@@ -228,7 +228,7 @@ void WatchTimeReporter::OnHidden() {
   MaybeFinalizeWatchTime(FinalizeTime::ON_NEXT_UPDATE);
 }
 
-void WatchTimeReporter::OnError(PipelineStatus status) {
+void WatchTimeReporter::OnError(media::PipelineStatus status) {
   // Since playback should have stopped by this point, go ahead and send the
   // error directly instead of on the next timer tick. It won't be recorded
   // until finalization anyways.
@@ -249,13 +249,13 @@ void WatchTimeReporter::OnUnderflow() {
     return;
 
   if (!pending_underflow_events_.empty())
-    DCHECK_NE(pending_underflow_events_.back().duration, kNoTimestamp);
+    DCHECK_NE(pending_underflow_events_.back().duration, media::kNoTimestamp);
 
   // In the event of a pending finalize, we don't want to count underflow events
   // that occurred after the finalize time. Yet if the finalize is canceled we
   // want to ensure they are all recorded.
   pending_underflow_events_.push_back(
-      {false, get_media_time_cb_.Run(), kNoTimestamp});
+      {false, get_media_time_cb_.Run(), media::kNoTimestamp});
 }
 
 void WatchTimeReporter::OnUnderflowComplete(base::TimeDelta elapsed) {
@@ -275,7 +275,7 @@ void WatchTimeReporter::OnUnderflowComplete(base::TimeDelta elapsed) {
 
   // There should only ever be one outstanding underflow, so stick the duration
   // in the last underflow event.
-  DCHECK_EQ(pending_underflow_events_.back().duration, kNoTimestamp);
+  DCHECK_EQ(pending_underflow_events_.back().duration, media::kNoTimestamp);
   pending_underflow_events_.back().duration = elapsed;
 }
 
@@ -300,7 +300,7 @@ void WatchTimeReporter::OnDisplayTypePictureInPicture() {
 }
 
 void WatchTimeReporter::UpdateSecondaryProperties(
-    mojom::SecondaryPlaybackPropertiesPtr secondary_properties) {
+    media::mojom::SecondaryPlaybackPropertiesPtr secondary_properties) {
   // Flush any unrecorded watch time before updating the secondary properties to
   // ensure the UKM record is finalized with up-to-date watch time information.
   if (reporting_timer_.IsRunning())
@@ -397,7 +397,7 @@ void WatchTimeReporter::MaybeStartReportingTimer(
   // is no possible elapsed watch time when this occurs, so don't start the
   // WatchTimeReporter at this time. If a later seek puts us earlier in the
   // stream this method will be called again after OnSeeking().
-  has_valid_start_timestamp_ = start_timestamp != kInfiniteDuration;
+  has_valid_start_timestamp_ = start_timestamp != media::kInfiniteDuration;
 
   // Don't start the timer if our state indicates we shouldn't; this check is
   // important since the various event handlers do not have to care about the
@@ -414,7 +414,7 @@ void WatchTimeReporter::MaybeStartReportingTimer(
 
   if (properties_->has_video) {
     initial_stats_ = get_pipeline_stats_cb_.Run();
-    last_stats_ = PipelineStatistics();
+    last_stats_ = media::PipelineStatistics();
   }
 
   ResetUnderflowState();
@@ -486,7 +486,7 @@ void WatchTimeReporter::RecordWatchTime() {
       // the rebuffer spans a suspend/resume the time can be arbitrarily long.
       constexpr base::TimeDelta kMaximumRebufferDuration =
           base::TimeDelta::FromMinutes(1);
-      if (ufe.duration != kNoTimestamp &&
+      if (ufe.duration != media::kNoTimestamp &&
           ufe.duration <= kMaximumRebufferDuration) {
         ++total_completed_underflow_count_;
         total_underflow_duration_ += ufe.duration;
@@ -494,7 +494,7 @@ void WatchTimeReporter::RecordWatchTime() {
     }
 
     base::EraseIf(pending_underflow_events_, [](const UnderflowEvent& ufe) {
-      return ufe.reported && ufe.duration != kNoTimestamp;
+      return ufe.reported && ufe.duration != media::kNoTimestamp;
     });
 
     if (last_underflow_count != total_underflow_count_)
@@ -540,7 +540,7 @@ void WatchTimeReporter::UpdateWatchTime() {
   RecordWatchTime();
 
   // Second, process any pending finalize events.
-  std::vector<WatchTimeKey> keys_to_finalize;
+  std::vector<media::WatchTimeKey> keys_to_finalize;
   if (power_component_->NeedsFinalize())
     power_component_->Finalize(&keys_to_finalize);
   if (display_type_component_ && display_type_component_->NeedsFinalize())
@@ -573,18 +573,19 @@ void WatchTimeReporter::ResetUnderflowState() {
 
 #define NORMAL_KEY(key)                                                     \
   ((properties_->has_video && properties_->has_audio)                       \
-       ? (is_background_ ? WatchTimeKey::kAudioVideoBackground##key         \
-                         : (is_muted_ ? WatchTimeKey::kAudioVideoMuted##key \
-                                      : WatchTimeKey::kAudioVideo##key))    \
+       ? (is_background_                                                    \
+              ? media::WatchTimeKey::kAudioVideoBackground##key             \
+              : (is_muted_ ? media::WatchTimeKey::kAudioVideoMuted##key     \
+                           : media::WatchTimeKey::kAudioVideo##key))        \
        : properties_->has_video                                             \
-             ? (is_background_ ? WatchTimeKey::kVideoBackground##key        \
-                               : WatchTimeKey::kVideo##key)                 \
-             : (is_background_ ? WatchTimeKey::kAudioBackground##key        \
-                               : WatchTimeKey::kAudio##key))
+             ? (is_background_ ? media::WatchTimeKey::kVideoBackground##key \
+                               : media::WatchTimeKey::kVideo##key)          \
+             : (is_background_ ? media::WatchTimeKey::kAudioBackground##key \
+                               : media::WatchTimeKey::kAudio##key))
 
 std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreateBaseComponent() {
-  std::vector<WatchTimeKey> keys_to_finalize;
+  std::vector<media::WatchTimeKey> keys_to_finalize;
   keys_to_finalize.emplace_back(NORMAL_KEY(All));
   if (properties_->is_mse)
     keys_to_finalize.emplace_back(NORMAL_KEY(Mse));
@@ -605,8 +606,8 @@ WatchTimeReporter::CreateBaseComponent() {
 
 std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreatePowerComponent() {
-  std::vector<WatchTimeKey> keys_to_finalize{NORMAL_KEY(Battery),
-                                             NORMAL_KEY(Ac)};
+  std::vector<media::WatchTimeKey> keys_to_finalize{NORMAL_KEY(Battery),
+                                                    NORMAL_KEY(Ac)};
 
   return std::make_unique<WatchTimeComponent<bool>>(
       IsOnBatteryPower(), std::move(keys_to_finalize),
@@ -615,24 +616,24 @@ WatchTimeReporter::CreatePowerComponent() {
       get_media_time_cb_, recorder_.get());
 }
 
-WatchTimeKey WatchTimeReporter::GetPowerKey(bool is_on_battery_power) {
+media::WatchTimeKey WatchTimeReporter::GetPowerKey(bool is_on_battery_power) {
   return is_on_battery_power ? NORMAL_KEY(Battery) : NORMAL_KEY(Ac);
 }
 #undef NORMAL_KEY
 
-#define FOREGROUND_KEY(key)                                 \
-  ((properties_->has_video && properties_->has_audio)       \
-       ? (is_muted_ ? WatchTimeKey::kAudioVideoMuted##key   \
-                    : WatchTimeKey::kAudioVideo##key)       \
-       : properties_->has_audio ? WatchTimeKey::kAudio##key \
-                                : WatchTimeKey::kVideo##key)
+#define FOREGROUND_KEY(key)                                        \
+  ((properties_->has_video && properties_->has_audio)              \
+       ? (is_muted_ ? media::WatchTimeKey::kAudioVideoMuted##key   \
+                    : media::WatchTimeKey::kAudioVideo##key)       \
+       : properties_->has_audio ? media::WatchTimeKey::kAudio##key \
+                                : media::WatchTimeKey::kVideo##key)
 
 std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreateControlsComponent() {
   DCHECK(!is_background_);
 
-  std::vector<WatchTimeKey> keys_to_finalize{FOREGROUND_KEY(NativeControlsOn),
-                                             FOREGROUND_KEY(NativeControlsOff)};
+  std::vector<media::WatchTimeKey> keys_to_finalize{
+      FOREGROUND_KEY(NativeControlsOn), FOREGROUND_KEY(NativeControlsOff)};
 
   return std::make_unique<WatchTimeComponent<bool>>(
       false, std::move(keys_to_finalize),
@@ -641,24 +642,26 @@ WatchTimeReporter::CreateControlsComponent() {
       get_media_time_cb_, recorder_.get());
 }
 
-WatchTimeKey WatchTimeReporter::GetControlsKey(bool has_native_controls) {
+media::WatchTimeKey WatchTimeReporter::GetControlsKey(
+    bool has_native_controls) {
   return has_native_controls ? FOREGROUND_KEY(NativeControlsOn)
                              : FOREGROUND_KEY(NativeControlsOff);
 }
 
 #undef FOREGROUND_KEY
 
-#define DISPLAY_TYPE_KEY(key)                                                \
-  (properties_->has_audio ? (is_muted_ ? WatchTimeKey::kAudioVideoMuted##key \
-                                       : WatchTimeKey::kAudioVideo##key)     \
-                          : WatchTimeKey::kVideo##key)
+#define DISPLAY_TYPE_KEY(key)                                    \
+  (properties_->has_audio                                        \
+       ? (is_muted_ ? media::WatchTimeKey::kAudioVideoMuted##key \
+                    : media::WatchTimeKey::kAudioVideo##key)     \
+       : media::WatchTimeKey::kVideo##key)
 
-std::unique_ptr<WatchTimeComponent<WatchTimeReporter::DisplayType>>
+std::unique_ptr<WatchTimeComponent<DisplayType>>
 WatchTimeReporter::CreateDisplayTypeComponent() {
   DCHECK(properties_->has_video);
   DCHECK(!is_background_);
 
-  std::vector<WatchTimeKey> keys_to_finalize{
+  std::vector<media::WatchTimeKey> keys_to_finalize{
       DISPLAY_TYPE_KEY(DisplayInline), DISPLAY_TYPE_KEY(DisplayFullscreen),
       DISPLAY_TYPE_KEY(DisplayPictureInPicture)};
 
@@ -669,7 +672,8 @@ WatchTimeReporter::CreateDisplayTypeComponent() {
       get_media_time_cb_, recorder_.get());
 }
 
-WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(DisplayType display_type) {
+media::WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(
+    DisplayType display_type) {
   switch (display_type) {
     case DisplayType::kInline:
       return DISPLAY_TYPE_KEY(DisplayInline);
@@ -682,4 +686,4 @@ WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(DisplayType display_type) {
 
 #undef DISPLAY_TYPE_KEY
 
-}  // namespace media
+}  // namespace blink

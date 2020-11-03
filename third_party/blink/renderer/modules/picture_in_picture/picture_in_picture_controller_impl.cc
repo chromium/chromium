@@ -10,6 +10,7 @@
 #include "base/bind_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
@@ -162,7 +163,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   if (!EnsureService())
     return;
 
-  if (video_element->DisplayType() == WebMediaPlayer::DisplayType::kFullscreen)
+  if (video_element->GetDisplayType() == DisplayType::kFullscreen)
     Fullscreen::ExitFullscreen(*GetSupplementable());
 
   video_element->GetWebMediaPlayer()->OnRequestPictureInPicture();

@@ -48,7 +48,6 @@
 #include "media/blink/texttrack_impl.h"
 #include "media/blink/url_index.h"
 #include "media/blink/video_decode_stats_reporter.h"
-#include "media/blink/watch_time_reporter.h"
 #include "media/blink/webcontentdecryptionmodule_impl.h"
 #include "media/blink/webinbandtexttrack_impl.h"
 #include "media/blink/webmediasource_impl.h"
@@ -60,7 +59,7 @@
 #include "media/remoting/remoting_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
-#include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
@@ -691,28 +690,26 @@ void WebMediaPlayerImpl::OnHasNativeControlsChanged(bool has_native_controls) {
     watch_time_reporter_->OnNativeControlsDisabled();
 }
 
-void WebMediaPlayerImpl::OnDisplayTypeChanged(
-    WebMediaPlayer::DisplayType display_type) {
+void WebMediaPlayerImpl::OnDisplayTypeChanged(blink::DisplayType display_type) {
   if (surface_layer_for_video_enabled_) {
     vfc_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &VideoFrameCompositor::SetForceSubmit,
-            base::Unretained(compositor_.get()),
-            display_type == WebMediaPlayer::DisplayType::kPictureInPicture));
+        base::BindOnce(&VideoFrameCompositor::SetForceSubmit,
+                       base::Unretained(compositor_.get()),
+                       display_type == blink::DisplayType::kPictureInPicture));
   }
 
   if (!watch_time_reporter_)
     return;
 
   switch (display_type) {
-    case WebMediaPlayer::DisplayType::kInline:
+    case blink::DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case WebMediaPlayer::DisplayType::kFullscreen:
+    case blink::DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case WebMediaPlayer::DisplayType::kPictureInPicture:
+    case blink::DisplayType::kPictureInPicture:
       watch_time_reporter_->OnDisplayTypePictureInPicture();
 
       // Resumes playback if it was paused when hidden.
@@ -3404,7 +3401,7 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   }
 
   // Create the watch time reporter and synchronize its initial state.
-  watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
+  watch_time_reporter_ = std::make_unique<blink::WatchTimeReporter>(
       mojom::PlaybackProperties::New(
           pipeline_metadata_.has_audio, has_video, false, false,
           !!chunk_demuxer_, is_encrypted_, embedded_media_experience_enabled_),
@@ -3428,14 +3425,14 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   else
     watch_time_reporter_->OnNativeControlsDisabled();
 
-  switch (client_->DisplayType()) {
-    case WebMediaPlayer::DisplayType::kInline:
+  switch (client_->GetDisplayType()) {
+    case blink::DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case WebMediaPlayer::DisplayType::kFullscreen:
+    case blink::DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case WebMediaPlayer::DisplayType::kPictureInPicture:
+    case blink::DisplayType::kPictureInPicture:
       watch_time_reporter_->OnDisplayTypePictureInPicture();
       break;
   }
@@ -3855,8 +3852,7 @@ void WebMediaPlayerImpl::RecordEncryptionScheme(
 
 bool WebMediaPlayerImpl::IsInPictureInPicture() const {
   DCHECK(client_);
-  return client_->DisplayType() ==
-         WebMediaPlayer::DisplayType::kPictureInPicture;
+  return client_->GetDisplayType() == blink::DisplayType::kPictureInPicture;
 }
 
 void WebMediaPlayerImpl::OnPictureInPictureAvailabilityChanged(bool available) {

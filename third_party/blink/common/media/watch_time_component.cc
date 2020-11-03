@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/blink/watch_time_component.h"
+#include "third_party/blink/public/common/media/watch_time_component.h"
 
-#include "media/blink/media_blink_export.h"
-#include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/media/display_type.h"
 
-namespace media {
+namespace blink {
 
 template <typename T>
 WatchTimeComponent<T>::WatchTimeComponent(
     T initial_value,
-    std::vector<WatchTimeKey> keys_to_finalize,
+    std::vector<media::WatchTimeKey> keys_to_finalize,
     ValueToKeyCB value_to_key_cb,
     GetMediaTimeCB get_media_time_cb,
-    mojom::WatchTimeRecorder* recorder)
+    media::mojom::WatchTimeRecorder* recorder)
     : keys_to_finalize_(std::move(keys_to_finalize)),
       value_to_key_cb_(std::move(value_to_key_cb)),
       get_media_time_cb_(std::move(get_media_time_cb)),
@@ -30,7 +30,7 @@ template <typename T>
 void WatchTimeComponent<T>::OnReportingStarted(
     base::TimeDelta start_timestamp) {
   start_timestamp_ = start_timestamp;
-  end_timestamp_ = last_timestamp_ = kNoTimestamp;
+  end_timestamp_ = last_timestamp_ = media::kNoTimestamp;
 }
 
 template <typename T>
@@ -43,7 +43,7 @@ void WatchTimeComponent<T>::SetPendingValue(T new_value) {
     // multiple state changes during an existing finalize, this will drop all
     // watch time between the current and final state. E.g., state=0 {0ms} ->
     // state=1 {1ms} -> state=2 {2ms} will result in loss of state=1 watch time.
-    if (end_timestamp_ != kNoTimestamp)
+    if (end_timestamp_ != media::kNoTimestamp)
       return;
 
     end_timestamp_ = get_media_time_cb_.Run();
@@ -52,7 +52,7 @@ void WatchTimeComponent<T>::SetPendingValue(T new_value) {
 
   // Clear any pending finalize since we returned to the previous value before
   // the finalize could completed. I.e., assume this is a continuation.
-  end_timestamp_ = kNoTimestamp;
+  end_timestamp_ = media::kNoTimestamp;
 }
 
 template <typename T>
@@ -62,8 +62,8 @@ void WatchTimeComponent<T>::SetCurrentValue(T new_value) {
 
 template <typename T>
 void WatchTimeComponent<T>::RecordWatchTime(base::TimeDelta current_timestamp) {
-  DCHECK_NE(current_timestamp, kNoTimestamp);
-  DCHECK_NE(current_timestamp, kInfiniteDuration);
+  DCHECK_NE(current_timestamp, media::kNoTimestamp);
+  DCHECK_NE(current_timestamp, media::kInfiniteDuration);
   DCHECK_GE(current_timestamp, base::TimeDelta());
 
   // If we're finalizing, use the media time at time of finalization. We only
@@ -101,7 +101,7 @@ void WatchTimeComponent<T>::RecordWatchTime(base::TimeDelta current_timestamp) {
 
 template <typename T>
 void WatchTimeComponent<T>::Finalize(
-    std::vector<WatchTimeKey>* keys_to_finalize) {
+    std::vector<media::WatchTimeKey>* keys_to_finalize) {
   DCHECK(NeedsFinalize());
   // Update |current_value_| and |start_timestamp_| to |end_timestamp_| since
   // that's when the |pending_value_| was set.
@@ -109,7 +109,7 @@ void WatchTimeComponent<T>::Finalize(
   start_timestamp_ = end_timestamp_;
 
   // Complete the finalize and indicate which keys need to be finalized.
-  end_timestamp_ = kNoTimestamp;
+  end_timestamp_ = media::kNoTimestamp;
   keys_to_finalize->insert(keys_to_finalize->end(), keys_to_finalize_.begin(),
                            keys_to_finalize_.end());
   DCHECK(!NeedsFinalize());
@@ -117,7 +117,7 @@ void WatchTimeComponent<T>::Finalize(
 
 template <typename T>
 bool WatchTimeComponent<T>::NeedsFinalize() const {
-  return end_timestamp_ != kNoTimestamp;
+  return end_timestamp_ != media::kNoTimestamp;
 }
 
 // Required to avoid linking errors since we've split this file into a .cc + .h
@@ -126,8 +126,7 @@ bool WatchTimeComponent<T>::NeedsFinalize() const {
 //
 // Note: These must be the last line in this file, otherwise you will also see
 // linking errors since the templates won't have been fully defined prior.
-template class MEDIA_BLINK_EXPORT WatchTimeComponent<bool>;
-template class MEDIA_BLINK_EXPORT
-    WatchTimeComponent<blink::WebMediaPlayer::DisplayType>;
+template class BLINK_COMMON_EXPORT WatchTimeComponent<bool>;
+template class BLINK_COMMON_EXPORT WatchTimeComponent<DisplayType>;
 
-}  // namespace media
+}  // namespace blink

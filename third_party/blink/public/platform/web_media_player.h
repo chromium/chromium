@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "media/base/video_frame_metadata.h"
+#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
@@ -430,17 +431,6 @@ class WebMediaPlayer {
   // This method is not used to say express if the native controls are visible
   // but if the element is using them.
   virtual void OnHasNativeControlsChanged(bool) {}
-
-  enum class DisplayType {
-    // Playback is happening inline.
-    kInline,
-    // Playback is happening either with the video fullscreen. It may also be
-    // set when Blink detects that the video is effectively fullscreen even if
-    // the element is not.
-    kFullscreen,
-    // Playback is happening in a Picture-in-Picture window.
-    kPictureInPicture,
-  };
 
   // Callback called whenever the media element display type changes. By
   // default, the display type is `kInline`.
