@@ -62,7 +62,6 @@ import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentOptionsUtils;
-import org.chromium.components.payments.PaymentRequestLifecycleObserver;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.Section;
@@ -99,9 +98,8 @@ import java.util.Set;
  * ChromePaymentRequestService} should be moved into this class.
  */
 public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Observer,
-                                         PaymentRequestLifecycleObserver, PaymentHandlerUiObserver,
-                                         FocusChangedObserver, NormalizedAddressRequestDelegate,
-                                         PaymentRequestUI.Client {
+                                         PaymentHandlerUiObserver, FocusChangedObserver,
+                                         NormalizedAddressRequestDelegate, PaymentRequestUI.Client {
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
@@ -136,7 +134,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     private ShoppingCart mUiShoppingCart;
     private boolean mMerchantSupportsAutofillCards;
-    private boolean mIsPaymentRequestParamsInitiated;
+    private boolean mHasInitialized;
+    private boolean mHasClosed;
     private SectionInformation mPaymentMethodsSection;
     private SectionInformation mShippingAddressesSection;
     private ContactDetailsSection mContactSection;
@@ -254,7 +253,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     /**
      * Create PaymentUiService.
      * @param delegate The delegate of this instance.
-     * @param params The parameters of the payment request specified by the merchant.
      * @param webContents The WebContents of the merchant page.
      * @param isOffTheRecord Whether merchant page is in an isOffTheRecord tab.
      * @param journeyLogger The logger of the user journey.
@@ -331,10 +329,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     /**
      * @return Whether the merchant supports autofill cards. It can be used only after
-     *         onPaymentRequestParamsInitiated() is invoked.
+     *         initialize() is invoked.
      */
     public boolean merchantSupportsAutofillCards() {
-        assert mIsPaymentRequestParamsInitiated;
+        assert mHasInitialized;
         return mMerchantSupportsAutofillCards;
     }
 
@@ -370,10 +368,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     /**
      * @return Whether user can add credit card. It can be used only after
-     *         onPaymentRequestParamsInitiated() is invoked.
+     *         initialize() is invoked.
      */
     public boolean canUserAddCreditCard() {
-        assert mIsPaymentRequestParamsInitiated;
+        assert mHasInitialized;
         return mCanUserAddCreditCard;
     }
 
@@ -553,7 +551,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     // Implement SettingsAutofillAndPaymentsObserver.Observer:
     @Override
     public void onCreditCardUpdated(CreditCard card) {
-        assert mIsPaymentRequestParamsInitiated;
+        assert mHasInitialized;
         if (!mMerchantSupportsAutofillCards || mPaymentMethodsSection == null
                 || mAutofillPaymentAppCreator == null) {
             return;
@@ -579,7 +577,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     // Implement SettingsAutofillAndPaymentsObserver.Observer:
     @Override
     public void onCreditCardDeleted(String guid) {
-        assert mIsPaymentRequestParamsInitiated;
+        assert mHasInitialized;
         if (!mMerchantSupportsAutofillCards || mPaymentMethodsSection == null) return;
 
         mPaymentMethodsSection.removeAndUnselectItem(guid);
@@ -592,16 +590,23 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         }
     }
 
-    // Implement PaymentRequestLifecycleObserver:
-    @Override
-    public void onPaymentRequestParamsInitiated(PaymentRequestParams params) {
-        assert !params.hasClosed();
-        for (PaymentMethodData method : params.getMethodData().values()) {
+    /**
+     * Initializes the payment UI service.
+     * @param details The PaymentDetails provided by the merchant.
+     * @param rawTotal The raw total amount being charged.
+     * @param rawLineItems The raw items in the shopping cart, as they were received from the
+     *         merchant page.
+     */
+    public void initialize(
+            PaymentDetails details, PaymentItem rawTotal, List<PaymentItem> rawLineItems) {
+        assert !mParams.hasClosed();
+        updateDetailsOnPaymentRequestUI(details, rawTotal, rawLineItems);
+        for (PaymentMethodData method : mParams.getMethodData().values()) {
             mCardEditor.addAcceptedPaymentMethodIfRecognized(method);
         }
         // Checks whether the merchant supports autofill cards before show is called.
         mMerchantSupportsAutofillCards =
-                BasicCardUtils.merchantSupportsBasicCard(params.getMethodData());
+                BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
 
         // If in strict mode, don't give user an option to add an autofill card during the checkout
         // to avoid the "unhappy" basic-card flow.
@@ -646,11 +651,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             }
             mHaveRequestedAutofillData &= haveCompleteContactInfo;
         }
-        mIsPaymentRequestParamsInitiated = true;
+        mHasInitialized = true;
     }
-
-    // Implement PaymentRequestLifecycleObserver:
-    @Override
+    /**
+     * Called after {@link PaymentRequest#retry} is invoked.
+     * @param errors The payment validation errors.
+     */
     public void onRetry(PaymentValidationErrors errors) {
         // Remove all payment apps except the selected one.
         assert mPaymentMethodsSection != null;
@@ -1676,5 +1682,41 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         // Will call back into either onAddressNormalized or onCouldNotNormalize which will send the
         // result to the merchant.
         PersonalDataManager.getInstance().normalizeAddress(address.getProfile(), /*delegate=*/this);
+    }
+
+    /** Close the instance. Do not use this instance any more after calling this method. */
+    public void close() {
+        assert !mHasClosed;
+        mHasClosed = true;
+
+        if (mPaymentHandlerUi != null) {
+            mPaymentHandlerUi.hide();
+            mPaymentHandlerUi = null;
+        }
+
+        if (mMinimalUi != null) {
+            mMinimalUi.hide();
+            mMinimalUi = null;
+        }
+
+        if (mPaymentRequestUI != null) {
+            mPaymentRequestUI.close();
+            ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
+            if (activity != null) {
+                activity.getLifecycleDispatcher().unregister(mPaymentRequestUI);
+            }
+            mPaymentRequestUI = null;
+            mPaymentUisShowStateReconciler.onPaymentRequestUiClosed();
+        }
+        if (mPaymentMethodsSection != null) {
+            for (int i = 0; i < mPaymentMethodsSection.getSize(); i++) {
+                EditableOption option = mPaymentMethodsSection.getItem(i);
+                ((PaymentApp) option).dismissInstrument();
+            }
+            mPaymentMethodsSection = null;
+        }
+
+        removeLeavingTabObservers();
+        destroyCurrencyFormatters();
     }
 }

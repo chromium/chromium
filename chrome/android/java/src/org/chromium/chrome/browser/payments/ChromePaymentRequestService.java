@@ -254,7 +254,6 @@ public class ChromePaymentRequestService
         mPaymentUiService = new PaymentUiService(/*delegate=*/this,
                 /*params=*/this, mWebContents, mIsOffTheRecord, mJourneyLogger, mTopLevelOrigin,
                 /*observer=*/this);
-        mPaymentRequestService.registerPaymentRequestLifecycleObserver(mPaymentUiService);
     }
 
     // Implement BrowserPaymentRequest:
@@ -307,14 +306,8 @@ public class ChromePaymentRequestService
             return false;
         }
 
-        mPaymentUiService.updateDetailsOnPaymentRequestUI(
+        mPaymentUiService.initialize(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
-
-        // The first time initializations and validation of all of the parameters of {@link
-        // PaymentRequestParams} should be done before {@link
-        // PaymentRequestLifeCycleObserver#onPaymentRequestParamsInitiated}.
-        mPaymentRequestService.getPaymentRequestLifecycleObserver().onPaymentRequestParamsInitiated(
-                /*params=*/this);
 
         PaymentAppService service = PaymentAppService.getInstance();
         addUniqueFactoriesToPaymentAppService(service);
@@ -1181,7 +1174,7 @@ public class ChromePaymentRequestService
 
         mWasRetryCalled = true;
 
-        mPaymentRequestService.getPaymentRequestLifecycleObserver().onRetry(errors);
+        mPaymentUiService.onRetry(errors);
     }
 
     // Implement BrowserPaymentRequest:
@@ -1722,39 +1715,14 @@ public class ChromePaymentRequestService
      * function is called.
      */
     private void closeUIAndDestroyNativeObjects() {
-        mPaymentUiService.ensureHideAndResetPaymentHandlerUi();
-        mPaymentUiService.hideMinimalUI();
-
-        if (mPaymentUiService.getPaymentRequestUI() != null) {
-            mPaymentUiService.getPaymentRequestUI().close();
-            ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-            if (activity != null) {
-                activity.getLifecycleDispatcher().unregister(
-                        mPaymentUiService.getPaymentRequestUI());
-            }
-            mPaymentUiService.setPaymentRequestUI(null);
-            mPaymentUiService.getPaymentUisShowStateReconciler().onPaymentRequestUiClosed();
-        }
+        mPaymentUiService.close();
+        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
 
         setShowingPaymentRequest(null);
         mIsCurrentPaymentRequestShowing = false;
 
-        if (mPaymentUiService.getPaymentMethodsSection() != null) {
-            for (int i = 0; i < mPaymentUiService.getPaymentMethodsSection().getSize(); i++) {
-                EditableOption option = mPaymentUiService.getPaymentMethodsSection().getItem(i);
-                ((PaymentApp) option).dismissInstrument();
-            }
-            mPaymentUiService.setPaymentMethodsSection(null);
-        }
-
-        mPaymentUiService.removeLeavingTabObservers();
-
-        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
-
         // Destroy native objects.
-        mPaymentUiService.destroyCurrencyFormatters();
         mJourneyLogger.destroy();
-
         if (mPaymentHandlerHost != null) {
             mPaymentHandlerHost.destroy();
             mPaymentHandlerHost = null;

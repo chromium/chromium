@@ -129,7 +129,6 @@ android_library("all_java") {
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
     "java/src/org/chromium/components/payments/PaymentOptionsUtils.java",
-    "java/src/org/chromium/components/payments/PaymentRequestLifecycleObserver.java",
     "java/src/org/chromium/components/payments/PaymentRequestParams.java",
     "java/src/org/chromium/components/payments/PaymentRequestService.java",
     "java/src/org/chromium/components/payments/PaymentRequestServiceUtil.java",

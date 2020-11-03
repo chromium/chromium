@@ -66,7 +66,6 @@ public class PaymentRequestService {
     private final boolean mRequestPayerPhone;
     private final boolean mRequestPayerEmail;
     private final Delegate mDelegate;
-    private PaymentRequestLifecycleObserver mPaymentRequestLifecycleObserver;
     private boolean mHasClosed;
 
     // mClient is null only when it has closed.
@@ -511,22 +510,6 @@ public class PaymentRequestService {
         mClient = null;
 
         mOnClosedListener.run();
-    }
-
-    /**
-     * Register an observer for the PaymentRequest lifecycle.
-     * @param paymentRequestLifecycleObserver The observer, cannot be null.
-     */
-    public void registerPaymentRequestLifecycleObserver(
-            PaymentRequestLifecycleObserver paymentRequestLifecycleObserver) {
-        assert paymentRequestLifecycleObserver != null;
-        mPaymentRequestLifecycleObserver = paymentRequestLifecycleObserver;
-    }
-
-    /** @return The observer for the PaymentRequest lifecycle, can be null. */
-    @Nullable
-    public PaymentRequestLifecycleObserver getPaymentRequestLifecycleObserver() {
-        return mPaymentRequestLifecycleObserver;
     }
 
     /** @return An observer for the payment request service, if any; otherwise, null. */
