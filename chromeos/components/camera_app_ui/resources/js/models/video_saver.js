@@ -31,7 +31,8 @@ const VideoProcessor = (async () => {
  */
 async function createVideoProcessor(output) {
   // Comlink proxies all calls asynchronously, including constructors.
-  return new (await VideoProcessor)(Comlink.proxy(output));
+  return new (await VideoProcessor)(
+      Comlink.proxy(output), {seekable: output.seekable()});
 }
 
 /**
