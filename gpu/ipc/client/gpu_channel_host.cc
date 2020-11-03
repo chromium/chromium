@@ -31,6 +31,19 @@ using base::AutoLock;
 
 namespace gpu {
 
+namespace {
+
+// The |context_lock_| of the GpuChannelHost should only be acquired on
+// foreground threads. Otherwise, a normal priority thread could end up waiting
+// for a background thread. A background thread may not run for a long time when
+// the system is busy.
+void AssertForegroundThreadForGpuChannelHostLock() {
+  DCHECK_NE(base::ThreadPriority::BACKGROUND,
+            base::PlatformThread::GetCurrentThreadPriority());
+}
+
+}  // namespace
+
 GpuChannelHost::GpuChannelHost(int channel_id,
                                const gpu::GPUInfo& gpu_info,
                                const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -122,6 +135,9 @@ uint32_t GpuChannelHost::OrderingBarrier(
     int32_t route_id,
     int32_t put_offset,
     std::vector<SyncToken> sync_token_fences) {
+  TRACE_EVENT0("ipc", "GpuChannelHost::OrderingBarrier");
+  AssertForegroundThreadForGpuChannelHostLock();
+
   AutoLock lock(context_lock_);
 
   if (pending_ordering_barrier_ &&
@@ -143,6 +159,9 @@ uint32_t GpuChannelHost::OrderingBarrier(
 uint32_t GpuChannelHost::EnqueueDeferredMessage(
     const IPC::Message& message,
     std::vector<SyncToken> sync_token_fences) {
+  TRACE_EVENT0("ipc", "GpuChannelHost::EnqueueDeferredMessage");
+  AssertForegroundThreadForGpuChannelHostLock();
+
   AutoLock lock(context_lock_);
 
   EnqueuePendingOrderingBarrier();
@@ -155,11 +174,17 @@ uint32_t GpuChannelHost::EnqueueDeferredMessage(
 }
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {
+  TRACE_EVENT0("ipc", "GpuChannelHost::EnsureFlush");
+  AssertForegroundThreadForGpuChannelHostLock();
+
   AutoLock lock(context_lock_);
   InternalFlush(deferred_message_id);
 }
 
 void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
+  TRACE_EVENT0("ipc", "GpuChannelHost::VerifyFlush");
+  AssertForegroundThreadForGpuChannelHostLock();
+
   AutoLock lock(context_lock_);
 
   InternalFlush(deferred_message_id);
