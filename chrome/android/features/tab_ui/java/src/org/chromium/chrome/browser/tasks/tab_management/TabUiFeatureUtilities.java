@@ -57,6 +57,11 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SEARCH_CHIP_ADAPTIVE_PARAM, false);
 
+    private static final String LAUNCH_BUG_FIX_PARAM = "enable_launch_bug_fix";
+    public static final BooleanCachedFieldTrialParameter ENABLE_LAUNCH_BUG_FIX =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, LAUNCH_BUG_FIX_PARAM, false);
+
     private static final String LAUNCH_POLISH_PARAM = "enable_launch_polish";
     public static final BooleanCachedFieldTrialParameter ENABLE_LAUNCH_POLISH =
             new BooleanCachedFieldTrialParameter(
@@ -184,5 +189,12 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isLaunchPolishEnabled() {
         return ENABLE_LAUNCH_POLISH.getValue();
+    }
+
+    /**
+     * @return Whether the Grid/Group launch bug fix is enabled.
+     */
+    public static boolean isLaunchBugFixEnabled() {
+        return ENABLE_LAUNCH_BUG_FIX.getValue();
     }
 }
