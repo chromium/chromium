@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 
 namespace dbus {
@@ -153,6 +154,24 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     // Allowlists the key allowed to be registered to the key store.
     virtual void AllowlistRegisterKey(const std::string& username,
                                       const std::string& label) = 0;
+
+    // Sets the status code returned by `SignEnterpriseChallenge()`.
+    virtual void set_sign_enterprise_challenge_status(
+        ::attestation::AttestationStatus status) = 0;
+    // Allowlists the key used to sign enterprise challenge. Note that
+    // `include_signed_public_key` and `challenge` are ignored for key
+    // comparison because they are are part of the key but the inputs for
+    // signature generation.
+    virtual void AllowlistSignEnterpriseChallengeKey(
+        const ::attestation::SignEnterpriseChallengeRequest& request) = 0;
+    // Signs the enterprise `challenge` with this class the same way the
+    // enterprise challenge is signed.
+    virtual std::string GetEnterpriseChallengeFakeSignature(
+        const std::string& challenge,
+        bool include_spkac) const = 0;
+    // Sets the delay to the time we reply to `SignEnterpriseChallenge()`.
+    virtual void set_sign_enterprise_challenge_delay(
+        const base::TimeDelta& delay) = 0;
   };
 
   // Not copyable or movable.
@@ -177,6 +196,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
   // ACA.
   static bool IsAttestationPrepared(
       const ::attestation::GetEnrollmentPreparationsReply& reply);
+
+  // Gets the verified access server type from command-line arguments.
+  static ::attestation::VAType GetVerifiedAccessServerType();
 
   // Attestation daemon D-Bus method calls. See org.chromium.Attestation.xml and
   // the corresponding protobuf definitions in Chromium OS code for the

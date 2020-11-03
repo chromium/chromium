@@ -13,6 +13,7 @@ component("attestation") {
   deps = [
     ":attestation_proto",
     "//base",
+    "//chromeos/dbus/constants:constants",
     "//dbus",
   ]
 

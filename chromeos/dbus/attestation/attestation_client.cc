@@ -10,12 +10,14 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -24,6 +26,10 @@
 
 namespace chromeos {
 namespace {
+
+// Values for the attestation server switch.
+const char kAttestationServerDefault[] = "default";
+const char kAttestationServerTest[] = "test";
 
 // An arbitrary timeout for getting a certificate.
 constexpr base::TimeDelta kGetCertificateTimeout =
@@ -324,6 +330,22 @@ bool AttestationClient::IsAttestationPrepared(
     }
   }
   return false;
+}
+
+// static
+::attestation::VAType AttestationClient::GetVerifiedAccessServerType() {
+  std::string value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kAttestationServer);
+  if (value.empty() || value == kAttestationServerDefault) {
+    return ::attestation::DEFAULT_VA;
+  }
+  if (value == kAttestationServerTest) {
+    return ::attestation::TEST_VA;
+  }
+  LOG(WARNING) << "Invalid Verified Access server value: " << value
+               << ". Using default.";
+  return attestation::DEFAULT_VA;
 }
 
 }  // namespace chromeos

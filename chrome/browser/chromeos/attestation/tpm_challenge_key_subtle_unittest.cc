@@ -42,6 +42,7 @@ namespace attestation {
 namespace {
 
 constexpr char kTestUserEmail[] = "test@google.com";
+constexpr char kTestUserDomain[] = "google.com";
 constexpr char kTestUserGaiaId[] = "test_gaia_id";
 constexpr char kEmptyKeyName[] = "";
 constexpr char kNonDefaultKeyName[] = "key_name_123";
@@ -61,10 +62,10 @@ std::string GetChallenge() {
   return std::string(reinterpret_cast<const char*>(kBuffer), sizeof(kBuffer));
 }
 
-std::string GetChallengeResponse() {
-  constexpr uint8_t kBuffer[] = {0x0, 0x1, 0x2,  'r',  'e',
-                                 's', 'p', 0xfd, 0xfe, 0xff};
-  return std::string(reinterpret_cast<const char*>(kBuffer), sizeof(kBuffer));
+std::string GetChallengeResponse(bool include_spkac) {
+  return AttestationClient::Get()
+      ->GetTestInterface()
+      ->GetEnterpriseChallengeFakeSignature(GetChallenge(), include_spkac);
 }
 
 std::string GetPublicKey() {
@@ -287,9 +288,9 @@ void TpmChallengeKeySubtleTest::RunThreeStepsAndExpect(
     bool will_register_key,
     const std::string& key_name,
     const TpmChallengeKeyResult& register_result) {
-  RunTwoStepsAndExpect(
-      key_type, will_register_key, key_name,
-      TpmChallengeKeyResult::MakeChallengeResponse(GetChallengeResponse()));
+  RunTwoStepsAndExpect(key_type, will_register_key, key_name,
+                       TpmChallengeKeyResult::MakeChallengeResponse(
+                           GetChallengeResponse(will_register_key)));
 
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartRegisterKeyStep(callback_observer.GetCallback());
@@ -475,17 +476,17 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNotRegisteredSuccess) {
           RunOnceCallback<5>(chromeos::attestation::ATTESTATION_SUCCESS,
                              /*pem_certificate_chain=*/"fake_certificate"));
 
-  EXPECT_CALL(*mock_async_method_caller_,
-              TpmAttestationSignEnterpriseChallenge(
-                  key_type, _, key_name, _, _,
-                  AttestationChallengeOptions::CHALLENGE_OPTION_NONE,
-                  GetChallenge(), kEmptyKeyName, _))
-      .WillOnce(RunOnceCallback<8>(
-          /*success=*/true, /*data=*/GetChallengeResponse()));
+  ::attestation::SignEnterpriseChallengeRequest expected_request;
+  expected_request.set_key_label(key_name);
+  expected_request.set_domain(kTestUserDomain);
+  expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
-  RunTwoStepsAndExpect(
-      key_type, /*will_register_key=*/false, kEmptyKeyName,
-      TpmChallengeKeyResult::MakeChallengeResponse(GetChallengeResponse()));
+  RunTwoStepsAndExpect(key_type, /*will_register_key=*/false, kEmptyKeyName,
+                       TpmChallengeKeyResult::MakeChallengeResponse(
+                           GetChallengeResponse(/*include_spkac=*/false)));
 }
 
 TEST_F(TpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
@@ -498,14 +499,14 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
           RunOnceCallback<5>(chromeos::attestation::ATTESTATION_SUCCESS,
                              /*pem_certificate_chain=*/"fake_certificate"));
 
-  EXPECT_CALL(
-      *mock_async_method_caller_,
-      TpmAttestationSignEnterpriseChallenge(
-          key_type, _, GetDefaultKeyName(key_type), _, _,
-          AttestationChallengeOptions::CHALLENGE_INCLUDE_SIGNED_PUBLIC_KEY,
-          GetChallenge(), key_name, _))
-      .WillOnce(RunOnceCallback<8>(
-          /*success=*/true, /*data=*/GetChallengeResponse()));
+  ::attestation::SignEnterpriseChallengeRequest expected_request;
+  expected_request.set_key_label(GetDefaultKeyName(key_type));
+  expected_request.set_key_name_for_spkac(key_name);
+  expected_request.set_domain(kTestUserDomain);
+  expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
   AttestationClient::Get()->GetTestInterface()->AllowlistRegisterKey(
       /*username=*/"", key_name);
@@ -531,17 +532,18 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
           RunOnceCallback<5>(chromeos::attestation::ATTESTATION_SUCCESS,
                              /*pem_certificate_chain=*/"fake_certificate"));
 
-  EXPECT_CALL(*mock_async_method_caller_,
-              TpmAttestationSignEnterpriseChallenge(
-                  key_type, _, key_name, _, _,
-                  AttestationChallengeOptions::CHALLENGE_OPTION_NONE,
-                  GetChallenge(), kEmptyKeyName, _))
-      .WillOnce(RunOnceCallback<8>(
-          /*success=*/true, /*data=*/GetChallengeResponse()));
+  ::attestation::SignEnterpriseChallengeRequest expected_request;
+  expected_request.set_username(kTestUserEmail);
+  expected_request.set_key_label(GetDefaultKeyName(key_type));
+  expected_request.set_domain(kTestUserEmail);
+  expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
-  RunTwoStepsAndExpect(
-      key_type, /*will_register_key=*/false, kEmptyKeyName,
-      TpmChallengeKeyResult::MakeChallengeResponse(GetChallengeResponse()));
+  RunTwoStepsAndExpect(key_type, /*will_register_key=*/false, kEmptyKeyName,
+                       TpmChallengeKeyResult::MakeChallengeResponse(
+                           GetChallengeResponse(/*include_spkac=*/false)));
 }
 
 TEST_F(TpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
@@ -555,14 +557,14 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
           RunOnceCallback<5>(chromeos::attestation::ATTESTATION_SUCCESS,
                              /*pem_certificate_chain=*/"fake_certificate"));
 
-  EXPECT_CALL(
-      *mock_async_method_caller_,
-      TpmAttestationSignEnterpriseChallenge(
-          key_type, _, key_name, _, _,
-          AttestationChallengeOptions::CHALLENGE_INCLUDE_SIGNED_PUBLIC_KEY,
-          GetChallenge(), kEmptyKeyName, _))
-      .WillOnce(RunOnceCallback<8>(
-          /*success=*/true, /*data=*/GetChallengeResponse()));
+  ::attestation::SignEnterpriseChallengeRequest expected_request;
+  expected_request.set_username(kTestUserEmail);
+  expected_request.set_key_label(kNonDefaultKeyName);
+  expected_request.set_domain(kTestUserEmail);
+  expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
   AttestationClient::Get()->GetTestInterface()->AllowlistRegisterKey(
       kTestUserEmail, key_name);
@@ -587,9 +589,7 @@ TEST_F(TpmChallengeKeySubtleTest, SignChallengeFailed) {
           RunOnceCallback<5>(chromeos::attestation::ATTESTATION_SUCCESS,
                              /*pem_certificate_chain=*/"fake_certificate"));
 
-  EXPECT_CALL(*mock_async_method_caller_, TpmAttestationSignEnterpriseChallenge)
-      .WillOnce(RunOnceCallback<8>(
-          /*success=*/false, /*data=*/""));
+  // The signing operations fails because we don't allowlist any key.
   RunTwoStepsAndExpect(
       key_type, /*will_register_key=*/false, kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
@@ -606,14 +606,14 @@ TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
           key_type, /*will_register_key=*/true, key_name, GetPublicKey(),
           GetProfile());
 
-  EXPECT_CALL(
-      *mock_async_method_caller_,
-      TpmAttestationSignEnterpriseChallenge(
-          key_type, _, key_name, _, _,
-          AttestationChallengeOptions::CHALLENGE_INCLUDE_SIGNED_PUBLIC_KEY,
-          GetChallenge(), kEmptyKeyName, _))
-      .WillOnce(RunOnceCallback<8>(
-          /*success=*/true, /*data=*/GetChallengeResponse()));
+  ::attestation::SignEnterpriseChallengeRequest expected_request;
+  expected_request.set_username(kTestUserEmail);
+  expected_request.set_key_label(kNonDefaultKeyName);
+  expected_request.set_domain(kTestUserEmail);
+  expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
   {
     CallbackObserver callback_observer;
@@ -621,9 +621,9 @@ TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
         GetChallenge(), callback_observer.GetCallback());
     callback_observer.WaitForCallback();
 
-    EXPECT_EQ(
-        callback_observer.GetResult(),
-        TpmChallengeKeyResult::MakeChallengeResponse(GetChallengeResponse()));
+    EXPECT_EQ(callback_observer.GetResult(),
+              TpmChallengeKeyResult::MakeChallengeResponse(
+                  GetChallengeResponse(/*include_spkac=*/true)));
   }
 
   AttestationClient::Get()->GetTestInterface()->AllowlistRegisterKey(

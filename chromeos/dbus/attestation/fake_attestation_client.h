@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "dbus/object_proxy.h"
 
@@ -131,6 +132,15 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       ::attestation::AttestationStatus status) override;
   void AllowlistRegisterKey(const std::string& username,
                             const std::string& label) override;
+  void set_sign_enterprise_challenge_status(
+      ::attestation::AttestationStatus status) override;
+  void AllowlistSignEnterpriseChallengeKey(
+      const ::attestation::SignEnterpriseChallengeRequest& request) override;
+  std::string GetEnterpriseChallengeFakeSignature(
+      const std::string& challenge,
+      bool include_spkac) const override;
+  void set_sign_enterprise_challenge_delay(
+      const base::TimeDelta& delay) override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -194,6 +204,33 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   // The table of username-label pairs of which keys can be registered to the
   // key store.
   std::set<std::pair<std::string, std::string>> allowlisted_register_keys_;
+
+  // The status returned by `SignEnterpriseChallenge()`.
+  ::attestation::AttestationStatus sign_enterprise_challenge_status_ =
+      ::attestation::STATUS_SUCCESS;
+
+  class SignEnterpriseChallengeRequestComparator {
+   public:
+    bool operator()(
+        const ::attestation::SignEnterpriseChallengeRequest& r1,
+        const ::attestation::SignEnterpriseChallengeRequest& r2) const {
+      // The inputs for signature generation `challenge()` and
+      // `include_signed_public_key()` are ignored.
+      return std::forward_as_tuple(r1.username(), r1.key_label(),
+                                   r1.key_name_for_spkac(), r1.domain(),
+                                   r1.device_id(), r1.va_type()) <
+             std::forward_as_tuple(r2.username(), r2.key_label(),
+                                   r2.key_name_for_spkac(), r2.domain(),
+                                   r2.device_id(), r2.va_type());
+    }
+  };
+  // The table of `SignEnterpriseChallenge` which can sign enterprise
+  // challenge.
+  std::set<::attestation::SignEnterpriseChallengeRequest,
+           SignEnterpriseChallengeRequestComparator>
+      allowlisted_sign_enterprise_challenge_keys_;
+  // The delay the reply of `SignEnterpriseChallenge()` is posted with.
+  base::TimeDelta sign_enterprise_challenge_delay_;
 };
 
 }  // namespace chromeos

@@ -181,7 +181,8 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
       base::Optional<CryptohomeClient::TpmAttestationDataResult>
           prepare_key_result);
 
-  void SignChallengeCallback(bool success, const std::string& response);
+  void SignChallengeCallback(
+      const ::attestation::SignEnterpriseChallengeReply& reply);
 
   void RegisterKeyCallback(
       const ::attestation::RegisterKeyWithChapsTokenReply& reply);

@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "third_party/cros_system_api/dbus/attestation/dbus-constants.h"
 
 namespace chromeos {
@@ -19,14 +20,27 @@ constexpr int kCertificateNotAssigned = 0;
 constexpr char kFakeCertPrefix[] = "fake cert";
 constexpr char kResponseSuffix[] = "_response";
 constexpr char kSignatureSuffix[] = "_signature";
+constexpr char kEnterpriseChallengeResponseSuffix[] = "enterprise_challenge";
+constexpr char kIncludeSpkacSuffix[] = "_with_spkac";
 
-// Posts |callback| on the current thread's task runner, passing it the
-// |response| message.
+// Posts `callback` on the current thread's task runner, passing it the
+// `reply` message.
 template <class ReplyType>
 void PostProtoResponse(base::OnceCallback<void(const ReplyType&)> callback,
                        const ReplyType& reply) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
+}
+
+// Posts `callback` on the current thread's task runner, passing it the
+// `reply` message with `delay`.
+template <class ReplyType>
+void PostProtoResponseWithDelay(
+    base::OnceCallback<void(const ReplyType&)> callback,
+    const ReplyType& reply,
+    const base::TimeDelta& delay) {
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), reply), delay);
 }
 
 bool GetCertificateRequestEqual(::attestation::GetCertificateRequest r1,
@@ -237,7 +251,18 @@ void FakeAttestationClient::GetCertificate(
 void FakeAttestationClient::SignEnterpriseChallenge(
     const ::attestation::SignEnterpriseChallengeRequest& request,
     SignEnterpriseChallengeCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::SignEnterpriseChallengeReply reply;
+  if (allowlisted_sign_enterprise_challenge_keys_.count(request) == 0) {
+    reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+  } else {
+    reply.set_status(sign_enterprise_challenge_status_);
+  }
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    reply.set_challenge_response(GetEnterpriseChallengeFakeSignature(
+        request.challenge(), request.include_signed_public_key()));
+  }
+  PostProtoResponseWithDelay(std::move(callback), reply,
+                             sign_enterprise_challenge_delay_);
 }
 
 void FakeAttestationClient::SignSimpleChallenge(
@@ -414,6 +439,32 @@ void FakeAttestationClient::set_register_key_status(
 void FakeAttestationClient::AllowlistRegisterKey(const std::string& username,
                                                  const std::string& label) {
   allowlisted_register_keys_.insert({username, label});
+}
+
+void FakeAttestationClient::set_sign_enterprise_challenge_status(
+    ::attestation::AttestationStatus status) {
+  sign_enterprise_challenge_status_ = status;
+}
+
+void FakeAttestationClient::AllowlistSignEnterpriseChallengeKey(
+    const ::attestation::SignEnterpriseChallengeRequest& request) {
+  allowlisted_sign_enterprise_challenge_keys_.insert(request);
+}
+
+std::string FakeAttestationClient::GetEnterpriseChallengeFakeSignature(
+    const std::string& challenge,
+    bool include_spkac) const {
+  std::string challenge_response =
+      challenge + kEnterpriseChallengeResponseSuffix;
+  if (include_spkac) {
+    challenge_response += kIncludeSpkacSuffix;
+  }
+  return challenge_response;
+}
+
+void FakeAttestationClient::set_sign_enterprise_challenge_delay(
+    const base::TimeDelta& delay) {
+  sign_enterprise_challenge_delay_ = delay;
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

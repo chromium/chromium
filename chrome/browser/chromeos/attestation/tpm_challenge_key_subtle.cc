@@ -522,31 +522,32 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
       (will_register_key_ && key_type_ == KEY_DEVICE) ? key_name_
                                                       : std::string();
 
-  // Everything is checked. Sign the challenge.
-  cryptohome::AsyncMethodCaller::GetInstance()
-      ->TpmAttestationSignEnterpriseChallenge(
-          key_type_, cryptohome::Identification(GetAccountId()),
-          key_name_for_challenge, GetEmail(),
-          InstallAttributes::Get()->GetDeviceId(),
-          will_register_key_ ? CHALLENGE_INCLUDE_SIGNED_PUBLIC_KEY
-                             : CHALLENGE_OPTION_NONE,
-          challenge, key_name_for_spkac,
-          base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
-                         weak_factory_.GetWeakPtr()));
+  ::attestation::SignEnterpriseChallengeRequest request;
+  request.set_username(cryptohome::Identification(GetAccountId()).id());
+  request.set_key_label(key_name_for_challenge);
+  request.set_key_name_for_spkac(key_name_for_spkac);
+  request.set_domain(GetEmail());
+  request.set_device_id(InstallAttributes::Get()->GetDeviceId());
+  request.set_include_signed_public_key(will_register_key_);
+  request.set_challenge(challenge);
+  request.set_va_type(AttestationClient::GetVerifiedAccessServerType());
+  AttestationClient::Get()->SignEnterpriseChallenge(
+      request, base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void TpmChallengeKeySubtleImpl::SignChallengeCallback(
-    bool success,
-    const std::string& response) {
+    const ::attestation::SignEnterpriseChallengeReply& reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!success) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kSignChallengeFailedError));
     return;
   }
 
-  std::move(callback_).Run(Result::MakeChallengeResponse(response));
+  std::move(callback_).Run(
+      Result::MakeChallengeResponse(reply.challenge_response()));
 }
 
 void TpmChallengeKeySubtleImpl::StartRegisterKeyStep(
