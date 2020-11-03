@@ -1065,9 +1065,9 @@
         'use_swarming': True,
         'os_type': 'android',
       },
-      'android-weblayer-pie-x86-rel-tests': {
+      'android-weblayer-10-x86-rel-tests': {
         'mixins': [
-          'pie-x86-emulator',
+          '10-x86-emulator',
           'emulator-4-cores',
           'linux-xenial',
           'x86-64',
@@ -1077,9 +1077,21 @@
           'gtest_tests': 'android_weblayer_x86_gtests',
         }
       },
-      'android-weblayer-x86-fyi-rel-10-tests': {
+      'android-weblayer-marshmallow-x86-rel-tests': {
         'mixins': [
-          '10-x86-emulator',
+          'marshmallow-x86-emulator',
+          'emulator-4-cores',
+          'linux-xenial',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_weblayer_x86_gtests',
+        }
+      },
+      'android-weblayer-pie-x86-rel-tests': {
+        'mixins': [
+          'pie-x86-emulator',
           'emulator-4-cores',
           'linux-xenial',
           'x86-64',

@@ -974,6 +974,26 @@ ci.android_fyi_builder(
 )
 
 ci.android_fyi_builder(
+    name = "android-weblayer-10-x86-rel-tests",
+    console_view_entry = ci.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "10",
+    ),
+    triggered_by = ["android-weblayer-x86-fyi-rel"],
+    notifies = ["weblayer-sheriff"],
+)
+
+ci.android_fyi_builder(
+    name = "android-weblayer-marshmallow-x86-rel-tests",
+    console_view_entry = ci.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "M",
+    ),
+    triggered_by = ["android-weblayer-x86-fyi-rel"],
+    notifies = ["weblayer-sheriff"],
+)
+
+ci.android_fyi_builder(
     name = "android-weblayer-pie-x86-rel-tests",
     console_view_entry = ci.console_view_entry(
         category = "tester|weblayer",
@@ -989,16 +1009,6 @@ ci.android_fyi_builder(
         category = "builder|weblayer",
         short_name = "x86",
     ),
-)
-
-ci.android_fyi_builder(
-    name = "android-weblayer-x86-fyi-rel-10-tests",
-    console_view_entry = ci.console_view_entry(
-        category = "tester|weblayer",
-        short_name = "10",
-    ),
-    triggered_by = ["android-weblayer-x86-fyi-rel"],
-    notifies = ["weblayer-sheriff"],
 )
 
 ci.android_fyi_builder(
