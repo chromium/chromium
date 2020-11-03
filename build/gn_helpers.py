@@ -93,7 +93,7 @@ def ToGNString(value, pretty=False):
 
     elif isinstance(v, dict):
       if level > 0:
-        raise GNError('Attempting to recursively print a dictionary.')
+        yield '{'
       for key in sorted(v):
         if not isinstance(key, basestring_compat):
           raise GNError('Dictionary key is not a string.')
@@ -101,14 +101,16 @@ def ToGNString(value, pretty=False):
           raise GNError('Dictionary key is not a valid GN identifier.')
         yield key  # No quotations.
         yield '='
-        for tok in GenerateTokens(value[key], level + 1):
+        for tok in GenerateTokens(v[key], level + 1):
           yield tok
+      if level > 0:
+        yield '}'
 
     else:  # Not supporting float: Add only when needed.
       raise GNError('Unsupported type when printing to GN.')
 
-  can_start = lambda tok: tok and tok not in ',]='
-  can_end = lambda tok: tok and tok not in ',[='
+  can_start = lambda tok: tok and tok not in ',}]='
+  can_end = lambda tok: tok and tok not in ',{[='
 
   # Adds whitespaces, trying to keep everything (except dicts) in 1 line.
   def PlainGlue(gen):
@@ -134,12 +136,14 @@ def ToGNString(value, pretty=False):
           yield '\n' + '  ' * level  # New dict item.
         elif tok == '=' or prev_tok in '=':
           yield ' '  # Separator before and after '=', on same line.
-      if tok == ']':
+      if tok in ']}':
         level -= 1
-      if int(prev_tok == '[') + int(tok == ']') == 1:  # Exclude '[]' case.
+      # Exclude '[]' and '{}' cases.
+      if int(prev_tok == '[') + int(tok == ']') == 1 or \
+         int(prev_tok == '{') + int(tok == '}') == 1:
         yield '\n' + '  ' * level
       yield tok
-      if tok == '[':
+      if tok in '[{':
         level += 1
       if tok == ',':
         yield '\n' + '  ' * level

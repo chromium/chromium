@@ -55,6 +55,18 @@ class UnitTest(unittest.TestCase):
             [[[], [[]]], []],
             '[ [ [  ], [ [  ] ] ], [  ] ]',
             '[\n  [\n    [],\n    [\n      []\n    ]\n  ],\n  []\n]\n',
+        ),
+        (
+            [{
+                'a': 1,
+                'c': {
+                    'z': 8
+                },
+                'b': []
+            }],
+            '[ { a = 1\nb = [  ]\nc = { z = 8 } } ]\n',
+            '[\n  {\n    a = 1\n    b = []\n    c = {\n' +
+            '      z = 8\n    }\n  }\n]\n',
         )
     ]
     for obj, exp_ugly, exp_pretty in test_cases:
