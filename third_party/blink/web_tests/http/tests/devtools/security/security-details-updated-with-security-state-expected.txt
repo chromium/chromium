@@ -70,9 +70,9 @@ foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <SPAN class=devtools-link origin-button tabindex=0 role=link >
+            <BUTTON class=text-button type=button role=link >
 View requests in Network Panel
-            </SPAN>
+            </BUTTON>
         </DIV>
     </DIV>
     <DIV class=origin-view-section >
