@@ -44,10 +44,6 @@ std::string GetServerTypeString(BaseTestServer::Type type) {
     case BaseTestServer::TYPE_WS:
     case BaseTestServer::TYPE_WSS:
       return "ws";
-    case BaseTestServer::TYPE_TCP_ECHO:
-      return "tcpecho";
-    case BaseTestServer::TYPE_UDP_ECHO:
-      return "udpecho";
     default:
       NOTREACHED();
   }

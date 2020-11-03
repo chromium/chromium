@@ -46,8 +46,6 @@ class BaseTestServer {
     TYPE_HTTPS,
     TYPE_WS,
     TYPE_WSS,
-    TYPE_TCP_ECHO,
-    TYPE_UDP_ECHO,
     TYPE_PROXY,
   };
 

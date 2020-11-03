@@ -233,12 +233,6 @@ bool LocalTestServer::AddCommandLineArguments(
     case TYPE_FTP:
       command_line->AppendArg("--ftp");
       break;
-    case TYPE_TCP_ECHO:
-      command_line->AppendArg("--tcp-echo");
-      break;
-    case TYPE_UDP_ECHO:
-      command_line->AppendArg("--udp-echo");
-      break;
     case TYPE_BASIC_AUTH_PROXY:
       command_line->AppendArg("--basic-auth-proxy");
       break;

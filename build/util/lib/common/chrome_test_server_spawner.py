@@ -25,8 +25,6 @@ import urlparse
 SERVER_TYPES = {
     'http': '',
     'ftp': '-f',
-    'tcpecho': '--tcp-echo',
-    'udpecho': '--udp-echo',
     'ws': '--websocket',
 }
 
@@ -61,9 +59,6 @@ def _GetServerTypeCommandLine(server_type):
   """
   if server_type not in SERVER_TYPES:
     raise NotImplementedError('Unknown server type: %s' % server_type)
-  if server_type == 'udpecho':
-    raise Exception('Please do not run UDP echo tests because we do not have '
-                    'a UDP forwarder tool.')
   return SERVER_TYPES[server_type]
 
 

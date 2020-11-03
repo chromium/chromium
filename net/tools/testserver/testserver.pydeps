@@ -75,7 +75,6 @@
 ../../../third_party/tlslite/tlslite/x509.py
 ../../../third_party/tlslite/tlslite/x509certchain.py
 asn1.py
-echo_message.py
 minica.py
 testserver.py
 testserver_base.py

@@ -199,8 +199,6 @@ std::string BaseTestServer::GetScheme() const {
       return "ws";
     case TYPE_WSS:
       return "wss";
-    case TYPE_TCP_ECHO:
-    case TYPE_UDP_ECHO:
     default:
       NOTREACHED();
   }
