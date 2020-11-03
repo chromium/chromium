@@ -81,11 +81,12 @@ void UsbDeviceImpl::ReadAllConfigurations() {
       if (!usb_descriptor.Parse(base::make_span(buffer, rv)))
         USB_LOG(EVENT) << "Config descriptor index " << i << " was corrupt.";
       free(buffer);
-
-      // Update the configurations.
-      device_info_->configurations =
-          std::move(usb_descriptor.device_info->configurations);
     }
+
+    // The only populated field in |usb_descriptor| is the parsed configuration
+    // descriptor info.
+    device_info_->configurations =
+        std::move(usb_descriptor.device_info->configurations);
   } else {
     USB_LOG(EVENT) << "Failed to get device descriptor: "
                    << ConvertPlatformUsbErrorToString(rv);
