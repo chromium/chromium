@@ -328,10 +328,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.MediaDeviceType"
-          cpp = "::blink::MediaDeviceType"
-        },
-        {
           mojom = "blink.mojom.MediaDeviceInfo"
           cpp = "::blink::WebMediaDeviceInfo"
         },

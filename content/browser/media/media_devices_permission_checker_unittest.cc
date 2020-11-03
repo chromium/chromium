@@ -17,6 +17,8 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
 
+using blink::mojom::MediaDeviceType;
+
 namespace content {
 
 namespace {
@@ -55,7 +57,7 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
         ->SimulateFeaturePolicyHeader(feature, allowlist);
   }
 
-  bool CheckPermission(blink::MediaDeviceType device_type) {
+  bool CheckPermission(MediaDeviceType device_type) {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     checker_.CheckPermission(
@@ -93,18 +95,18 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
 TEST_F(MediaDevicesPermissionCheckerTest, CheckPermissionWithFeaturePolicy) {
   // Mic and Camera should be enabled by default for a frame (if permission is
   // granted).
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT));
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
 
   RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature::kMicrophone,
                                 /*enabled=*/false);
-  EXPECT_FALSE(CheckPermission(blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT));
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT));
+  EXPECT_FALSE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
 
   RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature::kCamera,
                                 /*enabled=*/false);
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT));
-  EXPECT_FALSE(CheckPermission(blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
+  EXPECT_FALSE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
 }
 
 }  // namespace

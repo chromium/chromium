@@ -13,15 +13,6 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::MediaDeviceType, blink::MediaDeviceType> {
-  static blink::mojom::MediaDeviceType ToMojom(blink::MediaDeviceType type);
-
-  static bool FromMojom(blink::mojom::MediaDeviceType input,
-                        blink::MediaDeviceType* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
     EnumTraits<blink::mojom::FacingMode, media::VideoFacingMode> {
   static blink::mojom::FacingMode ToMojom(media::VideoFacingMode facing_mode);
 

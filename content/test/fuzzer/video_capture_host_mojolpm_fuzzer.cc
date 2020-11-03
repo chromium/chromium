@@ -56,6 +56,8 @@ const media::VideoCaptureDeviceDescriptors kDeviceDescriptors{
 // All devices are opened for each id.
 const uint32_t kNumRenderProcessIds = 2;
 
+using blink::mojom::MediaDeviceType;
+
 // Global environment needed to run the interface being tested.
 //
 // This will be created once, before fuzzing starts, and will be shared between
@@ -450,7 +452,8 @@ void VideoCaptureHostTestcase::OpenSessionOnIOThread(
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     content::MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-    devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] = true;
+    devices_to_enumerate[static_cast<size_t>(
+        MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&VideoCaptureHostTestcase::VideoInputDevicesEnumerated,
@@ -521,7 +524,8 @@ void VideoCaptureHostTestcase::VideoInputDevicesEnumerated(
     const url::Origin& security_origin,
     blink::WebMediaDeviceInfoArray* out,
     const content::MediaDeviceEnumeration& enumeration) {
-  for (const auto& info : enumeration[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT]) {
+  for (const auto& info :
+       enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
     std::string device_id =
         content::MediaStreamManager::GetHMACForMediaDeviceID(
             salt, security_origin, info.device_id);

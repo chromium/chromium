@@ -19,6 +19,8 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 
+using blink::mojom::MediaDeviceType;
+
 namespace content {
 
 namespace {
@@ -56,8 +58,8 @@ void CheckAccessOnUIThread(
   std::move(cb).Run(std::move(salt_and_origin.device_id_salt),
                     std::move(salt_and_origin.origin),
                     MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
-                        blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT,
-                        render_process_id, render_frame_id));
+                        MediaDeviceType::MEDIA_AUDIO_OUTPUT, render_process_id,
+                        render_frame_id));
 }
 
 }  // namespace
@@ -262,7 +264,8 @@ void AudioOutputAuthorizationHandler::AccessChecked(
   }
 
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-  devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT] = true;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_AUDIO_OUTPUT)] = true;
   media_stream_manager_->media_devices_manager()->EnumerateDevices(
       devices_to_enumerate,
       base::BindOnce(&AudioOutputAuthorizationHandler::TranslateDeviceID,
@@ -282,7 +285,7 @@ void AudioOutputAuthorizationHandler::TranslateDeviceID(
   DCHECK(!media::AudioDeviceDescription::IsDefaultDevice(device_id));
 
   for (const blink::WebMediaDeviceInfo& device_info :
-       enumeration[blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT]) {
+       enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
     if (DoesMediaDeviceIDMatchHMAC(salt, security_origin, device_id,
                                    device_info.device_id)) {
       GetDeviceParameters(std::move(trace_scope), std::move(cb),

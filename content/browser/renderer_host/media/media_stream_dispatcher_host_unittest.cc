@@ -69,7 +69,8 @@ constexpr media::VideoCaptureApi kStubCaptureApi =
 void AudioInputDevicesEnumerated(base::OnceClosure quit_closure,
                                  media::AudioDeviceDescriptions* out,
                                  const MediaDeviceEnumeration& enumeration) {
-  for (const auto& info : enumeration[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT]) {
+  for (const auto& info : enumeration[static_cast<size_t>(
+           blink::mojom::MediaDeviceType::MEDIA_AUDIO_INPUT)]) {
     out->emplace_back(info.label, info.device_id, info.group_id);
   }
   std::move(quit_closure).Run();
@@ -298,7 +299,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
     base::RunLoop run_loop;
     MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-    devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT] = true;
+    devices_to_enumerate[static_cast<size_t>(
+        blink::mojom::MediaDeviceType::MEDIA_AUDIO_INPUT)] = true;
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&AudioInputDevicesEnumerated, run_loop.QuitClosure(),

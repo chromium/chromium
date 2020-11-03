@@ -70,8 +70,7 @@ class MockMediaDevicesListener : public blink::mojom::MediaDevicesListener {
   MockMediaDevicesListener() {}
 
   MOCK_METHOD2(OnDevicesChanged,
-               void(blink::MediaDeviceType,
-                    const blink::WebMediaDeviceInfoArray&));
+               void(MediaDeviceType, const blink::WebMediaDeviceInfoArray&));
 
   mojo::PendingRemote<blink::mojom::MediaDevicesListener>
   CreatePendingRemoteAndBind() {
@@ -148,20 +147,29 @@ class MediaDevicesDispatcherHostTest
 
     base::RunLoop run_loop;
     MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-    devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT] = true;
-    devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] = true;
-    devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT] = true;
+    devices_to_enumerate[static_cast<size_t>(
+        MediaDeviceType::MEDIA_AUDIO_INPUT)] = true;
+    devices_to_enumerate[static_cast<size_t>(
+        MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+    devices_to_enumerate[static_cast<size_t>(
+        MediaDeviceType::MEDIA_AUDIO_OUTPUT)] = true;
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&PhysicalDevicesEnumerated, run_loop.QuitClosure(),
                        &physical_devices_));
     run_loop.Run();
 
-    ASSERT_GT(physical_devices_[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT].size(),
+    ASSERT_GT(physical_devices_[static_cast<size_t>(
+                                    MediaDeviceType::MEDIA_AUDIO_INPUT)]
+                  .size(),
               0u);
-    ASSERT_GT(physical_devices_[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT].size(),
+    ASSERT_GT(physical_devices_[static_cast<size_t>(
+                                    MediaDeviceType::MEDIA_VIDEO_INPUT)]
+                  .size(),
               0u);
-    ASSERT_GT(physical_devices_[blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT].size(),
+    ASSERT_GT(physical_devices_[static_cast<size_t>(
+                                    MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
+                  .size(),
               0u);
   }
 
@@ -272,14 +280,17 @@ class MediaDevicesDispatcherHostTest
 
     ASSERT_FALSE(enumerated_devices_.empty());
     if (enumerate_audio_input)
-      EXPECT_FALSE(
-          enumerated_devices_[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT].empty());
+      EXPECT_FALSE(enumerated_devices_[static_cast<size_t>(
+                                           MediaDeviceType::MEDIA_AUDIO_INPUT)]
+                       .empty());
     if (enumerate_video_input)
-      EXPECT_FALSE(
-          enumerated_devices_[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT].empty());
+      EXPECT_FALSE(enumerated_devices_[static_cast<size_t>(
+                                           MediaDeviceType::MEDIA_VIDEO_INPUT)]
+                       .empty());
     if (enumerate_audio_output)
-      EXPECT_FALSE(
-          enumerated_devices_[blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT].empty());
+      EXPECT_FALSE(enumerated_devices_[static_cast<size_t>(
+                                           MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
+                       .empty());
 
     EXPECT_FALSE(DoesContainRawIds(enumerated_devices_));
 #if defined(OS_ANDROID)
@@ -292,7 +303,9 @@ class MediaDevicesDispatcherHostTest
 
   bool DoesContainRawIds(
       const std::vector<std::vector<blink::WebMediaDeviceInfo>>& enumeration) {
-    for (size_t i = 0; i < blink::NUM_MEDIA_DEVICE_TYPES; ++i) {
+    for (size_t i = 0;
+         i < static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+         ++i) {
       for (const auto& device_info : enumeration[i]) {
         for (const auto& raw_device_info : physical_devices_[i]) {
           // Skip default and communications audio devices, whose IDs are not
@@ -316,7 +329,9 @@ class MediaDevicesDispatcherHostTest
       const url::Origin& origin) {
     MediaDeviceSaltAndOrigin salt_and_origin =
         GetMediaDeviceSaltAndOrigin(-1, -1);
-    for (size_t i = 0; i < blink::NUM_MEDIA_DEVICE_TYPES; ++i) {
+    for (size_t i = 0;
+         i < static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+         ++i) {
       for (const auto& device_info : enumeration[i]) {
         bool found_match = false;
         for (const auto& raw_device_info : physical_devices_[i]) {
@@ -377,12 +392,14 @@ class MediaDevicesDispatcherHostTest
     media_stream_manager_->media_devices_manager()->SetPermissionChecker(
         std::make_unique<MediaDevicesPermissionChecker>(has_permission));
     MockMediaDevicesListener device_change_listener;
-    for (size_t i = 0; i < blink::NUM_MEDIA_DEVICE_TYPES; ++i) {
-      blink::MediaDeviceType type = static_cast<blink::MediaDeviceType>(i);
+    for (size_t i = 0;
+         i < static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+         ++i) {
+      MediaDeviceType type = static_cast<MediaDeviceType>(i);
       host_->AddMediaDevicesListener(
-          type == blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT,
-          type == blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT,
-          type == blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT,
+          type == MediaDeviceType::MEDIA_AUDIO_INPUT,
+          type == MediaDeviceType::MEDIA_VIDEO_INPUT,
+          type == MediaDeviceType::MEDIA_AUDIO_OUTPUT,
           device_change_listener.CreatePendingRemoteAndBind());
       blink::WebMediaDeviceInfoArray changed_devices;
       EXPECT_CALL(device_change_listener, OnDevicesChanged(type, _))

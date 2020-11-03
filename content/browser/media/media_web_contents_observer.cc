@@ -418,7 +418,7 @@ void MediaWebContentsObserver::OnAudioOutputSinkChanged(
          base::OnceCallback<void(const base::Optional<std::string>&)>
              callback) {
         MediaStreamManager::GetMediaDeviceIDForHMAC(
-            blink::MediaDeviceType::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT, salt,
+            blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT, salt,
             std::move(origin), hashed_device_id,
             base::SequencedTaskRunnerHandle::Get(), std::move(callback));
       },

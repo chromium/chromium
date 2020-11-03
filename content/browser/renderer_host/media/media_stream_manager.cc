@@ -88,6 +88,8 @@
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #endif
 
+using blink::mojom::MediaDeviceType;
+
 namespace content {
 
 base::LazyInstance<base::ThreadLocalPointer<MediaStreamManager>>::Leaky
@@ -166,11 +168,11 @@ bool GetDeviceIDFromHMAC(const std::string& salt,
   return false;
 }
 
-MediaStreamType ConvertToMediaStreamType(blink::MediaDeviceType type) {
+MediaStreamType ConvertToMediaStreamType(MediaDeviceType type) {
   switch (type) {
-    case blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT:
+    case MediaDeviceType::MEDIA_AUDIO_INPUT:
       return MediaStreamType::DEVICE_AUDIO_CAPTURE;
-    case blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT:
+    case MediaDeviceType::MEDIA_VIDEO_INPUT:
       return MediaStreamType::DEVICE_VIDEO_CAPTURE;
     default:
       NOTREACHED();
@@ -179,26 +181,26 @@ MediaStreamType ConvertToMediaStreamType(blink::MediaDeviceType type) {
   return MediaStreamType::NO_SERVICE;
 }
 
-blink::MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
+MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
   switch (stream_type) {
     case MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT;
+      return MediaDeviceType::MEDIA_AUDIO_INPUT;
     case MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT;
+      return MediaDeviceType::MEDIA_VIDEO_INPUT;
     default:
       NOTREACHED();
   }
 
-  return blink::NUM_MEDIA_DEVICE_TYPES;
+  return MediaDeviceType::NUM_MEDIA_DEVICE_TYPES;
 }
 
-const char* DeviceTypeToString(blink::MediaDeviceType type) {
+const char* DeviceTypeToString(MediaDeviceType type) {
   switch (type) {
-    case blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT:
+    case MediaDeviceType::MEDIA_AUDIO_INPUT:
       return "DEVICE_AUDIO_INPUT";
-    case blink::MEDIA_DEVICE_TYPE_AUDIO_OUTPUT:
+    case MediaDeviceType::MEDIA_AUDIO_OUTPUT:
       return "DEVICE_AUDIO_OUTPUT";
-    case blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT:
+    case MediaDeviceType::MEDIA_VIDEO_INPUT:
       return "DEVICE_VIDEO_INPUT";
     default:
       NOTREACHED();
@@ -424,14 +426,14 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
 }
 
 void FinalizeGetMediaDeviceIDForHMAC(
-    blink::MediaDeviceType type,
+    MediaDeviceType type,
     const std::string& salt,
     const url::Origin& security_origin,
     const std::string& source_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(const base::Optional<std::string>&)> callback,
     const MediaDeviceEnumeration& enumeration) {
-  for (const auto& device : enumeration[type]) {
+  for (const auto& device : enumeration[static_cast<size_t>(type)]) {
     if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
             salt, security_origin, source_id, device.device_id)) {
       task_runner->PostTask(
@@ -1176,11 +1178,11 @@ void MediaStreamManager::EnsureDeviceMonitorStarted() {
 }
 
 void MediaStreamManager::StopRemovedDevice(
-    blink::MediaDeviceType type,
+    MediaDeviceType type,
     const blink::WebMediaDeviceInfo& media_device_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(type == blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT ||
-         type == blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT);
+  DCHECK(type == MediaDeviceType::MEDIA_AUDIO_INPUT ||
+         type == MediaDeviceType::MEDIA_VIDEO_INPUT);
   SendLogMessage(base::StringPrintf(
                      "StopRemovedDevice({type=%s}, {device=[id: %s, name: %s]}",
                      DeviceTypeToString(type),
@@ -1283,10 +1285,10 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
   // UI thread, after the IO thread has been stopped.
   DCHECK(request_audio_input || request_video_input);
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-  devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT] =
-      request_audio_input;
-  devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] =
-      request_video_input;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_AUDIO_INPUT)] = request_audio_input;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_VIDEO_INPUT)] = request_video_input;
   media_devices_manager_->EnumerateDevices(
       devices_to_enumerate,
       base::BindOnce(&MediaStreamManager::DevicesEnumerated,
@@ -1416,10 +1418,10 @@ void MediaStreamManager::PostRequestToUI(
     } else {
       MediaStreamDevices audio_devices = ConvertToMediaStreamDevices(
           request->audio_type(),
-          enumeration[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT]);
+          enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)]);
       MediaStreamDevices video_devices = ConvertToMediaStreamDevices(
           request->video_type(),
-          enumeration[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT]);
+          enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]);
       devices.reserve(audio_devices.size() + video_devices.size());
       devices.insert(devices.end(), audio_devices.begin(), audio_devices.end());
       devices.insert(devices.end(), video_devices.begin(), video_devices.end());
@@ -1533,7 +1535,7 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
   if (request->controls.audio.requested &&
       !GetRequestedDeviceCaptureId(
           request, request->audio_type(),
-          enumeration[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT],
+          enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)],
           &audio_device_id)) {
     return false;
   }
@@ -1542,7 +1544,7 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
   if (request->controls.video.requested &&
       !GetRequestedDeviceCaptureId(
           request, request->video_type(),
-          enumeration[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT],
+          enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)],
           &video_device_id)) {
     return false;
   }
@@ -2370,7 +2372,7 @@ void MediaStreamManager::WillDestroyCurrentMessageLoop() {
 }
 
 void MediaStreamManager::NotifyDevicesChanged(
-    blink::MediaDeviceType device_type,
+    MediaDeviceType device_type,
     const blink::WebMediaDeviceInfoArray& devices) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SendLogMessage(base::StringPrintf("NotifyDevicesChanged({device_type=%s})",
@@ -2525,14 +2527,14 @@ void MediaStreamManager::GetMediaDeviceIDForHMAC(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  blink::MediaDeviceType device_type = ConvertToMediaDeviceType(stream_type);
+  MediaDeviceType device_type = ConvertToMediaDeviceType(stream_type);
   MediaStreamManager::GetMediaDeviceIDForHMAC(
       device_type, std::move(salt), std::move(security_origin),
       std::move(hmac_device_id), std::move(task_runner), std::move(callback));
 }
 
 void MediaStreamManager::GetMediaDeviceIDForHMAC(
-    blink::MediaDeviceType device_type,
+    MediaDeviceType device_type,
     std::string salt,
     url::Origin security_origin,
     std::string hmac_device_id,
@@ -2541,7 +2543,7 @@ void MediaStreamManager::GetMediaDeviceIDForHMAC(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   MediaStreamManager* msm = g_media_stream_manager_tls_ptr.Pointer()->Get();
   MediaDevicesManager::BoolDeviceTypes requested_types;
-  requested_types[device_type] = true;
+  requested_types[static_cast<size_t>(device_type)] = true;
   msm->media_devices_manager()->EnumerateDevices(
       requested_types,
       base::BindOnce(&FinalizeGetMediaDeviceIDForHMAC, device_type,
