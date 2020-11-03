@@ -394,6 +394,42 @@ void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
   base_observer_->OnInputMethodOptionsChanged(engine_id);
 }
 
+void NativeInputMethodEngine::ImeObserver::CommitText(const std::string& text) {
+  GetInputContext()->CommitText(NormalizeString(text));
+}
+
+void NativeInputMethodEngine::ImeObserver::SetComposition(
+    const std::string& text) {
+  ui::CompositionText composition;
+  composition.text = base::UTF8ToUTF16(NormalizeString(text));
+  GetInputContext()->UpdateCompositionText(
+      composition, /*cursor_pos=*/composition.text.length(), /*visible=*/true);
+}
+
+void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
+    uint32_t start_byte_index,
+    uint32_t end_byte_index) {
+  const auto ordered_range = std::minmax(start_byte_index, end_byte_index);
+  GetInputContext()->SetComposingRange(
+      ordered_range.first, ordered_range.second,
+      {ui::ImeTextSpan(
+          ui::ImeTextSpan::Type::kComposition, /*start_offset=*/0,
+          /*end_offset=*/ordered_range.second - ordered_range.first)});
+}
+
+void NativeInputMethodEngine::ImeObserver::FinishComposition() {
+  GetInputContext()->ConfirmCompositionText(/*reset_engine=*/false,
+                                            /*keep_selection=*/true);
+}
+
+void NativeInputMethodEngine::ImeObserver::DeleteSurroundingText(
+    uint32_t num_bytes_before_cursor,
+    uint32_t num_bytes_after_cursor) {
+  GetInputContext()->DeleteSurroundingText(
+      /*offset=*/-static_cast<int>(num_bytes_before_cursor),
+      /*length=*/num_bytes_before_cursor + num_bytes_after_cursor);
+}
+
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   remote_manager_.FlushForTesting();
   if (remote_to_engine_.is_bound())

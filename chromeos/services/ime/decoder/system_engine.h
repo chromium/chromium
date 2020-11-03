@@ -54,7 +54,8 @@ class SystemEngine : public InputEngine {
 
   // Called when there's a reply from the shared library.
   // Deserializes |message| and converts it into Mojo calls to the receiver.
-  void OnReply(const std::vector<uint8_t>& message);
+  void OnReply(const std::vector<uint8_t>& message,
+               mojo::Remote<mojom::InputChannel>& remote);
 
   // Shared library handle of the implementation for input logic with decoders.
   base::ScopedNativeLibrary library_;

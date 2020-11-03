@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
+#include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,29 +49,6 @@ class MockImeEngineMainEntry : public ImeEngineMainEntry {
   ImeClientDelegate* delegate_;
 };
 
-class StubInputChannel : public mojom::InputChannel {
-  void ProcessMessage(const std::vector<uint8_t>& message,
-                      ProcessMessageCallback callback) final {
-    std::move(callback).Run({});
-  }
-  void OnInputMethodChanged(const std::string& engine_id) final {}
-  void OnFocus(mojom::InputFieldInfoPtr input_field_info) final {}
-  void OnBlur() final {}
-  void ProcessKeypressForRulebased(
-      ime::mojom::PhysicalKeyEventPtr event,
-      ProcessKeypressForRulebasedCallback callback) final {}
-  void OnKeyEvent(ime::mojom::PhysicalKeyEventPtr event,
-                  OnKeyEventCallback callback) final {}
-  void OnSurroundingTextChanged(
-      const std::string& text,
-      uint32_t offset,
-      ime::mojom::SelectionRangePtr selection_range) final {}
-  void OnCompositionCanceled() final {}
-  void ResetForRulebased() final {}
-  void GetRulebasedKeypressCountForTesting(
-      GetRulebasedKeypressCountForTestingCallback callback) final {}
-};
-
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.
 class SystemEngineTest : public testing::Test {
  protected:
@@ -94,23 +72,21 @@ class SystemEngineTest : public testing::Test {
 TEST_F(SystemEngineTest, BindRequestBindsInterfaces) {
   SystemEngine engine(/*platform=*/nullptr);
 
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   EXPECT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
 
   EXPECT_TRUE(client.is_bound());
-  EXPECT_TRUE(receiver.is_bound());
+  EXPECT_TRUE(mock_channel.IsBound());
 }
 
 TEST_F(SystemEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
       OnInputMethodChangedToProto(/*seq_id=*/0, "xkb:us::eng");
@@ -123,11 +99,10 @@ TEST_F(SystemEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
 
   auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
                                          mojom::AutocorrectMode::kEnabled,
@@ -145,11 +120,10 @@ TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() = OnBlurToProto(/*seq_id=*/0);
 
@@ -161,11 +135,10 @@ TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
   SystemEngine engine(/*platform=*/nullptr);
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
   auto key_event = mojom::PhysicalKeyEvent::New(
       mojom::KeyEventType::kKeyDown, "KeyA", "A", mojom::ModifierState::New());
   ime::Wrapper expected_proto;
@@ -197,11 +170,10 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
 
 TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
   const auto selection = mojom::SelectionRange::New(/*anchor=*/3, /*focus=*/2);
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() = OnSurroundingTextChangedToProto(
@@ -215,11 +187,10 @@ TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
-  StubInputChannel stub_channel;
-  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  MockInputChannel mock_channel;
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
-                                 receiver.BindNewPipeAndPassRemote(), {}));
+                                 mock_channel.CreatePendingRemote(), {}));
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
       OnCompositionCanceledToProto(/*seq_id=*/0);
@@ -228,6 +199,102 @@ TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
 
   client->OnCompositionCanceled();
   client.FlushForTesting();
+}
+
+TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+  ime::Wrapper proto;
+  proto.mutable_public_message()->mutable_commit_text()->set_text("hello");
+
+  EXPECT_CALL(mock_channel, CommitText("hello"));
+
+  const std::string serialized = proto.SerializeAsString();
+  mock_main_entry_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  mock_channel.FlushForTesting();
+}
+
+TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+  ime::Wrapper proto;
+  proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
+
+  EXPECT_CALL(mock_channel, SetComposition("hello"));
+
+  const std::string serialized = proto.SerializeAsString();
+  mock_main_entry_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  mock_channel.FlushForTesting();
+}
+
+TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+  ime::Wrapper proto;
+  proto.mutable_public_message()
+      ->mutable_set_composition_range()
+      ->set_start_byte_index(2);
+  proto.mutable_public_message()
+      ->mutable_set_composition_range()
+      ->set_end_byte_index(6);
+
+  EXPECT_CALL(mock_channel, SetCompositionRange(2, 6));
+
+  const std::string serialized = proto.SerializeAsString();
+  mock_main_entry_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  mock_channel.FlushForTesting();
+}
+
+TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+  ime::Wrapper proto;
+  *proto.mutable_public_message()->mutable_finish_composition() =
+      ime::FinishComposition();
+
+  EXPECT_CALL(mock_channel, FinishComposition());
+
+  const std::string serialized = proto.SerializeAsString();
+  mock_main_entry_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  mock_channel.FlushForTesting();
+}
+
+TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
+  SystemEngine engine(/*platform=*/nullptr);
+  MockInputChannel mock_channel;
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 mock_channel.CreatePendingRemote(), {}));
+  ime::Wrapper proto;
+  proto.mutable_public_message()
+      ->mutable_delete_surrounding_text()
+      ->set_num_bytes_before_cursor(2);
+  proto.mutable_public_message()
+      ->mutable_delete_surrounding_text()
+      ->set_num_bytes_after_cursor(6);
+
+  EXPECT_CALL(mock_channel, DeleteSurroundingText(2, 6));
+
+  const std::string serialized = proto.SerializeAsString();
+  mock_main_entry_.delegate()->Process(
+      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+  mock_channel.FlushForTesting();
 }
 
 }  // namespace ime

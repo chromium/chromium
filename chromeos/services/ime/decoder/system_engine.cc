@@ -21,7 +21,8 @@ namespace {
 ImeEngineMainEntry* g_fake_main_entry_for_testing = nullptr;
 
 using ReplyCallback =
-    base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
+    base::RepeatingCallback<void(const std::vector<uint8_t>&,
+                                 mojo::Remote<mojom::InputChannel>& remote)>;
 
 // A client delegate passed to the shared library in order for the
 // shared library to send replies back to the engine.
@@ -47,7 +48,7 @@ class ClientDelegate : public ImeClientDelegate {
     if (client_remote_ && client_remote_.is_bound()) {
       std::vector<uint8_t> msg(data, data + size);
       client_remote_->ProcessMessage(msg, base::DoNothing());
-      callback_.Run(msg);
+      callback_.Run(msg, client_remote_);
     }
   }
 
@@ -206,7 +207,8 @@ void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message,
   std::move(callback).Run(result);
 }
 
-void SystemEngine::OnReply(const std::vector<uint8_t>& message) {
+void SystemEngine::OnReply(const std::vector<uint8_t>& message,
+                           mojo::Remote<mojom::InputChannel>& remote) {
   ime::Wrapper wrapper;
   if (!wrapper.ParseFromArray(message.data(), message.size()) ||
       !wrapper.has_public_message()) {
@@ -221,6 +223,30 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message) {
       auto callback = std::move(it->second);
       std::move(callback).Run(reply.on_key_event_reply().consumed());
       pending_key_event_callbacks_.erase(it);
+      break;
+    }
+    case ime::PublicMessage::kSetComposition: {
+      remote->SetComposition(reply.set_composition().text());
+      break;
+    }
+    case ime::PublicMessage::kSetCompositionRange: {
+      remote->SetCompositionRange(
+          reply.set_composition_range().start_byte_index(),
+          reply.set_composition_range().end_byte_index());
+      break;
+    }
+    case ime::PublicMessage::kFinishComposition: {
+      remote->FinishComposition();
+      break;
+    }
+    case ime::PublicMessage::kDeleteSurroundingText: {
+      remote->DeleteSurroundingText(
+          reply.delete_surrounding_text().num_bytes_before_cursor(),
+          reply.delete_surrounding_text().num_bytes_after_cursor());
+      break;
+    }
+    case ime::PublicMessage::kCommitText: {
+      remote->CommitText(reply.commit_text().text());
       break;
     }
     default:

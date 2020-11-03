@@ -115,6 +115,12 @@ class NativeInputMethodEngine : public InputMethodEngine {
     void ResetForRulebased() override {}
     void GetRulebasedKeypressCountForTesting(
         GetRulebasedKeypressCountForTestingCallback callback) override {}
+    void CommitText(const std::string& text) override;
+    void SetComposition(const std::string& text) override;
+    void SetCompositionRange(uint32_t start_byte_index,
+                             uint32_t end_byte_index) override;
+    void FinishComposition() override;
+    void DeleteSurroundingText(uint32_t before, uint32_t after) override;
 
     // Flush all relevant Mojo pipes.
     void FlushForTesting();

@@ -100,5 +100,7 @@ source_set("services_unittests") {
     "decoder/proto_conversion_unittest.cc",
     "decoder/system_engine_unittest.cc",
     "ime_service_unittest.cc",
+    "mock_input_channel.cc",
+    "mock_input_channel.h",
   ]
 }

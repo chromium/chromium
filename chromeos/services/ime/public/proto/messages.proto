@@ -34,6 +34,11 @@ message PublicMessage {
     OnBlur on_blur = 6;
     OnCompositionCanceled on_composition_canceled = 7;
     OnInputMethodChanged on_input_method_changed = 8;
+    CommitText commit_text = 9;
+    SetComposition set_composition = 10;
+    SetCompositionRange set_composition_range = 11;
+    FinishComposition finish_composition = 12;
+    DeleteSurroundingText delete_surrounding_text = 13;
   }
 }
 
@@ -141,3 +146,33 @@ message OnSurroundingTextChanged {
 // Protobuf version of InputEngine::OnCompositionCanceled in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message OnCompositionCanceled {}
+
+// Protobuf version of InputEngine::CommitText in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message CommitText {
+  optional string text = 1;
+}
+
+// Protobuf version of InputEngine::SetComposition in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message SetComposition {
+  optional string text = 1;
+}
+
+// Protobuf version of InputEngine::SetCompositionRange in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message SetCompositionRange {
+  optional uint32 start_byte_index = 1;
+  optional uint32 end_byte_index = 2;
+}
+
+// Protobuf version of InputEngine::FinishComposition in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message FinishComposition {}
+
+// Protobuf version of InputEngine::DeleteSurroundingText in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message DeleteSurroundingText {
+  optional uint32 num_bytes_before_cursor = 1;
+  optional uint32 num_bytes_after_cursor = 2;
+}

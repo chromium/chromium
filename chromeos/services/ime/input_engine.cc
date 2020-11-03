@@ -195,5 +195,26 @@ void InputEngine::GetRulebasedKeypressCountForTesting(
   std::move(callback).Run(engine ? engine->process_key_count() : -1);
 }
 
+void InputEngine::CommitText(const std::string& text) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
+void InputEngine::SetComposition(const std::string& text) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
+void InputEngine::SetCompositionRange(uint32_t start, uint32_t end) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
+void InputEngine::FinishComposition() {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
+void InputEngine::DeleteSurroundingText(uint32_t num_bytes_before_cursor,
+                                        uint32_t num_bytes_after_cursor) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 }  // namespace ime
 }  // namespace chromeos

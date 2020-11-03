@@ -159,6 +159,8 @@ interface InputEngineManager {
 // In order to encapsulate all the communication, (e.g. access to some
 // closed-sourced input engine with decoders), implement the method that takes
 // a serialized protobuf message (instead of a plaintext) as its argument.
+// TODO(crbug.com/1145326): Split this into two separate APIs for the sending or
+// receiving end.
 interface InputChannel {
   // Returns a serialized protobuf result after processing a serialized
   // protobuf message.
@@ -205,6 +207,42 @@ interface InputChannel {
 
   // Gets the keypress count for rulebased logic.
   GetRulebasedKeypressCountForTesting() => (int32 count);
+
+  // Asks the input field to commit `text`. If there is a composition, then that
+  // composition is removed and `text` is inserted. Otherwise, `text` is
+  // inserted at the current cursor position, deleting any text in the current
+  // selection if any. In both cases, the cursor moves to the end of `text`.
+  CommitText(string text);
+
+  // Asks the input field to set composition with `text`. Replaces the current
+  // composition if there is one. Otherwise, start a composition at the current
+  // cursor position, deleting any text in the current selection if any.
+  // The cursor is moved to the end of |text|.
+  SetComposition(string text);
+
+  // Asks the input field to mark the range of text spanned by
+  // `start_byte_index` and `end_byte_index` as the current composition,
+  // where index 0 indicates the beginning of the input field contents.
+  // If there was already a composition, then that composition is committed
+  // first, as if FinishComposition was called.
+  // The order of `start_byte_index` and `end_byte_index` does not matter.
+  // If both `start_byte_index` and `end_byte_index` are the same, then this i
+  // the same as calling `FinishComposition`.
+  // The composition range does not have to overlap with the cursor selection.
+  // The cursor position remains unchanged.
+  SetCompositionRange(uint32 start_byte_index, uint32 end_byte_index);
+
+  // Asks the input field to commit the current composition text. If there is
+  // composition, this is equivalent to calling `CommitText` with the
+  // composition text. If there is no current composition then this is a no-op.
+  // The cursor position remains unchanged.
+  FinishComposition();
+
+  // Asks the input field to delete text around the cursor.
+  // This operation fails if there is currently a composition.
+  // TODO(b/161490915): Determine the right behaviour when there is a selection.
+  DeleteSurroundingText(uint32 num_bytes_before_cursor,
+                        uint32 num_bytes_after_cursor);
 };
 
 // Implemented in the browser process, used to perform network requests or
