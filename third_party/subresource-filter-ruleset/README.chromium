@@ -2,15 +2,20 @@ Name: EasyList
 URL: https://easylist.to/easylist/easylist.txt
 Version: 202010221614
 License: Creative Commons Attribution-ShareAlike 3.0 Unported
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
 
 Description:
 After fetching from Google storage, the data/ folder contains a filter list
 derived from EasyList. It is used for the Subresource Filter, as described at
-https://cs.chromium.org/chromium/src/components/subresource_filter/README.md
+https://cs.chromium.org/chromium/src/components/subresource_filter/README.md.
+This copy is included in WebLayer releases, but is not used for Chrome. Instead,
+Chrome's filter list is updated via the component updater.
 
 Local Modifications:
 The filter list is processed to reduce its size substantially. We include the
 unindexed version of this smaller ruleset. The full process is described at
-https://cs.chromium.org/chromium/src/components/subresource_filter/FILTER_LIST_GENERATION.md
+https://cs.chromium.org/chromium/src/components/subresource_filter/FILTER_LIST_GENERATION.md.
+A manifest.json file is added to the top-level directory and is not based on
+EasyList. It mirrors the manifest.json file distributed by component updater for
+Chrome and lists version information for the derived list.
