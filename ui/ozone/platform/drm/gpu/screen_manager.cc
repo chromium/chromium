@@ -190,20 +190,20 @@ base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(
     const ControllerConfigsList& controllers_params) {
   // Split them to different lists unique to each DRM Device.
   base::flat_map<scoped_refptr<DrmDevice>, ControllerConfigsList>
-      displays_for_drms;
+      displays_for_drm_devices;
 
   for (auto& params : controllers_params) {
-    auto it = displays_for_drms.find(params.drm);
-    if (it == displays_for_drms.end()) {
-      displays_for_drms.insert(
+    auto it = displays_for_drm_devices.find(params.drm);
+    if (it == displays_for_drm_devices.end()) {
+      displays_for_drm_devices.insert(
           std::make_pair(params.drm, ControllerConfigsList()));
     }
-    displays_for_drms[params.drm].emplace_back(params);
+    displays_for_drm_devices[params.drm].emplace_back(params);
   }
 
   base::flat_map<int64_t, bool> statuses;
   // Perform display configurations together for the same DRM only.
-  for (const auto& configs_on_drm : displays_for_drms) {
+  for (const auto& configs_on_drm : displays_for_drm_devices) {
     auto display_statuses = TestAndModeset(configs_on_drm.second);
     statuses.insert(display_statuses.begin(), display_statuses.end());
   }
