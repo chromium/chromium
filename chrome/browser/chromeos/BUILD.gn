@@ -1744,6 +1744,8 @@ source_set("chromeos") {
     "login/screens/network_screen.h",
     "login/screens/packaged_license_screen.cc",
     "login/screens/packaged_license_screen.h",
+    "login/screens/parental_handoff_screen.cc",
+    "login/screens/parental_handoff_screen.h",
     "login/screens/pin_setup_screen.cc",
     "login/screens/pin_setup_screen.h",
     "login/screens/recommend_apps/fake_recommend_apps_fetcher.cc",

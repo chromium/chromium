@@ -2539,6 +2539,7 @@ if (!is_android) {
         "../browser/chromeos/login/screens/multidevice_setup_screen_browsertest.cc",
         "../browser/chromeos/login/screens/network_screen_browsertest.cc",
         "../browser/chromeos/login/screens/packaged_license_screen_browsertest.cc",
+        "../browser/chromeos/login/screens/parental_handoff_screen_browsertest.cc",
         "../browser/chromeos/login/screens/pin_setup_screen_browsertest.cc",
         "../browser/chromeos/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.cc",
         "../browser/chromeos/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h",

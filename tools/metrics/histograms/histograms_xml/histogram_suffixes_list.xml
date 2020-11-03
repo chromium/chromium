@@ -11877,6 +11877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Network" label=""/>
   <suffix name="Network-selection" label=""/>
   <suffix name="Packaged-license" label=""/>
+  <suffix name="Parental-handoff" label=""/>
   <suffix name="Recommend-apps" label=""/>
   <suffix name="Reset" label=""/>
   <suffix name="Supervision-transition" label=""/>
@@ -11931,6 +11932,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Oauth-enrollment.Completed" label=""/>
   <suffix name="Packaged-license.DontEnroll" label=""/>
   <suffix name="Packaged-license.Enroll" label=""/>
+  <suffix name="Parental-Handoff.Done" label=""/>
   <suffix name="Recommend-apps.Selected" label=""/>
   <suffix name="Recommend-apps.Skipped" label=""/>
   <suffix name="Reset.Cancel" label=""/>

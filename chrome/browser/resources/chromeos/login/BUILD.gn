@@ -46,6 +46,7 @@ js_type_check("closure_compile_local") {
     ":oobe_supervision_transition",
     ":oobe_update",
     ":oobe_welcome",
+    ":parental_handoff",
     ":recommend_apps",
     ":saml_confirm_password",
     ":sync_consent",
@@ -275,6 +276,14 @@ js_library("oobe_supervision_transition") {
 }
 
 js_library("oobe_update") {
+  deps = [
+    "components:login_screen_behavior",
+    "components:oobe_dialog_host_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("parental_handoff") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",

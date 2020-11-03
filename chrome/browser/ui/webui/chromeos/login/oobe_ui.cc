@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_display_chooser.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
@@ -187,7 +188,7 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kArcPlaystoreCSSPath, IDR_ARC_SUPPORT_PLAYSTORE_CSS);
   source->AddResourcePath(kArcPlaystoreJSPath, IDR_ARC_SUPPORT_PLAYSTORE_JS);
   source->AddResourcePath(kArcPlaystoreLogoPath,
-      IDR_ARC_SUPPORT_PLAYSTORE_LOGO);
+                          IDR_ARC_SUPPORT_PLAYSTORE_LOGO);
 
   source->AddResourcePath(kRecommendAppListViewJSPath,
                           IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS);
@@ -512,6 +513,9 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(
       std::make_unique<TpmErrorScreenHandler>(js_calls_container_.get()));
+
+  AddScreenHandler(std::make_unique<ParentalHandoffScreenHandler>(
+      js_calls_container_.get()));
 
   Profile* profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.

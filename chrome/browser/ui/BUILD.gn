@@ -2313,6 +2313,8 @@ static_library("ui") {
       "webui/chromeos/login/oobe_ui.h",
       "webui/chromeos/login/packaged_license_screen_handler.cc",
       "webui/chromeos/login/packaged_license_screen_handler.h",
+      "webui/chromeos/login/parental_handoff_screen_handler.cc",
+      "webui/chromeos/login/parental_handoff_screen_handler.h",
       "webui/chromeos/login/pin_setup_screen_handler.cc",
       "webui/chromeos/login/pin_setup_screen_handler.h",
       "webui/chromeos/login/recommend_apps_screen_handler.cc",

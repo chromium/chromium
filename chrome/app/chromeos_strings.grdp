@@ -963,6 +963,17 @@
     Please retry. If you see this error again please contact your support representative.
   </message>
 
+  <!-- Strings for parental handoff login screen -->
+  <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">
+    Now it's <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>'s turn
+  </message>
+  <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_SUBTITLE" desc="Subtitle of screen which tells user that the parent can handoff the device to supervised user.">
+    You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>. Setup is almost done, then it's time to explore.
+  </message>
+  <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_NEXT_BUTTON" desc="Next button of parental handoff screen">
+    Next
+  </message>
+
   <!-- Strings for family link notice screen -->
   <message name="IDS_LOGIN_FAMILY_LINK_NOTICE_SCREEN_TITLE" desc="Title of the screen which tells user they can add parental control later.">
     Add parental controls after setup
