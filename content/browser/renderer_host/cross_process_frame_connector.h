@@ -11,10 +11,14 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/browser/renderer_host/frame_connector_delegate.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace IPC {
 class Message;
@@ -22,11 +26,24 @@ class Message;
 
 namespace blink {
 struct FrameVisualProperties;
+class WebGestureEvent;
+}  // namespace blink
+
+namespace cc {
+class RenderFrameMetadata;
 }
+
+namespace viz {
+class SurfaceId;
+class SurfaceInfo;
+}  // namespace viz
 
 namespace content {
 class RenderFrameHostImpl;
 class RenderFrameProxyHost;
+class RenderWidgetHostViewBase;
+class RenderWidgetHostViewChildFrame;
+class WebCursor;
 
 // CrossProcessFrameConnector provides the platform view abstraction for
 // RenderWidgetHostViewChildFrame allowing RWHVChildFrame to remain ignorant
@@ -64,13 +81,12 @@ class RenderFrameProxyHost;
 // SiteInstance, A2 in the picture above. When a child frame navigates in a new
 // process, SetView() is called to update to the new view.
 //
-class CONTENT_EXPORT CrossProcessFrameConnector
-    : public FrameConnectorDelegate {
+class CONTENT_EXPORT CrossProcessFrameConnector {
  public:
   // |frame_proxy_in_parent_renderer| corresponds to A2 in the example above.
   explicit CrossProcessFrameConnector(
       RenderFrameProxyHost* frame_proxy_in_parent_renderer);
-  ~CrossProcessFrameConnector() override;
+  virtual ~CrossProcessFrameConnector();
 
   bool OnMessageReceived(const IPC::Message& msg);
 
@@ -78,53 +94,176 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // above.
   RenderWidgetHostViewChildFrame* get_view_for_testing() { return view_; }
 
-  // FrameConnectorDelegate implementation.
-  void SetView(RenderWidgetHostViewChildFrame* view) override;
-  RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
-  RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override;
-  void RenderProcessGone() override;
-  void SendIntrinsicSizingInfoToParent(
-      blink::mojom::IntrinsicSizingInfoPtr) override;
+  void SetView(RenderWidgetHostViewChildFrame* view);
 
-  void UpdateCursor(const WebCursor& cursor) override;
-  gfx::PointF TransformPointToRootCoordSpace(
-      const gfx::PointF& point,
-      const viz::SurfaceId& surface_id) override;
-  bool TransformPointToCoordSpaceForView(
-      const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
-      const viz::SurfaceId& local_surface_id,
-      gfx::PointF* transformed_point) override;
+  // Returns the parent RenderWidgetHostView or nullptr if it doesn't have one.
+  virtual RenderWidgetHostViewBase* GetParentRenderWidgetHostView();
+
+  // Returns the view for the top-level frame under the same WebContents.
+  virtual RenderWidgetHostViewBase* GetRootRenderWidgetHostView();
+
+  // Notify the frame connector that the renderer process has terminated.
+  void RenderProcessGone();
+
+  // Provide the SurfaceInfo to the embedder, which becomes a reference to the
+  // current view's Surface that is included in higher-level compositor
+  // frames. This is virtual to be overridden in tests.
+  virtual void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {}
+
+  // Sends the given intrinsic sizing information from a sub-frame to
+  // its corresponding remote frame in the parent frame's renderer.
+  void SendIntrinsicSizingInfoToParent(blink::mojom::IntrinsicSizingInfoPtr);
+
+  // Sends new resize parameters to the subframe's renderer.
+  void SynchronizeVisualProperties(
+      const blink::FrameVisualProperties& visual_properties);
+
+  // Return the size of the CompositorFrame to use in the child renderer.
+  const gfx::Size& local_frame_size_in_pixels() const {
+    return local_frame_size_in_pixels_;
+  }
+
+  // Return the size of the CompositorFrame to use in the child renderer in DIP.
+  // This is used to set the layout size of the child renderer.
+  const gfx::Size& local_frame_size_in_dip() const {
+    return local_frame_size_in_dip_;
+  }
+
+  // Return the rect in DIP that the RenderWidgetHostViewChildFrame's content
+  // will render into.
+  const gfx::Rect& screen_space_rect_in_dip() const {
+    return screen_space_rect_in_dip_;
+  }
+
+  // Return the rect in pixels that the RenderWidgetHostViewChildFrame's content
+  // will render into.
+  const gfx::Rect& screen_space_rect_in_pixels() const {
+    return screen_space_rect_in_pixels_;
+  }
+
+  // Return the latest capture sequence number for this subframe.
+  uint32_t capture_sequence_number() const { return capture_sequence_number_; }
+
+  // Request that the platform change the mouse cursor when the mouse is
+  // positioned over this view's content.
+  void UpdateCursor(const WebCursor& cursor);
+
+  // Given a point in the current view's coordinate space, return the same
+  // point transformed into the coordinate space of the top-level view's
+  // coordinate space.
+  gfx::PointF TransformPointToRootCoordSpace(const gfx::PointF& point,
+                                             const viz::SurfaceId& surface_id);
+
+  // Transform a point into the coordinate space of the root
+  // RenderWidgetHostView, for the current view's coordinate space.
+  // Returns false if |target_view| and |view_| do not have the same root
+  // RenderWidgetHostView.
+  bool TransformPointToCoordSpaceForView(const gfx::PointF& point,
+                                         RenderWidgetHostViewBase* target_view,
+                                         const viz::SurfaceId& local_surface_id,
+                                         gfx::PointF* transformed_point);
+
+  // Pass acked touchpad pinch or double tap gesture events to the root view
+  // for processing.
   void ForwardAckedTouchpadZoomEvent(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) override;
-  bool BubbleScrollEvent(const blink::WebGestureEvent& event) override;
-  bool HasFocus() override;
-  void FocusRootView() override;
-  blink::mojom::PointerLockResult LockMouse(
-      bool request_unadjusted_movement) override;
+      blink::mojom::InputEventResultState ack_result);
+
+  // A gesture scroll sequence that is not consumed by a child must be bubbled
+  // to ancestors who may consume it.
+  // Returns false if the scroll event could not be bubbled. The caller must
+  // not attempt to bubble the rest of the scroll sequence in this case.
+  // Otherwise, returns true.
+  // Made virtual for test override.
+  virtual bool BubbleScrollEvent(const blink::WebGestureEvent& event)
+      WARN_UNUSED_RESULT;
+
+  // Determines whether the root RenderWidgetHostView (and thus the current
+  // page) has focus.
+  bool HasFocus();
+
+  // Cause the root RenderWidgetHostView to become focused.
+  void FocusRootView();
+
+  // Locks the mouse, if |request_unadjusted_movement_| is true, try setting the
+  // unadjusted movement mode. Returns true if mouse is locked.
+  blink::mojom::PointerLockResult LockMouse(bool request_unadjusted_movement);
+
+  // Change the current mouse lock to match the unadjusted movement option
+  // given.
   blink::mojom::PointerLockResult ChangeMouseLock(
-      bool request_unadjusted_movement) override;
-  void UnlockMouse() override;
-  void EnableAutoResize(const gfx::Size& min_size,
-                        const gfx::Size& max_size) override;
-  void DisableAutoResize() override;
-  bool IsInert() const override;
-  cc::TouchAction InheritedEffectiveTouchAction() const override;
-  bool IsHidden() const override;
-  bool IsThrottled() const override;
-  bool IsSubtreeThrottled() const override;
-  void DidUpdateVisualProperties(
-      const cc::RenderFrameMetadata& metadata) override;
-  void DidAckGestureEvent(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result) override;
+      bool request_unadjusted_movement);
 
-  // Set the visibility of immediate child views, i.e. views whose parent view
-  // is |view_|.
-  void SetVisibilityForChildViews(bool visible) const override;
+  // Unlocks the mouse if the mouse is locked.
+  void UnlockMouse();
 
-  void SetScreenSpaceRect(const gfx::Rect& screen_space_rect) override;
+  // Returns the state of the frame's intersection with the top-level viewport.
+  const blink::mojom::ViewportIntersectionState& intersection_state() const {
+    return intersection_state_;
+  }
+
+  // Returns the viz::LocalSurfaceId propagated from the parent to be
+  // used by this child frame.
+  const viz::LocalSurfaceId& local_surface_id() const {
+    return local_surface_id_;
+  }
+
+  // Returns the ScreenInfo propagated from the parent to be used by this
+  // child frame.
+  const blink::ScreenInfo& screen_info() const { return screen_info_; }
+
+  void SetScreenInfoForTesting(const blink::ScreenInfo& screen_info) {
+    screen_info_ = screen_info;
+  }
+
+  // Informs the parent the child will enter auto-resize mode, automatically
+  // resizing itself to the provided |min_size| and |max_size| constraints.
+  void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size);
+
+  // Turns off auto-resize mode.
+  void DisableAutoResize();
+
+  // Determines whether the current view's content is inert, either because
+  // an HTMLDialogElement is being modally displayed in a higher-level frame,
+  // or because the inert attribute has been specified.
+  bool IsInert() const;
+
+  // Returns the inherited effective touch action property that should be
+  // applied to any nested child RWHVCFs inside the caller RWHVCF.
+  cc::TouchAction InheritedEffectiveTouchAction() const;
+
+  // Determines whether the RenderWidgetHostViewChildFrame is hidden due to
+  // a higher-level embedder being hidden. This is distinct from the
+  // RenderWidgetHostImpl being hidden, which is a property set when
+  // RenderWidgetHostView::Hide() is called on the current view.
+  bool IsHidden() const;
+
+  // Determines whether the child frame should be render throttled, which
+  // happens when the entire rect is offscreen.
+  bool IsThrottled() const;
+  bool IsSubtreeThrottled() const;
+
+  // Called by RenderWidgetHostViewChildFrame when the child frame has updated
+  // its visual properties and its viz::LocalSurfaceId has changed.
+  void DidUpdateVisualProperties(const cc::RenderFrameMetadata& metadata);
+
+  bool has_size() const { return has_size_; }
+
+  void DidAckGestureEvent(const blink::WebGestureEvent& event,
+                          blink::mojom::InputEventResultState ack_result);
+
+  // Called by RenderWidgetHostViewChildFrame to update the visibility of any
+  // nested child RWHVCFs inside it.
+  void SetVisibilityForChildViews(bool visible) const;
+
+  // Called to resize the child renderer's CompositorFrame.
+  // |local_frame_size| is in pixels if zoom-for-dsf is enabled, and in DIP
+  // if not.
+  void SetLocalFrameSize(const gfx::Size& local_frame_size);
+
+  // Called to resize the child renderer. |screen_space_rect| is in pixels if
+  // zoom-for-dsf is enabled, and in DIP if not.
+  void SetScreenSpaceRect(const gfx::Rect& screen_space_rect);
 
   void SetIsInert(bool inert);
 
@@ -179,8 +318,16 @@ class CONTENT_EXPORT CrossProcessFrameConnector
     child_frame_crash_shown_closure_for_testing_ = std::move(closure);
   }
 
- private:
+  void set_use_zoom_for_device_scale_factor_for_testing(
+      bool use_zoom_for_device_scale_factor) {
+    use_zoom_for_device_scale_factor_ = use_zoom_for_device_scale_factor;
+  }
+
+ protected:
   friend class MockCrossProcessFrameConnector;
+
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewChildFrameZoomForDSFTest,
+                           CompositorViewportPixelSize);
 
   // Resets the rect and the viz::LocalSurfaceId of the connector to ensure the
   // unguessable surface ID is not reused after a cross-process navigation.
@@ -199,6 +346,28 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties);
 
+  // The RenderWidgetHostView for the frame. Initially nullptr.
+  RenderWidgetHostViewChildFrame* view_ = nullptr;
+
+  // This is here rather than in the implementation class so that
+  // intersection_state() can return a reference.
+  blink::mojom::ViewportIntersectionState intersection_state_;
+
+  blink::ScreenInfo screen_info_;
+  gfx::Size local_frame_size_in_dip_;
+  gfx::Size local_frame_size_in_pixels_;
+  gfx::Rect screen_space_rect_in_dip_;
+  gfx::Rect screen_space_rect_in_pixels_;
+
+  viz::LocalSurfaceId local_surface_id_;
+
+  bool has_size_ = false;
+
+  // This allows a test override for UseZoomForDSF().
+  bool use_zoom_for_device_scale_factor_;
+
+  uint32_t capture_sequence_number_ = 0u;
+
   // Gets the current RenderFrameHost for the
   // |frame_proxy_in_parent_renderer_|'s (i.e., the child frame's)
   // FrameTreeNode. This corresponds to B2 in the class-level comment
@@ -207,6 +376,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector
 
   // The RenderFrameProxyHost that routes messages to the parent frame's
   // renderer process.
+  // Can be nullptr in tests.
   RenderFrameProxyHost* frame_proxy_in_parent_renderer_;
 
   bool is_inert_ = false;

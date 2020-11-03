@@ -14,7 +14,7 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
-#include "content/browser/renderer_host/frame_connector_delegate.h"
+#include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -35,22 +35,24 @@ namespace content {
 
 namespace {
 
-class MockFrameConnectorDelegate : public FrameConnectorDelegate {
+class MockFrameConnector : public CrossProcessFrameConnector {
  public:
-  MockFrameConnectorDelegate(RenderWidgetHostViewChildFrame* view,
-                             RenderWidgetHostViewBase* parent_view,
-                             RenderWidgetHostViewBase* root_view,
-                             bool use_zoom_for_device_scale_factor)
-      : FrameConnectorDelegate(use_zoom_for_device_scale_factor),
+  MockFrameConnector(RenderWidgetHostViewChildFrame* view,
+                     RenderWidgetHostViewBase* parent_view,
+                     RenderWidgetHostViewBase* root_view,
+                     bool use_zoom_for_device_scale_factor)
+      : CrossProcessFrameConnector(nullptr),
         parent_view_(parent_view),
         root_view_(root_view) {
     view_ = view;
-    view_->SetFrameConnectorDelegate(this);
+    view_->SetFrameConnector(this);
+    set_use_zoom_for_device_scale_factor_for_testing(
+        use_zoom_for_device_scale_factor);
   }
 
-  ~MockFrameConnectorDelegate() override {
+  ~MockFrameConnector() override {
     if (view_) {
-      view_->SetFrameConnectorDelegate(nullptr);
+      view_->SetFrameConnector(nullptr);
       view_ = nullptr;
     }
   }
@@ -67,7 +69,7 @@ class MockFrameConnectorDelegate : public FrameConnectorDelegate {
   RenderWidgetHostViewBase* parent_view_;
   RenderWidgetHostViewBase* root_view_;
 
-  DISALLOW_COPY_AND_ASSIGN(MockFrameConnectorDelegate);
+  DISALLOW_COPY_AND_ASSIGN(MockFrameConnector);
 };
 
 // Used as a target for the RenderWidgetHostInputEventRouter. We record what
@@ -273,7 +275,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host;
     std::unique_ptr<RenderWidgetHostImpl> widget_host;
     std::unique_ptr<TestRenderWidgetHostViewChildFrame> view;
-    std::unique_ptr<MockFrameConnectorDelegate> frame_connector;
+    std::unique_ptr<MockFrameConnector> frame_connector;
   };
 
   ChildViewState MakeChildView(RenderWidgetHostViewBase* parent_view) {
@@ -289,7 +291,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         /*hidden=*/false, std::make_unique<FrameTokenMessageQueue>());
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
-    child.frame_connector = std::make_unique<MockFrameConnectorDelegate>(
+    child.frame_connector = std::make_unique<MockFrameConnector>(
         child.view.get(), parent_view, view_root_.get(),
         false /* use_zoom_for_device_scale_factor */);
 

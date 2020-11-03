@@ -21,9 +21,9 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/display_util.h"
-#include "content/browser/renderer_host/frame_connector_delegate.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_child_frame.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -107,8 +107,8 @@ void RenderWidgetHostViewChildFrame::
   selection_controller_client_.reset();
 }
 
-void RenderWidgetHostViewChildFrame::SetFrameConnectorDelegate(
-    FrameConnectorDelegate* frame_connector) {
+void RenderWidgetHostViewChildFrame::SetFrameConnector(
+    CrossProcessFrameConnector* frame_connector) {
   if (frame_connector_ == frame_connector)
     return;
 
@@ -365,7 +365,7 @@ void RenderWidgetHostViewChildFrame::Destroy() {
   // observers of our impending destruction.
   if (frame_connector_) {
     frame_connector_->SetView(nullptr);
-    SetFrameConnectorDelegate(nullptr);
+    SetFrameConnector(nullptr);
   }
 
   // We notify our observers about shutdown here since we are about to release

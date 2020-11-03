@@ -21,7 +21,7 @@
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
-#include "content/browser/renderer_host/frame_connector_delegate.h"
+#include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -51,11 +51,14 @@ const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
 
 }  // namespace
 
-class MockFrameConnectorDelegate : public FrameConnectorDelegate {
+class MockFrameConnector : public CrossProcessFrameConnector {
  public:
-  MockFrameConnectorDelegate(bool use_zoom_for_device_scale_factor)
-      : FrameConnectorDelegate(use_zoom_for_device_scale_factor) {}
-  ~MockFrameConnectorDelegate() override {}
+  explicit MockFrameConnector(bool use_zoom_for_device_scale_factor)
+      : CrossProcessFrameConnector(nullptr) {
+    set_use_zoom_for_device_scale_factor_for_testing(
+        use_zoom_for_device_scale_factor);
+  }
+  ~MockFrameConnector() override = default;
 
   void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
     last_surface_info_ = surface_info;
@@ -147,9 +150,9 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     EXPECT_EQ(screen_info, actual_screen_info);
 
     test_frame_connector_ =
-        new MockFrameConnectorDelegate(use_zoom_for_device_scale_factor);
+        new MockFrameConnector(use_zoom_for_device_scale_factor);
     test_frame_connector_->SetView(view_);
-    view_->SetFrameConnectorDelegate(test_frame_connector_);
+    view_->SetFrameConnector(test_frame_connector_);
   }
 
   void TearDown() override {
@@ -191,21 +194,24 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
   // destruction.
   RenderWidgetHostImpl* widget_host_;
   RenderWidgetHostViewChildFrame* view_;
-  MockFrameConnectorDelegate* test_frame_connector_;
+  MockFrameConnector* test_frame_connector_;
 };
 
 TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
   // Calling show and hide also needs to be propagated to child frame by the
   // |frame_connector_| which itself requires a |frame_proxy_in_parent_renderer|
-  // (set to nullptr for MockFrameConnectorDelegate). To avoid crashing the test
+  // (set to nullptr for MockFrameConnector). To avoid crashing the test
   // |frame_connector_| is to set to nullptr.
-  view_->SetFrameConnectorDelegate(nullptr);
+  view_->SetFrameConnector(nullptr);
 
   view_->Show();
   ASSERT_TRUE(view_->IsShowing());
 
   view_->Hide();
   ASSERT_FALSE(view_->IsShowing());
+
+  // Restore the MockFrameConnector to avoid a crash during destruction.
+  view_->SetFrameConnector(test_frame_connector_);
 }
 
 // Tests that the viewport intersection rect is dispatched to the RenderWidget

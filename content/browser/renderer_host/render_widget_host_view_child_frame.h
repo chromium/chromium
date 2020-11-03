@@ -34,7 +34,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
-class FrameConnectorDelegate;
+class CrossProcessFrameConnector;
 class RenderWidgetHost;
 class RenderWidgetHostViewChildFrameTest;
 class TouchSelectionControllerClientChildFrame;
@@ -57,7 +57,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       RenderWidgetHost* widget,
       const blink::ScreenInfo& screen_info);
 
-  void SetFrameConnectorDelegate(FrameConnectorDelegate* frame_connector);
+  void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
 
   // TouchSelectionControllerClientManager::Observer implementation.
   void OnManagerWillDestroy(
@@ -172,7 +172,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
 
-  FrameConnectorDelegate* FrameConnectorForTesting() const {
+  CrossProcessFrameConnector* FrameConnectorForTesting() const {
     return frame_connector_;
   }
 
@@ -232,7 +232,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // frame_connector_ provides a platform abstraction. Messages
   // sent through it are routed to the embedding renderer process.
-  FrameConnectorDelegate* frame_connector_;
+  CrossProcessFrameConnector* frame_connector_;
 
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

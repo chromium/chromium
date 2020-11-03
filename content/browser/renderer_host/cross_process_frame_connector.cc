@@ -31,8 +31,12 @@ namespace content {
 
 CrossProcessFrameConnector::CrossProcessFrameConnector(
     RenderFrameProxyHost* frame_proxy_in_parent_renderer)
-    : FrameConnectorDelegate(IsUseZoomForDSFEnabled()),
+    : use_zoom_for_device_scale_factor_(IsUseZoomForDSFEnabled()),
       frame_proxy_in_parent_renderer_(frame_proxy_in_parent_renderer) {
+  // Skip for tests.
+  if (!frame_proxy_in_parent_renderer_)
+    return;
+
   // At this point, SetView() has not been called and so the associated
   // RenderWidgetHost doesn't have a view yet. That means calling
   // GetScreenInfo() on the associated RenderWidgetHost will just default to the
@@ -92,7 +96,7 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
           ->GetInputEventRouter()
           ->WillDetachChildView(view_);
     }
-    view_->SetFrameConnectorDelegate(nullptr);
+    view_->SetFrameConnector(nullptr);
   }
 
   ResetScreenSpaceRect();
@@ -111,11 +115,13 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
     is_crash_already_logged_ = has_crashed_ = false;
     delegate_was_shown_after_crash_ = false;
 
-    view_->SetFrameConnectorDelegate(this);
+    view_->SetFrameConnector(this);
     if (visibility_ != blink::mojom::FrameVisibility::kRenderedInViewport)
       OnVisibilityChanged(visibility_);
-    frame_proxy_in_parent_renderer_->GetAssociatedRenderFrameProxy()
-        ->SetFrameSinkId(view_->GetFrameSinkId());
+    if (frame_proxy_in_parent_renderer_) {
+      frame_proxy_in_parent_renderer_->GetAssociatedRenderFrameProxy()
+          ->SetFrameSinkId(view_->GetFrameSinkId());
+    }
   }
 }
 
@@ -153,6 +159,35 @@ void CrossProcessFrameConnector::SendIntrinsicSizingInfoToParent(
          (sizing_info->aspect_ratio.height() >= 0.f));
   frame_proxy_in_parent_renderer_->GetAssociatedRemoteFrame()
       ->IntrinsicSizingInfoOfChildChanged(std::move(sizing_info));
+}
+
+void CrossProcessFrameConnector::SynchronizeVisualProperties(
+    const blink::FrameVisualProperties& visual_properties) {
+  screen_info_ = visual_properties.screen_info;
+  local_surface_id_ = visual_properties.local_surface_id;
+
+  capture_sequence_number_ = visual_properties.capture_sequence_number;
+
+  SetScreenSpaceRect(visual_properties.screen_space_rect);
+  SetLocalFrameSize(visual_properties.local_frame_size);
+
+  if (!view_)
+    return;
+
+  RenderWidgetHostImpl* render_widget_host = view_->host();
+  DCHECK(render_widget_host);
+
+  render_widget_host->SetAutoResize(visual_properties.auto_resize_enabled,
+                                    visual_properties.min_size_for_auto_resize,
+                                    visual_properties.max_size_for_auto_resize);
+  render_widget_host->SetVisualPropertiesFromParentFrame(
+      visual_properties.page_scale_factor,
+      visual_properties.is_pinch_gesture_active,
+      visual_properties.visible_viewport_size,
+      visual_properties.compositor_viewport,
+      visual_properties.root_widget_window_segments);
+
+  render_widget_host->SynchronizeVisualProperties();
 }
 
 void CrossProcessFrameConnector::UpdateCursor(const WebCursor& cursor) {
@@ -375,7 +410,9 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
 RenderWidgetHostViewBase*
 CrossProcessFrameConnector::GetParentRenderWidgetHostView() {
   RenderFrameHostImpl* parent =
-      current_child_frame_host()->ParentOrOuterDelegateFrame();
+      current_child_frame_host()
+          ? current_child_frame_host()->ParentOrOuterDelegateFrame()
+          : nullptr;
   return parent ? static_cast<RenderWidgetHostViewBase*>(parent->GetView())
                 : nullptr;
 }
@@ -422,12 +459,38 @@ void CrossProcessFrameConnector::SetVisibilityForChildViews(
   current_child_frame_host()->SetVisibilityForChildViews(visible);
 }
 
+void CrossProcessFrameConnector::SetLocalFrameSize(
+    const gfx::Size& local_frame_size) {
+  has_size_ = true;
+  if (use_zoom_for_device_scale_factor_) {
+    local_frame_size_in_pixels_ = local_frame_size;
+    local_frame_size_in_dip_ = gfx::ScaleToRoundedSize(
+        local_frame_size, 1.f / screen_info_.device_scale_factor);
+  } else {
+    local_frame_size_in_dip_ = local_frame_size;
+    local_frame_size_in_pixels_ = gfx::ScaleToCeiledSize(
+        local_frame_size, screen_info_.device_scale_factor);
+  }
+}
+
 void CrossProcessFrameConnector::SetScreenSpaceRect(
     const gfx::Rect& screen_space_rect) {
   gfx::Rect old_rect = screen_space_rect_in_pixels_;
-  FrameConnectorDelegate::SetScreenSpaceRect(screen_space_rect);
 
-  if (view_) {
+  if (use_zoom_for_device_scale_factor_) {
+    screen_space_rect_in_pixels_ = screen_space_rect;
+    screen_space_rect_in_dip_ = gfx::Rect(
+        gfx::ScaleToFlooredPoint(screen_space_rect.origin(),
+                                 1.f / screen_info_.device_scale_factor),
+        gfx::ScaleToCeiledSize(screen_space_rect.size(),
+                               1.f / screen_info_.device_scale_factor));
+  } else {
+    screen_space_rect_in_dip_ = screen_space_rect;
+    screen_space_rect_in_pixels_ = gfx::ScaleToEnclosingRect(
+        screen_space_rect, screen_info_.device_scale_factor);
+  }
+
+  if (view_ && frame_proxy_in_parent_renderer_) {
     view_->SetBounds(screen_space_rect_in_dip_);
 
     // Other local root frames nested underneath this one implicitly have their
@@ -549,6 +612,9 @@ bool CrossProcessFrameConnector::IsVisible() {
   if (intersection_state().viewport_intersection.IsEmpty())
     return false;
 
+  if (!current_child_frame_host())
+    return true;
+
   Visibility embedder_visibility =
       current_child_frame_host()->delegate()->GetVisibility();
   if (embedder_visibility != Visibility::VISIBLE)
@@ -559,8 +625,10 @@ bool CrossProcessFrameConnector::IsVisible() {
 
 RenderFrameHostImpl* CrossProcessFrameConnector::current_child_frame_host()
     const {
-  return frame_proxy_in_parent_renderer_->frame_tree_node()
-      ->current_frame_host();
+  return frame_proxy_in_parent_renderer_
+             ? frame_proxy_in_parent_renderer_->frame_tree_node()
+                   ->current_frame_host()
+             : nullptr;
 }
 
 }  // namespace content
