@@ -40,6 +40,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
@@ -1524,9 +1526,33 @@ void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,
   extensions_api_[origin + "/"] = script;
 }
 
-void DevToolsUIBindings::GetSurveyAPIKey(const DispatchCallback& callback) {
+namespace {
+
+void ShowSurveyCallback(const DevToolsUIBindings::DispatchCallback& callback,
+                        bool survey_shown) {
   base::DictionaryValue response;
-  response.SetString("apiKey", google_apis::GetDevtoolsSurveysAPIKey());
+  response.SetBoolean("surveyShown", survey_shown);
+  callback.Run(&response);
+}
+
+}  // namespace
+
+void DevToolsUIBindings::ShowSurvey(const DispatchCallback& callback,
+                                    const std::string& trigger) {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_->GetOriginalProfile(), true);
+  hats_service->LaunchSurvey(
+      trigger, base::BindOnce(ShowSurveyCallback, callback, true),
+      base::BindOnce(ShowSurveyCallback, callback, false));
+}
+
+void DevToolsUIBindings::CanShowSurvey(const DispatchCallback& callback,
+                                       const std::string& trigger) {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_->GetOriginalProfile(), true);
+  bool can_show = hats_service->CanShowSurvey(trigger);
+  base::DictionaryValue response;
+  response.SetBoolean("canShowSurvey", can_show);
   callback.Run(&response);
 }
 

@@ -171,7 +171,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void SetOpenNewWindowForPopups(bool value) override;
   void RegisterExtensionsAPI(const std::string& origin,
                              const std::string& script) override;
-  void GetSurveyAPIKey(const DispatchCallback& callback) override;
+  void ShowSurvey(const DispatchCallback& callback,
+                  const std::string& trigger) override;
+  void CanShowSurvey(const DispatchCallback& callback,
+                     const std::string& trigger) override;
 
   void EnableRemoteDeviceCounter(bool enable);
 
