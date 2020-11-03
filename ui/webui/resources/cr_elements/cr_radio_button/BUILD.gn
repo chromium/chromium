@@ -41,7 +41,6 @@ group("polymer3_elements") {
 
 js_modulizer("modulize") {
   input_files = [ "cr_radio_button_behavior.js" ]
-  deps = [ "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior" ]
   namespace_rewrites = [ "Polymer.PaperRippleBehavior|PaperRippleBehavior" ]
 }
 

@@ -36,7 +36,6 @@ group("polymer3_elements") {
 
 js_modulizer("modulize") {
   input_files = [ "cr_search_field_behavior.js" ]
-  deps = []
 }
 
 polymer_modulizer("cr_search_field") {

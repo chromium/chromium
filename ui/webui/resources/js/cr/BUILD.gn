@@ -30,18 +30,24 @@ js_library("ui") {
 
 js_library("event_target.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/cr/event_target.m.js" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("ui.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui.m.js" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
-js_modulizer("modulize") {
+group("modulize") {
+  public_deps = [
+    ":modulize_local",
+    "ui:modulize",
+  ]
+}
+
+js_modulizer("modulize_local") {
   input_files = [
     "event_target.js",
     "ui.js",
   ]
-  deps = [ "ui:modulize" ]
 }

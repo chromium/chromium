@@ -60,9 +60,5 @@ template("js_modulizer") {
     if (defined(invoker.namespace_rewrites)) {
       args += invoker.namespace_rewrites
     }
-
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
   }
 }

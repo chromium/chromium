@@ -115,7 +115,14 @@ js_library("webui_resource_test") {
 
 # Targets for auto-generating and type-checking JS Modules
 
-js_modulizer("modulize") {
+group("modulize") {
+  public_deps = [
+    ":modulize_local",
+    "cr:modulize",
+  ]
+}
+
+js_modulizer("modulize_local") {
   input_files = [
     "assert.js",
     "event_tracker.js",
@@ -133,7 +140,6 @@ js_modulizer("modulize") {
     "cr.search_highlight_utils.Range|Range",
     "Polymer.ArraySplice.calculateSplices|calculateSplices",
   ]
-  deps = [ "cr:modulize" ]
 }
 
 group("closure_compile_modules") {
@@ -164,7 +170,7 @@ js_type_check("js_resources_modules") {
 
 js_library("assert.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/assert.m.js" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("cr.m") {
@@ -177,13 +183,13 @@ js_library("cr.m") {
 
 js_library("event_tracker.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/event_tracker.m.js" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("icon.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/icon.m.js" ]
   deps = [ ":cr.m" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("i18n_behavior.m") {
@@ -192,7 +198,7 @@ js_library("i18n_behavior.m") {
     ":load_time_data.m",
     ":parse_html_subset.m",
   ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("list_property_update_behavior.m") {
@@ -202,7 +208,7 @@ js_library("list_property_update_behavior.m") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("load_time_data.m") {
@@ -212,12 +218,12 @@ js_library("load_time_data.m") {
     ":parse_html_subset.m",
     "//third_party/jstemplate:jstemplate",
   ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("parse_html_subset.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/parse_html_subset.m.js" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("plural_string_proxy") {
@@ -227,14 +233,14 @@ js_library("plural_string_proxy") {
 js_library("promise_resolver.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/promise_resolver.m.js" ]
   deps = [ ":assert.m" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("search_highlight_utils.m") {
   sources =
       [ "$root_gen_dir/ui/webui/resources/js/search_highlight_utils.m.js" ]
   deps = [ ":assert.m" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("util.m") {
@@ -244,12 +250,12 @@ js_library("util.m") {
     ":cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("web_ui_listener_behavior.m") {
   sources =
       [ "$root_gen_dir/ui/webui/resources/js/web_ui_listener_behavior.m.js" ]
   deps = [ ":cr.m" ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":modulize_local" ]
 }
