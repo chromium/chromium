@@ -423,9 +423,6 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     mojom::PaintPreviewStatus status,
     mojom::PaintPreviewCaptureParamsPtr capture_params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // For the main frame, apply a clip rect if one is provided.
-  if (params.is_main_frame)
-    capture_params->clip_rect_is_hint = false;
 
   auto it = all_document_data_.find(params.document_guid);
   if (it == all_document_data_.end())
@@ -442,8 +439,10 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   // If the render frame host navigated or is no longer around treat this as a
   // failure as a navigation occurring during capture is bad.
   auto* render_frame_host = content::RenderFrameHost::FromID(render_frame_id);
-  if (!render_frame_host || render_frame_host->GetEmbeddingToken().value_or(
-                                base::UnguessableToken::Null()) != frame_guid) {
+  if (!render_frame_host ||
+      render_frame_host->GetEmbeddingToken().value_or(
+          base::UnguessableToken::Null()) != frame_guid ||
+      !capture_params) {
     std::move(document_data->callback)
         .Run(params.document_guid, mojom::PaintPreviewStatus::kCaptureFailed,
              {});
@@ -466,6 +465,11 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
         &interface_ptrs_[frame_guid]);
   }
+
+  // For the main frame, apply a clip rect if one is provided.
+  if (params.is_main_frame)
+    capture_params->clip_rect_is_hint = false;
+
   interface_ptrs_[frame_guid]->CapturePaintPreview(
       std::move(capture_params),
       base::BindOnce(&PaintPreviewClient::OnPaintPreviewCapturedCallback,
