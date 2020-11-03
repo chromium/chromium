@@ -53,7 +53,8 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
 void ReportInitialSessionData(
     WebXRSessionTracker* webxr_session_tracker,
     const device::mojom::XRSessionOptions& session_options,
-    const std::set<device::mojom::XRSessionFeature>& enabled_features) {
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        enabled_features) {
   DCHECK(webxr_session_tracker);
 
   webxr_session_tracker->ukm_entry()->SetMode(
@@ -104,7 +105,7 @@ SessionMetricsHelper::~SessionMetricsHelper() {
 mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
 SessionMetricsHelper::StartInlineSession(
     const device::mojom::XRSessionOptions& session_options,
-    const std::set<device::mojom::XRSessionFeature>& enabled_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
     size_t session_id) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -147,7 +148,8 @@ void SessionMetricsHelper::StopAndRecordInlineSession(size_t session_id) {
 mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
 SessionMetricsHelper::StartImmersiveSession(
     const device::mojom::XRSessionOptions& session_options,
-    const std::set<device::mojom::XRSessionFeature>& enabled_features) {
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        enabled_features) {
   DVLOG(1) << __func__;
   DCHECK(!webxr_immersive_session_tracker_);
   base::Time start_time = base::Time::Now();

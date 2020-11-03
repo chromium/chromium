@@ -83,7 +83,7 @@ ArCoreDevice::ArCoreDevice(
 
 ArCoreDevice::~ArCoreDevice() {
   // If there's still a pending session request, reject it.
-  CallDeferredRequestSessionCallback(/*success=*/false);
+  CallDeferredRequestSessionCallback(base::nullopt);
 
   // Ensure that any active sessions are terminated. Terminating the GL thread
   // would normally do so via its session_shutdown_callback_, but that happens
@@ -119,10 +119,16 @@ void ArCoreDevice::RequestSession(
 
   DCHECK(!session_state_->pending_request_session_callback_);
   session_state_->pending_request_session_callback_ = std::move(callback);
-  session_state_->enabled_features_ = options->enabled_features;
+  session_state_->required_features_.insert(options->required_features.begin(),
+                                            options->required_features.end());
+  session_state_->optional_features_.insert(options->optional_features.begin(),
+                                            options->optional_features.end());
 
-  bool use_dom_overlay = base::Contains(
-      options->enabled_features, device::mojom::XRSessionFeature::DOM_OVERLAY);
+  bool use_dom_overlay =
+      base::Contains(options->required_features,
+                     device::mojom::XRSessionFeature::DOM_OVERLAY) ||
+      base::Contains(options->optional_features,
+                     device::mojom::XRSessionFeature::DOM_OVERLAY);
 
   // mailbox_bridge_ is either supplied from the constructor, or recreated in
   // OnSessionEnded().
@@ -192,7 +198,7 @@ void ArCoreDevice::OnDrawingSurfaceTouch(bool is_primary,
 void ArCoreDevice::OnDrawingSurfaceDestroyed() {
   DVLOG(1) << __func__;
 
-  CallDeferredRequestSessionCallback(/*success=*/false);
+  CallDeferredRequestSessionCallback(base::nullopt);
 
   OnSessionEnded();
 }
@@ -240,8 +246,10 @@ void ArCoreDevice::OnSessionEnded() {
   OnExitPresent();
 }
 
-void ArCoreDevice::CallDeferredRequestSessionCallback(bool success) {
-  DVLOG(1) << __func__ << " success=" << success;
+void ArCoreDevice::CallDeferredRequestSessionCallback(
+    base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+        enabled_features) {
+  DVLOG(1) << __func__ << " success=" << enabled_features.has_value();
   DCHECK(IsOnMainThread());
 
   // We might not have any pending session requests, i.e. if destroyed
@@ -252,7 +260,7 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(bool success) {
   mojom::XRRuntime::RequestSessionCallback deferred_callback =
       std::move(session_state_->pending_request_session_callback_);
 
-  if (!success) {
+  if (!enabled_features) {
     std::move(deferred_callback).Run(nullptr, mojo::NullRemote());
     return;
   }
@@ -260,7 +268,7 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(bool success) {
   // Success case should only happen after GL thread is ready.
   auto create_callback =
       base::BindOnce(&ArCoreDevice::OnCreateSessionCallback, GetWeakPtr(),
-                     std::move(deferred_callback));
+                     std::move(deferred_callback), *enabled_features);
 
   auto shutdown_callback =
       base::BindOnce(&ArCoreDevice::OnSessionEnded, GetWeakPtr());
@@ -275,6 +283,7 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(bool success) {
 
 void ArCoreDevice::OnCreateSessionCallback(
     mojom::XRRuntime::RequestSessionCallback deferred_callback,
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
     mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
     mojom::VRDisplayInfoPtr display_info,
     mojo::PendingRemote<mojom::XRSessionController> session_controller,
@@ -286,7 +295,8 @@ void ArCoreDevice::OnCreateSessionCallback(
   session->data_provider = std::move(frame_data_provider);
   session->display_info = std::move(display_info);
   session->submit_frame_sink = std::move(presentation_connection);
-
+  session->enabled_features.assign(enabled_features.begin(),
+                                   enabled_features.end());
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 
@@ -321,7 +331,7 @@ void ArCoreDevice::RequestArCoreGlInitialization(
 
   if (!arcore_session_utils_->EnsureLoaded()) {
     DLOG(ERROR) << "ARCore was not loaded properly.";
-    OnArCoreGlInitializationComplete(false);
+    OnArCoreGlInitializationComplete(base::nullopt);
     return;
   }
 
@@ -335,30 +345,30 @@ void ArCoreDevice::RequestArCoreGlInitialization(
         &ArCoreGl::Initialize,
         session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),
         arcore_session_utils_.get(), arcore_factory_.get(), drawing_widget,
-        frame_size, rotation, session_state_->enabled_features_,
+        frame_size, rotation, session_state_->required_features_,
+        session_state_->optional_features_,
         std::move(session_state_->tracked_images_),
         CreateMainThreadCallback(base::BindOnce(
             &ArCoreDevice::OnArCoreGlInitializationComplete, GetWeakPtr()))));
     return;
   }
 
-  OnArCoreGlInitializationComplete(true);
+  OnArCoreGlInitializationComplete(session_state_->enabled_features_);
 }
 
-void ArCoreDevice::OnArCoreGlInitializationComplete(bool success) {
+void ArCoreDevice::OnArCoreGlInitializationComplete(
+    base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+        enabled_features) {
   DVLOG(1) << __func__;
   DCHECK(IsOnMainThread());
 
-  if (!success) {
-    CallDeferredRequestSessionCallback(/*success=*/false);
-    return;
-  }
-
-  session_state_->is_arcore_gl_initialized_ = true;
+  session_state_->is_arcore_gl_initialized_ = enabled_features.has_value();
+  session_state_->enabled_features_ = enabled_features.value_or(
+      std::unordered_set<device::mojom::XRSessionFeature>{});
 
   // We only start GL initialization after the user has granted consent, so we
   // can now start the session.
-  CallDeferredRequestSessionCallback(/*success=*/true);
+  CallDeferredRequestSessionCallback(enabled_features);
 }
 
 }  // namespace device

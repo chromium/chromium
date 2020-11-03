@@ -41,9 +41,10 @@ struct XRRuntimeSessionOptions {
   // Represents the type of session that is being requested.
   XRSessionMode mode;
 
-  // The enabled features combine the active required and optional features as
+  // The below arrays combine the active required and optional features as
   // resolved by BrowserXRRuntime and VRServiceImpl.
-  array<XRSessionFeature> enabled_features;
+  array<XRSessionFeature> required_features;
+  array<XRSessionFeature> optional_features;
 
   // The following options are used for permission requests and showing module
   // install UI.

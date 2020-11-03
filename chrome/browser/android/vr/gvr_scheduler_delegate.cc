@@ -212,6 +212,25 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   session->submit_frame_sink = std::move(submit_frame_sink);
   session->display_info = std::move(display_info);
 
+  // Currently, the initial filtering of supported devices happens on the
+  // browser side (BrowserXRRuntimeImpl::SupportsFeature()), so if we have
+  // reached this point, it is safe to assume that all requested features are
+  // enabled.
+  // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
+  session->enabled_features.insert(session->enabled_features.end(),
+                                   options->required_features.begin(),
+                                   options->required_features.end());
+  session->enabled_features.insert(session->enabled_features.end(),
+                                   options->optional_features.begin(),
+                                   options->optional_features.end());
+
+  DVLOG(3) << __func__ << ": options->required_features.size()="
+           << options->required_features.size()
+           << ", options->optional_features.size()="
+           << options->optional_features.size()
+           << ", session->enabled_features.size()="
+           << session->enabled_features.size();
+
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 

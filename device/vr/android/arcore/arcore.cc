@@ -25,4 +25,12 @@ gfx::Transform ArCore::GetCameraUvFromScreenUvTransform() const {
          gfx::Transform(1, 0, 0, -1, 0, 1);
 }
 
+ArCore::InitializeResult::InitializeResult(
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features)
+    : enabled_features(enabled_features) {}
+
+ArCore::InitializeResult::InitializeResult(const InitializeResult& other) =
+    default;
+ArCore::InitializeResult::~InitializeResult() = default;
+
 }  // namespace device

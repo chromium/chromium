@@ -345,9 +345,12 @@ ArCoreImpl::~ArCoreImpl() {
   }
 }
 
-bool ArCoreImpl::Initialize(
+base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     base::android::ScopedJavaLocalRef<jobject> context,
-    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        required_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
@@ -357,7 +360,7 @@ bool ArCoreImpl::Initialize(
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!env) {
     DLOG(ERROR) << "Unable to get JNIEnv for ArCore";
-    return false;
+    return base::nullopt;
   }
 
   // Use a local scoped ArSession for the next steps, we want the
@@ -370,73 +373,21 @@ bool ArCoreImpl::Initialize(
       internal::ScopedArCoreObject<ArSession*>::Receiver(session).get());
   if (status != AR_SUCCESS) {
     DLOG(ERROR) << "ArSession_create failed: " << status;
-    return false;
+    return base::nullopt;
   }
 
-  // Set incognito mode for ARCore session - this is done unconditionally as we
-  // always want to limit the amount of logging done by ARCore.
-  ArSession_enableIncognitoMode_private(session.get());
-  DVLOG(1) << __func__ << ": ARCore incognito mode enabled";
+  base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+      maybe_enabled_features = ConfigureFeatures(
+          session.get(), required_features, optional_features, tracked_images);
 
-  internal::ScopedArCoreObject<ArConfig*> arcore_config;
-  ArConfig_create(
-      session.get(),
-      internal::ScopedArCoreObject<ArConfig*>::Receiver(arcore_config).get());
-  if (!arcore_config.is_valid()) {
-    DLOG(ERROR) << "ArConfig_create failed";
-    return false;
-  }
-
-  // Enable lighting estimation with spherical harmonics
-  ArConfig_setLightEstimationMode(session.get(), arcore_config.get(),
-                                  AR_LIGHT_ESTIMATION_MODE_ENVIRONMENTAL_HDR);
-
-  if (base::Contains(enabled_features,
-                     device::mojom::XRSessionFeature::IMAGE_TRACKING)) {
-    internal::ScopedArCoreObject<ArAugmentedImageDatabase*> image_db;
-    ArAugmentedImageDatabase_create(
-        session.get(),
-        internal::ScopedArCoreObject<ArAugmentedImageDatabase*>::Receiver(
-            image_db)
-            .get());
-    if (!image_db.is_valid()) {
-      DLOG(ERROR) << "ArAugmentedImageDatabase creation failed";
-      return false;
-    }
-
-    // Populate the image tracking database and set up data structures,
-    // this doesn't modify the ArConfig or session yet.
-    BuildImageDatabase(session.get(), image_db.get(), tracked_images);
-
-    if (!tracked_image_arcore_id_to_index_.empty()) {
-      // Image tracking with a non-empty image DB adds a few frames of
-      // synchronization delay internally in ARCore, has a high CPU cost, and
-      // reconfigures its graphics pipeline. Only activate it if we got images.
-      // (Apparently an empty image db is equivalent, but that seems fragile.)
-      ArConfig_setAugmentedImageDatabase(session.get(), arcore_config.get(),
-                                         image_db.get());
-      // Switch to autofocus mode when tracking images. The default fixed focus
-      // mode has trouble tracking close images since they end up blurry.
-      ArConfig_setFocusMode(session.get(), arcore_config.get(),
-                            AR_FOCUS_MODE_AUTO);
-    }
-  }
-
-  if (base::Contains(enabled_features,
-                     device::mojom::XRSessionFeature::DEPTH)) {
-    ArConfig_setDepthMode(session.get(), arcore_config.get(),
-                          AR_DEPTH_MODE_AUTOMATIC);
-  }
-
-  status = ArSession_configure(session.get(), arcore_config.get());
-  if (status != AR_SUCCESS) {
-    DLOG(ERROR) << "ArSession_configure failed: " << status;
-    return false;
+  if (!maybe_enabled_features) {
+    DLOG(ERROR) << "Failed to configure session features";
+    return base::nullopt;
   }
 
   if (!ConfigureCamera(session.get())) {
-    DLOG(ERROR) << "Failed to configure camera";
-    return false;
+    DLOG(ERROR) << "Failed to configure session camera";
+    return base::nullopt;
   }
 
   internal::ScopedArCoreObject<ArFrame*> frame;
@@ -444,7 +395,7 @@ bool ArCoreImpl::Initialize(
                  internal::ScopedArCoreObject<ArFrame*>::Receiver(frame).get());
   if (!frame.is_valid()) {
     DLOG(ERROR) << "ArFrame_create failed";
-    return false;
+    return base::nullopt;
   }
 
   internal::ScopedArCoreObject<ArLightEstimate*> light_estimate;
@@ -454,7 +405,7 @@ bool ArCoreImpl::Initialize(
           .get());
   if (!light_estimate.is_valid()) {
     DVLOG(1) << "ArLightEstimate_create failed";
-    return false;
+    return base::nullopt;
   }
 
   // Success, we now have a valid session and a valid frame.
@@ -465,7 +416,122 @@ bool ArCoreImpl::Initialize(
       util::PassKey<ArCoreImpl>(), arcore_session_.get());
   plane_manager_ = std::make_unique<ArCorePlaneManager>(
       util::PassKey<ArCoreImpl>(), arcore_session_.get());
-  return true;
+  return ArCore::InitializeResult(*maybe_enabled_features);
+}
+
+base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+ArCoreImpl::ConfigureFeatures(
+    ArSession* ar_session,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        required_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        optional_features,
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+  // Let's assume we will be able to configure a session with all features -
+  // this will be adjusted if it turns out we can only create a session w/o some
+  // optional features. Currently, only depth sensing is not supported across
+  // all the ARCore-capable devices.
+  std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
+  enabled_features.insert(required_features.begin(), required_features.end());
+  enabled_features.insert(optional_features.begin(), optional_features.end());
+
+  // Set incognito mode for ARCore session - this is done unconditionally as we
+  // always want to limit the amount of logging done by ARCore.
+  ArSession_enableIncognitoMode_private(ar_session);
+  DVLOG(1) << __func__ << ": ARCore incognito mode enabled";
+
+  internal::ScopedArCoreObject<ArConfig*> arcore_config;
+  ArConfig_create(
+      ar_session,
+      internal::ScopedArCoreObject<ArConfig*>::Receiver(arcore_config).get());
+  if (!arcore_config.is_valid()) {
+    DLOG(ERROR) << __func__ << ": ArConfig_create failed";
+    return base::nullopt;
+  }
+
+  const bool light_estimation_requested =
+      base::Contains(required_features,
+                     device::mojom::XRSessionFeature::LIGHT_ESTIMATION) ||
+      base::Contains(optional_features,
+                     device::mojom::XRSessionFeature::LIGHT_ESTIMATION);
+
+  if (light_estimation_requested) {
+    // Enable lighting estimation with spherical harmonics
+    ArConfig_setLightEstimationMode(ar_session, arcore_config.get(),
+                                    AR_LIGHT_ESTIMATION_MODE_ENVIRONMENTAL_HDR);
+  }
+
+  const bool image_tracking_requested =
+      base::Contains(required_features,
+                     device::mojom::XRSessionFeature::IMAGE_TRACKING) ||
+      base::Contains(optional_features,
+                     device::mojom::XRSessionFeature::IMAGE_TRACKING);
+
+  if (image_tracking_requested) {
+    internal::ScopedArCoreObject<ArAugmentedImageDatabase*> image_db;
+    ArAugmentedImageDatabase_create(
+        ar_session,
+        internal::ScopedArCoreObject<ArAugmentedImageDatabase*>::Receiver(
+            image_db)
+            .get());
+    if (!image_db.is_valid()) {
+      DLOG(ERROR) << "ArAugmentedImageDatabase creation failed";
+      return base::nullopt;
+    }
+
+    // Populate the image tracking database and set up data structures,
+    // this doesn't modify the ArConfig or session yet.
+    BuildImageDatabase(ar_session, image_db.get(), tracked_images);
+
+    if (!tracked_image_arcore_id_to_index_.empty()) {
+      // Image tracking with a non-empty image DB adds a few frames of
+      // synchronization delay internally in ARCore, has a high CPU cost, and
+      // reconfigures its graphics pipeline. Only activate it if we got images.
+      // (Apparently an empty image db is equivalent, but that seems fragile.)
+      ArConfig_setAugmentedImageDatabase(ar_session, arcore_config.get(),
+                                         image_db.get());
+      // Switch to autofocus mode when tracking images. The default fixed focus
+      // mode has trouble tracking close images since they end up blurry.
+      ArConfig_setFocusMode(ar_session, arcore_config.get(),
+                            AR_FOCUS_MODE_AUTO);
+    }
+  }
+
+  const bool depth_api_optional =
+      base::Contains(optional_features, device::mojom::XRSessionFeature::DEPTH);
+  const bool depth_api_requested =
+      base::Contains(required_features,
+                     device::mojom::XRSessionFeature::DEPTH) ||
+      depth_api_optional;
+
+  if (depth_api_requested) {
+    ArConfig_setDepthMode(ar_session, arcore_config.get(),
+                          AR_DEPTH_MODE_AUTOMATIC);
+  }
+
+  ArStatus status = ArSession_configure(ar_session, arcore_config.get());
+  if (status != AR_SUCCESS && depth_api_optional) {
+    // Depth API is not available on some ARCore-capable devices - if it was
+    // requested optionally, let's try to request the session w/o it.
+
+    DLOG(WARNING) << __func__
+                  << ": Depth API was optionally requested and the session "
+                     "creation failed, re-trying with depth API disabled";
+
+    enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
+
+    ArConfig_setDepthMode(ar_session, arcore_config.get(),
+                          AR_DEPTH_MODE_DISABLED);
+
+    status = ArSession_configure(ar_session, arcore_config.get());
+  }
+
+  if (status != AR_SUCCESS) {
+    DLOG(ERROR) << __func__ << ": ArSession_configure failed: " << status;
+    return base::nullopt;
+  }
+
+  return enabled_features;
 }
 
 bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) {

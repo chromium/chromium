@@ -88,15 +88,15 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
  private:
   struct SessionRequestData {
-    device::mojom::XRSessionOptionsPtr options;
     device::mojom::VRService::RequestSessionCallback callback;
-    std::set<device::mojom::XRSessionFeature> enabled_features;
+    std::unordered_set<device::mojom::XRSessionFeature> required_features;
+    std::unordered_set<device::mojom::XRSessionFeature> optional_features;
+    device::mojom::XRSessionOptionsPtr options;
     device::mojom::XRDeviceId runtime_id;
 
     SessionRequestData(
         device::mojom::XRSessionOptionsPtr options,
         device::mojom::VRService::RequestSessionCallback callback,
-        std::set<device::mojom::XRSessionFeature> enabled_features,
         device::mojom::XRDeviceId runtime_id);
     ~SessionRequestData();
     SessionRequestData(SessionRequestData&&);

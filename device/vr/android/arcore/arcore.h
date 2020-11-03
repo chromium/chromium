@@ -34,12 +34,23 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
     float max;
   };
 
+  struct InitializeResult {
+    std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
+
+    InitializeResult(const std::unordered_set<device::mojom::XRSessionFeature>&
+                         enabled_features);
+    InitializeResult(const InitializeResult& other);
+    ~InitializeResult();
+  };
+
   // Initializes the runtime and returns whether it was successful.
   // If successful, the runtime must be paused when this method returns.
-  virtual bool Initialize(
+  virtual base::Optional<InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features,
+          required_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) = 0;
 
   // Returns the target framerate range in Hz. Actual capture frame rate will

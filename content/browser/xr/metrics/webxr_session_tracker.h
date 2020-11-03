@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_XR_METRICS_WEBXR_SESSION_TRACKER_H_
 
 #include <memory>
-#include <set>
+#include <unordered_set>
 
 #include "content/browser/xr/metrics/session_tracker.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -29,7 +29,8 @@ class WebXRSessionTracker
   // all. This assumes that the session as a whole was accepted.
   void ReportRequestedFeatures(
       const device::mojom::XRSessionOptions& session_options,
-      const std::set<device::mojom::XRSessionFeature>& enabled_features);
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          enabled_features);
 
   // |XRSessionMetricsRecorder| implementation
   void ReportFeatureUsed(device::mojom::XRSessionFeature feature) override;

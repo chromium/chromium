@@ -106,10 +106,12 @@ class ArCoreImpl : public ArCore {
   ArCoreImpl();
   ~ArCoreImpl() override;
 
-  bool Initialize(
+  base::Optional<ArCore::InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features,
+          required_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images)
       override;
   MinMaxRange GetTargetFramerateRange() override;
@@ -314,6 +316,19 @@ class ArCoreImpl : public ArCore {
   // happening during initialization, before arcore_session_ is set.
   // Returns true if configuration succeeded, false otherwise.
   bool ConfigureCamera(ArSession* ar_session);
+
+  // Helper, attempts to configure ArSession's features based on required and
+  // optional features. Note that this is happening during initialization,
+  // before arcore_session_ is set. Returns a collection of features that were
+  // successfully enabled on a session or a nullopt on failure.
+  base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+  ConfigureFeatures(
+      ArSession* ar_session,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          required_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          optional_features,
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images);
 
   // Must be last.
   base::WeakPtrFactory<ArCoreImpl> weak_ptr_factory_{this};

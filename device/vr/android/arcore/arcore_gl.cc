@@ -112,9 +112,12 @@ void ArCoreGl::Initialize(
     gfx::AcceleratedWidget drawing_widget,
     const gfx::Size& frame_size,
     display::Display::Rotation display_rotation,
-    const std::vector<device::mojom::XRSessionFeature>& enabled_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        required_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-    base::OnceCallback<void(bool)> callback) {
+    ArCoreGlInitializeCallback callback) {
   DVLOG(3) << __func__;
 
   DCHECK(IsOnGlThread());
@@ -123,14 +126,10 @@ void ArCoreGl::Initialize(
   transfer_size_ = frame_size;
   camera_image_size_ = frame_size;
   display_rotation_ = display_rotation;
-  // TODO(https://crbug.com/953503): start using the list to control the
-  // behavior of local and unbounded spaces & send appropriate data back in
-  // GetFrameData().
-  enabled_features_.insert(enabled_features.begin(), enabled_features.end());
   should_update_display_geometry_ = true;
 
   if (!InitializeGl(drawing_widget)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(base::nullopt);
     return;
   }
 
@@ -139,17 +138,24 @@ void ArCoreGl::Initialize(
       session_utils->GetApplicationContext();
   if (!application_context.obj()) {
     DLOG(ERROR) << "Unable to retrieve the Java context/activity!";
-    std::move(callback).Run(false);
+    std::move(callback).Run(base::nullopt);
     return;
   }
 
   arcore_ = arcore_factory->Create();
-  if (!arcore_->Initialize(application_context, enabled_features_,
-                           tracked_images)) {
+  base::Optional<ArCore::InitializeResult> maybe_initialize_result =
+      arcore_->Initialize(application_context, required_features,
+                          optional_features, tracked_images);
+  if (!maybe_initialize_result) {
     DLOG(ERROR) << "ARCore failed to initialize";
-    std::move(callback).Run(false);
+    std::move(callback).Run(base::nullopt);
     return;
   }
+
+  // TODO(https://crbug.com/953503): start using the list to control the
+  // behavior of local and unbounded spaces & send appropriate data back in
+  // GetFrameData().
+  enabled_features_ = maybe_initialize_result->enabled_features;
 
   DVLOG(3) << "ar_image_transport_->Initialize()...";
   ar_image_transport_->Initialize(
@@ -164,12 +170,11 @@ void ArCoreGl::Initialize(
   arcore_->SetDisplayGeometry(kDefaultFrameSize, kDefaultRotation);
 }
 
-void ArCoreGl::OnArImageTransportReady(
-    base::OnceCallback<void(bool)> callback) {
+void ArCoreGl::OnArImageTransportReady(ArCoreGlInitializeCallback callback) {
   DVLOG(3) << __func__;
   is_initialized_ = true;
   webxr_->NotifyMailboxBridgeReady();
-  std::move(callback).Run(true);
+  std::move(callback).Run(enabled_features_);
 }
 
 void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,

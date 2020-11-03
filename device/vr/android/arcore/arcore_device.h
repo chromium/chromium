@@ -7,8 +7,8 @@
 
 #include <jni.h>
 #include <memory>
+#include <unordered_set>
 #include <utility>
-#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
@@ -92,7 +92,9 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
                        bool use_overlay);
 
   // Replies to the pending mojo RequestSession request.
-  void CallDeferredRequestSessionCallback(bool success);
+  void CallDeferredRequestSessionCallback(
+      base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+          enabled_features);
 
   // Tells the GL thread to initialize a GL context and other resources,
   // using the supplied window as a drawing surface.
@@ -101,10 +103,14 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
                                      const gfx::Size& size);
 
   // Called when the GL thread's GL context initialization completes.
-  void OnArCoreGlInitializationComplete(bool success);
+  void OnArCoreGlInitializationComplete(
+      base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
+          enabled_features);
 
   void OnCreateSessionCallback(
       mojom::XRRuntime::RequestSessionCallback deferred_callback,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          enabled_features,
       mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
       mojom::VRDisplayInfoPtr display_info,
       mojo::PendingRemote<mojom::XRSessionController> session_controller,
@@ -133,8 +139,13 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     // concurrent session is supported, other requests are rejected.
     mojom::XRRuntime::RequestSessionCallback pending_request_session_callback_;
 
-    // List of features that are enabled on the session.
-    std::vector<device::mojom::XRSessionFeature> enabled_features_;
+    // Collections of features that were requested on the session.
+    std::unordered_set<device::mojom::XRSessionFeature> required_features_;
+    std::unordered_set<device::mojom::XRSessionFeature> optional_features_;
+
+    // Collection of features that have been enabled on the session. Initially
+    // empty, will be set only once the ArCoreGl has been initialized.
+    std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
     std::vector<device::mojom::XRTrackedImagePtr> tracked_images_;
   };

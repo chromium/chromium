@@ -117,6 +117,11 @@ void VrShellDelegate::OnPresentResult(
   DVLOG(1) << __FUNCTION__ << ": success=" << success;
   DCHECK(options);
 
+  DVLOG(3) << __func__ << ": options->required_features.size()="
+           << options->required_features.size()
+           << ", options->optional_features.size()="
+           << options->optional_features.size();
+
   if (!success) {
     std::move(callback).Run(nullptr);
     return;

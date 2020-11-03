@@ -59,6 +59,9 @@ using ArCoreGlCreateSessionCallback = base::OnceCallback<void(
     mojo::PendingRemote<mojom::XRSessionController> session_controller,
     mojom::XRPresentationConnectionPtr presentation_connection)>;
 
+using ArCoreGlInitializeCallback = base::OnceCallback<void(
+    base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>)>;
+
 // All of this class's methods must be called on the same valid GL thread with
 // the exception of GetGlThreadTaskRunner() and GetWeakPtr().
 class ArCoreGl : public mojom::XRFrameDataProvider,
@@ -75,9 +78,12 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
       gfx::AcceleratedWidget drawing_widget,
       const gfx::Size& frame_size,
       display::Display::Rotation display_rotation,
-      const std::vector<device::mojom::XRSessionFeature>& enabled_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          required_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-      base::OnceCallback<void(bool)> callback);
+      ArCoreGlInitializeCallback callback);
 
   void CreateSession(mojom::VRDisplayInfoPtr display_info,
                      ArCoreGlCreateSessionCallback create_callback,
@@ -174,7 +180,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
                     mojom::XRFrameDataProvider::GetFrameDataCallback callback);
 
   bool InitializeGl(gfx::AcceleratedWidget drawing_widget);
-  void OnArImageTransportReady(base::OnceCallback<void(bool)> callback);
+  void OnArImageTransportReady(ArCoreGlInitializeCallback callback);
   bool IsOnGlThread() const;
   void CopyCameraImageToFramebuffer();
   void OnTransportFrameAvailable(const gfx::Transform& uv_transform);

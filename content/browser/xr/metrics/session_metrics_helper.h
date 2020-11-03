@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_XR_METRICS_SESSION_METRICS_HELPER_H_
 
 #include <memory>
-#include <set>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,10 +38,10 @@ class SessionMetricsHelper : public content::WebContentsObserver {
   // Records that an inline session was started and returns the |PendingRemote|
   // for the created session recorder.
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
-  StartInlineSession(
-      const device::mojom::XRSessionOptions& session_options,
-      const std::set<device::mojom::XRSessionFeature>& enabled_features,
-      size_t session_id);
+  StartInlineSession(const device::mojom::XRSessionOptions& session_options,
+                     const std::unordered_set<device::mojom::XRSessionFeature>&
+                         enabled_features,
+                     size_t session_id);
 
   // Records that inline session was stopped. Will record an UKM entry.
   void StopAndRecordInlineSession(size_t session_id);
@@ -52,7 +52,8 @@ class SessionMetricsHelper : public content::WebContentsObserver {
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
   StartImmersiveSession(
       const device::mojom::XRSessionOptions& session_options,
-      const std::set<device::mojom::XRSessionFeature>& enabled_features);
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          enabled_features);
 
   // Records that an immersive session was stopped. Will record a UKM entry.
   void StopAndRecordImmersiveSession();

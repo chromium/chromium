@@ -21,12 +21,20 @@ ArCore::MinMaxRange FakeArCore::GetTargetFramerateRange() {
   return {30.f, 30.f};
 }
 
-bool FakeArCore::Initialize(
+base::Optional<ArCore::InitializeResult> FakeArCore::Initialize(
     base::android::ScopedJavaLocalRef<jobject> application_context,
-    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        required_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
   DCHECK(IsOnGlThread());
-  return true;
+
+  std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
+  enabled_features.insert(required_features.begin(), required_features.end());
+  enabled_features.insert(optional_features.begin(), optional_features.end());
+
+  return ArCore::InitializeResult(enabled_features);
 }
 
 void FakeArCore::SetDisplayGeometry(

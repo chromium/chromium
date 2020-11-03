@@ -22,10 +22,12 @@ class FakeArCore : public ArCore {
   ~FakeArCore() override;
 
   // ArCore implementation.
-  bool Initialize(
+  base::Optional<ArCore::InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features,
+          required_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images)
       override;
   MinMaxRange GetTargetFramerateRange() override;
