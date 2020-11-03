@@ -5804,7 +5804,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Find
       </message>
       <message name="IDS_TOOLTIP_TAB_SEARCH" desc="The tooltip for the Tab Search bubble.">
-        Tab search
+        Search tabs
       </message>
 
       <!-- Strings for intent picker -->
@@ -5889,7 +5889,7 @@ the Bookmarks menu.">
         Reset to default zoom level
       </message>
       <message name="IDS_ACCNAME_TAB_SEARCH" desc="The accessible name for the Tab Search bubble.">
-        Tab search
+        Search tabs
       </message>
 
       <!-- Clipboard permission -->
