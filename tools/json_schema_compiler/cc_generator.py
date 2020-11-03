@@ -139,13 +139,11 @@ class _Generator(object):
         .Append('%s::~%s() = default;' % (classname_in_namespace, classname))
       )
       # Note: we use 'rhs' because some API objects have a member 'other'.
-      (c.Append('%s::%s(%s&& rhs)' %
+      (c.Append('%s::%s(%s&& rhs) = default;' %
                     (classname_in_namespace, classname, classname))
-        .Cblock(self._GenerateMoveCtor(type_))
-        .Append('%s& %s::operator=(%s&& rhs)' %
+        .Append('%s& %s::operator=(%s&& rhs) = default;' %
                     (classname_in_namespace, classname_in_namespace,
                      classname))
-        .Cblock(self._GenerateMoveAssignOperator(type_))
       )
 
       if type_.origin.from_manifest_keys:
@@ -212,86 +210,6 @@ class _Generator(object):
     else:
       s = ''
     s = s + ' {}'
-    return Code().Append(s)
-
-  def _GetMoveProps(self, type_, copy_str, move_str):
-    """Returns a tuple of (props, dicts) for the type.
-
-    |props| is a list of all the copyable or movable properties generated using
-    the copy_str and move_str, and |dicts| is a list of all the dictionary
-    properties by name.
-
-    Properties:
-    - |type_| the Type to get the properties from
-    - |copy_str| the string to use when copying a value; should have two
-                 placeholders to take the property name.
-    - |move_str| the string to use when moving a value; should have two
-                 placeholders to take the property name.
-    """
-    props = []
-    dicts = []
-    for prop in type_.properties.values():
-      t = prop.type_
-
-      real_t = self._type_helper.FollowRef(t)
-      if (real_t.property_type != PropertyType.ENUM and
-          (prop.optional or
-           t.property_type == PropertyType.ANY or
-           t.property_type == PropertyType.ARRAY or
-           t.property_type == PropertyType.BINARY or
-           t.property_type == PropertyType.CHOICES or
-           t.property_type == PropertyType.OBJECT or
-           t.property_type == PropertyType.REF or
-           t.property_type == PropertyType.STRING)):
-        props.append(move_str % (prop.unix_name, prop.unix_name))
-      elif t.property_type == PropertyType.FUNCTION:
-        dicts.append(prop.unix_name)
-      elif (real_t.property_type == PropertyType.ENUM or
-            t.property_type == PropertyType.INTEGER or
-            t.property_type == PropertyType.DOUBLE or
-            t.property_type == PropertyType.BOOLEAN):
-        props.append(copy_str % (prop.unix_name, prop.unix_name))
-      else:
-        raise TypeError(t)
-
-    if type_.property_type == PropertyType.CHOICES:
-      for choice in type_.choices:
-        prop_name = 'as_%s' % choice.unix_name
-        props.append(move_str % (prop_name, prop_name))
-
-    if (type_.property_type == PropertyType.OBJECT and
-        type_.additional_properties is not None):
-      if type_.additional_properties.property_type == PropertyType.ANY:
-        dicts.append('additional_properties')
-      else:
-        props.append(move_str % ('additional_properties',
-                                 'additional_properties'))
-
-    return (props, dicts)
-
-  def _GenerateMoveCtor(self, type_):
-    props, dicts = self._GetMoveProps(type_, '%s(rhs.%s)',
-                                      '%s(std::move(rhs.%s))')
-    s = ''
-    if props:
-      s = s + ': %s' % (',\n'.join(props))
-    s = s + '{'
-    for item in dicts:
-      s = s + ('\n%s.Swap(&rhs.%s);' % (item, item))
-    s = s + '\n}'
-
-    return Code().Append(s)
-
-  def _GenerateMoveAssignOperator(self, type_):
-    props, dicts = self._GetMoveProps(type_, '%s = rhs.%s;',
-                                      '%s = std::move(rhs.%s);')
-    s = '{\n'
-    if props:
-      s = s + '\n'.join(props)
-    for item in dicts:
-      s = s + ('%s.Swap(&rhs.%s);' % (item, item))
-    s = s + '\nreturn *this;\n}'
-
     return Code().Append(s)
 
   def _GenerateTypePopulate(self, cpp_namespace, type_):
