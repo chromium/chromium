@@ -22,7 +22,12 @@ class FileManagerAsh : public mojom::FileManager {
   ~FileManagerAsh() override;
 
   // crosapi::mojom::FileManager:
-  void ShowItemInFolder(const base::FilePath& path) override;
+  void DeprecatedShowItemInFolder(const base::FilePath& path) override;
+  void ShowItemInFolder(const base::FilePath& path,
+                        ShowItemInFolderCallback callback) override;
+  void OpenFolder(const base::FilePath& path,
+                  OpenFolderCallback callback) override;
+  void OpenFile(const base::FilePath& path, OpenFileCallback callback) override;
 
  private:
   mojo::Receiver<mojom::FileManager> receiver_;
