@@ -61,26 +61,10 @@ constexpr int kLineHeightDip = 20;
 // Spacing between labels in the horizontal elements view.
 constexpr int kLabelSpacingDip = 2;
 
-// TODO(llin): Move to grd after confirming specs (b/149758492).
-constexpr char kDefaultLoadingStr[] = "Loading...";
-constexpr char kDefaultRetryStr[] = "Retry";
-constexpr char kNetworkErrorStr[] = "Cannot connect to internet.";
-
 // Dogfood button.
 constexpr int kDogfoodButtonMarginDip = 4;
 constexpr int kDogfoodButtonSizeDip = 20;
 constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
-
-// Accessibility.
-// TODO(siabhijeet): Move to grd (tracked in b/149758492).
-constexpr char kA11yAlertAnnouncement[] =
-    "Info related to your selection available. Use Up arrow key to access.";
-constexpr char kA11yNameText[] = "Info related to your selection";
-constexpr char kA11yDescTemplate[] =
-    "%s; Click the dialog to see result in Assistant.";
-constexpr char kA11yRetryLabelNameTemplate[] = "%s: Retry";
-constexpr char kA11yRetryLabelDesc[] =
-    "Cannot connect to the internet. Click to try again.";
 
 // Maximum height QuickAnswersView can expand to.
 int MaximumViewHeight() {
@@ -199,7 +183,8 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(kA11yNameText);
+  node_data->SetName(
+      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
 std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
@@ -260,8 +245,9 @@ void QuickAnswersView::ShowRetryView() {
 
   // Add error label.
   std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
-  description_labels.push_back(
-      std::make_unique<QuickAnswerText>(kNetworkErrorStr, gfx::kGoogleGrey700));
+  description_labels.push_back(std::make_unique<QuickAnswerText>(
+      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NETWORK_ERROR),
+      gfx::kGoogleGrey700));
   auto* description_container =
       AddHorizontalUiElements(description_labels, content_view_);
 
@@ -270,13 +256,16 @@ void QuickAnswersView::ShowRetryView() {
       description_container->AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&QuickAnswersUiController::OnRetryLabelPressed,
                               base::Unretained(controller_)),
-          base::UTF8ToUTF16(kDefaultRetryStr)));
+          l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_RETRY)));
   retry_label_->SetEnabledTextColors(gfx::kGoogleBlue600);
   retry_label_->SetRequestFocusOnPress(true);
   SetButtonNotifyActionToOnPress(retry_label_);
-  retry_label_->SetAccessibleName(base::UTF8ToUTF16(
-      base::StringPrintf(kA11yRetryLabelNameTemplate, kA11yNameText)));
-  retry_label_->GetViewAccessibility().OverrideDescription(kA11yRetryLabelDesc);
+  retry_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE,
+      l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT)));
+  retry_label_->GetViewAccessibility().OverrideDescription(
+      l10n_util::GetStringUTF8(
+          IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC));
 }
 
 void QuickAnswersView::AddAssistantIcon() {
@@ -328,7 +317,9 @@ void QuickAnswersView::InitLayout() {
       views::BoxLayout::Orientation::kVertical, kContentViewInsets,
       kLineSpacingDip));
   AddTextElement({title_}, content_view_);
-  AddTextElement({kDefaultLoadingStr, gfx::kGoogleGrey700}, content_view_);
+  AddTextElement({l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING),
+                  gfx::kGoogleGrey700},
+                 content_view_);
 
   // Add dogfood button, if in dogfood.
   if (chromeos::features::IsQuickAnswersDogfood())
@@ -412,8 +403,9 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     // Update answer announcement.
     auto* answer_label =
         static_cast<Label*>(first_answer_view->children().front());
-    GetViewAccessibility().OverrideDescription(base::StringPrintf(
-        kA11yDescTemplate, base::UTF16ToUTF8(answer_label->GetText()).c_str()));
+    GetViewAccessibility().OverrideDescription(l10n_util::GetStringFUTF8(
+        IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE,
+        answer_label->GetText()));
   }
 
   // Add second row answer.
@@ -436,8 +428,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     RequestFocus();
   } else {
     // Announce that a Quick Answer is available.
-    GetViewAccessibility().AnnounceText(
-        base::UTF8ToUTF16(kA11yAlertAnnouncement));
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
   }
 }
 

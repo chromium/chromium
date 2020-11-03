@@ -2891,6 +2891,30 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE" desc="A11y description template for the Quick Answers user notice view.">
         <ph name="DESC_TEXT">$1<ex>With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</ex></ph> Use Left or Right arrow keys to manage this feature.
       </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_LOADING" desc="Display text when the Quick Answers view is loading.">
+        Loading...
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_NETWORK_ERROR" desc="Display text when network error occurs in the Quick Answers view.">
+        Cannot connect to internet.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_RETRY" desc="Display text when the Quick Answers view is retry.">
+        Retry
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT" desc="A11y alert text for the Quick Answers view.">
+        Info related to your selection available. Use Up arrow key to access.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE" desc="A11y description template for the Quick Answers view.">
+        <ph name="DESC_TEXT">$1<ex>Query texts</ex></ph>; Click the dialog to see result in Assistant.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
+        Info related to your selection
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC" desc="A11y retry label description for the Quick Answers view.">
+        Cannot connect to the internet. Click to try again.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE" desc="A11y retry label name template for the Quick Answers view.">
+        <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
+      </message>
 
       <!-- Media Notification -->
       <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK" desc="The button to trigger media playback to go to the previous track.">
