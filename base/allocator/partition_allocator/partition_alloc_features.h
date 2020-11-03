@@ -19,6 +19,8 @@
 #include <VersionHelpers.h>
 #endif
 
+#define ALLOW_ENABLING_PCSCAN 0
+
 namespace base {
 
 struct Feature;
@@ -61,7 +63,7 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 }
 
 ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !defined(PA_HAS_64_BITS_POINTERS) || !ALLOW_ENABLING_PCSCAN
   return false;
 #endif
   // TODO(bikineev): Calling this function can allocate which can cause

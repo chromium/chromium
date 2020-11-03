@@ -9,6 +9,8 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if ALLOW_ENABLING_PCSCAN
+
 namespace base {
 namespace internal {
 
@@ -304,5 +306,7 @@ TEST_F(PCScanTest, DanglingInnerReference) {
 
 }  // namespace internal
 }  // namespace base
+
+#endif
 
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

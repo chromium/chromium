@@ -369,7 +369,11 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 
+#if ALLOW_ENABLING_PCSCAN
   scannable = (opts.pcscan != PartitionOptions::PCScan::kAlwaysDisabled);
+#else
+  scannable = false;
+#endif
   // Concurrent freeing in PCScan can only safely work on thread-safe
   // partitions.
   if (thread_safe &&

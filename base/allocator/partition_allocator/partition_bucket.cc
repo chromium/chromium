@@ -295,7 +295,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* quarantine_bitmaps = tag_bitmap + ReservedTagBitmapSize();
   const size_t quarantine_bitmaps_size =
       root->scannable ? 2 * sizeof(QuarantineBitmap) : 0;
+#if ALLOW_ENABLING_PCSCAN
+  // TODO(bartekn): Fix the assert when partition page isn't 16kB.
   PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
+#else
+  PA_DCHECK(quarantine_bitmaps_size == 0);
+#endif
   char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
   root->next_partition_page = ret + total_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
@@ -346,6 +351,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   //
   // TODO(ajwong): Refactor Page Allocator API so the SuperPage comes in
   // decommited initially.
+  // TODO(bartekn): Also decommit quarantine bitmap pages here, and commit them
+  // only when EnablePCScan() is called.
   SetSystemPagesAccess(
       super_page + PartitionPageSize() + ReservedTagBitmapSize() +
           quarantine_bitmaps_size + total_size,
