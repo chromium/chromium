@@ -1090,6 +1090,11 @@ Node* ScrollManager::NodeTargetForScrollableAreaElementId(
     LocalFrame* current_frame = layout_box->GetDocument().GetFrame();
     while (current_frame) {
       HTMLFrameOwnerElement* owner = current_frame->GetDocument()->LocalOwner();
+      // If the hosting element has no layout box, don't return it for targeting
+      // since there's nothing to scroll.
+      if (!owner->GetLayoutBox())
+        break;
+
       LocalFrame* owner_frame =
           owner ? owner->GetDocument().GetFrame() : nullptr;
       if (owner_frame == frame_) {
