@@ -113,9 +113,9 @@ void SubresourceFilterAgent::SetIsAdSubframe(
   render_frame()->GetWebFrame()->SetIsAdSubframe(ad_frame_type);
 }
 
+// static
 mojom::ActivationState SubresourceFilterAgent::GetInheritedActivationState(
     content::RenderFrame* render_frame) {
-  DCHECK(ShouldInheritActivation(GetDocumentURL()));
   if (!render_frame)
     return mojom::ActivationState();
 
@@ -222,7 +222,7 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
   first_document_ = false;
 
   const mojom::ActivationState activation_state =
-      ShouldInheritActivation(url) ? GetInheritedActivationState(render_frame())
+      ShouldInheritActivation(url) ? GetInheritedActivationStateForNewDocument()
                                    : activation_state_for_next_document_;
 
   ResetInfoForNextDocument();
@@ -232,6 +232,12 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
   }
 
   ConstructFilter(activation_state, url);
+}
+
+const mojom::ActivationState
+SubresourceFilterAgent::GetInheritedActivationStateForNewDocument() {
+  DCHECK(ShouldInheritActivation(GetDocumentURL()));
+  return GetInheritedActivationState(render_frame());
 }
 
 void SubresourceFilterAgent::ConstructFilter(

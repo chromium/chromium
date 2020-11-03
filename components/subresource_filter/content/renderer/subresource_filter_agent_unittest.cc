@@ -82,10 +82,10 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
     return std::move(last_injected_filter_);
   }
 
-  void SetInheritedActivationState(mojom::ActivationLevel level) {
+  void SetInheritedActivationStateForNewDocument(mojom::ActivationLevel level) {
     mojom::ActivationState state;
     state.activation_level = level;
-    inherited_activation_state_ = state;
+    inherited_activation_state_for_new_document_ = state;
   }
 
   void SimulateNonInitialLoad() { SetFirstDocument(false); }
@@ -93,15 +93,15 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
   using SubresourceFilterAgent::ActivateForNextCommittedLoad;
 
  private:
-  mojom::ActivationState GetInheritedActivationState(
-      content::RenderFrame*) override {
-    return inherited_activation_state_;
+  const mojom::ActivationState GetInheritedActivationStateForNewDocument()
+      override {
+    return inherited_activation_state_for_new_document_;
   }
 
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
   bool is_ad_subframe_ = false;
   bool is_main_frame_ = true;
-  mojom::ActivationState inherited_activation_state_;
+  mojom::ActivationState inherited_activation_state_for_new_document_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAgentUnderTest);
 };
@@ -568,7 +568,8 @@ TEST_F(SubresourceFilterAgentTest,
       SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
 
   agent()->SetIsMainFrame(false);
-  agent()->SetInheritedActivationState(mojom::ActivationLevel::kEnabled);
+  agent()->SetInheritedActivationStateForNewDocument(
+      mojom::ActivationLevel::kEnabled);
 
   EXPECT_CALL(*agent(), GetDocumentURL())
       .WillOnce(::testing::Return(GURL("about:blank")));
@@ -585,7 +586,8 @@ TEST_F(SubresourceFilterAgentTest,
       SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
 
   agent()->SetIsMainFrame(true);
-  agent()->SetInheritedActivationState(mojom::ActivationLevel::kEnabled);
+  agent()->SetInheritedActivationStateForNewDocument(
+      mojom::ActivationLevel::kEnabled);
 
   EXPECT_CALL(*agent(), GetDocumentURL())
       .WillOnce(::testing::Return(GURL("about:blank")));
