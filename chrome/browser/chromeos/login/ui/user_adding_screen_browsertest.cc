@@ -15,13 +15,13 @@
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/chromeos/login/test/user_adding_screen_utils.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
-#include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -48,11 +48,15 @@ constexpr char kLoginFormatJS[] = R"({
 
 }  // namespace
 
+// TODO(1066489): Merge UserAddingScreenViewBasedTest into UserAddingScreenTest
+// once kViewBasedMultiprofileLogin is enabled by default.
 class UserAddingScreenTest : public LoginManagerTest,
                              public UserAddingScreen::Observer {
  public:
   UserAddingScreenTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(3);
+    feature_list_.InitAndDisableFeature(
+        chromeos::features::kViewBasedMultiprofileLogin);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -104,6 +108,9 @@ class UserAddingScreenTest : public LoginManagerTest,
   std::vector<AccountId> users_in_session_order_;
   LoginManagerMixin login_mixin_{&mixin_host_};
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   int user_adding_started_ = 0;
   int user_adding_finished_ = 0;
@@ -150,33 +157,13 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
             users[0].account_id);
 }
 
-class UserAddingScreenViewBasedTest : public UserAddingScreenTest,
-                                      public LoginScreenShownObserver {
+class UserAddingScreenViewBasedTest : public UserAddingScreenTest {
  public:
   UserAddingScreenViewBasedTest() : UserAddingScreenTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kViewBasedMultiprofileLogin}, {});
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kViewBasedMultiprofileLogin);
   }
-
-  // LoginScreenShownObserver:
-  void OnLoginScreenShown() override {
-    LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
-    login_screen_shown_ = true;
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  void WaitUntilLoginScreenShown() {
-    if (login_screen_shown_)
-      return;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
- private:
-  bool login_screen_shown_ = false;
-  std::unique_ptr<base::RunLoop> run_loop_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, CancelAdding) {
@@ -192,9 +179,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, CancelAdding) {
             session_manager::SessionState::ACTIVE);
 
   base::HistogramTester histogram_tester;
-  UserAddingScreen::Get()->Start();
-  LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
-  WaitUntilLoginScreenShown();
+  test::ShowUserAddingScreen();
 
   EXPECT_EQ(user_adding_started(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -265,9 +250,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, UILogin) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
   base::HistogramTester histogram_tester;
-  UserAddingScreen::Get()->Start();
-  LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
-  WaitUntilLoginScreenShown();
+  test::ShowUserAddingScreen();
 
   EXPECT_EQ(user_adding_started(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -416,9 +399,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, AddingSeveralUsers) {
 
   const int n = users.size();
   for (int i = 1; i < n; ++i) {
-    UserAddingScreen::Get()->Start();
-    LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
-    WaitUntilLoginScreenShown();
+    test::ShowUserAddingScreen();
 
     EXPECT_EQ(user_adding_started(), i);
     EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -617,6 +598,32 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, InfoBubbleVisible) {
 
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
+}
+
+// Makes sure Chrome doesn't crash if we lock the screen during an add-user
+// flow. Regression test for crbug.com/467111.
+// Note that this test has been moved from ScreenLockerTest because it is easier
+// to login a user here; and without any logged user on the user adding screen,
+// a OOBE dialog would appear, making the test crash.
+IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest,
+                       LockScreenWhileAddingUser) {
+  const auto& users = login_mixin_.users();
+  EXPECT_EQ(users.size(), user_manager::UserManager::Get()->GetUsers().size());
+  EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
+  EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+            session_manager::SessionState::LOGIN_PRIMARY);
+  LoginUser(users[0].account_id);
+  EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1u);
+  EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+            session_manager::SessionState::ACTIVE);
+
+  UserAddingScreen::Get()->Start();
+  EXPECT_EQ(user_adding_started(), 1);
+  EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+            session_manager::SessionState::LOGIN_SECONDARY);
+  base::RunLoop().RunUntilIdle();
+
+  ScreenLocker::HandleShowLockScreenRequest();
 }
 
 }  // namespace chromeos

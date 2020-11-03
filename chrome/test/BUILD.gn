@@ -2602,6 +2602,8 @@ if (!is_android) {
         "../browser/chromeos/login/test/session_flags_manager.h",
         "../browser/chromeos/login/test/session_manager_state_waiter.cc",
         "../browser/chromeos/login/test/session_manager_state_waiter.h",
+        "../browser/chromeos/login/test/user_adding_screen_utils.cc",
+        "../browser/chromeos/login/test/user_adding_screen_utils.h",
         "../browser/chromeos/login/test/user_policy_mixin.cc",
         "../browser/chromeos/login/test/user_policy_mixin.h",
         "../browser/chromeos/login/test/webview_content_extractor.cc",

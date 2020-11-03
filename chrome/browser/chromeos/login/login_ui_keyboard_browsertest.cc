@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/chromeos/login/test/user_adding_screen_utils.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
@@ -69,30 +70,6 @@ void Append_en_US_InputMethods(std::vector<std::string>* out) {
   out->push_back("xkb:us:workman:eng");
   out->push_back("xkb:us:workman-intl:eng");
   chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(out);
-}
-
-class LoginScreenWaiter : public LoginScreenShownObserver {
- public:
-  LoginScreenWaiter() {
-    LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
-  }
-  ~LoginScreenWaiter() override {
-    LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
-  }
-
-  // LoginScreenShownObserver:
-  void OnLoginScreenShown() override { run_loop_.Quit(); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-void ShowUserAddingScreen() {
-  LoginScreenWaiter waiter;
-  UserAddingScreen::Get()->Start();
-  waiter.Wait();
 }
 
 }  // anonymous namespace
@@ -161,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, CheckPODSwitches) {
   LoginUser(test_users_[2]);
   const std::string logged_user_input_method =
       lock_screen_utils::GetUserLastInputMethod(test_users_[2]);
-  ShowUserAddingScreen();
+  test::ShowUserAddingScreen();
 
   std::vector<std::string> expected_input_methods;
   expected_input_methods.push_back(user_input_methods[0]);
@@ -425,7 +402,12 @@ class LoginUIDevicePolicyUserAdding : public LoginUIKeyboardPolicy {
   LoginUIDevicePolicyUserAdding() {
     // Need at least two to run user adding screen.
     login_manager_.AppendRegularUsers(2);
+    scoped_feature_list_.InitAndEnableFeature(
+      features::kViewBasedMultiprofileLogin);
   }
+  
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginUIDevicePolicyUserAdding, PolicyNotHonored) {
@@ -441,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIDevicePolicyUserAdding, PolicyNotHonored) {
   chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
       &allowed_input_method);
 
-  UserAddingScreen::Get()->Start();
-  OobeScreenWaiter(OobeScreen::SCREEN_ACCOUNT_PICKER).Wait();
+  test::ShowUserAddingScreen();
 
   auto user_adding_ime_state = input_manager->GetActiveIMEState();
   EXPECT_NE(user_ime_state, user_adding_ime_state);
