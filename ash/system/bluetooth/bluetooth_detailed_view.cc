@@ -237,8 +237,8 @@ void BluetoothDetailedView::UpdateDeviceScrollList(
   // Show user Bluetooth state if there is no bluetooth devices in list.
   if (device_map_.empty()) {
     if (!bluetooth_discovering_label_) {
-      bluetooth_discovering_label_ = new TrayInfoLabel(
-          nullptr /* delegate */, IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING);
+      bluetooth_discovering_label_ =
+          new TrayInfoLabel(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING);
       scroll_content()->AddChildViewAt(bluetooth_discovering_label_, index++);
     } else {
       scroll_content()->ReorderChildView(bluetooth_discovering_label_, index++);

@@ -2209,7 +2209,6 @@ test("ash_unittests") {
     "system/tray/size_range_layout_unittest.cc",
     "system/tray/status_area_overflow_button_tray_unittest.cc",
     "system/tray/tray_event_filter_unittest.cc",
-    "system/tray/tray_info_label_unittest.cc",
     "system/tray/tri_view_unittest.cc",
     "system/unified/camera_mic_tray_item_view_unittest.cc",
     "system/unified/feature_pods_container_view_unittest.cc",

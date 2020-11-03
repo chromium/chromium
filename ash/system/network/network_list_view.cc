@@ -591,7 +591,7 @@ void NetworkListView::UpdateInfoLabel(int message_id,
     return;
   }
   if (!info_label)
-    info_label = new TrayInfoLabel(nullptr /* delegate */, message_id);
+    info_label = new TrayInfoLabel(message_id);
   else
     info_label->Update(message_id);
 

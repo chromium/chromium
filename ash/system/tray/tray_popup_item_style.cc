@@ -8,7 +8,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -90,13 +89,6 @@ void TrayPopupItemStyle::SetupLabel(views::Label* label) const {
     case FontStyle::SYSTEM_INFO:
       label->SetFontList(base_font_list.Derive(1, gfx::Font::NORMAL,
                                                gfx::Font::Weight::NORMAL));
-      break;
-    case FontStyle::CLICKABLE_SYSTEM_INFO:
-      label->SetFontList(base_font_list.Derive(1, gfx::Font::NORMAL,
-                                               gfx::Font::Weight::NORMAL));
-      label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ProminentButtonColor));
-      label->SetAutoColorReadabilityEnabled(false);
       break;
     case FontStyle::CAPTION:
       label->SetFontList(base_font_list.Derive(0, gfx::Font::NORMAL,
