@@ -90,10 +90,9 @@ class BASE_EXPORT CPU final {
   // Attempts to guess the core types of individual CPU cores based on frequency
   // information from /sys/devices/system/cpu/cpuN/cpufreq/cpuinfo_max_freq.
   // Beware that it is kernel/hardware dependent whether the information from
-  // sys is accurate.
-  //
-  // Returns a vector with the guessed type for core N at index N.
-  static std::vector<CoreType> GuessCoreTypes();
+  // sys is accurate. Returns a reference to a static-storage vector (leaked on
+  // shutdown) with the guessed type for core N at index N.
+  static const std::vector<CoreType>& GetGuessedCoreTypes();
 
   struct TimeInStateEntry {
     CPU::CoreType core_type;      // type of the cores in this cluster.
