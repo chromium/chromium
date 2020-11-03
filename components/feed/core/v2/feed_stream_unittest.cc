@@ -1447,10 +1447,6 @@ TEST_F(FeedStreamTest, ReadNetworkResponse) {
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.ActivityLoggingEnabled", 1, 1);
 
-  // The response has a privacy_notice_fulfilled=true.
-  histograms.ExpectUniqueSample("ContentSuggestions.Feed.NoticeCardFulfilled",
-                                1, 1);
-
   // A request schedule with two entries was in the response. The first entry
   // should have already been scheduled/consumed, leaving only the second
   // entry still in the the refresh_offsets vector.
@@ -1779,6 +1775,40 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   ASSERT_TRUE(stream_->CanUploadActions());
 }
 
+TEST_F(FeedStreamTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
+  base::HistogramTester histograms;
+
+  // Trigger a stream refresh that updates the histogram.
+  {
+    auto model_state = MakeTypicalInitialModelState();
+    model_state->stream_data.set_privacy_notice_fulfilled(false);
+    response_translator_.InjectResponse(std::move(model_state));
+
+    refresh_scheduler_.Clear();
+    stream_->ExecuteRefreshTask();
+    WaitForIdleTaskQueue();
+  }
+
+  UnloadModel();
+
+  // Trigger another stream refresh that updates the histogram.
+  {
+    auto model_state = MakeTypicalInitialModelState();
+    model_state->stream_data.set_privacy_notice_fulfilled(true);
+    response_translator_.InjectResponse(std::move(model_state));
+
+    refresh_scheduler_.Clear();
+    stream_->ExecuteRefreshTask();
+    WaitForIdleTaskQueue();
+  }
+
+  // Verify that the notice card fulfillment histogram was properly recorded.
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.NoticeCardFulfilled2",
+                               0, 1);
+  histograms.ExpectBucketCount("ContentSuggestions.Feed.NoticeCardFulfilled2",
+                               1, 1);
+}
+
 TEST_F(FeedStreamTest, LoadStreamFromNetworkUploadsActions) {
   stream_->UploadAction(MakeFeedAction(99ul), false, base::DoNothing());
   WaitForIdleTaskQueue();
@@ -1870,7 +1900,7 @@ TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
-       LoadMoreDoesntUpdateNoticeCardPref) {
+       LoadMoreDoesntUpdateNoticeCardPrefAndHistogram) {
   // The initial stream load has the notice card.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestSurface surface(stream_.get());
@@ -1884,6 +1914,11 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
       /* signed_in= */ true,
       /* logging_enabled= */ true,
       /* privacy_notice_fulfilled= */ false));
+
+  // Start tracking histograms after the initial stream load to isolate the
+  // effect of load more.
+  base::HistogramTester histograms;
+
   stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
   WaitForIdleTaskQueue();
 
@@ -1898,6 +1933,11 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
   // Verify that there were no uploads.
   EXPECT_EQ(0, network_.action_request_call_count);
+
+  // Verify that the notice card fulfillment histogram isn't recorded for load
+  // more.
+  histograms.ExpectTotalCount("ContentSuggestions.Feed.NoticeCardFulfilled2",
+                              0);
 }
 
 TEST_F(FeedStreamTest, BackgroundingAppUploadsActions) {

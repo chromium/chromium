@@ -901,11 +901,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled" enum="Boolean"
     expires_after="2021-03-07">
-  <owner>frechette@chromium.org</owner>
+  <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: Whether the notice card for feed action reporting has been
-    fulfilled.
+    Android: Reports whether the notice card for feed action reporting has been
+    fulfilled. Recorded when reading the response content of the feed query that
+    is successful (includes both load stream and load more queries).
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
+    expires_after="2021-06-16">
+  <owner>vincb@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports whether the notice card for feed action reporting has been
+    fulfilled. Recorded when reading the response content of the load stream
+    query that is successful.
   </summary>
 </histogram>
 

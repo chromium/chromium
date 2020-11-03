@@ -476,6 +476,12 @@ void MetricsReporter::ActivityLoggingEnabled(
 }
 
 void MetricsReporter::NoticeCardFulfilled(bool response_has_notice_card) {
+  base::UmaHistogramBoolean("ContentSuggestions.Feed.NoticeCardFulfilled2",
+                            response_has_notice_card);
+}
+
+void MetricsReporter::NoticeCardFulfilledObsolete(
+    bool response_has_notice_card) {
   base::UmaHistogramBoolean("ContentSuggestions.Feed.NoticeCardFulfilled",
                             response_has_notice_card);
 }
