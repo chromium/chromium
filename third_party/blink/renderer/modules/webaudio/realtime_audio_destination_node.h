@@ -84,6 +84,10 @@ class RealtimeAudioDestinationHandler final
   // Returns a given frames-per-buffer size from audio infra.
   int GetFramesPerBuffer() const;
 
+  bool IsPullingAudioGraphAllowed() const {
+    return allow_pulling_audio_graph_.load(std::memory_order_acquire);
+  }
+
   // Sets the detect silence flag for the platform destination.
   void SetDetectSilence(bool detect_silence);
 
@@ -101,12 +105,32 @@ class RealtimeAudioDestinationHandler final
   // Render() method.
   void SetDetectSilenceIfNecessary(bool has_automatic_pull_nodes);
 
+  // Should only be called from StartPlatformDestination.
+  void EnablePullingAudioGraph() {
+    allow_pulling_audio_graph_.store(true, std::memory_order_release);
+  }
+
+  // Should only be called from StopPlatformDestination.
+  void DisablePullingAudioGraph() {
+    allow_pulling_audio_graph_.store(false, std::memory_order_release);
+  }
+
   const WebAudioLatencyHint latency_hint_;
 
   // Holds the audio device thread that runs the real time audio context.
   scoped_refptr<AudioDestination> platform_destination_;
 
   base::Optional<float> sample_rate_;
+
+  // If true, the audio graph will be pulled to get new data.  Otherwise, the
+  // graph is not pulled, even if the audio thread is still running and
+  // requesting data.
+  //
+  // Must be modified only in StartPlatformDestination (via
+  // EnablePullingAudioGraph) or StopPlatformDestination (via
+  // DisablePullingAudioGraph) .  This is modified only by the main threda and
+  // the audio thread only reads this.
+  std::atomic_bool allow_pulling_audio_graph_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
