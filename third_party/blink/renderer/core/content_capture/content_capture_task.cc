@@ -72,7 +72,6 @@ ContentCaptureTask::~ContentCaptureTask() = default;
 void ContentCaptureTask::Shutdown() {
   DCHECK(local_frame_root_);
   local_frame_root_ = nullptr;
-  CancelTask();
 }
 
 bool ContentCaptureTask::CaptureContent(Vector<cc::NodeInfo>& data) {
@@ -300,10 +299,6 @@ bool ContentCaptureTask::ShouldPause() {
   return ThreadScheduler::Current()->ShouldYieldForHighPriorityWork();
 }
 
-void ContentCaptureTask::CancelTask() {
-  if (delay_task_ && delay_task_->IsActive())
-    delay_task_->Stop();
-}
 void ContentCaptureTask::ClearDocumentSessionsForTesting() {
   task_session_->ClearDocumentSessionsForTesting();
 }
@@ -315,7 +310,8 @@ base::TimeDelta ContentCaptureTask::GetTaskNextFireIntervalForTesting() const {
 }
 
 void ContentCaptureTask::CancelTaskForTesting() {
-  CancelTask();
+  if (delay_task_ && delay_task_->IsActive())
+    delay_task_->Stop();
 }
 
 void ContentCaptureTask::Trace(Visitor* visitor) const {

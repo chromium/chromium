@@ -769,26 +769,4 @@ public class AwContentCaptureTest {
     public void testCantCreateExperimentConsumer() throws Throwable {
         Assert.assertNull(ExperimentContentCaptureConsumer.create(mAwContents.getWebContents()));
     }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testHideAndShow() throws Throwable {
-        final String response = "<html><head></head><body>"
-                + "<div id='editable_id'>Hello</div>"
-                + "</div></body></html>";
-        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
-        runAndVerifyCallbacks(() -> {
-            loadUrlSync(url);
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
-
-        // Hides and shows the WebContent and verifies the content is captured again.
-        runAndVerifyCallbacks(() -> {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                // Removes the view and adds it back, this essentially hides and shows the frame.
-                mRule.getActivity().removeAllViews();
-                mRule.getActivity().addView(mContainerView);
-            });
-        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
-    }
 }

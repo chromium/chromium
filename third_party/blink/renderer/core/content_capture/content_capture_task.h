@@ -135,8 +135,6 @@ class CORE_EXPORT ContentCaptureTask
   void ScheduleInternal(ScheduleReason reason);
   bool CaptureContent(Vector<cc::NodeInfo>& data);
 
-  void CancelTask();
-
   // Indicates if there is content change since last run.
   bool has_content_change_ = false;
 

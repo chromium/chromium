@@ -34,8 +34,6 @@ ContentCaptureManager::ContentCaptureManager(LocalFrame& local_frame_root)
 ContentCaptureManager::~ContentCaptureManager() = default;
 
 void ContentCaptureManager::ScheduleTaskIfNeeded(const Node& node) {
-  if (!task_session_)
-    return;
   if (first_node_holder_created_) {
     ScheduleTask(
         UserActivated(node)
@@ -60,7 +58,6 @@ bool ContentCaptureManager::UserActivated(const Node& node) const {
 
 void ContentCaptureManager::ScheduleTask(
     ContentCaptureTask::ScheduleReason reason) {
-  DCHECK(task_session_);
   if (!content_capture_idle_task_) {
     content_capture_idle_task_ = CreateContentCaptureTask();
   }
@@ -72,10 +69,12 @@ ContentCaptureTask* ContentCaptureManager::CreateContentCaptureTask() {
                                                   *task_session_);
 }
 
-void ContentCaptureManager::OnLayoutTextWillBeDestroyed(const Node& node) {
-  if (!task_session_)
-    return;
+void ContentCaptureManager::NotifyNodeDetached(const Node& node) {
   task_session_->OnNodeDetached(node);
+}
+
+void ContentCaptureManager::OnLayoutTextWillBeDestroyed(const Node& node) {
+  NotifyNodeDetached(node);
   ScheduleTask(
       UserActivated(node)
           ? ContentCaptureTask::ScheduleReason::kUserActivatedContentChange
@@ -83,8 +82,6 @@ void ContentCaptureManager::OnLayoutTextWillBeDestroyed(const Node& node) {
 }
 
 void ContentCaptureManager::OnScrollPositionChanged() {
-  if (!task_session_)
-    return;
   ScheduleTask(ContentCaptureTask::ScheduleReason::kScrolling);
 }
 
@@ -104,8 +101,6 @@ void ContentCaptureManager::NotifyInputEvent(WebInputEvent::Type type,
 }
 
 void ContentCaptureManager::OnNodeTextChanged(Node& node) {
-  if (!task_session_)
-    return;
   task_session_->OnNodeChanged(node);
   ScheduleTask(
       UserActivated(node)
@@ -120,23 +115,11 @@ void ContentCaptureManager::Trace(Visitor* visitor) const {
   visitor->Trace(latest_user_activation_);
 }
 
-void ContentCaptureManager::OnFrameWasShown() {
-  if (task_session_)
-    return;
-  task_session_ = MakeGarbageCollected<TaskSession>();
-  ScheduleTask(ContentCaptureTask::ScheduleReason::kFirstContentChange);
-}
-
-void ContentCaptureManager::OnFrameWasHidden() {
-  Shutdown();
-}
-
 void ContentCaptureManager::Shutdown() {
   if (content_capture_idle_task_) {
     content_capture_idle_task_->Shutdown();
     content_capture_idle_task_ = nullptr;
   }
-  task_session_ = nullptr;
 }
 
 }  // namespace blink
