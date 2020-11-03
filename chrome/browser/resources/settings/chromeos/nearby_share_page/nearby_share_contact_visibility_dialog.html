@@ -15,8 +15,24 @@
 
 <dom-module id="nearby-share-contact-visibility-dialog">
   <template>
+    <style>
+      div.title {
+        font-weight: 500;
+        padding-bottom: 0;
+      }
+
+      div.header {
+        padding-bottom: 20px;
+        padding-inline-start: 20px;
+      }
+    </style>
     <cr-dialog id="dialog" show-on-attach>
-      <div slot="title">$i18n{nearbyShareVisibilityDialogTitle}</div>
+      <div slot="title" class="title">
+        $i18n{nearbyShareVisibilityDialogTitle}
+      </div>
+      <div slot="header" class="header">
+        $i18n{nearbyShareVisibilityPageSubtitle}
+      </div>
       <div slot="body">
         <nearby-contact-visibility settings="{{settings}}">
         </nearby-contact-visibility>
