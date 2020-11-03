@@ -4,7 +4,6 @@
 
 #include "ash/in_session_auth/in_session_auth_dialog.h"
 
-#include "ash/in_session_auth/auth_dialog_contents_view.h"
 #include "ash/public/cpp/rounded_corner_decorator.h"
 #include "base/command_line.h"
 #include "ui/aura/window.h"
@@ -47,11 +46,14 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
 
 }  // namespace
 
-InSessionAuthDialog::InSessionAuthDialog(uint32_t auth_methods,
-                                         aura::Window* parent_window)
+InSessionAuthDialog::InSessionAuthDialog(
+    uint32_t auth_methods,
+    aura::Window* parent_window,
+    const AuthDialogContentsView::AuthMethodsMetadata& auth_metadata)
     : auth_methods_(auth_methods) {
   widget_ = CreateAuthDialogWidget(
-      std::make_unique<AuthDialogContentsView>(auth_methods), parent_window);
+      std::make_unique<AuthDialogContentsView>(auth_methods, auth_metadata),
+      parent_window);
   gfx::Rect bounds = parent_window->GetBoundsInScreen();
   gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
   int horizontal_inset_dp = (bounds.width() - preferred_size.width()) / 2;

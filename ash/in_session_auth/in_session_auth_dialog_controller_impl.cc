@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_util.h"
+#include "components/user_manager/known_user.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/focus_controller.h"
@@ -97,9 +98,15 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
     return;
   }
 
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  AuthDialogContentsView::AuthMethodsMetadata auth_metadata;
+  auth_metadata.autosubmit_pin_length =
+      user_manager::known_user::GetUserPinLength(account_id);
   window_tracker_.Remove(source_window);
   Shell::Get()->focus_controller()->AddObserver(this);
-  dialog_ = std::make_unique<InSessionAuthDialog>(auth_methods, source_window);
+  dialog_ = std::make_unique<InSessionAuthDialog>(auth_methods, source_window,
+                                                  auth_metadata);
 }
 
 void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/login_types.h"
 #include "ui/views/view.h"
 
@@ -19,6 +20,7 @@ namespace ash {
 
 class LoginPasswordView;
 class LoginPinView;
+class LoginPinInputView;
 
 // Contains the debug views that allows the developer to interact with the
 // AuthDialogController.
@@ -32,7 +34,14 @@ class AuthDialogContentsView : public views::View {
     kAuthFingerprint = 1 << 2,  // Use fingerprint to unlock.
   };
 
-  explicit AuthDialogContentsView(uint32_t auth_methods);
+  // Extra control parameters to be passed when setting the auth methods.
+  struct AuthMethodsMetadata {
+    // User's pin length to use for autosubmit.
+    size_t autosubmit_pin_length = 0;
+  };
+
+  AuthDialogContentsView(uint32_t auth_methods,
+                         const AuthMethodsMetadata& auth_metadata);
   AuthDialogContentsView(const AuthDialogContentsView&) = delete;
   AuthDialogContentsView& operator=(const AuthDialogContentsView&) = delete;
   ~AuthDialogContentsView() override;
@@ -54,11 +63,14 @@ class AuthDialogContentsView : public views::View {
   // Add a view for the prompt message.
   void AddPromptView();
 
-  // Add a view for password input field.
-  void AddPasswordView();
+  // Add a view for entering PIN (if autosubmit is off).
+  void AddPinTextInputView();
 
   // Add a PIN pad view.
-  void AddPinView();
+  void AddPinPadView();
+
+  // Add a PIN input view that automatically submits PIN.
+  void AddPinDigitInputView();
 
   // Initializes password input field functionality.
   void InitPasswordView();
@@ -91,16 +103,27 @@ class AuthDialogContentsView : public views::View {
   // Prompt message to the user.
   views::Label* prompt_ = nullptr;
 
-  // Password input field for password and PIN.
-  LoginPasswordView* password_view_ = nullptr;
+  // Whether PIN can be auto submitted.
+  bool pin_autosubmit_on_ = false;
+
+  // Text input field for PIN if PIN cannot be auto submitted.
+  LoginPasswordView* pin_text_input_view_ = nullptr;
+
+  // PIN input view that's shown if PIN can be auto submitted.
+  LoginPinInputView* pin_digit_input_view_ = nullptr;
 
   // PIN pad view.
-  LoginPinView* pin_view_ = nullptr;
+  LoginPinView* pin_pad_view_ = nullptr;
 
   FingerprintView* fingerprint_view_ = nullptr;
 
   // Flags of auth methods that should be visible.
   uint32_t auth_methods_ = 0u;
+
+  // Extra parameters to control the UI.
+  AuthMethodsMetadata auth_metadata_;
+
+  LoginPalette palette_ = CreateInSessionAuthPalette();
 
   // Container which holds action buttons.
   views::View* action_view_container_ = nullptr;
