@@ -104,6 +104,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void StopCleanUpTimerForTesting();
 
  private:
+  friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictWithInvalidEntry);
