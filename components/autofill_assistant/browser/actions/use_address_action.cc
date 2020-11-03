@@ -27,7 +27,6 @@ UseAddressAction::UseAddressAction(ActionDelegate* delegate,
     : Action(delegate, proto) {
   DCHECK(proto.has_use_address());
   selector_ = Selector(proto.use_address().form_field_element());
-  selector_.MustBeVisible();
 }
 
 UseAddressAction::~UseAddressAction() = default;

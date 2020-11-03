@@ -89,7 +89,7 @@ void ElementArea::AddRectangles(
     for (const auto& element_proto : rectangle_proto.elements()) {
       rectangle.positions.emplace_back();
       ElementPosition& position = rectangle.positions.back();
-      position.selector = Selector(element_proto).MustBeVisible();
+      position.selector = Selector(element_proto);
       DVLOG(3) << "  " << position.selector;
     }
   }

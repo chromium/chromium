@@ -24,8 +24,7 @@ HighlightElementAction::~HighlightElementAction() {}
 
 void HighlightElementAction::InternalProcessAction(
     ProcessActionCallback callback) {
-  Selector selector =
-      Selector(proto_.highlight_element().element()).MustBeVisible();
+  Selector selector = Selector(proto_.highlight_element().element());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     UpdateProcessedAction(INVALID_SELECTOR);

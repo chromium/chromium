@@ -543,7 +543,6 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Selector expected_option_selector({".option"});
   expected_option_selector.MatchingInnerText("08");
-  expected_option_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_option_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
@@ -589,7 +588,6 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
           .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   Selector expected_option_selector({".option"});
   expected_option_selector.MatchingInnerText("08");
-  expected_option_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_option_selector, _))
       .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),

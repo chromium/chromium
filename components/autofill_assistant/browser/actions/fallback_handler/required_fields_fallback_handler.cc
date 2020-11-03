@@ -344,7 +344,7 @@ void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
 
   DCHECK(required_field.fallback_click_element.has_value());
   Selector value_selector = required_field.fallback_click_element.value();
-  value_selector.MatchingInnerText(value).MustBeVisible();
+  value_selector.MatchingInnerText(value);
 
   action_delegate_->ShortWaitForElement(
       value_selector,

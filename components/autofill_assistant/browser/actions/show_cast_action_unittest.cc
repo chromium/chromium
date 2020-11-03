@@ -54,7 +54,6 @@ TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
   *proto_.mutable_element_to_present() = selector.proto;
 
   Selector expected_selector = selector;
-  expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
@@ -73,7 +72,6 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
   *proto_.mutable_element_to_present() = selector.proto;
 
   Selector expected_selector = selector;
-  expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),

@@ -28,8 +28,7 @@ ClickAction::ClickAction(ActionDelegate* delegate, const ActionProto& proto)
 ClickAction::~ClickAction() {}
 
 void ClickAction::InternalProcessAction(ProcessActionCallback callback) {
-  Selector selector =
-      Selector(proto_.click().element_to_click()).MustBeVisible();
+  Selector selector = Selector(proto_.click().element_to_click());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     UpdateProcessedAction(INVALID_SELECTOR);

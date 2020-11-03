@@ -29,9 +29,7 @@ void GeneratePasswordForFormFieldAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
 
-  selector_ = Selector(proto_.generate_password_for_form_field().element())
-                  .MustBeVisible();
-
+  selector_ = Selector(proto_.generate_password_for_form_field().element());
   if (selector_.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     EndAction(ClientStatus(INVALID_SELECTOR));

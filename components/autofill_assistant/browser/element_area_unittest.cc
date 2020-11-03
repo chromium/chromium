@@ -148,8 +148,6 @@ TEST_F(ElementAreaTest, GetVisualViewport) {
 
 TEST_F(ElementAreaTest, OneRectangle) {
   Selector expected_selector({"#found"});
-  expected_selector.MustBeVisible();
-
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
                                    mock_web_controller_, expected_selector)),
@@ -164,8 +162,6 @@ TEST_F(ElementAreaTest, OneRectangle) {
 
 TEST_F(ElementAreaTest, CallOnUpdate) {
   Selector expected_selector({"#found"});
-  expected_selector.MustBeVisible();
-
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
                                    mock_web_controller_, expected_selector)),
@@ -180,8 +176,6 @@ TEST_F(ElementAreaTest, CallOnUpdate) {
 
 TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
   Selector expected_selector({"#found"});
-  expected_selector.MustBeVisible();
-
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
                                    mock_web_controller_, expected_selector, 2)),
@@ -198,7 +192,6 @@ TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
 
 TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
   Selector expected_selector({"#found"});
-  expected_selector.MustBeVisible();
 
   // Swallowing calls to OnGetVisualViewport guarantees that the viewport
   // position will never be known.
@@ -232,9 +225,7 @@ TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
 
 TEST_F(ElementAreaTest, TwoRectangles) {
   Selector expected_selector_top_left({"#top_left"});
-  expected_selector_top_left.MustBeVisible();
   Selector expected_selector_bottom_right({"#bottom_right"});
-  expected_selector_bottom_right.MustBeVisible();
 
   EXPECT_CALL(
       mock_web_controller_,
@@ -263,9 +254,7 @@ TEST_F(ElementAreaTest, TwoRectangles) {
 
 TEST_F(ElementAreaTest, OneRectangleTwoElements) {
   Selector expected_selector_1({"#element1"});
-  expected_selector_1.MustBeVisible();
   Selector expected_selector_2({"#element2"});
-  expected_selector_2.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
@@ -291,7 +280,6 @@ TEST_F(ElementAreaTest, OneRectangleTwoElements) {
 
 TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
   Selector expected_selector_1({"#element1"});
-  expected_selector_1.MustBeVisible();
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
                                    mock_web_controller_, expected_selector_1)),
@@ -301,7 +289,6 @@ TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
   // Getting the position of #element2 neither succeeds nor fails, simulating an
   // intermediate state which shouldn't be reported to the callback.
   Selector expected_selector_2({"#element2"});
-  expected_selector_2.MustBeVisible();
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
                                    mock_web_controller_, expected_selector_2)),
@@ -323,13 +310,9 @@ TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
 
 TEST_F(ElementAreaTest, OneRectangleFourElements) {
   Selector expected_selector_1({"#element1"});
-  expected_selector_1.MustBeVisible();
   Selector expected_selector_2({"#element2"});
-  expected_selector_2.MustBeVisible();
   Selector expected_selector_3({"#element3"});
-  expected_selector_3.MustBeVisible();
   Selector expected_selector_4({"#element4"});
-  expected_selector_4.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
@@ -367,9 +350,7 @@ TEST_F(ElementAreaTest, OneRectangleFourElements) {
 
 TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
   Selector expected_selector_1({"#element1"});
-  expected_selector_1.MustBeVisible();
   Selector expected_selector_2({"#element2"});
-  expected_selector_2.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
@@ -397,9 +378,7 @@ TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
 
 TEST_F(ElementAreaTest, FullWidthRectangle) {
   Selector expected_selector_1({"#element1"});
-  expected_selector_1.MustBeVisible();
   Selector expected_selector_2({"#element2"});
-  expected_selector_2.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
@@ -434,7 +413,6 @@ TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
   testing::InSequence seq;
 
   Selector expected_selector({"#element"});
-  expected_selector.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
@@ -469,7 +447,6 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
   testing::InSequence seq;
 
   Selector expected_selector({"#element"});
-  expected_selector.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(
@@ -509,7 +486,6 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
 
 TEST_F(ElementAreaTest, RestrictedElement) {
   Selector expected_selector({"#restricted_element"});
-  expected_selector.MustBeVisible();
 
   EXPECT_CALL(mock_web_controller_,
               OnGetElementRect(EqualsElement(test_util::MockFindElement(

@@ -45,8 +45,7 @@ class SetFormFieldValueActionTest : public testing::Test {
  public:
   void SetUp() override {
     set_form_field_proto_ = proto_.mutable_set_form_value();
-    *set_form_field_proto_->mutable_element() =
-        Selector({kFakeSelector}).MustBeVisible().proto;
+    *set_form_field_proto_->mutable_element() = Selector({kFakeSelector}).proto;
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
     ON_CALL(mock_action_delegate_, WriteUserData)
@@ -82,7 +81,7 @@ class SetFormFieldValueActionTest : public testing::Test {
     user_data_.selected_login_ =
         base::make_optional<WebsiteLoginManager::Login>(GURL(kFakeUrl),
                                                         kFakeUsername);
-    fake_selector_ = Selector({kFakeSelector}).MustBeVisible();
+    fake_selector_ = Selector({kFakeSelector});
   }
 
  protected:

@@ -53,7 +53,7 @@ SetFormFieldValueAction::~SetFormFieldValueAction() {}
 void SetFormFieldValueAction::InternalProcessAction(
     ProcessActionCallback callback) {
   process_action_callback_ = std::move(callback);
-  selector_ = Selector(proto_.set_form_value().element()).MustBeVisible();
+  selector_ = Selector(proto_.set_form_value().element());
   if (selector_.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     EndAction(ClientStatus(INVALID_SELECTOR));

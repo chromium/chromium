@@ -230,10 +230,8 @@ TEST_F(BatchElementCheckerTest, DeduplicateElementExists) {
 
 TEST_F(BatchElementCheckerTest, DeduplicateElementVisible) {
   Selector expected_selector_1({"1"});
-  expected_selector_1.MustBeVisible();
   test_util::MockFindElement(mock_web_controller_, expected_selector_1);
   Selector expected_selector_2({"2"});
-  expected_selector_2.MustBeVisible();
   test_util::MockFindElement(mock_web_controller_, expected_selector_2);
 
   checks_.AddElementCheck(expected_selector_1,

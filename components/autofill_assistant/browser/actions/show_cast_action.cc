@@ -31,7 +31,7 @@ void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
     // use tell instead.
     delegate_->SetStatusMessage(show_cast.title());
   }
-  Selector selector = Selector(show_cast.element_to_present()).MustBeVisible();
+  Selector selector = Selector(show_cast.element_to_present());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     UpdateProcessedAction(INVALID_SELECTOR);

@@ -182,9 +182,15 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                         .setElement(SelectorProto.newBuilder().addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector(
                                         "#js_dropdown_value")))
-                        .setOptionElementToClick(SelectorProto.newBuilder().addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                        "#js_dropdown_options li")))
+                        .setOptionElementToClick(
+                                SelectorProto.newBuilder()
+                                        .addFilters(
+                                                SelectorProto.Filter.newBuilder().setCssSelector(
+                                                        "#js_dropdown_options li"))
+                                        .addFilters(
+                                                SelectorProto.Filter.newBuilder().setBoundingBox(
+                                                        SelectorProto.EmptyFilter
+                                                                .getDefaultInstance())))
                         .setClickType(ClickType.TAP)
                         .build();
         list.add((ActionProto) ActionProto.newBuilder()

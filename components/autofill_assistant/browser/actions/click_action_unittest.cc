@@ -55,7 +55,6 @@ TEST_F(ClickActionTest, CheckExpectedCallChain) {
   proto_.set_click_type(ClickType::CLICK);
 
   Selector expected_selector = selector;
-  expected_selector.MustBeVisible();
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),

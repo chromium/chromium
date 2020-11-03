@@ -32,7 +32,6 @@ UseCreditCardAction::UseCreditCardAction(ActionDelegate* delegate,
     : Action(delegate, proto) {
   DCHECK(proto.has_use_card());
   selector_ = Selector(proto.use_card().form_field_element());
-  selector_.MustBeVisible();
 }
 
 UseCreditCardAction::~UseCreditCardAction() = default;

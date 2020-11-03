@@ -66,8 +66,7 @@ TEST_F(GeneratePasswordForFormFieldActionTest, GeneratedPassword) {
                                         autofill::FormFieldData()));
   GeneratePasswordForFormFieldProto* generate_password_proto =
       proto_.mutable_generate_password_for_form_field();
-  *generate_password_proto->mutable_element() =
-      Selector({kFakeSelector}).MustBeVisible().proto;
+  *generate_password_proto->mutable_element() = Selector({kFakeSelector}).proto;
   generate_password_proto->set_memory_key(kMemoryKeyForGeneratedPassword);
 
   GeneratePasswordForFormFieldAction action(&mock_action_delegate_, proto_);
