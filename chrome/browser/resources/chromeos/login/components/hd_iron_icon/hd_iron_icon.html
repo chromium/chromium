@@ -4,6 +4,8 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
+<link rel="import" href="/components/common_styles.html">
+
 <!--
   <iron-icon> that automatically displays one of the two icons depending on
   display resolution,
@@ -22,11 +24,23 @@
 -->
 <dom-module id="hd-iron-icon">
   <template>
-    <style include="oobe-common"></style>
-    <link rel="stylesheet" href="hd-iron-icon.css">
+    <style include="oobe-common">
+      @media all and (-webkit-max-device-pixel-ratio: 1.5) {
+        #icon2x {
+          display: none;
+        }
+      }
+
+      @media all and (-webkit-min-device-pixel-ratio: 1.5) {
+        #icon1x {
+          display: none;
+        }
+      }
+    </style>
     <div class="flex layout vertical" aria-hidden="true">
       <iron-icon id="icon1x" icon="[[icon1x]]" src="[[src1x]]"></iron-icon>
       <iron-icon id="icon2x" icon="[[icon2x]]" src="[[src2x]]"></iron-icon>
     </div>
   </template>
+  <script src="hd_iron_icon.js"></script>
 </dom-module>

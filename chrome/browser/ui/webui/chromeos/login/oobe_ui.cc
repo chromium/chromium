@@ -146,6 +146,9 @@ constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 // Components
 constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
+constexpr char kCommonStylesHTML[] = "components/common_styles.html";
+constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
+constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
@@ -614,6 +617,13 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML);
   source->AddResourcePath(kI18nBehaviorJS,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS);
+
+  source->AddResourcePath(kCommonStylesHTML,
+                          IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
+
+  source->AddResourcePath(kHDIronIconHTML,
+                          IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML);
+  source->AddResourcePath(kHDIronIconJS, IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS);
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="../login/components/hd-iron-icon.js">
 // <include src="../login/components/oobe_types.js">
 // <include src="../login/components/oobe_buttons.js">
 // <include src="../login/components/oobe_dialog_host_behavior.js">

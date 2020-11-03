@@ -43,6 +43,9 @@
         <!-- OOBE Components -->
         <structure name="IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML" file="resources/chromeos/login/components/oobe_i18n_behavior/oobe_i18n_behavior.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS" file="resources/chromeos/login/components/oobe_i18n_behavior/oobe_i18n_behavior.js" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML" file="resources/chromeos/login/components/common_styles/common_styles.html" type="chrome_html" flattenhtml="true"/>
+        <structure name="IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML" file="resources/chromeos/login/components/hd_iron_icon/hd_iron_icon.html" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS" file="resources/chromeos/login/components/hd_iron_icon/hd_iron_icon.js" type="chrome_html" />
 
         <!-- Gesture Navigation animations. -->
         <structure type="chrome_html" name="IDR_GESTURE_NAVIGATION_GO_HOME_ANIMATION" file="resources\chromeos\login\images\gesture_go_home.json" compress="gzip" />

@@ -8,7 +8,6 @@ window.onerror = function(message, file, line, column, error) {
   console.error(error.stack);
 };
 
-// <include src="../components/hd-iron-icon.js">
 // <include src="../components/oobe_buttons.js">
 // <include src="../components/oobe_dialog.js">
 // <include src="../components/oobe_dialog_host_behavior.js">

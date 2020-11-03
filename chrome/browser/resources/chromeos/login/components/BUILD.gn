@@ -8,6 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
+    "hd_iron_icon:closure_compile",
     "oobe_i18n_behavior:closure_compile",
   ]
 }
@@ -15,7 +16,6 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   deps = [
     ":fake_oobe",
-    ":hd-iron-icon",
     ":html-echo",
     ":login_screen_behavior",
     ":multi_step_behavior",
@@ -76,9 +76,6 @@ js_library("oobe_help_dialog") {
 }
 
 js_library("oobe_carousel") {
-}
-
-js_library("hd-iron-icon") {
 }
 
 js_library("html-echo") {
