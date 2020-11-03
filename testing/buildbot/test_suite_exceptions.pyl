@@ -102,13 +102,6 @@
       'linux-lacros-tester-rel',
       'linux-lacros-tester-fyi-rel',
     ],
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
   },
   'angle_white_box_tests': {
     'remove_from': [
