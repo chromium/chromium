@@ -1221,7 +1221,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (isActivityFinishingOrDestroyed()) {
                 return;
             }
-            if (isFromChrome(intent, externalAppId)) {
+            final boolean fromChrome = isFromChrome(intent, externalAppId);
+            if (fromChrome) {
                 RecordUserAction.record("MobileTabbedModeViewIntentFromChrome");
             } else {
                 RecordUserAction.record("MobileTabbedModeViewIntentFromApp");
@@ -1278,7 +1279,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         RedirectHandlerTabHelper.updateIntentInTab(currentTab, intent);
                         LoadUrlParams loadUrlParams =
                                 ChromeTabbedActivity.createLoadUrlParamsForIntent(url, referer,
-                                        hasUserGesture, mIntentHandlingTimeMs, intent);
+                                        hasUserGesture, mIntentHandlingTimeMs, intent, fromChrome);
                         loadUrlParams.setIsRendererInitiated(isRendererInitiated);
                         loadUrlParams.setInitiatorOrigin(initiatorOrigin);
                         currentTab.loadUrl(loadUrlParams);
@@ -1307,7 +1308,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 LoadUrlParams loadUrlParams =
                                         ChromeTabbedActivity.createLoadUrlParamsForIntent(url,
                                                 referer, hasUserGesture, mIntentHandlingTimeMs,
-                                                intent);
+                                                intent, fromChrome);
                                 loadUrlParams.setVerbatimHeaders(headers);
                                 loadUrlParams.setIsRendererInitiated(isRendererInitiated);
                                 loadUrlParams.setInitiatorOrigin(initiatorOrigin);
@@ -1951,11 +1952,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * Create a LoadUrlParams for handling a VIEW intent.
      */
     private static LoadUrlParams createLoadUrlParamsForIntent(String url, String referer,
-            boolean hasUserGesture, long intentHandlingTimeMs, Intent intent) {
+            boolean hasUserGesture, long intentHandlingTimeMs, Intent intent, boolean fromChrome) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         loadUrlParams.setIntentReceivedTimestamp(intentHandlingTimeMs);
         loadUrlParams.setHasUserGesture(hasUserGesture);
-        int transitionType = PageTransition.LINK | PageTransition.FROM_API;
+        int transitionType = PageTransition.LINK;
+        if (!fromChrome) transitionType |= PageTransition.FROM_API;
         loadUrlParams.setTransitionType(
                 IntentHandler.getTransitionTypeFromIntent(intent, transitionType));
         if (referer != null) {
