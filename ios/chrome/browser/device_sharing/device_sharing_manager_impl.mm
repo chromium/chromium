@@ -22,8 +22,8 @@ DeviceSharingManagerImpl::DeviceSharingManagerImpl(
   prefs_change_observer_->Init(browser_state_->GetPrefs());
   prefs_change_observer_->Add(
       prefs::kIosHandoffToOtherDevices,
-      base::Bind(&DeviceSharingManagerImpl::UpdateHandoffManager,
-                 base::Unretained(this)));
+      base::BindRepeating(&DeviceSharingManagerImpl::UpdateHandoffManager,
+                          base::Unretained(this)));
   UpdateHandoffManager();
   [handoff_manager_ updateActiveURL:GURL()];
 }

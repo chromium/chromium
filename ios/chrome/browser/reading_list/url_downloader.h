@@ -55,7 +55,7 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
 
   // A completion callback that takes a GURL and a bool indicating the
   // outcome and returns void.
-  using SuccessCompletion = base::Callback<void(const GURL&, bool)>;
+  using SuccessCompletion = base::RepeatingCallback<void(const GURL&, bool)>;
 
   // A download completion callback that takes, in order, the GURL that was
   // downloaded, the GURL of the page that was downloaded after redirections, a
@@ -64,12 +64,12 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // the url, and returns void.
   // The path to downloaded file and title should not be used in case of
   // failure.
-  using DownloadCompletion = base::Callback<void(const GURL&,
-                                                 const GURL&,
-                                                 SuccessState,
-                                                 const base::FilePath&,
-                                                 int64_t size,
-                                                 const std::string&)>;
+  using DownloadCompletion = base::RepeatingCallback<void(const GURL&,
+                                                          const GURL&,
+                                                          SuccessState,
+                                                          const base::FilePath&,
+                                                          int64_t size,
+                                                          const std::string&)>;
 
   // Create a URL downloader with completion callbacks for downloads and
   // deletions. The completion callbacks will be called with the original url

@@ -451,8 +451,8 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
           (channel != version_info::Channel::STABLE &&
            channel != version_info::Channel::BETA);
       browser_policy_connector_ = std::make_unique<BrowserPolicyConnectorIOS>(
-          base::Bind(&BuildPolicyHandlerList,
-                     enable_future_policies_without_allowlist));
+          base::BindRepeating(&BuildPolicyHandlerList,
+                              enable_future_policies_without_allowlist));
 
       // Install a mock platform policy provider, if running under EG2 and one
       // is supplied.

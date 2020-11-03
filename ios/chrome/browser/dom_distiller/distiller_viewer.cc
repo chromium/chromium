@@ -47,9 +47,10 @@ DistillerViewer::DistillerViewer(
   distiller_ = distiller_factory->CreateDistillerForUrl(url);
   distiller_->DistillPage(
       url, std::move(page),
-      base::Bind(&DistillerViewer::OnDistillerFinished, base::Unretained(this)),
-      base::Bind(&DistillerViewer::OnArticleDistillationUpdated,
-                 base::Unretained(this)));
+      base::BindOnce(&DistillerViewer::OnDistillerFinished,
+                     base::Unretained(this)),
+      base::BindRepeating(&DistillerViewer::OnArticleDistillationUpdated,
+                          base::Unretained(this)));
 }
 
 DistillerViewer::~DistillerViewer() {}

@@ -173,8 +173,8 @@ IOSChromeSyncClient::GetSessionSyncService() {
   return SessionSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
-base::Closure IOSChromeSyncClient::GetPasswordStateChangedCallback() {
-  return base::Bind(
+base::RepeatingClosure IOSChromeSyncClient::GetPasswordStateChangedCallback() {
+  return base::BindRepeating(
       &IOSChromePasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged,
       base::Unretained(browser_state_));
 }

@@ -27,7 +27,8 @@ class FakeSafeBrowsingUrlCheckerImpl
             resource_type,
             base::MakeRefCounted<UrlCheckerDelegateImpl>(
                 /*database_manager=*/nullptr),
-            base::Bind([]() { return static_cast<web::WebState*>(nullptr); }),
+            base::BindRepeating(
+                []() { return static_cast<web::WebState*>(nullptr); }),
             /*real_time_lookup_enabled=*/false,
             /*can_rt_check_subresource_url=*/false,
             /*url_lookup_service_on_ui=*/nullptr) {}

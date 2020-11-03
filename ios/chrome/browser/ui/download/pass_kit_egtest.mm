@@ -74,7 +74,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 - (void)setUp {
   [super setUp];
 
-  self.testServer->RegisterRequestHandler(base::Bind(&GetResponse));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(&GetResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 

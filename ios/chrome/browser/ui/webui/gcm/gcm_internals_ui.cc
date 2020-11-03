@@ -98,8 +98,9 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
     ReturnResults(browser_state->GetPrefs(), nullptr, nullptr);
   } else {
     profile_service->driver()->GetGCMStatistics(
-        base::Bind(&GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
-                   weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
+            weak_ptr_factory_.GetWeakPtr()),
         clear_activity_logs);
   }
 }
@@ -126,8 +127,9 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
   }
   // Get fresh stats after changing recording setting.
   profile_service->driver()->SetGCMRecording(
-      base::Bind(&GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
+          weak_ptr_factory_.GetWeakPtr()),
       recording);
 }
 

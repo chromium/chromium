@@ -141,7 +141,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
     EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
   }
   // Set server up.
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL(kPageURL);
 
@@ -206,7 +207,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
     EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
   }
   // Set server up.
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL(kPageURL);
 
@@ -416,7 +418,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 
 // Setup a most visited tile, and open the context menu by long pressing on it.
 - (void)setupMostVisitedTileLongPress {
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);

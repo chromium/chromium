@@ -164,7 +164,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
       base::TimeDelta::FromMilliseconds(1500);
   timer_->Start(
       FROM_HERE, kDelayUntilLoadingProgressIsChecked,
-      base::Bind(
+      base::BindRepeating(
           &ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading,
           base::Unretained(this)));
 }

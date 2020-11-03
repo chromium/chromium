@@ -101,8 +101,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   DCHECK(IsEnterprisePolicyEnabled());
   std::unique_ptr<policy::ConfigurationPolicyHandlerList> handlers =
       std::make_unique<policy::ConfigurationPolicyHandlerList>(
-          base::Bind(&PopulatePolicyHandlerParameters),
-          base::Bind(&policy::GetChromePolicyDetails), allow_future_policies);
+          base::BindRepeating(&PopulatePolicyHandlerParameters),
+          base::BindRepeating(&policy::GetChromePolicyDetails),
+          allow_future_policies);
 
   // Check the feature flag before adding handlers to the list.
   if (!ShouldInstallEnterprisePolicyHandlers()) {

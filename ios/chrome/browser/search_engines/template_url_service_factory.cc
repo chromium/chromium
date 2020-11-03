@@ -27,11 +27,11 @@
 namespace ios {
 namespace {
 
-base::Closure GetDefaultSearchProviderChangedCallback() {
+base::RepeatingClosure GetDefaultSearchProviderChangedCallback() {
 #if BUILDFLAG(ENABLE_RLZ)
-  return base::Bind(base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent),
-                    rlz_lib::CHROME, rlz::RLZTracker::ChromeOmnibox(),
-                    rlz_lib::SET_TO_GOOGLE);
+  return base::BindRepeating(
+      base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent), rlz_lib::CHROME,
+      rlz::RLZTracker::ChromeOmnibox(), rlz_lib::SET_TO_GOOGLE);
 #else
   return base::Closure();
 #endif

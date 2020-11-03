@@ -28,8 +28,8 @@ const char kPrintCommandPrefix[] = "print";
 PrintTabHelper::PrintTabHelper(web::WebState* web_state) {
   web_state->AddObserver(this);
   subscription_ = web_state->AddScriptCommandCallback(
-      base::Bind(&PrintTabHelper::OnPrintCommand, base::Unretained(this),
-                 base::Unretained(web_state)),
+      base::BindRepeating(&PrintTabHelper::OnPrintCommand,
+                          base::Unretained(this), base::Unretained(web_state)),
       kPrintCommandPrefix);
 }
 

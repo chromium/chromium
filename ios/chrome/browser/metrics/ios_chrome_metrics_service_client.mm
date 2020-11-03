@@ -401,12 +401,13 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
 bool IOSChromeMetricsServiceClient::RegisterForNotifications() {
   tab_parented_subscription_ =
       TabParentingGlobalObserver::GetInstance()->RegisterCallback(
-          base::Bind(&IOSChromeMetricsServiceClient::OnTabParented,
-                     base::Unretained(this)));
+          base::BindRepeating(&IOSChromeMetricsServiceClient::OnTabParented,
+                              base::Unretained(this)));
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
-                     base::Unretained(this)));
+          base::BindRepeating(
+              &IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
+              base::Unretained(this)));
 
   std::vector<ChromeBrowserState*> loaded_browser_states =
       GetApplicationContext()

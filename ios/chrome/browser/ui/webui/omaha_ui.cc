@@ -70,8 +70,8 @@ void OmahaDOMHandler::RegisterMessages() {
 void OmahaDOMHandler::HandleRequestDebugInformation(
     const base::ListValue* args) {
   OmahaService::GetDebugInformation(
-      base::Bind(&OmahaDOMHandler::OnDebugInformationAvailable,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OmahaDOMHandler::OnDebugInformationAvailable(

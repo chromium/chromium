@@ -261,7 +261,7 @@ class JsLanguageDetectionManagerDetectLanguageTest
  public:
   void SetUp() override {
     JsLanguageDetectionManagerTest::SetUp();
-    auto callback = base::Bind(
+    auto callback = base::BindRepeating(
         &JsLanguageDetectionManagerDetectLanguageTest::CommandReceived,
         base::Unretained(this));
     subscription_ =

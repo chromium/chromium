@@ -80,7 +80,7 @@ IOSChromeTabRestoreServiceClient::FindLiveTabContextForTab(
   if (!web_state) {
     return nullptr;
   }
-  return FindLiveTabContextWithCondition(base::Bind(
+  return FindLiveTabContextWithCondition(base::BindRepeating(
       [](const web::WebState* web_state, Browser* browser) {
         WebStateList* web_state_list = browser->GetWebStateList();
         const int index = web_state_list->GetIndexOfWebState(web_state);
@@ -92,7 +92,7 @@ IOSChromeTabRestoreServiceClient::FindLiveTabContextForTab(
 sessions::LiveTabContext*
 IOSChromeTabRestoreServiceClient::FindLiveTabContextWithID(
     SessionID desired_id) {
-  return FindLiveTabContextWithCondition(base::Bind(
+  return FindLiveTabContextWithCondition(base::BindRepeating(
       [](SessionID desired_id, Browser* browser) {
         SyncedWindowDelegateBrowserAgent* syncedWindowDelegate =
             SyncedWindowDelegateBrowserAgent::FromBrowser(browser);

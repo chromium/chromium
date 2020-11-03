@@ -69,7 +69,7 @@ IOSChromeMetricsServicesManagerClient::CreateRapporServiceImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return std::make_unique<rappor::RapporServiceImpl>(
       local_state_,
-      base::Bind(
+      base::BindRepeating(
           &IOSChromeMetricsServicesManagerClient::AreIncognitoTabsPresent));
 }
 
@@ -100,8 +100,8 @@ IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   if (!metrics_state_manager_) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), base::string16(),
-        base::Bind(&PostStoreMetricsClientInfo),
-        base::Bind(&LoadMetricsClientInfo));
+        base::BindRepeating(&PostStoreMetricsClientInfo),
+        base::BindRepeating(&LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();
 }

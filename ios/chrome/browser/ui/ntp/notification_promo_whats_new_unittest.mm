@@ -34,8 +34,8 @@ class NotificationPromoWhatsNewTest : public PlatformTest {
   NotificationPromoWhatsNewTest()
       : promo_(&local_state_),
         action_callback_(
-            base::Bind(&NotificationPromoWhatsNewTest::OnUserAction,
-                       base::Unretained(this))) {
+            base::BindRepeating(&NotificationPromoWhatsNewTest::OnUserAction,
+                                base::Unretained(this))) {
     ios::NotificationPromo::RegisterPrefs(local_state_.registry());
     local_state_.registry()->RegisterInt64Pref(metrics::prefs::kInstallDate, 0);
     base::AddActionCallback(action_callback_);

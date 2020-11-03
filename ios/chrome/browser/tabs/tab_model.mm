@@ -57,10 +57,10 @@ void CleanCertificatePolicyCache(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   task_tracker->PostTaskAndReply(
       task_runner.get(), FROM_HERE,
-      base::Bind(&web::CertificatePolicyCache::ClearCertificatePolicies,
-                 policy_cache),
-      base::Bind(&RestoreCertificatePolicyCacheFromModel, policy_cache,
-                 base::Unretained(web_state_list)));
+      base::BindOnce(&web::CertificatePolicyCache::ClearCertificatePolicies,
+                     policy_cache),
+      base::BindOnce(&RestoreCertificatePolicyCacheFromModel, policy_cache,
+                     base::Unretained(web_state_list)));
 }
 
 }  // anonymous namespace

@@ -56,7 +56,7 @@ class HistoryClientImpl : public history::HistoryClient,
   bookmarks::BookmarkModel* bookmark_model_;
 
   // Callback invoked when URLs are removed from BookmarkModel.
-  base::Callback<void(const std::set<GURL>&)> on_bookmarks_removed_;
+  base::RepeatingCallback<void(const std::set<GURL>&)> on_bookmarks_removed_;
 
   // Subscription for notifications of changes to favicons.
   std::unique_ptr<

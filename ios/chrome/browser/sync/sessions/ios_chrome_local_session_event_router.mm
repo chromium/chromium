@@ -44,8 +44,8 @@ IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
       flare_(flare) {
   tab_parented_subscription_ =
       TabParentingGlobalObserver::GetInstance()->RegisterCallback(
-          base::Bind(&IOSChromeLocalSessionEventRouter::OnTabParented,
-                     base::Unretained(this)));
+          base::BindRepeating(&IOSChromeLocalSessionEventRouter::OnTabParented,
+                              base::Unretained(this)));
 
   registrars_.insert(std::make_unique<AllWebStateListObservationRegistrar>(
       browser_state, std::make_unique<Observer>(this),

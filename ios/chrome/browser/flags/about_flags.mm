@@ -865,7 +865,7 @@ void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            base::ListValue* unsupported_entries) {
   GetGlobalFlagsState().GetFlagFeatureEntries(
       flags_storage, access, supported_entries, unsupported_entries,
-      base::Bind(&SkipConditionalFeatureEntry));
+      base::BindRepeating(&SkipConditionalFeatureEntry));
 }
 
 void SetFeatureEntryEnabled(flags_ui::FlagsStorage* flags_storage,

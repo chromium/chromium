@@ -227,7 +227,7 @@ void ExternalFileRemoverImpl::RemoveFiles(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&RemoveFilesWithOptions, referenced_files, age_in_days),
-      base::Bind(&RunCallback, base::Passed(&closure_runner)));
+      base::BindOnce(&RunCallback, base::Passed(&closure_runner)));
 }
 
 NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {

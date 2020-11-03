@@ -123,7 +123,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
   _watchdogTimer->Start(
       FROM_HERE,
       base::TimeDelta::FromSeconds(kAuthenticationFlowTimeoutSeconds),
-      base::Bind(onTimeout));
+      base::BindOnce(onTimeout));
 }
 
 - (BOOL)stopWatchdogTimer {

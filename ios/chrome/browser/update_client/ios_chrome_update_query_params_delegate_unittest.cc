@@ -53,7 +53,7 @@ using IOSChromeUpdateQueryParamsDelegateTest = PlatformTest;
 
 TEST_F(IOSChromeUpdateQueryParamsDelegateTest, GetParams) {
   base::ScopedClosureRunner runner(
-      base::Bind(update_client::UpdateQueryParams::SetDelegate, nullptr));
+      base::BindOnce(update_client::UpdateQueryParams::SetDelegate, nullptr));
   update_client::UpdateQueryParams::SetDelegate(
       IOSChromeUpdateQueryParamsDelegate::GetInstance());
 

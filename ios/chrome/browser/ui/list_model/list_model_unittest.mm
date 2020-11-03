@@ -318,7 +318,8 @@ TEST_F(ListModelTest, InvalidIndexPath) {
   ListModel* model = [[ListModel alloc] init];
   [model addSectionWithIdentifier:SectionIdentifierCheese];
 
-  logging::ScopedLogAssertHandler scoped_assert_handler(base::Bind(LogSink));
+  logging::ScopedLogAssertHandler scoped_assert_handler(
+      base::BindRepeating(LogSink));
   bool out_of_bounds_exception_thrown = false;
   @try {
     [model indexInItemTypeForIndexPath:[NSIndexPath indexPathForItem:0

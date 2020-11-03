@@ -79,9 +79,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
 // Sets up the EmbeddedTestServer as needed for tests.
 - (void)setUpTestServer {
-  self.testServer->RegisterDefaultHandler(
-      base::Bind(net::test_server::HandlePrefixedRequest, "/querytitle",
-                 base::Bind(&HandleQueryTitle)));
+  self.testServer->RegisterDefaultHandler(base::BindRepeating(
+      net::test_server::HandlePrefixedRequest, "/querytitle",
+      base::BindRepeating(&HandleQueryTitle)));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 

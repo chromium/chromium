@@ -107,8 +107,8 @@ void RLZTrackerDelegateImpl::SetOmniboxSearchCallback(
   on_omnibox_search_callback_ = std::move(callback);
   on_omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox,
-                     base::Unretained(this)));
+          base::BindRepeating(&RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox,
+                              base::Unretained(this)));
 }
 
 void RLZTrackerDelegateImpl::SetHomepageSearchCallback(

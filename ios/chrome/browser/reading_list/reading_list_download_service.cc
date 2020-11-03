@@ -81,10 +81,10 @@ ReadingListDownloadService::ReadingListDownloadService(
   url_downloader_ = std::make_unique<URLDownloader>(
       distiller_factory_.get(), distiller_page_factory_.get(), prefs,
       chrome_profile_path, url_loader_factory,
-      base::Bind(&ReadingListDownloadService::OnDownloadEnd,
-                 base::Unretained(this)),
-      base::Bind(&ReadingListDownloadService::OnDeleteEnd,
-                 base::Unretained(this)));
+      base::BindRepeating(&ReadingListDownloadService::OnDownloadEnd,
+                          base::Unretained(this)),
+      base::BindRepeating(&ReadingListDownloadService::OnDeleteEnd,
+                          base::Unretained(this)));
 
   GetApplicationContext()
       ->GetNetworkConnectionTracker()
@@ -174,9 +174,9 @@ void ReadingListDownloadService::SyncWithModel() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::Bind(&::CleanUpFiles, OfflineRoot(), processed_directories),
-      base::Bind(&ReadingListDownloadService::DownloadUnprocessedEntries,
-                 base::Unretained(this), unprocessed_entries));
+      base::BindOnce(&::CleanUpFiles, OfflineRoot(), processed_directories),
+      base::BindOnce(&ReadingListDownloadService::DownloadUnprocessedEntries,
+                     base::Unretained(this), unprocessed_entries));
 }
 
 void ReadingListDownloadService::DownloadUnprocessedEntries(

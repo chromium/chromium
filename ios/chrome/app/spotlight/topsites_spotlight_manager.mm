@@ -188,9 +188,10 @@ class SpotlightSuggestionsBridge
       _suggestionsBridge.reset(new SpotlightSuggestionsBridge(self));
       _syncService = syncService;
       _suggestionService = suggestionsService;
-      _suggestionsServiceResponseSubscription = _suggestionService->AddCallback(
-          base::Bind(&SpotlightSuggestionsBridge::OnSuggestionsProfileAvailable,
-                     _suggestionsBridge->AsWeakPtr()));
+      _suggestionsServiceResponseSubscription =
+          _suggestionService->AddCallback(base::BindRepeating(
+              &SpotlightSuggestionsBridge::OnSuggestionsProfileAvailable,
+              _suggestionsBridge->AsWeakPtr()));
       _syncObserverBridge.reset(new SyncObserverBridge(self, syncService));
     }
   }
@@ -218,9 +219,9 @@ class SpotlightSuggestionsBridge
 }
 
 - (void)addAllLocalTopSitesItems {
-  _topSites->GetMostVisitedURLs(
-      base::Bind(&SpotlightTopSitesCallbackBridge::OnMostVisitedURLsAvailable,
-                 _topSitesCallbackBridge->AsWeakPtr()));
+  _topSites->GetMostVisitedURLs(base::BindOnce(
+      &SpotlightTopSitesCallbackBridge::OnMostVisitedURLsAvailable,
+      _topSitesCallbackBridge->AsWeakPtr()));
 }
 
 - (void)addAllSuggestionsTopSitesItems {

@@ -45,9 +45,9 @@ void FullCardRequester::ShowUnmaskPrompt(
     autofill::AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<autofill::CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
-      base::Bind(&CreateCardUnmaskPromptViewBridge,
-                 base::Unretained(&unmask_controller_),
-                 base::Unretained(base_view_controller_)),
+      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
+                     base::Unretained(&unmask_controller_),
+                     base::Unretained(base_view_controller_)),
       card, reason, delegate);
 }
 

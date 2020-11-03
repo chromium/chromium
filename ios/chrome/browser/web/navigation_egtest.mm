@@ -340,7 +340,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // and verifies the URLs and that hashchange event is fired.
 - (void)testWindowLocationChangeHash {
   self.testServer->RegisterRequestHandler(
-      base::Bind(&WindowLocationHashHandlers));
+      base::BindRepeating(&WindowLocationHashHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL page1URL = self.testServer->GetURL(kPage1URL);
   const GURL hashChangedWithHistoryURL =
@@ -384,7 +384,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // and verifies that going back returns to the replaced entry.
 - (void)testWindowLocationReplaceAndChangeHash {
   self.testServer->RegisterRequestHandler(
-      base::Bind(&WindowLocationHashHandlers));
+      base::BindRepeating(&WindowLocationHashHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL page1URL = self.testServer->GetURL(kPage1URL);
   const GURL hashChangedWithHistoryURL =
@@ -422,7 +422,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // only one entry in the history by navigating back.
 - (void)testWindowLocationChangeToSameHash {
   self.testServer->RegisterRequestHandler(
-      base::Bind(&WindowLocationHashHandlers));
+      base::BindRepeating(&WindowLocationHashHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL page1URL = self.testServer->GetURL(kPage1URL);
   const GURL hashChangedWithHistoryURL =
@@ -461,7 +461,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Navigates to a page that immediately redirects to another page via JavaScript
 // then verifies the browsing history.
 - (void)testJavaScriptRedirect {
-  self.testServer->RegisterRequestHandler(base::Bind(&RedirectHandlers));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&RedirectHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   // A starting page.
   const GURL initialURL = self.testServer->GetURL(kDefaultPageURL);
@@ -519,7 +520,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 }
 
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel {
-  self.testServer->RegisterRequestHandler(base::Bind(&RedirectHandlers));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&RedirectHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL indexURL(self.testServer->GetURL(kRedirectIndexURL));
   const GURL destinationURL(self.testServer->GetURL(kDestinationURL));

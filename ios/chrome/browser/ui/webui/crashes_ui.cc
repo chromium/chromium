@@ -109,8 +109,8 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
       UpdateUI();
   } else {
     list_available_ = false;
-    upload_list_->Load(base::Bind(&CrashesDOMHandler::OnUploadListAvailable,
-                                  base::Unretained(this)));
+    upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
+                                      base::Unretained(this)));
   }
 }
 

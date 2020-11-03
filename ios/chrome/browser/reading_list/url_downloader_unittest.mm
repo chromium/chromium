@@ -76,10 +76,10 @@ class MockURLDownloader : public URLDownloader {
                       nullptr,
                       path,
                       std::move(url_loader_factory),
-                      base::Bind(&MockURLDownloader::OnEndDownload,
-                                 base::Unretained(this)),
-                      base::Bind(&MockURLDownloader::OnEndRemove,
-                                 base::Unretained(this))),
+                      base::BindRepeating(&MockURLDownloader::OnEndDownload,
+                                          base::Unretained(this)),
+                      base::BindRepeating(&MockURLDownloader::OnEndRemove,
+                                          base::Unretained(this))),
         html_("html") {}
 
   void ClearCompletionTrackers() {
@@ -120,7 +120,8 @@ class MockURLDownloader : public URLDownloader {
     saved_size_ = 0;
     distiller_.reset(new DistillerViewerTest(
         url,
-        base::Bind(&URLDownloader::DistillerCallback, base::Unretained(this)),
+        base::BindRepeating(&URLDownloader::DistillerCallback,
+                            base::Unretained(this)),
         this, html_, redirect_url_, mime_type_));
   }
 

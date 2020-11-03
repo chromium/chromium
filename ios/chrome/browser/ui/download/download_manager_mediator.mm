@@ -130,9 +130,10 @@ void DownloadManagerMediator::UpdateConsumer() {
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::Bind(base::PathExists, download_path_),
-          base::Bind(&DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
-                     weak_ptr_factory_.GetWeakPtr(), download_path_));
+          base::BindOnce(base::PathExists, download_path_),
+          base::BindOnce(
+              &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
+              weak_ptr_factory_.GetWeakPtr(), download_path_));
     }
   }
 
@@ -167,9 +168,9 @@ void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::Bind(&base::Move, download_path_, user_download_path),
-      base::Bind(&DownloadManagerMediator::RestoreDownloadPath,
-                 weak_ptr_factory_.GetWeakPtr(), user_download_path));
+      base::BindOnce(&base::Move, download_path_, user_download_path),
+      base::BindOnce(&DownloadManagerMediator::RestoreDownloadPath,
+                     weak_ptr_factory_.GetWeakPtr(), user_download_path));
 }
 
 void DownloadManagerMediator::RestoreDownloadPath(

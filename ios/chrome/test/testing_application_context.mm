@@ -213,7 +213,7 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
 
   if (!browser_policy_connector_.get()) {
     browser_policy_connector_ = std::make_unique<BrowserPolicyConnectorIOS>(
-        base::Bind(&BuildPolicyHandlerList, true));
+        base::BindRepeating(&BuildPolicyHandlerList, true));
   }
 
   return browser_policy_connector_.get();

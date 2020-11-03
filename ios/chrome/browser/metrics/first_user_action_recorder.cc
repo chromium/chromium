@@ -100,8 +100,9 @@ FirstUserActionRecorder::FirstUserActionRecorder(
       recorded_action_(false),
       action_pending_(false),
       background_duration_(background_duration),
-      action_callback_(base::Bind(&FirstUserActionRecorder::OnUserAction,
-                                  base::Unretained(this))) {
+      action_callback_(
+          base::BindRepeating(&FirstUserActionRecorder::OnUserAction,
+                              base::Unretained(this))) {
   base::AddActionCallback(action_callback_);
 }
 

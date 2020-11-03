@@ -35,12 +35,12 @@ void HistoryClientImpl::OnHistoryServiceCreated(
     history::HistoryService* history_service) {
   if (bookmark_model_) {
     on_bookmarks_removed_ =
-        base::Bind(&history::HistoryService::URLsNoLongerBookmarked,
-                   base::Unretained(history_service));
+        base::BindRepeating(&history::HistoryService::URLsNoLongerBookmarked,
+                            base::Unretained(history_service));
     favicons_changed_subscription_ =
         history_service->AddFaviconsChangedCallback(
-            base::Bind(&bookmarks::BookmarkModel::OnFaviconsChanged,
-                       base::Unretained(bookmark_model_)));
+            base::BindRepeating(&bookmarks::BookmarkModel::OnFaviconsChanged,
+                                base::Unretained(bookmark_model_)));
   }
 }
 

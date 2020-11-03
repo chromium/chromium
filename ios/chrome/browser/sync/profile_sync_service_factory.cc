@@ -161,7 +161,8 @@ ProfileSyncServiceFactory::BuildServiceInstanceFor(
   init_params.start_behavior = syncer::ProfileSyncService::MANUAL_START;
   init_params.sync_client =
       std::make_unique<IOSChromeSyncClient>(browser_state);
-  init_params.network_time_update_callback = base::Bind(&UpdateNetworkTime);
+  init_params.network_time_update_callback =
+      base::BindRepeating(&UpdateNetworkTime);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
   init_params.network_connection_tracker =
       GetApplicationContext()->GetNetworkConnectionTracker();
