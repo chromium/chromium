@@ -461,14 +461,21 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
           num_topics, gaia_id, access_token, client_id);
   auto resource_request = CreateResourceRequest(request);
 
-  // Request photo with display size in pixel.
+  // For portrait photos, the server returns image of half requested width.
+  // When the device is in portrait mode, where only shows one portrait photo,
+  // it will cause unnecessary scaling. To reduce this effect, always requesting
+  // the landscape display size.
+  // TODO(b/172075868): Support tiling in portrait mode.
   gfx::Size display_size_px = GetDisplaySizeInPixel();
+  const int width = std::max(display_size_px.width(), display_size_px.height());
+  const int height =
+      std::min(display_size_px.width(), display_size_px.height());
   resource_request->url =
       net::AppendQueryParameter(resource_request->url, "device-screen-width",
-                                base::NumberToString(display_size_px.width()));
+                                base::NumberToString(width));
   resource_request->url =
       net::AppendQueryParameter(resource_request->url, "device-screen-height",
-                                base::NumberToString(display_size_px.height()));
+                                base::NumberToString(height));
 
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();

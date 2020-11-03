@@ -69,7 +69,7 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // Whether the device is in landscape orientation.
   bool IsLandscapeOrientation() const;
 
-  bool HasPairedPortraitImages() const;
+  bool HasPairedImages() const;
 
   // Owned by |AmbientController| and should always outlive |this|.
   AmbientViewDelegate* delegate_ = nullptr;
