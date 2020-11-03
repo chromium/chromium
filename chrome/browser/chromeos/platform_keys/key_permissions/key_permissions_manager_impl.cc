@@ -58,10 +58,11 @@ enum class MigrationStatus {
   kMaxValue = kFailed,
 };
 
-chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed) {
+chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
+                                           bool arc_usage_allowed) {
   chaps::KeyPermissions key_permissions;
   key_permissions.mutable_key_usages()->set_corporate(corporate_usage_allowed);
-  key_permissions.mutable_key_usages()->set_arc(false);
+  key_permissions.mutable_key_usages()->set_arc(arc_usage_allowed);
   return key_permissions;
 }
 
@@ -133,6 +134,15 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
           /*corporate_usage_retrieval_status=*/Status::kSuccess);
       break;
     }
+    case Mode::kUpdateArcUsageFlag: {
+      key_permissions_manager_->IsKeyAllowedForUsage(
+          base::BindOnce(&KeyPermissionsInChapsUpdater::
+                             UpdatePermissionsForKeyWithCorporateFlag,
+                         weak_ptr_factory_.GetWeakPtr(), public_key_spki_der),
+          KeyUsage::kCorporate, public_key_spki_der);
+
+      break;
+    }
   }
 }
 
@@ -149,8 +159,12 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 
   DCHECK(corporate_usage_allowed.has_value());
 
+  bool arc_usage_allowed =
+      corporate_usage_allowed.value() &&
+      key_permissions_manager_->AreCorporateKeysAllowedForArcUsage();
+
   chaps::KeyPermissions key_permissions =
-      CreateKeyPermissions(corporate_usage_allowed.value());
+      CreateKeyPermissions(corporate_usage_allowed.value(), arc_usage_allowed);
 
   key_permissions_manager_->platform_keys_service_->SetAttributeForKey(
       key_permissions_manager_->token_id_, public_key_spki_der,
@@ -202,7 +216,7 @@ KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager() {
 
   auto system_token_key_permissions_manager =
       std::make_unique<KeyPermissionsManagerImpl>(
-          TokenId::kSystem,
+          TokenId::kSystem, std::make_unique<SystemTokenArcKpmDelegate>(),
           PlatformKeysServiceFactory::GetInstance()->GetDeviceWideService(),
           g_browser_process->local_state());
   g_system_token_key_permissions_manager =
@@ -225,13 +239,18 @@ void KeyPermissionsManagerImpl::SetOneTimeMigrationEnabledForTesting(
 
 KeyPermissionsManagerImpl::KeyPermissionsManagerImpl(
     TokenId token_id,
+    std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate,
     PlatformKeysService* platform_keys_service,
     PrefService* pref_service)
     : token_id_(token_id),
+      arc_usage_manager_delegate_(std::move(arc_usage_manager_delegate)),
       platform_keys_service_(platform_keys_service),
       pref_service_(pref_service) {
+  DCHECK(arc_usage_manager_delegate_);
   DCHECK(platform_keys_service_);
   DCHECK(pref_service_);
+
+  arc_usage_manager_delegate_observer_.Add(arc_usage_manager_delegate_.get());
 
   // This waits until the token this KPM is responsible for is available.
   platform_keys_service_->GetTokens(base::BindOnce(
@@ -260,6 +279,10 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     StartOneTimeMigration();
   } else {
     OnReadyForQueries();
+    // On initialization, ARC usage allowance for corporate keys may be
+    // different than after the one-time migration ends, so we trigger an update
+    // in chaps.
+    UpdateKeyPermissionsInChaps();
   }
 }
 
@@ -277,8 +300,8 @@ void KeyPermissionsManagerImpl::AllowKeyForUsage(
 
   switch (usage) {
     case KeyUsage::kArc:
-      LOG(ERROR)
-          << "ARC key usage is managed internally by key permissions manager.";
+      LOG(ERROR) << "ARC usage of corporate keys is managed internally by "
+                    "ArcKpmDelegate.";
       std::move(callback).Run(Status::kErrorInternal);
       break;
     case KeyUsage::kCorporate: {
@@ -311,7 +334,7 @@ void KeyPermissionsManagerImpl::AllowKeyForCorporateUsage(
     AllowKeyForUsageCallback callback,
     const std::string& public_key_spki_der) {
   chaps::KeyPermissions key_permissions = CreateKeyPermissions(
-      /*corporate_usage_allowed=*/true);
+      /*corporate_usage_allowed=*/true, AreCorporateKeysAllowedForArcUsage());
 
   platform_keys_service_->SetAttributeForKey(
       token_id_, public_key_spki_der, KeyAttributeType::kKeyPermissions,
@@ -354,6 +377,33 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions(
   std::move(callback).Run(allowed, Status::kSuccess);
 }
 
+bool KeyPermissionsManagerImpl::AreCorporateKeysAllowedForArcUsage() const {
+  return arc_usage_manager_delegate_->AreCorporateKeysAllowedForArcUsage();
+}
+
+void KeyPermissionsManagerImpl::UpdateKeyPermissionsInChaps() {
+  if (!IsOneTimeMigrationDone()) {
+    // This function will always be called after the one-time migration is done.
+    return;
+  }
+
+  key_permissions_in_chaps_updater_ =
+      std::make_unique<KeyPermissionsInChapsUpdater>(
+          KeyPermissionsInChapsUpdater::Mode::kUpdateArcUsageFlag, this);
+  key_permissions_in_chaps_updater_->Update(
+      base::BindOnce(&KeyPermissionsManagerImpl::OnKeyPermissionsInChapsUpdated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void KeyPermissionsManagerImpl::OnKeyPermissionsInChapsUpdated(
+    Status update_status) {
+  if (update_status != Status::kSuccess) {
+    // TODO(crbug.com/1140105): Record the number of times
+    // KeyPermissionsInChapsUpdater fails in UMA.
+    LOG(ERROR) << "Updating key permissions in chaps failed.";
+  }
+}
+
 void KeyPermissionsManagerImpl::StartOneTimeMigration() {
   DCHECK(!IsOneTimeMigrationDone());
 
@@ -394,10 +444,32 @@ void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
   pref_service_->SetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone, true);
 
   OnReadyForQueries();
+
+  // Double-check keys permissions after the migration is done just in case any
+  // ARC updates happened during the migration.
+  UpdateKeyPermissionsInChaps();
 }
 
 bool KeyPermissionsManagerImpl::IsOneTimeMigrationDone() const {
   return pref_service_->GetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone);
+}
+
+void KeyPermissionsManagerImpl::OnArcUsageAllowanceForCorporateKeysChanged(
+    bool allowed) {
+  if (allowed == arc_usage_allowed_for_corporate_keys_) {
+    return;
+  }
+
+  if (allowed) {
+    VLOG(0) << "ARC usage is allowed for corporate keys on token: "
+            << static_cast<int>(token_id_) << ".";
+  } else {
+    VLOG(0) << "ARC usage is not allowed for corporate keys on token: "
+            << static_cast<int>(token_id_) << ".";
+  }
+
+  arc_usage_allowed_for_corporate_keys_ = allowed;
+  UpdateKeyPermissionsInChaps();
 }
 
 void KeyPermissionsManagerImpl::OnReadyForQueries() {

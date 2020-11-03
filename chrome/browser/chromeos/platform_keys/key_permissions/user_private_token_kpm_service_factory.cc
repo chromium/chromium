@@ -22,8 +22,11 @@ UserPrivateTokenKeyPermissionsManagerService::
     UserPrivateTokenKeyPermissionsManagerService(Profile* profile) {
   DCHECK(profile);
 
+  auto arc_usage_manager_delegate =
+      std::make_unique<UserPrivateTokenArcKpmDelegate>(profile);
+
   key_permissions_manager_ = std::make_unique<KeyPermissionsManagerImpl>(
-      TokenId::kUser,
+      TokenId::kUser, std::move(arc_usage_manager_delegate),
       PlatformKeysServiceFactory::GetInstance()->GetForBrowserContext(profile),
       profile->GetPrefs());
 }

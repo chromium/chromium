@@ -79,6 +79,11 @@ class KeyPermissionsManager {
   virtual void IsKeyAllowedForUsage(IsKeyAllowedForUsageCallback callback,
                                     KeyUsage key_usage,
                                     const std::string& public_key_spki_der) = 0;
+
+  // Returns true if corporate keys are allowed for ARC usages. Currently,
+  // either all corporate keys on a token are allowed for ARC usage or none of
+  // them.
+  virtual bool AreCorporateKeysAllowedForArcUsage() const = 0;
 };
 
 }  // namespace platform_keys
