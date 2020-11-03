@@ -89,6 +89,12 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         *visible_security_state.get(), security_style_explanations);
   }
 
+  void BeforeUnloadFired(content::WebContents* web_contents,
+                         bool proceed,
+                         bool* proceed_to_fire_unload) override {
+    *proceed_to_fire_unload = proceed;
+  }
+
   void ActivateContents(content::WebContents* contents) override {
     contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->Focus();
   }

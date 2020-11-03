@@ -239,6 +239,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeFetchKeepalive,
 HEADLESS_PROTOCOL_TEST(VirtualTimeDisposeWhileRunning,
                        "emulation/virtual-time-dispose-while-running.js")
 
+HEADLESS_PROTOCOL_TEST(PageBeforeUnload, "page/page-before-unload.js")
+
 // http://crbug.com/633321
 #if defined(OS_ANDROID)
 #define MAYBE_VirtualTimeTimerOrder DISABLED_VirtualTimeTimerOrder
