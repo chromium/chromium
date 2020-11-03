@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
@@ -22,7 +23,7 @@ struct AVCodecContext;
 struct AVFrame;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -34,7 +35,7 @@ class FFmpegDecodingLoop;
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
   FFmpegAudioDecoder(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
   ~FFmpegAudioDecoder() override;
 
@@ -99,7 +100,8 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
 
   void ResetTimestampState(const AudioDecoderConfig& config);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   OutputCB output_cb_;
 

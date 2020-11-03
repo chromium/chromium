@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame_pool.h"
@@ -75,7 +75,8 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   // Releases resources associated with |codec_context_|.
   void ReleaseFFmpegResources();
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
   MediaLog* media_log_;
 
   DecoderState state_;

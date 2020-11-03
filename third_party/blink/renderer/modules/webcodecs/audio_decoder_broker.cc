@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "build/buildflag.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_factory.h"
@@ -70,8 +71,8 @@ class MediaAudioTaskWrapper {
   MediaAudioTaskWrapper(
       base::WeakPtr<CrossThreadAudioDecoderClient> weak_client,
       ExecutionContext& execution_context,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner)
       : weak_client_(std::move(weak_client)),
         media_task_runner_(std::move(media_task_runner)),
         main_task_runner_(std::move(main_task_runner)) {
@@ -236,8 +237,8 @@ class MediaAudioTaskWrapper {
   }
 
   base::WeakPtr<CrossThreadAudioDecoderClient> weak_client_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsAudioDecoderSelector> selector_;
   std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;

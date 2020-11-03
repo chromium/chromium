@@ -172,7 +172,7 @@ BrowserGpuVideoAcceleratorFactories::CreateSharedMemoryRegion(size_t size) {
   return {};
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
+scoped_refptr<base::SequencedTaskRunner>
 BrowserGpuVideoAcceleratorFactories::GetTaskRunner() {
   return nullptr;
 }

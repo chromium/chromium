@@ -20,6 +20,10 @@
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace gpu {
 class GpuMemoryBufferSupport;
 }  // namespace gpu
@@ -40,9 +44,8 @@ extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
 class PLATFORM_EXPORT VideoCaptureImpl
     : public media::mojom::blink::VideoCaptureObserver {
  public:
-  VideoCaptureImpl(
-      media::VideoCaptureSessionId session_id,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+  VideoCaptureImpl(media::VideoCaptureSessionId session_id,
+                   scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   ~VideoCaptureImpl() override;
 
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
@@ -196,8 +199,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   // Methods of |gpu_factories_| need to run on |media_task_runner_|.
   media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 

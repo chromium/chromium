@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VPX_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VPX_ENCODER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -30,7 +30,7 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   VpxEncoder(bool use_vp9,
              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
              int32_t bits_per_second,
-             scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+             scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
  private:
   // VideoTrackRecorder::Encoder implementation.

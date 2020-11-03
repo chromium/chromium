@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_H264_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_H264_ENCODER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 
 #if !BUILDFLAG(RTC_USE_H264)
@@ -31,7 +31,7 @@ class H264Encoder final : public VideoTrackRecorder::Encoder {
 
   H264Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
               int32_t bits_per_second,
-              scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
   // VideoTrackRecorder::Encoder implementation.

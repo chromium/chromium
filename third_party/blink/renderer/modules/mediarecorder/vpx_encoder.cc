@@ -46,7 +46,7 @@ VpxEncoder::VpxEncoder(
     bool use_vp9,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     int32_t bits_per_second,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : VideoTrackRecorder::Encoder(on_encoded_video_cb,
                                   bits_per_second,
                                   std::move(main_task_runner)),
@@ -70,7 +70,7 @@ bool VpxEncoder::CanEncodeAlphaChannel() {
 void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
                                             base::TimeTicks capture_timestamp) {
   TRACE_EVENT0("media", "VpxEncoder::EncodeOnEncodingTaskRunner");
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   if (frame->format() == media::PIXEL_FORMAT_NV12 &&
       frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
@@ -194,7 +194,7 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
                           std::string& output_data,
                           bool* const keyframe,
                           vpx_img_fmt_t img_fmt) {
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   DCHECK(img_fmt == VPX_IMG_FMT_I420 || img_fmt == VPX_IMG_FMT_NV12);
 
   vpx_image_t vpx_image;
@@ -238,7 +238,7 @@ void VpxEncoder::ConfigureEncoderOnEncodingTaskRunner(
     const gfx::Size& size,
     vpx_codec_enc_cfg_t* codec_config,
     ScopedVpxCodecCtxPtr* encoder) {
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   if (IsInitialized(*codec_config)) {
     // TODO(mcasas) VP8 quirk/optimisation: If the new |size| is strictly less-
     // than-or-equal than the old size, in terms of area, the existing encoder
@@ -326,12 +326,12 @@ void VpxEncoder::ConfigureEncoderOnEncodingTaskRunner(
 }
 
 bool VpxEncoder::IsInitialized(const vpx_codec_enc_cfg_t& codec_config) const {
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   return codec_config.g_timebase.den != 0;
 }
 
 base::TimeDelta VpxEncoder::EstimateFrameDuration(const VideoFrame& frame) {
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   using base::TimeDelta;
 

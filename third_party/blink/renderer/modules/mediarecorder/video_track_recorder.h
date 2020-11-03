@@ -10,7 +10,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -141,8 +142,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
    public:
     Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
             int32_t bits_per_second,
-            scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-            scoped_refptr<base::SingleThreadTaskRunner> encoding_task_runner =
+            scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+            scoped_refptr<base::SequencedTaskRunner> encoding_task_runner =
                 nullptr);
 
     // Start encoding |frame|, returning via |on_encoded_video_cb_|. This
@@ -209,13 +210,15 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         scoped_refptr<media::VideoFrame> frame);
 
     // Used to shutdown properly on the same thread we were created.
-    const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+    const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
     // Task runner where frames to encode and reply callbacks must happen.
-    scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
+    scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+    SEQUENCE_CHECKER(origin_sequence_checker_);
 
     // Task runner where encoding interactions happen.
-    scoped_refptr<base::SingleThreadTaskRunner> encoding_task_runner_;
+    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner_;
+    SEQUENCE_CHECKER(encoding_sequence_checker_);
 
     // Optional thread for encoding. Active for the lifetime of VpxEncoder.
     std::unique_ptr<Thread> encoding_thread_;
@@ -322,7 +325,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       OnEncodedVideoCB on_encoded_video_cb,
       base::OnceClosure on_track_source_ended_cb,
       int32_t bits_per_second,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   ~VideoTrackRecorderImpl() override;
 
   void Pause() override;
@@ -343,8 +346,8 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
   void DisconnectFromTrack();
 
-  // Used to check that we are destroyed on the same thread we were created.
-  THREAD_CHECKER(main_thread_checker_);
+  // Used to check that we are destroyed on the same sequence we were created.
+  SEQUENCE_CHECKER(main_sequence_checker_);
 
   // We need to hold on to the Blink track to remove ourselves on dtor.
   Persistent<MediaStreamComponent> track_;
@@ -359,7 +362,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
 
   bool should_pause_encoder_on_initialization_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   base::WeakPtrFactory<VideoTrackRecorderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoTrackRecorderImpl);
@@ -373,7 +376,7 @@ class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
       MediaStreamComponent* track,
       OnEncodedVideoCB on_encoded_video_cb,
       base::OnceClosure on_track_source_ended_cb,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   ~VideoTrackRecorderPassthrough() override;
 
   // VideoTrackRecorderBase
@@ -388,8 +391,8 @@ class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
   void HandleEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> encoded_frame,
                                base::TimeTicks estimated_capture_time);
 
-  // Used to check that we are destroyed on the same thread we were created.
-  THREAD_CHECKER(main_thread_checker_);
+  // Used to check that we are destroyed on the same sequence we were created.
+  SEQUENCE_CHECKER(main_sequence_checker_);
 
   // This enum class tracks encoded frame waiting and dispatching state. This
   // is needed to guarantee we're dispatching decodable content to
@@ -404,7 +407,7 @@ class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
   // We need to hold on to the Blink track to remove ourselves on dtor.
   const Persistent<MediaStreamComponent> track_;
   KeyFrameState state_;
-  const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   const OnEncodedVideoCB callback_;
   base::WeakPtrFactory<VideoTrackRecorderPassthrough> weak_factory_{this};
 

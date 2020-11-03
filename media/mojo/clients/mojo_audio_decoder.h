@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "media/base/audio_decoder.h"
 #include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -17,7 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -28,7 +29,7 @@ class MojoDecoderBufferWriter;
 class MojoAudioDecoder final : public AudioDecoder,
                                public mojom::AudioDecoderClient {
  public:
-  MojoAudioDecoder(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+  MojoAudioDecoder(scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::AudioDecoder> remote_decoder);
   ~MojoAudioDecoder() final;
 
@@ -73,7 +74,8 @@ class MojoAudioDecoder final : public AudioDecoder,
   // called when |remote_decoder_| finished Reset() sequence.
   void OnResetDone();
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // This class is constructed on one thread and used exclusively on another
   // thread. This member is used to safely pass the

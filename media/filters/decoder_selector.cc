@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -95,19 +95,20 @@ void SetDefaultDecoderPriorityCB(AudioDecoderSelector::DecoderPriorityCB* out) {
 
 template <DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     CreateDecodersCB create_decoders_cb,
     MediaLog* media_log)
     : task_runner_(std::move(task_runner)),
       create_decoders_cb_(std::move(create_decoders_cb)),
       media_log_(media_log) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   SetDefaultDecoderPriorityCB(&decoder_priority_cb_);
 }
 
 template <DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::~DecoderSelector() {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (select_decoder_cb_)
     ReturnNullDecoder();
 }
@@ -132,7 +133,7 @@ void DecoderSelector<StreamType>::SelectDecoder(
     SelectDecoderCB select_decoder_cb,
     typename Decoder::OutputCB output_cb) {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(select_decoder_cb);
   DCHECK(!select_decoder_cb_);
   select_decoder_cb_ = std::move(select_decoder_cb);
@@ -163,7 +164,7 @@ void DecoderSelector<StreamType>::SelectDecoder(
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::FinalizeDecoderSelection() {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!select_decoder_cb_);
   is_selecting_decoders_ = false;
 
@@ -197,7 +198,7 @@ void DecoderSelector<StreamType>::FinalizeDecoderSelection() {
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::NotifyConfigChanged() {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_selecting_for_config_change_ = true;
 
@@ -212,7 +213,7 @@ template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::PrependDecoder(
     std::unique_ptr<Decoder> decoder) {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Decoders inserted directly should be given priority over those returned by
   // |create_decoders_cb_|.
@@ -243,7 +244,7 @@ void DecoderSelector<StreamType>::CreateDecoders() {
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::InitializeDecoder() {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!decoder_);
 
   if (decoders_.empty()) {
@@ -278,7 +279,7 @@ template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
   DVLOG(2) << __func__ << ": " << decoder_->GetDisplayName()
            << " success=" << std::hex << status.code();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
     // TODO(tmathmeyer) this was too noisy in media log. Batch all the logs
@@ -299,7 +300,7 @@ void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::ReturnNullDecoder() {
   DVLOG(1) << __func__ << ": No decoder selected";
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   decrypting_demuxer_stream_.reset();
   decoder_.reset();
@@ -329,7 +330,7 @@ template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::OnDecryptingDemuxerStreamInitializeDone(
     PipelineStatus status) {
   DVLOG(2) << __func__ << ": status=" << status;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != PIPELINE_OK) {
     // Since we already tried every potential decoder without DDS, give up.

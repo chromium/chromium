@@ -77,8 +77,8 @@ class MediaVideoTaskWrapper {
       base::WeakPtr<CrossThreadVideoDecoderClient> weak_client,
       ExecutionContext& execution_context,
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner)
       : weak_client_(std::move(weak_client)),
         media_task_runner_(std::move(media_task_runner)),
         main_task_runner_(std::move(main_task_runner)),
@@ -272,8 +272,8 @@ class MediaVideoTaskWrapper {
   }
 
   base::WeakPtr<CrossThreadVideoDecoderClient> weak_client_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   media::GpuVideoAcceleratorFactories* gpu_factories_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsVideoDecoderSelector> selector_;

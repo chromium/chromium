@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
@@ -17,7 +18,7 @@
 #include "media/base/video_decoder_config.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -33,7 +34,7 @@ class MediaLog;
 class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
  public:
   DecryptingVideoDecoder(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
   ~DecryptingVideoDecoder() override;
 
@@ -85,8 +86,10 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   void CompleteWaitingForDecryptionKey();
 
   // Set in constructor.
-  scoped_refptr<base::SingleThreadTaskRunner> const task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
   MediaLog* const media_log_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   State state_ = kUninitialized;
 

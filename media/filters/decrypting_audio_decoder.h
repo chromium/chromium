@@ -19,7 +19,7 @@
 #include "media/base/demuxer_stream.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -36,7 +36,7 @@ class MediaLog;
 class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
  public:
   DecryptingAudioDecoder(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
   ~DecryptingAudioDecoder() override;
 
@@ -91,7 +91,7 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
   void ProcessDecodedFrames(const Decryptor::AudioFrames& frames);
 
   // Set in constructor.
-  scoped_refptr<base::SingleThreadTaskRunner> const task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
   MediaLog* const media_log_;
 
   State state_ = kUninitialized;

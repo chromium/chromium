@@ -71,7 +71,7 @@ void NullDemuxerStream<media::DemuxerStream::VIDEO>::Configure(
 
 template <media::DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     CreateDecodersCB create_decoders_cb,
     typename Decoder::OutputCB output_cb)
     : impl_(std::move(task_runner),

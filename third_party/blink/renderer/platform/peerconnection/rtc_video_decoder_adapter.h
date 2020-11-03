@@ -28,7 +28,7 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace media {
@@ -114,7 +114,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
                           FlushDoneCB flush_fail_cb);
 
   // Construction parameters.
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
   const webrtc::SdpVideoFormat format_;
   const media::VideoDecoderImplementation implementation_;
@@ -142,6 +142,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   WTF::Deque<base::TimeDelta> decode_timestamps_;
 
   // Thread management.
+  SEQUENCE_CHECKER(media_sequence_checker_);
   SEQUENCE_CHECKER(worker_sequence_checker_);
   SEQUENCE_CHECKER(decoding_sequence_checker_);
 

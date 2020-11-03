@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
+#include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -66,7 +67,7 @@ struct VideoCaptureImpl::BufferContext
     : public base::RefCountedThreadSafe<BufferContext> {
  public:
   BufferContext(media::mojom::blink::VideoBufferHandlePtr buffer_handle,
-                scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+                scoped_refptr<base::SequencedTaskRunner> media_task_runner)
       : buffer_type_(buffer_handle->which()),
         media_task_runner_(media_task_runner) {
     switch (buffer_type_) {
@@ -130,7 +131,7 @@ struct VideoCaptureImpl::BufferContext
                               scoped_refptr<BufferContext>)> on_texture_bound,
       base::OnceCallback<void()> on_gpu_context_lost) {
     DCHECK(gpu_factories);
-    DCHECK(buffer_context->media_task_runner_->BelongsToCurrentThread());
+    DCHECK(buffer_context->media_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_EQ(info->pixel_format, media::PIXEL_FORMAT_NV12);
 
     bool should_recreate_shared_image = false;
@@ -195,7 +196,7 @@ struct VideoCaptureImpl::BufferContext
 
   static void MailboxHolderReleased(scoped_refptr<BufferContext> buffer_context,
                                     const gpu::SyncToken& release_sync_token) {
-    if (!buffer_context->media_task_runner_->BelongsToCurrentThread()) {
+    if (!buffer_context->media_task_runner_->RunsTasksInCurrentSequence()) {
       buffer_context->media_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&BufferContext::MailboxHolderReleased,
                                     buffer_context, release_sync_token));
@@ -287,7 +288,7 @@ struct VideoCaptureImpl::BufferContext
   // Uses to create SharedImage from |gpu_memory_buffer_|.
   media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
   // The task runner that |gpu_factories_| runs on.
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   std::unique_ptr<GpuMemoryBufferResources> gmb_resources_;
 
@@ -311,7 +312,7 @@ struct VideoCaptureImpl::ClientInfo {
 
 VideoCaptureImpl::VideoCaptureImpl(
     media::VideoCaptureSessionId session_id,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : device_id_(session_id),
       session_id_(session_id),
       video_capture_host_for_testing_(nullptr),
@@ -319,7 +320,7 @@ VideoCaptureImpl::VideoCaptureImpl(
       main_task_runner_(std::move(main_task_runner)),
       gpu_memory_buffer_support_(new gpu::GpuMemoryBufferSupport()) {
   CHECK(!session_id.is_empty());
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(io_thread_checker_);
 
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(

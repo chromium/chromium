@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"

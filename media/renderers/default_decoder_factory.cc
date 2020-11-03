@@ -8,7 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -59,7 +59,7 @@ DefaultDecoderFactory::DefaultDecoderFactory(
 DefaultDecoderFactory::~DefaultDecoderFactory() = default;
 
 void DefaultDecoderFactory::CreateAudioDecoders(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     MediaLog* media_log,
     std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) {
   base::AutoLock auto_lock(shutdown_lock_);
@@ -87,7 +87,7 @@ void DefaultDecoderFactory::CreateAudioDecoders(
 }
 
 void DefaultDecoderFactory::CreateVideoDecoders(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,
     MediaLog* media_log,
     RequestOverlayInfoCB request_overlay_info_cb,

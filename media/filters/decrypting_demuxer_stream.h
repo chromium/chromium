@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
@@ -19,7 +20,7 @@
 #include "media/base/waiting.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -35,7 +36,7 @@ class MediaLog;
 class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
  public:
   DecryptingDemuxerStream(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log,
       const WaitingCB& waiting_cb);
 
@@ -143,7 +144,8 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   void CompletePendingDecrypt(Decryptor::Status status);
   void CompleteWaitingForDecryptionKey();
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
   MediaLog* const media_log_;
   WaitingCB waiting_cb_;
 

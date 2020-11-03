@@ -227,8 +227,8 @@ VideoTrackRecorderImpl::Counter::GetWeakPtr() {
 VideoTrackRecorderImpl::Encoder::Encoder(
     const OnEncodedVideoCB& on_encoded_video_cb,
     int32_t bits_per_second,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> encoding_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner)
     : main_task_runner_(std::move(main_task_runner)),
       encoding_task_runner_(encoding_task_runner),
       paused_(false),
@@ -236,6 +236,8 @@ VideoTrackRecorderImpl::Encoder::Encoder(
       bits_per_second_(bits_per_second),
       num_frames_in_encode_(
           std::make_unique<VideoTrackRecorderImpl::Counter>()) {
+  DETACH_FROM_SEQUENCE(encoding_sequence_checker_);
+  DETACH_FROM_SEQUENCE(origin_sequence_checker_);
   DCHECK(!on_encoded_video_cb_.is_null());
   if (encoding_task_runner_)
     return;
@@ -247,7 +249,8 @@ VideoTrackRecorderImpl::Encoder::Encoder(
 }
 
 VideoTrackRecorderImpl::Encoder::~Encoder() {
-  if (origin_task_runner_ && !origin_task_runner_->BelongsToCurrentThread()) {
+  if (origin_task_runner_ &&
+      !origin_task_runner_->RunsTasksInCurrentSequence()) {
     origin_task_runner_->DeleteSoon(FROM_HERE,
                                     std::move(num_frames_in_encode_));
   }
@@ -260,7 +263,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   if (!origin_task_runner_.get())
     origin_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
-  DCHECK(origin_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(origin_sequence_checker_);
   if (paused_)
     return;
 
@@ -316,7 +319,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
 void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     scoped_refptr<VideoFrame> video_frame,
     base::TimeTicks capture_timestamp) {
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   scoped_refptr<media::VideoFrame> frame;
 
@@ -443,7 +446,7 @@ void VideoTrackRecorderImpl::Encoder::OnFrameEncodeCompleted(
 }
 
 void VideoTrackRecorderImpl::Encoder::SetPaused(bool paused) {
-  if (!encoding_task_runner_->BelongsToCurrentThread()) {
+  if (!encoding_task_runner_->RunsTasksInCurrentSequence()) {
     PostCrossThreadTask(
         *encoding_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(&Encoder::SetPaused, WrapRefCounted(this), paused));
@@ -577,12 +580,12 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
     int32_t bits_per_second,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : VideoTrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
       should_pause_encoder_on_initialization_(false),
       main_task_runner_(std::move(main_task_runner)) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(track_);
   DCHECK(track_->Source()->GetType() == MediaStreamSource::kTypeVideo);
 
@@ -596,12 +599,12 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
 }
 
 VideoTrackRecorderImpl::~VideoTrackRecorderImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DisconnectFromTrack();
 }
 
 void VideoTrackRecorderImpl::Pause() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (encoder_)
     encoder_->SetPaused(true);
   else
@@ -609,7 +612,7 @@ void VideoTrackRecorderImpl::Pause() {
 }
 
 void VideoTrackRecorderImpl::Resume() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (encoder_)
     encoder_->SetPaused(false);
   else
@@ -637,7 +640,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
     scoped_refptr<media::VideoFrame> frame,
     base::TimeTicks capture_time) {
   DVLOG(3) << __func__ << frame->visible_rect().size().ToString();
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   // Avoid reinitializing |encoder_| when there are multiple frames sent to the
   // sink to initialize, https://crbug.com/698441.
@@ -698,7 +701,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
 
 void VideoTrackRecorderImpl::OnError() {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   // InitializeEncoder() will be called to reinitialize encoder on Render Main
   // thread.
@@ -725,13 +728,13 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : VideoTrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
       state_(KeyFrameState::kWaitingForKeyFrame),
       main_task_runner_(main_task_runner),
       callback_(std::move(on_encoded_video_cb)) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // HandleEncodedVideoFrame() will be called on Render Main thread.
   // Note: Adding an encoded sink internally generates a new key frame
   // request, no need to RequestRefreshFrame().
@@ -743,17 +746,17 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
 }
 
 VideoTrackRecorderPassthrough::~VideoTrackRecorderPassthrough() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DisconnectFromTrack();
 }
 
 void VideoTrackRecorderPassthrough::Pause() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   state_ = KeyFrameState::kPaused;
 }
 
 void VideoTrackRecorderPassthrough::Resume() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   state_ = KeyFrameState::kWaitingForKeyFrame;
   RequestRefreshFrame();
 }
@@ -774,14 +777,14 @@ void VideoTrackRecorderPassthrough::RequestRefreshFrame() {
 void VideoTrackRecorderPassthrough::DisconnectFromTrack() {
   // TODO(crbug.com/704136) : Remove this method when moving
   // MediaStreamVideoTrack to Oilpan's heap.
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DisconnectEncodedFromTrack();
 }
 
 void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> encoded_frame,
     base::TimeTicks estimated_capture_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (state_ == KeyFrameState::kPaused)
     return;
   if (state_ == KeyFrameState::kWaitingForKeyFrame &&

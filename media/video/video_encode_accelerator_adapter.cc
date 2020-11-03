@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
@@ -115,13 +116,15 @@ VideoEncodeAcceleratorAdapter::PendingOp::~PendingOp() = default;
 
 VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
     : gpu_factories_(gpu_factories),
       accelerator_task_runner_(gpu_factories_->GetTaskRunner()),
-      callback_task_runner_(std::move(callback_task_runner)) {}
+      callback_task_runner_(std::move(callback_task_runner)) {
+  DETACH_FROM_SEQUENCE(accelerator_sequence_checker_);
+}
 
 VideoEncodeAcceleratorAdapter::~VideoEncodeAcceleratorAdapter() {
-  DCHECK(accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 }
 
 void VideoEncodeAcceleratorAdapter::DestroyAsync(
@@ -129,7 +132,7 @@ void VideoEncodeAcceleratorAdapter::DestroyAsync(
   DCHECK(self);
   auto runner = self->accelerator_task_runner_;
   DCHECK(runner);
-  if (!runner->BelongsToCurrentThread())
+  if (!runner->RunsTasksInCurrentSequence())
     runner->DeleteSoon(FROM_HERE, std::move(self));
 }
 
@@ -137,7 +140,7 @@ void VideoEncodeAcceleratorAdapter::Initialize(VideoCodecProfile profile,
                                                const Options& options,
                                                OutputCB output_cb,
                                                StatusCB done_cb) {
-  DCHECK(!accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
   accelerator_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -152,7 +155,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
     const Options& options,
     OutputCB output_cb,
     StatusCB done_cb) {
-  DCHECK(accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   if (state_ != State::kNotInitialized) {
     auto status = Status(StatusCode::kEncoderInitializeTwice,
                          "Encoder has already been initialized.");
@@ -196,7 +199,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 void VideoEncodeAcceleratorAdapter::Encode(scoped_refptr<VideoFrame> frame,
                                            bool key_frame,
                                            StatusCB done_cb) {
-  DCHECK(!accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
   accelerator_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread,
@@ -208,7 +211,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     scoped_refptr<VideoFrame> frame,
     bool key_frame,
     StatusCB done_cb) {
-  DCHECK(accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   if (state_ != State::kReadyToEncode) {
     auto status =
         Status(StatusCode::kEncoderFailedEncode, "Encoder can't encode now.");
@@ -282,7 +285,7 @@ void VideoEncodeAcceleratorAdapter::ChangeOptions(const Options& options,
                                                   StatusCB done_cb) {}
 
 void VideoEncodeAcceleratorAdapter::Flush(StatusCB done_cb) {
-  DCHECK(!accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
   accelerator_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread,
@@ -290,7 +293,7 @@ void VideoEncodeAcceleratorAdapter::Flush(StatusCB done_cb) {
 }
 
 void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(StatusCB done_cb) {
-  DCHECK(accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   if (state_ != State::kReadyToEncode) {
     auto status =
         Status(StatusCode::kEncoderFailedFlush, "Encoder can't flush now");
@@ -451,7 +454,7 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {}
 
 void VideoEncodeAcceleratorAdapter::InitCompleted(Status status) {
-  DCHECK(accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   if (!pending_init_)
     return;
 
@@ -461,7 +464,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(Status status) {
 }
 
 void VideoEncodeAcceleratorAdapter::FlushCompleted(bool success) {
-  DCHECK(accelerator_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   if (!pending_flush_)
     return;
 

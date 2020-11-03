@@ -48,16 +48,18 @@ static void ReleaseAudioBufferImpl(void* opaque, uint8_t* data) {
 }
 
 FFmpegAudioDecoder::FFmpegAudioDecoder(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
     : task_runner_(task_runner),
       state_(kUninitialized),
       av_sample_format_(0),
       media_log_(media_log),
-      pool_(new AudioBufferMemoryPool()) {}
+      pool_(new AudioBufferMemoryPool()) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 FFmpegAudioDecoder::~FFmpegAudioDecoder() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ != kUninitialized)
     ReleaseFFmpegResources();
@@ -72,7 +74,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     InitCB init_cb,
                                     const OutputCB& output_cb,
                                     const WaitingCB& /* waiting_cb */) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
 
   InitCB bound_init_cb = BindToCurrentLoop(std::move(init_cb));
@@ -108,7 +110,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                 DecodeCB decode_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(decode_cb);
   CHECK_NE(state_, kUninitialized);
   DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
@@ -128,7 +130,7 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 }
 
 void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   avcodec_flush_buffers(codec_context_.get());
   state_ = kNormal;
@@ -138,7 +140,7 @@ void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
 
 void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
                                       DecodeCB decode_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
   DCHECK_NE(state_, kDecodeFinished);
   DCHECK_NE(state_, kError);

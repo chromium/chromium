@@ -14,7 +14,7 @@
 #include "media/base/overlay_info.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace gfx {
@@ -37,14 +37,14 @@ class MEDIA_EXPORT DecoderFactory {
   // Creates audio decoders and append them to the end of |audio_decoders|.
   // Decoders are single-threaded, each decoder should run on |task_runner|.
   virtual void CreateAudioDecoders(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders);
 
   // Creates video decoders and append them to the end of |video_decoders|.
   // Decoders are single-threaded, each decoder should run on |task_runner|.
   virtual void CreateVideoDecoders(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       GpuVideoAcceleratorFactories* gpu_factories,
       MediaLog* media_log,
       RequestOverlayInfoCB request_overlay_info_cb,

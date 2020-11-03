@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
@@ -135,7 +136,7 @@ void MapBaselineProfile(
 class ScopedVideoDecoder : public webrtc::VideoDecoder {
  public:
   ScopedVideoDecoder(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       std::unique_ptr<webrtc::VideoDecoder> decoder)
       : task_runner_(task_runner), decoder_(std::move(decoder)) {}
 
@@ -167,7 +168,7 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
   }
 
  private:
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<webrtc::VideoDecoder> decoder_;
 };
 

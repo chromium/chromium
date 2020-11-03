@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
@@ -21,7 +22,7 @@
 #include "ui/gfx/color_space.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -47,7 +48,7 @@ class MojoVideoDecoder final : public VideoDecoder,
                                public mojom::VideoDecoderClient {
  public:
   MojoVideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       GpuVideoAcceleratorFactories* gpu_factories,
       MediaLog* media_log,
       mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder,
@@ -105,7 +106,8 @@ class MojoVideoDecoder final : public VideoDecoder,
   void ReportInitialPlaybackErrorUMA();
 
   // Task runner that the decoder runs on (media thread).
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to pass the remote decoder from the constructor (on the main thread)
   // to Initialize() (on the media thread).

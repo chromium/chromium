@@ -14,7 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "media/base/callback_holder.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/pipeline_status.h"
@@ -106,7 +106,7 @@ class FakeVideoDecoder : public VideoDecoder {
 
   void DoReset();
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const std::string decoder_name_;
   const size_t decoding_delay_;

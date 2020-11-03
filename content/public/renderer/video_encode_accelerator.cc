@@ -23,7 +23,7 @@ void CreateVideoEncodeAccelerator(
     return;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner =
+  scoped_refptr<base::SequencedTaskRunner> encode_task_runner =
       gpu_factories->GetTaskRunner();
   base::PostTaskAndReplyWithResult(
       encode_task_runner.get(), FROM_HERE,

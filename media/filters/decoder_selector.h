@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/pipeline_status.h"
@@ -19,7 +20,7 @@
 #include "media/filters/decoder_stream_traits.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -78,7 +79,7 @@ class MEDIA_EXPORT DecoderSelector {
       base::OnceCallback<void(std::unique_ptr<Decoder>,
                               std::unique_ptr<DecryptingDemuxerStream>)>;
 
-  DecoderSelector(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+  DecoderSelector(scoped_refptr<base::SequencedTaskRunner> task_runner,
                   CreateDecodersCB create_decoders_cb,
                   MediaLog* media_log);
 
@@ -133,7 +134,9 @@ class MEDIA_EXPORT DecoderSelector {
   void RunSelectDecoderCB();
   void FilterAndSortAvailableDecoders();
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
   CreateDecodersCB create_decoders_cb_;
   DecoderPriorityCB decoder_priority_cb_;
   MediaLog* media_log_;

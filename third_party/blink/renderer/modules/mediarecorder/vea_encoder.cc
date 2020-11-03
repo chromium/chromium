@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -43,7 +44,7 @@ scoped_refptr<VEAEncoder> VEAEncoder::Create(
     base::Optional<uint8_t> level,
     const gfx::Size& size,
     bool use_native_input,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto encoder = base::AdoptRef(new VEAEncoder(on_encoded_video_cb, on_error_cb,
                                                bits_per_second, codec, level,
                                                size, std::move(task_runner)));
@@ -65,7 +66,7 @@ VEAEncoder::VEAEncoder(
     media::VideoCodecProfile codec,
     base::Optional<uint8_t> level,
     const gfx::Size& size,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : Encoder(on_encoded_video_cb,
               bits_per_second > 0 ? bits_per_second
                                   : size.GetArea() * kVEADefaultBitratePerPixel,
@@ -84,7 +85,7 @@ VEAEncoder::VEAEncoder(
 }
 
 VEAEncoder::~VEAEncoder() {
-  if (encoding_task_runner_->BelongsToCurrentThread()) {
+  if (encoding_task_runner_->RunsTasksInCurrentSequence()) {
     DestroyOnEncodingTaskRunner();
     return;
   }
@@ -111,7 +112,7 @@ void VEAEncoder::RequireBitstreamBuffers(unsigned int /*input_count*/,
                                          const gfx::Size& input_coded_size,
                                          size_t output_buffer_size) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   vea_requested_input_coded_size_ = input_coded_size;
   output_buffers_.clear();
@@ -134,7 +135,7 @@ void VEAEncoder::BitstreamBufferReady(
     int32_t bitstream_buffer_id,
     const media::BitstreamBufferMetadata& metadata) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   num_frames_after_keyframe_ =
       metadata.key_frame ? 0 : num_frames_after_keyframe_ + 1;
@@ -164,7 +165,7 @@ void VEAEncoder::BitstreamBufferReady(
 
 void VEAEncoder::NotifyError(media::VideoEncodeAccelerator::Error error) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.VEAError", error,
                             media::VideoEncodeAccelerator::kErrorMax + 1);
   on_error_cb_.Run();
@@ -173,7 +174,7 @@ void VEAEncoder::NotifyError(media::VideoEncodeAccelerator::Error error) {
 
 void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   video_encoder_->UseOutputBitstreamBuffer(media::BitstreamBuffer(
       bitstream_buffer_id,
@@ -183,14 +184,14 @@ void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
 
 void VEAEncoder::FrameFinished(std::unique_ptr<InputBuffer> shm) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   input_buffers_.push(std::move(shm));
 }
 
 void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
                                             base::TimeTicks capture_timestamp) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   if (input_visible_size_ != frame->visible_rect().size() && video_encoder_)
     video_encoder_.reset();
@@ -293,8 +294,8 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
 void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
                                                       bool use_native_input) {
   DVLOG(3) << __func__;
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
-  DCHECK(gpu_factories_->GetTaskRunner()->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
+  DCHECK(gpu_factories_->GetTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_GT(bits_per_second_, 0);
 
   input_visible_size_ = size;
@@ -321,7 +322,7 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
 
 void VEAEncoder::DestroyOnEncodingTaskRunner(
     base::WaitableEvent* async_waiter) {
-  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   video_encoder_.reset();
   if (async_waiter)
     async_waiter->Signal();

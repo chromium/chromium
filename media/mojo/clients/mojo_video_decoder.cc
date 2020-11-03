@@ -16,7 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -62,7 +62,7 @@ class MojoVideoFrameHandleReleaser
   MojoVideoFrameHandleReleaser(
       mojo::PendingRemote<mojom::VideoFrameHandleReleaser>
           video_frame_handle_releaser_remote,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
     // Connection errors are not handled because we wouldn't do anything
     // differently. ("If a tree falls in a forest...")
     video_frame_handle_releaser_ =
@@ -99,7 +99,7 @@ class MojoVideoFrameHandleReleaser
 };
 
 MojoVideoDecoder::MojoVideoDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,
     MediaLog* media_log,
     mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder,
@@ -118,6 +118,7 @@ MojoVideoDecoder::MojoVideoDecoder(
       target_color_space_(target_color_space),
       video_decoder_implementation_(implementation) {
   DVLOG(1) << __func__;
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -159,7 +160,7 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   const OutputCB& output_cb,
                                   const WaitingCB& waiting_cb) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Fail immediately if we know that the remote side cannot support |config|.
   if (gpu_factories_ && gpu_factories_->IsDecoderConfigSupported(
@@ -209,7 +210,7 @@ void MojoVideoDecoder::OnInitializeDone(const Status& status,
                                         bool needs_bitstream_conversion,
                                         int32_t max_decode_requests) {
   DVLOG(1) << __func__ << ": status = " << std::hex << status.code();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   initialized_ = status.is_ok();
   needs_bitstream_conversion_ = needs_bitstream_conversion;
   max_decode_requests_ = max_decode_requests;
@@ -219,7 +220,7 @@ void MojoVideoDecoder::OnInitializeDone(const Status& status,
 void MojoVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                               DecodeCB decode_cb) {
   DVLOG(3) << __func__ << ": " << buffer->AsHumanReadableString();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (has_connection_error_) {
     task_runner_->PostTask(
@@ -255,7 +256,7 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
     bool can_read_without_stalling,
     const base::Optional<base::UnguessableToken>& release_token) {
   DVLOG(3) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(sandersd): Prove that all paths read this value again after running
   // |output_cb_|. In practice this isn't very important, since all decoders
@@ -298,7 +299,7 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
 
 void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id, const Status& status) {
   DVLOG(3) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = pending_decodes_.find(decode_id);
   if (it == pending_decodes_.end()) {
@@ -317,7 +318,7 @@ void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id, const Status& status) {
 
 void MojoVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (has_connection_error_) {
     task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
@@ -331,7 +332,7 @@ void MojoVideoDecoder::Reset(base::OnceClosure reset_cb) {
 
 void MojoVideoDecoder::OnResetDone() {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(reset_cb_).Run();
 }
 
@@ -354,7 +355,7 @@ int MojoVideoDecoder::GetMaxDecodeRequests() const {
 
 void MojoVideoDecoder::BindRemoteDecoder() {
   DVLOG(3) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!remote_decoder_bound_);
 
   remote_decoder_.Bind(std::move(pending_remote_decoder_));
@@ -400,14 +401,14 @@ void MojoVideoDecoder::BindRemoteDecoder() {
 
 void MojoVideoDecoder::OnWaiting(WaitingReason reason) {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   waiting_cb_.Run(reason);
 }
 
 void MojoVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request_overlay_info_cb_);
 
   overlay_info_requested_ = true;
@@ -419,7 +420,7 @@ void MojoVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
 
 void MojoVideoDecoder::OnOverlayInfoChanged(const OverlayInfo& overlay_info) {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (has_connection_error_)
     return;
@@ -428,7 +429,7 @@ void MojoVideoDecoder::OnOverlayInfoChanged(const OverlayInfo& overlay_info) {
 
 void MojoVideoDecoder::Stop() {
   DVLOG(2) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   has_connection_error_ = true;
   ReportInitialPlaybackErrorUMA();

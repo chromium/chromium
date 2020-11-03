@@ -12,8 +12,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -86,7 +86,7 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
     : media_log_(media_log), state_(kUninitialized), decode_nalus_(false) {
   DVLOG(1) << __func__;
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
@@ -207,7 +207,7 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                     const OutputCB& output_cb,
                                     const WaitingCB& /* waiting_cb */) {
   DVLOG(1) << __func__ << ": " << config.AsHumanReadableString();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
   DCHECK(output_cb);
 
@@ -233,7 +233,7 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                 DecodeCB decode_cb) {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer.get());
   DCHECK(decode_cb);
   CHECK_NE(state_, kUninitialized);
@@ -286,16 +286,17 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
   DVLOG(2) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   avcodec_flush_buffers(codec_context_.get());
   state_ = kNormal;
   // PostTask() to avoid calling |closure| immediately.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(closure));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(closure));
 }
 
 FFmpegVideoDecoder::~FFmpegVideoDecoder() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ != kUninitialized)
     ReleaseFFmpegResources();

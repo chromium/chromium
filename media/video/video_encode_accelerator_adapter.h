@@ -17,6 +17,10 @@
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+class SequencedTaskRunner;
+}
+
 namespace media {
 class GpuVideoAcceleratorFactories;
 class H264AnnexBToAvcBitstreamConverter;
@@ -32,7 +36,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
  public:
   VideoEncodeAcceleratorAdapter(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
   ~VideoEncodeAcceleratorAdapter() override;
 
   // VideoEncoder implementation.
@@ -105,10 +109,11 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   std::unique_ptr<PendingOp> pending_init_;
 
   // For calling accelerator_ methods
-  scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> accelerator_task_runner_;
+  SEQUENCE_CHECKER(accelerator_sequence_checker_);
 
   // For calling user provided callbacks
-  scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
   State state_ = State::kNotInitialized;
 

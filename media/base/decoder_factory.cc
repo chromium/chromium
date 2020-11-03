@@ -13,12 +13,12 @@ DecoderFactory::DecoderFactory() = default;
 DecoderFactory::~DecoderFactory() = default;
 
 void DecoderFactory::CreateAudioDecoders(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     MediaLog* media_log,
     std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) {}
 
 void DecoderFactory::CreateVideoDecoders(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,
     MediaLog* media_log,
     RequestOverlayInfoCB request_overlay_info_cb,
