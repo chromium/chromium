@@ -110,7 +110,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   base::string16 html_;
   GURL base_url_;
 
+#if !defined(OS_CHROMEOS)
   bool originated_from_renderer_ = false;
+#endif
 
   // Data source.
   std::unique_ptr<DataTransferEndpoint> source_;

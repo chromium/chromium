@@ -41,7 +41,7 @@ namespace {
 constexpr gfx::Rect kBounds = gfx::Rect(0, 0, 20, 20);
 constexpr gfx::PointF kClientPt = {5, 10};
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN)
 constexpr gfx::PointF kScreenPt = {17, 3};
 #endif
 
@@ -200,7 +200,7 @@ TEST_F(WebContentsViewAuraTest, OccludeView) {
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::VISIBLE);
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN)
 TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
@@ -285,9 +285,6 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   }
 }
 
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS) || defined(OS_WIN)
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
@@ -327,7 +324,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -351,7 +348,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
 
   CheckDropData(view);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX)
   // By design, Linux implementations returns an empty string if file data is
   // also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||

@@ -41,11 +41,19 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
 }
 
 void OSExchangeDataProviderNonBacked::MarkOriginatedFromRenderer() {
+  // TODO(dcheng): Currently unneeded because ChromeOS Aura correctly separates
+  // URL and filename metadata, and does not implement the DownloadURL protocol.
+#if !defined(OS_CHROMEOS)
   originated_from_renderer_ = true;
+#endif
 }
 
 bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
+#if defined(OS_CHROMEOS)
+  return false;
+#else
   return originated_from_renderer_;
+#endif
 }
 
 void OSExchangeDataProviderNonBacked::SetString(const base::string16& data) {
