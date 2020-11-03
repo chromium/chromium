@@ -16,7 +16,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
 /** @enum {string} */
-const Screens = {
+export const Screens = {
   ONLINE_FLOW: 'edu-coexistence-ui',
   ERROR: 'edu-coexistence-error',
   OFFLINE: 'edu-coexistence-offline',
@@ -72,6 +72,16 @@ Polymer({
         .switchView(this.currentScreen_);
   },
 
+  /**
+   * @param {boolean} isOnline Whether or not the browser is online.
+   * @private
+   */
+  setInitialScreen_(isOnline) {
+    this.currentScreen_ = isOnline ? Screens.ONLINE_FLOW : Screens.OFFLINE;
+    /** @type {CrViewManagerElement} */ (this.$.viewManager)
+        .switchView(this.currentScreen_);
+  },
+
   /** @override */
   ready() {
     window.addEventListener('online', () => {
@@ -85,9 +95,7 @@ Polymer({
         this.switchToScreen_(Screens.OFFLINE);
       }
     });
-
-    this.switchToScreen_(
-        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE);
+    this.setInitialScreen_(navigator.onLine);
   },
 
 });
