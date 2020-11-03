@@ -11,9 +11,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
-class BottomSheetUtils {
+/**
+ * Utility class to facilitate showing instances of {@code AssistantBottomSheetContent} in the
+ * Chrome bottom sheet.
+ */
+public class BottomSheetUtils {
     /** Request {@code controller} to show {@code content} and expand the sheet when it is shown. */
-    static void showContentAndMaybeExpand(BottomSheetController controller,
+    public static void showContentAndMaybeExpand(BottomSheetController controller,
             AssistantBottomSheetContent content, boolean shouldExpand, boolean animate) {
         // Show the content.
         boolean contentShown = controller.requestShowContent(content, animate);

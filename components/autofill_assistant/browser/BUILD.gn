@@ -407,6 +407,7 @@ if (is_android) {
       "generic_ui_java_generated_enums.h",
       "metrics.h",
       "overlay_state.h",
+      "trigger_scripts/trigger_script_action.h",
       "user_data.h",
       "viewport_mode.h",
     ]

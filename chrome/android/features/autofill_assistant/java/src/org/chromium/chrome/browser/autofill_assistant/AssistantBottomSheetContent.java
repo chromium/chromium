@@ -21,7 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  * BottomSheet when its size changes and allows to dynamically set its scrollable content (in
  * practice, this allows to replace the onboarding by the actual Autofill Assistant content).
  */
-class AssistantBottomSheetContent implements BottomSheetContent {
+public class AssistantBottomSheetContent implements BottomSheetContent {
     private final View mToolbarView;
     private final SizeListenableLinearLayout mContentView;
     @Nullable
@@ -50,7 +50,7 @@ class AssistantBottomSheetContent implements BottomSheetContent {
         mContentScrollableView = scrollableView;
     }
 
-    void setPeekModeDisabled(boolean disabled) {
+    public void setPeekModeDisabled(boolean disabled) {
         mPeekModeDisabled = disabled;
     }
 
