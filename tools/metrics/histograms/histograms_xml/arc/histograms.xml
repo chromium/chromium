@@ -21,6 +21,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Arc.AbiMigration.BootTime" units="ms"
+    expires_after="2021-10-10">
+  <owner>vraheja@chromium.org</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>Time taken for ARC to boot during an Abi Migration event.</summary>
+</histogram>
+
+<histogram name="Arc.AbiMigration.DowngradeDelay" units="ms"
+    expires_after="2021-10-10">
+  <owner>vraheja@chromium.org</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Time taken by ArcAbiMigrationService specifically to downgrade system
+    packages.
+  </summary>
+</histogram>
+
+<histogram name="Arc.AbiMigration.Event" enum="ArcCorePriAbiMigEvent"
+    expires_after="2021-10-10">
+  <owner>vraheja@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records event type for ArcAbiMigrationService during Abi Migration.
+  </summary>
+</histogram>
+
+<histogram name="Arc.AbiMigration.FailedAttempts" units="units"
+    expires_after="2021-10-10">
+  <owner>vraheja@chromium.org</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the number of failed attempts in trying to perform Primary Abi
+    Migration.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AccessibilityWithTalkBack" enum="BooleanEnabled"
     expires_after="2021-07-01">
   <owner>hirokisato@chromium.org</owner>

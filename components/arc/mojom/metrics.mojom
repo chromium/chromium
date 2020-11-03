@@ -1,9 +1,11 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module arc.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
 
 [Extensible]
 enum BootType {
@@ -119,7 +121,23 @@ struct AppKill {
   uint32 count;
 };
 
-// Next method ID: 4
+// Outlines the various states that can arise while performing Primary ABI
+// Migration on a ChromeOS device.
+[Extensible]
+enum ArcCorePriAbiMigEvent {
+  // If an unknown event is reported, it will be recorded as UNSUPPORTED.
+  kUnsupported = 0,
+
+  kMigrationCompleted = 1,
+  kGmsNoDowngrade = 2,
+  kGmsDowngradeSuccess = 3,
+  kGmsDowngradeFailure = 4,
+  kWebviewNoDowngrade = 5,
+  kWebviewDowngradeSuccess = 6,
+  kWebviewDowngradeFailure = 7,
+};
+
+// Next method ID: 8
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -133,6 +151,18 @@ interface MetricsHost {
 
   // Reports LMKD and OOM kills from ARC.
   [MinVersion=6] ReportAppKill@3(AppKill app_kill);
+
+  // Reports migration event by ARC Metrics Service.
+  [MinVersion=7] ReportArcCorePriAbiMigEvent@4(ArcCorePriAbiMigEvent event);
+
+  // Reports number of failed ABI Migration attempts by ARC Metrics Service.
+  [MinVersion=7] ReportArcCorePriAbiMigFailedTries@5(uint32 failed_attempts);
+
+  // Reports ABI Migration system packages downgrade delay by ArcMetricsService.
+  [MinVersion=7] ReportArcCorePriAbiMigDowngradeDelay@6(mojo_base.mojom.TimeDelta delay);
+
+  // Reports boot time during ABI Migration by ARC Metrics Service.
+  [MinVersion=7] ReportArcCorePriAbiMigBootTime@7(mojo_base.mojom.TimeDelta duration);
 };
 
 // Next method ID: 3

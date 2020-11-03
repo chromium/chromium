@@ -90,6 +90,11 @@ class ArcMetricsService : public KeyedService,
   void ReportNativeBridge(mojom::NativeBridgeType native_bridge_type) override;
   void ReportCompanionLibApiUsage(mojom::CompanionLibApiId api_id) override;
   void ReportAppKill(mojom::AppKillPtr app_kill) override;
+  void ReportArcCorePriAbiMigEvent(
+      mojom::ArcCorePriAbiMigEvent event_type) override;
+  void ReportArcCorePriAbiMigFailedTries(uint32_t failed_attempts) override;
+  void ReportArcCorePriAbiMigDowngradeDelay(base::TimeDelta delay) override;
+  void ReportArcCorePriAbiMigBootTime(base::TimeDelta duration) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
@@ -185,6 +190,9 @@ class ArcMetricsService : public KeyedService,
   void OnArcStartTimeRetrieved(std::vector<mojom::BootProgressEventPtr> events,
                                mojom::BootType boot_type,
                                base::Optional<base::TimeTicks> arc_start_time);
+  void OnArcStartTimeForPriAbiMigration(
+      base::TimeTicks durationTicks,
+      base::Optional<base::TimeTicks> arc_start_time);
 
   // Notify AppKillObservers.
   void NotifyLowMemoryKill();

@@ -3228,6 +3228,19 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Crashed"/>
 </enum>
 
+<enum name="ArcCorePriAbiMigEvent">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Migration Completed"/>
+  <int value="2" label="GMS No Downgrade"/>
+  <int value="3" label="GMS Downgrade Success"/>
+  <int value="4" label="GMS Downgrade Failure"/>
+  <int value="5" label="Webview No Downgrade"/>
+  <int value="6" label="Webview Downgrade Success"/>
+  <int value="7" label="Webview Downgrade Failure"/>
+</enum>
+
 <enum name="ArcCustomTabsSessionEndReason">
   <int value="0" label="Closed"/>
   <int value="1" label="Forwarded to a normal tab"/>
