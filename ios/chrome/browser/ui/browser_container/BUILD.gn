@@ -15,11 +15,13 @@ source_set("browser_container") {
   deps = [
     ":ui",
     "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/screen_time:feature_flags",
+    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/link_to_text",
@@ -27,6 +29,8 @@ source_set("browser_container") {
     "//ios/chrome/browser/ui/screen_time",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
     "//url",
   ]
 }
@@ -55,6 +59,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "browser_container_coordinator_unittest.mm",
     "browser_container_mediator_unittest.mm",
     "browser_container_view_controller_unittest.mm",
   ]
@@ -65,13 +70,21 @@ source_set("unit_tests") {
     ":browser_container",
     ":ui",
     "//base/test:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/link_to_text",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
   ]
 }

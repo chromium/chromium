@@ -21079,6 +21079,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharedHighlights.LinkGenerated.Error.OK">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <description>
+    User pressed the 'OK' button on the Link Generation Error Alert dialog (iOS
+    only).
+  </description>
+</action>
+
+<action name="SharedHighlights.LinkGenerated.Error.SharePage">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <description>
+    User pressed the 'Share Page...' button on the Link Generation Error Alert
+    dialog (iOS only).
+  </description>
+</action>
+
 <action name="SharingHubAndroid.BottomRowScrolled">
   <obsolete>
     Renamed to SharingHubAndroid.ThirdPartyAppsScrolled 09/2020.
