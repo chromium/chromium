@@ -1,0 +1,4 @@
+file://content/browser/sms/OWNERS
+
+# TEAM: web-identity@google.com
+# COMPONENT: Blink>WebOTP
