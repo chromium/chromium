@@ -75,6 +75,12 @@ class Trash {
      * @const
      */
     this.trashDirs_ = {};
+
+    /**
+     * @private {!Set<string>}
+     * @const
+     */
+    this.infoWritesInProgress_ = new Set();
   }
 
   /**
@@ -182,10 +188,9 @@ class Trash {
 
   /**
    * Write /.Trash/info/<name>.trashinfo file.
-   * Creates empty /.Trash/info/<name>.trashinfo.tmp file, writes to file,
-   * then moves to /.Trash/info/<name>.trashinfo. By using mv as the final
-   * operation we guarantee that another process such as removing old items
-   * will not read an incomplete *.trashinfo file.
+   * Since creating and writing the file requires multiple async operations, we
+   * keep a record of which writes are in progress to be ignored by
+   * removeOldItems_() if it is running concurrently.
    *
    * @param {!DirectoryEntry} trashInfoDir /.Trash/info directory.
    * @param {string} name name for <name>.trashinfo file.
@@ -194,12 +199,15 @@ class Trash {
    * @private
    */
   async writeTrashInfoFile_(trashInfoDir, name, path) {
-    const tmpName = `${name}.trashinfo.tmp`;
-    const finalName = `${name}.trashinfo`;
-    const tmpFile = await new Promise((resolve, reject) => {
-      trashInfoDir.getFile(tmpName, {create: true}, infoFile => {
+    const filename = `${name}.trashinfo`;
+    this.infoWritesInProgress_.add(filename);
+    return new Promise((resolve, reject) => {
+      trashInfoDir.getFile(filename, {create: true}, infoFile => {
         infoFile.createWriter(writer => {
-          writer.onwriteend = resolve.bind(null, infoFile);
+          writer.onwriteend = () => {
+            this.infoWritesInProgress_.delete(filename);
+            resolve(infoFile);
+          };
           writer.onerror = reject;
           const info = `[Trash Info]\nPath=${path}\nDeletionDate=${
               new Date().toISOString()}`;
@@ -207,7 +215,6 @@ class Trash {
         }, reject);
       }, reject);
     });
-    return this.moveTo_(tmpFile, trashInfoDir, finalName);
   }
 
   /**
@@ -350,13 +357,21 @@ class Trash {
           break;
         }
         for (const entry of entries) {
+          // Delete any directories.
           if (!entry.isFile) {
             rm(entry, console.error, 'Unexpected trash info directory');
             continue;
           }
 
+          // Delete any files not *.trashinfo.
           if (!entry.name.endsWith('.trashinfo')) {
             rm(entry, console.error, 'Unexpected trash info file');
+            continue;
+          }
+
+          // Ignore any write-in-progress files.
+          if (this.infoWritesInProgress_.has(entry.name)) {
+            console.log(`Ignoring write in progress ${entry.toURL()}`);
             continue;
           }
 
@@ -364,6 +379,14 @@ class Trash {
           const filesEntry = filesEntries[name];
           delete filesEntries[name];
 
+          // Delete any .trashinfo file with no matching file entry (unless it
+          // was write-in-progress).
+          if (!filesEntry) {
+            rm(entry, console.error, 'No matching files entry');
+            continue;
+          }
+
+          // Delete any entries with no DeletionDate.
           const file = await new Promise(
               (resolve, reject) => entry.file(resolve, reject));
           const text = await file.text();
@@ -374,6 +397,7 @@ class Trash {
             continue;
           }
 
+          // Delete any entries with invalid DeletionDate.
           const d = Date.parse(found[1]);
           if (!d) {
             rm(entry, console.error, 'Could not parse DeletionDate in ' + text);
@@ -381,6 +405,7 @@ class Trash {
             continue;
           }
 
+          // Delete entries older than 30d.
           const ago30d = now - Trash.AUTO_DELETE_INTERVAL_MS;
           const ago30dStr = new Date(ago30d).toISOString();
           if (d < ago30d) {
