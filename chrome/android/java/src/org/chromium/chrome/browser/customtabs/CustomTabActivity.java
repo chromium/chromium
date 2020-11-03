@@ -101,6 +101,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 if (mIntentDataProvider.shouldHideOmniboxSuggestionsForCctVisits()) {
                     tab.setAddApi2TransitionToFutureNavigations(true);
                 }
+                if (mIntentDataProvider.shouldHideCctVisits()) {
+                    tab.setHideFutureNavigations(true);
+                }
             }
         });
 
@@ -189,7 +192,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             if (mNavigationController.openCurrentUrlInBrowser(false)) {
                 RecordUserAction.record("CustomTabsMenuOpenInChrome");
                 WebContents webContents = tab == null ? null : tab.getWebContents();
-                if (tab != null) tab.setAddApi2TransitionToFutureNavigations(false);
+                if (tab != null) {
+                    tab.setAddApi2TransitionToFutureNavigations(false);
+                    tab.setHideFutureNavigations(false);
+                }
                 mConnection.notifyOpenInBrowser(mSession, webContents);
             }
             return true;

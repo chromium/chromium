@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -145,6 +146,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static final String EXTRA_HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT =
             "androidx.browser.customtabs.extra.HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT";
+
+    /**
+     * Extra that, if set, results in marking visits from cct as hidden. The value is
+     * a boolean, and is only considered if the feature kCCTHideVisits is enabled.
+     */
+    public static final String EXTRA_HIDE_VISITS_FROM_CCT =
+            "androidx.browser.customtabs.extra.HIDE_VISITS_FROM_CCT";
 
     /**
      * Extra used to provide a PendingIntent that we can launch to focus the client.
@@ -570,7 +578,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    @Nullable
     public Intent getIntent() {
         return mIntent;
     }
@@ -854,5 +861,19 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public boolean shouldHideOmniboxSuggestionsForCctVisits() {
         return shouldHideOmniboxSuggestionsForCctVisits(mIntent);
+    }
+
+    @Override
+    public boolean shouldHideCctVisits() {
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.HIDE_FROM_API_3_TRANSITIONS_FROM_HISTORY)) {
+            return false;
+        }
+
+        // Only 1p apps are allowed to hide visits.
+        String clientPackageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(getSession());
+        if (!GSAState.isGsaPackageName(clientPackageName)) return false;
+        return IntentUtils.safeGetBooleanExtra(mIntent, EXTRA_HIDE_VISITS_FROM_CCT, false);
     }
 }
