@@ -21,5 +21,21 @@
     }),
   ]);
   testRunner.log(event.params.args[0].value);
+
+  session.evaluate(`
+    fetch('${testRunner.url('./resources/post-echo.pl')}', {
+      method: 'post',
+      body: 'hello'
+    })`);
+  const requestPaused2 = await dp.Fetch.onceRequestPaused();
+  const {error} = await dp.Fetch.continueRequest({
+    requestId: requestPaused2.params.requestId,
+    postData: '¯\_(ツ)_/¯ not a base64 string ¯\_(ツ)_/¯'});
+
+  function trimErrorMessage(message) {
+    return message.replace(/at position \d+/, "<somewhere>");
+  }
+  testRunner.log(`error when passing body as string: ${trimErrorMessage(error.data)}`);
+
   testRunner.completeTest();
 })
