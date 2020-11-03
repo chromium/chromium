@@ -98,19 +98,36 @@ std::vector<std::string> GetCrostiniMountOptions(
     const std::string& host_private_key,
     const std::string& container_public_key);
 
-// Convert a cracked url to a path inside a VM mounted at |vm_mount|.
+// Convert a cracked |file_system_url| to a path inside a VM mounted at
+// |vm_mount| (e.g. /mnt/chromeos). If |map_crostini_home| is set, paths under
+// GetCrostiniMountDirectory() are translated to be under the user's home
+// directory (e.g. /home/user) otherwise these paths map to
+// |vm_mount|/LinuxFiles. This function is the reverse of
+// ConvertPathInsideVMToFileSystemURL(). Returns true iff path can be converted.
 bool ConvertFileSystemURLToPathInsideVM(
     Profile* profile,
     const storage::FileSystemURL& file_system_url,
     const base::FilePath& vm_mount,
-    base::FilePath* inside,
-    bool map_crostini_home = false);
+    bool map_crostini_home,
+    base::FilePath* inside);
 
 // Convert a cracked url to a path inside the Crostini VM.
 bool ConvertFileSystemURLToPathInsideCrostini(
     Profile* profile,
     const storage::FileSystemURL& file_system_url,
     base::FilePath* inside);
+
+// Convert a path inside a VM mounted at |vm_mount| (e.g. /mnt/chromeos) to a
+// FileSystemURL. If |map_crostini_home| is set, paths
+// under the user's home directory (e.g. /home/user) are translated to be under
+// GetCrostiniMountDirectory(). This function is the reverse of
+// ConvertFileSystemURLToPathInsideVM(). Returns true iff path can be converted.
+bool ConvertPathInsideVMToFileSystemURL(
+    Profile* profile,
+    const base::FilePath& inside,
+    const base::FilePath& vm_mount,
+    bool map_crostini_home,
+    storage::FileSystemURL* file_system_url);
 
 // DEPRECATED. Use |ConvertToContentUrls| instead.
 // While this function can convert paths under Downloads, /media/removable

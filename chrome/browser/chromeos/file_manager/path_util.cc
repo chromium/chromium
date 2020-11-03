@@ -192,6 +192,14 @@ std::string GetFsUuidForRemovableMedia(const std::string& volume_name) {
   return fs_uuid;
 }
 
+// Same as parent.AppendRelativePath(child, path) except that it allows
+// parent == child, in which case path is unchanged.
+bool AppendRelativePath(const base::FilePath& parent,
+                        const base::FilePath& child,
+                        base::FilePath* path) {
+  return child == parent || parent.AppendRelativePath(child, path);
+}
+
 }  // namespace
 
 const base::FilePath::CharType kRemovableMediaPath[] =
@@ -288,8 +296,7 @@ bool MigrateFromDownloadsToMyFiles(Profile* profile,
   if (new_base == old_base)
     return false;
   base::FilePath relative;
-  if (old_path == old_base ||
-      old_base.AppendRelativePath(old_path, &relative)) {
+  if (AppendRelativePath(old_base, old_path, &relative)) {
     *new_path = new_base.Append(relative);
     return old_path != *new_path;
   }
@@ -365,8 +372,8 @@ bool ConvertFileSystemURLToPathInsideVM(
     Profile* profile,
     const storage::FileSystemURL& file_system_url,
     const base::FilePath& vm_mount,
-    base::FilePath* inside,
-    bool map_crostini_home) {
+    bool map_crostini_home,
+    base::FilePath* inside) {
   const std::string& id(file_system_url.mount_filesystem_id());
   // File system root requires strip trailing separator.
   base::FilePath path =
@@ -405,10 +412,12 @@ bool ConvertFileSystemURLToPathInsideVM(
       base_to_exclude = base_to_exclude.Append(kDriveFsDirTeamDrives);
       *inside = inside->Append(kCrostiniMapTeamDrives);
     }
+    // Computers -> Computers
   } else if (id == chromeos::kSystemMountNameRemovable) {
     // Removable.
     *inside = vm_mount.Append(chromeos::kSystemMountNameRemovable);
   } else if (id == GetAndroidFilesMountPointName()) {
+    // PlayFiles.
     *inside = vm_mount.Append(kCrostiniMapPlayFiles);
   } else if (id == chromeos::kSystemMountNameArchive) {
     // Archive.
@@ -427,7 +436,7 @@ bool ConvertFileSystemURLToPathInsideVM(
       *inside = vm_mount.Append(kCrostiniMapLinuxFiles);
     }
   } else if (file_system_url.type() == storage::kFileSystemTypeSmbFs) {
-    // Do not assume the share is currently accessible via SmbService
+    // SMB. Do not assume the share is currently accessible via SmbService
     // as this function is called during unmount when SmbFsShare is
     // destroyed. The only information safely available is the stable
     // mount ID.
@@ -436,8 +445,7 @@ bool ConvertFileSystemURLToPathInsideVM(
   } else {
     return false;
   }
-  return base_to_exclude == path ||
-         base_to_exclude.AppendRelativePath(path, inside);
+  return AppendRelativePath(base_to_exclude, path, inside);
 }
 
 bool ConvertFileSystemURLToPathInsideCrostini(
@@ -446,7 +454,106 @@ bool ConvertFileSystemURLToPathInsideCrostini(
     base::FilePath* inside) {
   return ConvertFileSystemURLToPathInsideVM(
       profile, file_system_url, crostini::ContainerChromeOSBaseDirectory(),
-      inside, /*map_crostini_home=*/true);
+      /*map_crostini_home=*/true, inside);
+}
+
+bool ConvertPathInsideVMToFileSystemURL(
+    Profile* profile,
+    const base::FilePath& inside,
+    const base::FilePath& vm_mount,
+    bool map_crostini_home,
+    storage::FileSystemURL* file_system_url) {
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+
+  // Include drive if using DriveFS.
+  std::string mount_point_name_drive;
+  auto* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (integration_service) {
+    mount_point_name_drive =
+        integration_service->GetMountPointPath().BaseName().value();
+  }
+
+  std::string mount_name;
+  base::FilePath path;
+  base::FilePath relative_path;
+
+  if (map_crostini_home) {
+    base::Optional<crostini::ContainerInfo> container_info =
+        crostini::CrostiniManager::GetForProfile(profile)->GetContainerInfo(
+            crostini::ContainerId::GetDefault());
+    if (container_info &&
+        AppendRelativePath(container_info->homedir, inside, &relative_path)) {
+      *file_system_url = mount_points->CreateExternalFileSystemURL(
+          url::Origin(), GetCrostiniMountPointName(profile), relative_path);
+      return file_system_url->is_valid();
+    }
+  }
+
+  if (!vm_mount.AppendRelativePath(inside, &path)) {
+    return false;
+  }
+
+  if (AppendRelativePath(base::FilePath(kFolderNameMyFiles), path,
+                         &relative_path)) {
+    // MyFiles.
+    mount_name = GetDownloadsMountPointName(profile);
+    path = relative_path;
+  } else if (AppendRelativePath(base::FilePath(kCrostiniMapLinuxFiles), path,
+                                &relative_path)) {
+    // LinuxFiles.
+    mount_name = GetCrostiniMountPointName(profile);
+    path = relative_path;
+  } else if (base::FilePath(kCrostiniMapGoogleDrive)
+                 .AppendRelativePath(path, &relative_path)) {
+    mount_name = mount_point_name_drive;
+    path = relative_path;
+    relative_path.clear();
+    // GoogleDrive
+    if (AppendRelativePath(base::FilePath(kCrostiniMapMyDrive), path,
+                           &relative_path)) {
+      // Special mapping for /GoogleDrive/MyDrive -> root
+      path = base::FilePath(kDriveFsDirRoot).Append(relative_path);
+    } else if (AppendRelativePath(base::FilePath(kCrostiniMapTeamDrives), path,
+                                  &relative_path)) {
+      // Special mapping for /GoogleDrive/SharedDrive -> team_drives
+      path = base::FilePath(kDriveFsDirTeamDrives).Append(relative_path);
+    }
+    // Computers -> Computers
+  } else if (base::FilePath(chromeos::kSystemMountNameRemovable)
+                 .AppendRelativePath(path, &relative_path)) {
+    // Removable subdirs only.
+    mount_name = chromeos::kSystemMountNameRemovable;
+    path = relative_path;
+  } else if (AppendRelativePath(base::FilePath(kCrostiniMapPlayFiles), path,
+                                &relative_path)) {
+    // PlayFiles.
+    mount_name = GetAndroidFilesMountPointName();
+    path = relative_path;
+  } else if (base::FilePath(chromeos::kSystemMountNameArchive)
+                 .AppendRelativePath(path, &relative_path)) {
+    // Archive subdirs only.
+    mount_name = chromeos::kSystemMountNameArchive;
+    path = relative_path;
+  } else if (base::FilePath(kCrostiniMapSmbFs)
+                 .AppendRelativePath(path, &relative_path)) {
+    // SMB.
+    std::vector<base::FilePath::StringType> components;
+    relative_path.GetComponents(&components);
+    if (components.size() < 1) {
+      return false;
+    }
+    mount_name = components[0];
+    path.clear();
+    base::FilePath(mount_name).AppendRelativePath(relative_path, &path);
+  } else {
+    return false;
+  }
+
+  *file_system_url = mount_points->CreateExternalFileSystemURL(
+      url::Origin(), mount_name, path);
+  return file_system_url->is_valid();
 }
 
 bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {

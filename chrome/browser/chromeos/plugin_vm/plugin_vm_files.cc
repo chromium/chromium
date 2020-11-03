@@ -180,8 +180,9 @@ void LaunchPluginVmApp(Profile* profile,
     // Validate paths in MyFiles/PvmDefault, or are already shared, and convert.
     bool shared = GetDefaultSharedDir(profile).IsParent(url.path()) ||
                   share_path->IsPathShared(kPluginVmName, url.path());
-    if (!shared || !file_manager::util::ConvertFileSystemURLToPathInsideVM(
-                       profile, url, vm_mount, &file_path)) {
+    if (!shared ||
+        !file_manager::util::ConvertFileSystemURLToPathInsideVM(
+            profile, url, vm_mount, /*map_crostini_home=*/false, &file_path)) {
       return std::move(callback).Run(
           file_manager::util::GetMyFilesFolderForProfile(profile).IsParent(
               url.path())

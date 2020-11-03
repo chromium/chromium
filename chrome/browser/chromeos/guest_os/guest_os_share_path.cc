@@ -431,8 +431,9 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
     storage::FileSystemURL url = mount_points->CreateCrackedFileSystemURL(
         url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
     result = file_manager::util::ConvertFileSystemURLToPathInsideVM(
-        profile_, url, dummy_vm_mount, &inside,
-        /*map_crostini_home=*/vm_name == crostini::kCrostiniDefaultVmName);
+        profile_, url, dummy_vm_mount,
+        /*map_crostini_home=*/vm_name == crostini::kCrostiniDefaultVmName,
+        &inside);
   }
   base::FilePath unshare_path;
   if (!result || !dummy_vm_mount.AppendRelativePath(inside, &unshare_path)) {
