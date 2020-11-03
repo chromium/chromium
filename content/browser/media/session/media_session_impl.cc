@@ -174,16 +174,8 @@ bool MediaSessionImpl::PlayerIdentifier::operator==(
 
 bool MediaSessionImpl::PlayerIdentifier::operator<(
     const PlayerIdentifier& other) const {
-  return MediaSessionImpl::PlayerIdentifier::Hash()(*this) <
-         MediaSessionImpl::PlayerIdentifier::Hash()(other);
-}
-
-size_t MediaSessionImpl::PlayerIdentifier::Hash::operator()(
-    const PlayerIdentifier& player_identifier) const {
-  size_t hash =
-      std::hash<MediaSessionPlayerObserver*>()(player_identifier.observer);
-  hash += std::hash<int>()(player_identifier.player_id);
-  return hash;
+  return observer != other.observer ? observer < other.observer
+                                    : player_id < other.player_id;
 }
 
 // static
@@ -421,19 +413,10 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
 
 void MediaSessionImpl::RemovePlayer(MediaSessionPlayerObserver* observer,
                                     int player_id) {
-  PlayerIdentifier identifier(observer, player_id);
-
-  auto iter = normal_players_.find(identifier);
-  if (iter != normal_players_.end())
-    normal_players_.erase(iter);
-
-  auto it = pepper_players_.find(identifier);
-  if (it != pepper_players_.end())
-    pepper_players_.erase(it);
-
-  it = one_shot_players_.find(identifier);
-  if (it != one_shot_players_.end())
-    one_shot_players_.erase(it);
+  const PlayerIdentifier identifier(observer, player_id);
+  normal_players_.erase(identifier);
+  pepper_players_.erase(identifier);
+  one_shot_players_.erase(identifier);
 
   AbandonSystemAudioFocusIfNeeded();
   UpdateRoutedService();

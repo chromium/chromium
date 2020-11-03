@@ -9,11 +9,10 @@
 
 #include <map>
 #include <set>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -314,22 +313,19 @@ class MediaSessionImpl : public MediaSession,
   // Representation of a player for the MediaSessionImpl.
   struct PlayerIdentifier {
     PlayerIdentifier(MediaSessionPlayerObserver* observer, int player_id);
+
     PlayerIdentifier(const PlayerIdentifier&) = default;
+    PlayerIdentifier(PlayerIdentifier&&) = default;
 
-    void operator=(const PlayerIdentifier&) = delete;
-    bool operator==(const PlayerIdentifier& player_identifier) const;
-    bool operator<(const PlayerIdentifier&) const;
+    PlayerIdentifier& operator=(const PlayerIdentifier&) = default;
+    PlayerIdentifier& operator=(PlayerIdentifier&&) = default;
 
-    // Hash operator for std::unordered_map<>.
-    struct Hash {
-      size_t operator()(const PlayerIdentifier& player_identifier) const;
-    };
+    bool operator==(const PlayerIdentifier& other) const;
+    bool operator<(const PlayerIdentifier& other) const;
 
     MediaSessionPlayerObserver* observer;
     int player_id;
   };
-  using PlayersMap =
-      std::unordered_set<PlayerIdentifier, PlayerIdentifier::Hash>;
 
   CONTENT_EXPORT explicit MediaSessionImpl(WebContents* web_contents);
 
@@ -430,11 +426,11 @@ class MediaSessionImpl : public MediaSession,
   std::unique_ptr<AudioFocusDelegate> delegate_;
   std::map<PlayerIdentifier, media_session::mojom::AudioFocusType>
       normal_players_;
-  PlayersMap pepper_players_;
+  base::flat_set<PlayerIdentifier> pepper_players_;
 
   // Players that are playing in the web contents but we cannot control (e.g.
   // WebAudio or MediaStream).
-  PlayersMap one_shot_players_;
+  base::flat_set<PlayerIdentifier> one_shot_players_;
 
   State audio_focus_state_ = State::INACTIVE;
   MediaSession::SuspendType suspend_type_;
