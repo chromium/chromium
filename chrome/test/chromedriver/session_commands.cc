@@ -712,16 +712,16 @@ Status ExecuteClose(Session* session,
       return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
   }
 
-  if (!is_last_web_view) {
-    status = session->chrome->CloseWebView(web_view->GetId());
-    if (status.IsError())
-      return status;
+  status = session->chrome->CloseWebView(web_view->GetId());
+  if (status.IsError())
+    return status;
 
+  if (!is_last_web_view) {
     status = ExecuteGetWindowHandles(session, base::DictionaryValue(), value);
     if (status.IsError())
       return status;
   } else {
-    // If there is only one open window, close is the same as calling "quit".
+    // If there is only one window left, call quit as well.
     session->quit = true;
     status = session->chrome->Quit();
     if (status.IsOk())
