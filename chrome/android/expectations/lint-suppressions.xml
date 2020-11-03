@@ -13,6 +13,12 @@ Still reading?
   local as possible, i.e. by warning message or by file.
 - When adding new issues, please keep the issue ids in sorted order.
 -->
+  <issue id="all">
+    <ignore regexp="^../../clank/"/>
+    <ignore regexp="^gen/clank/"/>
+    <!-- obj can be a subdirectory under gen. -->
+    <ignore regexp="/obj/clank/"/>
+  </issue>
   <issue id="AcceptsUserCertificates">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
@@ -38,10 +44,6 @@ Still reading?
     <!-- These only need to be 1px for all densities. See: crbug.com/804449 -->
     <ignore regexp="chrome/android/java/res/.*tab_strip_fade"/>
   </issue>
-  <issue id="IconDuplicates">
-    <!-- Filed https://crbug.com/1073963 -->
-    <ignore regexp="clank/java/res_default/mipmap-.*/app_shortcut_icon.png"/>
-  </issue>
   <issue id="IconLocation">
     <!-- It is OK for content_shell_apk to have missing assets. -->
     <ignore regexp="content/shell/android/java/res/"/>
@@ -63,7 +65,6 @@ Still reading?
   <issue id="ImpliedQuantity">
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd"/>
     <ignore regexp="components/browser_ui/strings/android/browser_ui_strings_grd"/>
-    <ignore regexp="clank/third_party/chime/chime_systemtray_strings_grd.resources.zip"/>
   </issue>
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
@@ -190,9 +191,6 @@ Still reading?
     <ignore regexp="The resource `R.mipmap.maskable_splash_icon_xxxhdpi` appears to be unused"/>
     <!-- 1: Module titles may only be used by the Play Store. -->
     <ignore regexp="The resource `R.string.*_module_title` appears to be unused"/>
-    <!-- 2: resource sets used by clank widgets for each channel -->
-    <ignore regexp="The resource `R.string.bookmark_widget_title.*` appears to be unused"/>
-    <ignore regexp="The resource `R.string.search_widget_title.*` appears to be unused"/>
     <!-- crbug.com/1004570 remove this line and the following six lines after the bug resolved -->
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_review_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_close_stale_message` appears to be unused"/>

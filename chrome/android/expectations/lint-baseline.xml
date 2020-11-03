@@ -41,7 +41,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinder.java"
-            line="591"
+            line="593"
             column="55"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
-            line="354"
+            line="365"
             column="22"/>
     </issue>
 
@@ -129,7 +129,7 @@
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteMediator.java"
-            line="475"
+            line="463"
             column="30"/>
     </issue>
 
@@ -367,22 +367,11 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="                toUmaEnumValueFromTaskId(taskId));"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/background_task_scheduler/internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerUma.java"
-            line="166"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
         errorLine1="        int umaEnumValue = toUmaEnumValueFromTaskId(taskId);"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/background_task_scheduler/internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerUma.java"
-            line="171"
+            line="165"
             column="28"/>
     </issue>
 
@@ -393,7 +382,7 @@
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/background_task_scheduler/internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerUma.java"
-            line="184"
+            line="178"
             column="28"/>
     </issue>
 
@@ -404,7 +393,7 @@
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/background_task_scheduler/internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerUma.java"
-            line="195"
+            line="189"
             column="28"/>
     </issue>
 
@@ -437,7 +426,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="301"
+            line="305"
             column="57"/>
     </issue>
 
@@ -448,7 +437,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="412"
+            line="416"
             column="77"/>
     </issue>
 
@@ -459,7 +448,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="368"
+            line="367"
             column="84"/>
     </issue>
 
@@ -492,7 +481,7 @@
         errorLine2="                                                                  ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="783"
+            line="791"
             column="67"/>
     </issue>
 
@@ -690,7 +679,7 @@
         errorLine2="                                                                              ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/NavigationControllerImpl.java"
-            line="28"
+            line="35"
             column="79"/>
     </issue>
 
@@ -712,7 +701,7 @@
         errorLine2="                                  ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="302"
+            line="308"
             column="35"/>
     </issue>
 
@@ -800,7 +789,7 @@
         errorLine2="                     ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanel.java"
-            line="522"
+            line="515"
             column="22"/>
     </issue>
 
@@ -877,7 +866,7 @@
         errorLine2="                   ~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
-            line="325"
+            line="327"
             column="20"/>
     </issue>
 
@@ -1053,7 +1042,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="1554"
+            line="1535"
             column="74"/>
     </issue>
 
@@ -1064,7 +1053,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
-            line="634"
+            line="626"
             column="31"/>
     </issue>
 
@@ -1339,7 +1328,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="652"
+            line="660"
             column="20"/>
     </issue>
 
@@ -1460,7 +1449,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omnibox/LocationBarTablet.java"
-            line="112"
+            line="111"
             column="20"/>
     </issue>
 
@@ -1565,23 +1554,12 @@
 
     <issue
         id="ClickableViewAccessibility"
-        message="Custom view `TextEditorHandleView` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../clank/browser/image_editor/internal/java/src/org/chromium/chrome/browser/image_editor/text/TextEditorHandleView.java"
-            line="181"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
         message="Custom view `ToolbarControlContainer` overrides `onTouchEvent` but not `performClick`"
         errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="249"
+            line="264"
             column="20"/>
     </issue>
 
@@ -1592,7 +1570,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="499"
+            line="488"
             column="20"/>
     </issue>
 
@@ -1759,17 +1737,6 @@
             file="../../chrome/android/java/res/layout/languages_preference.xml"
             line="32"
             column="9"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="    android:clickable=&quot;true&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../clank/browser/image_editor/internal/java/res/layout/line_tool_color_item.xml"
-            line="17"
-            column="5"/>
     </issue>
 
     <issue

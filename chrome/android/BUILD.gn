@@ -2972,10 +2972,9 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
 
 group("android_lint") {
   if (!disable_android_lint) {
-    if (defined(default_chrome_lint_targets)) {
-      deps = default_chrome_lint_targets
-    } else {
-      deps = [ ":monochrome_public_bundle__lint" ]
+    deps = [ ":monochrome_public_bundle__lint" ]
+    if (defined(additional_chrome_lint_targets)) {
+      deps += additional_chrome_lint_targets
     }
   }
 }
