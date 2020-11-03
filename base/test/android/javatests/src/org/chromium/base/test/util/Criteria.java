@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content_public.browser.test.util;
+package org.chromium.base.test.util;
 
+import android.text.TextUtils;
+
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 
 /**
  * Provides a means for validating whether some condition/criteria has been met.
@@ -23,7 +27,7 @@ public final class Criteria {
      * @param matcher Determines if the current value matches the desired expectation.
      */
     public static <T> void checkThat(T actual, Matcher<T> matcher) {
-        org.chromium.base.test.util.Criteria.checkThat(actual, matcher);
+        checkThat("", actual, matcher);
     }
 
     /**
@@ -36,6 +40,16 @@ public final class Criteria {
      * @param matcher Determines if the current value matches the desired expectation.
      */
     public static <T> void checkThat(String reason, T actual, Matcher<T> matcher) {
-        org.chromium.base.test.util.Criteria.checkThat(reason, actual, matcher);
+        if (matcher.matches(actual)) return;
+        Description description = new StringDescription();
+        if (!TextUtils.isEmpty(reason)) {
+            description.appendText(reason).appendText(System.lineSeparator());
+        }
+        description.appendText("Expected: ")
+                .appendDescriptionOf(matcher)
+                .appendText(System.lineSeparator())
+                .appendText("     but: ");
+        matcher.describeMismatch(actual, description);
+        throw new CriteriaNotSatisfiedException(description.toString());
     }
 }
