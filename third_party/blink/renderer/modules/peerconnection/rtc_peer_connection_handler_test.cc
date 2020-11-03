@@ -24,6 +24,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -1285,12 +1286,18 @@ TEST_F(RTCPeerConnectionHandlerTest, CheckInsertableStreamsConfig) {
   }
 }
 
-TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceIsEnabledByDefault) {
+TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceDefaultValue) {
   EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
   pc_handler_->OnThermalStateChange(
       base::PowerObserver::DeviceThermalState::kCritical);
+#if defined(OS_MAC)
+  bool expect_disabled = false;
+#else
+  bool expect_disabled = true;
+#endif
   // A ThermalResource is created in response to the thermal signal.
-  EXPECT_FALSE(mock_peer_connection_->adaptation_resources().IsEmpty());
+  EXPECT_EQ(mock_peer_connection_->adaptation_resources().IsEmpty(),
+            expect_disabled);
 }
 
 TEST_F(RTCPeerConnectionHandlerTest,

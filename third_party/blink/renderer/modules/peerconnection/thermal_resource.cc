@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
+#include "build/build_config.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {
@@ -14,8 +15,14 @@ const int kReportIntervalSeconds = 10;
 
 }  // namespace
 
-const base::Feature kWebRtcThermalResource{"WebRtcThermalResource",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kWebRtcThermalResource {
+  "WebRtcThermalResource",
+#if defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // static
 scoped_refptr<ThermalResource> ThermalResource::Create(
