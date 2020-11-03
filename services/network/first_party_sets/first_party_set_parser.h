@@ -7,9 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/optional.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 
 namespace network {
@@ -29,6 +32,13 @@ class FirstPartySetParser {
   // only for *preloaded* sets.
   static std::unique_ptr<base::flat_map<std::string, std::string>>
   ParsePreloadedSets(base::StringPiece raw_sets);
+
+  // Canonicalizes the passed in origin to a registered domain. In particular,
+  // this ensures that the origin is non-opaque, is HTTPS, and has a registered
+  // domain. Returns base::nullopt in case of any error.
+  static base::Optional<std::string> CanonicalizeRegisteredDomain(
+      const base::StringPiece origin_string,
+      bool emit_errors);
 };
 
 }  // namespace network

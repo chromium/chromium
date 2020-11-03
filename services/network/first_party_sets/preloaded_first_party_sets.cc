@@ -6,45 +6,15 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
-#include "url/gurl.h"
-#include "url/origin.h"
+
+namespace network {
 
 namespace {
-
-// Ensures that the string represents an origin that is non-opaque and HTTPS.
-// Returns the registered domain.
-base::Optional<std::string> CanonicalizeRegisteredDomain(
-    const std::string& origin_string) {
-  const url::Origin origin(url::Origin::Create(GURL(origin_string)));
-  if (origin.opaque()) {
-    LOG(ERROR) << "First-Party Set origin " << origin_string
-               << " is not valid; ignoring.";
-    return base::nullopt;
-  }
-  if (origin.scheme() != "https") {
-    LOG(ERROR) << "First-Party Set origin " << origin_string
-               << " is not HTTPS; ignoring.";
-    return base::nullopt;
-  }
-  const std::string domain_and_registry =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-  if (domain_and_registry.empty()) {
-    LOG(ERROR) << "First-Party Set origin" << origin_string
-               << " does not have a valid registered domain; ignoring.";
-    return base::nullopt;
-  }
-
-  return domain_and_registry;
-}
 
 base::Optional<std::pair<std::string, base::flat_set<std::string>>>
 CanonicalizeSet(const std::vector<std::string>& origins) {
@@ -52,7 +22,8 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
     return base::nullopt;
 
   const base::Optional<std::string> maybe_owner =
-      CanonicalizeRegisteredDomain(origins[0]);
+      FirstPartySetParser::CanonicalizeRegisteredDomain(origins[0],
+                                                        true /* emit_errors */);
   if (!maybe_owner.has_value()) {
     LOG(ERROR) << "First-Party Set owner is not valid; aborting.";
     return base::nullopt;
@@ -62,7 +33,8 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
   base::flat_set<std::string> members;
   for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
     const base::Optional<std::string> maybe_member =
-        CanonicalizeRegisteredDomain(*it);
+        FirstPartySetParser::CanonicalizeRegisteredDomain(
+            *it, true /* emit_errors */);
     if (maybe_member.has_value() && maybe_member != owner)
       members.emplace(std::move(*maybe_member));
   }
@@ -77,8 +49,6 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
 }
 
 }  // namespace
-
-namespace network {
 
 PreloadedFirstPartySets::PreloadedFirstPartySets() = default;
 

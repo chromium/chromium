@@ -6,14 +6,55 @@
 
 #include <iterator>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/optional.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 
 namespace {
+
+// Ensures that the string represents an origin that is non-opaque and HTTPS.
+// Returns the registered domain.
+base::Optional<std::string> Canonicalize(const base::StringPiece origin_string,
+                                         bool emit_errors) {
+  const url::Origin origin(url::Origin::Create(GURL(origin_string)));
+  if (origin.opaque()) {
+    if (emit_errors) {
+      LOG(ERROR) << "First-Party Set origin " << origin_string
+                 << " is not valid; ignoring.";
+    }
+    return base::nullopt;
+  }
+  if (origin.scheme() != "https") {
+    if (emit_errors) {
+      LOG(ERROR) << "First-Party Set origin " << origin_string
+                 << " is not HTTPS; ignoring.";
+    }
+    return base::nullopt;
+  }
+  const std::string domain_and_registry =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  if (domain_and_registry.empty()) {
+    if (emit_errors) {
+      LOG(ERROR) << "First-Party Set origin" << origin_string
+                 << " does not have a valid registered domain; ignoring.";
+    }
+    return base::nullopt;
+  }
+
+  return domain_and_registry;
+}
 
 const char kFirstPartySetOwnerField[] = "owner";
 const char kFirstPartySetMembersField[] = "members";
@@ -37,11 +78,16 @@ void ParsePreloadedSet(
   if (!maybe_owner)
     return;
 
-  // An owner may only be listed once, and may not be a member of another set.
-  if (members.contains(*maybe_owner) || owners.contains(*maybe_owner))
+  base::Optional<std::string> canonical_owner =
+      Canonicalize(std::move(*maybe_owner), false /* emit_errors */);
+  if (!canonical_owner.has_value())
     return;
 
-  owners.insert(*maybe_owner);
+  // An owner may only be listed once, and may not be a member of another set.
+  if (members.contains(*canonical_owner) || owners.contains(*canonical_owner))
+    return;
+
+  owners.insert(*canonical_owner);
 
   // Confirm that the members field is present, and is an array of strings.
   const base::Value* maybe_members_list =
@@ -54,16 +100,25 @@ void ParsePreloadedSet(
     // Members may not be a member of another set, and may not be an owner of
     // another set.
     if (item.is_string()) {
-      std::string member = item.GetString();
-      if (!members.contains(member) && !owners.contains(member)) {
-        map_storage.emplace_back(member, *maybe_owner);
-        members.insert(member);
+      base::Optional<std::string> member =
+          Canonicalize(item.GetString(), false /* emit_errors */);
+      if (!member.has_value() || members.contains(*member) ||
+          owners.contains(*member)) {
+        continue;
       }
+      map_storage.emplace_back(*member, *canonical_owner);
+      members.insert(std::move(*member));
     }
   }
 }
 
 }  // namespace
+
+base::Optional<std::string> FirstPartySetParser::CanonicalizeRegisteredDomain(
+    const base::StringPiece origin_string,
+    bool emit_errors) {
+  return Canonicalize(origin_string, emit_errors);
+}
 
 std::unique_ptr<base::flat_map<std::string, std::string>>
 FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {

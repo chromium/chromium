@@ -25,23 +25,26 @@ TEST(PreloadedFirstPartySets, ParsesJSON) {
 
 TEST(PreloadedFirstPartySets, AcceptsMinimal) {
   const std::string input =
-      R"( [ { "owner": "example.test", "members": ["aaaa"] } ] )";
+      R"([{
+        "owner": "https://example.test",
+        "members": ["https://aaaa.test"]
+        }])";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(PreloadedFirstPartySets().ParseAndSet(input),
-              Pointee(UnorderedElementsAre(Pair("aaaa", "example.test"))));
+              Pointee(UnorderedElementsAre(Pair("aaaa.test", "example.test"))));
 }
 
 TEST(PreloadedFirstPartySets, AcceptsMultipleSets) {
   const std::string input = R"(
   [
     {
-      "owner": "example.test",
-      "members": ["member1.test"]
+      "owner": "https://example.test",
+      "members": ["https://member1.test"]
     },
     {
-      "owner": "foo.test",
-      "members": ["member2.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member2.test"]
     }
   ]
   )";
@@ -56,12 +59,12 @@ TEST(PreloadedFirstPartySets, OwnerIsOnlyMember) {
   const std::string input = R"(
   [
     {
-      "owner": "example.test",
-      "members": ["example.test"]
+      "owner": "https://example.test",
+      "members": ["https://example.test"]
     },
     {
-      "owner": "foo.test",
-      "members": ["member2.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member2.test"]
     }
   ]
   )";
@@ -75,12 +78,12 @@ TEST(PreloadedFirstPartySets, OwnerIsMember) {
   const std::string input = R"(
   [
     {
-      "owner": "example.test",
-      "members": ["example.test", "member1.test"]
+      "owner": "https://example.test",
+      "members": ["https://example.test", "https://member1.test"]
     },
     {
-      "owner": "foo.test",
-      "members": ["member2.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member2.test"]
     }
   ]
   )";
@@ -95,12 +98,16 @@ TEST(PreloadedFirstPartySets, RepeatedMember) {
   const std::string input = R"(
   [
     {
-      "owner": "example.test",
-      "members": ["member1.test", "member2.test", "member1.test"]
+      "owner": "https://example.test",
+      "members": [
+        "https://member1.test",
+        "https://member2.test",
+        "https://member1.test"
+        ]
     },
     {
-      "owner": "foo.test",
-      "members": ["member3.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member3.test"]
     }
   ]
   )";
@@ -206,12 +213,12 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerOwner) {
   const std::string input = R"(
   [
     {
-      "owner": "example.test",
-      "members": ["member2.test", "member3.test"]
+      "owner": "https://example.test",
+      "members": ["https://member2.test", "https://member3.test"]
     },
     {
-      "owner": "bar.test",
-      "members": ["member4.test"]
+      "owner": "https://bar.test",
+      "members": ["https://member4.test"]
     }
   ]
   )";
@@ -230,12 +237,12 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesOwnerMember) {
   const std::string input = R"(
   [
     {
-      "owner": "foo.test",
-      "members": ["member1.test", "example.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member1.test", "https://example.test"]
     },
     {
-      "owner": "bar.test",
-      "members": ["member2.test"]
+      "owner": "https://bar.test",
+      "members": ["https://member2.test"]
     }
   ]
   )";
@@ -255,8 +262,8 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
   const std::string input = R"(
   [
     {
-      "owner": "foo.test",
-      "members": ["member1.test", "member2.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member1.test", "https://member2.test"]
     },
     {
       "owner": "member3.test",
@@ -279,12 +286,12 @@ TEST(PreloadedFirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
   const std::string input = R"(
   [
     {
-      "owner": "foo.test",
-      "members": ["member2.test", "member3.test"]
+      "owner": "https://foo.test",
+      "members": ["https://member2.test", "https://member3.test"]
     },
     {
-      "owner": "bar.test",
-      "members": ["member4.test"]
+      "owner": "https://bar.test",
+      "members": ["https://member4.test"]
     }
   ]
   )";
