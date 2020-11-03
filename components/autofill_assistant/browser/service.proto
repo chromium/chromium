@@ -495,8 +495,8 @@ message TriggerScriptConditionProto {
     // The condition matches if none of these conditions match.
     TriggerScriptConditionsProto none_of = 3;
 
-    // The condition matches if the element matches the specified condition.
-    ElementConditionProto element_condition = 4;
+    // The condition matches if the specified selector matches the current DOM..
+    SelectorProto selector = 8;
     // The condition matches if the user has stored login credentials for the
     // domain.
     Empty stored_login_credentials = 5;
@@ -505,6 +505,8 @@ message TriggerScriptConditionProto {
     // The condition matches if the client is in the specified experiment.
     int32 experiment_id = 7;
   }
+
+  reserved 4;
 }
 
 message TriggerScriptConditionsProto {
