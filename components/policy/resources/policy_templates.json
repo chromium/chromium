@@ -11472,6 +11472,7 @@
         'per_profile': False,
       },
       'example_value': False,
+      'default': True,
       'id': 203,
       'caption': '''Allow screen wake locks''',
       'tags': [],
@@ -17304,6 +17305,7 @@
         'per_profile': True,
       },
       'example_value': 1,
+      'default': 1,
       'id': 409,
       'caption': '''Ads setting for sites with intrusive ads''',
       'tags': [],
@@ -17611,6 +17613,7 @@
         'per_profile': False,
       },
       'example_value': 1,
+      'default': 0,
       'id': 690,
       'caption': '''Control usage of Android apps from untrusted sources for the user''',
       'tags': ['system-security'],
@@ -17653,6 +17656,7 @@
         'dynamic_refresh': True,
       },
       'example_value': 1,
+      'default': 0,
       'id': 695,
       'caption': '''Control usage of Android apps from untrusted sources for the device''',
       'tags': ['system-security'],
@@ -19749,11 +19753,12 @@
         'per_profile': True
       },
       'example_value': 1,
+      'default': 0,
       'id': 518,
       'caption': '''Allow users to manage installed client certificates.''',
-      'desc': '''Setting the policy to None or leaving it unset lets users manage certificates. Setting the policy to 2 means users can only view (not manage) certificates.
+      'desc': '''Setting the policy to 'All' (value 0) or leaving it unset lets users manage certificates. Setting the policy to 'None' (value 2) means users can only view (not manage) certificates.
 
-      Setting the policy to 1 lets users manage user certificates, but not device-wide certificates.''',
+      Setting the policy to 'UserOnly' (value 1) lets users manage user certificates, but not device-wide certificates.''',
     },
     {
       'id': 520,
@@ -22612,6 +22617,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'per_profile': True,
       },
       'example_value': False,
+      'default': None,
       'id': 703,
       'caption': '''Enable <ph name="PRODUCT_NAME">Get Image Descriptions from Google</ph>.''',
       'tags': ['google-sharing'],
