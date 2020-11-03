@@ -30,6 +30,9 @@ class CONTENT_EXPORT SmsProviderGmsVerification : public SmsProvider {
   // Implements JNI method SmsVerificationReceiver.Natives.onTimeout().
   void OnTimeout(JNIEnv* env);
 
+  // Implements JNI method SmsVerificationReceiver.Natives.onCancel().
+  void OnCancel(JNIEnv* env);
+
   base::android::ScopedJavaGlobalRef<jobject> GetWebOTPServiceForTesting()
       const;
 

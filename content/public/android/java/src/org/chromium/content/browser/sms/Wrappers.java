@@ -10,6 +10,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
 
@@ -21,11 +22,21 @@ class Wrappers {
      * Wraps com.google.android.gms.auth.api.phone.SmsRetrieverClient.
      */
     static class SmsRetrieverClientWrapper {
+        // Used for user consent flow.
         private final SmsRetrieverClient mSmsRetrieverClient;
+        // Used for browser code flow.
+        private final SmsCodeBrowserClient mSmsCodeBrowserClient;
         private WebOTPServiceContext mContext;
 
         public SmsRetrieverClientWrapper(SmsRetrieverClient smsRetrieverClient) {
             mSmsRetrieverClient = smsRetrieverClient;
+            mSmsCodeBrowserClient = null;
+        }
+
+        public SmsRetrieverClientWrapper(
+                SmsRetrieverClient smsRetrieverClient, SmsCodeBrowserClient smsCodeBrowserClient) {
+            mSmsRetrieverClient = smsRetrieverClient;
+            mSmsCodeBrowserClient = smsCodeBrowserClient;
         }
 
         public void setContext(WebOTPServiceContext context) {
@@ -36,8 +47,8 @@ class Wrappers {
             return mContext;
         }
 
-        public Task<Void> startSmsRetriever() {
-            return mSmsRetrieverClient.startSmsRetriever();
+        public Task<Void> startSmsCodeBrowserRetriever() {
+            return mSmsCodeBrowserClient.startSmsCodeRetriever();
         }
 
         public Task<Void> startSmsUserConsent(String senderAddress) {

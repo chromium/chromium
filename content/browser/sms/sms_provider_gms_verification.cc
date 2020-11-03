@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -34,8 +35,16 @@ SmsProviderGmsVerification::~SmsProviderGmsVerification() {
 }
 
 void SmsProviderGmsVerification::Retrieve(RenderFrameHost* render_frame_host) {
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host);
+  base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
+
+  if (web_contents && web_contents->GetTopLevelNativeWindow()) {
+    j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
+  }
+
   JNIEnv* env = AttachCurrentThread();
-  Java_SmsVerificationReceiver_listen(env, j_sms_receiver_);
+  Java_SmsVerificationReceiver_listen(env, j_sms_receiver_, j_window);
 }
 
 void SmsProviderGmsVerification::OnReceive(JNIEnv* env, jstring message) {
@@ -43,7 +52,13 @@ void SmsProviderGmsVerification::OnReceive(JNIEnv* env, jstring message) {
   NotifyReceive(sms);
 }
 
-void SmsProviderGmsVerification::OnTimeout(JNIEnv* env) {}
+void SmsProviderGmsVerification::OnTimeout(JNIEnv* env) {
+  NotifyFailure(SmsFetcher::FailureType::kPromptTimeout);
+}
+
+void SmsProviderGmsVerification::OnCancel(JNIEnv* env) {
+  NotifyFailure(SmsFetcher::FailureType::kPromptCancelled);
+}
 
 base::android::ScopedJavaGlobalRef<jobject>
 SmsProviderGmsVerification::GetWebOTPServiceForTesting() const {

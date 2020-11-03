@@ -91,7 +91,7 @@ class SmsUserConsentFakes {
         // SmsRetrieverClient overrides:
 
         @Override
-        public Task<Void> startSmsRetriever() {
+        public Task<Void> startSmsUserConsent(String senderAddress) {
             return Tasks.forResult(null);
         }
     }

@@ -4,11 +4,14 @@
 
 package org.chromium.content.browser.sms;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
+import com.google.android.gms.auth.api.phone.SmsRetrieverStatusCodes;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
@@ -18,6 +21,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.ui.base.WindowAndroid;
 
 @JNINamespace("content")
 @JNIAdditionalImport(Wrappers.class)
@@ -39,49 +43,110 @@ class SmsVerificationFakes {
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private Task<Void> triggerSmsVerificationSms(String sms) {
-            Wrappers.WebOTPServiceContext context = super.getContext();
-            if (context == null) {
-                Log.v(TAG,
-                        "FakeSmsRetrieverClient.triggerSmsVerificationSms failed: "
-                                + "no context was set");
-                return Tasks.forResult(null);
-            }
-
-            Intent intent = new Intent(SmsRetriever.SMS_RETRIEVED_ACTION);
+        private void triggerSmsVerificationSms(String sms) {
+            Intent intent = new Intent(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
             Bundle bundle = new Bundle();
-            bundle.putParcelable(SmsRetriever.EXTRA_STATUS, new Status(CommonStatusCodes.SUCCESS));
-            bundle.putString(SmsRetriever.EXTRA_SMS_MESSAGE, sms);
+            bundle.putParcelable(
+                    SmsCodeRetriever.EXTRA_STATUS, new Status(CommonStatusCodes.SUCCESS));
+            bundle.putString(SmsCodeRetriever.EXTRA_SMS_CODE_LINE, sms);
             intent.putExtras(bundle);
 
-            BroadcastReceiver receiver = context.getRegisteredReceiver();
-            receiver.onReceive(context, intent);
-            return Tasks.forResult(null);
+            deliverIntent(intent);
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private Task<Void> triggerTimeout() {
+        private void triggerTimeout() {
+            Intent intent = new Intent(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(
+                    SmsCodeRetriever.EXTRA_STATUS, new Status(CommonStatusCodes.TIMEOUT));
+            intent.putExtras(bundle);
+
+            deliverIntent(intent);
+        }
+
+        @CalledByNative("FakeSmsRetrieverClient")
+        private void triggerUserDeniesPermission(WindowAndroid window) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
-                Log.v(TAG, "FakeSmsRetrieverClient.triggerTimeout failed: no context was set");
-                return Tasks.forResult(null);
+                Log.v(TAG,
+                        "FakeSmsRetrieverClient.triggerUserDeniesPermission failed: "
+                                + "no context was set");
+                return;
             }
 
-            Intent intent = new Intent(SmsRetriever.SMS_RETRIEVED_ACTION);
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(SmsRetriever.EXTRA_STATUS, new Status(CommonStatusCodes.TIMEOUT));
-            intent.putExtras(bundle);
+            SmsVerificationReceiver receiver =
+                    (SmsVerificationReceiver) context.getRegisteredReceiver();
+            receiver.onPermissionDone(window, Activity.RESULT_CANCELED);
+        }
+
+        @CalledByNative("FakeSmsRetrieverClient")
+        private void triggerUserGrantsPermission(WindowAndroid window) {
+            Wrappers.WebOTPServiceContext context = super.getContext();
+            if (context == null) {
+                Log.v(TAG,
+                        "FakeSmsRetrieverClient.triggerUserGrantsPermission failed: "
+                                + "no context was set");
+                return;
+            }
+
+            SmsVerificationReceiver receiver =
+                    (SmsVerificationReceiver) context.getRegisteredReceiver();
+            receiver.onPermissionDone(window, Activity.RESULT_OK);
+        }
+
+        @CalledByNative("FakeSmsRetrieverClient")
+        private void triggerFailure(String type) {
+            Wrappers.WebOTPServiceContext context = super.getContext();
+            if (context == null) {
+                Log.v(TAG,
+                        "FakeSmsRetrieverClient.triggerFailure failed:"
+                                + "no context was set");
+                return;
+            }
+
+            SmsVerificationReceiver receiver =
+                    (SmsVerificationReceiver) context.getRegisteredReceiver();
+
+            int code;
+            if (type.equals("API_NOT_CONNECTED")) {
+                code = SmsRetrieverStatusCodes.API_NOT_CONNECTED;
+            } else if (type.equals("PLATFORM_NOT_SUPPORTED")) {
+                code = SmsRetrieverStatusCodes.PLATFORM_NOT_SUPPORTED;
+            } else if (type.equals("API_NOT_AVAILABLE")) {
+                code = SmsRetrieverStatusCodes.API_NOT_AVAILABLE;
+            } else if (type.equals("USER_PERMISSION_REQUIRED")) {
+                code = SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED;
+            } else {
+                Log.v(TAG,
+                        "FakeSmsRetrieverClient.triggerFailure failed:"
+                                + "invalid failure type " + type);
+                return;
+            }
+
+            ApiException e = new ApiException(new Status(code));
+
+            receiver.onRetrieverTaskFailure(null, e);
+        }
+
+        private void deliverIntent(Intent intent) {
+            Wrappers.WebOTPServiceContext context = super.getContext();
+            if (context == null) {
+                Log.v(TAG,
+                        "FakeSmsRetrieverClient.deliverIntent failed: "
+                                + "no context was set");
+                return;
+            }
 
             BroadcastReceiver receiver = context.getRegisteredReceiver();
             receiver.onReceive(context, intent);
-            return Tasks.forResult(null);
         }
 
         // ---------------------------------------------------------------------
         // SmsRetrieverClient overrides:
 
         @Override
-        public Task<Void> startSmsRetriever() {
+        public Task<Void> startSmsCodeBrowserRetriever() {
             return Tasks.forResult(null);
         }
     }
