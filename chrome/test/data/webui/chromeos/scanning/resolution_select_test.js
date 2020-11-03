@@ -1,0 +1,78 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://scanning/scan_preview.js';
+import 'chrome://scanning/scanning_app.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+export function resolutionSelectTest() {
+  /** @type {!ResolutionSelectElement} */
+  let resolutionSelect;
+
+  setup(() => {
+    resolutionSelect = document.createElement('resolution-select');
+    assertTrue(!!resolutionSelect);
+    document.body.appendChild(resolutionSelect);
+  });
+
+  teardown(() => {
+    resolutionSelect.remove();
+    resolutionSelect = null;
+  });
+
+  test('initializeResolutionSelect', () => {
+    // Before options are added, the dropdown should be disabled and empty.
+    const select = resolutionSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+    assertEquals(0, select.length);
+
+    const firstResolution = 75;
+    const secondResolution = 300;
+    resolutionSelect.resolutions = [firstResolution, secondResolution];
+    flush();
+
+    // Verify that adding more than one resolution results in the dropdown
+    // becoming enabled with the correct options.
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
+    assertEquals(
+        firstResolution.toString() + ' dpi',
+        select.options[0].textContent.trim());
+    assertEquals(
+        secondResolution.toString() + ' dpi',
+        select.options[1].textContent.trim());
+    assertEquals(firstResolution.toString(), select.value);
+
+    // Selecting a different option should update the selected value.
+    select.value = secondResolution;
+    select.dispatchEvent(new CustomEvent('change'));
+    flush();
+
+    assertEquals(
+        secondResolution.toString(), resolutionSelect.selectedResolution);
+  });
+
+  test('resolutionSelectDisabled', () => {
+    const select = resolutionSelect.$$('select');
+    assertTrue(!!select);
+
+    let resolutionArr = [75];
+    resolutionSelect.resolutions = resolutionArr;
+    flush();
+
+    // Verify the dropdown is disabled when there's only one option.
+    assertEquals(1, select.length);
+    assertTrue(select.disabled);
+
+    resolutionArr = resolutionArr.concat([150]);
+    resolutionSelect.resolutions = resolutionArr;
+    flush();
+
+    // Verify the dropdown is enabled when there's more than one option.
+    assertEquals(2, select.length);
+    assertFalse(select.disabled);
+  });
+}

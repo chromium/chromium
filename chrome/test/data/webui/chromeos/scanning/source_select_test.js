@@ -1,0 +1,98 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://scanning/scan_preview.js';
+import 'chrome://scanning/scanning_app.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
+
+import * as utils from './scanning_app_test_utils.js';
+
+const FileType = {
+  JPG: chromeos.scanning.mojom.FileType.kJpg,
+  PDF: chromeos.scanning.mojom.FileType.kPdf,
+  PNG: chromeos.scanning.mojom.FileType.kPng,
+};
+
+const PageSize = {
+  A4: chromeos.scanning.mojom.PageSize.kIsoA4,
+  Letter: chromeos.scanning.mojom.PageSize.kNaLetter,
+  Max: chromeos.scanning.mojom.PageSize.kMax,
+};
+
+const SourceType = {
+  FLATBED: chromeos.scanning.mojom.SourceType.kFlatbed,
+  ADF_SIMPLEX: chromeos.scanning.mojom.SourceType.kAdfSimplex,
+  ADF_DUPLEX: chromeos.scanning.mojom.SourceType.kAdfDuplex,
+};
+
+const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+
+export function sourceSelectTest() {
+  /** @type {!SourceSelectElement} */
+  let sourceSelect;
+
+  setup(() => {
+    sourceSelect = document.createElement('source-select');
+    assertTrue(!!sourceSelect);
+    document.body.appendChild(sourceSelect);
+  });
+
+  teardown(() => {
+    sourceSelect.remove();
+    sourceSelect = null;
+  });
+
+  test('initializeSourceSelect', () => {
+    // Before options are added, the dropdown should be disabled and empty.
+    const select = sourceSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+    assertEquals(0, select.length);
+
+    const firstSource =
+        utils.createScannerSource(SourceType.FLATBED, 'platen', pageSizes);
+    const secondSource = utils.createScannerSource(
+        SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes);
+    const sourceArr = [firstSource, secondSource];
+    sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify that adding more than one source results in the dropdown becoming
+    // enabled with the correct options.
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
+    assertEquals(
+        getSourceTypeString(firstSource.type),
+        select.options[0].textContent.trim());
+    assertEquals(
+        getSourceTypeString(secondSource.type),
+        select.options[1].textContent.trim());
+    assertEquals(firstSource.name, select.value);
+  });
+
+  test('sourceSelectDisabled', () => {
+    const select = sourceSelect.$$('select');
+    assertTrue(!!select);
+
+    let sourceArr =
+        [utils.createScannerSource(SourceType.FLATBED, 'flatbed', pageSizes)];
+    sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify the dropdown is disabled when there's only one option.
+    assertEquals(1, select.length);
+    assertTrue(select.disabled);
+
+    sourceArr = sourceArr.concat([utils.createScannerSource(
+        SourceType.ADF_DUPLEX, 'adf duplex', pageSizes)]);
+    sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify the dropdown is enabled when there's more than one option.
+    assertEquals(2, select.length);
+    assertFalse(select.disabled);
+  });
+}
