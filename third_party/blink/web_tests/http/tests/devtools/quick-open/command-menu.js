@@ -8,7 +8,7 @@
   self.runtime.loadModulePromise('quick_open').then(() => {
     var categories = new Set();
     var commands = new Map();
-    QuickOpen.commandMenu.commands().forEach(command => {
+    QuickOpen.CommandMenu.instance().commands().forEach(command => {
       categories.add(command.category());
       commands.set(command.category() + ': ' + command.title(), command);
     });

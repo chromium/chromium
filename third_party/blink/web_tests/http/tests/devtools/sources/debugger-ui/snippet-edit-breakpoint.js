@@ -7,7 +7,7 @@
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
-  const uiSourceCode1 = await Snippets.project.createFile('s1', null, '');
+  const uiSourceCode1 = await Snippets.ScriptSnippetFileSystem.findSnippetsProject().createFile('s1', null, '');
   uiSourceCode1.setContent('var x = 0;\n');
   TestRunner.addResult('Snippet content:');
   TestRunner.addResult((await uiSourceCode1.requestContent()).content);

@@ -24,9 +24,10 @@
   TestRunner.completeTest();
 
   async function setup() {
+    const snippetsProject = Snippets.ScriptSnippetFileSystem.findSnippetsProject();
     // Add snippets
-    await Snippets.project.createFile('s1', null, '');
-    await Snippets.project.createFile('s2', null, '');
+    await snippetsProject.createFile('s1', null, '');
+    await snippetsProject.createFile('s2', null, '');
   }
 
   async function testA11yForView(ruleSet) {

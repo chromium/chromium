@@ -6019,7 +6019,7 @@ crbug.com/1105279 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-for-different-
 # Temporarily disable tests to allow fixing of devtools path escaping
 crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Pass Timeout Failure ]
 crbug.com/1094436 http/tests/devtools/persistence/automapping-urlencoded-paths.js [ Pass Failure ]
-crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Skip ]
+crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Pass Timeout ]
 crbug.com/1094436 http/tests/devtools/sources/debugger/navigator-view.js [ Pass Failure Crash ]
 
 # This test fails due to the linked bug since input is now routed through the compositor.
@@ -6221,11 +6221,6 @@ crbug.com/1142877 external/wpt/mediacapture-fromelement/capture.html [ Pass Fail
 
 #Sheriff 2020-10-29
 crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ Pass Failure ]
-
-# DevTools roll
-crbug.com/1143170 http/tests/devtools/quick-open/command-menu.js [ Skip ]
-crbug.com/1143170 http/tests/devtools/a11y-axe-core/sources/source-navigator-snippets-a11y-test.js [ Skip ]
-crbug.com/1143170 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Skip ]
 
 # Eco-Infra Sheriff 2020-11-02
 crbug.com/1144677 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Pass Failure ]
