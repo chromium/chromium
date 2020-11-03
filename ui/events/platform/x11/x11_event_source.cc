@@ -70,7 +70,7 @@ void InitializeXkb(x11::Connection* connection) {
       }));
 
   constexpr auto kXkbAllMapPartMask = static_cast<x11::Xkb::MapPart>(0xff);
-  xkb.SelectEvents({
+  xkb.SelectEvents(x11::Xkb::SelectEventsRequest{
       .deviceSpec = static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
       .affectWhich = x11::Xkb::EventType::NewKeyboardNotify,
       .selectAll = x11::Xkb::EventType::NewKeyboardNotify,
