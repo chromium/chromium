@@ -62,6 +62,12 @@
     margin-bottom: var(--panel-container-margin-bottom);
     margin-top: var(--panel-container-margin-top);
   }
+
+  .scan-button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 289px;
+  }
 </style>
 <div id="scanningContainer">
   <div class="panel-container">
@@ -105,11 +111,12 @@
             selected-resolution="{{selectedResolution}}">
         </resolution-select>
       </iron-collapse>
-      <!-- TODO(jschettler): Replace button label with finalized i18n string. -->
-      <cr-button id="scanButton" on-click="onScanClick_"
-          disabled$="[[scanButtonDisabled_]]">
-        Scan
-      </cr-button>
+      <div class="scan-button-container">
+        <cr-button id="scanButton" class="action-button" on-click="onScanClick_"
+            disabled$="[[scanButtonDisabled_]]">
+          [[i18n('scanButtonText')]]
+        </cr-button>
+      </div>
       <p id="statusText">[[statusText_]]</p>
     </div>
   </div>
