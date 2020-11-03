@@ -9,16 +9,15 @@
 #include "ash/system/power/power_button_controller.h"
 #include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace ash {
+enum class PowerButtonMenuActionType;
 class PowerButtonMenuItemView;
 
 // PowerButtonMenuView displays the menu items of the power button menu. It
 // includes power off and sign out items currently.
 class ASH_EXPORT PowerButtonMenuView : public views::View,
-                                       public views::ButtonListener,
                                        public ui::ImplicitAnimationObserver {
  public:
   // The duration of showing or dismissing power button menu animation.
@@ -79,11 +78,11 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
+
+  void ButtonPressed(PowerButtonMenuActionType action,
+                     base::RepeatingClosure callback);
 
   // Items in the menu. Owned by views hierarchy.
   PowerButtonMenuItemView* power_off_item_ = nullptr;

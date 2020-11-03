@@ -144,10 +144,11 @@ PowerButtonMenuView::GetTransformDisplacement() const {
 void PowerButtonMenuView::RecreateItems() {
   // Helper to add or remove a menu item from |this|. Stores weak pointer to
   // |out_item_ptr|.
-  auto add_remove_item = [this](
-                             bool create, const gfx::VectorIcon& icon,
-                             const base::string16& string,
-                             PowerButtonMenuItemView** out_item_ptr) -> void {
+  auto add_remove_item =
+      [this](bool create, PowerButtonMenuActionType action,
+             base::RepeatingClosure callback, const gfx::VectorIcon& icon,
+             const base::string16& string,
+             PowerButtonMenuItemView** out_item_ptr) -> void {
     // If an item needs to be created and exists, or needs to be destroyed but
     // does not exist, there is nothing to be done.
     if (create && *out_item_ptr)
@@ -156,8 +157,11 @@ void PowerButtonMenuView::RecreateItems() {
       return;
 
     if (create) {
-      *out_item_ptr = AddChildView(
-          std::make_unique<PowerButtonMenuItemView>(this, icon, string));
+      *out_item_ptr = AddChildView(std::make_unique<PowerButtonMenuItemView>(
+          base::BindRepeating(&PowerButtonMenuView::ButtonPressed,
+                              base::Unretained(this), action,
+                              std::move(callback)),
+          icon, string));
     } else {
       std::unique_ptr<PowerButtonMenuItemView> to_delete =
           RemoveChildViewT(*out_item_ptr);
@@ -175,18 +179,46 @@ void PowerButtonMenuView::RecreateItems() {
                                login_status != LoginStatus::KIOSK_APP;
 
   add_remove_item(
-      true, kSystemPowerButtonMenuPowerOffIcon,
+      true, PowerButtonMenuActionType::kPowerOff,
+      base::BindRepeating(
+          &LockStateController::StartShutdownAnimation,
+          base::Unretained(Shell::Get()->lock_state_controller()),
+          ShutdownReason::POWER_BUTTON),
+      kSystemPowerButtonMenuPowerOffIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON),
       &power_off_item_);
-  add_remove_item(create_sign_out, kSystemPowerButtonMenuSignOutIcon,
-                  user::GetLocalizedSignOutStringForStatus(login_status, false),
-                  &sign_out_item_);
   add_remove_item(
-      create_lock_screen, kSystemPowerButtonMenuLockScreenIcon,
+      create_sign_out, PowerButtonMenuActionType::kSignOut,
+      base::BindRepeating(&SessionControllerImpl::RequestSignOut,
+                          base::Unretained(Shell::Get()->session_controller())),
+      kSystemPowerButtonMenuSignOutIcon,
+      user::GetLocalizedSignOutStringForStatus(login_status, false),
+      &sign_out_item_);
+  add_remove_item(
+      create_lock_screen, PowerButtonMenuActionType::kLockScreen,
+      base::BindRepeating(&SessionControllerImpl::LockScreen,
+                          base::Unretained(Shell::Get()->session_controller())),
+      kSystemPowerButtonMenuLockScreenIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_LOCK_SCREEN_BUTTON),
       &lock_screen_item_);
   add_remove_item(
-      create_feedback, kSystemPowerButtonMenuFeedbackIcon,
+      create_feedback, PowerButtonMenuActionType::kFeedback,
+      base::BindRepeating(
+          [](Shell* shell) {
+            if (shell->session_controller()->login_status() ==
+                LoginStatus::NOT_LOGGED_IN) {
+              // There is a special flow for feedback while in login screen,
+              // therefore we trigger the same handler associated with the
+              // feedback accelerator from the login screen to bring up the
+              // feedback dialog.
+              shell->login_screen_controller()->HandleAccelerator(
+                  LoginAcceleratorAction::kShowFeedback);
+            } else {
+              NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+            }
+          },
+          Shell::Get()),
+      kSystemPowerButtonMenuFeedbackIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_FEEDBACK_BUTTON),
       &feedback_item_);
 }
@@ -254,44 +286,19 @@ void PowerButtonMenuView::OnThemeChanged() {
           AshColorProvider::BaseLayerType::kTransparent80)));
 }
 
-void PowerButtonMenuView::ButtonPressed(views::Button* sender,
-                                        const ui::Event& event) {
-  DCHECK(sender);
-  Shell* shell = Shell::Get();
-  if (sender == power_off_item_) {
-    RecordMenuActionHistogram(PowerButtonMenuActionType::kPowerOff);
-    shell->lock_state_controller()->StartShutdownAnimation(
-        ShutdownReason::POWER_BUTTON);
-  } else if (sender == sign_out_item_) {
-    RecordMenuActionHistogram(PowerButtonMenuActionType::kSignOut);
-    shell->session_controller()->RequestSignOut();
-  } else if (sender == lock_screen_item_) {
-    RecordMenuActionHistogram(PowerButtonMenuActionType::kLockScreen);
-    shell->session_controller()->LockScreen();
-  } else if (sender == feedback_item_) {
-    RecordMenuActionHistogram(PowerButtonMenuActionType::kFeedback);
-    if (shell->session_controller()->login_status() ==
-        LoginStatus::NOT_LOGGED_IN) {
-      // There is a special flow for feedback while in login screen, therefore
-      // we trigger the same handler associated with the feedback accelerator
-      // from the login screen to bring up the feedback dialog.
-      shell->login_screen_controller()->HandleAccelerator(
-          LoginAcceleratorAction::kShowFeedback);
-    } else {
-      NewWindowDelegate::GetInstance()->OpenFeedbackPage();
-    }
-  } else {
-    NOTREACHED() << "Invalid sender";
-  }
-  shell->power_button_controller()->DismissMenu();
-}
-
 void PowerButtonMenuView::OnImplicitAnimationsCompleted() {
   if (layer()->opacity() == 0.f)
     SetVisible(false);
 
   if (layer()->opacity() == 1.0f)
     RequestFocus();
+}
+
+void PowerButtonMenuView::ButtonPressed(PowerButtonMenuActionType action,
+                                        base::RepeatingClosure callback) {
+  RecordMenuActionHistogram(action);
+  std::move(callback).Run();
+  Shell::Get()->power_button_controller()->DismissMenu();
 }
 
 }  // namespace ash

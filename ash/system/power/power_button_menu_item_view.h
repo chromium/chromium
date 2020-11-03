@@ -33,7 +33,7 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   // Thickness of the menu item's border in pixels.
   static constexpr int kItemBorderThickness = 2;
 
-  PowerButtonMenuItemView(views::ButtonListener* listener,
+  PowerButtonMenuItemView(PressedCallback callback,
                           const gfx::VectorIcon& icon,
                           const base::string16& title_text);
   PowerButtonMenuItemView(const PowerButtonMenuItemView&) = delete;
