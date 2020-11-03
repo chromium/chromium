@@ -4552,12 +4552,12 @@
   {
     "name": "turn-off-streaming-media-caching-always",
     "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "turn-off-streaming-media-caching-on-battery",
     "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 89
   },
   {
     "name": "ui-disable-partial-swap",
