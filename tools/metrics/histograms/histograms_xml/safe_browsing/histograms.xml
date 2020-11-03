@@ -80,6 +80,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
+    enum="BooleanCompleted" expires_after="2021-10-30">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs whether the Safe Browsing check is completed when the URL loader starts
+    to process a response. If not, the URL loader will be deferred until the
+    Safe Browsing check is completed. Logs each time the URL loader dispatches
+    WillProcessResponse() and the Safe Browsing check doesn't block the URL.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.BrowserThrottle.TotalDelay" units="ms"
+    expires_after="2021-10-30">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when the URL loader was deferred by Safe Browsing
+    check and when the check is completed. Logs each time the URL loader was
+    deferred by Safe Browsing check and the Safe Browsing check doesn't block
+    the URL.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"
     enum="BooleanMatched" expires_after="2021-08-05">
   <owner>vakh@chromium.org</owner>

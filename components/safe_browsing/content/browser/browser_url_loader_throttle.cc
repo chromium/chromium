@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -251,7 +252,12 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
     return;
   }
 
-  if (pending_checks_ == 0)
+  bool check_completed = (pending_checks_ == 0);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse",
+      check_completed);
+
+  if (check_completed)
     return;
 
   DCHECK(!deferred_);
@@ -289,6 +295,8 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
       TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+      base::UmaHistogramTimes("SafeBrowsing.BrowserThrottle.TotalDelay",
+                              total_delay_);
       delegate_->Resume();
     }
   } else {
