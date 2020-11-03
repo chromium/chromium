@@ -488,18 +488,15 @@ class MailtoExternalProtocolHandlerDelegate
 // This test is not run on ChromeOS because it registers a custom handler (see
 // ProtocolHandlerRegistry::InstallDefaultsForChromeOS), and handles mailto:
 // navigations before getting to external protocol code.
-// Flaky on Windows. See https://crbug.com/980446
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_LaunchExternalProtocolFromSubframe \
-  DISABLED_LaunchExternalProtocolFromSubframe
-#else
-#define MAYBE_LaunchExternalProtocolFromSubframe \
-  LaunchExternalProtocolFromSubframe
-#endif
+
 // This test verifies that external protocol requests succeed when made from an
 // OOPIF (https://crbug.com/668289).
+
+// Disabled due to flakiness. If enabled, still skip for ChromeOS based on
+// comment above.
+// See https://crbug.com/980446
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
-                       MAYBE_LaunchExternalProtocolFromSubframe) {
+                       DISABLED_LaunchExternalProtocolFromSubframe) {
   GURL start_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
 
   ui_test_utils::NavigateToURL(browser(), start_url);
