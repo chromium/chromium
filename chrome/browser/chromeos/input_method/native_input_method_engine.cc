@@ -92,10 +92,11 @@ ime::mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
 }
 
 ime::mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags) {
-  if (flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_ON) {
-    return ime::mojom::AutocorrectMode::kEnabled;
+  if ((flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF) ||
+      (flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)) {
+    return ime::mojom::AutocorrectMode::kDisabled;
   }
-  return ime::mojom::AutocorrectMode::kDisabled;
+  return ime::mojom::AutocorrectMode::kEnabled;
 }
 
 enum class ImeServiceEvent {
