@@ -324,6 +324,8 @@ class FlocIdProviderUnitTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
   content::BrowserTaskEnvironment task_environment_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -615,9 +617,6 @@ TEST_F(FlocIdProviderUnitTest, SwaaNacAccountEnabledUseCacheStatus) {
 }
 
 TEST_F(FlocIdProviderUnitTest, EventLogging) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFlocIdComputedEventLogging);
-
   // Event logging for browser start.
   floc_id_provider_->LogFlocComputedEvent(
       ComputeFlocTrigger::kBrowserStart,
@@ -831,153 +830,6 @@ TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
   EXPECT_EQ(FlocId::CreateFromHistory({"a.test", "b.test"}), floc_id());
 }
 
-// TODO(crbug.com/1143855): Flaky on Linux TSAN.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(THREAD_SANITIZER)
-#define MAYBE_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded \
-  DISABLED_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded
-#else
-#define MAYBE_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded \
-  SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded
-#endif
-TEST_F(
-    FlocIdProviderUnitTest,
-    MAYBE_SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kFlocIdSortingLshBasedComputation);
-
-  // Turn on sync & sync-history. The 1st floc computation should not be
-  // triggered as the sorting-lsh file hasn't been loaded yet.
-  test_sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_->FireStateChanged();
-
-  EXPECT_FALSE(first_floc_computation_triggered());
-
-  // Trigger the sorting-lsh ready event. The 1st floc computation should be
-  // triggered now as sync & sync-history are enabled the sorting-lsh is ready.
-  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
-                                                      base::Version());
-
-  EXPECT_TRUE(first_floc_computation_triggered());
-}
-
-// TODO(crbug.com/1143855): Flaky on Linux TSAN.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(THREAD_SANITIZER)
-#define MAYBE_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled \
-  DISABLED_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled
-#else
-#define MAYBE_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled \
-  SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled
-#endif
-TEST_F(
-    FlocIdProviderUnitTest,
-    MAYBE_SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kFlocIdSortingLshBasedComputation);
-
-  // Trigger the sorting-lsh ready event. The 1st floc computation should not be
-  // triggered as sync & sync-history are not enabled yet.
-  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
-                                                      base::Version());
-
-  EXPECT_FALSE(first_floc_computation_triggered());
-
-  // Turn on sync & sync-history. The 1st floc computation should be triggered
-  // now as sync & sync-history are enabled the sorting-lsh is loaded.
-  test_sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_->FireStateChanged();
-
-  EXPECT_TRUE(first_floc_computation_triggered());
-}
-
-TEST_F(FlocIdProviderUnitTest, SortingLshPostProcessing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kFlocIdComputedEventLogging,
-                                 features::kFlocIdSortingLshBasedComputation},
-                                {});
-
-  std::string domain = "foo.com";
-
-  history::HistoryAddPageArgs add_page_args;
-  add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(1);
-  add_page_args.publicly_routable = true;
-  history_service_->AddPage(add_page_args);
-
-  task_environment_.RunUntilIdle();
-
-  FlocId floc_from_history = FlocId::CreateFromHistory({domain});
-
-  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 12345.
-  sorting_lsh_service_->ConfigureSortingLsh(
-      {{floc_from_history.ToUint64(), FlocId(12345)}}, base::Version("3.4.5"));
-
-  // Trigger the sorting-lsh ready event, and turn on sync & sync-history to
-  // trigger the 1st floc computation.
-  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
-                                                      base::Version());
-
-  test_sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_->FireStateChanged();
-
-  EXPECT_TRUE(first_floc_computation_triggered());
-
-  task_environment_.RunUntilIdle();
-
-  // Expect a computation. The floc should be equal to 12345.
-  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(12345), floc_id());
-
-  // Configure the |sorting_lsh_service_| to block |floc_from_history|.
-  sorting_lsh_service_->ConfigureSortingLsh(
-      {{floc_from_history.ToUint64(), FlocId()}}, base::Version("3.4.5"));
-
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
-
-  // Expect one more computation, where the result contains a valid sim_hash and
-  // an invalid final_hash, as it was blocked. The internal floc is set to the
-  // invalid one.
-  EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(floc_id_provider_->last_log_event_result().sim_hash,
-            floc_from_history);
-  EXPECT_FALSE(floc_id_provider_->last_log_event_result().final_hash.IsValid());
-  EXPECT_FALSE(floc_id().IsValid());
-
-  // In the event when the sim_hash is valid and final_hash is invalid, we'll
-  // still log it.
-  EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
-  const sync_pb::UserEventSpecifics& specifics =
-      fake_user_event_service_->GetRecordedUserEvents()[1];
-  EXPECT_EQ(specifics.event_time_usec(),
-            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-
-  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
-            specifics.event_case());
-
-  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
-      specifics.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event.event_trigger());
-  EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
-
-  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 6789.
-  sorting_lsh_service_->ConfigureSortingLsh(
-      {{floc_from_history.ToUint64(), FlocId(6789)}}, base::Version("3.4.5"));
-
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
-
-  // Expect one more computation. The floc should be equal to 6789.
-  EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(6789), floc_id());
-}
-
 TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
   std::string domain = "foo.com";
 
@@ -1188,11 +1040,52 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateDuringInProgressComputation) {
   EXPECT_EQ(FlocId::CreateFromHistory({domain1}), floc_id());
 }
 
-TEST_F(FlocIdProviderUnitTest, ApplyAdditionalFiltering_SortingLsh) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kFlocIdSortingLshBasedComputation},
-                                {});
+class FlocIdProviderUnitTestSortingLshEnabled : public FlocIdProviderUnitTest {
+ public:
+  FlocIdProviderUnitTestSortingLshEnabled() {
+    feature_list_.InitAndEnableFeature(
+        features::kFlocIdSortingLshBasedComputation);
+  }
+};
 
+TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
+       SyncHistoryEnabledFollowedBySortingLshLoaded) {
+  // Turn on sync & sync-history. The 1st floc computation should not be
+  // triggered as the sorting-lsh file hasn't been loaded yet.
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->FireStateChanged();
+
+  EXPECT_FALSE(first_floc_computation_triggered());
+
+  // Trigger the sorting-lsh ready event. The 1st floc computation should be
+  // triggered now as sync & sync-history are enabled the sorting-lsh is ready.
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
+
+  EXPECT_TRUE(first_floc_computation_triggered());
+}
+
+TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
+       SortingLshLoadedFollowedBySyncHistoryEnabled) {
+  // Trigger the sorting-lsh ready event. The 1st floc computation should not be
+  // triggered as sync & sync-history are not enabled yet.
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
+
+  EXPECT_FALSE(first_floc_computation_triggered());
+
+  // Turn on sync & sync-history. The 1st floc computation should be triggered
+  // now as sync & sync-history are enabled the sorting-lsh is loaded.
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->FireStateChanged();
+
+  EXPECT_TRUE(first_floc_computation_triggered());
+}
+
+TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
+       ApplyAdditionalFiltering_SortingLsh) {
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
     EXPECT_FALSE(callback_called);
@@ -1213,11 +1106,8 @@ TEST_F(FlocIdProviderUnitTest, ApplyAdditionalFiltering_SortingLsh) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(FlocIdProviderUnitTest, ApplyAdditionalFiltering_SortingLshCorrupted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kFlocIdSortingLshBasedComputation},
-                                {});
-
+TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
+       ApplyAdditionalFiltering_SortingLshCorrupted) {
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
     EXPECT_FALSE(callback_called);
@@ -1234,6 +1124,86 @@ TEST_F(FlocIdProviderUnitTest, ApplyAdditionalFiltering_SortingLshCorrupted) {
   ApplyAdditionalFiltering(std::move(callback), sim_hash);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
+  std::string domain = "foo.com";
+
+  history::HistoryAddPageArgs add_page_args;
+  add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
+  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  add_page_args.publicly_routable = true;
+  history_service_->AddPage(add_page_args);
+
+  task_environment_.RunUntilIdle();
+
+  FlocId floc_from_history = FlocId::CreateFromHistory({domain});
+
+  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 12345.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{floc_from_history.ToUint64(), FlocId(12345)}}, base::Version("3.4.5"));
+
+  // Trigger the sorting-lsh ready event, and turn on sync & sync-history to
+  // trigger the 1st floc computation.
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
+
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->FireStateChanged();
+
+  EXPECT_TRUE(first_floc_computation_triggered());
+
+  task_environment_.RunUntilIdle();
+
+  // Expect a computation. The floc should be equal to 12345.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(FlocId(12345), floc_id());
+
+  // Configure the |sorting_lsh_service_| to block |floc_from_history|.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{floc_from_history.ToUint64(), FlocId()}}, base::Version("3.4.5"));
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+
+  // Expect one more computation, where the result contains a valid sim_hash and
+  // an invalid final_hash, as it was blocked. The internal floc is set to the
+  // invalid one.
+  EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(floc_id_provider_->last_log_event_result().sim_hash,
+            floc_from_history);
+  EXPECT_FALSE(floc_id_provider_->last_log_event_result().final_hash.IsValid());
+  EXPECT_FALSE(floc_id().IsValid());
+
+  // In the event when the sim_hash is valid and final_hash is invalid, we'll
+  // still log it.
+  EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics& specifics =
+      fake_user_event_service_->GetRecordedUserEvents()[1];
+  EXPECT_EQ(specifics.event_time_usec(),
+            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
+            specifics.event_case());
+
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      specifics.floc_id_computed_event();
+  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
+            event.event_trigger());
+  EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
+
+  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 6789.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{floc_from_history.ToUint64(), FlocId(6789)}}, base::Version("3.4.5"));
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+
+  // Expect one more computation. The floc should be equal to 6789.
+  EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(FlocId(6789), floc_id());
 }
 
 }  // namespace federated_learning
