@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest,
 // driven from native code.
 #if !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, OffTheRecord) {
-  auto otr_profile = Profile::Create(std::string());
+  auto otr_profile = Profile::Create(std::string(), true);
   ProfileImpl* otr_profile_impl = static_cast<ProfileImpl*>(otr_profile.get());
   EXPECT_TRUE(otr_profile_impl->GetBrowserContext()->IsOffTheRecord());
   auto otr_browser = Browser::Create(otr_profile.get(), nullptr);

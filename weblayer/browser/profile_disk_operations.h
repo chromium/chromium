@@ -13,12 +13,21 @@
 namespace weblayer {
 
 struct ProfileInfo {
-  // The profile name supplied by client code. Name can only contain
-  // alphanumeric and underscore to be valid. The empty name is valid and
-  // indicates the incognito profile.
+  ProfileInfo(bool is_incognito,
+              const std::string& name,
+              const base::FilePath& data_path,
+              const base::FilePath& cache_path);
+  ProfileInfo();
+  ProfileInfo(const ProfileInfo&);
+  ProfileInfo& operator=(const ProfileInfo&);
+  ~ProfileInfo();
+
+  bool is_incognito = false;
+  // The profile name supplied by client code. For non-incognito profiles name
+  // can only contain alphanumeric and underscore to be valid.
   std::string name;
-  // Path where persistent profile data is stored. This will be empty for the
-  // incognito profile with empty name.
+  // Path where persistent profile data is stored. This will be empty if
+  // icognito.
   base::FilePath data_path;
   // Path where cache profile data is stored. Depending on the OS, this may
   // be the same as |data_path|; the OS may delete data in this directory.
@@ -28,7 +37,7 @@ struct ProfileInfo {
 // |name| must be a valid profile name. Ensures that both data and cache path
 // directories are created. The paths returned may be different from the name
 // to avoid reusing directories that are marked as deleted.
-ProfileInfo CreateProfileInfo(const std::string& name);
+ProfileInfo CreateProfileInfo(const std::string& name, bool is_incognito);
 
 base::FilePath ComputeBrowserPersisterDataBaseDir(const ProfileInfo& info);
 void MarkProfileAsDeleted(const ProfileInfo& info);
@@ -45,7 +54,7 @@ void NukeProfilesMarkedForDeletion();
 // Functions exposed for testing.
 namespace internal {
 
-bool IsProfileNameValid(const std::string& name);
+bool IsValidNameForNonIncognitoProfile(const std::string& name);
 std::string CheckDirNameAndExtractName(const std::string& dir_name);
 bool IsProfileMarkedForDeletion(const std::string& dir_name);
 

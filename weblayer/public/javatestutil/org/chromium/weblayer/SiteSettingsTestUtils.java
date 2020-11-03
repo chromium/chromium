@@ -16,7 +16,8 @@ public final class SiteSettingsTestUtils {
     // This can be removed if/when we move this into SiteSettingsActivity. Currently no embedders
     // need to launch the single site settings UI directly.
     public static Intent createIntentForSingleWebsite(
-            Context context, String profileName, String url) {
-        return SiteSettingsIntentHelper.createIntentForSingleWebsite(context, profileName, url);
+            Context context, String profileName, boolean isIncognito, String url) {
+        return SiteSettingsIntentHelper.createIntentForSingleWebsite(
+                context, profileName, isIncognito, url);
     }
 }

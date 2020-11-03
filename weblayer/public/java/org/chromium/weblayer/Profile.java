@@ -24,8 +24,8 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +35,7 @@ import java.util.Set;
  */
 public class Profile {
     private static final Map<String, Profile> sProfiles = new HashMap<>();
+    private static final Map<String, Profile> sIncognitoProfiles = new HashMap<>();
 
     /* package */ static Profile of(IProfile impl) {
         ThreadCheck.ensureOnUiThread();
@@ -44,25 +45,43 @@ public class Profile {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        Profile profile = sProfiles.get(name);
+        boolean isIncognito;
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            isIncognito = "".equals(name);
+        } else {
+            try {
+                isIncognito = impl.isIncognito();
+            } catch (RemoteException e) {
+                throw new APICallException(e);
+            }
+        }
+        Profile profile;
+        if (isIncognito) {
+            profile = sIncognitoProfiles.get(name);
+        } else {
+            profile = sProfiles.get(name);
+        }
         if (profile != null) {
             return profile;
         }
 
-        return new Profile(name, impl);
+        return new Profile(name, impl, isIncognito);
     }
 
     /**
      * Return all profiles that have been created and not yet called destroyed.
-     * Note returned structure is immutable.
      */
     @NonNull
     public static Collection<Profile> getAllProfiles() {
         ThreadCheck.ensureOnUiThread();
-        return Collections.unmodifiableCollection(sProfiles.values());
+        Set<Profile> profiles = new HashSet<Profile>();
+        profiles.addAll(sProfiles.values());
+        profiles.addAll(sIncognitoProfiles.values());
+        return profiles;
     }
 
     private final String mName;
+    private final boolean mIsIncognito;
     private IProfile mImpl;
     private DownloadCallbackClientImpl mDownloadCallbackClient;
     private final CookieManager mCookieManager;
@@ -71,14 +90,16 @@ public class Profile {
     // Constructor for test mocking.
     protected Profile() {
         mName = null;
+        mIsIncognito = false;
         mImpl = null;
         mCookieManager = null;
         mPrerenderController = null;
     }
 
-    private Profile(String name, IProfile impl) {
+    private Profile(String name, IProfile impl, boolean isIncognito) {
         mName = name;
         mImpl = impl;
+        mIsIncognito = isIncognito;
         mCookieManager = CookieManager.create(impl);
         if (WebLayer.getSupportedMajorVersionInternal() >= 87) {
             mPrerenderController = PrerenderController.create(impl);
@@ -86,7 +107,35 @@ public class Profile {
             mPrerenderController = null;
         }
 
-        sProfiles.put(name, this);
+        if (isIncognito) {
+            sIncognitoProfiles.put(name, this);
+        } else {
+            sProfiles.put(name, this);
+        }
+    }
+
+    /**
+     * Returns the name of the profile. While added in 88, this can be used with any version.
+     *
+     * @return The name of the profile.
+     *
+     * @since 88
+     */
+    @NonNull
+    public String getName() {
+        return mName;
+    }
+
+    /**
+     * Returns true if the profile is incognito. While added in 88, this can be used with any
+     * version.
+     *
+     * @return True if the profile is incognito.
+     *
+     * @since 88
+     */
+    public boolean isIncognito() {
+        return mIsIncognito;
     }
 
     /**
@@ -138,8 +187,8 @@ public class Profile {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+        removeFromProfiles();
         mImpl = null;
-        sProfiles.remove(mName);
     }
 
     @Deprecated
@@ -150,8 +199,16 @@ public class Profile {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+        removeFromProfiles();
         mImpl = null;
-        sProfiles.remove(mName);
+    }
+
+    private void removeFromProfiles() {
+        if (mIsIncognito) {
+            sIncognitoProfiles.remove(mName);
+        } else {
+            sProfiles.remove(mName);
+        }
     }
 
     /**

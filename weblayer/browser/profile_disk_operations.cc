@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "components/base32/base32.h"
 #include "weblayer/common/weblayer_paths.h"
 
 namespace weblayer {
@@ -65,11 +66,25 @@ base::FilePath GetCachePathFromDirName(const std::string& dir_name) {
 
 }  // namespace
 
-ProfileInfo CreateProfileInfo(const std::string& name) {
-  CHECK(internal::IsProfileNameValid(name));
-  if (name.empty())
-    return {name, base::FilePath(), base::FilePath()};
+ProfileInfo::ProfileInfo(bool is_incognito,
+                         const std::string& name,
+                         const base::FilePath& data_path,
+                         const base::FilePath& cache_path)
+    : is_incognito(is_incognito),
+      name(name),
+      data_path(data_path),
+      cache_path(cache_path) {}
 
+ProfileInfo::ProfileInfo() = default;
+ProfileInfo::ProfileInfo(const ProfileInfo&) = default;
+ProfileInfo& ProfileInfo::operator=(const ProfileInfo&) = default;
+ProfileInfo::~ProfileInfo() = default;
+
+ProfileInfo CreateProfileInfo(const std::string& name, bool is_incognito) {
+  if (is_incognito)
+    return {is_incognito, name, base::FilePath(), base::FilePath()};
+
+  CHECK(internal::IsValidNameForNonIncognitoProfile(name));
   std::string dir_name = name;
   int suffix = 0;
   while (internal::IsProfileMarkedForDeletion(dir_name)) {
@@ -85,14 +100,23 @@ ProfileInfo CreateProfileInfo(const std::string& name) {
   cache_path = GetCachePathFromDirName(dir_name);
   base::CreateDirectory(cache_path);
 #endif
-  return {name, data_path, cache_path};
+  return {is_incognito, name, data_path, cache_path};
 }
 
 base::FilePath ComputeBrowserPersisterDataBaseDir(const ProfileInfo& info) {
   base::FilePath base_path;
-  if (info.data_path.empty()) {
+  if (info.is_incognito) {
     CHECK(base::PathService::Get(DIR_USER_DATA, &base_path));
-    base_path = base_path.AppendASCII("Incognito Restore Data");
+    if (info.name.empty()) {
+      // Originally the Android side of WebLayer only supported a single
+      // incognitoofile with an empty name.
+      std::string file_name = "Incognito Restore Data";
+      base_path = base_path.AppendASCII(file_name);
+    } else {
+      std::string file_name = "Named Profile Incognito Restore Data";
+      base_path = base_path.AppendASCII(file_name).AppendASCII(
+          base32::Base32Encode(info.name));
+    }
   } else {
     base_path = info.data_path.AppendASCII("Restore Data");
   }
@@ -100,7 +124,7 @@ base::FilePath ComputeBrowserPersisterDataBaseDir(const ProfileInfo& info) {
 }
 
 void MarkProfileAsDeleted(const ProfileInfo& info) {
-  if (info.name.empty())
+  if (info.is_incognito)
     return;
 
   base::FilePath data_root_path = GetProfileRootDataDir();
@@ -115,7 +139,7 @@ void MarkProfileAsDeleted(const ProfileInfo& info) {
 }
 
 void TryNukeProfileFromDisk(const ProfileInfo& info) {
-  if (info.name.empty()) {
+  if (info.is_incognito) {
     // Incognito. Just delete session data.
     base::DeletePathRecursively(ComputeBrowserPersisterDataBaseDir(info));
     return;
@@ -169,13 +193,12 @@ void NukeProfilesMarkedForDeletion() {
 
 namespace internal {
 
-// Note empty name is valid for the incognito profile.
-bool IsProfileNameValid(const std::string& name) {
+bool IsValidNameForNonIncognitoProfile(const std::string& name) {
   for (char c : name) {
     if (!IsValidProfileNameChar(c))
       return false;
   }
-  return true;
+  return !name.empty();
 }
 
 // If |dir_name| is valid, then return the |name|. Otherwise return the empty
@@ -187,7 +210,7 @@ std::string CheckDirNameAndExtractName(const std::string& dir_name) {
   if (parts.size() == 0 || parts.size() > 2)
     return std::string();
 
-  if (!IsProfileNameValid(parts[0]))
+  if (!IsValidNameForNonIncognitoProfile(parts[0]))
     return std::string();
 
   if (parts.size() > 1) {

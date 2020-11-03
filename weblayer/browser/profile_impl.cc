@@ -175,11 +175,11 @@ base::FilePath ProfileImpl::GetCachePath(content::BrowserContext* context) {
   return profile->info_.cache_path;
 }
 
-ProfileImpl::ProfileImpl(const std::string& name)
+ProfileImpl::ProfileImpl(const std::string& name, bool is_incognito)
     : download_directory_(BrowserContextImpl::GetDefaultDownloadDirectory()) {
   {
     base::ScopedAllowBlocking allow_blocking;
-    info_ = CreateProfileInfo(name);
+    info_ = CreateProfileInfo(name, is_incognito);
   }
 
   GetProfiles().insert(this);
@@ -388,8 +388,9 @@ void ProfileImpl::OnLocaleChanged() {
 }
 
 // static
-std::unique_ptr<Profile> Profile::Create(const std::string& name) {
-  return std::make_unique<ProfileImpl>(name);
+std::unique_ptr<Profile> Profile::Create(const std::string& name,
+                                         bool is_incognito) {
+  return std::make_unique<ProfileImpl>(name, is_incognito);
 }
 
 // static
@@ -437,16 +438,19 @@ void ProfileImpl::OnProfileMarked(std::unique_ptr<ProfileImpl> profile,
 ProfileImpl::ProfileImpl(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name,
-    const base::android::JavaParamRef<jobject>& java_profile)
-    : ProfileImpl(ConvertJavaStringToUTF8(env, name)) {
+    const base::android::JavaParamRef<jobject>& java_profile,
+    bool is_incognito)
+    : ProfileImpl(ConvertJavaStringToUTF8(env, name), is_incognito) {
   java_profile_ = java_profile;
 }
 
 static jlong JNI_ProfileImpl_CreateProfile(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name,
-    const base::android::JavaParamRef<jobject>& java_profile) {
-  return reinterpret_cast<jlong>(new ProfileImpl(env, name, java_profile));
+    const base::android::JavaParamRef<jobject>& java_profile,
+    jboolean is_incognito) {
+  return reinterpret_cast<jlong>(
+      new ProfileImpl(env, name, java_profile, is_incognito));
 }
 
 static void JNI_ProfileImpl_DeleteProfile(JNIEnv* env, jlong profile) {

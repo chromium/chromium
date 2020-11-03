@@ -46,10 +46,9 @@ enum class SettingType {
 
 class Profile {
  public:
-  // Pass an empty |name| for an in-memory profile.
-  // Otherwise, |name| should contain only alphanumeric characters and
-  // underscore.
-  static std::unique_ptr<Profile> Create(const std::string& name);
+  // Creates a new profile.
+  static std::unique_ptr<Profile> Create(const std::string& name,
+                                         bool is_incognito);
 
   // Delete all profile's data from disk. If there are any existing usage
   // of this profile, return |profile| immediately and |done_callback| will not

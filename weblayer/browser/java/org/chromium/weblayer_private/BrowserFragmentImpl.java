@@ -50,8 +50,15 @@ public class BrowserFragmentImpl extends RemoteFragmentImpl {
             ProfileManager profileManager, IRemoteFragmentClient client, Bundle fragmentArgs) {
         super(client);
         mPersistenceId = fragmentArgs.getString(BrowserFragmentArgs.PERSISTENCE_ID);
-        mProfile =
-                profileManager.getProfile(fragmentArgs.getString(BrowserFragmentArgs.PROFILE_NAME));
+        String name = fragmentArgs.getString(BrowserFragmentArgs.PROFILE_NAME);
+
+        boolean isIncognito;
+        if (fragmentArgs.containsKey(BrowserFragmentArgs.IS_INCOGNITO)) {
+            isIncognito = fragmentArgs.getBoolean(BrowserFragmentArgs.IS_INCOGNITO, false);
+        } else {
+            isIncognito = "".equals(name);
+        }
+        mProfile = profileManager.getProfile(name, isIncognito);
     }
 
     @Override

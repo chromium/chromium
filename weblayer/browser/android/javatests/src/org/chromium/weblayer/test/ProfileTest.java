@@ -124,12 +124,11 @@ public class ProfileTest {
     @SmallTest
     public void testEnumerateAllProfileNames() throws Exception {
         final String profileName = "TestEnumerateAllProfileNames";
-        final WebLayer weblayer = mActivityTestRule.getWebLayer();
         final InstrumentationActivity activity = mActivityTestRule.launchWithProfile(profileName);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> activity.getBrowser().getProfile());
 
-        Assert.assertTrue(Arrays.asList(enumerateAllProfileNames(weblayer)).contains(profileName));
+        Assert.assertTrue(Arrays.asList(enumerateAllProfileNames()).contains(profileName));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> activity.finish());
         CriteriaHelper.pollUiThread(activity::isDestroyed);
@@ -138,7 +137,7 @@ public class ProfileTest {
                 () -> profile.destroyAndDeleteDataFromDisk(callbackHelper::notifyCalled));
         callbackHelper.waitForFirst();
 
-        Assert.assertFalse(Arrays.asList(enumerateAllProfileNames(weblayer)).contains(profileName));
+        Assert.assertFalse(Arrays.asList(enumerateAllProfileNames()).contains(profileName));
     }
 
     private Profile launchAndDestroyActivity(
@@ -218,7 +217,7 @@ public class ProfileTest {
         }
     }
 
-    private static String[] enumerateAllProfileNames(final WebLayer weblayer) throws Exception {
+    private String[] enumerateAllProfileNames() throws Exception {
         final String[][] holder = new String[1][];
         final CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -229,7 +228,7 @@ public class ProfileTest {
                     callbackHelper.notifyCalled();
                 }
             };
-            weblayer.enumerateAllProfileNames(callback);
+            mActivityTestRule.getWebLayer().enumerateAllProfileNames(callback);
         });
         callbackHelper.waitForFirst();
         return holder[0];
@@ -237,5 +236,48 @@ public class ProfileTest {
 
     private static Collection<Profile> getAllProfiles() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> Profile.getAllProfiles());
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void testMultipleIncognitoProfiles() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebLayer weblayer = mActivityTestRule.getWebLayer();
+            Profile profile = activity.getBrowser().getProfile();
+            Assert.assertFalse(profile.isIncognito());
+            final String incognitoProfileName1 = "incognito1";
+            Profile incognitoProfile1 = weblayer.getIncognitoProfile(incognitoProfileName1);
+            Assert.assertTrue(incognitoProfile1.isIncognito());
+            Assert.assertEquals(incognitoProfileName1, incognitoProfile1.getName());
+
+            final String incognitoProfileName2 = "incognito2";
+            Profile incognitoProfile2 = weblayer.getIncognitoProfile(incognitoProfileName2);
+            Assert.assertTrue(incognitoProfile2.isIncognito());
+            Assert.assertEquals(incognitoProfileName2, incognitoProfile2.getName());
+            Assert.assertNotEquals(incognitoProfile1, incognitoProfile2);
+
+            // Calling getIncognitoProfile() should return the same Profile.
+            Assert.assertEquals(
+                    incognitoProfile1, weblayer.getIncognitoProfile(incognitoProfileName1));
+            Assert.assertEquals(
+                    incognitoProfile2, weblayer.getIncognitoProfile(incognitoProfileName2));
+
+            // getAllProfiles() should return the incognito profiles.
+            Collection<Profile> allProfiles = Profile.getAllProfiles();
+            Assert.assertEquals(3, allProfiles.size());
+            Assert.assertTrue(allProfiles.contains(profile));
+            Assert.assertTrue(allProfiles.contains(incognitoProfile1));
+            Assert.assertTrue(allProfiles.contains(incognitoProfile2));
+        });
+
+        // Incognito profiles should not be returned from enumerateAllProfileNames().
+        String[] profileNames = enumerateAllProfileNames();
+        Assert.assertEquals(1, profileNames.length);
+        Assert.assertEquals(profileNames[0],
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> activity.getBrowser().getProfile().getName()));
     }
 }

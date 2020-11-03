@@ -108,4 +108,5 @@ interface IWebLayer {
   // Added in Version 88.
   void onRemoteMediaServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 22;
   void onRemoteMediaServiceDestroyed(int id) = 23;
+  IProfile getIncognitoProfile(in String profileName) = 24;
 }

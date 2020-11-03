@@ -46,4 +46,7 @@ interface IProfile {
   // Added in Version 87.
   void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) = 13;
   IPrerenderController getPrerenderController() = 15;
+
+  // Added in Version 88.
+  boolean isIncognito() = 16;
 }
