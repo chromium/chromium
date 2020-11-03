@@ -108,6 +108,8 @@ constexpr int kFrameworkPiVersion = 28;
 
 constexpr size_t kMaxSimultaneousIconRequests = 250;
 
+constexpr int kDefaultIconUpdateCount = 1;
+
 class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
  public:
   FakeAppIconLoaderDelegate() = default;
@@ -301,13 +303,15 @@ void WaitForIconCreation(ArcAppListPrefs* prefs,
   } while (!base::PathExists(icon_path));
 }
 
-void WaitForIconUpdates(Profile* profile, const std::string& app_id) {
+void WaitForIconUpdates(Profile* profile,
+                        const std::string& app_id,
+                        int expected_update_count = kDefaultIconUpdateCount) {
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
       profile, ash::AppListConfig::instance().grid_icon_dimension(), &delegate);
 
   icon_loader.FetchImage(app_id);
-  delegate.WaitForIconUpdates(1);
+  delegate.WaitForIconUpdates(expected_update_count);
 }
 
 void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
@@ -907,7 +911,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
   // Ensures that icons for the test app were updated for each scale factor.
-  void EnsureIconsUpdated() {
+  void EnsureIconsUpdated(int expected_update_count = kDefaultIconUpdateCount) {
     const arc::mojom::AppInfo app = test_app();
     const std::string app_id = ArcAppTest::GetAppId(app);
 
@@ -921,7 +925,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     ASSERT_EQ(GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_200P),
               icon_requests[1]->dimension());
 
-    WaitForIconUpdates(profile_.get(), app_id);
+    WaitForIconUpdates(profile_.get(), app_id, expected_update_count);
   }
 
   // ArcAppListPrefs::Observer overrides.
@@ -2858,7 +2862,10 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnFrameworkUpdate) {
       CreatePackageWithVersion(kFrameworkPackageName, kFrameworkNycVersion));
   app_instance()->SendRefreshPackageList(std::move(packages));
 
-  WaitForIconUpdates(profile_.get(), app_id);
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  WaitForIconUpdates(profile_.get(), app_id,
+                     scale_factors.size() + kDefaultIconUpdateCount);
 
   RestartArc();
 
@@ -2884,7 +2891,7 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnFrameworkUpdate) {
   app_instance()->SendRefreshPackageList(std::move(packages));
 
   EXPECT_FALSE(app_instance()->icon_requests().empty());
-  EnsureIconsUpdated();
+  EnsureIconsUpdated(scale_factors.size() + kDefaultIconUpdateCount);
 }
 
 // This verifies that app icons are invalidated in case icon version was
