@@ -107,8 +107,6 @@
     'remove_from': [
       # https://crbug.com/1035178
       'Win10 FYI x64 Release (AMD RX 550)',
-      # https://crbug.com/1035461
-      'Linux FYI GPU TSAN Release',
       # https://crbug.com/1094629
       'Linux FYI Release (AMD R7 240)',
     ],
