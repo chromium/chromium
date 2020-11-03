@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_network_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -292,9 +293,12 @@ class TlsProberWithRealNetworkContextTest : public ::testing::Test {
   void SetUp() override {
     service_ = network::NetworkService::CreateForTesting();
     service_->Bind(network_service_.BindNewPipeAndPassReceiver());
+    auto context_params = network::mojom::NetworkContextParams::New();
+    context_params->cert_verifier_params = content::GetCertVerifierParams(
+        network::mojom::CertVerifierCreationParams::New());
     network_service_->CreateNetworkContext(
         network_context_.BindNewPipeAndPassReceiver(),
-        network::mojom::NetworkContextParams::New());
+        std::move(context_params));
     test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::SSLServerConfig ssl_config;

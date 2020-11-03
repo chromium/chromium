@@ -64,9 +64,12 @@ CreateNetworkContextForDefaultStoragePartition(
     network::NetworkService* network_service,
     content::BrowserContext* browser_context) {
   mojo::PendingRemote<network::mojom::NetworkContext> network_context_remote;
+  auto params = network::mojom::NetworkContextParams::New();
+  params->cert_verifier_params = content::GetCertVerifierParams(
+      network::mojom::CertVerifierCreationParams::New());
   auto network_context = std::make_unique<network::NetworkContext>(
       network_service, network_context_remote.InitWithNewPipeAndPassReceiver(),
-      network::mojom::NetworkContextParams::New());
+      std::move(params));
   content::BrowserContext::GetDefaultStoragePartition(browser_context)
       ->SetNetworkContextForTesting(std::move(network_context_remote));
   return network_context;

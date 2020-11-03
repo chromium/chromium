@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -14,6 +13,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +23,7 @@ class CommandLinePrefStoreSSLManagerTest : public testing::Test {
   CommandLinePrefStoreSSLManagerTest() {}
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Test that command-line settings for SSL versions are respected and that they
