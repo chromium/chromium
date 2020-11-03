@@ -21,7 +21,7 @@ class MediaLog;
 //
 // The caller must guarantee that the returned DecryptingRenderer will never
 // be initialized with a |media_resource| of type MediaResource::Type::URL.
-class MEDIA_EXPORT DecryptingRendererFactory : public RendererFactory {
+class MEDIA_EXPORT DecryptingRendererFactory final : public RendererFactory {
  public:
   DecryptingRendererFactory(
       MediaLog* media_log,

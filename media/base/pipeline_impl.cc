@@ -51,8 +51,8 @@ gfx::Size GetRotatedVideoSize(VideoRotation rotation, gfx::Size natural_size) {
 // |default_renderer| in Start() and Resume() helps avoid a round trip to the
 // render main task runner for Renderer creation in most cases which could add
 // latency to start-to-play time.
-class PipelineImpl::RendererWrapper : public DemuxerHost,
-                                      public RendererClient {
+class PipelineImpl::RendererWrapper final : public DemuxerHost,
+                                            public RendererClient {
  public:
   RendererWrapper(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
                   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,

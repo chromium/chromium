@@ -18,7 +18,7 @@ namespace media {
 // operations and modes of the camera.  For the detailed state transitions for
 // auto-exposure, auto-focus, and auto-white-balancing, see
 // https://source.android.com/devices/camera/camera3_3Amodes
-class CAPTURE_EXPORT Camera3AController
+class CAPTURE_EXPORT Camera3AController final
     : public CaptureMetadataDispatcher::ResultMetadataObserver {
  public:
   Camera3AController(const cros::mojom::CameraMetadataPtr& static_metadata,

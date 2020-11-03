@@ -35,7 +35,7 @@ using CreateVideoDecodersCB =
     base::RepeatingCallback<std::vector<std::unique_ptr<VideoDecoder>>()>;
 
 // The default factory class for creating RendererImpl.
-class MEDIA_EXPORT DefaultRendererFactory : public RendererFactory {
+class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
  public:
   using GetGpuFactoriesCB =
       base::RepeatingCallback<GpuVideoAcceleratorFactories*()>;

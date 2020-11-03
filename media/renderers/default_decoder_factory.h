@@ -13,7 +13,7 @@
 
 namespace media {
 
-class MEDIA_EXPORT DefaultDecoderFactory : public DecoderFactory {
+class MEDIA_EXPORT DefaultDecoderFactory final : public DecoderFactory {
  public:
   // |external_decoder_factory| is optional decoder factory that provides
   // additional decoders.

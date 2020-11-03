@@ -14,7 +14,7 @@ namespace media {
 
 // Basic data source that treats the URL as a file path, and uses the file
 // system to read data for a media pipeline.
-class MEDIA_EXPORT MemoryDataSource : public DataSource {
+class MEDIA_EXPORT MemoryDataSource final : public DataSource {
  public:
   // Construct MemoryDataSource with |data| and |size|. The data is guaranteed
   // to be valid during the lifetime of MemoryDataSource.

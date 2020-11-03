@@ -41,7 +41,7 @@ class TimeSource;
 class VideoRenderer;
 class WallClockTimeSource;
 
-class MEDIA_EXPORT RendererImpl : public Renderer {
+class MEDIA_EXPORT RendererImpl final : public Renderer {
  public:
   // Renders audio/video streams using |audio_renderer| and |video_renderer|
   // provided. All methods except for GetMediaTime() run on the |task_runner|.

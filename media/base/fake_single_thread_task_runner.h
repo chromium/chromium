@@ -14,7 +14,7 @@
 
 namespace media {
 
-class FakeSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
+class FakeSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
  public:
   explicit FakeSingleThreadTaskRunner(base::SimpleTestTickClock* clock);
 

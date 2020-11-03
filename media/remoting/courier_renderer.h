@@ -39,7 +39,7 @@ class RendererController;
 // A media::Renderer implementation that proxies all operations to a remote
 // renderer via RPCs. The CourierRenderer is instantiated by
 // AdaptiveRendererFactory when media remoting is meant to take place.
-class CourierRenderer : public Renderer {
+class CourierRenderer final : public Renderer {
  public:
   // The whole class except for constructor and GetMediaTime() runs on
   // |media_task_runner|. The constructor and GetMediaTime() run on render main
