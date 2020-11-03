@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
+#include <vector>
+
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/bind.h"
 #include "base/stl_util.h"
@@ -176,16 +178,18 @@ DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
     return set;
   DlpRulesManager* dlp_rules_manager = DlpRulesManager::Get();
 
-  static const base::NoDestructor<
-      base::flat_map<DlpRulesManager::Restriction, DlpContentRestriction>>
-      kRestrictionsMap({{DlpRulesManager::Restriction::kScreenshot,
-                         DlpContentRestriction::kScreenshot},
-                        {DlpRulesManager::Restriction::kPrivacyScreen,
-                         DlpContentRestriction::kPrivacyScreen},
-                        {DlpRulesManager::Restriction::kPrinting,
-                         DlpContentRestriction::kPrint}});
+  static const base::NoDestructor<std::vector<
+      std::pair<DlpRulesManager::Restriction, DlpContentRestriction>>>
+      kRestrictionsList({{DlpRulesManager::Restriction::kScreenshot,
+                          DlpContentRestriction::kScreenshot},
+                         {DlpRulesManager::Restriction::kScreenshot,
+                          DlpContentRestriction::kVideoCapture},
+                         {DlpRulesManager::Restriction::kPrivacyScreen,
+                          DlpContentRestriction::kPrivacyScreen},
+                         {DlpRulesManager::Restriction::kPrinting,
+                          DlpContentRestriction::kPrint}});
 
-  for (const auto& restriction : *kRestrictionsMap) {
+  for (const auto& restriction : *kRestrictionsList) {
     if (dlp_rules_manager->IsRestricted(url, restriction.first) ==
         DlpRulesManager::Level::kBlock) {
       set.SetRestriction(restriction.second);

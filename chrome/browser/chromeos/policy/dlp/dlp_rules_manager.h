@@ -46,6 +46,7 @@ class DlpRulesManager {
                          // drag-n-drop.
     kScreenshot = 2,     // Restricts taking screenshots of confidential screen
                          // content.
+                         // TODO(crbug/1145100): Update to include video capture
     kPrinting = 3,       // Restricts printing confidential screen content.
     kPrivacyScreen = 4,  // Enforces the Eprivacy screen when there's
                          // confidential content on the screen.
