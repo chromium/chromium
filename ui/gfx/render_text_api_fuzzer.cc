@@ -17,6 +17,10 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/render_text.h"
 
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+#include "base/test/test_discardable_memory_allocator.h"
+#endif
+
 namespace {
 
 #if defined(OS_WIN)
@@ -33,10 +37,18 @@ struct Environment {
                           TestTimeouts::Initialize(),
                           base::test::TaskEnvironment::MainThreadType::UI)) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
-
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+    // Some platforms require discardable memory to use bitmap fonts.
+    base::DiscardableMemoryAllocator::SetInstance(
+        &discardable_memory_allocator);
+#endif
     CHECK(base::i18n::InitializeICU());
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
+
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator;
+#endif
 
   base::AtExitManager at_exit_manager;
   base::test::TaskEnvironment task_environment;
