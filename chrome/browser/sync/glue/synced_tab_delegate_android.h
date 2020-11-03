@@ -33,6 +33,7 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
+  bool ShouldSync(sync_sessions::SyncSessionsClient* sessions_client) override;
 
   // Set the web contents for this tab and handles source tab ID initialization.
   void SetWebContents(content::WebContents* web_contents, int source_tab_id);
