@@ -45,12 +45,6 @@ class NativeFileSystemRestrictedDirectoryDialogView
       base::OnceCallback<void(SensitiveDirectoryResult)> callback,
       content::WebContents* web_contents);
 
-  // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-
  private:
   NativeFileSystemRestrictedDirectoryDialogView(
       const url::Origin& origin,

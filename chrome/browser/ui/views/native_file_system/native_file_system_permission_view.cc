@@ -78,6 +78,11 @@ NativeFileSystemPermissionView::NativeFileSystemPermissionView(
   SetCloseCallback(base::BindOnce(run_callback, base::Unretained(this),
                                   permissions::PermissionAction::DISMISSED));
 
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   const views::LayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -132,21 +137,6 @@ base::string16 NativeFileSystemPermissionView::GetWindowTitle() const {
       }
   }
   NOTREACHED();
-}
-
-bool NativeFileSystemPermissionView::ShouldShowCloseButton() const {
-  return false;
-}
-
-gfx::Size NativeFileSystemPermissionView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType NativeFileSystemPermissionView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 views::View* NativeFileSystemPermissionView::GetInitiallyFocusedView() {

@@ -39,32 +39,6 @@ views::Widget* NativeFileSystemRestrictedDirectoryDialogView::ShowDialog(
                                                      web_contents);
 }
 
-base::string16 NativeFileSystemRestrictedDirectoryDialogView::GetWindowTitle()
-    const {
-  return l10n_util::GetStringUTF16(
-      handle_type_ == HandleType::kDirectory
-          ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TITLE
-          : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TITLE);
-}
-
-bool NativeFileSystemRestrictedDirectoryDialogView::ShouldShowCloseButton()
-    const {
-  return false;
-}
-
-gfx::Size
-NativeFileSystemRestrictedDirectoryDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType NativeFileSystemRestrictedDirectoryDialogView::GetModalType()
-    const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 NativeFileSystemRestrictedDirectoryDialogView::
     NativeFileSystemRestrictedDirectoryDialogView(
         const url::Origin& origin,
@@ -72,6 +46,9 @@ NativeFileSystemRestrictedDirectoryDialogView::
         content::NativeFileSystemPermissionContext::HandleType handle_type,
         base::OnceCallback<void(SensitiveDirectoryResult)> callback)
     : handle_type_(handle_type), callback_(std::move(callback)) {
+  SetTitle(handle_type_ == HandleType::kDirectory
+               ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TITLE
+               : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TITLE);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      handle_type_ == HandleType::kDirectory
@@ -90,6 +67,11 @@ NativeFileSystemRestrictedDirectoryDialogView::
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
+
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   AddChildView(native_file_system_ui_helper::CreateOriginLabel(
       handle_type_ == HandleType::kDirectory

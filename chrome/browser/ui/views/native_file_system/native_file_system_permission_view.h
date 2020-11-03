@@ -41,9 +41,6 @@ class NativeFileSystemPermissionView : public views::DialogDelegateView {
 
   // views::DialogDelegateView:
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
   views::View* GetInitiallyFocusedView() override;
 
  private:
