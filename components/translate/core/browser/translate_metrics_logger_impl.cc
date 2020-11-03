@@ -9,10 +9,14 @@
 
 namespace translate {
 
+const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[] =
+    "Translate.PageLoad.AutofillAssistantDeferredTriggerDecision";
 const char kTranslatePageLoadRankerDecision[] =
     "Translate.PageLoad.Ranker.Decision";
 const char kTranslatePageLoadRankerVersion[] =
     "Translate.PageLoad.Ranker.Version";
+const char kTranslatePageLoadTriggerDecision[] =
+    "Translate.PageLoad.TriggerDecision";
 
 TranslateMetricsLoggerImpl::TranslateMetricsLoggerImpl(
     base::WeakPtr<TranslateManager> translate_manager)
@@ -49,6 +53,11 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics() {
                                 ranker_decision_);
   base::UmaHistogramSparse(kTranslatePageLoadRankerVersion,
                            int(ranker_version_));
+  base::UmaHistogramEnumeration(kTranslatePageLoadTriggerDecision,
+                                trigger_decision_);
+  base::UmaHistogramBoolean(
+      kTranslatePageLoadAutofillAssistantDeferredTriggerDecision,
+      autofill_assistant_deferred_trigger_decision_);
 }
 
 void TranslateMetricsLoggerImpl::LogRankerMetrics(
@@ -56,6 +65,18 @@ void TranslateMetricsLoggerImpl::LogRankerMetrics(
     uint32_t ranker_version) {
   ranker_decision_ = ranker_decision;
   ranker_version_ = ranker_version;
+}
+
+void TranslateMetricsLoggerImpl::LogTriggerDecision(
+    TriggerDecision trigger_decision) {
+  // Only stores the first non-kUninitialized trigger decision in the event that
+  // there are multiple.
+  if (trigger_decision_ == TriggerDecision::kUninitialized)
+    trigger_decision_ = trigger_decision;
+}
+
+void TranslateMetricsLoggerImpl::LogAutofillAssistantDeferredTriggerDecision() {
+  autofill_assistant_deferred_trigger_decision_ = true;
 }
 
 }  // namespace translate

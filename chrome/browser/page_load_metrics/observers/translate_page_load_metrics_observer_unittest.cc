@@ -40,6 +40,16 @@ class MockTranslateMetricsLoggerContainer
                                                      ranker_version);
   }
 
+  void LogTriggerDecision(
+      translate::TriggerDecision trigger_decision) override {
+    mock_translate_metrics_logger_->LogTriggerDecision(trigger_decision);
+  }
+
+  void LogAutofillAssistantDeferredTriggerDecision() override {
+    mock_translate_metrics_logger_
+        ->LogAutofillAssistantDeferredTriggerDecision();
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

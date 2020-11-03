@@ -458,6 +458,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.AutofillAssistantDeferredTriggerDecision"
+    enum="BooleanDeferred" expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Autofill Assistant defered determining the initial state
+    of Chrome Translate for a page load. This value is logged once the page load
+    is completed or the first time that Chrome is backgrounded during the course
+    of the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageLoad.Ranker.Decision"
     enum="TranslateRankerDecision" expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
@@ -480,6 +493,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Logs the version of the Translate Ranker used for a page load. This value is
     logged once the page load is completed or the first time that Chrome is
     backgrounded during the course of the page load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.TriggerDecision"
+    enum="TranslateTriggerDecision" expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the highest priority reason for the initial state of Translate for the
+    page load. This value is logged at the end of the page load or the first
+    time Chrome is backgrounded during the page load, whichever comes first.
   </summary>
 </histogram>
 

@@ -41,8 +41,12 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
       translate::RankerDecision::kShowUI;
   uint32_t ranker_model_version = 1234;
 
+  translate::TriggerDecision trigger_decision =
+      translate::TriggerDecision::kDisabledNeverTranslateLanguage;
+
   translate_metrics_logger()->LogRankerMetrics(ranker_decision,
                                                ranker_model_version);
+  translate_metrics_logger()->LogTriggerDecision(trigger_decision);
 
   // Simulate |RecordMetrics| being called multiple times.
   translate_metrics_logger()->RecordMetrics(false);
@@ -56,6 +60,11 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
       translate::kTranslatePageLoadRankerDecision, ranker_decision, 1);
   histogram_tester()->ExpectUniqueSample(
       translate::kTranslatePageLoadRankerVersion, ranker_model_version, 1);
+  histogram_tester()->ExpectUniqueSample(
+      translate::kTranslatePageLoadTriggerDecision, trigger_decision, 1);
+  histogram_tester()->ExpectUniqueSample(
+      translate::kTranslatePageLoadAutofillAssistantDeferredTriggerDecision,
+      false, 1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogRankerMetrics) {
@@ -72,4 +81,39 @@ TEST_F(TranslateMetricsLoggerImplTest, LogRankerMetrics) {
       translate::kTranslatePageLoadRankerDecision, ranker_decision, 1);
   histogram_tester()->ExpectUniqueSample(
       translate::kTranslatePageLoadRankerVersion, ranker_model_version, 1);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogTriggerDecision) {
+  // If we log multiple trigger decisions, we expect that only the first one is
+  // recorded.
+  std::vector<translate::TriggerDecision> trigger_decisions = {
+      translate::TriggerDecision::kAutomaticTranslationByLink,
+      translate::TriggerDecision::kDisabledByRanker,
+      translate::TriggerDecision::kDisabledUnsupportedLanguage};
+
+  for (auto trigger_decision : trigger_decisions)
+    translate_metrics_logger()->LogTriggerDecision(trigger_decision);
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(
+      translate::kTranslatePageLoadTriggerDecision, trigger_decisions[0], 1);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest,
+       LogAutofillAssistantDeferredTriggerDecision) {
+  translate::TriggerDecision trigger_decision =
+      translate::TriggerDecision::kShowUI;
+
+  // Simulate the autofill assistant running the first time.
+  translate_metrics_logger()->LogAutofillAssistantDeferredTriggerDecision();
+  translate_metrics_logger()->LogTriggerDecision(trigger_decision);
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(
+      translate::kTranslatePageLoadTriggerDecision, trigger_decision, 1);
+  histogram_tester()->ExpectUniqueSample(
+      translate::kTranslatePageLoadAutofillAssistantDeferredTriggerDecision,
+      true, 1);
 }

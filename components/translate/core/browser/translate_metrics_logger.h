@@ -19,6 +19,28 @@ enum class RankerDecision {
   kMaxValue = kDontShowUI,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TriggerDecision {
+  kUninitialized = 0,
+  kDisabledDoesntNeedTranslation = 1,
+  kDisabledTranslationFeatureDisabled = 2,
+  kDisabledOffline = 3,
+  kDisabledMissingAPIKey = 4,
+  kDisabledMIMETypeNotSupported = 5,
+  kDisabledURLNotSupported = 6,
+  kDisabledNeverOfferTranslations = 7,
+  kDisabledSimilarLanguages = 8,
+  kDisabledUnsupportedLanguage = 9,
+  kDisabledNeverTranslateLanguage = 10,
+  kDisabledNeverTranslateSite = 11,
+  kDisabledByRanker = 12,
+  kShowUI = 13,
+  kAutomaticTranslationByLink = 14,
+  kAutomaticTranslationByPref = 15,
+  kMaxValue = kAutomaticTranslationByPref,
+};
+
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome
 // Translate over the course of a page load.
 class TranslateMetricsLogger {
@@ -39,6 +61,12 @@ class TranslateMetricsLogger {
 
   virtual void LogRankerMetrics(RankerDecision ranker_decision,
                                 uint32_t ranker_version) = 0;
+
+  // Records trigger decision that impacts the initial state of Translate. The
+  // highest priority trigger decision will be logged to UMA at the end of the
+  // page load.
+  virtual void LogTriggerDecision(TriggerDecision trigger_decision) = 0;
+  virtual void LogAutofillAssistantDeferredTriggerDecision() = 0;
 };
 
 }  // namespace translate

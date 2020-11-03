@@ -12,8 +12,10 @@
 
 namespace translate {
 
+extern const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[];
 extern const char kTranslatePageLoadRankerDecision[];
 extern const char kTranslatePageLoadRankerVersion[];
+extern const char kTranslatePageLoadTriggerDecision[];
 
 class NullTranslateMetricsLogger : public TranslateMetricsLogger {
  public:
@@ -25,6 +27,8 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void RecordMetrics(bool is_final) override {}
   void LogRankerMetrics(RankerDecision ranker_decision,
                         uint32_t ranker_version) override {}
+  void LogTriggerDecision(TriggerDecision trigger_decision) override {}
+  void LogAutofillAssistantDeferredTriggerDecision() override {}
 };
 
 class TranslateManager;
@@ -47,6 +51,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void RecordMetrics(bool is_final) override;
   void LogRankerMetrics(RankerDecision ranker_decision,
                         uint32_t ranker_version) override;
+  void LogTriggerDecision(TriggerDecision trigger_decision) override;
+  void LogAutofillAssistantDeferredTriggerDecision() override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
@@ -68,6 +74,11 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Stores state about TranslateRanker for this page load.
   RankerDecision ranker_decision_{RankerDecision::kUninitialized};
   uint32_t ranker_version_{0};
+
+  // Stores the reason for the initial state of the page load. In the case there
+  // are multiple reasons, only the first reported reason is stored.
+  TriggerDecision trigger_decision_{TriggerDecision::kUninitialized};
+  bool autofill_assistant_deferred_trigger_decision_{false};
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };

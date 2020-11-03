@@ -775,6 +775,14 @@ const TranslateTriggerDecision TranslateManager::ComputePossibleOutcomes(
   }
 
   FilterForUserPrefs(&decision, translate_prefs, page_language_code);
+
+  if (decision.should_suppress_from_ranker()) {
+    // Delay logging this until after FilterForUserPrefs because TriggerDecision
+    // values from FilterForUserPrefs have higher priority.
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledByRanker);
+  }
+
   FilterAutoTranslate(&decision, translate_prefs, page_language_code);
   FilterForHrefTranslate(&decision, translate_prefs, page_language_code);
   FilterForPredefinedTarget(&decision, translate_prefs, page_language_code);
@@ -796,12 +804,16 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DOESNT_NEED_TRANSLATION);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledDoesntNeedTranslation);
   }
 
   if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_SWITCH);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledTranslationFeatureDisabled);
   }
 
   // Also, skip if the connection is currently offline - initiation doesn't make
@@ -810,6 +822,8 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_NO_NETWORK);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledOffline);
   }
 
   // Skip translation if autofill assistant is running.
@@ -819,6 +833,8 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::
             INITIATION_STATUS_DISABLED_BY_AUTOFILL_ASSISTANT);
+    GetActiveTranslateMetricsLogger()
+        ->LogAutofillAssistantDeferredTriggerDecision();
   }
 
   if (!ignore_missing_key_for_testing_ &&
@@ -830,6 +846,8 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_KEY);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledMissingAPIKey);
   }
 
   // MHTML pages currently cannot be translated.
@@ -838,6 +856,8 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_MIME_TYPE_IS_NOT_SUPPORTED);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledMIMETypeNotSupported);
   }
 
   // Don't translate any Chrome specific page, e.g., New Tab Page, Download,
@@ -847,6 +867,8 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_URL_IS_NOT_SUPPORTED);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledURLNotSupported);
   }
 
   if (!translate_prefs->IsOfferTranslateEnabled()) {
@@ -855,6 +877,8 @@ void TranslateManager::FilterIsTranslatePossible(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_PREFS);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::DISABLED_BY_PREF);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledNeverOfferTranslations);
   }
 
   // Don't translate similar languages (ex: en-US to en).
@@ -866,6 +890,8 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventShowingUI();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_SIMILAR_LANGUAGES);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledSimilarLanguages);
   }
 
   // Nothing to do if either the language Chrome is in or the language of
@@ -881,6 +907,8 @@ void TranslateManager::FilterIsTranslatePossible(
         TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IS_NOT_SUPPORTED);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::UNSUPPORTED_LANGUAGE);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledUnsupportedLanguage);
   }
 }
 
@@ -903,6 +931,8 @@ void TranslateManager::FilterAutoTranslate(
         TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_CONFIG);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::AUTO_TRANSLATION_BY_PREF);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kAutomaticTranslationByPref);
   } else if (!link_auto_translate_target.empty()) {
     // This page was navigated through a click from a translated page.
     decision->auto_translate_target = link_auto_translate_target;
@@ -910,6 +940,8 @@ void TranslateManager::FilterAutoTranslate(
         TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_LINK);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::AUTO_TRANSLATION_BY_LINK);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kAutomaticTranslationByLink);
   }
 
   if (decision->auto_translate_target.empty()) {
@@ -950,6 +982,8 @@ void TranslateManager::FilterForUserPrefs(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_USER_CONFIG);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledNeverTranslateLanguage);
   }
 
   // Don't translate any user black-listed URLs.
@@ -978,6 +1012,8 @@ void TranslateManager::FilterForUserPrefs(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::URL_DISABLED_BY_USER_CONFIG);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kDisabledNeverTranslateSite);
   }
 }
 
@@ -1087,6 +1123,10 @@ bool TranslateManager::MaterializeDecision(
         translate::TRANSLATE_STEP_BEFORE_TRANSLATE, page_language_code,
         decision.href_translate_target, TranslateErrors::NONE, false);
   }
+
+  if (did_show_ui)
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kShowUI);
 
   return did_show_ui;
 }
