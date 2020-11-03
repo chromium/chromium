@@ -11,7 +11,6 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "components/autofill/core/common/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockImporterBridge : public ImporterBridge {
@@ -27,7 +26,7 @@ class MockImporterBridge : public ImporterBridge {
                void(const std::vector<ImporterURLRow>&, importer::VisitSource));
   MOCK_METHOD2(SetKeywords,
                void(const std::vector<importer::SearchEngineInfo>&, bool));
-  MOCK_METHOD1(SetPasswordForm, void(const autofill::PasswordForm&));
+  MOCK_METHOD1(SetPasswordForm, void(const importer::ImportedPasswordForm&));
   MOCK_METHOD1(SetAutofillFormData,
                void(const std::vector<ImporterAutofillFormDataEntry>&));
   MOCK_METHOD0(NotifyStarted, void());

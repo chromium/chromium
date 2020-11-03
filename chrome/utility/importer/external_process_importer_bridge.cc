@@ -17,7 +17,6 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"
-#include "components/autofill/core/common/password_form.h"
 
 namespace {
 
@@ -110,7 +109,7 @@ void ExternalProcessImporterBridge::SetKeywords(
 }
 
 void ExternalProcessImporterBridge::SetPasswordForm(
-    const autofill::PasswordForm& form) {
+    const importer::ImportedPasswordForm& form) {
   observer_->OnPasswordFormImportReady(form);
 }
 

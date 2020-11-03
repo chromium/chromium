@@ -18,12 +18,12 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
+#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_url_row.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "chrome/utility/importer/favicon_reencode.h"
 #include "chrome/utility/importer/nss_decryptor.h"
-#include "components/autofill/core/common/password_form.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -380,7 +380,7 @@ void FirefoxImporter::ImportPasswords() {
     return;
   }
 
-  std::vector<autofill::PasswordForm> forms;
+  std::vector<importer::ImportedPasswordForm> forms;
   base::FilePath source_path = source_path_;
   const base::FilePath sqlite_file = source_path.AppendASCII("signons.sqlite");
   const base::FilePath json_file = source_path.AppendASCII("logins.json");

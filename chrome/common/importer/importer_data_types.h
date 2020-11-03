@@ -78,6 +78,33 @@ struct ImporterIE7PasswordInfo {
   base::Time date_created;
 };
 
+// Represents information about an imported password form.
+struct ImportedPasswordForm {
+  // Enum to differentiate between HTML form based authentication, and dialogs
+  // using basic or digest schemes. Default is kHtml.
+  enum class Scheme {
+    kHtml,
+    kBasic,
+  };
+
+  ImportedPasswordForm();
+  ImportedPasswordForm(const ImportedPasswordForm& other);
+  ImportedPasswordForm(ImportedPasswordForm&& other) noexcept;
+  ImportedPasswordForm& operator=(const ImportedPasswordForm& other);
+  ImportedPasswordForm& operator=(ImportedPasswordForm&& other);
+  ~ImportedPasswordForm();
+
+  Scheme scheme = Scheme::kHtml;
+  std::string signon_realm;
+  GURL url;
+  GURL action;
+  base::string16 username_element;
+  base::string16 username_value;
+  base::string16 password_element;
+  base::string16 password_value;
+  bool blocked_by_user = false;
+};
+
 // Mapped to history::VisitSource after import in the browser.
 enum VisitSource {
   VISIT_SOURCE_BROWSED = 0,

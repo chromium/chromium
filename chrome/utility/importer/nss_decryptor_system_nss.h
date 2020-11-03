@@ -14,8 +14,8 @@
 
 struct FirefoxRawPasswordInfo;
 
-namespace autofill {
-struct PasswordForm;
+namespace importer {
+struct ImportedPasswordForm;
 }
 
 namespace base {
@@ -39,19 +39,19 @@ class NSSDecryptor {
   // username/password and reads other related information.
   // The result will be stored in |forms|.
   void ParseSignons(const base::FilePath& signon_file,
-                    std::vector<autofill::PasswordForm>* forms);
+                    std::vector<importer::ImportedPasswordForm>* forms);
 
   // Reads and parses the Firefox password sqlite db, decrypts the
   // username/password and reads other related information.
   // The result will be stored in |forms|.
   bool ReadAndParseSignons(const base::FilePath& sqlite_file,
-                           std::vector<autofill::PasswordForm>* forms);
+                           std::vector<importer::ImportedPasswordForm>* forms);
 
   // Reads and parses the Firefox password file logins.json, decrypts the
   // username/password and reads other related information.
   // The result will be stored in |forms|.
   bool ReadAndParseLogins(const base::FilePath& json_file,
-                          std::vector<autofill::PasswordForm>* forms);
+                          std::vector<importer::ImportedPasswordForm>* forms);
 
  private:
   // Does not actually free the slot, since we'll free it when NSSDecryptor is
@@ -59,10 +59,10 @@ class NSSDecryptor {
   void FreeSlot(PK11SlotInfo* slot) const {}
 
   // Turns unprocessed information extracted from Firefox's password file
-  // into PasswordForm.
+  // into ImportedPasswordForm.
   bool CreatePasswordFormFromRawInfo(
       const FirefoxRawPasswordInfo& raw_password_info,
-      autofill::PasswordForm* form);
+      importer::ImportedPasswordForm* form);
 
   PK11SlotInfo* GetKeySlotForDB() const { return db_slot_; }
 

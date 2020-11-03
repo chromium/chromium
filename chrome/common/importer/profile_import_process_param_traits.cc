@@ -40,9 +40,9 @@ namespace mojo {
 
 // static
 bool StructTraits<chrome::mojom::ImportedPasswordFormDataView,
-                  autofill::PasswordForm>::
+                  importer::ImportedPasswordForm>::
     Read(chrome::mojom::ImportedPasswordFormDataView data,
-         autofill::PasswordForm* out) {
+         importer::ImportedPasswordForm* out) {
   if (!data.ReadScheme(&out->scheme) ||
       !data.ReadSignonRealm(&out->signon_realm) || !data.ReadUrl(&out->url) ||
       !data.ReadAction(&out->action) ||

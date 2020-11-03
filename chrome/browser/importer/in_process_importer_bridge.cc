@@ -59,9 +59,33 @@ history::VisitSource ConvertImporterVisitSourceToHistoryVisitSource(
   return history::SOURCE_SYNCED;
 }
 
-}  // namespace
+password_manager::PasswordForm::Scheme ConvertToPasswordFormScheme(
+    importer::ImportedPasswordForm::Scheme scheme) {
+  switch (scheme) {
+    case importer::ImportedPasswordForm::Scheme::kHtml:
+      return password_manager::PasswordForm::Scheme::kHtml;
+    case importer::ImportedPasswordForm::Scheme::kBasic:
+      return password_manager::PasswordForm::Scheme::kBasic;
+  }
 
-namespace {
+  NOTREACHED();
+  return password_manager::PasswordForm::Scheme::kHtml;
+}
+
+password_manager::PasswordForm ConvertImportedPasswordForm(
+    const importer::ImportedPasswordForm& form) {
+  password_manager::PasswordForm result;
+  result.scheme = ConvertToPasswordFormScheme(form.scheme);
+  result.signon_realm = form.signon_realm;
+  result.url = form.url;
+  result.action = form.action;
+  result.username_element = form.username_element;
+  result.username_value = form.username_value;
+  result.password_element = form.password_element;
+  result.password_value = form.password_value;
+  result.blocked_by_user = form.blocked_by_user;
+  return result;
+}
 
 // Attempts to create a TemplateURL from the provided data. |title| is optional.
 // If TemplateURL creation fails, returns null.
@@ -126,8 +150,8 @@ void InProcessImporterBridge::SetKeywords(
 }
 
 void InProcessImporterBridge::SetPasswordForm(
-    const password_manager::PasswordForm& form) {
-  writer_->AddPasswordForm(form);
+    const importer::ImportedPasswordForm& form) {
+  writer_->AddPasswordForm(ConvertImportedPasswordForm(form));
 }
 
 void InProcessImporterBridge::SetAutofillFormData(

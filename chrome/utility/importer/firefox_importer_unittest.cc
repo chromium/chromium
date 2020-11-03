@@ -104,8 +104,8 @@ TEST(FirefoxImporterTest, MAYBE_NSS(Firefox3NSS3Decryptor)) {
 // The following test verifies proper detection of authentication scheme in
 // firefox's signons db. We insert two entries into moz_logins table. The first
 // has httpRealm column filled with non-empty string, therefore resulting
-// PasswordForm should have SCHEME_BASIC in scheme. The second entry has NULL
-// httpRealm, so it should produce a SCHEME_HTML PasswordForm.
+// ImportedPasswordForm should have SCHEME_BASIC in scheme. The second entry has
+// NULL httpRealm, so it should produce a SCHEME_HTML ImportedPasswordForm.
 TEST(FirefoxImporterTest, MAYBE_NSS(FirefoxNSSDecryptorDeduceAuthScheme)) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -155,12 +155,12 @@ TEST(FirefoxImporterTest, MAYBE_NSS(FirefoxNSSDecryptorDeduceAuthScheme)) {
   ASSERT_TRUE(decryptor_proxy.Setup(nss_path));
 
   ASSERT_TRUE(decryptor_proxy.DecryptorInit(nss_path, db_path));
-  std::vector<autofill::PasswordForm> forms =
+  std::vector<importer::ImportedPasswordForm> forms =
       decryptor_proxy.ParseSignons(signons_path);
 
   ASSERT_EQ(2u, forms.size());
-  EXPECT_EQ(autofill::PasswordForm::Scheme::kBasic, forms[0].scheme);
-  EXPECT_EQ(autofill::PasswordForm::Scheme::kHtml, forms[1].scheme);
+  EXPECT_EQ(importer::ImportedPasswordForm::Scheme::kBasic, forms[0].scheme);
+  EXPECT_EQ(importer::ImportedPasswordForm::Scheme::kHtml, forms[1].scheme);
 }
 
 TEST(FirefoxImporterTest, ImportBookmarks_Firefox48) {

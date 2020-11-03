@@ -32,7 +32,7 @@ struct ImporterIE7PasswordInfo;
 enum ImportItem;
 
 // Represents information about an imported password form. Typemapped to
-// autofill::PasswordForm.
+// importer::ImportedPasswordForm.
 struct ImportedPasswordForm {
   // Enum to differentiate between HTML form based authentication, and dialogs
   // using basic or digest schemes. Default is kHtml.

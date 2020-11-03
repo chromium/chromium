@@ -212,7 +212,7 @@ void ExternalProcessImporterClient::OnFaviconsImportGroup(
 }
 
 void ExternalProcessImporterClient::OnPasswordFormImportReady(
-    const password_manager::PasswordForm& form) {
+    const importer::ImportedPasswordForm& form) {
   if (cancelled_)
     return;
 
