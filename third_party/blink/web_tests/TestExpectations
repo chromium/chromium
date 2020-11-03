@@ -6229,3 +6229,6 @@ crbug.com/1144677 external/wpt/infrastructure/reftest/reftest.www.sub.html [ Fai
 crbug.com/1144677 external/wpt/paint-timing/fcp-only/fcp-ensure-update-the-rendering-step.html [ Pass Failure ]
 
 crbug.com/1144537 external/wpt/xhr/responsexml-document-properties.htm [ Pass Failure ]
+
+# Sheriff 2020-11-03
+crbug.com/1145019 [ Win7 ] fast/events/updateLayoutForHitTest.html [ Failure ]
