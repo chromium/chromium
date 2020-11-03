@@ -10,6 +10,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -107,9 +108,13 @@ struct OmniboxLog {
   const AutocompleteResult& result;
 
   // Diagnostic information from providers.  See
-  // AutocompleteController::AddProvidersInfo() and
-  // AutocompleteProvider::AddProviderInfo() above.
+  // AutocompleteController::AddProviderAndTriggeringLogs() and
+  // AutocompleteProvider::AddProviderInfo().
   ProvidersInfo providers_info;
+
+  // The features that have been triggered (see
+  // OmniboxTriggeredFeatureService::Feature).
+  OmniboxTriggeredFeatureService::Features feature_triggered_in_session;
 
   // Whether the omnibox input is a search query that is started
   // by clicking on a image tile. Currently only used on Android.

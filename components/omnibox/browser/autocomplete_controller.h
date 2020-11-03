@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_log.h"
 
 class ClipboardProvider;
 class DocumentProvider;
@@ -127,12 +128,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   void OnProviderUpdate(bool updated_matches) override;
 
   // Called when an omnibox event log entry is generated.
-  // Populates provider_info with diagnostic information about the status
-  // of various providers.  In turn, calls
-  // AutocompleteProvider::AddProviderInfo() so each provider can add
-  // provider-specific information, information we want to log for a particular
-  // provider but not others.
-  void AddProvidersInfo(ProvidersInfo* provider_info) const;
+  // Populates |log.provider_info| with diagnostic information about the status
+  // of various providers and |log.feature_triggered_in_session| with triggered
+  // features.
+  void AddProviderAndTriggeringLogs(OmniboxLog* logs) const;
 
   // Called when a new omnibox session starts.
   // We start a new session when the user first begins modifying the omnibox

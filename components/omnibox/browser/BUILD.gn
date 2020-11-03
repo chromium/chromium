@@ -167,6 +167,8 @@ static_library("browser") {
     "omnibox_popup_view.h",
     "omnibox_prefs.cc",
     "omnibox_prefs.h",
+    "omnibox_triggered_feature_service.cc",
+    "omnibox_triggered_feature_service.h",
     "omnibox_view.cc",
     "omnibox_view.h",
     "on_device_head_model.cc",

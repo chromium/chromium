@@ -180,7 +180,9 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(
                   ProfileSyncServiceFactory::GetForProfile(profile_))),
-      storage_partition_(nullptr) {
+      storage_partition_(nullptr),
+      omnibox_triggered_feature_service_(
+          std::make_unique<OmniboxTriggeredFeatureService>()) {
   if (OmniboxFieldTrial::IsPedalSuggestionsEnabled())
     pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this);
 }
@@ -248,12 +250,6 @@ ChromeAutocompleteProviderClient::GetRemoteSuggestionsService(
     bool create_if_necessary) const {
   return RemoteSuggestionsServiceFactory::GetForProfile(profile_,
                                                         create_if_necessary);
-}
-
-query_tiles::TileService*
-ChromeAutocompleteProviderClient::GetQueryTileService() const {
-  ProfileKey* profile_key = profile_->GetProfileKey();
-  return query_tiles::TileServiceFactory::GetForKey(profile_key);
 }
 
 DocumentSuggestionsService*
@@ -342,6 +338,17 @@ ChromeAutocompleteProviderClient::GetBuiltinsToProvideAsUserTypes() {
 component_updater::ComponentUpdateService*
 ChromeAutocompleteProviderClient::GetComponentUpdateService() {
   return g_browser_process->component_updater();
+}
+
+query_tiles::TileService*
+ChromeAutocompleteProviderClient::GetQueryTileService() const {
+  ProfileKey* profile_key = profile_->GetProfileKey();
+  return query_tiles::TileServiceFactory::GetForKey(profile_key);
+}
+
+OmniboxTriggeredFeatureService*
+ChromeAutocompleteProviderClient::GetOmniboxTriggeredFeatureService() const {
+  return omnibox_triggered_feature_service_.get();
 }
 
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {

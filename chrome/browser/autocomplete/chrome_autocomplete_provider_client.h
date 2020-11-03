@@ -62,6 +62,8 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   query_tiles::TileService* GetQueryTileService() const override;
+  OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
+      const override;
 
   bool IsOffTheRecord() const override;
   bool SearchSuggestEnabled() const override;
@@ -117,6 +119,9 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
 
   // Injectable storage partitiion, used for testing.
   content::StoragePartition* storage_partition_;
+
+  std::unique_ptr<OmniboxTriggeredFeatureService>
+      omnibox_triggered_feature_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeAutocompleteProviderClient);
 };

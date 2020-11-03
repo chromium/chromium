@@ -329,7 +329,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       now - autocomplete_controller_->last_time_default_match_changed(),
       autocomplete_controller_->result());
   log.is_query_started_from_tile = is_query_started_from_tiles_;
-  autocomplete_controller_->AddProvidersInfo(&log.providers_info);
+  autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 

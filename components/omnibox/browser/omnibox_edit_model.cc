@@ -846,7 +846,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     // tab, we don't know the tab ID yet.)
     log.tab_id = client_->GetSessionID();
   }
-  autocomplete_controller()->AddProvidersInfo(&log.providers_info);
+  autocomplete_controller()->AddProviderAndTriggeringLogs(&log);
   client_->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);

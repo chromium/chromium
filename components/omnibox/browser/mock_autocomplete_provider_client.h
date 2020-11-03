@@ -83,6 +83,10 @@ class MockAutocompleteProviderClient
   query_tiles::TileService* GetQueryTileService() const override {
     return nullptr;
   }
+  OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
+      const override {
+    return nullptr;
+  }
 
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override {

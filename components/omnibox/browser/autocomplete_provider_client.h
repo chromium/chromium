@@ -14,6 +14,7 @@
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -79,6 +80,8 @@ class AutocompleteProviderClient {
   virtual std::unique_ptr<KeywordExtensionsDelegate>
   GetKeywordExtensionsDelegate(KeywordProvider* keyword_provider) = 0;
   virtual query_tiles::TileService* GetQueryTileService() const = 0;
+  virtual OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
+      const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.

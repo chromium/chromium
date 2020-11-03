@@ -544,12 +544,12 @@ void AutocompleteController::OnProviderUpdate(bool updated_matches) {
     UpdateResult(false, false);
 }
 
-void AutocompleteController::AddProvidersInfo(
-    ProvidersInfo* provider_info) const {
-  provider_info->clear();
-  for (auto i(providers_.begin()); i != providers_.end(); ++i) {
+void AutocompleteController::AddProviderAndTriggeringLogs(
+    OmniboxLog* logs) const {
+  logs->providers_info.clear();
+  for (const auto& provider : providers_) {
     // Add per-provider info, if any.
-    (*i)->AddProviderInfo(provider_info);
+    provider->AddProviderInfo(&logs->providers_info);
 
     // This is also a good place to put code to add info that you want to
     // add for every provider.
@@ -559,16 +559,22 @@ void AutocompleteController::AddProvidersInfo(
     // OmniboxPedalProvider is not a "true" AutocompleteProvider and isn't
     // included in the list of providers, though needs to report information for
     // its field trial.  Manually call AddProviderInfo for pedals.
-    provider_client_->GetPedalProvider()->AddProviderInfo(provider_info);
+    provider_client_->GetPedalProvider()->AddProviderInfo(
+        &logs->providers_info);
   }
+
+  // Add any features that have been triggered.
+  // |GetOmniboxTriggeredFeatureService()| can be null in tests.
+  if (provider_client_->GetOmniboxTriggeredFeatureService())
+    provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
+        &logs->feature_triggered_in_session);
 }
 
 void AutocompleteController::ResetSession() {
   search_service_worker_signal_sent_ = false;
 
-  for (Providers::const_iterator i(providers_.begin()); i != providers_.end();
-       ++i) {
-    (*i)->ResetSession();
+  for (const auto& provider : providers_) {
+    provider->ResetSession();
   }
 
   if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
@@ -576,6 +582,10 @@ void AutocompleteController::ResetSession() {
     // a "true" AutocompleteProvider.  Manually call ResetSession() for pedals.
     provider_client_->GetPedalProvider()->ResetSession();
   }
+
+  // |GetOmniboxTriggeredFeatureService()| can be null in tests.
+  if (provider_client_->GetOmniboxTriggeredFeatureService())
+    provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
 }
 
 void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(

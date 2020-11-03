@@ -45,7 +45,9 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
       url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
                               NewPersonalizedDataCollectionConsentHelper(
                                   ProfileSyncServiceFactory::GetForBrowserState(
-                                      browser_state_))) {}
+                                      browser_state_))),
+      omnibox_triggered_feature_service_(
+          std::make_unique<OmniboxTriggeredFeatureService>()) {}
 
 AutocompleteProviderClientImpl::~AutocompleteProviderClientImpl() {}
 
@@ -139,6 +141,11 @@ AutocompleteProviderClientImpl::GetKeywordExtensionsDelegate(
 query_tiles::TileService* AutocompleteProviderClientImpl::GetQueryTileService()
     const {
   return nullptr;
+}
+
+OmniboxTriggeredFeatureService*
+AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
+  return omnibox_triggered_feature_service_.get();
 }
 
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
