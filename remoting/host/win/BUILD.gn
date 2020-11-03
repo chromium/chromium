@@ -154,6 +154,8 @@ source_set("unit_tests") {
   sources = [
     "elevated_native_messaging_host.cc",
     "elevated_native_messaging_host.h",
+    "etw_trace_consumer.cc",
+    "etw_trace_consumer.h",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
     "launch_native_messaging_host_process.cc",
@@ -365,6 +367,8 @@ shared_library("remoting_core") {
     "core_resource.h",
     "elevated_native_messaging_host.cc",
     "elevated_native_messaging_host.h",
+    "etw_trace_consumer.cc",
+    "etw_trace_consumer.h",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
     "host_service.cc",
