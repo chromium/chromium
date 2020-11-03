@@ -141,6 +141,91 @@ TEST_F(ServiceRequestSenderTest, SendAuthenticatedRequest) {
                              mock_response_callback_.Get());
 }
 
+TEST_F(ServiceRequestSenderTest,
+       AuthRequestFallsBackToApiKeyOnEmptyAccessToken) {
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .Times(1)
+      .WillOnce(RunOnceCallback<0>(true, /*access_token = */ ""));
+
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
+        EXPECT_EQ(resource_request->url,
+                  GURL("https://www.example.com/?key=fake_api_key"));
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader,
+              AttachStringForUpload(std::string("request"),
+                                    std::string("application/x-protobuffer")))
+      .Times(1);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(std::make_unique<std::string>("response"));
+      }));
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  ServiceRequestSender request_sender{
+      &context_,
+      /* access_token_fetcher = */ &mock_access_token_fetcher_,
+      std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key"),
+      /* auth_enabled = */ true,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(GURL("https://www.example.com"),
+                             std::string("request"),
+                             mock_response_callback_.Get());
+}
+
+TEST_F(ServiceRequestSenderTest,
+       AuthRequestFallsBackToApiKeyIfFetchingAccessTokenFails) {
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .Times(1)
+      .WillOnce(
+          RunOnceCallback<0>(/*success = */ false, /*access_token = */ ""));
+
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
+        EXPECT_EQ(resource_request->url,
+                  GURL("https://www.example.com/?key=fake_api_key"));
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader,
+              AttachStringForUpload(std::string("request"),
+                                    std::string("application/x-protobuffer")))
+      .Times(1);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(std::make_unique<std::string>("response"));
+      }));
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  ServiceRequestSender request_sender{
+      &context_,
+      /* access_token_fetcher = */ &mock_access_token_fetcher_,
+      std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key"),
+      /* auth_enabled = */ true,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(GURL("https://www.example.com"),
+                             std::string("request"),
+                             mock_response_callback_.Get());
+}
+
 // TODO(b/170934170): Add tests for full unit test coverage of
 // service_request_sender.
 

@@ -102,6 +102,7 @@ void SendRequestNoAuth(
   add_key.SetQueryStr(query_str);
   GURL modified_url = url.ReplaceComponents(add_key);
 
+  VLOG(2) << "Sending request with api key to backend";
   SendRequestImpl(CreateResourceRequest(modified_url), request_body, context,
                   loader_factory, std::move(callback));
 }
@@ -153,17 +154,17 @@ void ServiceRequestSender::OnFetchAccessToken(GURL url,
                                               ResponseCallback callback,
                                               bool access_token_fetched,
                                               const std::string& access_token) {
-  if (!access_token_fetched) {
+  if (!access_token_fetched || access_token.empty()) {
     if (disable_auth_if_no_access_token_) {
       // Give up on authentication for this run. Without access token, requests
       // might be successful or rejected, depending on the server configuration.
       auth_enabled_ = false;
+      VLOG(1) << "No access token, falling back to api key";
       SendRequestNoAuth(url, request_body, context_, loader_factory_.get(),
                         api_key_, std::move(callback));
       return;
     }
-    VLOG(1) << "Failed to fetch access token, but "
-               "disable_auth_if_no_access_token not set";
+    VLOG(1) << "No access token, but disable_auth_if_no_access_token not set";
     std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
     return;
   }
@@ -187,6 +188,7 @@ void ServiceRequestSender::SendRequestAuth(const GURL& url,
                               weak_ptr_factory_.GetWeakPtr(), url, access_token,
                               request_body, std::move(callback));
   }
+  VLOG(2) << "Sending request with access token to backend";
   SendRequestImpl(std::move(resource_request), request_body, context_,
                   loader_factory_.get(), std::move(callback));
 }
@@ -199,6 +201,8 @@ void ServiceRequestSender::RetryIfUnauthorized(const GURL& url,
                                                const std::string& response) {
   // On first UNAUTHORIZED error, invalidate access token and try again.
   if (auth_enabled_ && http_status == net::HTTP_UNAUTHORIZED) {
+    VLOG(1) << "Request with access token returned with 401 UNAUTHORIZED, "
+               "fetching a fresh access token and trying again";
     DCHECK(!retried_with_fresh_access_token_);
     retried_with_fresh_access_token_ = true;
     access_token_fetcher_->InvalidateAccessToken(access_token);
