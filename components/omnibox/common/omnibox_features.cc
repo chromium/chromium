@@ -296,7 +296,7 @@ const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
 
 // Feature that enables Search Ready Omnibox in incognito.
 const base::Feature kOmniboxSearchReadyIncognito{
-    "OmniboxSearchReadyIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxSearchReadyIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature that puts a single row of buttons on suggestions with actionable
 // elements like keywords, tab-switch buttons, and Pedals.
