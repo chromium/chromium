@@ -36,11 +36,13 @@ android_library("weblayer_shell_java") {
   testonly = true
   resources_package = "org.chromium.weblayer.shell"
 
-  # The play services dependency is necessary for the
+  # The google_play_services_base_java dependency is necessary for the
   # google_play_services_version definition in the manifest.
   deps = [
     ":weblayer_shell_resources",
     "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_cast_framework_java",
+    "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
     "//components/strictmode/android:java",
     "//third_party/android_deps:android_support_v4_java",
@@ -49,6 +51,7 @@ android_library("weblayer_shell_java") {
     "//weblayer/public/java",
   ]
   sources = [
+    "shell_apk/src/org/chromium/weblayer/shell/CastOptionsProvider.java",
     "shell_apk/src/org/chromium/weblayer/shell/InstrumentationActivity.java",
     "shell_apk/src/org/chromium/weblayer/shell/TelemetryActivity.java",
     "shell_apk/src/org/chromium/weblayer/shell/WebLayerShellActivity.java",

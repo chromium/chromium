@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.media_router.caf;
+package org.chromium.chrome.browser.media.router;
 
 import android.content.Context;
 
@@ -13,7 +13,11 @@ import com.google.android.gms.cast.framework.SessionProvider;
 
 import java.util.List;
 
-/** {@link OptionsProvider} implementation for Chrome MR. */
+/**
+ * {@link OptionsProvider} implementation for Chrome media router.
+ *
+ * This has to live in the base java module for it to be loaded under isolated splits.
+ */
 public class CastOptionsProvider implements OptionsProvider {
     @Override
     public CastOptions getCastOptions(Context context) {
