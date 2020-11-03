@@ -96,7 +96,6 @@ android_clang_toolchain("android_clang_arm") {
   binary_prefix = "arm-linux-androideabi"
   toolchain_args = {
     current_cpu = "arm"
-    arm_float_abi = "softfp"
   }
 }
 
