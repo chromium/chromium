@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -259,10 +260,9 @@ class MediaAudioTaskWrapper {
 constexpr char AudioDecoderBroker::kDefaultDisplayName[];
 
 AudioDecoderBroker::AudioDecoderBroker(ExecutionContext& execution_context)
-    : media_task_runner_(
-          // TODO(chcunningham): This should use a separate thread from the
-          // pool. http://crbug.com/1095786
-          execution_context.GetTaskRunner(TaskType::kInternalMedia)) {
+    // Use a worker task runner to avoid scheduling decoder
+    // work on the main thread.
+    : media_task_runner_(worker_pool::CreateSequencedTaskRunner({})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaAudioTaskWrapper>(
       weak_factory_.GetWeakPtr(), execution_context, media_task_runner_,

@@ -23,6 +23,11 @@ void PostTask(const base::Location& location,
                              ConvertToBaseOnceCallback(std::move(closure)));
 }
 
+scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner(
+    const base::TaskTraits& traits) {
+  return base::ThreadPool::CreateSequencedTaskRunner(traits);
+}
+
 }  // namespace worker_pool
 
 }  // namespace blink

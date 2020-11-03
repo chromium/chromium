@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/color_space.h"
@@ -299,14 +300,11 @@ VideoDecoderBroker::VideoDecoderBroker(
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : media_task_runner_(
           gpu_factories
+              // GpuFactories requires we use its task runner when available.
               ? gpu_factories->GetTaskRunner()
-              // TODO(chcunningham): Consider adding a new single thread task
-              // runner just for WebCodecs. This is still using the main thread,
-              // albeit at a lower priority than things like user gestures.
-              // http://crbug.com/1095786
-              // TODO(chcunningham): Should this be kInternalMediaRealTime? Why
-              // does WebAudio use that task type?
-              : execution_context.GetTaskRunner(TaskType::kInternalMedia)) {
+              // Otherwise, use a worker task runner to avoid scheduling decoder
+              // work on the main thread.
+              : worker_pool::CreateSequencedTaskRunner({})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaVideoTaskWrapper>(
       weak_factory_.GetWeakPtr(), execution_context, gpu_factories,
