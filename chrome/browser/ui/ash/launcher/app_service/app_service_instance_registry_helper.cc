@@ -261,12 +261,15 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     // state for the tab window to keep one instance for the Web app.
     auto windows = GetWindows(shelf_id.app_id);
     for (auto* it : windows) {
-      if (it->GetToplevelWindow() != window)
+      auto tab_it = tab_window_to_browser_window_.find(it);
+      if (tab_it == tab_window_to_browser_window_.end() ||
+          tab_it->second != window) {
         continue;
+      }
 
       // When the user drags a tab to a new browser, or to an other browser, the
-      // top window could be changed, so the relation for the tap window and the
-      // browser window.
+      // top window could be changed, so update the relation for the tap window
+      // and the browser window.
       UpdateTabWindow(shelf_id.app_id, it);
 
       apps::InstanceState state = CalculateVisibilityState(it, visible);
