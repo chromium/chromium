@@ -180,7 +180,17 @@ void ContentSecurityPolicy::SetupSelf(const SecurityOrigin& security_origin) {
   // Ensure that 'self' processes correctly.
   self_protocol_ = security_origin.Protocol();
   self_source_ = MakeGarbageCollected<CSPSource>(
-      this, self_protocol_, security_origin.Host(), security_origin.Port(),
+      this, self_protocol_, security_origin.Host(),
+      // CSPSource uses port CSPSource::kPortUnspecified to represent a
+      // missing port and reserves port 0 specifically for origins with port set
+      // to 0; SecurityOrigin uses port 0 for origins with port 0 as well as for
+      // origins without ports.
+      //
+      // TODO(crbug.com/1136678): Once SecurityOrigin starts treating port 0 as
+      // a specifically set port, rather than as a sentinel for an
+      // omitted or default-valued port, modify this logic.
+      security_origin.Port() == 0 ? CSPSource::kPortUnspecified
+                                  : security_origin.Port(),
       String(), CSPSource::kNoWildcard, CSPSource::kNoWildcard);
 }
 

@@ -23,8 +23,8 @@ class CSPSourceTest : public testing::Test {
     String scheme;
     String host;
     String path;
-    // port is 0 if it was not specified so the default port for a given scheme
-    // will be used.
+    // port is CSPSource::kPortUnspecified if it was not specified so the
+    // default port for a given scheme will be used.
     const int port;
     CSPSource::WildcardDisposition host_wildcard;
     CSPSource::WildcardDisposition port_wildcard;
@@ -77,8 +77,9 @@ TEST_F(CSPSourceTest, BasicPathMatching) {
 
 TEST_F(CSPSourceTest, WildcardMatching) {
   KURL base;
-  CSPSource source(csp.Get(), "http", "example.com", 0, "/",
-                   CSPSource::kHasWildcard, CSPSource::kHasWildcard);
+  CSPSource source(csp.Get(), "http", "example.com",
+                   CSPSource::kPortUnspecified, "/", CSPSource::kHasWildcard,
+                   CSPSource::kHasWildcard);
 
   EXPECT_TRUE(source.Matches(KURL(base, "http://foo.example.com:8000/")));
   EXPECT_TRUE(source.Matches(KURL(base, "http://foo.example.com:8000/foo")));
@@ -118,8 +119,8 @@ TEST_F(CSPSourceTest, RedirectMatching) {
 
 TEST_F(CSPSourceTest, InsecureSchemeMatchesSecureScheme) {
   KURL base;
-  CSPSource source(csp.Get(), "http", "", 0, "/", CSPSource::kNoWildcard,
-                   CSPSource::kHasWildcard);
+  CSPSource source(csp.Get(), "http", "", CSPSource::kPortUnspecified, "/",
+                   CSPSource::kNoWildcard, CSPSource::kHasWildcard);
 
   EXPECT_TRUE(source.Matches(KURL(base, "http://example.com:8000/")));
   EXPECT_TRUE(source.Matches(KURL(base, "https://example.com:8000/")));
@@ -130,8 +131,9 @@ TEST_F(CSPSourceTest, InsecureSchemeMatchesSecureScheme) {
 
 TEST_F(CSPSourceTest, InsecureHostSchemeMatchesSecureScheme) {
   KURL base;
-  CSPSource source(csp.Get(), "http", "example.com", 0, "/",
-                   CSPSource::kNoWildcard, CSPSource::kHasWildcard);
+  CSPSource source(csp.Get(), "http", "example.com",
+                   CSPSource::kPortUnspecified, "/", CSPSource::kNoWildcard,
+                   CSPSource::kHasWildcard);
 
   EXPECT_TRUE(source.Matches(KURL(base, "http://example.com:8000/")));
   EXPECT_FALSE(source.Matches(KURL(base, "http://not-example.com:8000/")));
@@ -147,8 +149,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
     Persistent<ContentSecurityPolicy> csp(
         MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("http://a.com/"));
-    CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "a.com", CSPSource::kPortUnspecified, "/",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_TRUE(source.Matches(KURL(base, "http://a.com")));
     EXPECT_TRUE(source.Matches(KURL(base, "https://a.com")));
     EXPECT_FALSE(source.Matches(KURL(base, "ftp://a.com")));
@@ -159,8 +161,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
     Persistent<ContentSecurityPolicy> csp(
         MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("https://a.com/"));
-    CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "a.com", CSPSource::kPortUnspecified, "/",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_FALSE(source.Matches(KURL(base, "http://a.com")));
     EXPECT_TRUE(source.Matches(KURL(base, "https://a.com")));
     EXPECT_FALSE(source.Matches(KURL(base, "ftp://a.com")));
@@ -171,8 +173,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
     Persistent<ContentSecurityPolicy> csp(
         MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("ftp://a.com/"));
-    CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "a.com", CSPSource::kPortUnspecified, "/",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_FALSE(source.Matches(KURL(base, "http://a.com")));
     EXPECT_TRUE(source.Matches(KURL(base, "ftp://a.com")));
   }
@@ -183,8 +185,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
         MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(
         *SecurityOrigin::CreateFromString("non-standard-scheme://a.com/"));
-    CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "a.com", CSPSource::kPortUnspecified, "/",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_FALSE(source.Matches(KURL(base, "http://a.com")));
 
     // The reason matching fails is because the host is parsed as "" when
@@ -246,8 +248,9 @@ TEST_F(CSPSourceTest, InsecureHostSchemePortMatchesSecurePort) {
 
   // source port is empty
   {
-    CSPSource source(csp.Get(), "http", "example.com", 0, "/",
-                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "http", "example.com",
+                     CSPSource::kPortUnspecified, "/", CSPSource::kNoWildcard,
+                     CSPSource::kNoWildcard);
 
     EXPECT_TRUE(source.Matches(KURL(base, "http://example.com")));
     EXPECT_TRUE(source.Matches(KURL(base, "https://example.com")));
@@ -266,16 +269,16 @@ TEST_F(CSPSourceTest, HostMatches) {
 
   // Host is * (source-expression = "http://*")
   {
-    CSPSource source(csp.Get(), "http", "", 0, "", CSPSource::kHasWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "http", "", CSPSource::kPortUnspecified, "",
+                     CSPSource::kHasWildcard, CSPSource::kNoWildcard);
     EXPECT_TRUE(source.Matches(KURL(base, "http://a.com")));
     EXPECT_TRUE(source.Matches(KURL(base, "http://.")));
   }
 
   // Host is *.foo.bar
   {
-    CSPSource source(csp.Get(), "", "foo.bar", 0, "", CSPSource::kHasWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "foo.bar", CSPSource::kPortUnspecified, "",
+                     CSPSource::kHasWildcard, CSPSource::kNoWildcard);
     EXPECT_FALSE(source.Matches(KURL(base, "http://a.com")));
     EXPECT_FALSE(source.Matches(KURL(base, "http://bar")));
     EXPECT_FALSE(source.Matches(KURL(base, "http://foo.bar")));
@@ -289,8 +292,8 @@ TEST_F(CSPSourceTest, HostMatches) {
 
   // Host is exact.
   {
-    CSPSource source(csp.Get(), "", "foo.bar", 0, "", CSPSource::kNoWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "foo.bar", CSPSource::kPortUnspecified, "",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_TRUE(source.Matches(KURL(base, "http://foo.bar")));
     EXPECT_FALSE(source.Matches(KURL(base, "http://sub.foo.bar")));
     EXPECT_FALSE(source.Matches(KURL(base, "http://bar")));
@@ -300,16 +303,16 @@ TEST_F(CSPSourceTest, HostMatches) {
 
   // Host matching is case-insensitive.
   {
-    CSPSource source(csp.Get(), "", "FoO.BaR", 0, "", CSPSource::kNoWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "FoO.BaR", CSPSource::kPortUnspecified, "",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_TRUE(source.Matches(KURL(base, "http://foo.bar")));
     EXPECT_FALSE(source.Matches(KURL(base, "http://sub.foo.bar")));
   }
 
   // Wildcarded host matching is case-insensitive.
   {
-    CSPSource source(csp.Get(), "", "FoO.BaR", 0, "", CSPSource::kHasWildcard,
-                     CSPSource::kNoWildcard);
+    CSPSource source(csp.Get(), "", "FoO.BaR", CSPSource::kPortUnspecified, "",
+                     CSPSource::kHasWildcard, CSPSource::kNoWildcard);
     EXPECT_TRUE(source.Matches(KURL(base, "http://sub.foo.bar")));
     EXPECT_FALSE(source.Matches(KURL(base, "http://foo.bar")));
   }
@@ -326,12 +329,16 @@ TEST_F(CSPSourceTest, DoesNotSubsume) {
     const Source a;
     const Source b;
   } cases[] = {
-      {{"http", "example.com", "/", 0}, {"http", "another.com", "/", 0}},
-      {{"wss", "example.com", "/", 0}, {"http", "example.com", "/", 0}},
-      {{"wss", "example.com", "/", 0}, {"about", "example.com", "/", 0}},
-      {{"http", "example.com", "/", 0}, {"about", "example.com", "/", 0}},
-      {{"http", "example.com", "/1.html", 0},
-       {"http", "example.com", "/2.html", 0}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "another.com", "/", CSPSource::kPortUnspecified}},
+      {{"wss", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified}},
+      {{"wss", "example.com", "/", CSPSource::kPortUnspecified},
+       {"about", "example.com", "/", CSPSource::kPortUnspecified}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"about", "example.com", "/", CSPSource::kPortUnspecified}},
+      {{"http", "example.com", "/1.html", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/2.html", CSPSource::kPortUnspecified}},
       {{"http", "example.com", "/", 443}, {"about", "example.com", "/", 800}},
   };
   for (const auto& test : cases) {
@@ -362,32 +369,80 @@ TEST_F(CSPSourceTest, Subsumes) {
     bool expected_when_swapped;
   } cases[] = {
       // Equal signals
-      {{"http", "/", 0}, {"http", "/", 0}, true, true},
-      {{"https", "/", 0}, {"https", "/", 0}, true, true},
-      {{"https", "/page1.html", 0}, {"https", "/page1.html", 0}, true, true},
+      {{"http", "/", CSPSource::kPortUnspecified},
+       {"http", "/", CSPSource::kPortUnspecified},
+       true,
+       true},
+      {{"https", "/", CSPSource::kPortUnspecified},
+       {"https", "/", CSPSource::kPortUnspecified},
+       true,
+       true},
+      {{"https", "/page1.html", CSPSource::kPortUnspecified},
+       {"https", "/page1.html", CSPSource::kPortUnspecified},
+       true,
+       true},
       {{"http", "/", 70}, {"http", "/", 70}, true, true},
       {{"https", "/", 70}, {"https", "/", 70}, true, true},
-      {{"https", "/page1.html", 0}, {"https", "/page1.html", 0}, true, true},
+      {{"https", "/page1.html", CSPSource::kPortUnspecified},
+       {"https", "/page1.html", CSPSource::kPortUnspecified},
+       true,
+       true},
       {{"http", "/page1.html", 70}, {"http", "/page1.html", 70}, true, true},
       {{"https", "/page1.html", 70}, {"https", "/page1.html", 70}, true, true},
-      {{"http", "/", 0}, {"http", "", 0}, true, true},
+      {{"http", "/", CSPSource::kPortUnspecified},
+       {"http", "", CSPSource::kPortUnspecified},
+       true,
+       true},
       {{"http", "/", 80}, {"http", "", 80}, true, true},
       {{"http", "/", 80}, {"https", "", 443}, false, true},
       // One stronger signal in the first CSPSource
-      {{"https", "/", 0}, {"http", "/", 0}, true, false},
-      {{"http", "/page1.html", 0}, {"http", "/", 0}, true, false},
-      {{"http", "/", 80}, {"http", "/", 0}, true, true},
-      {{"http", "/", 700}, {"http", "/", 0}, false, false},
+      {{"https", "/", CSPSource::kPortUnspecified},
+       {"http", "/", CSPSource::kPortUnspecified},
+       true,
+       false},
+      {{"http", "/page1.html", CSPSource::kPortUnspecified},
+       {"http", "/", CSPSource::kPortUnspecified},
+       true,
+       false},
+      {{"http", "/", 80},
+       {"http", "/", CSPSource::kPortUnspecified},
+       true,
+       true},
+      {{"http", "/", 700},
+       {"http", "/", CSPSource::kPortUnspecified},
+       false,
+       false},
       // Two stronger signals in the first CSPSource
-      {{"https", "/page1.html", 0}, {"http", "/", 0}, true, false},
-      {{"https", "/", 80}, {"http", "/", 0}, false, false},
-      {{"http", "/page1.html", 80}, {"http", "/", 0}, true, false},
+      {{"https", "/page1.html", CSPSource::kPortUnspecified},
+       {"http", "/", CSPSource::kPortUnspecified},
+       true,
+       false},
+      {{"https", "/", 80},
+       {"http", "/", CSPSource::kPortUnspecified},
+       false,
+       false},
+      {{"http", "/page1.html", 80},
+       {"http", "/", CSPSource::kPortUnspecified},
+       true,
+       false},
       // Three stronger signals in the first CSPSource
-      {{"https", "/page1.html", 70}, {"http", "/", 0}, false, false},
+      {{"https", "/page1.html", 70},
+       {"http", "/", CSPSource::kPortUnspecified},
+       false,
+       false},
       // Mixed signals
-      {{"https", "/", 0}, {"http", "/page1.html", 0}, false, false},
-      {{"https", "/", 0}, {"http", "/", 70}, false, false},
-      {{"http", "/page1.html", 0}, {"http", "/", 70}, false, false},
+      {{"https", "/", CSPSource::kPortUnspecified},
+       {"http", "/page1.html", CSPSource::kPortUnspecified},
+       false,
+       false},
+      {{"https", "/", CSPSource::kPortUnspecified},
+       {"http", "/", 70},
+       false,
+       false},
+      {{"http", "/page1.html", CSPSource::kPortUnspecified},
+       {"http", "/", 70},
+       false,
+       false},
   };
 
   for (const auto& test : cases) {
@@ -490,18 +545,18 @@ TEST_F(CSPSourceTest, WildcardsSubsumes) {
   // has a more specific path.
   for (const auto& test : cases) {
     CSPSource* returned = MakeGarbageCollected<CSPSource>(
-        csp.Get(), "http", "example.com", 0, "/", test.a.host_dispotion,
-        test.a.port_dispotion);
+        csp.Get(), "http", "example.com", CSPSource::kPortUnspecified, "/",
+        test.a.host_dispotion, test.a.port_dispotion);
     CSPSource* required = MakeGarbageCollected<CSPSource>(
-        csp.Get(), "http", "example.com", 0, "/", test.b.host_dispotion,
-        test.b.port_dispotion);
+        csp.Get(), "http", "example.com", CSPSource::kPortUnspecified, "/",
+        test.b.host_dispotion, test.b.port_dispotion);
     EXPECT_EQ(required->Subsumes(returned), test.expected);
 
     // Wildcards should not matter when required csp is stricter than returned
     // csp.
     CSPSource* required2 = MakeGarbageCollected<CSPSource>(
-        csp.Get(), "https", "example.com", 0, "/", test.b.host_dispotion,
-        test.b.port_dispotion);
+        csp.Get(), "https", "example.com", CSPSource::kPortUnspecified, "/",
+        test.b.host_dispotion, test.b.port_dispotion);
     EXPECT_FALSE(required2->Subsumes(returned));
   }
 }
@@ -530,11 +585,11 @@ TEST_F(CSPSourceTest, SchemesOnlySubsumes) {
 
   for (const auto& test : cases) {
     CSPSource* returned = MakeGarbageCollected<CSPSource>(
-        csp.Get(), test.a_scheme, "example.com", 0, "/", CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard);
+        csp.Get(), test.a_scheme, "example.com", CSPSource::kPortUnspecified,
+        "/", CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     CSPSource* required = MakeGarbageCollected<CSPSource>(
-        csp.Get(), test.b_scheme, "example.com", 0, "/", CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard);
+        csp.Get(), test.b_scheme, "example.com", CSPSource::kPortUnspecified,
+        "/", CSPSource::kNoWildcard, CSPSource::kNoWildcard);
     EXPECT_EQ(required->Subsumes(returned), test.expected);
   }
 }
@@ -552,21 +607,29 @@ TEST_F(CSPSourceTest, IsSimilar) {
     bool is_similar;
   } cases[] = {
       // Similar
-      {{"http", "example.com", "/", 0}, {"http", "example.com", "/", 0}, true},
-      // Schemes
-      {{"https", "example.com", "/", 0},
-       {"https", "example.com", "/", 0},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified},
        true},
-      {{"https", "example.com", "/", 0}, {"http", "example.com", "/", 0}, true},
-      {{"ws", "example.com", "/", 0}, {"wss", "example.com", "/", 0}, true},
+      // Schemes
+      {{"https", "example.com", "/", CSPSource::kPortUnspecified},
+       {"https", "example.com", "/", CSPSource::kPortUnspecified},
+       true},
+      {{"https", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified},
+       true},
+      {{"ws", "example.com", "/", CSPSource::kPortUnspecified},
+       {"wss", "example.com", "/", CSPSource::kPortUnspecified},
+       true},
       // Ports
       {{"http", "example.com", "/", 90},
        {"http", "example.com", "/", 90},
        true},
-      {{"wss", "example.com", "/", 0},
-       {"wss", "example.com", "/", 0},
+      {{"wss", "example.com", "/", CSPSource::kPortUnspecified},
+       {"wss", "example.com", "/", CSPSource::kPortUnspecified},
        true},  // use default port
-      {{"http", "example.com", "/", 80}, {"http", "example.com", "/", 0}, true},
+      {{"http", "example.com", "/", 80},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified},
+       true},
       {{"http", "example.com", "/", 80},
        {"https", "example.com", "/", 443},
        true},
@@ -574,30 +637,34 @@ TEST_F(CSPSourceTest, IsSimilar) {
        {"https", "example.com", "/", 444},
        false},
       // Paths
-      {{"http", "example.com", "/", 0},
-       {"http", "example.com", "/1.html", 0},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/1.html", CSPSource::kPortUnspecified},
        true},
-      {{"http", "example.com", "/", 0}, {"http", "example.com", "", 0}, true},
-      {{"http", "example.com", "/", 0},
-       {"http", "example.com", "/a/b/", 0},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "", CSPSource::kPortUnspecified},
        true},
-      {{"http", "example.com", "/a/", 0},
-       {"http", "example.com", "/a/", 0},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified},
        true},
-      {{"http", "example.com", "/a/", 0},
-       {"http", "example.com", "/a/b/", 0},
+      {{"http", "example.com", "/a/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/a/", CSPSource::kPortUnspecified},
        true},
-      {{"http", "example.com", "/a/", 0},
-       {"http", "example.com", "/a/b/1.html", 0},
+      {{"http", "example.com", "/a/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified},
        true},
-      {{"http", "example.com", "/1.html", 0},
-       {"http", "example.com", "/1.html", 0},
+      {{"http", "example.com", "/a/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/a/b/1.html", CSPSource::kPortUnspecified},
+       true},
+      {{"http", "example.com", "/1.html", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/1.html", CSPSource::kPortUnspecified},
        true},
       // Mixed
       {{"http", "example.com", "/1.html", 90},
        {"http", "example.com", "/", 90},
        true},
-      {{"https", "example.com", "/", 0}, {"http", "example.com", "/", 0}, true},
+      {{"https", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified},
+       true},
       {{"http", "example.com", "/a/", 90},
        {"https", "example.com", "", 90},
        true},
@@ -608,23 +675,29 @@ TEST_F(CSPSourceTest, IsSimilar) {
        {"https", "example.com", "/a/b/", 90},
        true},
       // Not Similar
-      {{"http", "example.com", "/a/", 0},
+      {{"http", "example.com", "/a/", CSPSource::kPortUnspecified},
        {"https", "example.com", "", 90},
        false},
-      {{"https", "example.com", "/", 0},
+      {{"https", "example.com", "/", CSPSource::kPortUnspecified},
        {"https", "example.com", "/", 90},
        false},
-      {{"http", "example.com", "/", 0}, {"http", "another.com", "/", 0}, false},
-      {{"wss", "example.com", "/", 0}, {"http", "example.com", "/", 0}, false},
-      {{"wss", "example.com", "/", 0}, {"about", "example.com", "/", 0}, false},
-      {{"http", "example.com", "/", 0},
-       {"about", "example.com", "/", 0},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "another.com", "/", CSPSource::kPortUnspecified},
        false},
-      {{"http", "example.com", "/1.html", 0},
-       {"http", "example.com", "/2.html", 0},
+      {{"wss", "example.com", "/", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified},
        false},
-      {{"http", "example.com", "/a/1.html", 0},
-       {"http", "example.com", "/a/b/", 0},
+      {{"wss", "example.com", "/", CSPSource::kPortUnspecified},
+       {"about", "example.com", "/", CSPSource::kPortUnspecified},
+       false},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified},
+       {"about", "example.com", "/", CSPSource::kPortUnspecified},
+       false},
+      {{"http", "example.com", "/1.html", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/2.html", CSPSource::kPortUnspecified},
+       false},
+      {{"http", "example.com", "/a/1.html", CSPSource::kPortUnspecified},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified},
        false},
       {{"http", "example.com", "/", 443},
        {"about", "example.com", "/", 800},
@@ -659,39 +732,55 @@ TEST_F(CSPSourceTest, FirstSubsumesSecond) {
     bool expected;
   } cases[] = {
       // Subsumed.
-      {{"http", "example.com", 0, "/"}, "http", true},
-      {{"http", "example.com", 0, "/page.html"}, "http", true},
+      {{"http", "example.com", CSPSource::kPortUnspecified, "/"}, "http", true},
+      {{"http", "example.com", CSPSource::kPortUnspecified, "/page.html"},
+       "http",
+       true},
       {{"http", "second-example.com", 80, "/"}, "http", true},
-      {{"https", "second-example.com", 0, "/"}, "http", true},
-      {{"http", "second-example.com", 0, "/page.html"}, "http", true},
+      {{"https", "second-example.com", CSPSource::kPortUnspecified, "/"},
+       "http",
+       true},
+      {{"http", "second-example.com", CSPSource::kPortUnspecified,
+        "/page.html"},
+       "http",
+       true},
       {{"https", "second-example.com", 80, "/page.html"}, "http", true},
-      {{"https", "second-example.com", 0, "/"}, "https", true},
-      {{"https", "second-example.com", 0, "/page.html"}, "https", true},
+      {{"https", "second-example.com", CSPSource::kPortUnspecified, "/"},
+       "https",
+       true},
+      {{"https", "second-example.com", CSPSource::kPortUnspecified,
+        "/page.html"},
+       "https",
+       true},
       {{"http", "example.com", 900, "/"}, "http", true},
       // NOT subsumed.
-      {{"http", "second-example.com", 0, "/"}, "wss", false},
+      {{"http", "second-example.com", CSPSource::kPortUnspecified, "/"},
+       "wss",
+       false},
       {{"http", "non-example.com", 900, "/"}, "http", false},
-      {{"http", "second-example.com", 0, "/"}, "https", false},
+      {{"http", "second-example.com", CSPSource::kPortUnspecified, "/"},
+       "https",
+       false},
   };
 
   CSPSource* no_wildcards = MakeGarbageCollected<CSPSource>(
-      csp.Get(), "http", "example.com", 0, "/", CSPSource::kNoWildcard,
-      CSPSource::kNoWildcard);
+      csp.Get(), "http", "example.com", CSPSource::kPortUnspecified, "/",
+      CSPSource::kNoWildcard, CSPSource::kNoWildcard);
   CSPSource* host_wildcard = MakeGarbageCollected<CSPSource>(
-      csp.Get(), "http", "third-example.com", 0, "/", CSPSource::kHasWildcard,
-      CSPSource::kNoWildcard);
+      csp.Get(), "http", "third-example.com", CSPSource::kPortUnspecified, "/",
+      CSPSource::kHasWildcard, CSPSource::kNoWildcard);
   CSPSource* port_wildcard = MakeGarbageCollected<CSPSource>(
-      csp.Get(), "http", "third-example.com", 0, "/", CSPSource::kNoWildcard,
-      CSPSource::kHasWildcard);
+      csp.Get(), "http", "third-example.com", CSPSource::kPortUnspecified, "/",
+      CSPSource::kNoWildcard, CSPSource::kHasWildcard);
   CSPSource* both_wildcards = MakeGarbageCollected<CSPSource>(
-      csp.Get(), "http", "third-example.com", 0, "/", CSPSource::kHasWildcard,
-      CSPSource::kHasWildcard);
+      csp.Get(), "http", "third-example.com", CSPSource::kPortUnspecified, "/",
+      CSPSource::kHasWildcard, CSPSource::kHasWildcard);
   CSPSource* http_only = MakeGarbageCollected<CSPSource>(
-      csp.Get(), "http", "", 0, "", CSPSource::kNoWildcard,
-      CSPSource::kNoWildcard);
+      csp.Get(), "http", "", CSPSource::kPortUnspecified, "",
+      CSPSource::kNoWildcard, CSPSource::kNoWildcard);
   CSPSource* https_only = MakeGarbageCollected<CSPSource>(
-      csp.Get(), "https", "", 0, "", CSPSource::kNoWildcard,
-      CSPSource::kNoWildcard);
+      csp.Get(), "https", "", CSPSource::kPortUnspecified, "",
+      CSPSource::kNoWildcard, CSPSource::kNoWildcard);
 
   for (const auto& test : cases) {
     // Setup default vectors.
@@ -704,11 +793,13 @@ TEST_F(CSPSourceTest, FirstSubsumesSecond) {
     list_a.push_back(no_wildcards);
     // Add CSPSources based on the current test.
     list_b.push_back(MakeGarbageCollected<CSPSource>(
-        csp.Get(), test.source_b.scheme, test.source_b.host, 0,
-        test.source_b.path, CSPSource::kNoWildcard, CSPSource::kNoWildcard));
+        csp.Get(), test.source_b.scheme, test.source_b.host,
+        CSPSource::kPortUnspecified, test.source_b.path, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard));
     list_a.push_back(MakeGarbageCollected<CSPSource>(
-        csp.Get(), test.scheme_a, "second-example.com", 0, "/",
-        CSPSource::kNoWildcard, CSPSource::kNoWildcard));
+        csp.Get(), test.scheme_a, "second-example.com",
+        CSPSource::kPortUnspecified, "/", CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard));
     // listB contains: ["http://example.com/", test.listB]
     // listA contains: ["http://example.com/",
     // test.schemeA + "://second-example.com/"]
@@ -748,42 +839,42 @@ TEST_F(CSPSourceTest, Intersect) {
     const Source b;
     const Source normalized;
   } cases[] = {
-      {{"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"ws", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"wss", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"wss", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"ws", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"wss", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"wss", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
       // Wildcards
-      {{"http", "example.com", "/", 0, CSPSource::kHasWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "example.com", "/", 0, CSPSource::kHasWildcard,
-        CSPSource::kHasWildcard},
-       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "example.com", "/", 0, CSPSource::kHasWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kHasWildcard},
-       {"http", "sub.example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kHasWildcard, CSPSource::kNoWildcard},
+       {"http", "sub.example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "sub.example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kHasWildcard, CSPSource::kHasWildcard},
+       {"http", "sub.example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "sub.example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kHasWildcard, CSPSource::kNoWildcard},
+       {"http", "sub.example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kHasWildcard},
+       {"http", "sub.example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
       // Ports
       {{"http", "example.com", "/", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
        {"http", "example.com", "/", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
       {{"http", "example.com", "/", 80, CSPSource::kNoWildcard,
@@ -799,39 +890,39 @@ TEST_F(CSPSourceTest, Intersect) {
        {"https", "example.com", "/", 443, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
       // Paths
-      {{"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/1.html", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/1.html", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/a/b/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/a/b/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "example.com", "/a/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/a/b/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/a/b/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "example.com", "/a/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/a/b/1.html", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
-       {"http", "example.com", "/a/b/1.html", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/1.html", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/1.html", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/a/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/a/b/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "example.com", "/a/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/a/b/1.html", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/a/b/1.html", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
       // Mixed
-      {{"http", "example.com", "/1.html", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
+      {{"http", "example.com", "/1.html", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
        {"http", "example.com", "/", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
        {"http", "example.com", "/1.html", 80, CSPSource::kNoWildcard,
@@ -851,7 +942,15 @@ TEST_F(CSPSourceTest, Intersect) {
         normalized->scheme_,        normalized->host_,
         normalized->path_,          normalized->port_,
         normalized->host_wildcard_, normalized->port_wildcard_};
-    EXPECT_TRUE(EqualSources(intersect_ab, test.normalized));
+    EXPECT_TRUE(EqualSources(intersect_ab, test.normalized))
+        <<
+
+        "intersect_ab=" << normalized->scheme_ << normalized->host_
+        << normalized->path_ << normalized->port_ << normalized->host_wildcard_
+        << normalized->port_wildcard_
+        << ", test.normalized=" << test.normalized.scheme
+        << test.normalized.host << test.normalized.path << test.normalized.port
+        << test.normalized.host_wildcard << test.normalized.port_wildcard;
 
     // Verify the same test with A and B swapped. The result should be
     // identical.
@@ -860,7 +959,15 @@ TEST_F(CSPSourceTest, Intersect) {
         normalized->scheme_,        normalized->host_,
         normalized->path_,          normalized->port_,
         normalized->host_wildcard_, normalized->port_wildcard_};
-    EXPECT_TRUE(EqualSources(intersect_ba, test.normalized));
+    EXPECT_TRUE(EqualSources(intersect_ba, test.normalized))
+        <<
+
+        "intersect_ba=" << normalized->scheme_ << normalized->host_
+        << normalized->path_ << normalized->port_ << normalized->host_wildcard_
+        << normalized->port_wildcard_
+        << ", test.normalized=" << test.normalized.scheme
+        << test.normalized.host << test.normalized.path << test.normalized.port
+        << test.normalized.host_wildcard << test.normalized.port_wildcard;
   }
 }
 
@@ -871,43 +978,58 @@ TEST_F(CSPSourceTest, IntersectSchemesOnly) {
     const Source normalized;
   } cases[] = {
       // Both sources are schemes only.
-      {{"http", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"http", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"http", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
-      {{"http", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"https", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"https", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
-      {{"ws", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"wss", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"wss", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
+       {"http", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
+       {"http", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard}},
+      {{"http", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
+       {"https", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
+       {"https", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard}},
+      {{"ws", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
+       {"wss", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
+       {"wss", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard}},
       // One source is a scheme only and the other one has no wildcards.
-      {{"http", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
+      {{"http", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
-       {"http", "example.com", "/", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard}},
-      {{"http", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+       {"http", "example.com", "/", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard}},
+      {{"http", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
        {"https", "example.com", "/", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
        {"https", "example.com", "/", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
-      {{"https", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+      {{"https", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
        {"http", "example.com", "/page.html", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard},
        {"https", "example.com", "/page.html", 80, CSPSource::kNoWildcard,
         CSPSource::kNoWildcard}},
       // One source is a scheme only and the other has one or two wildcards.
-      {{"https", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+      {{"https", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
        {"http", "example.com", "/page.html", 80, CSPSource::kHasWildcard,
         CSPSource::kNoWildcard},
        {"https", "example.com", "/page.html", 80, CSPSource::kHasWildcard,
         CSPSource::kNoWildcard}},
-      {{"https", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+      {{"https", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
        {"http", "example.com", "/page.html", 80, CSPSource::kNoWildcard,
         CSPSource::kHasWildcard},
        {"https", "example.com", "/page.html", 80, CSPSource::kNoWildcard,
         CSPSource::kHasWildcard}},
-      {{"https", "", "", 0, CSPSource::kNoWildcard, CSPSource::kNoWildcard},
+      {{"https", "", "", CSPSource::kPortUnspecified, CSPSource::kNoWildcard,
+        CSPSource::kNoWildcard},
        {"http", "example.com", "/page.html", 80, CSPSource::kHasWildcard,
         CSPSource::kHasWildcard},
        {"https", "example.com", "/page.html", 80, CSPSource::kHasWildcard,
@@ -1002,8 +1124,8 @@ TEST_F(CSPSourceTest, MatchingAsSelf) {
        "wss://example.com:443/",
        true},
       // Ports not set (aka default)
-      {{"https", "example.com", "", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
+      {{"https", "example.com", "", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
        "wss://example.com:443/",
        true},
       {{"https", "example.com", "", 443, CSPSource::kNoWildcard,
@@ -1042,8 +1164,8 @@ TEST_F(CSPSourceTest, MatchingAsSelf) {
         CSPSource::kNoWildcard},
        "custom-scheme://example.com/some-path",
        false},
-      {{"http", "example.com", "", 0, CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard},
+      {{"http", "example.com", "", CSPSource::kPortUnspecified,
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard},
        "custom-scheme://example.com/some-path",
        false},
   };

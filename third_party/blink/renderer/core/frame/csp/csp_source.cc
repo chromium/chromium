@@ -15,6 +15,8 @@
 
 namespace blink {
 
+constexpr int CSPSource::kPortUnspecified = -1;
+
 CSPSource::CSPSource(ContentSecurityPolicy* policy,
                      const String& scheme,
                      const String& host,
@@ -48,7 +50,8 @@ bool CSPSource::Matches(const KURL& url,
     return true;
   bool paths_match = (redirect_status == RedirectStatus::kFollowedRedirect) ||
                      PathMatches(url.GetPath());
-  PortMatchingResult ports_match = PortMatches(url.Port(), url.Protocol());
+  PortMatchingResult ports_match = PortMatches(
+      url.HasPort() ? url.Port() : kPortUnspecified, url.Protocol());
 
   // if either the scheme or the port would require an upgrade (e.g. from http
   // to https) then check that both of them can upgrade to ensure that we don't
@@ -68,7 +71,8 @@ bool CSPSource::MatchesAsSelf(const KURL& url) {
   // Step 4.
   SchemeMatchingResult schemes_match = SchemeMatches(url.Protocol());
   bool hosts_match = HostMatches(url.Host());
-  PortMatchingResult ports_match = PortMatches(url.Port(), url.Protocol());
+  PortMatchingResult ports_match = PortMatches(
+      url.HasPort() ? url.Port() : kPortUnspecified, url.Protocol());
 
   // check if the origin is exactly matching
   if (schemes_match == SchemeMatchingResult::kMatchingExact && hosts_match &&
@@ -82,9 +86,10 @@ bool CSPSource::MatchesAsSelf(const KURL& url) {
 
   bool ports_match_or_defaults =
       (ports_match == PortMatchingResult::kMatchingExact ||
-       ((IsDefaultPortForProtocol(port_, self_scheme) || port_ == 0) &&
-        (IsDefaultPortForProtocol(url.Port(), url.Protocol()) ||
-         url.Port() == 0)));
+       ((IsDefaultPortForProtocol(port_, self_scheme) ||
+         port_ == kPortUnspecified) &&
+        (!url.HasPort() ||
+         IsDefaultPortForProtocol(url.Port(), url.Protocol()))));
 
   if (hosts_match && ports_match_or_defaults &&
       (url.Protocol() == "https" || url.Protocol() == "wss" ||
@@ -159,7 +164,7 @@ CSPSource::PortMatchingResult CSPSource::PortMatches(
     return PortMatchingResult::kMatchingWildcard;
 
   if (port == port_) {
-    if (port == 0)
+    if (port == kPortUnspecified)
       return PortMatchingResult::kMatchingWildcard;
     return PortMatchingResult::kMatchingExact;
   }
@@ -168,18 +173,21 @@ CSPSource::PortMatchingResult CSPSource::PortMatches(
   is_scheme_http = scheme_.IsEmpty() ? policy_->ProtocolEqualsSelf("http")
                                      : EqualIgnoringASCIICase("http", scheme_);
 
-  if ((port_ == 80 || ((port_ == 0 || port_ == 443) && is_scheme_http)) &&
-      (port == 443 || (port == 0 && DefaultPortForProtocol(protocol) == 443)))
+  if ((port_ == 80 ||
+       ((port_ == kPortUnspecified || port_ == 443) && is_scheme_http)) &&
+      (port == 443 ||
+       (port == kPortUnspecified && DefaultPortForProtocol(protocol) == 443))) {
     return PortMatchingResult::kMatchingUpgrade;
+  }
 
-  if (!port) {
+  if (port == kPortUnspecified) {
     if (IsDefaultPortForProtocol(port_, protocol))
       return PortMatchingResult::kMatchingExact;
 
     return PortMatchingResult::kNotMatching;
   }
 
-  if (!port_) {
+  if (port_ == kPortUnspecified) {
     if (IsDefaultPortForProtocol(port, protocol))
       return PortMatchingResult::kMatchingExact;
 
@@ -261,7 +269,8 @@ CSPSource* CSPSource::Intersect(CSPSource* other) const {
   // Choose this port if the other port is empty, has wildcard or is a port for
   // a less secure scheme such as "http" whereas scheme of this is "https", in
   // which case the lengths would differ.
-  int port = (other->port_wildcard_ == kHasWildcard || !other->port_ ||
+  int port = (other->port_wildcard_ == kHasWildcard ||
+              other->port_ == kPortUnspecified ||
               scheme_.length() > other->scheme_.length())
                  ? port_
                  : other->port_;
@@ -302,12 +311,13 @@ bool CSPSource::FirstSubsumesSecond(
 network::mojom::blink::CSPSourcePtr CSPSource::ExposeForNavigationalChecks()
     const {
   return network::mojom::blink::CSPSource::New(
-      scheme_ ? scheme_ : "",                               // scheme
-      host_ ? host_ : "",                                   // host
-      port_ == 0 ? -1 /* url::PORT_UNSPECIFIED */ : port_,  // port
-      path_ ? path_ : "",                                   // path
-      host_wildcard_ == kHasWildcard,                       // is_host_wildcard
-      port_wildcard_ == kHasWildcard                        // is_port_wildcard
+      scheme_ ? scheme_ : "",             // scheme
+      host_ ? host_ : "",                 // host
+      port_ == kPortUnspecified ? -1      /* url::PORT_UNSPECIFIED */
+                                : port_,  // port
+      path_ ? path_ : "",                 // path
+      host_wildcard_ == kHasWildcard,     // is_host_wildcard
+      port_wildcard_ == kHasWildcard      // is_port_wildcard
   );
 }
 

@@ -161,7 +161,7 @@ void SourceListDirective::Parse(const UChar* begin, const UChar* end) {
     SkipWhile<UChar, IsSourceCharacter>(position, end);
 
     String scheme, host, path;
-    int port = 0;
+    int port = CSPSource::kPortUnspecified;
     CSPSource::WildcardDisposition host_wildcard = CSPSource::kNoWildcard;
     CSPSource::WildcardDisposition port_wildcard = CSPSource::kNoWildcard;
 
@@ -339,7 +339,7 @@ bool SourceListDirective::ParseSource(
     if (!ParsePort(begin_port, begin_path, port, port_wildcard))
       return false;
   } else {
-    *port = 0;
+    *port = CSPSource::kPortUnspecified;
   }
 
   if (begin_path != end) {
@@ -559,7 +559,7 @@ bool SourceListDirective::ParsePort(
     int* port,
     CSPSource::WildcardDisposition* port_wildcard) {
   DCHECK(begin <= end);
-  DCHECK_EQ(*port, 0);
+  DCHECK_EQ(*port, CSPSource::kPortUnspecified);
   DCHECK(*port_wildcard == CSPSource::kNoWildcard);
 
   if (!SkipExactly<UChar>(begin, end, ':'))
@@ -569,7 +569,7 @@ bool SourceListDirective::ParsePort(
     return false;
 
   if (end - begin == 1 && *begin == '*') {
-    *port = 0;
+    *port = CSPSource::kPortUnspecified;
     *port_wildcard = CSPSource::kHasWildcard;
     return true;
   }
@@ -672,18 +672,18 @@ HeapVector<Member<CSPSource>> SourceListDirective::GetSources(
   HeapVector<Member<CSPSource>> sources = list_;
   if (allow_star_) {
     sources.push_back(MakeGarbageCollected<CSPSource>(
-        policy_, "ftp", String(), 0, String(), CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard));
+        policy_, "ftp", String(), CSPSource::kPortUnspecified, String(),
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard));
     sources.push_back(MakeGarbageCollected<CSPSource>(
-        policy_, "ws", String(), 0, String(), CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard));
+        policy_, "ws", String(), CSPSource::kPortUnspecified, String(),
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard));
     sources.push_back(MakeGarbageCollected<CSPSource>(
-        policy_, "http", String(), 0, String(), CSPSource::kNoWildcard,
-        CSPSource::kNoWildcard));
+        policy_, "http", String(), CSPSource::kPortUnspecified, String(),
+        CSPSource::kNoWildcard, CSPSource::kNoWildcard));
     if (self) {
       sources.push_back(MakeGarbageCollected<CSPSource>(
-          policy_, self->GetScheme(), String(), 0, String(),
-          CSPSource::kNoWildcard, CSPSource::kNoWildcard));
+          policy_, self->GetScheme(), String(), CSPSource::kPortUnspecified,
+          String(), CSPSource::kNoWildcard, CSPSource::kNoWildcard));
     }
   } else if (allow_self_ && self) {
     sources.push_back(self);
