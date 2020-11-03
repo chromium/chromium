@@ -72,6 +72,11 @@ public class AutofillUpstreamTest {
         Assert.assertEquals(buttonLabel, primaryButton.getText().toString());
     }
 
+    private boolean isFooterShown() {
+        InfoBarLayout view = (InfoBarLayout) getAutofillSaveCardInfoBar().getView();
+        return view.hasFooter();
+    }
+
     private void waitForSaveCardInfoBar() {
         CriteriaHelper.pollUiThread(
                 ()
@@ -221,5 +226,69 @@ public class AutofillUpstreamTest {
 
         // Verify that dialog is not null
         Assert.assertNotNull(fixflowPromptPropertyModel);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
+    public void testSaveCardInfoBar_syncedUser_noAccountIndicationFooter() throws TimeoutException {
+        mActivityTestRule.startMainActivityWithURL(mServer.getURL(TEST_FORM_URL));
+        final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
+        mActivityTestRule.setUpAccountAndEnableSyncForTesting();
+
+        DOMUtils.clickNode(webContents, "fill_form");
+        DOMUtils.clickNode(webContents, "submit");
+        waitForSaveCardInfoBar();
+
+        Assert.assertFalse(isFooterShown());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
+    public void testSaveCardInfoBar_loggedInUnsyncedUser_showsAccountIndicationFooter()
+            throws TimeoutException {
+        mActivityTestRule.startMainActivityWithURL(mServer.getURL(TEST_FORM_URL));
+        final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
+        mActivityTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
+
+        DOMUtils.clickNode(webContents, "fill_form");
+        DOMUtils.clickNode(webContents, "submit");
+        waitForSaveCardInfoBar();
+
+        Assert.assertTrue(isFooterShown());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
+    public void testSaveCardInfoBar_singleAccountUser_noAccountIndicationFooter()
+            throws TimeoutException {
+        mActivityTestRule.startMainActivityWithURL(mServer.getURL(TEST_FORM_URL));
+        final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
+        mActivityTestRule.addAccount("account1");
+
+        DOMUtils.clickNode(webContents, "fill_form");
+        DOMUtils.clickNode(webContents, "submit");
+        waitForSaveCardInfoBar();
+
+        Assert.assertFalse(isFooterShown());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
+    public void testSaveCardInfoBar_multipleAccountUser_showsAccountIndicationFooter()
+            throws TimeoutException {
+        mActivityTestRule.startMainActivityWithURL(mServer.getURL(TEST_FORM_URL));
+        final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
+        mActivityTestRule.addAccount("account1");
+        mActivityTestRule.addAccount("account2");
+
+        DOMUtils.clickNode(webContents, "fill_form");
+        DOMUtils.clickNode(webContents, "submit");
+        waitForSaveCardInfoBar();
+
+        Assert.assertTrue(isFooterShown());
     }
 }

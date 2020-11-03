@@ -297,6 +297,13 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     }
 
     /**
+     * Returns whether or not InfoBar has a footer.
+     */
+    public boolean hasFooter() {
+        return mFooterViewGroup != null;
+    }
+
+    /**
      * Returns the icon, or null if it doesn't exist.
      */
     public ImageView getIcon() {
