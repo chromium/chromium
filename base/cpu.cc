@@ -335,6 +335,8 @@ constexpr char kTimeInStatePath[] =
     "/sys/devices/system/cpu/cpu%d/cpufreq/stats/time_in_state";
 constexpr char kPhysicalPackageIdPath[] =
     "/sys/devices/system/cpu/cpu%d/topology/physical_package_id";
+constexpr char kCoreIdleStateTimePath[] =
+    "/sys/devices/system/cpu/cpu%d/cpuidle/state%d/time";
 
 bool SupportsTimeInState() {
   // Reading from time_in_state doesn't block (it amounts to reading a struct
@@ -386,6 +388,16 @@ bool ParseTimeInState(const std::string& content,
   }
 
   return true;
+}
+
+bool SupportsCoreIdleTimes() {
+  // Reading from the cpuidle driver doesn't block.
+  ThreadRestrictions::ScopedAllowIO allow_io;
+  // Check if the path for the idle time in state 0 for core 0 is readable.
+  FilePath idle_state0_path(
+      StringPrintf(kCoreIdleStateTimePath, /*core_index=*/0, /*idle_state=*/0));
+  ScopedFILE file_stream(OpenFile(idle_state0_path, "rb"));
+  return static_cast<bool>(file_stream);
 }
 
 std::vector<CPU::CoreType> GuessCoreTypes() {
@@ -530,6 +542,46 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
   }
 
   return true;
+}
+
+// static
+bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
+  idle_times.clear();
+
+  // The kernel may not support the cpufreq-stats driver.
+  static const bool kSupportsIdleTimes = SupportsCoreIdleTimes();
+  if (!kSupportsIdleTimes)
+    return false;
+
+  // Reading from the cpuidle driver doesn't block.
+  ThreadRestrictions::ScopedAllowIO allow_io;
+
+  int num_cpus = SysInfo::NumberOfProcessors();
+
+  bool success = false;
+  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+    std::string content;
+    TimeDelta idle_time;
+
+    // The number of idle states is system/CPU dependent, so we increment and
+    // try to read each state until we fail.
+    for (int state_index = 0;; ++state_index) {
+      auto path = StringPrintf(kCoreIdleStateTimePath, core_index, state_index);
+      uint64_t idle_state_time = 0;
+      if (!ReadFileToString(FilePath(path), &content))
+        break;
+      StringToUint64(content, &idle_state_time);
+      idle_time += TimeDelta::FromMicroseconds(idle_state_time);
+    }
+
+    idle_times.push_back(idle_time);
+
+    // At least one of the cores should have some idle time, otherwise we report
+    // a failure.
+    success |= idle_time > base::TimeDelta();
+  }
+
+  return success;
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
         // defined(OS_AIX)
