@@ -46,8 +46,7 @@
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:
-"MS PGothic" : 4,
-"Cambria Math" : 4,
-"Segoe UI Symbol" : 1
+"Cambria Math" : 5,
+"MS PGothic" : 4
 
 

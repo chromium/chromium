@@ -65130,8 +65130,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-18363"
             }
           ],
           "hard_timeout": 900,

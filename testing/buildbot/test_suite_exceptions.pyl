@@ -281,32 +281,12 @@
           '--additional-driver-flag=--disable-blink-features=LayoutNG',
         ],
       },
-      'WebKit Win10': {
-        'swarming': {
-          # TODO(crbug.com/1124829): Remove this exception when moving web tests
-          # to 1909.
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Windows-10-15063',
-            },
-          ],
-        },
-      },
       'Win10 Tests x64': {
         'args': [
           '--target',
           'Release_x64',
         ],
         'swarming': {
-          # TODO(crbug.com/1124829): Remove this exception when moving web tests
-          # to 1909.
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Windows-10-15063',
-            },
-          ],
           "shards": 28
         },
       },
@@ -445,18 +425,6 @@
       'mac11.0-blink-rel-dummy': {
         'swarming': {
           'shards': 20,
-        },
-      },
-      'win10-blink-rel-dummy': {
-        'swarming': {
-          # TODO(crbug.com/1124829): Remove this exception when moving web tests
-          # to 1909.
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Windows-10-15063',
-            },
-          ],
         },
       },
     },
