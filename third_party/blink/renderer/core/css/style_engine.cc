@@ -1600,9 +1600,15 @@ void StyleEngine::ApplyUserRuleSetChanges(
     ScopedStyleResolver::KeyframesRulesAdded(GetDocument());
   }
 
-  if (changed_rule_flags & kPropertyRules) {
-    ClearPropertyRules();
-    AddPropertyRulesFromSheets(new_style_sheets);
+  if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
+    if (changed_rule_flags & kPropertyRules) {
+      ClearPropertyRules();
+      AddPropertyRulesFromSheets(new_style_sheets);
+    }
+    if (changed_rule_flags & kScrollTimelineRules) {
+      ClearScrollTimelineRules();
+      AddScrollTimelineRulesFromSheets(new_style_sheets);
+    }
 
     // We just cleared all the rules, which includes any author rules. They
     // must be forcibly re-added.
@@ -1639,10 +1645,12 @@ void StyleEngine::ApplyRuleSetChanges(
                                  (changed_rule_flags & kFontFaceRules) &&
                                  tree_scope.RootNode().IsDocumentNode();
   bool rebuild_at_property_registry = false;
+  bool rebuild_at_scroll_timeline_map = false;
   ScopedStyleResolver* scoped_resolver = tree_scope.GetScopedStyleResolver();
   if (scoped_resolver && scoped_resolver->NeedsAppendAllSheets()) {
     rebuild_font_face_cache = true;
     rebuild_at_property_registry = true;
+    rebuild_at_scroll_timeline_map = true;
     change = kActiveSheetsChanged;
   }
 
@@ -1665,20 +1673,14 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
-  // TODO(crbug.com/1097055): Support user origin rules.
-  if (changed_rule_flags & kScrollTimelineRules) {
+  if ((changed_rule_flags & kScrollTimelineRules) ||
+      rebuild_at_scroll_timeline_map) {
     // @scroll-timeline rules are currently not allowed in shadow trees.
     // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule
     if (tree_scope.RootNode().IsDocumentNode()) {
-      scroll_timeline_map_.clear();
-
-      for (const ActiveStyleSheet& active_sheet : new_style_sheets) {
-        if (RuleSet* rule_set = active_sheet.second)
-          AddScrollTimelineRules(*rule_set);
-      }
-
-      MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
-          style_change_reason::kScrollTimeline));
+      ClearScrollTimelineRules();
+      AddScrollTimelineRulesFromSheets(active_user_style_sheets_);
+      AddScrollTimelineRulesFromSheets(new_style_sheets);
     }
   }
 
@@ -1892,11 +1894,23 @@ void StyleEngine::ClearPropertyRules() {
   PropertyRegistration::RemoveDeclaredProperties(GetDocument());
 }
 
+void StyleEngine::ClearScrollTimelineRules() {
+  scroll_timeline_map_.clear();
+}
+
 void StyleEngine::AddPropertyRulesFromSheets(
     const ActiveStyleSheetVector& sheets) {
   for (const ActiveStyleSheet& active_sheet : sheets) {
     if (RuleSet* rule_set = active_sheet.second)
       AddPropertyRules(*rule_set);
+  }
+}
+
+void StyleEngine::AddScrollTimelineRulesFromSheets(
+    const ActiveStyleSheetVector& sheets) {
+  for (const ActiveStyleSheet& active_sheet : sheets) {
+    if (RuleSet* rule_set = active_sheet.second)
+      AddScrollTimelineRules(*rule_set);
   }
 }
 
@@ -1949,8 +1963,12 @@ void StyleEngine::AddPropertyRules(const RuleSet& rule_set) {
 void StyleEngine::AddScrollTimelineRules(const RuleSet& rule_set) {
   const HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules =
       rule_set.ScrollTimelineRules();
+  if (scroll_timeline_rules.IsEmpty())
+    return;
   for (const auto& rule : scroll_timeline_rules)
     scroll_timeline_map_.Set(AtomicString(rule->GetName()), rule);
+  MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
+      style_change_reason::kScrollTimeline));
 }
 
 StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(

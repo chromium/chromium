@@ -513,8 +513,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void ClearKeyframeRules() { keyframes_rule_map_.clear(); }
   void ClearPropertyRules();
+  void ClearScrollTimelineRules();
 
   void AddPropertyRulesFromSheets(const ActiveStyleSheetVector&);
+  void AddScrollTimelineRulesFromSheets(const ActiveStyleSheetVector&);
 
   // Returns true if any @font-face rules are added.
   bool AddUserFontFaceRules(const RuleSet&);

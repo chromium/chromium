@@ -3137,6 +3137,49 @@ TEST_F(StyleEngineTest, AtPropertyInUserOrigin) {
   EXPECT_EQ("30px", ComputedValue(GetDocument().body(), "--y")->CssText());
 }
 
+TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
+  ScopedCSSScrollTimelineForTest scoped_feature(true);
+
+  // @scroll-timeline in the user origin:
+  InjectSheet("user1", WebDocument::kUserOrigin, R"CSS(
+    @scroll-timeline timeline1 {
+      source: selector(#scroller1);
+    }
+  )CSS");
+  UpdateAllLifecyclePhases();
+  StyleRuleScrollTimeline* rule1 =
+      GetStyleEngine().FindScrollTimelineRule("timeline1");
+  ASSERT_TRUE(rule1);
+  ASSERT_TRUE(rule1->GetSource());
+  EXPECT_EQ("selector(#scroller1)", rule1->GetSource()->CssText());
+
+  // @scroll-timeline in the author origin (should win over user origin)
+  InjectSheet("author", WebDocument::kAuthorOrigin, R"CSS(
+    @scroll-timeline timeline1 {
+      source: selector(#scroller2);
+    }
+  )CSS");
+  UpdateAllLifecyclePhases();
+  StyleRuleScrollTimeline* rule2 =
+      GetStyleEngine().FindScrollTimelineRule("timeline1");
+  ASSERT_TRUE(rule2);
+  ASSERT_TRUE(rule2->GetSource());
+  EXPECT_EQ("selector(#scroller2)", rule2->GetSource()->CssText());
+
+  // An additional @scroll-timeline in the user origin:
+  InjectSheet("user2", WebDocument::kUserOrigin, R"CSS(
+    @scroll-timeline timeline2 {
+      source: selector(#scroller3);
+    }
+  )CSS");
+  UpdateAllLifecyclePhases();
+  StyleRuleScrollTimeline* rule3 =
+      GetStyleEngine().FindScrollTimelineRule("timeline2");
+  ASSERT_TRUE(rule3);
+  ASSERT_TRUE(rule3->GetSource());
+  EXPECT_EQ("selector(#scroller3)", rule3->GetSource()->CssText());
+}
+
 TEST_F(StyleEngineTest, SystemColorComputeToSelfUseCount) {
   // Don't count system color use by itself - only in conjunction with
   // color-scheme.
