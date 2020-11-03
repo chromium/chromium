@@ -1930,6 +1930,9 @@ bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
 }
 
 void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {
+  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled())
+    return;
+
   const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (unsigned i = 0; i < keyframes_rules.size(); ++i)
@@ -1937,6 +1940,8 @@ void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {
 }
 
 void StyleEngine::AddUserKeyframeStyle(StyleRuleKeyframes* rule) {
+  DCHECK(!RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled());
+
   AtomicString animation_name(rule->GetName());
 
   if (rule->IsVendorPrefixed()) {
@@ -1973,6 +1978,11 @@ void StyleEngine::AddScrollTimelineRules(const RuleSet& rule_set) {
 
 StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
+  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled()) {
+    return ScopedStyleResolver::KeyframeStylesForAnimationFromActiveSheets(
+        animation_name, active_user_style_sheets_);
+  }
+
   if (keyframes_rule_map_.IsEmpty())
     return nullptr;
 

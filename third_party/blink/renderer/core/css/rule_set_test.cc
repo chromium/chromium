@@ -30,7 +30,10 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -329,6 +332,63 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   // Adding with invalid selector_index should not lead to a change in count.
   rule_set->AddRule(rule, 1 << RuleData::kSelectorIndexBits, flags);
   EXPECT_EQ(1u, rule_set->RuleCount());
+}
+
+TEST(RuleSetTest, KeyframesRulesBasic) {
+  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
+
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules("@keyframes foo { from {top: 0;} to {top: 100px;} }");
+  sheet.AddCSSRules("@keyframes bar { from {top: 100px;} to {top: 0;} }");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  StyleRuleKeyframes* foo = rule_set.KeyframeStylesForAnimation("foo");
+  EXPECT_TRUE(foo);
+  EXPECT_EQ("foo", foo->GetName());
+
+  StyleRuleKeyframes* bar = rule_set.KeyframeStylesForAnimation("bar");
+  EXPECT_TRUE(bar);
+  EXPECT_EQ("bar", bar->GetName());
+
+  StyleRuleKeyframes* nonexist =
+      rule_set.KeyframeStylesForAnimation("nonexist");
+  EXPECT_FALSE(nonexist);
+}
+
+TEST(RuleSetTest, KeyframesRulesOverriding) {
+  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
+
+  // Among multiple @keyframes rules with the same name, the last one wins.
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules("@keyframes foo { from1 {top: 0;} to1 {top: 100px;} }");
+  sheet.AddCSSRules("@keyframes foo { from2 {top: 100px;} to2 {top: 0;} }");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  StyleRuleKeyframes* rule = rule_set.KeyframeStylesForAnimation("foo");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ("foo", rule->GetName());
+
+  CSSKeyframesRule* css_rule = To<CSSKeyframesRule>(sheet.CssRules()->item(1));
+  EXPECT_EQ(rule, css_rule->Keyframes());
+}
+
+TEST(RuleSetTest, KeyframesRulesVendorPrefixed) {
+  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
+
+  // Non-vendor-prefixed keyframes rules win against vendor-prefixed ones.
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules("@keyframes foo { from1 {top: 0;} to1 {top: 100px;} }");
+  sheet.AddCSSRules(
+      "@-webkit-keyframes foo { from2 {top: 100px;} to2 {top: 0;} }");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  StyleRuleKeyframes* rule = rule_set.KeyframeStylesForAnimation("foo");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ("foo", rule->GetName());
+  EXPECT_FALSE(rule->IsVendorPrefixed());
 }
 
 }  // namespace blink

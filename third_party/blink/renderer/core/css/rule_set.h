@@ -261,6 +261,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<StyleRuleKeyframes>>& KeyframesRules() const {
     return keyframes_rules_;
   }
+  StyleRuleKeyframes* KeyframeStylesForAnimation(const AtomicString& name);
   const HeapVector<Member<StyleRuleProperty>>& PropertyRules() const {
     return property_rules_;
   }
@@ -330,6 +331,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      AddRuleFlags);
   bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
 
+  void SortKeyframesRulesIfNeeded();
+
   void CompactRules();
   static void CompactPendingRules(PendingRuleMap&, CompactRuleMap&);
 
@@ -373,6 +376,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<MinimalRuleData> content_pseudo_element_rules_;
   HeapVector<MinimalRuleData> slotted_pseudo_element_rules_;
   Vector<MediaQuerySetResult> media_query_set_results_;
+
+  bool keyframes_rules_sorted_ = true;
 
   unsigned rule_count_;
   Member<PendingRuleMaps> pending_rules_;
