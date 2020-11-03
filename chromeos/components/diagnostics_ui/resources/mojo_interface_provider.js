@@ -45,6 +45,9 @@ function setupFakeSystemRoutineController_() {
   // Create controller.
   let controller = new FakeSystemRoutineController();
 
+  // Add a small delay while running fake routines.
+  controller.setDelayTimeInMillisecondsForTesting(2000);
+
   // Set the fake controller.
   setSystemRoutineControllerForTesting(controller);
 }
