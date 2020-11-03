@@ -15,6 +15,12 @@ declare_args() {
 
   # Whether version 2 of the NTP feed is enabled in the build.
   enable_feed_v2 = is_android
+
+  # Whether to include Feed V2 in ChromeModern builds.
+  enable_feed_v2_modern = false
+
+  # Whether to include Feed V2 as a DFM in ChromeModern builds.
+  dfmify_feed_v2_modern = false
 }
 
 if (is_android && android_channel != "default") {
