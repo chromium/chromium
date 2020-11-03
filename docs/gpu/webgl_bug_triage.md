@@ -87,9 +87,10 @@ with the person next on the triage rotation.
 This is intended to be a lightweight rotation that shouldn't take too much of
 the triager's time. For this reason it's scheduled independently of other shifts
 like [pixel wrangling](pixel_wrangling.md), and may overlap. If any conflicts do
-arise, please reach out or [swap
-shifts](https://www.chromium.org/developers/tree-sheriffs#TOC-How-to-swap).
+arise, please reach out or swap shifts.
 
-The rotation is managed in [rota-ng](https://rota-ng.appspot.com/).
-The rotation members, as well as a few others, are owners under their
-@google.com addresses.
+The rotation is [managed
+here](https://rotations.corp.google.com/rotation/6257611988008960) via the
+Google-internal rotations tool. Shift swaps are managed via the tool. The
+calendar which can be subscribed to in order to see the oncall person is linked
+from the "Google Calendar Integration" heading under "Settings".
