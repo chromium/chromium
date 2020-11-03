@@ -14,6 +14,9 @@ declare_args() {
   # Enable iOS 14, WidgetKit extension.
   ios_enable_widget_kit_extension = false
 
+  # Enable iOS 14, WidgetKit extension (prebuilt).
+  ios_enable_prebuilt_widget_kit_extension = false
+
   # Enable share extension.
   ios_enable_share_extension = true
 
@@ -77,6 +80,8 @@ if (target_environment == "catalyst") {
   ios_enable_content_widget_extension = false
   ios_enable_search_widget_extension = false
   ios_enable_credential_provider_extension = false
+  ios_enable_widget_kit_extension = false
+  ios_enable_prebuilt_widget_kit_extension = false
 }
 
 # Configure whether breakpad support is enabled.
