@@ -164,7 +164,7 @@
 <translation id="6134259848159370930">אפשר לחפש במכשיר, באפליקציות ובאינטרנט.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
-<translation id="6156262341071374681">הרחב לכל האפליקציות</translation>
+<translation id="6156262341071374681">הרחבה לכל האפליקציות</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6166852626429024716">חיפוש במכשיר, באפליקציות, בהגדרות, באינטרנט...</translation>
 <translation id="6264365405983206840">בחירת &amp;הכול</translation>
@@ -181,7 +181,7 @@
 <translation id="654149438358937226">חסימת כל ההודעות</translation>
 <translation id="6567071839949112727">לחיצה על אב</translation>
 <translation id="6578407462441924264">ללא שם</translation>
-<translation id="6612467943526193239">‏הקש על Esc כדי לצאת מהכיול.</translation>
+<translation id="6612467943526193239">‏יש להקיש על Esc כדי לצאת מהכיול.</translation>
 <translation id="6620110761915583480">שמירת קובץ</translation>
 <translation id="6699343763173986273">הרצועה הבאה במדיה</translation>
 <translation id="6710213216561001401">הקודם</translation>
@@ -213,7 +213,7 @@
 <translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7848989271541991537">עברה לדף <ph name="PAGE_NUMBER" />, שורה <ph name="ROW_NUMBER" />, עמודה <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7879499977785298635">ללא חסימה</translation>
-<translation id="7907591526440419938">פתח קובץ</translation>
+<translation id="7907591526440419938">פתיחת קובץ</translation>
 <translation id="7952747673138230804">‏Chrome OS מציג הצעות לתוכן חדש שעשוי לעניין אותך. נתונים סטטיסטיים יישלחו כדי לשפר את האיכות רק אם בחרת לשתף נתוני שימוש במכשיר. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">פקודה</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{יותר מהודעה אחת שלא נקראה}two{יותר מ-2 הודעות שלא נקראו}many{יותר מ-# הודעות שלא נקראו}other{יותר מ-# הודעות שלא נקראו}}</translation>

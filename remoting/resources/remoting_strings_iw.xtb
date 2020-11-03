@@ -7,9 +7,9 @@
 <translation id="1297009705180977556">אירעה שגיאת התחברות אל <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">האובייקט המבוקש אינו קיים.</translation>
 <translation id="1480046233931937785">שותפים לעשייה</translation>
-<translation id="1520828917794284345">שנה את גודל שולחן העבודה</translation>
+<translation id="1520828917794284345">שינוי גודל שולחן העבודה</translation>
 <translation id="1546934824884762070">אירעה שגיאה לא צפויה. דיווח על בעיה זו למפתחים.</translation>
-<translation id="1697532407822776718">הכל מוכן!</translation>
+<translation id="1697532407822776718">הכול מוכן!</translation>
 <translation id="1742469581923031760">ההתחברות מתבצעת…</translation>
 <translation id="177096447311351977">‏IP הערוץ של הלקוח: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ערוץ='<ph name="CHANNEL_TYPE" />' חיבור='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">מחיקה</translation>
@@ -40,7 +40,7 @@
 <translation id="2919669478609886916">שיתפת את המחשב הזה עם משתמש אחר. האם ברצונך להמשיך את השיתוף?</translation>
 <translation id="2939145106548231838">יש לאמת מול המארח</translation>
 <translation id="3027681561976217984">מצב מסך מגע</translation>
-<translation id="3106379468611574572">המחשב המרוחק אינו מגיב לבקשות החיבור. ודא שהוא מחובר לאינטרנט ונסה שוב.</translation>
+<translation id="3106379468611574572">המחשב המרוחק אינו מגיב לבקשות החיבור. יש לוודא שהוא מחובר לאינטרנט ולנסות שוב.</translation>
 <translation id="3150823315463303127">המארח לא הצליח לקרוא את המדיניות.</translation>
 <translation id="3171922709365450819">המכשיר הזה לא נתמך על-ידי הלקוח הזה כי נדרש עבורו אימות של צד שלישי.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
@@ -81,13 +81,13 @@
 <translation id="4784508858340177375">‏המארח X קרס או שלא הופעל.</translation>
 <translation id="4798680868612952294">אפשרויות עכבר</translation>
 <translation id="4804818685124855865">נתק</translation>
-<translation id="4808503597364150972">‏הזן את ה-PIN של <ph name="HOSTNAME" />.</translation>
+<translation id="4808503597364150972">יש להזין את קוד האימות של <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">מארח</translation>
 <translation id="4867841927763172006">‏שליחת PrtScn</translation>
 <translation id="4974476491460646149">ההתחברות אל <ph name="HOSTNAME" /> סגורה</translation>
 <translation id="4985296110227979402">תחילה עליך להגדיר את המחשב שלך לגישה מרחוק</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (לא מקוון)</translation>
-<translation id="507204348399810022">האם אתה בטוח שברצונך להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />?</translation>
+<translation id="507204348399810022">בטוח שברצונך להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">מזהה מארח לא חוקי.</translation>
 <translation id="5204575267916639804">שאלות נפוצות</translation>
 <translation id="5222676887888702881">יציאה</translation>
@@ -130,12 +130,12 @@
 <translation id="7067321367069083429">המסך פועל כמסך מגע</translation>
 <translation id="7116737094673640201">‏ברוך בואך אל Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
-<translation id="7312846573060934304">המארח אינו מקוון.</translation>
+<translation id="7312846573060934304">המארח במצב לא מקוון.</translation>
 <translation id="7319983568955948908">הפסק את השיתוף</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">נדחתה גישה עבור לקוח: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">לקוח שהתחבר: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="7526139040829362392">החלף חשבון</translation>
+<translation id="7526139040829362392">החלפת חשבון</translation>
 <translation id="7628469622942688817">אני רוצה לזכור את קוד האימות שלי במכשיר הזה.</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
@@ -154,7 +154,7 @@
 <translation id="806699900641041263">המערכת מתחברת אל <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">‏כדי להשתמש ב-Chrome Remote Desktop, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="809687642899217504">המחשבים שלי</translation>
-<translation id="8116630183974937060">אירעה שגיאת רשת. בדוק שהמכשיר מקוון ונסה שוב.</translation>
+<translation id="8116630183974937060">אירעה שגיאת רשת. יש לבדוק שהמכשיר מחובר לרשת ולנסות שוב.</translation>
 <translation id="8187079423890319756">‏Copyright 2013 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8295077433896346116">‏כדי להשתמש ב-<ph name="PRODUCT_NAME" />, יש להעניק הרשאת 'נגישות' כדי שניתן יהיה לשלוט במחשב ה-Mac הזה באמצעות קלט מהמחשב המרוחק.
 

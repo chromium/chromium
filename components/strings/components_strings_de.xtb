@@ -410,6 +410,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2609632851001447353">Varianten</translation>
 <translation id="2618023639789766142">C10 (Umschlag)</translation>
 <translation id="2625385379895617796">Ihre Uhr geht vor</translation>
+<translation id="2629325967560697240">Schalten Sie für größtmögliche Sicherheit in Chrome das <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />erweiterte Safe Browsing<ph name="END_ENHANCED_PROTECTION_LINK" /> ein</translation>
 <translation id="2634124572758952069">Die Server-IP-Adresse von <ph name="HOST_NAME" /> wurde nicht gefunden.</translation>
 <translation id="2639739919103226564">Status: </translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1879,7 +1880,6 @@ Weitere Details:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Verfügbar</translation>
 <translation id="868922510921656628">Seiten pro Satz</translation>
-<translation id="8697373104056314601">Schalten Sie für größtmögliche Sicherheit in Chrome <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />erweitertes Safe Browsing<ph name="END_ENHANCED_PROTECTION_LINK" /> ein.</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699041776323235191">HID-Gerät</translation>
 <translation id="8703575177326907206">Die Verbindung zu <ph name="DOMAIN" /> ist nicht verschlüsselt.</translation>
