@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_RUNNERS_CAST_APPLICATION_CONTROLLER_IMPL_H_
 #define FUCHSIA_RUNNERS_CAST_APPLICATION_CONTROLLER_IMPL_H_
 
+#include <fuchsia/diagnostics/cpp/fidl.h>
 #include <fuchsia/media/sessions2/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>

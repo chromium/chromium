@@ -1045,6 +1045,36 @@ TEST_F(CastRunnerIntegrationTest, OnTerminated_ComponentKill) {
   component_controller_.Unbind();
 }
 
+// Ensures that CastRunner handles the value not being specified.
+// TODO(https://crrev.com/c/2516246): Check for no logging.
+TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverity_NotSet) {
+  GURL app_url = test_server_.GetURL(kBlankAppUrl);
+  auto app_config =
+      FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
+
+  EXPECT_FALSE(app_config.has_initial_min_console_log_severity());
+  app_config_manager_.AddAppConfig(std::move(app_config));
+
+  CreateComponentContextAndStartComponent();
+
+  CheckAppUrl(app_url);
+}
+
+// TODO(https://crrev.com/c/2516246): Check for logging.
+TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverity_DEBUG) {
+  GURL app_url = test_server_.GetURL(kBlankAppUrl);
+  auto app_config =
+      FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
+
+  *app_config.mutable_initial_min_console_log_severity() =
+      fuchsia::diagnostics::Severity::DEBUG;
+  app_config_manager_.AddAppConfig(std::move(app_config));
+
+  CreateComponentContextAndStartComponent();
+
+  CheckAppUrl(app_url);
+}
+
 TEST_F(CastRunnerIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
   const char kTestPath[] = "/webgl_presence.html";
   const GURL test_url = test_server_.GetURL(kTestPath);

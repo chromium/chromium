@@ -4,6 +4,8 @@
 
 #include "fuchsia/runners/cast/application_controller_impl.h"
 
+#include <fuchsia/diagnostics/cpp/fidl.h>
+
 #include <utility>
 
 #include "base/check.h"
