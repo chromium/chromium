@@ -315,8 +315,13 @@ scoped_refptr<const media::VideoFrame> VideoFrame::frame() const {
 ScriptPromise VideoFrame::createImageBitmap(ScriptState* script_state,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
-  return ImageBitmapFactories::CreateImageBitmap(
-      script_state, this, base::Optional<IntRect>(), options, exception_state);
+  base::Optional<IntRect> crop_rect;
+
+  if (auto local_frame = handle_->frame())
+    crop_rect = IntRect(local_frame->visible_rect());
+
+  return ImageBitmapFactories::CreateImageBitmap(script_state, this, crop_rect,
+                                                 options, exception_state);
 }
 
 IntSize VideoFrame::BitmapSourceSize() const {
