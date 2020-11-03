@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.base.metrics.RecordUserAction;
+
 /**
  * Receives shared content broadcast from Chrome Custom Tabs and shows a share sheet to share the
  * url.
@@ -15,6 +17,7 @@ import android.content.Intent;
 public final class CustomTabsShareBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        RecordUserAction.record("MobileTopToolbarShareButton");
         String url = intent.getDataString();
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
