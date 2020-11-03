@@ -14,6 +14,7 @@ import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.CallbackException;
 import org.chromium.net.CronetException;
+import org.chromium.net.Idempotency;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.NetworkException;
 import org.chromium.net.RequestFinishedInfo;
@@ -77,6 +78,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private final VersionSafeCallbacks.UrlRequestCallback mCallback;
     private final String mInitialUrl;
     private final int mPriority;
+    private final int mIdempotency;
     private String mInitialMethod;
     private final HeadersList mRequestHeaders = new HeadersList();
     private final Collection<Object> mRequestAnnotations;
@@ -139,7 +141,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
             UrlRequest.Callback callback, Executor executor, Collection<Object> requestAnnotations,
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener) {
+            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
+            int idempotency) {
         if (url == null) {
             throw new NullPointerException("URL is required");
         }
@@ -167,6 +170,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
         mRequestFinishedListener = requestFinishedListener != null
                 ? new VersionSafeCallbacks.RequestFinishedInfoListener(requestFinishedListener)
                 : null;
+        mIdempotency = convertIdempotency(idempotency);
     }
 
     @Override
@@ -213,7 +217,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
                         mRequestContext.hasRequestFinishedListener()
                                 || mRequestFinishedListener != null,
                         mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                        mTrafficStatsUid);
+                        mTrafficStatsUid, mIdempotency);
                 mRequestContext.onRequestStarted();
                 if (mInitialMethod != null) {
                     if (!CronetUrlRequestJni.get().setHttpMethod(
@@ -414,6 +418,19 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 return RequestPriority.HIGHEST;
             default:
                 return RequestPriority.MEDIUM;
+        }
+    }
+
+    private static int convertIdempotency(int idempotency) {
+        switch (idempotency) {
+            case Builder.DEFAULT_IDEMPOTENCY:
+                return Idempotency.DEFAULT_IDEMPOTENCY;
+            case Builder.IDEMPOTENT:
+                return Idempotency.IDEMPOTENT;
+            case Builder.NOT_IDEMPOTENT:
+                return Idempotency.NOT_IDEMPOTENT;
+            default:
+                return Idempotency.DEFAULT_IDEMPOTENCY;
         }
     }
 
@@ -832,7 +849,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
         long createRequestAdapter(CronetUrlRequest caller, long urlRequestContextAdapter,
                 String url, int priority, boolean disableCache, boolean disableConnectionMigration,
                 boolean enableMetrics, boolean trafficStatsTagSet, int trafficStatsTag,
-                boolean trafficStatsUidSet, int trafficStatsUid);
+                boolean trafficStatsUidSet, int trafficStatsUid, int idempotency);
 
         @NativeClassQualifiedName("CronetURLRequestAdapter")
         boolean setHttpMethod(long nativePtr, CronetUrlRequest caller, String method);

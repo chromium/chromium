@@ -67,6 +67,10 @@ java_cpp_enum("net_request_priority_java") {
   sources = [ "//net/base/request_priority.h" ]
 }
 
+java_cpp_enum("net_idempotency_java") {
+  sources = [ "//net/base/idempotency.h" ]
+}
+
 java_cpp_enum("network_quality_observation_source_java") {
   sources = [ "//net/nqe/network_quality_observation_source.h" ]
 }
@@ -346,6 +350,7 @@ android_library("cronet_impl_fake_base_java") {
 }
 
 cronet_impl_native_java_srcjar_deps = [
+  ":net_idempotency_java",
   ":net_request_priority_java",
   ":network_quality_observation_source_java",
   ":url_request_error_java",

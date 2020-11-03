@@ -183,8 +183,10 @@ public abstract class org.chromium.net.ExperimentalUrlRequest$Builder extends or
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder setPriority(int);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder setUploadDataProvider(org.chromium.net.UploadDataProvider, java.util.concurrent.Executor);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder allowDirectExecutor();
+  public abstract org.chromium.net.ExperimentalUrlRequest$Builder setIdempotency(int);
   public abstract org.chromium.net.ExperimentalUrlRequest build();
   public org.chromium.net.UrlRequest build();
+  public org.chromium.net.UrlRequest$Builder setIdempotency(int);
   public org.chromium.net.UrlRequest$Builder allowDirectExecutor();
   public org.chromium.net.UrlRequest$Builder setUploadDataProvider(org.chromium.net.UploadDataProvider, java.util.concurrent.Executor);
   public org.chromium.net.UrlRequest$Builder setPriority(int);
@@ -327,6 +329,9 @@ public abstract class org.chromium.net.UrlRequest$Builder {
   public static final int REQUEST_PRIORITY_LOW;
   public static final int REQUEST_PRIORITY_MEDIUM;
   public static final int REQUEST_PRIORITY_HIGHEST;
+  public static final int DEFAULT_IDEMPOTENCY;
+  public static final int IDEMPOTENT;
+  public static final int NOT_IDEMPOTENT;
   public org.chromium.net.UrlRequest$Builder();
   public abstract org.chromium.net.UrlRequest$Builder setHttpMethod(java.lang.String);
   public abstract org.chromium.net.UrlRequest$Builder addHeader(java.lang.String, java.lang.String);
@@ -334,6 +339,7 @@ public abstract class org.chromium.net.UrlRequest$Builder {
   public abstract org.chromium.net.UrlRequest$Builder setPriority(int);
   public abstract org.chromium.net.UrlRequest$Builder setUploadDataProvider(org.chromium.net.UploadDataProvider, java.util.concurrent.Executor);
   public abstract org.chromium.net.UrlRequest$Builder allowDirectExecutor();
+  public abstract org.chromium.net.UrlRequest$Builder setIdempotency(int);
   public abstract org.chromium.net.UrlRequest build();
 }
 public abstract class org.chromium.net.UrlRequest$Callback {
@@ -394,4 +400,4 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
-Stamp: 71c5599220fcd59906505a5d599e5f7e
+Stamp: 244ffe19b91271fa736bb2f74a848e25
