@@ -33,6 +33,10 @@ class Origin;
 
 namespace content {
 
+#if defined(OS_CHROMEOS)
+class RenderFrameHost;
+#endif
+
 // Interface that the embedder should implement to provide the //content layer
 // with embedder-specific configuration for a single Web Authentication API [1]
 // request serviced in a given RenderFrame.
@@ -185,6 +189,19 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual base::Optional<TouchIdAuthenticatorConfig>
   GetTouchIdAuthenticatorConfig();
 #endif  // defined(OS_MAC)
+
+#if defined(OS_CHROMEOS)
+  // Callback that should generate and return a unique request id.
+  using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
+
+  // Returns a callback to generate a request id for |render_frame_host|. The
+  // request id has two purposes: 1. ChromeOS UI will use the request id to
+  // find the source window and show a dialog accordingly; 2. The authenticator
+  // will include the request id when asking ChromeOS platform to cancel the
+  // request.
+  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
+      RenderFrameHost* render_frame_host);
+#endif  // defined(OS_CHROMEOS)
 
   // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
   // API call should be overridden with that value, or base::nullopt otherwise.

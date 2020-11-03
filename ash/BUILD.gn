@@ -543,6 +543,8 @@ component("ash") {
     "in_session_auth/in_session_auth_dialog.h",
     "in_session_auth/in_session_auth_dialog_controller_impl.cc",
     "in_session_auth/in_session_auth_dialog_controller_impl.h",
+    "in_session_auth/webauthn_request_registrar_impl.cc",
+    "in_session_auth/webauthn_request_registrar_impl.h",
     "keyboard/arc/arc_virtual_keyboard_container_layout_manager.cc",
     "keyboard/arc/arc_virtual_keyboard_container_layout_manager.h",
     "keyboard/keyboard_controller_impl.cc",

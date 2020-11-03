@@ -24,7 +24,8 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
     : public FidoAuthenticator {
  public:
-  ChromeOSAuthenticator();
+  explicit ChromeOSAuthenticator(
+      base::RepeatingCallback<uint32_t()> generate_request_id_callback);
   ~ChromeOSAuthenticator() override;
 
   bool HasCredentialForGetAssertionRequest(
@@ -65,6 +66,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
                           dbus::Response* dbus_response,
                           dbus::ErrorResponse* error);
 
+  // Callback to set request_id in the window property.
+  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
   base::WeakPtrFactory<ChromeOSAuthenticator> weak_factory_;
 };
 

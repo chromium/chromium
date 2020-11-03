@@ -9,9 +9,11 @@
 
 namespace device {
 
-FidoChromeOSDiscovery::FidoChromeOSDiscovery()
+FidoChromeOSDiscovery::FidoChromeOSDiscovery(
+    base::RepeatingCallback<uint32_t()> generate_request_id_callback)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
-      authenticator_(std::make_unique<ChromeOSAuthenticator>()),
+      authenticator_(std::make_unique<ChromeOSAuthenticator>(
+          std::move(generate_request_id_callback))),
       weak_factory_(this) {}
 
 FidoChromeOSDiscovery::~FidoChromeOSDiscovery() {}

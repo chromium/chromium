@@ -638,6 +638,8 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
       !is_u2f_api_request) {
     constexpr device::VidPid kChromeOsU2fdVidPid{0x18d1, 0x502c};
     discovery_factory->set_hid_ignore_list({kChromeOsU2fdVidPid});
+    discovery_factory->set_generate_request_id_callback(
+        request_delegate->GetGenerateRequestIdCallback(render_frame_host));
   }
 #endif  // defined(OS_CHROMEOS)
 

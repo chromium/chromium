@@ -17,7 +17,8 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
     : public FidoDiscoveryBase {
  public:
-  FidoChromeOSDiscovery();
+  explicit FidoChromeOSDiscovery(
+      base::RepeatingCallback<uint32_t()> generate_request_id_callback);
   ~FidoChromeOSDiscovery() override;
 
   // FidoDiscoveryBase:

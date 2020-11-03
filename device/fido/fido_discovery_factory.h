@@ -89,6 +89,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   WinWebAuthnApi* win_webauthn_api() const;
 #endif  // defined(OS_WIN)
 
+#if defined(OS_CHROMEOS)
+  // Records the callback to generates request_id.
+  void set_generate_request_id_callback(base::RepeatingCallback<uint32_t()>);
+#endif  // defined(OS_CHROMEOS)
+
  protected:
   static std::vector<std::unique_ptr<FidoDiscoveryBase>> SingleDiscovery(
       std::unique_ptr<FidoDiscoveryBase> discovery);
@@ -113,6 +118,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #if defined(OS_WIN)
   WinWebAuthnApi* win_webauthn_api_ = nullptr;
 #endif  // defined(OS_WIN)
+#if defined(OS_CHROMEOS)
+  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+#endif  // defined(OS_CHROMEOS)
   base::flat_set<VidPid> hid_ignore_list_;
 };
 

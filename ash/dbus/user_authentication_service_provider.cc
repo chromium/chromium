@@ -5,6 +5,7 @@
 #include "ash/dbus/user_authentication_service_provider.h"
 
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/webauthn_request_registrar.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "dbus/bus.h"
@@ -42,10 +43,41 @@ void UserAuthenticationServiceProvider::OnExported(
 void UserAuthenticationServiceProvider::ShowAuthDialog(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  std::string rp_id;
+  if (!reader.PopString(&rp_id)) {
+    LOG(ERROR) << "Unable to parse rp_id";
+    OnAuthFlowComplete(method_call, std::move(response_sender), false);
+    return;
+  }
+  // TODO(b/156258540): Show RP id in the dialog prompt.
+  int verification_type;
+  if (!reader.PopInt32(&verification_type)) {
+    LOG(ERROR) << "Unable to parse verification_type";
+    OnAuthFlowComplete(method_call, std::move(response_sender), false);
+    return;
+  }
+  uint64_t request_id = 0;
+  if (!reader.PopUint64(&request_id)) {
+    LOG(ERROR) << "Unable to parse request id";
+    OnAuthFlowComplete(method_call, std::move(response_sender), false);
+    return;
+  }
+
+  aura::Window* source_window =
+      WebAuthnRequestRegistrar::Get()->GetWindowForRequestId(request_id);
+  if (!source_window) {
+    LOG(ERROR) << "Cannot find window with the given request id";
+    OnAuthFlowComplete(method_call, std::move(response_sender), false);
+    return;
+  }
+
   auto* auth_dialog_controller = InSessionAuthDialogController::Get();
-  auth_dialog_controller->ShowAuthenticationDialog(base::BindOnce(
-      &UserAuthenticationServiceProvider::OnAuthFlowComplete,
-      weak_ptr_factory_.GetWeakPtr(), method_call, std::move(response_sender)));
+  auth_dialog_controller->ShowAuthenticationDialog(
+      source_window,
+      base::BindOnce(&UserAuthenticationServiceProvider::OnAuthFlowComplete,
+                     weak_ptr_factory_.GetWeakPtr(), method_call,
+                     std::move(response_sender)));
 }
 
 void UserAuthenticationServiceProvider::OnAuthFlowComplete(

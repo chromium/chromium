@@ -297,6 +297,8 @@ component("cpp") {
     "wallpaper_controller_observer.h",
     "wallpaper_info.h",
     "wallpaper_types.h",
+    "webauthn_request_registrar.cc",
+    "webauthn_request_registrar.h",
     "window_animation_types.h",
     "window_backdrop.cc",
     "window_backdrop.h",

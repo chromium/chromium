@@ -57,6 +57,11 @@ class ChromeAuthenticatorRequestDelegate
       override;
 #endif  // defined(OS_MAC)
 
+#if defined(OS_CHROMEOS)
+  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
+      content::RenderFrameHost* render_frame_host) override;
+#endif  // defined(OS_CHROMEOS)
+
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
   AuthenticatorRequestDialogModel* WeakDialogModelForTesting() const;

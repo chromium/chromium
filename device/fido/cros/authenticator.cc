@@ -22,7 +22,10 @@
 
 namespace device {
 
-ChromeOSAuthenticator::ChromeOSAuthenticator() : weak_factory_(this) {}
+ChromeOSAuthenticator::ChromeOSAuthenticator(
+    base::RepeatingCallback<uint32_t()> generate_request_id_callback)
+    : generate_request_id_callback_(std::move(generate_request_id_callback)),
+      weak_factory_(this) {}
 
 ChromeOSAuthenticator::~ChromeOSAuthenticator() {}
 
@@ -96,6 +99,8 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   req.set_user_entity(
       std::string(request.user.id.begin(), request.user.id.end()));
   req.set_resident_credential(request.resident_key_required);
+  DCHECK(generate_request_id_callback_);
+  req.set_request_id(generate_request_id_callback_.Run());
 
   dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FMakeCredential);
   dbus::MessageWriter writer(&method_call);
@@ -193,6 +198,9 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   req.set_rp_id(request.rp_id);
   req.set_client_data_hash(std::string(request.client_data_hash.begin(),
                                        request.client_data_hash.end()));
+  DCHECK(generate_request_id_callback_);
+  req.set_request_id(generate_request_id_callback_.Run());
+
   for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
     const std::vector<uint8_t>& id = descriptor.id();
     req.add_allowed_credential_id(std::string(id.begin(), id.end()));

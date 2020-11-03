@@ -21,19 +21,20 @@ namespace {
 constexpr int kCornerRadius = 12;
 
 std::unique_ptr<views::Widget> CreateAuthDialogWidget(
-    std::unique_ptr<views::View> contents_view) {
+    std::unique_ptr<views::View> contents_view,
+    aura::Window* parent) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.delegate = new views::WidgetDelegate();
   params.show_state = ui::SHOW_STATE_NORMAL;
-  params.parent = nullptr;
+  params.parent = parent;
   params.name = "AuthDialogWidget";
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.shadow_elevation = 3;
 
   params.delegate->SetInitiallyFocusedView(contents_view.get());
-  params.delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  params.delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   params.delegate->SetOwnedByWidget(true);
 
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
@@ -45,10 +46,11 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
 
 }  // namespace
 
-InSessionAuthDialog::InSessionAuthDialog(uint32_t auth_methods)
+InSessionAuthDialog::InSessionAuthDialog(uint32_t auth_methods,
+                                         aura::Window* parent_window)
     : auth_methods_(auth_methods) {
   widget_ = CreateAuthDialogWidget(
-      std::make_unique<AuthDialogContentsView>(auth_methods));
+      std::make_unique<AuthDialogContentsView>(auth_methods), parent_window);
 
   aura::Window* window = widget_->GetNativeWindow();
   rounded_corner_decorator_ = std::make_unique<RoundedCornerDecorator>(

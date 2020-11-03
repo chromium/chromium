@@ -46,6 +46,11 @@
 #include "device/fido/win/authenticator.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "ash/public/cpp/webauthn_request_registrar.h"
+#include "ui/aura/window.h"
+#endif
+
 namespace {
 
 // Returns true iff |relying_party_id| is listed in the
@@ -445,6 +450,16 @@ ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfigForProfile(
                                     TouchIdMetadataSecret(profile)};
 }
 #endif
+
+#if defined(OS_CHROMEOS)
+ChromeAuthenticatorRequestDelegate::ChromeOSGenerateRequestIdCallback
+ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback(
+    content::RenderFrameHost* render_frame_host) {
+  aura::Window* window =
+      render_frame_host->GetNativeView()->GetToplevelWindow();
+  return ash::WebAuthnRequestRegistrar::Get()->GetRegisterCallback(window);
+}
+#endif  // defined(OS_CHROMEOS)
 
 void ChromeAuthenticatorRequestDelegate::UpdateLastTransportUsed(
     device::FidoTransportProtocol transport) {

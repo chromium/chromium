@@ -9,6 +9,10 @@
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "base/optional.h"
 
+namespace aura {
+class Window;
+}
+
 namespace ash {
 
 // InSessionAuthDialogController manages the in-session auth dialog.
@@ -29,7 +33,8 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   virtual void SetClient(InSessionAuthDialogClient* client) = 0;
 
   // Displays the authentication dialog.
-  virtual void ShowAuthenticationDialog(FinishCallback finish_callback) = 0;
+  virtual void ShowAuthenticationDialog(aura::Window* source_window,
+                                        FinishCallback finish_callback) = 0;
 
   // Destroys the authentication dialog.
   virtual void DestroyAuthenticationDialog() = 0;

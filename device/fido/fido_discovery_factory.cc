@@ -178,8 +178,14 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   return base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)
-             ? std::make_unique<FidoChromeOSDiscovery>()
+             ? std::make_unique<FidoChromeOSDiscovery>(
+                   generate_request_id_callback_)
              : nullptr;
+}
+
+void FidoDiscoveryFactory::set_generate_request_id_callback(
+    base::RepeatingCallback<uint32_t()> callback) {
+  generate_request_id_callback_ = std::move(callback);
 }
 #endif
 

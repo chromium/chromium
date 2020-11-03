@@ -9,6 +9,10 @@
 
 #include "ash/ash_export.h"
 
+namespace aura {
+class Window;
+}
+
 namespace views {
 class Widget;
 }
@@ -22,7 +26,7 @@ class RoundedCornerDecorator;
 // completed.
 class InSessionAuthDialog {
  public:
-  explicit InSessionAuthDialog(uint32_t auth_methods);
+  InSessionAuthDialog(uint32_t auth_methods, aura::Window* parent_window);
   InSessionAuthDialog(const InSessionAuthDialog&) = delete;
   InSessionAuthDialog& operator=(const InSessionAuthDialog&) = delete;
   ~InSessionAuthDialog();
