@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -28,6 +29,8 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 }
 
 }  // namespace
+
+using ContextType = ExtensionBrowserTest::ContextType;
 
 class ExperimentalApiTest : public ExtensionApiTest {
  public:
@@ -43,6 +46,23 @@ class PermissionsApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
+};
+
+class PermissionsApiTestWithContextType
+    : public PermissionsApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  PermissionsApiTestWithContextType() {
+    // Service Workers are currently only available on certain channels, so set
+    // the channel for those tests.
+    if (GetParam() == ContextType::kServiceWorker) {
+      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
+    }
+  }
+
+ private:
+  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
+      current_channel_;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, PermissionsFail) {
@@ -96,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_AlwaysAllowed) {
 }
 
 // Tests that the optional permissions API works correctly.
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsGranted) {
+IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
+                       OptionalPermissionsGranted) {
   // Mark all the tested APIs as granted to bypass the confirmation UI.
   APIPermissionSet apis;
   apis.insert(APIPermission::kBookmark);
@@ -115,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsGranted) {
 }
 
 // Tests that the optional permissions API works correctly.
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsAutoConfirm) {
+IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
+                       OptionalPermissionsAutoConfirm) {
   // Rather than setting the granted permissions, set the UI autoconfirm flag
   // and run the same tests.
   PermissionsRequestFunction::SetAutoConfirmForTests(true);
@@ -242,5 +264,12 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsUpdatesBindings) {
   ASSERT_TRUE(RunExtensionTest("permissions/optional_updates_bindings"))
       << message_;
 }
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         PermissionsApiTestWithContextType,
+                         testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         PermissionsApiTestWithContextType,
+                         testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions
