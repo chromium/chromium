@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.native_page;
 import android.net.Uri;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -42,6 +43,31 @@ public interface NativePage {
      * @return The background color of the page.
      */
     int getBackgroundColor();
+
+    /**
+     * @param defaultColor Default color if not customized.
+     * @return The color of the toolbar textbox background.
+     */
+    default @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
+        return defaultColor;
+    }
+
+    /**
+     * @param defaultColor Default color if not customized.
+     * @return The toolbar (or browser controls) color used in the compositor scene layer.
+     * @see {@link Toolbar#getToolbarSceneLayerBackground()}
+     */
+    default @ColorInt int getToolbarSceneLayerBackground(@ColorInt int defaultColor) {
+        return defaultColor;
+    }
+
+    /**
+     * @param defaultAlpha Default alpha if not customized.
+     * @return Alpha for the toolbar textbox.
+     */
+    default float getToolbarTextBoxAlpha(float defaultColor) {
+        return defaultColor;
+    }
 
     /**
      * @return True if the native page needs the toolbar shadow to be drawn.

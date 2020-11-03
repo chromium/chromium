@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,6 +69,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -96,6 +99,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final String mTitle;
+    private Resources mResources;
     private final int mBackgroundColor;
     protected final NewTabPageManagerImpl mNewTabPageManager;
     protected final TileGroup.Delegate mTileGroupDelegate;
@@ -293,6 +297,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTileGroupDelegate = new NewTabPageTileGroupDelegate(
                 activity, profile, navigationDelegate, snackbarManager);
 
+        mResources = activity.getResources();
         mTitle = activity.getResources().getString(R.string.button_new_tab);
         mBackgroundColor =
                 ApiCompatibilityUtils.getColor(activity.getResources(), R.color.default_bg_color);
@@ -749,6 +754,27 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Override
     public int getBackgroundColor() {
         return mBackgroundColor;
+    }
+
+    @Override
+    public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
+        if (isLocationBarShownInNTP()) {
+            return isLocationBarScrolledToTopInNtp()
+                    ? ApiCompatibilityUtils.getColor(
+                            mResources, R.color.toolbar_text_box_background)
+                    : ChromeColors.getPrimaryBackgroundColor(mResources, false);
+        }
+        return defaultColor;
+    }
+
+    @Override
+    public @ColorInt int getToolbarSceneLayerBackground(@ColorInt int defaultColor) {
+        return isLocationBarShownInNTP() ? getBackgroundColor() : defaultColor;
+    }
+
+    @Override
+    public float getToolbarTextBoxAlpha(float defaultAlpha) {
+        return isLocationBarShownInNTP() ? 0.f : defaultAlpha;
     }
 
     @Override

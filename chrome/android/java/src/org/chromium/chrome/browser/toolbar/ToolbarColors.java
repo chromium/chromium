@@ -18,10 +18,10 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
@@ -36,23 +36,18 @@ public class ToolbarColors {
      * Determine the text box background color given the current tab.
      * @param res {@link Resources} used to retrieve colors.
      * @param tab The current {@link Tab}
-     * @param color The color of the toolbar background.
+     * @param backgroundColor The color of the toolbar background.
      * @return The base color for the textbox given a toolbar background color.
      */
-    public static int getTextBoxColorForToolbarBackground(
-            Resources res, @Nullable Tab tab, int color) {
+    public static @ColorInt int getTextBoxColorForToolbarBackground(
+            Resources res, @Nullable Tab tab, @ColorInt int backgroundColor) {
         boolean isIncognito = tab != null && tab.isIncognito();
-        if (tab != null && tab.getNativePage() instanceof NewTabPage) {
-            NewTabPage page = (NewTabPage) tab.getNativePage();
-            if (page.isLocationBarShownInNTP()) {
-                return page.isLocationBarScrolledToTopInNtp()
-                        ? ApiCompatibilityUtils.getColor(res, R.color.toolbar_text_box_background)
-                        : ChromeColors.getPrimaryBackgroundColor(res, false);
-            }
-        }
-
-        return ToolbarColors.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                res, color, isIncognito);
+        @ColorInt
+        int defaultColor = getTextBoxColorForToolbarBackgroundInNonNativePage(
+                res, backgroundColor, isIncognito);
+        NativePage nativePage = tab != null ? tab.getNativePage() : null;
+        return nativePage != null ? nativePage.getToolbarTextBoxBackgroundColor(defaultColor)
+                                  : defaultColor;
     }
 
     /**
@@ -62,8 +57,8 @@ public class ToolbarColors {
      * @param isIncognito Whether or not the color is used for incognito mode.
      * @return The base color for the textbox given a toolbar background color.
      */
-    public static int getTextBoxColorForToolbarBackgroundInNonNativePage(
-            Resources res, int color, boolean isIncognito) {
+    public static @ColorInt int getTextBoxColorForToolbarBackgroundInNonNativePage(
+            Resources res, @ColorInt int color, boolean isIncognito) {
         // Text box color on default toolbar background in incognito mode is a pre-defined
         // color. We calculate the equivalent opaque color from the pre-defined translucent color.
         if (isIncognito) {
@@ -95,26 +90,22 @@ public class ToolbarColors {
     public static @ColorInt int getToolbarSceneLayerBackground(Tab tab) {
         // On NTP, the toolbar background is tinted as the NTP background color, so return NTP
         // background color here to make animation smoother.
-        if (tab.getNativePage() instanceof NewTabPage) {
-            if (((NewTabPage) tab.getNativePage()).isLocationBarShownInNTP()) {
-                return tab.getNativePage().getBackgroundColor();
-            }
-        }
-
-        return TabThemeColorHelper.getColor(tab);
+        @ColorInt
+        int defaultColor = TabThemeColorHelper.getColor(tab);
+        NativePage nativePage = tab.getNativePage();
+        return nativePage != null ? nativePage.getToolbarSceneLayerBackground(defaultColor)
+                                  : defaultColor;
     }
 
     /**
      * @return Alpha for the textbox given a Tab.
      */
     public static float getTextBoxAlphaForToolbarBackground(Tab tab) {
-        if (tab.getNativePage() instanceof NewTabPage) {
-            if (((NewTabPage) tab.getNativePage()).isLocationBarShownInNTP()) return 0f;
-        }
-        int color = TabThemeColorHelper.getColor(tab);
-        return ColorUtils.shouldUseOpaqueTextboxBackground(color)
-                ? 1f
+        float alpha = ColorUtils.shouldUseOpaqueTextboxBackground(TabThemeColorHelper.getColor(tab))
+                ? 1.f
                 : LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA;
+        NativePage nativePage = tab.getNativePage();
+        return nativePage != null ? nativePage.getToolbarTextBoxAlpha(alpha) : alpha;
     }
 
     /**

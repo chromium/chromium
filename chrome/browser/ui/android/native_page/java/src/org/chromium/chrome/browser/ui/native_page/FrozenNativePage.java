@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.ui.native_page;
 
+import android.graphics.Color;
 import android.view.View;
+
+import androidx.annotation.ColorInt;
 
 /**
  * A empty stand-in for a native page. An inactive NativePage may be replaced with a
@@ -14,6 +17,8 @@ import android.view.View;
  * return null.
  */
 public class FrozenNativePage implements NativePage {
+    @ColorInt
+    private static final int INVALID_COLOR = Color.TRANSPARENT;
     private final String mUrl;
     private final String mHost;
     private final String mTitle;
@@ -59,6 +64,21 @@ public class FrozenNativePage implements NativePage {
     @Override
     public int getBackgroundColor() {
         return mBackgroundColor;
+    }
+
+    @Override
+    public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
+        return INVALID_COLOR;
+    }
+
+    @Override
+    public @ColorInt int getToolbarSceneLayerBackground(@ColorInt int defaultColor) {
+        return INVALID_COLOR;
+    }
+
+    @Override
+    public float getToolbarTextBoxAlpha(float defaultAlpha) {
+        return 1.f;
     }
 
     @Override
