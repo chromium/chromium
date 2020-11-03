@@ -2501,14 +2501,15 @@ void SkiaRenderer::FinishDrawingQuadList() {
   if (!batched_quads_.empty())
     FlushBatchedQuads();
 
-  // Drawing the delegated ink trail must happen after the final
-  // FlushBatchedQuads() call so that the trail can always be on top of
-  // everything else that has already been drawn on the page.
-  if (delegated_ink_point_renderer_)
-    DrawDelegatedInkTrail();
-
   bool is_root_render_pass =
       current_frame()->current_render_pass == current_frame()->root_render_pass;
+
+  // Drawing the delegated ink trail must happen after the final
+  // FlushBatchedQuads() call so that the trail can always be on top of
+  // everything else that has already been drawn on the page. For the same
+  // reason, it should only happen on the root render pass.
+  if (is_root_render_pass && delegated_ink_point_renderer_)
+    DrawDelegatedInkTrail();
 
   base::OnceClosure on_finished_callback;
   // Signal |current_frame_resource_fence_| when the root render pass is

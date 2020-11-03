@@ -5346,6 +5346,50 @@ TEST_P(DelegatedInkTest, DelegatedInkTrailAfterBatchedQuads) {
           FILE_PATH_LITERAL("delegated_ink_trail_on_batched_quads.png")),
       cc::FuzzyPixelOffByOneComparator(true)));
 }
+
+// Confirm that delegated ink trails are not drawn on non-root render passes.
+TEST_P(DelegatedInkTest, SimpleTrailNonRootRenderPass) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  AggregatedRenderPassId child_id{2};
+  auto child_pass = CreateTestRenderPass(child_id, rect, gfx::Transform());
+
+  SharedQuadState* child_shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), rect, child_pass.get(), gfx::RRectF());
+
+  auto* color_quad = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  color_quad->SetNew(child_shared_state, rect, rect, SK_ColorGREEN, false);
+
+  AggregatedRenderPassId root_id{1};
+  auto root_pass = CreateTestRootRenderPass(root_id, rect, rect);
+
+  SharedQuadState* root_shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), rect, root_pass.get(), gfx::RRectF());
+
+  CreateTestRenderPassDrawQuad(root_shared_state, rect, child_id,
+                               root_pass.get());
+
+  auto* child_pass_ptr = child_pass.get();
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  // Values for a simple delegated ink trail, numbers chosen arbitrarily.
+  const gfx::RectF kPresentationArea(0, 0, 200, 200);
+  CreateAndSendMetadata(gfx::PointF(156.f, 111.f), 19.177f, SK_ColorRED,
+                        kPresentationArea);
+  CreateAndSendPointFromMetadata();
+  CreateAndSendPointFromLastPoint(gfx::PointF(119, 87.23f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(74.222f, 95.4f));
+
+  // This will only check what was drawn in the child pass, which should never
+  // contain a delegated ink trail, so it should be solid green.
+  EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
+      &pass_list, child_pass_ptr,
+      base::FilePath(FILE_PATH_LITERAL("green.png")),
+      cc::ExactPixelComparator(true)));
+}
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace
