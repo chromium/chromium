@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/canvas.h"
@@ -16,6 +17,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -57,6 +59,12 @@ SkPath GetHighlightPathInternal(const View* view) {
 
 // static
 FocusRing* FocusRing::Install(View* parent) {
+  if (IsViewClass<Button>(parent)) {
+    // Ensure we don't install dual focus rings on a button.
+    Button* button = static_cast<Button*>(parent);
+    if (button->GetInstallFocusRingOnFocus())
+      button->SetInstallFocusRingOnFocus(false);
+  }
   auto ring = base::WrapUnique<FocusRing>(new FocusRing());
   ring->InvalidateLayout();
   ring->SchedulePaint();
