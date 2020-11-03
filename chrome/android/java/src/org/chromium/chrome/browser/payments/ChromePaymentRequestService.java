@@ -197,6 +197,7 @@ public class ChromePaymentRequestService
 
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
+    private boolean mIsGooglePayBridgeActivated;
 
     /** The delegate of this class */
     public interface Delegate extends PaymentRequestService.Delegate {
@@ -264,54 +265,56 @@ public class ChromePaymentRequestService
         assert rawMethodData != null;
         assert details != null;
 
-        boolean googlePayBridgeActivated = googlePayBridgeEligible
-                && SkipToGPayHelperUtil.canActivateExperiment(mWebContents, rawMethodData);
-
-        Map<String, PaymentMethodData> methodData =
-                getValidatedMethodData(rawMethodData, googlePayBridgeActivated);
-
+        onWhetherGooglePayBridgeEligible(googlePayBridgeEligible, mWebContents, rawMethodData);
+        @Nullable
+        Map<String, PaymentMethodData> methodData = getValidatedMethodData(rawMethodData);
+        modifyMethodData(methodData);
         if (methodData == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.USER_CANCEL);
             return false;
         }
-
-        if (googlePayBridgeActivated) {
-            PaymentMethodData data = methodData.get(MethodStrings.GOOGLE_PAY);
-            mSkipToGPayHelper = new SkipToGPayHelper(mPaymentOptions, data.gpayBridgeData);
-        }
+        methodData = Collections.unmodifiableMap(methodData);
 
         mQueryForQuota = new HashMap<>(methodData);
-        if (mQueryForQuota.containsKey(MethodStrings.BASIC_CARD)
-                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
-            PaymentMethodData paymentMethodData = new PaymentMethodData();
-            paymentMethodData.stringifiedData =
-                    PaymentOptionsUtils.stringifyRequestedInformation(mPaymentOptions);
-            mQueryForQuota.put("basic-card-payment-options", paymentMethodData);
-        }
+        onQueryForQuotaCreated(mQueryForQuota);
 
-        if (!PaymentValidator.validatePaymentDetails(details)
-                || !parseAndValidateDetailsForSkipToGPayHelper(details)) {
+        if (!PaymentValidator.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
             return false;
         }
 
-        mSpec = new PaymentRequestSpec(mPaymentOptions, details, methodData.values(),
-                LocaleUtils.getDefaultLocaleString());
-        if (mSpec.getRawTotal() == null) {
+        if (disconnectIfExtraValidationFails(mWebContents, methodData, details, mPaymentOptions)) {
+            return false;
+        }
+
+        PaymentRequestSpec spec = new PaymentRequestSpec(mPaymentOptions, details,
+                methodData.values(), LocaleUtils.getDefaultLocaleString());
+        if (spec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.TOTAL_REQUIRED);
             return false;
         }
+        onSpecValidated(spec);
+        PaymentAppService service = PaymentAppService.getInstance();
+        addPaymentAppFactories(service);
+        service.create(/*delegate=*/this);
+        return true;
+    }
 
+    private void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
+            WebContents webContents, PaymentMethodData[] rawMethodData) {
+        mIsGooglePayBridgeActivated = googlePayBridgeEligible
+                && SkipToGPayHelperUtil.canActivateExperiment(mWebContents, rawMethodData);
+    }
+
+    private void onSpecValidated(PaymentRequestSpec spec) {
+        mSpec = spec;
         mPaymentUiService.initialize(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
-
-        PaymentAppService service = PaymentAppService.getInstance();
-        addUniqueFactoriesToPaymentAppService(service);
-        service.create(/*delegate=*/this);
 
         // Log the various types of payment methods that were requested by the merchant.
         boolean requestedMethodGoogle = false;
@@ -344,10 +347,40 @@ public class ChromePaymentRequestService
         mJourneyLogger.setRequestedPaymentMethodTypes(
                 /*requestedBasicCard=*/mPaymentUiService.merchantSupportsAutofillCards(),
                 requestedMethodGoogle, requestedMethodOther);
-        return true;
     }
 
-    private void addUniqueFactoriesToPaymentAppService(PaymentAppService service) {
+    private boolean disconnectIfExtraValidationFails(WebContents webContents,
+            Map<String, PaymentMethodData> methodData, PaymentDetails details,
+            PaymentOptions options) {
+        assert mPaymentRequestService != null;
+        assert methodData != null;
+        assert details != null;
+
+        if (mIsGooglePayBridgeActivated) {
+            PaymentMethodData data = methodData.get(MethodStrings.GOOGLE_PAY);
+            mSkipToGPayHelper = new SkipToGPayHelper(options, data.gpayBridgeData);
+        }
+
+        if (!parseAndValidateDetailsForSkipToGPayHelper(details)) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
+            return true;
+        }
+        return false;
+    }
+
+    private void onQueryForQuotaCreated(Map<String, PaymentMethodData> queryForQuota) {
+        if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
+                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
+            PaymentMethodData paymentMethodData = new PaymentMethodData();
+            paymentMethodData.stringifiedData =
+                    PaymentOptionsUtils.stringifyRequestedInformation(mPaymentOptions);
+            queryForQuota.put("basic-card-payment-options", paymentMethodData);
+        }
+    }
+
+    private void addPaymentAppFactories(PaymentAppService service) {
         String androidFactoryId = AndroidPaymentAppFactory.class.getName();
         if (!service.containsFactory(androidFactoryId)) {
             service.addUniqueFactory(new AndroidPaymentAppFactory(), androidFactoryId);
@@ -562,31 +595,39 @@ public class ChromePaymentRequestService
         }
     }
 
+    @Nullable
     private static Map<String, PaymentMethodData> getValidatedMethodData(
-            PaymentMethodData[] methodData, boolean googlePayBridgeEligible) {
+            PaymentMethodData[] methodDataList) {
         // Payment methodData are required.
-        assert methodData != null;
-        if (methodData.length == 0) return null;
+        assert methodDataList != null;
+        if (methodDataList.length == 0) return null;
         Map<String, PaymentMethodData> result = new ArrayMap<>();
-        for (int i = 0; i < methodData.length; i++) {
-            String method = methodData[i].supportedMethod;
-
-            if (TextUtils.isEmpty(method)) return null;
-
-            if (googlePayBridgeEligible) {
-                // If skip-to-GPay flow is activated, ignore all other payment methods, which can be
-                // either "basic-card" or "https://android.com/pay". The latter is safe to ignore
-                // because merchant has already requested Google Pay.
-                if (!method.equals(MethodStrings.GOOGLE_PAY)) continue;
-                if (methodData[i].gpayBridgeData != null
-                        && !methodData[i].gpayBridgeData.stringifiedData.isEmpty()) {
-                    methodData[i].stringifiedData = methodData[i].gpayBridgeData.stringifiedData;
-                }
-            }
-            result.put(method, methodData[i]);
+        for (PaymentMethodData methodData : methodDataList) {
+            String methodName = methodData.supportedMethod;
+            if (TextUtils.isEmpty(methodName)) return null;
+            result.put(methodName, methodData);
         }
+        return result;
+    }
 
-        return Collections.unmodifiableMap(result);
+    private void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodDataMap) {
+        if (!mIsGooglePayBridgeActivated || methodDataMap == null) return;
+        Map<String, PaymentMethodData> result = new ArrayMap<>();
+        for (PaymentMethodData methodData : methodDataMap.values()) {
+            String method = methodData.supportedMethod;
+            assert !TextUtils.isEmpty(method);
+            // If skip-to-GPay flow is activated, ignore all other payment methods, which can be
+            // either "basic-card" or "https://android.com/pay". The latter is safe to ignore
+            // because merchant has already requested Google Pay.
+            if (!method.equals(MethodStrings.GOOGLE_PAY)) continue;
+            if (methodData.gpayBridgeData != null
+                    && !methodData.gpayBridgeData.stringifiedData.isEmpty()) {
+                methodData.stringifiedData = methodData.gpayBridgeData.stringifiedData;
+            }
+            result.put(method, methodData);
+        }
+        methodDataMap.clear();
+        methodDataMap.putAll(result);
     }
 
     /** Called by the payment app to get updated total based on the billing address, for example. */
