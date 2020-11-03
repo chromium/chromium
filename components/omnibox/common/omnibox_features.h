@@ -17,7 +17,7 @@ extern const base::Feature kOmniboxShortBookmarkSuggestions;
 extern const base::Feature kOmniboxTailSuggestions;
 extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
-extern const base::Feature kEnableClipboardProviderImageSuggestions;
+extern const base::Feature kImageSearchSuggestionThumbnail;
 extern const base::Feature kSearchProviderWarmUpOnFocus;
 extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kUIExperimentSwapTitleAndUrl;

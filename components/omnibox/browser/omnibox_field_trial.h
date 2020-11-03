@@ -551,10 +551,6 @@ extern const char kRichAutocompletionSplitTitleCompletionParam[];
 extern const char kRichAutocompletionSplitUrlCompletionParam[];
 extern const char kRichAutocompletionSplitCompletionMinCharParam[];
 
-// Parameter names used by image search experiment that shows thumbnail in front
-// of the Omnibox clipboard image search suggestion.
-extern const char kImageSearchSuggestionThumbnail[];
-
 // Parameter names used by omnibox experiments that hide the path (and
 // optionally subdomains) in the steady state.
 extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];

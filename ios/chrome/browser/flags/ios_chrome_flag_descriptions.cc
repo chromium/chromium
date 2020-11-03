@@ -210,11 +210,6 @@ const char kEnableAutofillCacheServerCardInfoDescription[] =
     "If enabled, when a server card is unmasked, its info will be cached until "
     "page navigation to simplify consecutive fills on the same page.";
 
-const char kEnableClipboardProviderImageSuggestionsName[] =
-    "Enable copied image provider";
-const char kEnableClipboardProviderImageSuggestionsDescription[] =
-    "Enable suggesting a search for the image copied to the clipboard";
-
 const char kEnableCloseAllTabsConfirmationName[] =
     "Enable Close All Tabs confirmation";
 const char kEnableCloseAllTabsConfirmationDescription[] =

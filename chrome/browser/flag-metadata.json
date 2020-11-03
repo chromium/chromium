@@ -1273,11 +1273,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "enable-clipboard-provider-image-suggestions",
-    "owners": [ "rkgibson", "gangwu", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-close-all-tabs-confirmation",
     "owners": [ "ewannpv. gambard" ],
     "expiry_milestone": 90

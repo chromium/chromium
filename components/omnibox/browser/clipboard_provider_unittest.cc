@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -160,10 +159,6 @@ TEST_F(ClipboardProviderTest, MatchesText) {
 }
 
 TEST_F(ClipboardProviderTest, MatchesImage) {
-  base::test::ScopedFeatureList feature_list;
-  base::Feature imageFeature =
-      omnibox::kEnableClipboardProviderImageSuggestions;
-  feature_list.InitAndEnableFeature(imageFeature);
   auto template_url_service =
       std::make_unique<TemplateURLService>(/*initializers=*/nullptr,
                                            /*count=*/0);

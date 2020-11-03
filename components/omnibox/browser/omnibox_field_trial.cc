@@ -976,9 +976,6 @@ const char OmniboxFieldTrial::kRichAutocompletionSplitUrlCompletionParam[] =
 const char OmniboxFieldTrial::kRichAutocompletionSplitCompletionMinCharParam[] =
     "RichAutocompletionSplitCompletionMinChar";
 
-const char OmniboxFieldTrial::kImageSearchSuggestionThumbnail[] =
-    "ImageSearchSuggestionThumbnail";
-
 const char OmniboxFieldTrial::kOmniboxUIUnelideURLOnHoverThresholdMsParam[] =
     "OmniboxUIUnelideURLOnHoverThresholdMsdMs";
 

@@ -178,11 +178,6 @@ extern const char kEmbedderBlockRestoreUrlDescription[];
 extern const char kEnableAutofillCacheServerCardInfoName[];
 extern const char kEnableAutofillCacheServerCardInfoDescription[];
 
-// Title and description for the flag to enable the clipboard provider to
-// suggest searchihng for copied images.
-extern const char kEnableClipboardProviderImageSuggestionsName[];
-extern const char kEnableClipboardProviderImageSuggestionsDescription[];
-
 // Title and description for the flag to enable the confirmational action sheet
 // for the tab grid "Close All" action.
 extern const char kEnableCloseAllTabsConfirmationName[];

@@ -87,9 +87,6 @@ extern const char kEnableBloomDescription[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 
-extern const char kEnableClipboardProviderImageSuggestionsName[];
-extern const char kEnableClipboardProviderImageSuggestionsDescription[];
-
 extern const char kEnableFtpName[];
 extern const char kEnableFtpDescription[];
 

@@ -1913,16 +1913,6 @@ const FeatureEntry::FeatureVariation
          base::size(kOmniboxSearchEngineLogoLoupeEverywhereVariationConstant),
          nullptr}};
 
-const FeatureEntry::FeatureParam
-    kOmniboxImageSearchSuggestionThumbnailVariationConstant[] = {
-        {"ImageSearchSuggestionThumbnail", "true"}};
-const FeatureEntry::FeatureVariation
-    kOmniboxImageSearchSuggestionThumbnailVariation[] = {
-        {"(with thumbnail)",
-         kOmniboxImageSearchSuggestionThumbnailVariationConstant,
-         base::size(kOmniboxImageSearchSuggestionThumbnailVariationConstant),
-         nullptr}};
-
 const FeatureEntry::FeatureParam kTabbedAppOverflowMenuRegroupBackward[] = {
     {"action_bar", "backward_button"}};
 const FeatureEntry::FeatureParam kTabbedAppOverflowMenuRegroupShare[] = {
@@ -5845,17 +5835,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBackForwardCache,
                                     kBackForwardCacheVariations,
                                     "BackForwardCache")},
-
-#if defined(OS_ANDROID)
-    {"enable-clipboard-provider-image-suggestions",
-     flag_descriptions::kEnableClipboardProviderImageSuggestionsName,
-     flag_descriptions::kEnableClipboardProviderImageSuggestionsDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kEnableClipboardProviderImageSuggestions,
-         kOmniboxImageSearchSuggestionThumbnailVariation,
-         "OmniboxEnableClipboardProviderImageSuggestions")},
-#endif  // defined(OS_ANDROID)
 
     {"impulse-scroll-animations",
      flag_descriptions::kImpulseScrollAnimationsName,

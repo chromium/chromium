@@ -294,9 +294,7 @@ void ClipboardProvider::CheckClipboardContent(const AutocompleteInput& input) {
     desired_types.insert(ClipboardContentType::Text);
   }
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kEnableClipboardProviderImageSuggestions) &&
-      TemplateURLSupportsImageSearch()) {
+  if (TemplateURLSupportsImageSearch()) {
     desired_types.insert(ClipboardContentType::Image);
   }
 
@@ -324,15 +322,8 @@ void ClipboardProvider::OnReceiveClipboardContent(
     AutocompleteMatch match = NewBlankImageMatch();
     field_trial_triggered_ = true;
     field_trial_triggered_in_session_ = true;
-    // Some users may be in a counterfactual study arm in which we perform all
-    // necessary work but do not forward the autocomplete matches.
-    bool in_counterfactual_group = base::GetFieldTrialParamByFeatureAsBool(
-        omnibox::kEnableClipboardProviderImageSuggestions,
-        "ClipboardProviderImageSuggestionsCounterfactualArm", false);
-    if (!in_counterfactual_group) {
-      AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-      listener_->OnProviderUpdate(true);
-    }
+    AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
+    listener_->OnProviderUpdate(true);
   } else if (matched_types.find(ClipboardContentType::URL) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankURLMatch();
@@ -393,12 +384,6 @@ base::Optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
 }
 
 bool ClipboardProvider::CreateImageMatch(const AutocompleteInput& input) {
-  // Only try image match if feature is enabled
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kEnableClipboardProviderImageSuggestions)) {
-    return false;
-  }
-
   if (!clipboard_content_->HasRecentImageFromClipboard()) {
     return false;
   }
@@ -594,9 +579,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
       *match.search_terms_args.get(), url_service->search_terms_data(),
       &post_content));
 
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kEnableClipboardProviderImageSuggestions,
-          OmniboxFieldTrial::kImageSearchSuggestionThumbnail, true)) {
+  if (!base::FeatureList::IsEnabled(omnibox::kImageSearchSuggestionThumbnail)) {
     // If Omnibox image suggestion do not need thumbnail, release memory.
     match.search_terms_args.reset();
   }
