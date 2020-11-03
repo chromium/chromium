@@ -310,6 +310,10 @@ class JobHandleImpl : public v8::JobHandle {
   void NotifyConcurrencyIncrease() override {
     handle_.NotifyConcurrencyIncrease();
   }
+  bool UpdatePriorityEnabled() const override { return true; }
+  void UpdatePriority(v8::TaskPriority new_priority) override {
+    handle_.UpdatePriority(ToBaseTaskPriority(new_priority));
+  }
   void Join() override { handle_.Join(); }
   void Cancel() override { handle_.Cancel(); }
   void CancelAndDetach() override { handle_.CancelAndDetach(); }
@@ -317,6 +321,17 @@ class JobHandleImpl : public v8::JobHandle {
   bool IsRunning() override { return !!handle_; }
 
  private:
+  static base::TaskPriority ToBaseTaskPriority(v8::TaskPriority priority) {
+    switch (priority) {
+      case v8::TaskPriority::kBestEffort:
+        return base::TaskPriority::BEST_EFFORT;
+      case v8::TaskPriority::kUserVisible:
+        return base::TaskPriority::USER_VISIBLE;
+      case v8::TaskPriority::kUserBlocking:
+        return base::TaskPriority::USER_BLOCKING;
+    }
+  }
+
   base::JobHandle handle_;
   std::unique_ptr<v8::JobTask> job_task_;
 };
