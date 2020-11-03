@@ -471,6 +471,7 @@ mojom("mojom") {
     "proxy_resolving_socket.mojom",
     "quic_transport.mojom",
     "referrer_policy.mojom",
+    "schemeful_site.mojom",
     "source_location.mojom",
     "ssl_config.mojom",
     "supports_loading_mode.mojom",
@@ -854,6 +855,17 @@ mojom("mojom") {
         "//mojo/public/cpp/base",
         "//net",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SchemefulSite"
+          cpp = "::net::SchemefulSite"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/schemeful_site_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps

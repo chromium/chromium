@@ -141,6 +141,14 @@ TEST(SchemefulSiteTest, OpaqueOrigins) {
   EXPECT_NE(SchemefulSite(opaque_origin_a), SchemefulSite(opaque_origin_b));
 }
 
+TEST(SchemefulSiteTest, FileOriginWithoutHostname) {
+  SchemefulSite site1(url::Origin::Create(GURL("file:///")));
+  SchemefulSite site2(url::Origin::Create(GURL("file:///path/")));
+
+  EXPECT_EQ(site1, site2);
+  EXPECT_TRUE(site1.GetInternalOriginForTesting().host().empty());
+}
+
 TEST(SchemefulSiteTest, SerializationConsistent) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);

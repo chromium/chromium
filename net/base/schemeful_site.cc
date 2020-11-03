@@ -45,10 +45,11 @@ url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
   //
   // `GetDomainAndRegistry()` returns an empty string for IP literals and
   // effective TLDs.
+  //
+  // Note that `registerable_domain` could still end up empty, since the
+  // `origin` might have a scheme that permits empty hostnames, such as "file".
   if (registerable_domain.empty())
     registerable_domain = origin.host();
-
-  DCHECK(!registerable_domain.empty());
 
   int port = url::DefaultPortForScheme(origin.scheme().c_str(),
                                        origin.scheme().length());
@@ -57,8 +58,6 @@ url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
   if (port == url::PORT_UNSPECIFIED)
     port = 0;
 
-  // We tack on a port of 0, as a port is not included in the result of running
-  // the above algorithm.
   return url::Origin::CreateFromNormalizedTuple(origin.scheme(),
                                                 registerable_domain, port);
 }
@@ -66,10 +65,10 @@ url::Origin SwitchToRegistrableDomainAndRemovePort(const url::Origin& origin) {
 }  // namespace
 
 SchemefulSite::SchemefulSite(const url::Origin& origin)
-    : origin_(SwitchToRegistrableDomainAndRemovePort(origin)) {}
+    : site_as_origin_(SwitchToRegistrableDomainAndRemovePort(origin)) {}
 
 SchemefulSite::SchemefulSite(const GURL& url)
-    : origin_(
+    : site_as_origin_(
           SwitchToRegistrableDomainAndRemovePort(url::Origin::Create(url))) {}
 
 SchemefulSite::SchemefulSite(const SchemefulSite& other) = default;
@@ -84,19 +83,19 @@ SchemefulSite SchemefulSite::Deserialize(const std::string& value) {
 }
 
 std::string SchemefulSite::Serialize() const {
-  return origin_.Serialize();
+  return site_as_origin_.Serialize();
 }
 
 std::string SchemefulSite::GetDebugString() const {
-  return origin_.GetDebugString();
+  return site_as_origin_.GetDebugString();
 }
 
 const url::Origin& SchemefulSite::GetInternalOriginForTesting() const {
-  return origin_;
+  return site_as_origin_;
 }
 
 bool SchemefulSite::operator==(const SchemefulSite& other) const {
-  return origin_ == other.origin_;
+  return site_as_origin_ == other.site_as_origin_;
 }
 
 bool SchemefulSite::operator!=(const SchemefulSite& other) const {
@@ -106,7 +105,7 @@ bool SchemefulSite::operator!=(const SchemefulSite& other) const {
 // Allows SchemefulSite to be used as a key in STL containers (for example, a
 // std::set or std::map).
 bool SchemefulSite::operator<(const SchemefulSite& other) const {
-  return origin_ < other.origin_;
+  return site_as_origin_ < other.site_as_origin_;
 }
 
 // static
@@ -119,7 +118,7 @@ base::Optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
 }
 
 base::Optional<std::string> SchemefulSite::SerializeWithNonce() {
-  return origin_.SerializeWithNonceAndInitIfNeeded();
+  return site_as_origin_.SerializeWithNonceAndInitIfNeeded();
 }
 
 }  // namespace net

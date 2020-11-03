@@ -14,6 +14,17 @@
 
 class GURL;
 
+namespace network {
+namespace mojom {
+class SchemefulSiteDataView;
+}  // namespace mojom
+}  // namespace network
+
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+
 namespace net {
 
 // Class which represents a scheme and etld+1 for an origin, as specified by
@@ -21,6 +32,10 @@ namespace net {
 class NET_EXPORT SchemefulSite {
  public:
   SchemefulSite() = default;
+
+  // The passed `origin` may not match the resulting internal representation in
+  // certain circumstances. See the comment, below, on the `site_as_origin_`
+  // member.
   explicit SchemefulSite(const url::Origin& origin);
 
   // Using the origin constructor is preferred as this is less efficient.
@@ -38,17 +53,17 @@ class NET_EXPORT SchemefulSite {
   // Returns an opaque `SchemefulSite` if the value was invalid in any way.
   static SchemefulSite Deserialize(const std::string& value);
 
-  // Returns a serialized version of `origin_`. If the underlying origin is
-  // invalid, returns an empty string. If serialization of opaque origins with
-  // their associated nonce is necessary, see `SerializeWithNonce()`.
+  // Returns a serialized version of `site_as_origin_`. If the underlying origin
+  // is invalid, returns an empty string. If serialization of opaque origins
+  // with their associated nonce is necessary, see `SerializeWithNonce()`.
   std::string Serialize() const;
 
   std::string GetDebugString() const;
 
-  bool opaque() const { return origin_.opaque(); }
+  bool opaque() const { return site_as_origin_.opaque(); }
 
-  // Testing only function which allows tests to access the underlying `origin_`
-  // in order to verify behavior.
+  // Testing only function which allows tests to access the underlying
+  // `site_as_origin_` in order to verify behavior.
   const url::Origin& GetInternalOriginForTesting() const;
 
   bool operator==(const SchemefulSite& other) const;
@@ -58,6 +73,10 @@ class NET_EXPORT SchemefulSite {
   bool operator<(const SchemefulSite& other) const;
 
  private:
+  // Mojo serialization code needs to access internal origin.
+  friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,
+                                   SchemefulSite>;
+
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, OpaqueSerialization);
 
   // Deserializes a string obtained from `SerializeWithNonce()` to a
@@ -65,14 +84,25 @@ class NET_EXPORT SchemefulSite {
   static base::Optional<SchemefulSite> DeserializeWithNonce(
       const std::string& value);
 
-  // Returns a serialized version of `origin_`. For an opaque `origin_`, this
-  // serializes with the nonce.  See `url::origin::SerializeWithNonce()` for
-  // usage information.
+  // Returns a serialized version of `site_as_origin_`. For an opaque
+  // `site_as_origin_`, this serializes with the nonce.  See
+  // `url::origin::SerializeWithNonce()` for usage information.
   base::Optional<std::string> SerializeWithNonce();
 
   // Origin which stores the result of running the steps documented at
   // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site.
-  url::Origin origin_;
+  // This is not an arbitrary origin. It must either be an opaque origin, or a
+  // scheme + eTLD+1 + default port.
+  //
+  // The `origin` passed into the SchemefulSite(const url::Origin&) constructor
+  // might not match this internal representation used by this class to track
+  // the scheme and eTLD+1 representing a schemeful site. This may be the case
+  // if, e.g., the passed `origin` has an eTLD+1 that is not equal to its
+  // hostname, or if the port number is not the default port for its scheme.
+  //
+  // In general, this `site_as_origin_` used for the internal representation
+  // should NOT be used directly by SchemefulSite consumers.
+  url::Origin site_as_origin_;
 };
 
 }  // namespace net
