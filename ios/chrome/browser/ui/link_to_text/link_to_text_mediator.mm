@@ -74,11 +74,13 @@ using shared_highlighting::LinkGenerationError;
 
 - (void)shareLinkToText:(LinkToTextPayload*)payload {
   DCHECK(payload);
+  shared_highlighting::LogLinkGenerationStatus(true);
   [self.consumer generatedPayload:payload];
 }
 
 - (void)linkGenerationFailedWithError:(LinkGenerationError)error {
-  // TODO(crbug.com/1136043): Log appropriate failure metric.
+  shared_highlighting::LogLinkGenerationStatus(false);
+  shared_highlighting::LogLinkGenerationErrorReason(error);
   [self.consumer linkGenerationFailed];
 }
 

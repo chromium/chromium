@@ -11,8 +11,10 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
@@ -36,6 +38,7 @@ using shared_highlighting::TextFragment;
 using web::TestWebState;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using shared_highlighting::LinkGenerationError;
 
 namespace {
 const CGFloat kCaretWidth = 4.0;
@@ -157,6 +160,8 @@ TEST_F(LinkToTextMediatorTest, ShouldOfferLinkToText) {
 // Tests that the shareHighlight command is triggered with the right parameters
 // when the view is not zoomed in.
 TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
+  base::HistogramTester histogram_tester;
+
   CGFloat zoom = 1;
   CGRect selection_rect = CGRectMake(100, 150, 250, 250);
   CGRect expected_client_rect = CGRectMake(150, 250, 250 + kCaretWidth, 250);
@@ -187,12 +192,18 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
+                                      1);
 }
 
 // Tests that the shareHighlight command is triggered with the right parameters
 // when the current view is zoomed in.
 TEST_F(LinkToTextMediatorTest,
        HandleLinkToTextSelectionTriggersCommandWithZoom) {
+  base::HistogramTester histogram_tester;
+
   CGFloat zoom = 1.5;
   CGRect selection_rect = CGRectMake(100, 150, 250, 250);
   CGRect expected_client_rect = CGRectMake(200, 325, 375 + kCaretWidth, 375);
@@ -223,11 +234,17 @@ TEST_F(LinkToTextMediatorTest,
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
+                                      1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
 // error is returned from JavaScript.
 TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<base::Value> error_response =
       CreateErrorResponse(LinkGenerationOutcome::kInvalidSelection);
   SetLinkToTextResponse(std::move(error_response), /*zoom=*/1.0);
@@ -245,11 +262,20 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kIncorrectSelector,
+                                     1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
 // an empty response is returned from JavaScript.
 TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<base::Value> empty_response = std::make_unique<base::Value>();
   SetLinkToTextResponse(std::move(empty_response), /*zoom=*/1.0);
 
@@ -266,11 +292,19 @@ TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kUnknown, 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
 // a malformed response is returned from JavaScript.
 TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<base::Value> malformed_response =
       std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   malformed_response->SetStringKey("somethingElse", "abc");
@@ -289,11 +323,19 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kUnknown, 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when an
 // a string response is returned from JavaScript.
 TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<base::Value> string_response =
       std::make_unique<base::Value>("someValue");
   SetLinkToTextResponse(std::move(string_response), /*zoom=*/1.0);
@@ -311,11 +353,19 @@ TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kUnknown, 1);
 }
 
 // Tests that the consumer is informed of a failure to generate a link when a
 // success status is returned, but no payload.
 TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<base::Value> success_response =
       CreateErrorResponse(LinkGenerationOutcome::kSuccess);
   SetLinkToTextResponse(std::move(success_response), /*zoom=*/1.0);
@@ -333,4 +383,10 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
   }));
 
   [mocked_consumer_ verify];
+
+  // Make sure the correct metric were recorded.
+  histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", false,
+                                      1);
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                     LinkGenerationError::kUnknown, 1);
 }
