@@ -4,10 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 
 namespace {
@@ -17,6 +19,14 @@ void RecordListContactPeopleResultMetrics(NearbyShareHttpResult result,
   // TODO(https://crbug.com/1105579): Record a histogram value for each result.
   // TODO(https://crbug.com/1105579): On failure, record a histogram value for
   // the page that the request failed on.
+}
+
+void RecordContactDownloadMetrics(
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    size_t num_pages) {
+  // TODO(https://crbug.com/1105579): Record a histogram for the total number of
+  // pages needed, the ratio of contact types, and the ratio of (un)reachable
+  // contacts.
 }
 
 }  // namespace
@@ -118,9 +128,18 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
 
   NS_LOG(VERBOSE) << __func__ << ": Download of " << contacts_.size()
                   << " contacts succeeded.";
+  RecordContactDownloadMetrics(contacts_, current_page_number_);
 
-  // TODO(https://crbug.com/1105579): Record a histogram for the total number of
-  // pages needed.
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingDeviceContacts)) {
+    contacts_.erase(
+        std::remove_if(
+            contacts_.begin(), contacts_.end(),
+            [](const nearbyshare::proto::ContactRecord& contact) {
+              return contact.type() ==
+                     nearbyshare::proto::ContactRecord::DEVICE_CONTACT;
+            }),
+        contacts_.end());
+  }
 
   Succeed(std::move(contacts_));
 }

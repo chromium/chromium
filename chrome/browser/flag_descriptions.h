@@ -2511,6 +2511,9 @@ extern const char kMeteredShowToggleDescription[];
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 
+extern const char kNearbySharingDeviceContactsName[];
+extern const char kNearbySharingDeviceContactsDescription[];
+
 extern const char kNearbySharingWebRtcName[];
 extern const char kNearbySharingWebRtcDescription[];
 

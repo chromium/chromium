@@ -42690,6 +42690,7 @@ from previous Chrome versions.
   <int value="-1153892430"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:enabled"/>
   <int value="-1151766565" label="enable-fullscreen-tab-detaching"/>
+  <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
   <int value="-1150881704"
       label="ArcNativeBridge64BitSupportExperiment:enabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
@@ -45346,6 +45347,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:disabled"/>
   <int value="1514066770" label="DisplayCutoutAPI:enabled"/>
   <int value="1514119870" label="enable-file-manager-touch-mode"/>
+  <int value="1514158607" label="NearbySharingDeviceContacts:enabled"/>
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>

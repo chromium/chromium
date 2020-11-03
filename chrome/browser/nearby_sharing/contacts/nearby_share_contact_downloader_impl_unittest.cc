@@ -9,10 +9,12 @@
 
 #include "base/no_destructor.h"
 #include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
@@ -35,10 +37,13 @@ const std::vector<nearbyshare::proto::ContactRecord>& TestContactRecordList() {
       list([] {
         nearbyshare::proto::ContactRecord contact1;
         contact1.set_id(kTestContactRecordId1);
+        contact1.set_type(nearbyshare::proto::ContactRecord::GOOGLE_CONTACT);
         nearbyshare::proto::ContactRecord contact2;
         contact2.set_id(kTestContactRecordId2);
+        contact2.set_type(nearbyshare::proto::ContactRecord::DEVICE_CONTACT);
         nearbyshare::proto::ContactRecord contact3;
         contact3.set_id(kTestContactRecordId3);
+        contact3.set_type(nearbyshare::proto::ContactRecord::UNKNOWN);
         return std::vector<nearbyshare::proto::ContactRecord>{
             contact1, contact2, contact3};
       }());
@@ -218,4 +223,22 @@ TEST_F(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
       /*expected_page_token=*/kTestPageToken);
 
   VerifyFailure();
+}
+
+TEST_F(NearbyShareContactDownloaderImplTest, Success_FilterOutDeviceContacts) {
+  // Disable use of device contacts.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kNearbySharingDeviceContacts);
+
+  RunDownload();
+
+  SucceedListContactPeopleRequest(
+      /*expected_page_token=*/base::nullopt,
+      CreateListContactPeopleResponse(TestContactRecordList(),
+                                      /*next_page_token=*/base::nullopt));
+
+  // The device contact is filtered out.
+  VerifySuccess(/*expected_contacts=*/{TestContactRecordList()[0],
+                                       TestContactRecordList()[2]});
 }
