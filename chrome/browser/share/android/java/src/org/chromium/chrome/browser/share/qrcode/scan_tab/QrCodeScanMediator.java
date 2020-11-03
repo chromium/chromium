@@ -49,6 +49,7 @@ public class QrCodeScanMediator implements Camera.PreviewCallback {
     private final AndroidPermissionDelegate mPermissionDelegate;
 
     private BarcodeDetector mDetector;
+    private Toast mToast;
 
     /**
      * The QrCodeScanMediator constructor.
@@ -137,7 +138,7 @@ public class QrCodeScanMediator implements Camera.PreviewCallback {
     /**
      * Processes data received from the camera preview to detect QR/barcode containing URLs. If
      * found, navigates to it by creating a new tab. If not found registers for camera preview
-     * callback again. Runs on the same tread that was used to open the camera.
+     * callback again. Runs on the same thread that was used to open the camera.
      */
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
@@ -165,7 +166,11 @@ public class QrCodeScanMediator implements Camera.PreviewCallback {
         if (!URLUtil.isValidUrl(firstCode.rawValue)) {
             String toastMessage =
                     mContext.getString(R.string.qr_code_not_a_url_label, firstCode.rawValue);
-            Toast.makeText(mContext, toastMessage, Toast.LENGTH_LONG).show();
+            if (mToast != null) {
+                mToast.cancel();
+            }
+            mToast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_LONG);
+            mToast.show();
             RecordUserAction.record("SharingQRCode.ScannedNonURL");
             camera.setOneShotPreviewCallback(this);
             return;
