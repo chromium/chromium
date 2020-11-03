@@ -594,10 +594,27 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   handle.id.id = -1;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   handle.io_surface.reset(ioSurface, base::scoped_policy::RETAIN);
+
+  // The BT709_APPLE color space is stored as an ICC profile, which is parsed
+  // every frame in the GPU process. For this particularly common case, go back
+  // to ignoring the color profile, because doing so avoids doing an ICC profile
+  // parse.
+  // https://crbug.com/1143477 (CPU usage parsing ICC profile)
+  // https://crbug.com/959962 (ignoring color space)
+  gfx::ColorSpace overriddenColorSpace = colorSpace;
+  constexpr gfx::ColorSpace rec709Apple(
+      gfx::ColorSpace::PrimaryID::BT709,
+      gfx::ColorSpace::TransferID::BT709_APPLE,
+      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
+  if (colorSpace == rec709Apple) {
+    overriddenColorSpace = gfx::ColorSpace::CreateSRGB();
+    IOSurfaceSetValue(ioSurface, CFSTR("IOSurfaceColorSpace"),
+                      kCGColorSpaceSRGB);
+  }
+
   _lock.AssertAcquired();
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
-      std::move(handle),
-      captureFormat, colorSpace, timestamp);
+      std::move(handle), captureFormat, overriddenColorSpace, timestamp);
   return YES;
 }
 
