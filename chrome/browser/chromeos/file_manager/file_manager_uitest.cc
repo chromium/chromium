@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/base/filename_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace file_manager {
@@ -20,19 +21,25 @@ namespace file_manager {
 class FileManagerUITest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // --disable-web-security required to load resources from files.
+    // --disable-web-security required to launch Worker.
     command_line->AppendSwitch(switches::kDisableWebSecurity);
   }
 
-  void RunTest(std::string test_scope) {
-    base::FilePath root_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &root_path));
+  void RunTest(const char* name) {
+    base::FilePath out_dir;
+    CHECK(base::PathService::Get(base::DIR_EXE, &out_dir));
 
-    // Load test.html.
-    const GURL url = net::FilePathToFileURL(root_path.Append(
-        FILE_PATH_LITERAL("gen/ui/file_manager/file_manager/test.html")));
-    content::WebContents* const web_contents =
+    // Serve files from |gen_path|. Some files are read from DIR_SOURCE_ROOT
+    // so serve from there as well.
+    const base::FilePath gen_path =
+        out_dir.Append(FILE_PATH_LITERAL("gen/ui/file_manager/file_manager"));
+    embedded_test_server()->ServeFilesFromDirectory(gen_path);
+    embedded_test_server()->ServeFilesFromSourceDirectory(base::FilePath());
+    CHECK(embedded_test_server()->Start());
+
+    content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
+    CHECK(web_contents);
 
     // Set prefs required for cut/paste.
     auto web_prefs = web_contents->GetOrCreateWebPreferences();
@@ -40,13 +47,13 @@ class FileManagerUITest : public InProcessBrowserTest {
     web_prefs.javascript_can_access_clipboard = true;
     web_contents->SetWebPreferences(web_prefs);
 
-    ASSERT_TRUE(web_contents);
-    ui_test_utils::NavigateToURL(browser(), url);
+    // Load test page.
+    GURL test_page = embedded_test_server()->GetURL("/test.html");
+    ui_test_utils::NavigateToURL(browser(), test_page);
 
-    // Load and run specified test file.
+    // Run test |name|.
     content::DOMMessageQueue message_queue;
-    ExecuteScriptAsync(web_contents,
-                       base::StringPrintf("runTests(%s)", test_scope.c_str()));
+    ExecuteScriptAsync(web_contents, base::StrCat({"runTests(", name, ")"}));
 
     // Wait for JS to call domAutomationController.send("SUCCESS").
     std::string message;
