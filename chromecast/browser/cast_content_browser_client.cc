@@ -105,7 +105,6 @@
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/core/app/crashpad.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "media/audio/android/audio_manager_android.h"
 #else
 #include "chromecast/browser/memory_pressure_controller_impl.h"
@@ -175,11 +174,8 @@ CastContentBrowserClient::CastContentBrowserClient(
       // TODO(juke): Reenable this after solving casting issue on LAN.
       blink::features::kMixedContentAutoupgrade,
 #if defined(OS_ANDROID)
-          ::media::kAudioFocusLossSuspendMediaSession,
-          ::media::kRequestSystemAudioFocus,
-          // Temporarily disable SurfaceControl and AImageReader to solve some
-          // video playback stall issue. Remove once b/162803423 is fixed.
-          ::features::kAndroidSurfaceControl, ::features::kAImageReader,
+      ::media::kAudioFocusLossSuspendMediaSession,
+      ::media::kRequestSystemAudioFocus,
 #endif
   });
 }

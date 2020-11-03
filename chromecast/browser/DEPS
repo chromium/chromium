@@ -50,7 +50,6 @@ include_rules = [
   "+extensions/shell/browser/api",
   "+gin/v8_initializer.h",
   "+gpu/command_buffer/service/gpu_switches.h",
-  "+gpu/config/gpu_finch_features.h",
   "+media/audio",
   "+media/base",
   "+media/mojo",
