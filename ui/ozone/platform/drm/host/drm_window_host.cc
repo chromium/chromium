@@ -81,7 +81,7 @@ void DrmWindowHost::SetBounds(const gfx::Rect& bounds) {
   SendBoundsChange();
 }
 
-gfx::Rect DrmWindowHost::GetBounds() {
+gfx::Rect DrmWindowHost::GetBounds() const {
   return bounds_;
 }
 

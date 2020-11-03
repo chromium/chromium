@@ -149,7 +149,7 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
-gfx::Rect WaylandWindow::GetBounds() {
+gfx::Rect WaylandWindow::GetBounds() const {
   return bounds_px_;
 }
 

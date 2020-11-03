@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // Sets and gets the bounds of the platform-window. Note that the bounds is in
   // physical pixel coordinates.
   virtual void SetBounds(const gfx::Rect& bounds) = 0;
-  virtual gfx::Rect GetBounds() = 0;
+  virtual gfx::Rect GetBounds() const = 0;
 
   virtual void SetTitle(const base::string16& title) = 0;
 

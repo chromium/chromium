@@ -240,7 +240,7 @@ void X11Window::SetBounds(const gfx::Rect& bounds) {
   XWindow::SetBounds(bounds_in_pixels);
 }
 
-gfx::Rect X11Window::GetBounds() {
+gfx::Rect X11Window::GetBounds() const {
   return XWindow::bounds();
 }
 

@@ -40,7 +40,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   bool IsVisible() const override { return true; }
   void PrepareForShutdown() override {}
   void SetBounds(const gfx::Rect& bounds) override {}
-  gfx::Rect GetBounds() override { return gfx::Rect(); }
+  gfx::Rect GetBounds() const override { return gfx::Rect(); }
   void SetTitle(const base::string16& title) override {}
   void SetCapture() override {}
   void ReleaseCapture() override {}

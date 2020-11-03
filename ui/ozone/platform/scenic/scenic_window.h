@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   void AttachSurfaceView(fuchsia::ui::views::ViewHolderToken token);
 
   // PlatformWindow implementation.
-  gfx::Rect GetBounds() override;
+  gfx::Rect GetBounds() const override;
   void SetBounds(const gfx::Rect& bounds) override;
   void SetTitle(const base::string16& title) override;
   void Show(bool inactive) override;

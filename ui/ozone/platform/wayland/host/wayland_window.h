@@ -118,7 +118,7 @@ class WaylandWindow : public PlatformWindow, public PlatformEventDispatcher {
   bool IsVisible() const override;
   void PrepareForShutdown() override;
   void SetBounds(const gfx::Rect& bounds) override;
-  gfx::Rect GetBounds() override;
+  gfx::Rect GetBounds() const override;
   void SetTitle(const base::string16& title) override;
   void SetCapture() override;
   void ReleaseCapture() override;

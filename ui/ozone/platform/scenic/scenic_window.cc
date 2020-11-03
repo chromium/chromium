@@ -83,7 +83,7 @@ void ScenicWindow::AttachSurfaceView(
       [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
 }
 
-gfx::Rect ScenicWindow::GetBounds() {
+gfx::Rect ScenicWindow::GetBounds() const {
   return bounds_;
 }
 

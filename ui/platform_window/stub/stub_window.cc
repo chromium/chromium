@@ -43,7 +43,7 @@ void StubWindow::SetBounds(const gfx::Rect& bounds) {
   delegate_->OnBoundsChanged(bounds);
 }
 
-gfx::Rect StubWindow::GetBounds() {
+gfx::Rect StubWindow::GetBounds() const {
   return bounds_;
 }
 

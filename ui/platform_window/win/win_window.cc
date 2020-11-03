@@ -93,7 +93,7 @@ void WinWindow::SetBounds(const gfx::Rect& bounds) {
                window_bounds.width(), window_bounds.height(), flags);
 }
 
-gfx::Rect WinWindow::GetBounds() {
+gfx::Rect WinWindow::GetBounds() const {
   RECT cr;
   GetClientRect(hwnd(), &cr);
   return gfx::Rect(cr);
