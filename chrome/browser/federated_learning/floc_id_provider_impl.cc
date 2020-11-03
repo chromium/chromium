@@ -159,6 +159,8 @@ void FlocIdProviderImpl::Shutdown() {
   if (history_service_)
     history_service_->RemoveObserver(this);
   history_service_ = nullptr;
+
+  g_browser_process->floc_sorting_lsh_clusters_service()->RemoveObserver(this);
 }
 
 void FlocIdProviderImpl::OnURLsDeleted(
