@@ -78,7 +78,7 @@ bool DrawingDisplayItem::Equals(const DisplayItem& other) const {
   return BitmapsEqual(std::move(record), std::move(other_record), bounds);
 }
 
-SkColor DrawingDisplayItem::BackgroundColor(uint64_t& area) const {
+SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
   if (GetType() != DisplayItem::kBoxDecorationBackground &&
       GetType() != DisplayItem::kDocumentBackground &&
       GetType() != DisplayItem::kDocumentRootBackdrop)
@@ -111,8 +111,7 @@ SkColor DrawingDisplayItem::BackgroundColor(uint64_t& area) const {
       default:
         continue;
     }
-    area =
-        base::saturated_cast<uint64_t>(item_rect.width() * item_rect.height());
+    area = item_rect.width() * item_rect.height();
     return flags.getColor();
   }
   return SK_ColorTRANSPARENT;

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script>
+onload = () => {
+  if (window.testRunner && window.internals) {
+    testRunner.dumpAsText();
+    testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
+  }
+}
+</script>
+<div id="target" style="background: hotpink; padding: 10px; will-change: transform; position: absolute">
+  <div style="background: green; padding: 200px">
+    <div style="background: red; width: 200px; height: 200px"></div>
+  </div>
+</div>

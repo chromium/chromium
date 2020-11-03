@@ -23,7 +23,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroller'",
       "position": [5, 5],
       "bounds": [220, 236],
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 2
     },
     {
@@ -49,7 +49,7 @@
       "name": "LayoutNGBlockFlow DIV class='scroller'",
       "position": [5, 5],
       "bounds": [220, 236],
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 4
     },
     {
@@ -75,7 +75,7 @@
       "name": "LayoutNGBlockFlow DIV class='scroller'",
       "position": [5, 5],
       "bounds": [220, 236],
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 6
     },
     {
@@ -101,7 +101,7 @@
       "name": "LayoutNGBlockFlow DIV class='scroller'",
       "position": [5, 5],
       "bounds": [220, 236],
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#DDDDDD",
       "transform": 8
     },
     {

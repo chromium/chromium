@@ -60,6 +60,10 @@ class PaintChunkSubset {
       ++subset_or_chunk_index_;
       return *this;
     }
+    const Iterator& operator--() {
+      --subset_or_chunk_index_;
+      return *this;
+    }
     Iterator operator+(wtf_size_t offset) const {
       DCHECK_LE(subset_or_chunk_index_ + offset,
                 subset_.end().subset_or_chunk_index_);

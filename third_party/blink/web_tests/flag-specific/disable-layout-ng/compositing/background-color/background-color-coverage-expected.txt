@@ -2,20 +2,16 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [785, 2016],
+      "bounds": [785, 628],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "transform": 1
+      "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='reflected fixed'",
-      "bounds": [100, 100],
+      "name": "LayoutBlockFlow (positioned) DIV id='target'",
+      "bounds": [620, 620],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "invalidations": [
-        [0, 0, 100, 100]
-      ],
-      "transform": 2
+      "transform": 1
     },
     {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
@@ -31,16 +27,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, -180, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [250, 100, 0, 1]
+        [8, 8, 0, 1]
       ]
     }
   ]

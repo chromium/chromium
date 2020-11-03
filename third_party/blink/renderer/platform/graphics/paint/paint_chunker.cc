@@ -98,7 +98,7 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
   // If this paints the background and it's larger than our current candidate,
   // set the candidate to be this item.
   if (item.IsDrawing() && item.DrawsContent()) {
-    uint64_t item_area;
+    float item_area;
     Color item_color =
         static_cast<const DrawingDisplayItem&>(item).BackgroundColor(item_area);
     ProcessBackgroundColorCandidate(chunk.id, item_color, item_area);
@@ -188,11 +188,13 @@ void PaintChunker::CreateScrollHitTestChunk(
 
 bool PaintChunker::ProcessBackgroundColorCandidate(const PaintChunk::Id& id,
                                                    Color color,
-                                                   uint64_t area) {
+                                                   float area) {
   bool created_new_chunk = EnsureCurrentChunk(id);
   if (color != Color::kTransparent &&
-      (candidate_background_color_ == Color::kTransparent ||
-       (area >= candidate_background_area_))) {
+      (area >= candidate_background_area_ ||
+       area >= kMinBackgroundColorCoverageRatio *
+                   chunks_->back().bounds.Width() *
+                   chunks_->back().bounds.Height())) {
     candidate_background_color_ = color;
     candidate_background_area_ = area;
   }

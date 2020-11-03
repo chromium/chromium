@@ -71,7 +71,7 @@ class PLATFORM_EXPORT PaintChunker final {
   // Returns true if a new chunk is created.
   bool ProcessBackgroundColorCandidate(const PaintChunk::Id& id,
                                        Color color,
-                                       uint64_t area);
+                                       float area);
 
   // Returns true if a new chunk is created.
   bool EnsureChunk() { return EnsureCurrentChunk(*next_chunk_id_); }
@@ -103,7 +103,7 @@ class PLATFORM_EXPORT PaintChunker final {
   bool will_force_new_chunk_ = true;
 
   Color candidate_background_color_ = Color::kTransparent;
-  uint64_t candidate_background_area_ = 0;
+  float candidate_background_area_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(PaintChunker);
 };

@@ -4,7 +4,7 @@
       "name": "Scrolling Contents Layer",
       "bounds": [1008, 1008],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#C0C0C0"
     },
     {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",

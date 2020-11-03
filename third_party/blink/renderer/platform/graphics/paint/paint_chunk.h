@@ -19,6 +19,8 @@
 
 namespace blink {
 
+constexpr float kMinBackgroundColorCoverageRatio = 0.5;
+
 // A contiguous sequence of drawings with common paint properties.
 //
 // This is expected to be owned by the paint artifact which also owns the
@@ -113,7 +115,7 @@ struct PLATFORM_EXPORT PaintChunk {
   Color background_color;
 
   // The area that is painted by the paint op that defines background_color.
-  uint64_t background_color_area;
+  float background_color_area;
 
   // Identifier of this chunk. It should be unique if |is_cacheable| is true.
   // This is used to match a new chunk to a cached old chunk to track changes

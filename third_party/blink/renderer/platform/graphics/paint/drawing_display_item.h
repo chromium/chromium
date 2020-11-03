@@ -51,7 +51,7 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
     known_to_be_opaque_ = true;
   }
 
-  SkColor BackgroundColor(uint64_t& area) const;
+  SkColor BackgroundColor(float& area) const;
 
  private:
   bool CalculateKnownToBeOpaque(const PaintRecord*) const;

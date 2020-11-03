@@ -4,7 +4,7 @@
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#ADD8E6"
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='compositedlayer'",

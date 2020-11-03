@@ -14,7 +14,7 @@ struct SameSizeAsPaintChunk {
   wtf_size_t begin_index;
   wtf_size_t end_index;
   Color background_color;
-  uint64_t background_color_area;
+  float background_color_area;
   PaintChunk::Id id;
   PropertyTreeState properties;
   IntRect bounds;

@@ -800,36 +800,41 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
 
 // The heuristic for picking a checkerboarding color works as follows:
 //   - During paint, PaintChunker will look for background color display items,
-//     and annotates the chunk with the index of the display item that paints
-//     the largest area background color (ties are broken by selecting the
-//     display item that paints last).
+//     and record the background color of the latest display item with the
+//     largest background or bigger a ratio of the chunk bounds.
 //   - After layer allocation, the paint chunks assigned to a layer are
-//     examined for a background color annotation. The chunk with the largest
-//     background color annotation is selected.
-//   - If the area of the selected background color is at least half the size
-//     of the layer, then it is set as the layer's background color.
-//   - The same color is used for the layer's safe opaque background color, but
-//     without the size requirement, as safe opaque background color should
-//     always get a value if possible.
+//     examined for a background color annotation.
+//   - The background color of the latest chunk with a background larger than
+//     a ratio of the layer is set as the layer's background color.
+//   - If the above color exists, it's also used as the safe opaque background
+//     color. Otherwise the color of the largest background is used, without the
+//     size requirement, as safe opaque background color should always get a
+//     value if possible.
 static void UpdateBackgroundColor(cc::Layer& layer,
                                   const PaintChunkSubset& paint_chunks) {
-  SkColor color = SK_ColorTRANSPARENT;
-  uint64_t area = 0;
-  for (const auto& chunk : paint_chunks) {
-    if (chunk.background_color != Color::kTransparent &&
-        chunk.background_color_area >= area) {
-      color = chunk.background_color.Rgb();
-      area = chunk.background_color_area;
+  SkColor background_color = SK_ColorTRANSPARENT;
+  SkColor safe_opaque_background_color = SK_ColorTRANSPARENT;
+  float safe_opaque_background_area = 0;
+  float min_background_area = kMinBackgroundColorCoverageRatio *
+                              layer.bounds().width() * layer.bounds().height();
+  for (auto it = paint_chunks.end(); it != paint_chunks.begin();) {
+    const auto& chunk = *(--it);
+    if (chunk.background_color == Color::kTransparent)
+      continue;
+    if (chunk.background_color_area >= min_background_area) {
+      background_color = chunk.background_color.Rgb();
+      safe_opaque_background_color = background_color;
+      break;
+    }
+    if (chunk.background_color_area >= safe_opaque_background_area) {
+      // This color will be used only if we don't find proper background_color.
+      safe_opaque_background_color = chunk.background_color.Rgb();
+      safe_opaque_background_area = chunk.background_color_area;
     }
   }
 
-  layer.SetSafeOpaqueBackgroundColor(color);
-
-  uint64_t layer_area =
-      static_cast<uint64_t>(layer.bounds().width()) * layer.bounds().height();
-  if (area < layer_area / 2)
-    color = SK_ColorTRANSPARENT;
-  layer.SetBackgroundColor(color);
+  layer.SetBackgroundColor(background_color);
+  layer.SetSafeOpaqueBackgroundColor(safe_opaque_background_color);
 }
 
 static void UpdateTouchActionRegion(

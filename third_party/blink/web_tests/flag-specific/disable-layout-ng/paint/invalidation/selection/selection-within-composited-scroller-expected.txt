@@ -33,7 +33,7 @@
       "name": "Scrolling Contents Layer",
       "bounds": [200, 1620],
       "contentsOpaque": true,
-      "backgroundColor": "#D3D3D3",
+      "backgroundColor": "#ADD8E6",
       "invalidations": [
         [0, 610, 22, 19]
       ],
