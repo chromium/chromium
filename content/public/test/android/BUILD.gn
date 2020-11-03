@@ -45,6 +45,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/Coordinates.java",
     "javatests/src/org/chromium/content_public/browser/test/util/Criteria.java",
     "javatests/src/org/chromium/content_public/browser/test/util/CriteriaHelper.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/CriteriaNotSatisfiedException.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DOMUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DomAutomationController.java",
     "javatests/src/org/chromium/content_public/browser/test/util/HistoryUtils.java",
