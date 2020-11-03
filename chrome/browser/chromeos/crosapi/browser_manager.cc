@@ -317,7 +317,6 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
                                    "--enable-oop-rasterization",
                                    "--lang=en-US",
                                    "--enable-crashpad",
-                                   "--enable-wayland-ime",
                                    "--enable-webgl-image-chromium",
                                    "--breakpad-dump-location=" + crash_dir};
 
