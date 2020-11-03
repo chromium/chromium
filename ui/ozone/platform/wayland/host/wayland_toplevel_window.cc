@@ -199,6 +199,17 @@ void WaylandToplevelWindow::Minimize() {
 
 void WaylandToplevelWindow::Restore() {
   DCHECK(shell_surface_);
+
+  // Differently from other platforms, under Wayland, unmaximizing the dragged
+  // window before starting the drag loop is not needed as it is assumed to be
+  // handled at compositor side, just like in xdg_toplevel_surface::move. So
+  // skip it if there's a window drag session running.
+  auto* drag_controller = connection()->window_drag_controller();
+  if (drag_controller &&
+      drag_controller->state() != WaylandWindowDragController::State::kIdle) {
+    return;
+  }
+
   SetWindowState(PlatformWindowState::kNormal);
 }
 

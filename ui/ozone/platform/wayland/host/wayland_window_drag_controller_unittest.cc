@@ -6,6 +6,7 @@
 #include <wayland-server-protocol.h>
 #include <wayland-server.h>
 #include <wayland-util.h>
+#include <xdg-shell-server-protocol.h>
 
 #include <cstdint>
 
@@ -23,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
@@ -572,6 +574,39 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
+TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
+  const gfx::Rect original_bounds = window_->GetBounds();
+  wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
+
+  // Maximize and check restored bounds is correctly set.
+  const gfx::Rect maximized_bounds = gfx::Rect(0, 0, 1024, 768);
+  EXPECT_CALL(delegate_, OnBoundsChanged(testing::Eq(maximized_bounds)));
+  window_->Maximize();
+  states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
+  SendConfigureEvent(surface_->xdg_surface(), maximized_bounds.width(),
+                     maximized_bounds.height(), 1, states.get());
+  Sync();
+  auto restored_bounds = window_->GetRestoredBoundsInPixels();
+  EXPECT_EQ(original_bounds, restored_bounds);
+
+  // Start a window drag session.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+  Sync();
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  EXPECT_EQ(WaylandWindowDragController::State::kAttached,
+            connection_->window_drag_controller()->state());
+
+  // Call restore and ensure it's no-op.
+  window_->Restore();
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
