@@ -69,7 +69,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       const lorgnette::ScanSettings& settings,
       VoidDBusMethodCallback completion_callback,
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
-      base::RepeatingCallback<void(int)> progress_callback) override {
+      base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback)
+      override {
     lorgnette::StartScanRequest request;
     request.set_device_name(device_name);
     *request.mutable_settings() = settings;
@@ -183,7 +184,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // of data into a string.
   struct ScanJobState {
     VoidDBusMethodCallback completion_callback;
-    base::RepeatingCallback<void(int)> progress_callback;
+    base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback;
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback;
     std::unique_ptr<ScanDataReader> scan_data_reader;
   };
@@ -384,7 +385,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
               << " completed successfully";
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_IN_PROGRESS &&
                !state.progress_callback.is_null()) {
-      state.progress_callback.Run(signal_proto.progress());
+      state.progress_callback.Run(signal_proto.progress(), signal_proto.page());
     }
   }
 

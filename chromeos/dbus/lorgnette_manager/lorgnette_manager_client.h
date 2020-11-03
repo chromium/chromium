@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
       const lorgnette::ScanSettings& settings,
       VoidDBusMethodCallback completion_callback,
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
-      base::RepeatingCallback<void(int)> progress_callback) = 0;
+      base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback) = 0;
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().

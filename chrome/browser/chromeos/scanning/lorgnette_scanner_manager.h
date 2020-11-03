@@ -28,7 +28,9 @@ class LorgnetteScannerManager : public KeyedService {
       base::OnceCallback<void(std::vector<std::string> scanner_names)>;
   using GetScannerCapabilitiesCallback = base::OnceCallback<void(
       const base::Optional<lorgnette::ScannerCapabilities>& capabilities)>;
-  using ProgressCallback = base::RepeatingCallback<void(int progress_percent)>;
+  using ProgressCallback =
+      base::RepeatingCallback<void(uint32_t progress_percent,
+                                   uint32_t page_number)>;
   using PageCallback = base::RepeatingCallback<void(std::string scan_data,
                                                     uint32_t page_number)>;
   using CompletionCallback = base::OnceCallback<void(bool success)>;
