@@ -97,7 +97,7 @@ void WebMemoryAggregatorTest::MeasureAndVerify(
     base::flat_map<std::string, Bytes> expected) {
   bool measurement_done = false;
   WebMemoryAggregator web_memory(
-      frame->frame_token(),
+      frame->frame_token(), V8DetailedMemoryRequest::MeasurementMode::kDefault,
       base::BindLambdaForTesting([&measurement_done, &expected](
                                      mojom::WebMemoryMeasurementPtr result) {
         base::flat_map<std::string, Bytes> actual;
@@ -146,8 +146,8 @@ TEST_F(WebMemoryAggregatorPMTest, WebMeasureMemory) {
   blink::LocalFrameToken frame_token =
       blink::LocalFrameToken(main_frame()->GetFrameToken());
 
-  // Call WebMemory::Measure on the performance manager sequence and verify
-  // that the result matches the data provided by the mock reporter.
+  // Call WebMeasureMemory on the performance manager sequence and verify that
+  // the result matches the data provided by the mock reporter.
   base::RunLoop run_loop;
   auto measurement_callback =
       base::BindLambdaForTesting([&](mojom::WebMemoryMeasurementPtr result) {
@@ -182,6 +182,53 @@ TEST_F(WebMemoryAggregatorPMTest, WebMeasureMemory) {
   // Finally, run all tasks to verify that the memory measurement callback
   // is actually invoked. The test will time out if not.
   run_loop.Run();
+}
+
+TEST_F(WebMemoryAggregatorPMTest, MeasurementInterrupted) {
+  CreateCrossProcessChildFrame();
+
+  blink::LocalFrameToken frame_token =
+      blink::LocalFrameToken(child_frame()->GetFrameToken());
+
+  // Call WebMeasureMemory on the performance manager sequence but delete the
+  // process being measured before the result arrives.
+  auto measurement_callback =
+      base::BindOnce([](mojom::WebMemoryMeasurementPtr result) {
+        FAIL() << "Measurement callback ran unexpectedly";
+      });
+
+  base::WeakPtr<FrameNode> frame_node_wrapper =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ASSERT_TRUE(frame_node_wrapper);
+        FrameNode* frame_node = frame_node_wrapper.get();
+        WebMeasureMemory(frame_node,
+                         mojom::WebMemoryMeasurement::Mode::kDefault,
+                         std::move(measurement_callback));
+      }));
+
+  // Set up and bind the mock reporter.
+  MockV8DetailedMemoryReporter mock_reporter;
+  {
+    ::testing::InSequence seq;
+    ExpectBindReceiver(&mock_reporter, child_process_id());
+
+    auto data = NewPerProcessV8MemoryUsage(1);
+    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
+    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+
+  // Verify that requests are sent but reply is not yet received.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  ::testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+
+  // Remove the child frame, which will destroy the child process.
+  content::RenderFrameHostTester::For(child_frame())->Detach();
+
+  // Advance until the reply is expected to make sure nothing explodes.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
 }
 
 }  // namespace v8_memory

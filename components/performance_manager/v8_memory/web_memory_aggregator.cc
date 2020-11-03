@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "url/gurl.h"
 
@@ -85,21 +84,28 @@ void WebMeasureMemory(
     mojom::WebMemoryMeasurement::Mode mode,
     base::OnceCallback<void(mojom::WebMemoryMeasurementPtr)> callback) {
   auto web_memory_aggregator = std::make_unique<WebMemoryAggregator>(
-      frame_node->GetFrameToken(), std::move(callback));
-  // Start memory measurementfor the process of the given frame.
-  auto request = std::make_unique<V8DetailedMemoryRequestOneShot>(
-      frame_node->GetProcessNode(),
+      frame_node->GetFrameToken(),
+      WebMeasurementModeToRequestMeasurementMode(mode), std::move(callback));
+
+  // Create a measurement complete callback to own |web_memory_aggregator|. It
+  // will be deleted when the callback is executed or dropped.
+  V8DetailedMemoryRequestOneShot* request = web_memory_aggregator->request();
+  auto measurement_complete_callback =
       base::BindOnce(&WebMemoryAggregator::MeasurementComplete,
-                     base::Unretained(web_memory_aggregator.get())),
-      WebMeasurementModeToRequestMeasurementMode(mode));
-  WebMemoryAggregator::MakeSelfOwned(std::move(web_memory_aggregator),
-                                     std::move(request));
+                     std::move(web_memory_aggregator));
+
+  // Start memory measurement for the process of the given frame.
+  request->StartMeasurement(frame_node->GetProcessNode(),
+                            std::move(measurement_complete_callback));
 }
 
 WebMemoryAggregator::WebMemoryAggregator(
     const blink::LocalFrameToken& frame_token,
+    V8DetailedMemoryRequest::MeasurementMode mode,
     MeasurementCallback callback)
-    : frame_token_(frame_token), callback_(std::move(callback)) {}
+    : frame_token_(frame_token),
+      callback_(std::move(callback)),
+      request_(std::make_unique<V8DetailedMemoryRequestOneShot>(mode)) {}
 
 WebMemoryAggregator::~WebMemoryAggregator() = default;
 
@@ -107,17 +113,6 @@ void WebMemoryAggregator::MeasurementComplete(
     const ProcessNode* process_node,
     const V8DetailedMemoryProcessData*) {
   std::move(callback_).Run(BuildMemoryUsageResult(frame_token_, process_node));
-  self_reference_.reset();
-}
-
-void WebMemoryAggregator::MakeSelfOwned(
-    std::unique_ptr<WebMemoryAggregator> web_memory_aggregator,
-    std::unique_ptr<V8DetailedMemoryRequestOneShot> request) {
-  // Stash the request to ensure that it lives until the measurement is done.
-  web_memory_aggregator->request_ = std::move(request);
-  // Transfer the ownership to itself to make it self-owned. This reference will
-  // be reset in MeasurementCompleted.
-  web_memory_aggregator->self_reference_ = std::move(web_memory_aggregator);
 }
 
 }  // namespace v8_memory
