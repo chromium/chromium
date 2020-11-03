@@ -19,8 +19,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, int)
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Insets*)
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
-                                       views::BubbleDialogDelegate*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::DialogDelegate*)
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                        views::HighlightPathGenerator*)
@@ -32,7 +31,7 @@ namespace views {
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kHitTestComponentKey, HTNOWHERE)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kMarginsKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kInternalPaddingKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(views::BubbleDialogDelegate*,
+DEFINE_UI_CLASS_PROPERTY_KEY(views::DialogDelegate*,
                              kAnchoredDialogKey,
                              nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(views::HighlightPathGenerator,

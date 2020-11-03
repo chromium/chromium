@@ -697,7 +697,8 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
     auto* old_anchored_dialog = anchor_view->GetProperty(kAnchoredDialogKey);
     if (old_anchored_dialog && old_anchored_dialog != this)
       DLOG(WARNING) << "|anchor_view| has already anchored a focusable widget.";
-    anchor_view->SetProperty(kAnchoredDialogKey, this);
+    anchor_view->SetProperty(kAnchoredDialogKey,
+                             static_cast<DialogDelegate*>(this));
   }
 }
 

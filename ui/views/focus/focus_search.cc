@@ -6,11 +6,11 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace views {
 
@@ -203,8 +203,7 @@ View* FocusSearch::FindNextFocusableViewImpl(
     // Check to see if we should navigate into a dialog anchored at this view.
     if (can_go_into_anchored_dialog ==
         AnchoredDialogPolicy::kCanGoIntoAnchoredDialog) {
-      BubbleDialogDelegate* bubble =
-          starting_view->GetProperty(kAnchoredDialogKey);
+      DialogDelegate* bubble = starting_view->GetProperty(kAnchoredDialogKey);
       if (bubble) {
         *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
         *focus_traversable_view = starting_view;
@@ -230,7 +229,7 @@ View* FocusSearch::FindNextFocusableViewImpl(
     while (parent && parent != root_) {
       if (can_go_into_anchored_dialog ==
           AnchoredDialogPolicy::kCanGoIntoAnchoredDialog) {
-        BubbleDialogDelegate* bubble = parent->GetProperty(kAnchoredDialogKey);
+        DialogDelegate* bubble = parent->GetProperty(kAnchoredDialogKey);
         if (bubble) {
           *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
           *focus_traversable_view = starting_view;
@@ -301,8 +300,7 @@ View* FocusSearch::FindPreviousFocusableViewImpl(
     // Check to see if we should navigate into a dialog anchored at this view.
     if (can_go_into_anchored_dialog ==
         AnchoredDialogPolicy::kCanGoIntoAnchoredDialog) {
-      BubbleDialogDelegate* bubble =
-          starting_view->GetProperty(kAnchoredDialogKey);
+      DialogDelegate* bubble = starting_view->GetProperty(kAnchoredDialogKey);
       if (bubble) {
         *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
         *focus_traversable_view = starting_view;
