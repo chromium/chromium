@@ -64383,6 +64383,22 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13" label="In-session change password flow complete."/>
 </enum>
 
+<enum name="SamlInSessionPasswordSyncEvent">
+  <summary>
+    Track how often we call password sync token API and records its result.
+  </summary>
+  <int value="0" label="Start of sync token validation polling in-session."/>
+  <int value="1"
+      label="Start of sync token validation polling on the login screen."/>
+  <int value="2" label="Successful sync token validation."/>
+  <int value="3" label="Failed sync token validation."/>
+  <int value="4" label="API error: missing access token."/>
+  <int value="5" label="API error: wrong server response code."/>
+  <int value="6" label="API error: incorrect serlialized response data."/>
+  <int value="7" label="API error: no sync token in Create response."/>
+  <int value="8" label="API error: no sync token in Get response."/>
+</enum>
+
 <enum name="SamplingProfilerUnwindResult">
   <summary>Track reason for unwind failures in sampling profiler.</summary>
   <int value="0" label="Futex wait for signal handler failed."/>

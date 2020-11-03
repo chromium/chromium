@@ -114,6 +114,10 @@ void PasswordSyncTokenVerifier::CancelPendingChecks() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void PasswordSyncTokenVerifier::RecordTokenPollingStart() {
+  RecordStartOfSyncTokenPollingUMA(/*in_session=*/true);
+}
+
 void PasswordSyncTokenVerifier::OnTokenCreated(const std::string& sync_token) {
   DCHECK(!sync_token.empty());
   PrefService* prefs = primary_profile_->GetPrefs();
@@ -124,6 +128,7 @@ void PasswordSyncTokenVerifier::OnTokenCreated(const std::string& sync_token) {
   user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
                                                  sync_token);
   password_sync_token_fetcher_.reset();
+  RecordTokenPollingStart();
   RecheckAfter(retry_backoff_.GetTimeUntilRelease());
 }
 
@@ -135,6 +140,7 @@ void PasswordSyncTokenVerifier::OnTokenFetched(const std::string& sync_token) {
     prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
     user_manager::known_user::SetPasswordSyncToken(
         primary_user_->GetAccountId(), sync_token);
+    RecordTokenPollingStart();
     RecheckAfter(retry_backoff_.GetTimeUntilRelease());
   } else {
     // This is the first time a sync token is created for the user: we need to

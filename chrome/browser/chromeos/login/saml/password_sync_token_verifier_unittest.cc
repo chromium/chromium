@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/saml/password_sync_token_verifier.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -228,6 +229,14 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenPrefsAreNotSyncable) {
                 ->FindPreference(prefs::kSamlInSessionPasswordChangeEnabled)
                 ->registration_flags(),
             PrefRegistry::NO_REGISTRATION_FLAGS);
+}
+
+TEST_F(PasswordSyncTokenVerifierTest, ValidateSyncTokenHistogram) {
+  base::HistogramTester histogram_tester;
+  CreatePasswordSyncTokenVerifier();
+  verifier_->RecordTokenPollingStart();
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.SAML.InSessionPasswordSyncEvent", 0, 1);
 }
 
 }  // namespace chromeos

@@ -46,6 +46,7 @@ void PasswordSyncTokenCheckersCollection::StartPasswordSyncCheckers(
       if (observer)
         sync_token_checkers_[sync_token]->AddObserver(observer);
       sync_token_checkers_[sync_token]->AddObserver(this);
+      sync_token_checkers_[sync_token]->RecordTokenPollingStart();
       sync_token_checkers_[sync_token]->CheckForPasswordNotInSync();
     }
   }

@@ -50,6 +50,9 @@ class PasswordSyncTokenVerifier : public KeyedService,
   // Cancel all pending check requests.
   void CancelPendingChecks();
 
+  // Record start of in-session token polling.
+  void RecordTokenPollingStart();
+
   // PasswordSyncTokenFetcher::Consumer
   void OnTokenCreated(const std::string& sync_token) override;
   void OnTokenFetched(const std::string& sync_token) override;

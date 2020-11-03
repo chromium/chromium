@@ -49,6 +49,9 @@ class PasswordSyncTokenLoginChecker
   // Returns true if pending check exists for account_id_.
   bool IsCheckPending();
 
+  // Record start of token polling on the login screen.
+  void RecordTokenPollingStart();
+
   // PasswordSyncTokenFetcher::Consumer
   void OnTokenCreated(const std::string& sync_token) override;
   void OnTokenFetched(const std::string& sync_token) override;

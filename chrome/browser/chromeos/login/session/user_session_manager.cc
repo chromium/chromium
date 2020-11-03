@@ -1625,6 +1625,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
                  UserContext::AUTH_FLOW_OFFLINE) {
         // Verify local sync token to check whether the local password is out
         // of sync.
+        password_sync_token_verifier->RecordTokenPollingStart();
         password_sync_token_verifier->CheckForPasswordNotInSync();
       } else {
         NOTREACHED();

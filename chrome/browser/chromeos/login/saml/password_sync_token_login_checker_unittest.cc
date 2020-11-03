@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/saml/password_sync_token_login_checker.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -109,6 +110,14 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenInvalid) {
       user_manager_->FindUser(saml_login_account_id_)->force_online_signin());
   test_environment_.FastForwardBy(kSamlTokenDelay);
   EXPECT_FALSE(checker_->IsCheckPending());
+}
+
+TEST_F(PasswordSyncTokenLoginCheckerTest, ValidateSyncTokenHistogram) {
+  base::HistogramTester histogram_tester;
+  CreatePasswordSyncTokenLoginChecker();
+  checker_->RecordTokenPollingStart();
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.SAML.InSessionPasswordSyncEvent", 1, 1);
 }
 
 }  // namespace chromeos

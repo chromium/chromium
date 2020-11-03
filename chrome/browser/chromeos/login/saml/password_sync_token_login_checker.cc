@@ -66,6 +66,10 @@ bool PasswordSyncTokenLoginChecker::IsCheckPending() {
   return recheck_timer_.IsRunning();
 }
 
+void PasswordSyncTokenLoginChecker::RecordTokenPollingStart() {
+  RecordStartOfSyncTokenPollingUMA(/*in_session=*/false);
+}
+
 void PasswordSyncTokenLoginChecker::OnTokenCreated(
     const std::string& sync_token) {
   /* ignored */
