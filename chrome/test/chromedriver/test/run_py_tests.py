@@ -2702,6 +2702,17 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals('test', report['type']);
     self.assertEquals('test report message', report['body']['message']);
 
+  def testSetTimezone(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.SetTimezone('Asia/Taipei');
+    timeZone = self._driver.ExecuteScript(
+        'return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;')
+    self.assertEquals('Asia/Taipei', timeZone);
+    self._driver.SetTimezone('Asia/Hong_Kong');
+    timeZone = self._driver.ExecuteScript(
+        'return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;')
+    self.assertEquals('Asia/Hong_Kong', timeZone);
+
   def GetPermissionWithQuery(self, query):
     script = """
         let query = arguments[0];

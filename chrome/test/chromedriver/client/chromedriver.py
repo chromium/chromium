@@ -665,6 +665,9 @@ class ChromeDriver(object):
   def GenerateTestReport(self, message):
     self.ExecuteCommand(Command.GENERATE_TEST_REPORT, {'message': message})
 
+  def SetTimezone(self, timezone):
+    return self.ExecuteCommand(Command.SET_TIMEZONE, {'timezone': timezone})
+
   def AddVirtualAuthenticator(self, protocol=None, transport=None,
                               hasResidentKey=None, hasUserVerification=None,
                               isUserConsenting=None, isUserVerified=None,

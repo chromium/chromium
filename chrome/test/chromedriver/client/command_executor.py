@@ -182,6 +182,7 @@ class Command(object):
       _Method.POST, '/session/:sessionId/chromium/send_command_and_get_result')
   GENERATE_TEST_REPORT = (
       _Method.POST, '/session/:sessionId/reporting/generate_test_report')
+  SET_TIMEZONE = (_Method.POST, '/session/:sessionId/timezone')
   ADD_VIRTUAL_AUTHENTICATOR = (
       _Method.POST, '/session/:sessionId/webauthn/authenticator')
   REMOVE_VIRTUAL_AUTHENTICATOR = (

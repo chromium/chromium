@@ -167,6 +167,10 @@ Status ExecuteGenerateTestReport(Session* session,
                                  const base::DictionaryValue& params,
                                  std::unique_ptr<base::Value>* value);
 
+Status ExecuteSetTimezone(Session* session,
+                          const base::DictionaryValue& params,
+                          std::unique_ptr<base::Value>* value);
+
 namespace internal {
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities);
