@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/accessibility/accessibility_ui.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
@@ -127,7 +126,7 @@
 #include "chrome/browser/ui/webui/webapks_ui.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
-#else   // defined(OS_ANDROID)
+#else  // defined(OS_ANDROID)
 #include "chrome/browser/media/feeds/media_feeds_service.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_ui.h"
@@ -169,6 +168,7 @@
 #include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/web_applications/chrome_help_app_ui_delegate.h"
 #include "chrome/browser/chromeos/web_applications/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"

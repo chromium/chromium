@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"

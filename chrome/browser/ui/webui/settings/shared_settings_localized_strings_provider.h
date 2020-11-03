@@ -31,8 +31,10 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-sync-page> element.
 void AddSyncPageStrings(content::WebUIDataSource* html_source);
 
+#if defined(OS_CHROMEOS)
 // Adds load time data used by the <settings-nearby-share-subpage>.
 void AddNearbyShareData(content::WebUIDataSource* html_source);
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace settings
 

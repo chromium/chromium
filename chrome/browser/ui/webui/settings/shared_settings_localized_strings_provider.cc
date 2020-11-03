@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -30,6 +29,9 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace settings {
 #if defined(OS_CHROMEOS)
@@ -237,6 +239,7 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
 }
 
+#if defined(OS_CHROMEOS)
 void AddNearbyShareData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"nearbyShareTitle", IDS_SETTINGS_NEARBY_SHARE_TITLE},
@@ -290,5 +293,6 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace settings

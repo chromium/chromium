@@ -36,6 +36,7 @@
 #endif
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
 #endif
 

@@ -8,7 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "chrome/browser/browser_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_contact_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_http_handler.h"

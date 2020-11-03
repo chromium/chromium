@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/language/translate_frame_binder.h"
@@ -150,6 +149,7 @@
 #endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"

@@ -8,7 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/browser_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"

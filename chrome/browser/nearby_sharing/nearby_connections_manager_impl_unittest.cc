@@ -12,7 +12,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"

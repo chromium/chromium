@@ -43,15 +43,6 @@ const base::Feature kCopyLinkToText{"CopyLinkToText",
 // Enables notification muting during screen share sessions.
 const base::Feature kMuteNotificationsDuringScreenShare{
     "MuteNotificationsDuringScreenShare", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables Nearby Sharing functionality. Android already has a native
-// implementation.
-const base::Feature kNearbySharing{"NearbySharing",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables use of WebRTC in Nearby Share.
-const base::Feature kNearbySharingWebRtc{"NearbySharingWebRtc",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_MAC)

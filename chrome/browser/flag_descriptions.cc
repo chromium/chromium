@@ -1406,14 +1406,6 @@ const char kMouseSubframeNoImplicitCaptureName[] =
 const char kMouseSubframeNoImplicitCaptureDescription[] =
     "When enable, mouse down does not implicit capture for iframe.";
 
-const char kNearbySharingName[] = "Nearby Sharing";
-const char kNearbySharingDescription[] =
-    "Enables Nearby Sharing for sharing content between devices.";
-
-const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
-const char kNearbySharingWebRtcDescription[] =
-    "Enables use of WebRTC in Nearby Share.";
-
 const char kNewCanvas2DAPIName[] = "Experimental canvas 2D API features";
 const char kNewCanvas2DAPIDescription[] =
     "Enables in-progress features for the canvas 2D API. See "
@@ -4298,6 +4290,14 @@ const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
     "The toggle allows users to set whether a network should be considered "
     "metered for purposes of bandwith usage (e.g. for automatic updates).";
+
+const char kNearbySharingName[] = "Nearby Sharing";
+const char kNearbySharingDescription[] =
+    "Enables Nearby Sharing for sharing content between devices.";
+
+const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
+const char kNearbySharingWebRtcDescription[] =
+    "Enables use of WebRTC in Nearby Share.";
 
 const char kOsSettingsPolymer3Name[] = "Enable OS Settings Polymer3";
 const char kOsSettingsPolymer3Description[] =

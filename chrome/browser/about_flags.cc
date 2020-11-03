@@ -203,6 +203,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/ash_switches.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -6187,13 +6188,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"copy-link-to-text", flag_descriptions::kCopyLinkToTextName,
      flag_descriptions::kCopyLinkToTextDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCopyLinkToText)},
+#endif  // !defined(OS_ANDROID)
+
+#if defined(OS_CHROMEOS)
     {"nearby-sharing", flag_descriptions::kNearbySharingName,
-     flag_descriptions::kNearbySharingDescription, kOsDesktop,
+     flag_descriptions::kNearbySharingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharing)},
     {"nearby-sharing-webrtc", flag_descriptions::kNearbySharingWebRtcName,
-     flag_descriptions::kNearbySharingWebRtcDescription, kOsDesktop,
+     flag_descriptions::kNearbySharingWebRtcDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharingWebRtc)},
-#endif  // !defined(OS_ANDROID)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
     {"android-default-browser-promo",

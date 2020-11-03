@@ -9,7 +9,7 @@ GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
-GEN('#include "chrome/browser/browser_features.h"');
+GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
 // eslint-disable-next-line no-var

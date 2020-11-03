@@ -9,8 +9,8 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"

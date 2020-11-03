@@ -4,11 +4,11 @@
 
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
 
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/sharesheet/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/sharesheet/nearby_share_action.h"
 #include "chrome/browser/sharesheet/drive_share_action.h"
 #endif
