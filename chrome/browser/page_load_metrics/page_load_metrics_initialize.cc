@@ -40,7 +40,7 @@
 #include "chrome/browser/page_load_metrics/observers/tab_restore_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
-#include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"

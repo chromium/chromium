@@ -14,7 +14,7 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictors_enums.h"
 #include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"

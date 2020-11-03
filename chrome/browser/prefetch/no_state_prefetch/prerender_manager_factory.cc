@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
-#include "chrome/browser/prerender/chrome_prerender_manager_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_manager_delegate.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -37,8 +37,8 @@ PrerenderManagerFactory* PrerenderManagerFactory::GetInstance() {
 
 PrerenderManagerFactory::PrerenderManagerFactory()
     : BrowserContextKeyedServiceFactory(
-        "PrerenderManager",
-        BrowserContextDependencyManager::GetInstance()) {
+          "PrerenderManager",
+          BrowserContextDependencyManager::GetInstance()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
@@ -49,8 +49,7 @@ PrerenderManagerFactory::PrerenderManagerFactory()
   DependsOn(ProfileSyncServiceFactory::GetInstance());
 }
 
-PrerenderManagerFactory::~PrerenderManagerFactory() {
-}
+PrerenderManagerFactory::~PrerenderManagerFactory() {}
 
 KeyedService* PrerenderManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {

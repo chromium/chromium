@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "content/public/browser/navigation_handle.h"

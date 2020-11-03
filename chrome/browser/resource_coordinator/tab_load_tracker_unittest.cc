@@ -9,8 +9,8 @@
 
 #include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/prerender/prerender_manager_factory.h"
-#include "chrome/browser/prerender/prerender_test_utils.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prerender/browser/prerender_handle.h"

@@ -27,7 +27,7 @@
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/prerender/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
