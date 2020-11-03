@@ -99,6 +99,49 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesData) {
       base::nullopt);
 }
 
+// Tests that the AlternativeStateNameMap is populated when
+// |StateNameMapUpdater::LoadStatesData()| is called and there are UTF8 strings.
+TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesDataUTF8) {
+  test::ClearAlternativeStateNameMapForTesting();
+
+  base::WriteFile(
+      GetPath().AppendASCII("ES"),
+      test::CreateStatesProtoAsString(
+          "ES", {.canonical_name = "Paraná",
+                 .abbreviations = {"PR"},
+                 .alternative_names = {"Parana", "State of Parana"}}));
+  WritePathToPref(GetPath());
+
+  base::RunLoop run_loop;
+  alternative_state_name_map_updater.LoadStatesData(
+      {{AlternativeStateNameMap::CountryCode("ES"),
+        {AlternativeStateNameMap::StateName(ASCIIToUTF16("Parana"))}}},
+      pref_service_.get(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  base::Optional<StateEntry> entry1 =
+      AlternativeStateNameMap::GetInstance()->GetEntry(
+          AlternativeStateNameMap::CountryCode("ES"),
+          AlternativeStateNameMap::StateName(base::UTF8ToUTF16("Paraná")));
+  EXPECT_NE(entry1, base::nullopt);
+  EXPECT_EQ(entry1->canonical_name(), "Paraná");
+  EXPECT_THAT(entry1->abbreviations(),
+              testing::UnorderedElementsAreArray({"PR"}));
+  EXPECT_THAT(entry1->alternative_names(), testing::UnorderedElementsAreArray(
+                                               {"Parana", "State of Parana"}));
+
+  base::Optional<StateEntry> entry2 =
+      AlternativeStateNameMap::GetInstance()->GetEntry(
+          AlternativeStateNameMap::CountryCode("ES"),
+          AlternativeStateNameMap::StateName(base::UTF8ToUTF16("Parana")));
+  EXPECT_NE(entry2, base::nullopt);
+  EXPECT_EQ(entry2->canonical_name(), "Paraná");
+  EXPECT_THAT(entry2->abbreviations(),
+              testing::UnorderedElementsAreArray({"PR"}));
+  EXPECT_THAT(entry2->alternative_names(), testing::UnorderedElementsAreArray(
+                                               {"Parana", "State of Parana"}));
+}
+
 // Tests the |StateNameMapUpdater::ContainsState()| functionality.
 TEST_F(AlternativeStateNameMapUpdaterTest, ContainsState) {
   EXPECT_TRUE(AlternativeStateNameMapUpdater::ContainsStateForTesting(

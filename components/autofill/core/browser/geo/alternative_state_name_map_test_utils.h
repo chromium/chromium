@@ -37,7 +37,9 @@ void PopulateAlternativeStateNameMapForTesting(
     const std::vector<TestStateEntry>& test_state_entries = {TestStateEntry()});
 
 // Returns a StateEntry instance serialized as string.
-std::string CreateStatesProtoAsString(std::string country_code = "DE");
+std::string CreateStatesProtoAsString(
+    const std::string& country_code = "DE",
+    const TestStateEntry& test_state_entry = TestStateEntry());
 
 }  // namespace test
 }  // namespace autofill

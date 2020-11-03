@@ -52,11 +52,12 @@ void PopulateAlternativeStateNameMapForTesting(
   }
 }
 
-std::string CreateStatesProtoAsString(std::string country_code) {
+std::string CreateStatesProtoAsString(const std::string& country_code,
+                                      const TestStateEntry& test_state_entry) {
   StatesInCountry states_data;
   states_data.set_country_code(std::move(country_code));
   StateEntry* entry = states_data.add_states();
-  PopulateStateEntry(TestStateEntry(), entry);
+  PopulateStateEntry(test_state_entry, entry);
 
   std::string serialized_output;
   bool proto_is_serialized = states_data.SerializeToString(&serialized_output);
