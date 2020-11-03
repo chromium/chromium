@@ -34,9 +34,10 @@
       }
 
       #checkMark {
+        left: var(--cr-card-radio-button-checkmark-left, auto);
         position: absolute;
-        right: var(--cr-button-edge-spacing);
-        top: var(--cr-button-edge-spacing);
+        right: var(--cr-card-radio-button-checkmark-right, var(--cr-button-edge-spacing));
+        top: var(--cr-card-radio-button-checkmark-top, var(--cr-button-edge-spacing));
       }
 
       :host(:not([checked])) #checkMark {

@@ -47,6 +47,9 @@
         margin-inline-start: 5px;
         padding: 0;
         width: auto;
+        --cr-card-radio-button-checkmark-left: var(--cr-button-edge-spacing);
+        --cr-card-radio-button-checkmark-right: auto;
+        --cr-card-radio-button-checkmark-top: auto;
       }
 
       cr-card-radio-button[checked] {
@@ -64,9 +67,18 @@
       .card-contents {
         color: var(--google-blue-600);
       }
+
       .card-icon {
         fill: var(--google-blue-600);
-        margin-block-end: 8px;
+        margin-inline-end: 8px;
+      }
+
+      cr-card-radio-button[checked] .card-icon {
+        visibility: hidden;
+      }
+
+      .card-label {
+        display: inline-flex;
       }
 
       #zeroStateContainer {
