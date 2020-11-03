@@ -169,6 +169,7 @@ group("polymer3_elements") {
     ":nearby_onboarding_page_module",
     ":nearby_page_template_module",
     ":nearby_shared_icons_module",
+    ":nearby_shared_share_type_icons_module",
     ":nearby_visibility_page_module",
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js",
   ]
@@ -273,6 +274,12 @@ polymer_modulizer("nearby_page_template") {
 polymer_modulizer("nearby_shared_icons") {
   js_file = "nearby_shared_icons.m.js"
   html_file = "nearby_shared_icons.html"
+  html_type = "iron-iconset"
+}
+
+polymer_modulizer("nearby_shared_share_type_icons") {
+  js_file = "nearby_shared_share_type_icons.m.js"
+  html_file = "nearby_shared_share_type_icons.html"
   html_type = "iron-iconset"
 }
 

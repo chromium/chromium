@@ -1,38 +1,24 @@
 <style>
-  #background {
-    fill: rgb(232, 240, 254)
-  }
-
-  #placeholder {
-    clip-rule: evenodd;
-    fill: rgb(28, 116, 233);
-    fill-opacity: 0.3;
-    fill-rule: evenodd;
-  }
-
-  #svg {
+  iron-icon {
     display: block;
-    height: 110px;
-    margin: 0 auto;
-    width: 90px;
+    height: 40px;
+    margin: 20px auto 24px auto;
+    width: 40px;
   }
 
   #title {
-    color: rgb(95, 99, 104);
+    color: rgb(32, 33, 36);
     font-size: 13px;
+    height: 60px;
     letter-spacing: 0.2px;
     line-height: 20px;
     margin-top: 6px;
-    max-height: 40px;
-    max-width: 200px;
     overflow: hidden;
     overflow-wrap: break-word;
     text-align: center;
+    width: 116px;
   }
 </style>
 
-<svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 110">
-  <rect id="background" width="90" height="110" rx="4"></rect>
-  <path id="placeholder" d="M33 31v12a18 18 0 1020 22h14V31zm20 34a18 18 0 00-20-22v22h20z"></path>
-</svg>
+<iron-icon icon="[[getIronIconName_(shareType)]]"></iron-icon>
 <div id="title">[[title]]</div>

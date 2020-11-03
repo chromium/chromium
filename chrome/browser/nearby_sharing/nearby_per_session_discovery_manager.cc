@@ -38,6 +38,50 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
   return base::nullopt;
 }
 
+nearby_share::mojom::ShareType GetTextShareType(
+    const TextAttachment* attachment) {
+  switch (attachment->type()) {
+    case TextAttachment::Type::kUrl:
+      return nearby_share::mojom::ShareType::kUrl;
+    case TextAttachment::Type::kAddress:
+      return nearby_share::mojom::ShareType::kAddress;
+    case TextAttachment::Type::kPhoneNumber:
+      return nearby_share::mojom::ShareType::kPhone;
+    default:
+      return nearby_share::mojom::ShareType::kText;
+  }
+}
+
+nearby_share::mojom::ShareType GetFileShareType(
+    const FileAttachment* attachment) {
+  switch (attachment->type()) {
+    case FileAttachment::Type::kImage:
+      return nearby_share::mojom::ShareType::kImageFile;
+    case FileAttachment::Type::kVideo:
+      return nearby_share::mojom::ShareType::kVideoFile;
+    case FileAttachment::Type::kAudio:
+      return nearby_share::mojom::ShareType::kAudioFile;
+    default:
+      break;
+  }
+
+  // Try matching on mime type if the attachment type is unrecognized.
+  if (attachment->mime_type() == "application/pdf") {
+    return nearby_share::mojom::ShareType::kPdfFile;
+  } else if (attachment->mime_type() ==
+             "application/vnd.google-apps.document") {
+    return nearby_share::mojom::ShareType::kGoogleDocsFile;
+  } else if (attachment->mime_type() ==
+             "application/vnd.google-apps.spreadsheet") {
+    return nearby_share::mojom::ShareType::kGoogleSheetsFile;
+  } else if (attachment->mime_type() ==
+             "application/vnd.google-apps.presentation") {
+    return nearby_share::mojom::ShareType::kGoogleSlidesFile;
+  } else {
+    return nearby_share::mojom::ShareType::kUnknownFile;
+  }
+}
+
 }  // namespace
 
 NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
@@ -178,32 +222,22 @@ void NearbyPerSessionDiscoveryManager::GetSendPreview(
   auto& attachment = attachments_[0];
   send_preview->description = attachment->GetDescription();
 
-  // For text we are all done, but for files we have to handle the two cases of
-  // sharing a single file or sharing multiple files.
-  if (attachment->family() == Attachment::Family::kFile) {
-    send_preview->file_count = attachments_.size();
-    if (attachments_.size() > 1) {
+  // TODO(crbug.com/1144942) Add virtual GetShareType to Attachment to eliminate
+  // these casts.
+  switch (attachment->family()) {
+    case Attachment::Family::kText:
+      send_preview->share_type =
+          GetTextShareType(static_cast<TextAttachment*>(attachment.get()));
+      break;
+    case Attachment::Family::kFile:
+      send_preview->file_count = attachments_.size();
       // For multiple files we don't capture the types.
-      send_preview->share_type = nearby_share::mojom::ShareType::kMultipleFiles;
-    } else {
-      FileAttachment* file_attachment =
-          static_cast<FileAttachment*>(attachment.get());
-      switch (file_attachment->type()) {
-        case FileAttachment::Type::kImage:
-          send_preview->share_type = nearby_share::mojom::ShareType::kImageFile;
-          break;
-        case FileAttachment::Type::kVideo:
-          send_preview->share_type = nearby_share::mojom::ShareType::kVideoFile;
-          break;
-        case FileAttachment::Type::kAudio:
-          send_preview->share_type = nearby_share::mojom::ShareType::kAudioFile;
-          break;
-        default:
-          send_preview->share_type =
-              nearby_share::mojom::ShareType::kUnknownFile;
-          break;
-      }
-    }
+      send_preview->share_type =
+          attachments_.size() > 1
+              ? nearby_share::mojom::ShareType::kMultipleFiles
+              : GetFileShareType(
+                    static_cast<FileAttachment*>(attachment.get()));
+      break;
   }
 
   std::move(callback).Run(std::move(send_preview));

@@ -57,7 +57,8 @@
         cancel-button-event-name="[[getCancelEventName_(needsConfirmation_)]]">
   <div id="centerContent" slot="content">
     <div id="processRow">
-      <nearby-preview title="[[attachmentTitle_(sendPreview)]]">
+      <nearby-preview title="[[attachmentTitle_(sendPreview)]]"
+          share-type="[[sendPreview.shareType]]">
       </nearby-preview>
       <div id="confirmationToken">
         <template is="dom-if" if="[[confirmationToken_]]">

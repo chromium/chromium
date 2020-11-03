@@ -80,7 +80,8 @@
         cancel-button-event-name="close">
   <div id="centerContent" slot="content">
     <div id="process-row">
-      <nearby-preview title="[[sendPreview.description]]"></nearby-preview>
+      <nearby-preview title="[[sendPreview.description]]"
+          share-type="[[sendPreview.shareType]]"></nearby-preview>
       <iron-list items="[[shareTargets_]]" id="deviceList"
           selected-item="{{selectedShareTarget}}"
           on-selected-item-changed="onSelectedShareTargetChanged_"

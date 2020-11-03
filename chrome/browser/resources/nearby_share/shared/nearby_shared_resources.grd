@@ -42,6 +42,8 @@
                file="nearby_share_settings_behavior.js" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_SHARED_ICONS_HTML"
                file="nearby_shared_icons.html" type="BINDATA" compress="false"/>
+      <include name="IDR_NEARBY_SHARED_SHARE_TYPE_ICONS_HTML"
+               file="nearby_shared_share_type_icons.html" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_VISIBILITY_PAGE_HTML"
                file="nearby_visibility_page.html" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_VISIBILITY_PAGE_JS"
