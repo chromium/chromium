@@ -58,7 +58,6 @@
 using autofill::FormRendererId;
 using autofill::FormTracker;
 using autofill::mojom::FocusedFieldType;
-using autofill::mojom::PasswordFormFieldPredictionType;
 using autofill::mojom::SubmissionIndicatorEvent;
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;

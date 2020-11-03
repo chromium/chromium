@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_ANDROID_PASSWORDS_ALL_PASSWORDS_BOTTOM_SHEET_VIEW_H_
 
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // This interface is used for communicating between the all
 // passwords sheet controller and the Android frontend.

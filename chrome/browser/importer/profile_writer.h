@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/search_engines/template_url_service.h"
 #include "url/gurl.h"
 
@@ -24,6 +23,10 @@ class Profile;
 namespace autofill {
 class AutofillEntry;
 }
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // ProfileWriter encapsulates profile for writing entries into it.
 // This object must be invoked on UI thread.

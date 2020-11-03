@@ -7,8 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;

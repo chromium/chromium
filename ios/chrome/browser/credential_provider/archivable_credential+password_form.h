@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_ARCHIVABLE_CREDENTIAL_PASSWORD_FORM_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_ARCHIVABLE_CREDENTIAL_PASSWORD_FORM_H_
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // Category for adding convenience logic related to PasswordForms.
 @interface ArchivableCredential (PasswordForm)

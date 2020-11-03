@@ -6,12 +6,16 @@
 #define CHROME_BROWSER_UI_ANDROID_PASSWORDS_ALL_PASSWORDS_BOTTOM_SHEET_VIEW_IMPL_H_
 
 #include <memory>
+
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 class AllPasswordsBottomSheetController;
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // This class communicates via JNI with its AllPasswordsBottomSheetBridge
 // Java counterpart.

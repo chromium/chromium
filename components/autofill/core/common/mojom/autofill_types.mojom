@@ -29,19 +29,6 @@ enum SubmissionIndicatorEvent {
   PROBABLE_FORM_SUBMISSION = 10,
 };
 
-// This enum lists form field types as understood by the password manager,
-// essentially a digest of |autofill::ServerFieldType|. Note that we cannot
-// simply reuse |autofill::ServerFieldType| as it is defined in the browser,
-// while this enum will be used by both the browser and renderer.
-// TODO(https://crbug.com/1067347): move this enum to browser code. It is not
-// used in Mojo anymore.
-enum PasswordFormFieldPredictionType {
-  kUsername,
-  kCurrentPassword,
-  kNewPassword,
-  kNotPassword,
-};
-
 enum SubmissionSource {
   NONE,                      // No submission signal was detected.
   SAME_DOCUMENT_NAVIGATION,  // The form was removed in same document

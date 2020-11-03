@@ -13,12 +13,12 @@
 #include "base/observer_list_types.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
 struct CompromisedCredentials;
 struct InteractionsStats;
+struct PasswordForm;
 
 // This is an API for providing stored credentials to PasswordFormManager (PFM),
 // so that PFM instances do not have to talk to PasswordStore directly. This

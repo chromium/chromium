@@ -7,8 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 class IOSChromePasswordCheckManager;
 @protocol PasswordIssuesConsumer;

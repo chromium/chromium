@@ -11,12 +11,13 @@
 
 #include "base/macros.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
  public:

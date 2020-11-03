@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -23,6 +22,7 @@
 namespace password_manager {
 
 struct CredentialInfo;
+struct PasswordForm;
 class PasswordManagerClient;
 
 using SendCredentialCallback =

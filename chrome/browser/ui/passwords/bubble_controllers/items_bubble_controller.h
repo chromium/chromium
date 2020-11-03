@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "ui/gfx/image/image.h"
 
 class PasswordsModelDelegate;
@@ -18,6 +17,10 @@ class PasswordsModelDelegate;
 namespace favicon_base {
 struct FaviconImageResult;
 }
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // This controller provides data and actions for the PasswordItemsView.
 class ItemsBubbleController : public PasswordBubbleControllerBase {

@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUE_WITH_FORM_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUE_WITH_FORM_H_
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/browser/ui/settings/password/password_issue.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // Class based on PasswordIssue which adds PasswordForm as a property.
 @interface PasswordIssueWithForm : NSObject <PasswordIssue>

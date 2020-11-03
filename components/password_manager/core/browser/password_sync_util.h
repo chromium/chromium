@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -16,6 +15,9 @@ class IdentityManager;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
+
 namespace sync_util {
 
 // Returns the sync username received from |identity_manager| (if not null).
@@ -47,6 +49,7 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
 
 }  // namespace sync_util
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SYNC_UTIL_H_

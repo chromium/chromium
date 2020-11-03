@@ -9,9 +9,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 class PasswordsModelDelegate;
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // This controller provides data and actions for the
 // PasswordSaveUnsyncedCredentialsLocallyView.

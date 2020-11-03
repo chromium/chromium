@@ -7,12 +7,15 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 class CredentialManagerDialogController;
 

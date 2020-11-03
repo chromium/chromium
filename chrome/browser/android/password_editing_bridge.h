@@ -11,11 +11,14 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 class PasswordEditDelegate;
 class Profile;
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // A bridge that allows communication between Android UI and the native
 // side. It can be used to launch the password editing activity from the

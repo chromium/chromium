@@ -7,8 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // Object which is used by |PasswordDetailsViewController| to show
 // information about password.

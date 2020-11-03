@@ -11,12 +11,13 @@
 #include <string>
 
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 class SyncUsernameTestBase : public testing::Test {
  public:

@@ -15,13 +15,13 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 namespace password_manager {
 
 class AndroidAffiliationService;
+struct PasswordForm;
 
 // Interacts with the AndroidAffiliationService on behalf of the PasswordStore.
 // For each GetLogins() request, it provides the PasswordStore with a list of

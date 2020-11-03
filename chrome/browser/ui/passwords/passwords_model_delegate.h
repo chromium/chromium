@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -22,6 +21,7 @@ namespace password_manager {
 struct InteractionsStats;
 class PasswordFeatureManager;
 class PasswordFormMetricsRecorder;
+struct PasswordForm;
 namespace metrics_util {
 enum class CredentialSourceType;
 }  // namespace metrics_util

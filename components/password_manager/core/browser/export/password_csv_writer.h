@@ -11,9 +11,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // Static-only class bundling together the API for serializing passwords into
 // CSV format.

@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 @class PasswordFetcher;
 
 namespace password_manager {
 class PasswordStore;
+struct PasswordForm;
 }  // namespace password_manager
 
 class GURL;

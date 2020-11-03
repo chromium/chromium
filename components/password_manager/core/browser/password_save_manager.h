@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SAVE_MANAGER_H_
 
 #include "base/macros.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 namespace autofill {
@@ -26,6 +25,7 @@ class VotesUploader;
 class FormSaver;
 class PasswordFormMetricsRecorder;
 class PasswordManagerDriver;
+struct PasswordForm;
 
 // Implementations of this interface should encapsulate the password Save/Update
 // logic. One implementation of this class will provide the Save/Update logic in

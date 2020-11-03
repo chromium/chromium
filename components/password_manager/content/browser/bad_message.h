@@ -6,14 +6,17 @@
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_BAD_MESSAGE_H_
 
 #include <vector>
+
 #include "components/autofill/core/common/form_data.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace content {
 class RenderFrameHost;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
+
 // The browser process often chooses to terminate a renderer if it receives
 // a bad IPC message. The reasons are tracked for metrics.
 //

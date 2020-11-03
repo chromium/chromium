@@ -10,11 +10,14 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 namespace views {
 class Label;

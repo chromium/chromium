@@ -11,9 +11,10 @@
 #include <vector>
 
 #include "base/util/type_safety/strong_alias.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // Multimap from sort key to password forms.
 using DuplicatesMap = std::multimap<std::string, std::unique_ptr<PasswordForm>>;

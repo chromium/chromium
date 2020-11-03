@@ -69,7 +69,6 @@ using autofill::NOT_USERNAME;
 using autofill::PasswordFormFillData;
 using autofill::ServerFieldType;
 using autofill::SINGLE_USERNAME;
-using autofill::mojom::PasswordFormFieldPredictionType;
 using base::ASCIIToUTF16;
 using base::Feature;
 using base::TestMockTimeTaskRunner;

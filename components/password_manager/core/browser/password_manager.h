@@ -24,7 +24,6 @@
 #include "components/password_manager/core/browser/form_submission_observer.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
@@ -52,6 +51,7 @@ class PasswordManagerDriver;
 class PasswordFormManagerForUI;
 class PasswordFormManager;
 class PasswordManagerMetricsRecorder;
+struct PasswordForm;
 struct PossibleUsernameData;
 
 // Per-tab password manager. Handles creation and management of UI elements,

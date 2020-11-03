@@ -12,13 +12,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
@@ -29,6 +29,7 @@
 
 namespace password_manager {
 class PasswordManagerClient;
+struct PasswordForm;
 }
 
 class PasswordUIView;

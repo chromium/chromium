@@ -6,12 +6,12 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_MANAGER_H_
 
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
 class PasswordManagerClient;
 class HttpAuthObserver;
+struct PasswordForm;
 
 // Per-tab password manager for http-auth forms.
 // This class is the counterpart to the PasswordManager which manages storing

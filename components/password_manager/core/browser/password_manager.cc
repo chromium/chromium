@@ -59,7 +59,6 @@ using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;
-using autofill::mojom::PasswordFormFieldPredictionType;
 using base::NumberToString;
 using BlacklistedStatus =
     password_manager::OriginCredentialStore::BlacklistedStatus;

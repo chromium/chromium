@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/sync/model/sync_metadata_store.h"
 
@@ -20,6 +19,8 @@ class MetadataBatch;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
 
 using PrimaryKeyToFormMap = std::map<int, std::unique_ptr<PasswordForm>>;
 

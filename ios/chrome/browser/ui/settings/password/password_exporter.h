@@ -10,7 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 enum class WriteToURLStatus {
   SUCCESS,

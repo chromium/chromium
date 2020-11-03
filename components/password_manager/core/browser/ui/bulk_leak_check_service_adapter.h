@@ -7,12 +7,13 @@
 
 #include "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PrefService;
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // This class serves as an apdater for the BulkLeakCheckService and exposes an
 // API that is intended to be consumed from the settings page.

@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
-
 namespace password_manager {
+
+struct PasswordForm;
 
 // Interface that allows CredentialsCleanerRunner class to easily manipulate
 // credential clean-ups that request credentials from PasswordStore.

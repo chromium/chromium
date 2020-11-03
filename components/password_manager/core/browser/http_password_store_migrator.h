@@ -11,11 +11,12 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/hsts_query.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "url/origin.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

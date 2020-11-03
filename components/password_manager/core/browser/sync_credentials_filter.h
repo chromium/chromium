@@ -12,11 +12,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/sync/driver/sync_service.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // The sync- and GAIA- aware implementation of the filter.
 class SyncCredentialsFilter : public CredentialsFilter {

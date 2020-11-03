@@ -10,7 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // Enum with all possible UI states of password check.
 typedef NS_ENUM(NSInteger, PasswordCheckUIState) {

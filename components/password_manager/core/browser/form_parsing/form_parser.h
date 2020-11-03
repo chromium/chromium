@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -20,6 +19,8 @@ struct FormData;
 }  // namespace autofill
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // The susbset of autocomplete flags related to passwords.
 enum class AutocompleteFlag {

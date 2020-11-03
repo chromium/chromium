@@ -11,9 +11,12 @@
 
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "ui/gfx/range/range.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // An interface used by the password dialog (the account chooser) for setting
 // and retrieving the state.

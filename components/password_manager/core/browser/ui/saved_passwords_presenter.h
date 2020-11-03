@@ -11,11 +11,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece_forward.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // This interface provides a way for clients to obtain a list of all saved
 // passwords and register themselves as observers for changes. In contrast to

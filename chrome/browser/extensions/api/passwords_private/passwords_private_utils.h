@@ -11,7 +11,10 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 namespace extensions {
 

@@ -23,8 +23,6 @@
 
 namespace autofill {
 
-using mojom::PasswordFormFieldPredictionType;
-
 const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
                                            "Option4"};
 namespace {

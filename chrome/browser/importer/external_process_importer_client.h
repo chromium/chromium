@@ -23,7 +23,6 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

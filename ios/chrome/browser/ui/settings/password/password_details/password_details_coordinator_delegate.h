@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_DELEGATE_H_
 
-#include "components/password_manager/core/browser/password_form_forward.h"
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 @class PasswordDetailsCoordinator;
 

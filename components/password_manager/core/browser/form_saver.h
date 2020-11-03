@@ -12,10 +12,11 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // This interface allows the caller to save passwords and blacklist entries in
 // a password store.

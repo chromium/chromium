@@ -10,11 +10,14 @@
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 class GURL;
 

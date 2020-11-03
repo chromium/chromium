@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
-
 namespace password_manager {
+
+struct PasswordForm;
 
 // This is a delegate of the ExportFlow interface used to retrieve exportable
 // passwords.

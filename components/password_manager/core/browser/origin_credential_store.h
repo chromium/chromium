@@ -10,11 +10,12 @@
 #include "base/containers/span.h"
 #include "base/strings/string16.h"
 #include "base/util/type_safety/strong_alias.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // Encapsulates the data from the password manager backend as used by the UI.
 class UiCredential {

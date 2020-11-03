@@ -10,13 +10,13 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
 
 struct CompromisedCredentials;
 struct InteractionsStats;
+struct PasswordForm;
 class PasswordFormMetricsRecorder;
 
 // Interface that contains all methods from PasswordFormManager that are used in

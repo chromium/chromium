@@ -20,7 +20,6 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -76,6 +75,7 @@ class PasswordManagerMetricsRecorder;
 class HttpAuthManager;
 class PasswordRequirementsService;
 class PasswordStore;
+struct PasswordForm;
 
 enum SyncState {
   NOT_SYNCING,

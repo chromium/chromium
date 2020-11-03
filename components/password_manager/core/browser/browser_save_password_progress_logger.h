@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -19,6 +18,8 @@ class LogManager;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // This is the SavePasswordProgressLogger specialization for the browser code,
 // where the LogManager can be directly called.

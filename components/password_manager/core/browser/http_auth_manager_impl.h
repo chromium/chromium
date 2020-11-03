@@ -13,13 +13,13 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
 class PasswordManagerClient;
 class PasswordFormManager;
 class PasswordFormManagerForUI;
+struct PasswordForm;
 
 // Implementation of the HttpAuthManager as used by the PasswordManagerClient.
 class HttpAuthManagerImpl : public HttpAuthManager {

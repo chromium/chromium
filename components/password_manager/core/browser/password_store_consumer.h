@@ -11,12 +11,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
 struct FieldInfo;
 struct InteractionsStats;
+struct PasswordForm;
 class PasswordStore;
 
 // Reads from the PasswordStore are done asynchronously on a separate

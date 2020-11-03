@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "components/password_manager/core/browser/password_form_forward.h"
-
 namespace url {
 class Origin;
 }  // namespace url
@@ -16,6 +14,7 @@ class Origin;
 namespace password_manager {
 
 struct CredentialInfo;
+struct PasswordForm;
 
 // Create a new PasswordForm object based on |info|, valid in the
 // context of |origin|. Returns an empty std::unique_ptr for

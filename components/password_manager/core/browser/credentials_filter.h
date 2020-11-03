@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 
 class PasswordFormManager;
+struct PasswordForm;
 
 // This interface is used to filter credentials during saving, retrieval from
 // PasswordStore, etc.

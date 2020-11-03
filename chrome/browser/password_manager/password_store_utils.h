@@ -11,10 +11,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 class PasswordStore;
+struct PasswordForm;
 }
 
 class Profile;

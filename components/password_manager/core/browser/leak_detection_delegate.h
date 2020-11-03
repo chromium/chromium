@@ -12,7 +12,6 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 
 class PrefService;
 
@@ -21,6 +20,7 @@ namespace password_manager {
 class LeakDetectionCheck;
 class LeakDetectionDelegateHelper;
 class PasswordManagerClient;
+struct PasswordForm;
 
 // The helper class that encapsulates the requests and their processing.
 class LeakDetectionDelegate : public LeakDetectionDelegateInterface {

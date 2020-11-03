@@ -12,10 +12,13 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // An interface for a passwords UI View. A UI view is responsible for
 // displaying passwords in the UI and routing UI commands to the

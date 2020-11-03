@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
 
@@ -50,6 +49,8 @@ using StateSubscription =
     base::CallbackList<void(const std::string& username)>::Subscription;
 
 namespace password_manager {
+
+struct PasswordForm;
 
 using IsAccountStore = util::StrongAlias<class IsAccountStoreTag, bool>;
 

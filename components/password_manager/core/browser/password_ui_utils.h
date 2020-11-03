@@ -12,12 +12,12 @@
 
 #include "base/strings/string_piece.h"
 
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/origin.h"
 
 namespace password_manager {
 
 class PasswordFormManagerForUI;
+struct PasswordForm;
 
 // Reverses order of labels in hostname.
 std::string SplitByDotAndReverse(base::StringPiece host);

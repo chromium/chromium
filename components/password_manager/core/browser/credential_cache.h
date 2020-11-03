@@ -9,12 +9,12 @@
 
 #include "base/strings/string16.h"
 #include "base/util/type_safety/strong_alias.h"
-#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/origin.h"
 
 namespace password_manager {
 
 class OriginCredentialStore;
+struct PasswordForm;
 
 // This class caches and provides credential stores for different origins.
 class CredentialCache {

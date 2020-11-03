@@ -414,7 +414,6 @@ source_set("password_form") {
   sources = [
     "password_form.cc",
     "password_form.h",
-    "password_form_forward.h",
   ]
   deps = [
     "//base",
