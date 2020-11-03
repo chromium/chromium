@@ -1166,6 +1166,8 @@ by a child template that "extends" this file.
         </activity>
         {% endif %}
 
+        {% block extra_application_definitions %}
+        {% endblock %}
       {% endmacro %}
       {% if not definitions_in_split %}
       {{ application_definitions() }}
