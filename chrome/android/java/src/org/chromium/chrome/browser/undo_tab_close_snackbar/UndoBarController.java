@@ -176,7 +176,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         mSnackbarManagable.getSnackbarManager().showSnackbar(
                 Snackbar.make(content, this, Snackbar.TYPE_ACTION, Snackbar.UMA_TAB_CLOSE_UNDO)
                         .setTemplateText(mContext.getString(R.string.undo_bar_close_message))
-                        .setAction(mContext.getString(R.string.undo), tabId));
+                        .setAction(mContext.getString(R.string.undo), tabId)
+                        .setActionAccessibilityAnnouncement(
+                                getUndoneAccessibilityAnnouncement(content, false)));
     }
 
     /**
@@ -195,7 +197,18 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                                 isAllTabs ? Snackbar.UMA_TAB_CLOSE_ALL_UNDO
                                           : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                         .setTemplateText(mContext.getString(R.string.undo_bar_close_all_message))
-                        .setAction(mContext.getString(R.string.undo), closedTabs));
+                        .setAction(mContext.getString(R.string.undo), closedTabs)
+                        .setActionAccessibilityAnnouncement(
+                                getUndoneAccessibilityAnnouncement(content, true)));
+    }
+
+    private String getUndoneAccessibilityAnnouncement(String content, boolean isMultiple) {
+        return isMultiple
+                ? mContext.getString(
+                        R.string.accessibility_undo_multiple_closed_tabs_announcement_message,
+                        content)
+                : mContext.getString(
+                        R.string.accessibility_undo_closed_tab_announcement_message, content);
     }
 
     /**

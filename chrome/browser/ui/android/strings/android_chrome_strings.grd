@@ -1877,6 +1877,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_UNDO_TAB_CLOSED" desc="Content description for the undo tab closed 'button.">
         Reopen closed tab
       </message>
+      <message name="IDS_ACCESSIBILITY_UNDO_CLOSED_TAB_ANNOUNCEMENT_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo a closed tab.">
+        Restored <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph>, tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_UNDO_MULTIPLE_CLOSED_TABS_ANNOUNCEMENT_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo multiple closed tabs at once.">
+        Restored <ph name="TAB_COUNT">%1$s<ex>3</ex></ph> tabs
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
       </message>

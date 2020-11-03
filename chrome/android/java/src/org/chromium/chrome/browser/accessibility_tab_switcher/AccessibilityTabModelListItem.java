@@ -384,6 +384,9 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
             }
         } else if (v == mUndoButton) {
             // Kill the close action.
+            String undoButtonOnClickAnnouncement = mUndoButton.getContext().getString(
+                    R.string.accessibility_undo_closed_tab_announcement_message, mTab.getTitle());
+            mUndoButton.announceForAccessibility(undoButtonOnClickAnnouncement);
             mHandler.removeCallbacks(mCloseRunnable);
 
             mListener.cancelPendingClosure(tabId);
