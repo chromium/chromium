@@ -222,7 +222,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
       GuestNTPInfo guest_ntp_info{kLearnMoreGuestSessionUrl, IDR_GUEST_TAB_HTML,
                                   IDS_NEW_TAB_GUEST_SESSION_HEADING,
                                   IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION};
-      CreateNewTabGuestHTML(guest_ntp_info);
+      new_tab_guest_html_ = CreateNewTabGuestHTML(guest_ntp_info);
     }
 
     return new_tab_guest_html_.get();
