@@ -771,6 +771,13 @@
       'base_junit_tests': {},
       'chrome_java_test_pagecontroller_junit_tests': {},
       'chrome_junit_tests': {},
+      'chrome_junit_tests_with_shards': {
+        'args': [
+          '--shards=6',
+        ],
+        'test': 'chrome_junit_tests',
+        'experiment_percentage': 10,
+      },
       'components_junit_tests': {},
       'content_junit_tests': {},
       'device_junit_tests': {},

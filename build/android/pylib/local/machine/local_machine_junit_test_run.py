@@ -228,8 +228,15 @@ def _GetTestClasses(file_path):
     # TODO(crbug.com/1144077): Use robolectric buildconfig file arg.
     if 'third_party/robolectric/' in test_jar:
       continue
-    test_classes += _GetTestClassesFromJar(
-        os.path.join(constants.DIR_SOURCE_ROOT, test_jar))
+
+    test_jar_path = os.path.join(constants.DIR_SOURCE_ROOT, test_jar)
+
+    # Bots write the classpath indexed from src.
+    if not os.path.exists(test_jar_path):
+      if test_jar.startswith('src' + os.path.sep):
+        test_jar_path = os.path.join(constants.DIR_SOURCE_ROOT, test_jar[4:])
+
+    test_classes += _GetTestClassesFromJar(test_jar_path)
 
   logging.info('Found %d test classes in class_path jars.', len(test_classes))
   return test_classes
