@@ -396,10 +396,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
           "https://www.chromestatus.com/feature/5735596811091968 for more "
           "details."};
 
-#define kWebComponentsV0DeprecationPost                \
-  "https://developers.google.com/web/updates/2019/07/" \
-  "web-components-time-to-upgrade"
-
     case WebFeature::kHTMLImports:
       return {"HTMLImports", kUnknown,
               "The HTML Imports feature has been removed. See "
@@ -419,12 +415,11 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "details."};
 
     case WebFeature::kCSSSelectorPseudoUnresolved:
-      return {"CSSSelectorPseudoUnresolved", kM80,
-              ReplacedWillBeRemoved(
-                  ":unresolved pseudo selector", ":not(:defined)", kM80,
-                  "4642138092470272 and " kWebComponentsV0DeprecationPost)};
-
-#undef kWebComponentsV0DeprecationPost
+      return {
+          "CSSSelectorPseudoUnresolved", kUnknown,
+          "The Custom Elements v0 API (:unresolved pseudo selector) has been "
+          "removed. See https://www.chromestatus.com/feature/4642138092470272 "
+          "for more details."};
 
     case WebFeature::kLocalCSSFileExtensionRejected:
       return {"LocalCSSFileExtensionRejected", kM64,
