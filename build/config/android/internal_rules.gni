@@ -700,7 +700,7 @@ template("test_runner_script") {
                                "deps",
                                "public_deps",
                              ])
-      data_deps = [ "//tools/android/md5sum" ]
+      data_deps = []
       if (defined(invoker.data_deps)) {
         data_deps += invoker.data_deps
       }
@@ -726,18 +726,6 @@ template("test_runner_script") {
 
   generate_android_wrapper(target_name) {
     wrapper_script = "$root_build_dir/bin/run_${_test_name}"
-    forward_variables_from(invoker,
-                           [
-                             "data_deps",
-                             "deps",
-                           ])
-    if (!defined(deps)) {
-      deps = []
-    }
-
-    if (!defined(data_deps)) {
-      data_deps = []
-    }
 
     executable = "//testing/test_env.py"
 
@@ -751,21 +739,20 @@ template("test_runner_script") {
     if (defined(invoker.deps)) {
       deps = invoker.deps
     }
-    data_deps = []
+    data_deps = [ "//build/android:test_runner_py" ]
     if (defined(invoker.data_deps)) {
-      data_deps = invoker.data_deps
+      data_deps += invoker.data_deps
     }
     data = [ "//testing/test_env.py" ]
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
 
     executable_args = [
       "@WrappedPath(" + rebase_path(_runner_script, root_build_dir) + ")",
       _test_type,
       "--output-directory",
       "@WrappedPath(.)",
-    ]
-    data_deps += [
-      "//build/android:logdog_wrapper_py",
-      "//build/android:test_runner_py",
     ]
 
     if (_runtime_deps) {

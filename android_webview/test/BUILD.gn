@@ -24,7 +24,6 @@ python_library("webview_cts_tests") {
   pydeps_file = "//android_webview/tools/run_cts.pydeps"
   deps = [ "//android_webview:system_webview_apk" ]
   data_deps = [
-    "//build/android:logdog_wrapper_py",
     "//build/android:test_runner_py",
     "//testing/buildbot/filters:webview_cts_tests_filters",
   ]

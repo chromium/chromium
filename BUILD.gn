@@ -1254,7 +1254,11 @@ if (!is_ios) {
                          root_build_dir) + ")" ]
 
     data = [
+      # These tests use //build/android/devil_chromium.py even when !is_android,
+      # so cannot use the helpers in //build/android (they assert(is_android)).
       "//build/android/",
+      "//build/gn_helpers.py",
+      "//build/config/gclient_args.gni",
       "//components/crash/content/tools/generate_breakpad_symbols.py",
       "//third_party/blink/renderer/bindings/scripts/",
       "//third_party/blink/renderer/build/scripts/",

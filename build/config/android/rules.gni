@@ -3305,7 +3305,6 @@ if (enable_java_templates) {
         _generated_script = "$root_build_dir/bin/${invoker.target_name}"
         script = "//build/android/gyp/create_apk_operations_script.py"
         outputs = [ _generated_script ]
-        data_deps = [ "//tools/android/md5sum" ]
         args = [
           "--script-output-path",
           rebase_path(_generated_script, root_build_dir),
@@ -3339,9 +3338,12 @@ if (enable_java_templates) {
             _static_library_apk_path,
           ]
         }
-        if (!defined(data)) {
-          data = []
-        }
+        data = []
+        data_deps = [
+          "//build/android:apk_operations_py",
+          "//build/android:stack_tools",
+        ]
+
         if (_proguard_enabled && !_incremental_apk) {
           # Required by logcat command.
           data_deps += [ "//build/android/stacktrace:java_deobfuscate" ]
@@ -3408,10 +3410,6 @@ if (enable_java_templates) {
         data_deps += [ ":${target_name}__lint" ]
       }
 
-      if (_incremental_apk) {
-        # device/commands is used by the installer script to push files via .zip.
-        data_deps += [ "//build/android/pylib/device/commands" ]
-      }
       if (_uses_static_library) {
         data_deps += [ invoker.static_library_provider ]
       }
@@ -3779,8 +3777,6 @@ if (enable_java_templates) {
         # symbolization can be done.
         ":${target_name}__secondary_abi_shared_library_list",
         ":${target_name}__shared_library_list",
-        "//build/android/pylib/device/commands",
-        "//tools/android/forwarder2",
       ]
       if (defined(invoker.data_deps)) {
         data_deps += invoker.data_deps
@@ -3958,10 +3954,6 @@ if (enable_java_templates) {
         "//base:base_java",
         "//testing/android/reporter:reporter_java",
       ]
-      data_deps += [ "//build/android/pylib/device/commands" ]
-      if (host_os == "linux") {
-        data_deps += [ "//tools/android/forwarder2" ]
-      }
     }
   }
 
@@ -4984,8 +4976,8 @@ if (enable_java_templates) {
         _bundle_path,
       ]
       data_deps = [
-        "//build/android:bundle_wrapper_script_py",
-        "//tools/android/md5sum",
+        "//build/android:apk_operations_py",
+        "//build/android:stack_tools",
       ]
 
       deps = [ _base_module_build_config_target ]
