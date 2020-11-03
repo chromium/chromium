@@ -5,7 +5,6 @@
 #ifndef ASH_SHELF_WINDOW_PREVIEW_H_
 #define ASH_SHELF_WINDOW_PREVIEW_H_
 
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -26,7 +25,7 @@ class WindowPreviewView;
 // The view is also contains a button which closes the window if clicked. Other
 // click events will activate the window and dismiss the bubble which holds this
 // view.
-class WindowPreview : public views::View, public views::ButtonListener {
+class WindowPreview : public views::View {
  public:
   class Delegate {
    public:
@@ -54,9 +53,6 @@ class WindowPreview : public views::View, public views::ButtonListener {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   const char* GetClassName() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   const WindowPreviewView* preview_view() const { return preview_view_; }
 
  private:
@@ -64,6 +60,8 @@ class WindowPreview : public views::View, public views::ButtonListener {
 
   // All the preview containers have the same size.
   gfx::Size GetPreviewContainerSize() const;
+
+  void CloseButtonPressed();
 
   // Child views.
   views::ImageButton* close_button_ = nullptr;

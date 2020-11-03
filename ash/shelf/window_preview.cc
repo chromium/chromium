@@ -43,7 +43,8 @@ WindowPreview::WindowPreview(aura::Window* window,
   preview_container_view_->SetBackground(views::CreateRoundedRectBackground(
       kPreviewContainerBgColor, kPreviewBorderRadius));
   title_ = new views::Label(window->GetTitle());
-  close_button_ = new views::ImageButton(this);
+  close_button_ = new views::ImageButton(base::BindRepeating(
+      &WindowPreview::CloseButtonPressed, base::Unretained(this)));
   close_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   AddChildView(preview_container_view_);
@@ -134,23 +135,6 @@ const char* WindowPreview::GetClassName() const {
   return "WindowPreview";
 }
 
-void WindowPreview::ButtonPressed(views::Button* sender,
-                                  const ui::Event& event) {
-  // The close button was pressed.
-  DCHECK_EQ(sender, close_button_);
-  aura::Window* target = preview_view_->window();
-
-  // The window might have been closed in the mean time.
-  // TODO: Use WindowObserver to listen to when previewed windows are
-  // being closed and remove this condition.
-  if (!target)
-    return;
-  window_util::CloseWidgetForWindow(target);
-
-  // This will have the effect of deleting this view.
-  delegate_->OnPreviewDismissed(this);
-}
-
 void WindowPreview::SetStyling(const ui::NativeTheme* theme) {
   SkColor background_color =
       theme->GetSystemColor(ui::NativeTheme::kColorId_TooltipBackground);
@@ -177,6 +161,19 @@ gfx::Size WindowPreview::GetPreviewContainerSize() const {
                static_cast<float>(
                    ShelfConfig::Get()->shelf_tooltip_preview_max_width())),
       ShelfConfig::Get()->shelf_tooltip_preview_height());
+}
+
+void WindowPreview::CloseButtonPressed() {
+  // The window might have been closed in the mean time.
+  // TODO: Use WindowObserver to listen to when previewed windows are
+  // being closed and remove this condition.
+  aura::Window* target = preview_view_->window();
+  if (!target)
+    return;
+  window_util::CloseWidgetForWindow(target);
+
+  // This will have the effect of deleting this view.
+  delegate_->OnPreviewDismissed(this);
 }
 
 }  // namespace ash
