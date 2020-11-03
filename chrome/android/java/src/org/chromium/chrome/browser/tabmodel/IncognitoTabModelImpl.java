@@ -101,11 +101,6 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
 
     @Override
     public Profile getProfile() {
-        if (mDelegateModel instanceof TabModelJniBridge) {
-            TabModelJniBridge tabModel = (TabModelJniBridge) mDelegateModel;
-            assert tabModel.isNativeInitialized() && tabModel.getProfile() != null;
-            return tabModel.getProfile();
-        }
         return mDelegateModel.getProfile();
     }
 

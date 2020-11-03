@@ -65,6 +65,7 @@ public abstract class TabModelJniBridge implements TabModel {
 
     @Override
     public Profile getProfile() {
+        assert isNativeInitialized();
         return TabModelJniBridgeJni.get().getProfileAndroid(
                 mNativeTabModelJniBridge, TabModelJniBridge.this);
     }
