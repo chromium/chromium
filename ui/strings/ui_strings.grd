@@ -1059,6 +1059,14 @@ need to be translated for each locale.-->
         Search your device, apps, settings, web...
       </message>
 
+      <!-- Clipboard history menu -->
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_BITMAP_IMAGE" desc="Accessibility text for the bitmap image shown on the clipboard history menu">
+        Image.
+      </message>
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE" desc="Accessibility text for the HTML-rendered image shown on the clipboard history menu">
+        HTML content.
+      </message>
+
       <!-- Strings describing the touch calibration UX -->
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" desc="A message to notify the user about using the escape key to exit the calibration mode.">
         To exit calibration press Esc.

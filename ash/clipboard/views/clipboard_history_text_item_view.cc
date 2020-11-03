@@ -68,10 +68,6 @@ ClipboardHistoryTextItemView::ClipboardHistoryTextItemView(
 
 ClipboardHistoryTextItemView::~ClipboardHistoryTextItemView() = default;
 
-const char* ClipboardHistoryTextItemView::GetClassName() const {
-  return "ClipboardHistoryTextItemView";
-}
-
 std::unique_ptr<ClipboardHistoryTextItemView::ContentsView>
 ClipboardHistoryTextItemView::CreateContentsView() {
   auto contents_view = std::make_unique<TextContentsView>(this);
@@ -93,6 +89,14 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   contents_view->InstallDeleteButton();
 
   return contents_view;
+}
+
+base::string16 ClipboardHistoryTextItemView::GetAccessibleName() const {
+  return text_;
+}
+
+const char* ClipboardHistoryTextItemView::GetClassName() const {
+  return "ClipboardHistoryTextItemView";
 }
 
 void ClipboardHistoryTextItemView::OnThemeChanged() {

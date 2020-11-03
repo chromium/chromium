@@ -104,6 +104,9 @@ class ClipboardHistoryItemView : public views::View {
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
 
+  // Returns the name of the accessible node.
+  virtual base::string16 GetAccessibleName() const = 0;
+
   // Returns whether the item view is enabled. The item view is disabled when
   // it is not allowed to read clipboard data.
   bool IsItemEnabled() const;
@@ -134,6 +137,7 @@ class ClipboardHistoryItemView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* data) override;
 
   // Executes |command_id| on the delegate.
   void ExecuteCommand(int command_id, const ui::Event& event);

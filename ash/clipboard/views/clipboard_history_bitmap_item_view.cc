@@ -12,11 +12,13 @@
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -177,14 +179,10 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     : public ClipboardHistoryBitmapItemView::ContentsView {
  public:
   explicit BitmapContentsView(ClipboardHistoryBitmapItemView* container)
-      : ContentsView(container),
-        container_(container),
-        data_format_(ClipboardHistoryUtil::CalculateMainFormat(
-            container_->clipboard_history_item()->data())) {
+      : ContentsView(container), container_(container) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
-    DCHECK(data_format_.has_value());
-    auto image_view = BuildImageView(*data_format_);
+    auto image_view = BuildImageView();
     image_view->SetPreferredSize(gfx::Size(INT_MAX, kBitmapHeight));
     image_view->SetBorder(views::CreateRoundedRectBorder(
         kBorderThickness, kRoundedCornerRadius, gfx::kPlaceholderColor));
@@ -235,8 +233,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
             AshColorProvider::ControlsLayerType::kHairlineBorderColor));
   }
 
-  std::unique_ptr<RoundedImageView> BuildImageView(
-      ui::ClipboardInternalFormat data_format) {
+  std::unique_ptr<RoundedImageView> BuildImageView() {
     // `BuildImageView()` achieves the image's rounded corners through
     // RoundedImageView instead of layer. Because the menu's container does not
     // cut the children's layers outside of the container's bounds. As a result,
@@ -246,7 +243,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     const float image_opacity =
         container_->IsItemEnabled() ? 1.f : kDisabledAlpha;
     const auto* clipboard_history_item = container_->clipboard_history_item();
-    switch (data_format) {
+    switch (container_->data_format_) {
       case ui::ClipboardInternalFormat::kHtml:
         return std::make_unique<FadeImageView>(
             clipboard_history_item, container_->resource_manager_,
@@ -284,7 +281,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     // should fill the contents bounds while an image rendered from HTML
     // should meet at least one edge of the contents bounds.
     float scaling_up_ratio = 0.f;
-    switch (*data_format_) {
+    switch (container_->data_format_) {
       case ui::ClipboardInternalFormat::kBitmap: {
         if (width_ratio >= 1.f && height_ratio >= 1.f)
           scaling_up_ratio = 1.f;
@@ -315,7 +312,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
   ClipboardHistoryBitmapItemView* const container_;
   RoundedImageView* image_view_ = nullptr;
-  const base::Optional<ui::ClipboardInternalFormat> data_format_;
 
   base::WeakPtrFactory<BitmapContentsView> weak_ptr_factory_{this};
 };
@@ -328,7 +324,9 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
     const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container)
     : ClipboardHistoryItemView(clipboard_history_item, container),
-      resource_manager_(resource_manager) {}
+      resource_manager_(resource_manager),
+      data_format_(*ClipboardHistoryUtil::CalculateMainFormat(
+          clipboard_history_item->data())) {}
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 
@@ -339,6 +337,18 @@ const char* ClipboardHistoryBitmapItemView::GetClassName() const {
 std::unique_ptr<ClipboardHistoryBitmapItemView::ContentsView>
 ClipboardHistoryBitmapItemView::CreateContentsView() {
   return std::make_unique<BitmapContentsView>(this);
+}
+
+base::string16 ClipboardHistoryBitmapItemView::GetAccessibleName() const {
+  switch (data_format_) {
+    case ui::ClipboardInternalFormat::kHtml:
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE);
+    case ui::ClipboardInternalFormat::kBitmap:
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_BITMAP_IMAGE);
+    default:
+      NOTREACHED();
+      return base::string16();
+  }
 }
 
 }  // namespace ash

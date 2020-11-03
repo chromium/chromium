@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
@@ -22,6 +23,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -78,7 +80,9 @@ class ash::ClipboardHistoryItemView::MainButton : public views::Button {
   explicit MainButton(ClipboardHistoryItemView* container)
       : Button(), container_(container) {
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
+
+    // Let the parent handle accessibility features.
+    GetViewAccessibility().OverrideIsIgnored(/*value=*/true);
   }
   MainButton(const MainButton& rhs) = delete;
   MainButton& operator=(const MainButton& rhs) = delete;
@@ -264,6 +268,10 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
   const int preferred_width =
       views::MenuConfig::instance().touchable_menu_width;
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
+}
+
+void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
+  data->SetName(GetAccessibleName());
 }
 
 void ClipboardHistoryItemView::ExecuteCommand(int command_id,

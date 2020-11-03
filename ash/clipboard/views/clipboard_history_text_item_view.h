@@ -30,8 +30,9 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
   class TextContentsView;
 
   // ClipboardHistoryItemView:
-  const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
+  base::string16 GetAccessibleName() const override;
+  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // Text to show.

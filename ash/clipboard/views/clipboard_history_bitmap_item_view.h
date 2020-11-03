@@ -31,9 +31,13 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   // ClipboardHistoryItemView:
   const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
+  base::string16 GetAccessibleName() const override;
 
   // Owned by ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;
+
+  // The format of the associated `ClipboardData`.
+  const ui::ClipboardInternalFormat data_format_;
 };
 
 }  // namespace ash
