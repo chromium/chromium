@@ -26,6 +26,10 @@ namespace base {
 class DictionaryValue;
 }  // namespace base
 
+namespace content {
+class WebUIDataSource;
+}
+
 namespace chromeos {
 
 class ErrorScreen;
@@ -160,6 +164,9 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver);
+
+  static void AddOobeComponents(content::WebUIDataSource* source,
+                                const base::DictionaryValue& localized_strings);
 
  private:
   void AddWebUIHandler(std::unique_ptr<BaseWebUIHandler> handler);

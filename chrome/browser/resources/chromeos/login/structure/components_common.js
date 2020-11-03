@@ -5,7 +5,6 @@
 // This inclusion is types-only. No actual code to execute.
 // <include src="../components/oobe_types.js">
 
-// <include src="../components/oobe_i18n_behavior.js">
 // <include src="../components/oobe_dialog_host_behavior.js">
 // <include src="../components/login_screen_behavior.js">
 // <include src="../components/multi_step_behavior.js">

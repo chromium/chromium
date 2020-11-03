@@ -53,7 +53,6 @@ group("closure_compile") {
     "internet_config_dialog:closure_compile",
     "internet_detail_dialog:closure_compile",
     "login:closure_compile",
-    "login/components:closure_compile",
     "machine_learning:closure_compile",
     "multidevice_internals:closure_compile",
     "multidevice_setup:closure_compile",

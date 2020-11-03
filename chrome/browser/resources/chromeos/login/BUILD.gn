@@ -5,7 +5,14 @@
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_type_check("closure_compile") {
+group("closure_compile") {
+  deps = [
+    ":closure_compile_local",
+    "components:closure_compile",
+  ]
+}
+
+js_type_check("closure_compile_local") {
   deps = [
     ":active_directory_password_change",
     ":app_downloading",
@@ -59,7 +66,7 @@ js_library("oobe_welcome") {
     "components:fake_oobe",
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/js/cr/ui:dialogs",
   ]
 }
@@ -69,7 +76,7 @@ js_library("offline_ad_login") {
     ":oobe_select",
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:load_time_data",
   ]
@@ -77,7 +84,7 @@ js_library("offline_ad_login") {
 
 js_library("multidevice_setup_first_run") {
   deps = [
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/cr_components/chromeos/multidevice_setup:mojo_api",
     "//ui/webui/resources/cr_components/chromeos/multidevice_setup:multidevice_setup",
     "//ui/webui/resources/js:cr",
@@ -85,14 +92,14 @@ js_library("multidevice_setup_first_run") {
 }
 
 js_library("active_directory_password_change") {
-  deps = [ "components:oobe_i18n_behavior" ]
+  deps = [ "components/oobe_i18n_behavior:oobe_i18n_behavior" ]
 }
 
 js_library("app_downloading") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -100,7 +107,7 @@ js_library("arc_terms_of_service") {
   deps = [
     "components:oobe_dialog_host_behavior",
     "components:oobe_help_dialog",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -108,7 +115,7 @@ js_library("demo_preferences") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -117,7 +124,7 @@ js_library("demo_setup") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -126,7 +133,7 @@ js_library("encryption_migration") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -134,14 +141,14 @@ js_library("family_link_notice") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
 js_library("fingerprint_setup") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
   ]
@@ -164,7 +171,7 @@ js_library("gaia_password_changed") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -172,14 +179,14 @@ js_library("gesture_navigation") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
 js_library("marketing_opt_in") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -199,7 +206,7 @@ js_library("notification_card") {
 js_library("offline_gaia") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -211,7 +218,7 @@ js_library("oobe_adb_sideloading_screen") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -219,7 +226,7 @@ js_library("oobe_enable_kiosk") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -229,7 +236,7 @@ js_library("oobe_eula") {
     "components:login_screen_behavior",
     "components:oobe_dialog",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -240,14 +247,14 @@ js_library("oobe_i18n_dropdown") {
 js_library("oobe_network") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
 js_library("oobe_reset") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -255,7 +262,7 @@ js_library("oobe_screen_assistant_optin_flow") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -263,7 +270,7 @@ js_library("oobe_supervision_transition") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -271,7 +278,7 @@ js_library("oobe_update") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -280,8 +287,8 @@ js_library("recommend_apps") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
     "components:oobe_types",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -290,21 +297,21 @@ js_library("user_creation") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
 js_library("saml_confirm_password") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
 js_library("sync_consent") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -316,7 +323,7 @@ js_library("update_required_card") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components:oobe_i18n_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 

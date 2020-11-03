@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/assistant/buildflags.h"
@@ -85,6 +86,9 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
 
   base::DictionaryValue localized_strings;
   assistant_handler_ptr_->GetLocalizedStrings(&localized_strings);
+
+  OobeUI::AddOobeComponents(source, localized_strings);
+
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
   source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);

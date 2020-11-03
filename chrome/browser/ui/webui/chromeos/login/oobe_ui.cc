@@ -143,6 +143,9 @@ constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewHTMLPath[] = "recommend_app_list_view.html";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
+// Components
+constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
+constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
@@ -303,6 +306,8 @@ content::WebUIDataSource* CreateOobeUIDataSource(
       content::WebUIDataSource::Create(chrome::kChromeUIOobeHost);
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
+
+  OobeUI::AddOobeComponents(source, localized_strings);
 
   // First, configure default and non-shared resources for the current display
   // type.
@@ -599,6 +604,16 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
 OobeUI::~OobeUI() {
   for (Observer& observer : observer_list_)
     observer.OnDestroyingOobeUI();
+}
+
+// static
+
+void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
+                               const base::DictionaryValue& localized_strings) {
+  source->AddResourcePath(kI18nBehaviorHTML,
+                          IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML);
+  source->AddResourcePath(kI18nBehaviorJS,
+                          IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS);
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {
