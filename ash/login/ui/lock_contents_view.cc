@@ -1240,9 +1240,6 @@ void LockContentsView::OnSystemInfoChanged(
     const std::string& enterprise_info_text,
     const std::string& bluetooth_name,
     bool adb_sideloading_enabled) {
-  DCHECK(!os_version_label_text.empty() || !enterprise_info_text.empty() ||
-         !bluetooth_name.empty());
-
   // Helper function to create a label for the system info view.
   auto create_info_label = []() {
     auto label = std::make_unique<views::Label>();
@@ -1282,6 +1279,7 @@ void LockContentsView::OnSystemInfoChanged(
 
   LayoutTopHeader();
 
+  // TODO(crbug.com/1141348): Separate ADB sideloading from system info changed.
   // Note that if ADB is enabled and the device is enrolled, only the ADB
   // warning message will be displayed.
   if (adb_sideloading_enabled)
