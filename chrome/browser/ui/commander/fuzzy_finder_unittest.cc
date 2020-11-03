@@ -102,4 +102,12 @@ TEST(CommanderFuzzyFinder, Noncontiguous) {
   EXPECT_EQ(ranges,
             std::vector<gfx::Range>({{0, 1}, {6, 7}, {13, 14}, {19, 20}}));
 }
+
+TEST(CommanderFuzzyFinder, EmptyStringDoesNotMatch) {
+  std::vector<gfx::Range> ranges;
+  EXPECT_EQ(0, FuzzyFind(base::ASCIIToUTF16(""), base::ASCIIToUTF16("orange"),
+                         &ranges));
+  EXPECT_TRUE(ranges.empty());
+}
+
 }  // namespace commander

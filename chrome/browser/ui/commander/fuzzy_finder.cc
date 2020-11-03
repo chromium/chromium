@@ -141,6 +141,8 @@ namespace commander {
 double FuzzyFind(const base::string16& needle,
                  const base::string16& haystack,
                  std::vector<gfx::Range>* matched_ranges) {
+  if (needle.size() == 0)
+    return 0;
   DCHECK(needle == base::i18n::FoldCase(needle));
   matched_ranges->clear();
   const base::string16& folded = base::i18n::FoldCase(haystack);
