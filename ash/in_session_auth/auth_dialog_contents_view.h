@@ -113,9 +113,6 @@ class AuthDialogContentsView : public views::View,
   // Flags of auth methods that should be visible.
   uint32_t auth_methods_ = 0u;
 
-  // Cancel all operations and close th dialog.
-  views::LabelButton* cancel_button_ = nullptr;
-
   // Container which holds action buttons.
   views::View* action_view_container_ = nullptr;
 

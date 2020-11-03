@@ -33,13 +33,8 @@
 namespace ash {
 namespace {
 
-enum class ButtonId {
-  kCancel,
-};
-
 // TODO(b/164195709): Move these strings to a grd file.
 const char kTitle[] = "Verify it's you";
-const char kCancelButtonText[] = "Cancel";
 
 const int kContainerPreferredWidth = 512;
 const int kSpacingAfterTitle = 16;
@@ -383,20 +378,12 @@ void AuthDialogContentsView::AddActionButtonsView() {
   buttons_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
 
-  cancel_button_ =
-      AddButton(kCancelButtonText, static_cast<int>(ButtonId::kCancel),
-                action_view_container_);
-
-  action_view_container_->SetPreferredSize(
-      gfx::Size(kContainerPreferredWidth, cancel_button_->height()));
+  // TODO(b/156258540): Add a "Need help?" button that links to a HC article.
 }
 
 void AuthDialogContentsView::ButtonPressed(views::Button* sender,
                                            const ui::Event& event) {
-  if (sender == cancel_button_) {
-    // Cancel() deletes |this|.
-    InSessionAuthDialogController::Get()->Cancel();
-  }
+  // TODO(b/156258540): Add a "Need help?" button that links to a HC article.
 }
 
 views::LabelButton* AuthDialogContentsView::AddButton(const std::string& text,

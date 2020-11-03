@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_tracker.h"
 
 class AccountId;
@@ -26,7 +27,9 @@ class InSessionAuthDialogClient;
 class WebAuthnRequestRegistrarImpl;
 
 // InSessionAuthDialogControllerImpl persists as long as UI is running.
-class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
+class InSessionAuthDialogControllerImpl
+    : public InSessionAuthDialogController,
+      public aura::client::FocusChangeObserver {
  public:
   InSessionAuthDialogControllerImpl();
   InSessionAuthDialogControllerImpl(const InSessionAuthDialogControllerImpl&) =
@@ -45,6 +48,10 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, FingerprintState)> callback) override;
   void Cancel() override;
+
+  // aura::client::FocusChangeObserver overrides
+  void OnWindowFocused(aura::Window* gained_focus,
+                       aura::Window* lost_focus) override;
 
  private:
   bool IsFingerprintAvailable(const AccountId& account_id);
