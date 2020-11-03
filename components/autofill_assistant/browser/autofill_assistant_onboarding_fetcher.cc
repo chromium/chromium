@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/features.h"
@@ -106,19 +107,23 @@ void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
 void AutofillAssistantOnboardingFetcher::OnFetchComplete(
     std::unique_ptr<std::string> response_body) {
   url_loader_.reset();
-  ParseResponse(std::move(response_body));
+  ResultStatus result_status = ParseResponse(std::move(response_body));
+  base::UmaHistogramEnumeration(
+      "AutofillAssistant.AutofillAssistantOnboardingFetcher.ResultStatus",
+      result_status);
   for (auto& callback : pending_callbacks_) {
     std::move(callback).Run();
   }
   pending_callbacks_.clear();
 }
 
-bool AutofillAssistantOnboardingFetcher::ParseResponse(
+AutofillAssistantOnboardingFetcher::ResultStatus
+AutofillAssistantOnboardingFetcher::ParseResponse(
     std::unique_ptr<std::string> response_body) {
   onboarding_strings_.clear();
 
   if (!response_body) {
-    return false;
+    return ResultStatus::kNoBody;
   }
 
   base::JSONReader::ValueWithError data =
@@ -126,12 +131,14 @@ bool AutofillAssistantOnboardingFetcher::ParseResponse(
 
   if (data.value == base::nullopt) {
     DVLOG(1) << "Parse error: " << data.error_message;
-    return false;
+    return ResultStatus::kInvalidJson;
   }
   if (!data.value->is_dict()) {
-    return false;
+    return ResultStatus::kInvalidData;
   }
-  return ExtractStrings(*data.value, onboarding_strings_);
+  return ExtractStrings(*data.value, onboarding_strings_)
+             ? ResultStatus::kOk
+             : ResultStatus::kInvalidData;
 }
 
 void AutofillAssistantOnboardingFetcher::RunCallback(

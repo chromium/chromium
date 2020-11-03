@@ -4582,6 +4582,13 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="No answer, defaults to not accepted"/>
 </enum>
 
+<enum name="AutofillAssistantOnboardingFetcherResultStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="No body received"/>
+  <int value="2" label="Invalid JSON"/>
+  <int value="3" label="Invalid data"/>
+</enum>
+
 <enum name="AutofillAssistantPaymentRequestAutofillInfoChanged">
   <int value="0" label="Changed &amp; Success"/>
   <int value="1" label="Not changed &amp; Success"/>

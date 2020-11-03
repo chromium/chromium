@@ -29,6 +29,21 @@ class AutofillAssistantOnboardingFetcher : public KeyedService {
   using StringMap =
       base::flat_map<std::string, base::flat_map<std::string, std::string>>;
 
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantOnboardingFetcherResultStatus enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class ResultStatus {
+    kOk = 0,
+    // No body was received from the server.
+    kNoBody = 1,
+    // Parsing the JSON failed.
+    kInvalidJson = 1,
+    // The JSON was not in the form we expected it to be.
+    kInvalidData = 2,
+    kMaxValue = kInvalidData
+  };
+
   AutofillAssistantOnboardingFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -46,8 +61,8 @@ class AutofillAssistantOnboardingFetcher : public KeyedService {
   // Callback for the request to gstatic.
   void OnFetchComplete(std::unique_ptr<std::string> response_body);
 
-  // Parses the response body. Returns true if successful and false if not.
-  bool ParseResponse(std::unique_ptr<std::string> response_body);
+  // Parses the response body. Returns a result status.
+  ResultStatus ParseResponse(std::unique_ptr<std::string> response_body);
 
   // Extracts the requested data and runs the callback.
   void RunCallback(const std::string& intent, ResponseCallback callback);

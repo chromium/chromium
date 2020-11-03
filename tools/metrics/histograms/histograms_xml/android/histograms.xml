@@ -63,6 +63,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.AutofillAssistant.OnboardingFetcher.ResultStatus"
+    enum="AutofillAssistantOnboardingFetcherResultStatus" expires_after="M90">
+  <owner>sandromaggi@google.com</owner>
+  <owner>mcarlen@google.com</owner>
+  <summary>
+    Reports the result status of the AutofillAssistantOnboardingFetcher. This
+    includes general failures to get any data as well as failures to analyse or
+    extract data that was received. This is recorded every time an onboarding
+    definition is loaded for a user.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.PaymentRequest.AutofillChanged"
     enum="AutofillAssistantPaymentRequestAutofillInfoChanged"
     expires_after="M90">
