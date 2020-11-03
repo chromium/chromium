@@ -37,11 +37,11 @@ class AudioFramesImpl;
 class CdmAuxiliaryHelper;
 class CdmWrapper;
 
-class MEDIA_EXPORT CdmAdapter : public ContentDecryptionModule,
-                                public CdmContext,
-                                public Decryptor,
-                                public cdm::Host_10,
-                                public cdm::Host_11 {
+class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
+                                      public CdmContext,
+                                      public Decryptor,
+                                      public cdm::Host_10,
+                                      public cdm::Host_11 {
  public:
   using CreateCdmFunc = void* (*)(int cdm_interface_version,
                                   const char* key_system,

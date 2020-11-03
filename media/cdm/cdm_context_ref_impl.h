@@ -17,7 +17,7 @@ namespace media {
 
 class ContentDecryptionModule;
 
-class MEDIA_EXPORT CdmContextRefImpl : public CdmContextRef {
+class MEDIA_EXPORT CdmContextRefImpl final : public CdmContextRef {
  public:
   explicit CdmContextRefImpl(scoped_refptr<ContentDecryptionModule> cdm);
   ~CdmContextRefImpl() final;

@@ -19,7 +19,7 @@ namespace media {
 
 class VideoFrame;
 
-class DecryptedBlockImpl : public cdm::DecryptedBlock {
+class DecryptedBlockImpl final : public cdm::DecryptedBlock {
  public:
   DecryptedBlockImpl();
   ~DecryptedBlockImpl() final;
@@ -102,7 +102,7 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
   DISALLOW_COPY_AND_ASSIGN(VideoFrameImpl);
 };
 
-class AudioFramesImpl : public cdm::AudioFrames {
+class AudioFramesImpl final : public cdm::AudioFrames {
  public:
   AudioFramesImpl();
   ~AudioFramesImpl() final;

@@ -161,7 +161,7 @@ void SetupGlobalEnvironmentIfNeeded() {
 // |kNestableTasksAllowed| because we could be running the RunLoop in a task,
 // e.g. in component builds when we share the same task runner as the host. In
 // a static build, this is not necessary.
-class VideoDecoderAdapter : public CdmVideoDecoder {
+class VideoDecoderAdapter final : public CdmVideoDecoder {
  public:
   VideoDecoderAdapter(CdmHostProxy* cdm_host_proxy,
                       std::unique_ptr<VideoDecoder> video_decoder)

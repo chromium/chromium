@@ -13,7 +13,7 @@ namespace media {
 
 struct CdmConfig;
 
-class MEDIA_EXPORT DefaultCdmFactory : public CdmFactory {
+class MEDIA_EXPORT DefaultCdmFactory final : public CdmFactory {
  public:
   DefaultCdmFactory();
   ~DefaultCdmFactory() final;
