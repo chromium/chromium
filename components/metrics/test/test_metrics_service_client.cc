@@ -19,7 +19,8 @@ TestMetricsServiceClient::TestMetricsServiceClient()
     : version_string_("5.0.322.0-64-devel"),
       product_(ChromeUserMetricsExtension::CHROME),
       reporting_is_managed_(false),
-      enable_default_(EnableMetricsDefault::DEFAULT_UNKNOWN) {}
+      enable_default_(EnableMetricsDefault::DEFAULT_UNKNOWN),
+      storage_limits_(MetricsServiceClient::GetStorageLimits()) {}
 
 TestMetricsServiceClient::~TestMetricsServiceClient() {}
 
@@ -87,6 +88,11 @@ std::string TestMetricsServiceClient::GetAppPackageName() {
 
 bool TestMetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
   return should_reset_client_ids_on_cloned_install_;
+}
+
+MetricsLogStore::StorageLimits TestMetricsServiceClient::GetStorageLimits()
+    const {
+  return storage_limits_;
 }
 
 }  // namespace metrics

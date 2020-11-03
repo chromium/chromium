@@ -14,10 +14,11 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
-#include "components/metrics/metrics_service_client.h"
+#include "components/metrics/metrics_reporting_default_state.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 class PrefService;
@@ -31,6 +32,7 @@ class HistogramSnapshotManager;
 namespace metrics {
 
 class MetricsProvider;
+class MetricsServiceClient;
 class DelegatingProvider;
 
 namespace internal {
@@ -160,9 +162,7 @@ class MetricsLog {
   // record.  Must only be called after CloseLog() has been called.
   void GetEncodedLog(std::string* encoded_log);
 
-  const base::TimeTicks& creation_time() const {
-    return creation_time_;
-  }
+  const base::TimeTicks& creation_time() const { return creation_time_; }
 
   LogType log_type() const { return log_type_; }
 
@@ -180,9 +180,7 @@ class MetricsLog {
 
   // Exposed to allow subclass to access to export the uma_proto. Can be used
   // by external components to export logs to Chrome.
-  const ChromeUserMetricsExtension* uma_proto() const {
-    return &uma_proto_;
-  }
+  const ChromeUserMetricsExtension* uma_proto() const { return &uma_proto_; }
 
  private:
   // Write the default state of the enable metrics checkbox.

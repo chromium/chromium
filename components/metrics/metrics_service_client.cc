@@ -21,6 +21,33 @@ namespace {
 // The minimum time in seconds between consecutive metrics report uploads.
 constexpr int kMetricsUploadIntervalSecMinimum = 20;
 
+// If a metrics log upload fails, and the transmission is over this byte count,
+// then we will discard the log, and not try to retransmit it. We also don't
+// persist the log to the prefs for transmission during the next chrome session
+// if this limit is exceeded.
+const size_t kMaxOngoingLogSize = 100 * 1024;
+
+// The number of bytes of logs to save of each type (initial/ongoing). This
+// ensures that a reasonable amount of history will be stored even if there is a
+// long series of very small logs.
+constexpr size_t kMinLogQueueSize = 300 * 1000;  // ~300kB
+
+// The minimum number of "initial" logs to save, and hope to send during a
+// future Chrome session. Initial logs contain crash stats, and are pretty
+// small.
+constexpr size_t kMinInitialLogQueueCount = 20;
+
+// The minimum number of ongoing logs to save persistently, and hope to send
+// during a this or future sessions. Note that each log may be pretty large, as
+// presumably the related "initial" log wasn't sent (probably nothing was, as
+// the user was probably off-line). As a result, the log probably kept
+// accumulating while the "initial" log was stalled, and couldn't be sent. As a
+// result, we don't want to save too many of these mega-logs. A "standard
+// shutdown" will create a small log, including just the data that was not yet
+// been transmitted, and that is normal (to have exactly one ongoing_log_ at
+// startup).
+constexpr size_t kMinOngoingLogQueueCount = 8;
+
 }  // namespace
 
 MetricsServiceClient::MetricsServiceClient() {}
@@ -100,6 +127,16 @@ std::string MetricsServiceClient::GetUploadSigningKey() {
 
 bool MetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
   return false;
+}
+
+MetricsLogStore::StorageLimits MetricsServiceClient::GetStorageLimits() const {
+  return {
+      /*min_initial_log_queue_count=*/kMinInitialLogQueueCount,
+      /*min_initial_log_queue_size=*/kMinLogQueueSize,
+      /*min_ongoing_log_queue_count=*/kMinOngoingLogQueueCount,
+      /*min_ongoing_log_queue_size=*/kMinLogQueueSize,
+      /*max_ongoing_log_size=*/kMaxOngoingLogSize,
+  };
 }
 
 void MetricsServiceClient::SetUpdateRunningServicesCallback(

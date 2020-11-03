@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/test/test_metrics_log_uploader.h"
@@ -45,6 +46,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   EnableMetricsDefault GetMetricsReportingDefaultState() override;
   std::string GetAppPackageName() override;
   bool ShouldResetClientIdsOnClonedInstall() override;
+  MetricsLogStore::StorageLimits GetStorageLimits() const override;
 
   const std::string& get_client_id() const { return client_id_; }
   // Returns a weak ref to the last created uploader.
@@ -60,6 +62,9 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   void set_should_reset_client_ids_on_cloned_install(bool state) {
     should_reset_client_ids_on_cloned_install_ = state;
   }
+  void set_max_ongoing_log_size(size_t bytes) {
+    storage_limits_.max_ongoing_log_size = bytes;
+  }
 
  private:
   std::string client_id_;
@@ -68,6 +73,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   bool reporting_is_managed_;
   EnableMetricsDefault enable_default_;
   bool should_reset_client_ids_on_cloned_install_ = false;
+  MetricsLogStore::StorageLimits storage_limits_;
 
   // A weak ref to the last created TestMetricsLogUploader.
   TestMetricsLogUploader* uploader_;
