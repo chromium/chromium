@@ -14,13 +14,12 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/media_session/media_session_service.h"
+#include "services/media_session/media_session_service_impl.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_session {
@@ -31,11 +30,10 @@ class MediaControllerTest : public testing::Test {
 
   void SetUp() override {
     // Create an instance of the MediaSessionService and bind some interfaces.
-    service_ = std::make_unique<MediaSessionService>(
-        service_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindAudioFocusManager(
+    service_ = std::make_unique<MediaSessionServiceImpl>();
+    service_->BindAudioFocusManager(
         audio_focus_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindMediaControllerManager(
+    service_->BindMediaControllerManager(
         controller_manager_remote_.BindNewPipeAndPassReceiver());
 
     controller_manager_remote_->CreateActiveMediaController(
@@ -72,7 +70,6 @@ class MediaControllerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MediaSessionService> service_;
-  mojo::Remote<mojom::MediaSessionService> service_remote_;
   mojo::Remote<mojom::AudioFocusManager> audio_focus_remote_;
   mojo::Remote<mojom::MediaController> media_controller_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;

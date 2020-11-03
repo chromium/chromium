@@ -203,9 +203,6 @@ TEST_F(MediaSessionImplTest, SessionInfoState) {
     MockMediaSessionMojoObserver observer(*GetMediaSession());
     GetMediaSession()->StartDucking();
     observer.WaitForState(MediaSessionInfo::SessionState::kDucking);
-
-    EXPECT_TRUE(observer.session_info().Equals(
-        media_session::test::GetMediaSessionInfoSync(GetMediaSession())));
   }
 
   {
