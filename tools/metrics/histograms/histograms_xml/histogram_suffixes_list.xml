@@ -18548,10 +18548,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              (frozen or not frozen)"/>
   <suffix name="NoSavedFrames_Loaded_Frozen"
       label="Same as NoSavedFrames with the destination tab being loaded and
-             frozen."/>
+             frozen.">
+    <obsolete>
+      Frozen is no longer a supported state.
+    </obsolete>
+  </suffix>
   <suffix name="NoSavedFrames_Loaded_NotFrozen"
       label="Same as NoSavedFrames with the destination tab being loaded and
-             not frozen."/>
+             not frozen.">
+    <obsolete>
+      Frozen is no longer a supported state.
+    </obsolete>
+  </suffix>
   <suffix name="NoSavedFrames_NotLoaded"
       label="Same as WithSavedFrames with the destination tab being unloaded."/>
   <suffix name="WithSavedFrames"

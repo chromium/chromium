@@ -8783,7 +8783,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jbauman@chromium.org</owner>
   <summary>
     Time from tab switch requested to tab appearing on screen (Aura and Mac
-    only).
+    only). Replaced by Browser.Tabs.TotalSwitchDuration.*
   </summary>
 </histogram>
 
