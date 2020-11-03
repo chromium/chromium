@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/battery/android_battery_metrics.h"
+#include "components/power_metrics/android_battery_metrics.h"
 
 #include "base/android/radio_utils.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "net/android/network_library.h"
 #include "net/android/traffic_stats.h"
 
+namespace power_metrics {
 namespace {
 
 void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes) {
@@ -115,10 +117,7 @@ void ReportAveragedDrain(int capacity_consumed,
 constexpr base::TimeDelta AndroidBatteryMetrics::kMetricsInterval;
 
 AndroidBatteryMetrics::AndroidBatteryMetrics()
-    : app_state_listener_(base::android::ApplicationStatusListener::New(
-          base::BindRepeating(&AndroidBatteryMetrics::OnAppStateChanged,
-                              base::Unretained(this)))),
-      app_state_(base::android::ApplicationStatusListener::GetState()),
+    : app_visible_(false),
       on_battery_power_(base::PowerMonitor::IsOnBatteryPower()) {
   base::PowerMonitor::AddObserver(this);
   UpdateMetricsEnabled();
@@ -128,10 +127,9 @@ AndroidBatteryMetrics::~AndroidBatteryMetrics() {
   base::PowerMonitor::RemoveObserver(this);
 }
 
-void AndroidBatteryMetrics::OnAppStateChanged(
-    base::android::ApplicationState state) {
+void AndroidBatteryMetrics::OnAppVisibilityChanged(bool visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  app_state_ = state;
+  app_visible_ = visible;
   UpdateMetricsEnabled();
 }
 
@@ -144,12 +142,10 @@ void AndroidBatteryMetrics::OnPowerStateChange(bool on_battery_power) {
 void AndroidBatteryMetrics::UpdateMetricsEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // We want to attribute battery drain to Chrome while it is in the foreground.
-  // Battery drain will only be reflected in remaining battery capacity when the
-  // device is not on a charger.
-  bool should_be_enabled =
-      app_state_ == base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES &&
-      on_battery_power_;
+  // We want to attribute battery drain to chromium while the embedding app is
+  // visible. Battery drain will only be reflected in remaining battery capacity
+  // when the device is not on a charger.
+  bool should_be_enabled = app_visible_ && on_battery_power_;
 
   if (should_be_enabled && !metrics_timer_.IsRunning()) {
     // Capture first capacity measurement and enable the repeating timer.
@@ -237,3 +233,5 @@ void AndroidBatteryMetrics::CaptureAndReportMetrics() {
 bool AndroidBatteryMetrics::IsMeasuringDrainExclusively() const {
   return observed_capacity_drops_ >= 2;
 }
+
+}  // namespace power_metrics
