@@ -349,6 +349,7 @@ source_set("unit_tests") {
     "test_util.cc",
     "test_util.h",
     "trigger_context_unittest.cc",
+    "trigger_scripts/dynamic_trigger_conditions_unittest.cc",
     "trigger_scripts/trigger_script_coordinator_unittest.cc",
     "trigger_scripts/trigger_script_unittest.cc",
     "user_data_util_unittest.cc",
