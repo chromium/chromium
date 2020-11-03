@@ -16051,6 +16051,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="SameOrOtherChannel" separator=".">
+  <obsolete>
+    Removed 11/2020.
+  </obsolete>
   <suffix name="DifferentChannel"
       label="Instance(s) of Chrome of a different channel"/>
   <suffix name="SameChannel" label="Instance(s) of Chrome of the same channel"/>
