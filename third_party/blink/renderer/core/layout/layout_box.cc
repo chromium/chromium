@@ -4756,6 +4756,7 @@ LayoutUnit LayoutBox::ComputeContentLogicalHeight(
 }
 
 LayoutUnit LayoutBox::ComputeIntrinsicLogicalContentHeightUsing(
+    SizeType height_type,
     const Length& logical_height_length,
     LayoutUnit intrinsic_content_height,
     LayoutUnit border_and_padding) const {
@@ -4776,9 +4777,18 @@ LayoutUnit LayoutBox::ComputeIntrinsicLogicalContentHeightUsing(
       UseCounter::Count(GetDocument(),
                         WebFeature::kCSSFillAvailableLogicalHeight);
     }
-    return ContainingBlock()->AvailableLogicalHeight(
-               kExcludeMarginBorderPadding) -
-           border_and_padding;
+    const LayoutUnit available_logical_height =
+        LayoutBoxUtils::AvailableLogicalHeight(*this, ContainingBlock());
+    // If the available logical-height is indefinite fallback to the "default"
+    // depending on the |SizeType|.
+    if (available_logical_height == -1) {
+      if (height_type == kMinSize)
+        return LayoutUnit();
+      if (height_type == kMainOrPreferredSize)
+        return intrinsic_content_height;
+      return LayoutUnit::Max();
+    }
+    return available_logical_height - border_and_padding;
   }
   NOTREACHED();
   return LayoutUnit();
@@ -4798,7 +4808,7 @@ LayoutUnit LayoutBox::ComputeContentAndScrollbarLogicalHeightUsing(
     if (intrinsic_content_height == -1)
       return LayoutUnit(-1);  // Intrinsic height isn't available.
     return ComputeIntrinsicLogicalContentHeightUsing(
-               height, intrinsic_content_height,
+               height_type, height, intrinsic_content_height,
                BorderAndPaddingLogicalHeight()) +
            ComputeLogicalScrollbars().BlockSum();
   }
@@ -5239,7 +5249,7 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
     case Length::kFitContent:
     case Length::kFillAvailable:
       return AdjustContentBoxLogicalHeightForBoxSizing(
-          ComputeIntrinsicLogicalContentHeightUsing(logical_height,
+          ComputeIntrinsicLogicalContentHeightUsing(size_type, logical_height,
                                                     IntrinsicLogicalHeight(),
                                                     BorderAndPaddingHeight()));
     default:
@@ -6307,7 +6317,8 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
   } else {
     if (logical_height_length.IsIntrinsic()) {
       resolved_logical_height = ComputeIntrinsicLogicalContentHeightUsing(
-          logical_height_length, content_logical_height, borders_plus_padding);
+          height_size_type, logical_height_length, content_logical_height,
+          borders_plus_padding);
     } else if (from_aspect_ratio) {
       NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
                                 BorderEnd() + ComputedCSSPaddingEnd(),

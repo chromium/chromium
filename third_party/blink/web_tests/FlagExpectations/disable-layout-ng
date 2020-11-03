@@ -399,6 +399,9 @@ crbug.com/612641 fast/box-decoration-break/box-decoration-break-min-max.html [ F
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]
 crbug.com/591099 fast/css/text-overflow-ellipsis-button.html [ Failure ]
 
+### fast/css-intrinsic-dimensions/
+crbug.com/591099 fast/css-intrinsic-dimensions/orthogonal-max-width-fit-content-in-max-content.html [ Failure ]
+
 ### fast/forms/color-scheme/href/
 crbug.com/591099 fast/forms/color-scheme/href/href-appearance-basic.html [ Failure ]
 

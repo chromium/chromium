@@ -2102,6 +2102,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const Length& logical_width_length,
       LayoutUnit available_logical_width) const;
   LayoutUnit ComputeIntrinsicLogicalContentHeightUsing(
+      SizeType height_type,
       const Length& logical_height_length,
       LayoutUnit intrinsic_content_height,
       LayoutUnit border_and_padding) const;

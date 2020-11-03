@@ -507,8 +507,8 @@ LayoutUnit LayoutTable::ConvertStyleLogicalHeightToComputedHeight(
         ComputePercentageLogicalHeight(style_logical_height);
   } else if (style_logical_height.IsIntrinsic()) {
     computed_logical_height = ComputeIntrinsicLogicalContentHeightUsing(
-        style_logical_height, LogicalHeight() - border_and_padding,
-        border_and_padding);
+        kMainOrPreferredSize, style_logical_height,
+        LogicalHeight() - border_and_padding, border_and_padding);
   } else {
     NOTREACHED();
   }
