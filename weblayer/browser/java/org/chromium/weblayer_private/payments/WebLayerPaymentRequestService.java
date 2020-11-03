@@ -5,10 +5,11 @@
 package org.chromium.weblayer_private.payments;
 
 import org.chromium.components.payments.BrowserPaymentRequest;
+import org.chromium.components.payments.PaymentAppFactoryDelegate;
+import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.payments.mojom.PaymentDetails;
-import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
 /** The WebLayer-specific part of the payment request service. */
@@ -21,13 +22,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     public WebLayerPaymentRequestService(
             PaymentRequestService paymentRequestService, Delegate delegate) {
         assert false : "Not implemented yet";
-    }
-
-    @Override
-    public boolean initAndValidate(PaymentMethodData[] methodData, PaymentDetails details,
-            boolean googlePayBridgeEligible) {
-        assert false : "Not implemented yet";
-        return false;
     }
 
     @Override
@@ -78,5 +72,16 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     @Override
     public void close() {
         assert false : "Not implemented yet";
+    }
+
+    @Override
+    public void addPaymentAppFactories(PaymentAppService service) {
+        assert false : "Not implemented yet";
+    }
+
+    @Override
+    public PaymentAppFactoryDelegate getPaymentAppFactoryDelegate() {
+        assert false : "Not implemented yet";
+        return null;
     }
 }

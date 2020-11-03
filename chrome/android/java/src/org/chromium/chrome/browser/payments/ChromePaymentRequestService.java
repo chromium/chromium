@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -257,61 +256,17 @@ public class ChromePaymentRequestService
                 /*observer=*/this);
     }
 
-    // Implement BrowserPaymentRequest:
+    // Implements BrowserPaymentRequest:
     @Override
-    public boolean initAndValidate(PaymentMethodData[] rawMethodData, PaymentDetails details,
-            boolean googlePayBridgeEligible) {
-        assert mPaymentRequestService != null;
-        assert rawMethodData != null;
-        assert details != null;
-
-        onWhetherGooglePayBridgeEligible(googlePayBridgeEligible, mWebContents, rawMethodData);
-        @Nullable
-        Map<String, PaymentMethodData> methodData = getValidatedMethodData(rawMethodData);
-        modifyMethodData(methodData);
-        if (methodData == null) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.USER_CANCEL);
-            return false;
-        }
-        methodData = Collections.unmodifiableMap(methodData);
-
-        mQueryForQuota = new HashMap<>(methodData);
-        onQueryForQuotaCreated(mQueryForQuota);
-
-        if (!PaymentValidator.validatePaymentDetails(details)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
-            return false;
-        }
-
-        if (disconnectIfExtraValidationFails(mWebContents, methodData, details, mPaymentOptions)) {
-            return false;
-        }
-
-        PaymentRequestSpec spec = new PaymentRequestSpec(mPaymentOptions, details,
-                methodData.values(), LocaleUtils.getDefaultLocaleString());
-        if (spec.getRawTotal() == null) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.TOTAL_REQUIRED);
-            return false;
-        }
-        onSpecValidated(spec);
-        PaymentAppService service = PaymentAppService.getInstance();
-        addPaymentAppFactories(service);
-        service.create(/*delegate=*/this);
-        return true;
-    }
-
-    private void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
+    public void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
             WebContents webContents, PaymentMethodData[] rawMethodData) {
         mIsGooglePayBridgeActivated = googlePayBridgeEligible
                 && SkipToGPayHelperUtil.canActivateExperiment(mWebContents, rawMethodData);
     }
 
-    private void onSpecValidated(PaymentRequestSpec spec) {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
         mPaymentUiService.initialize(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
@@ -349,7 +304,9 @@ public class ChromePaymentRequestService
                 requestedMethodGoogle, requestedMethodOther);
     }
 
-    private boolean disconnectIfExtraValidationFails(WebContents webContents,
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean disconnectIfExtraValidationFails(WebContents webContents,
             Map<String, PaymentMethodData> methodData, PaymentDetails details,
             PaymentOptions options) {
         assert mPaymentRequestService != null;
@@ -369,7 +326,9 @@ public class ChromePaymentRequestService
         return false;
     }
 
-    private void onQueryForQuotaCreated(Map<String, PaymentMethodData> queryForQuota) {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void onQueryForQuotaCreated(Map<String, PaymentMethodData> queryForQuota) {
         if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
@@ -378,9 +337,12 @@ public class ChromePaymentRequestService
                     PaymentOptionsUtils.stringifyRequestedInformation(mPaymentOptions);
             queryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
+        mQueryForQuota = queryForQuota;
     }
 
-    private void addPaymentAppFactories(PaymentAppService service) {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void addPaymentAppFactories(PaymentAppService service) {
         String androidFactoryId = AndroidPaymentAppFactory.class.getName();
         if (!service.containsFactory(androidFactoryId)) {
             service.addUniqueFactory(new AndroidPaymentAppFactory(), androidFactoryId);
@@ -398,6 +360,12 @@ public class ChromePaymentRequestService
             mPaymentUiService.setAutofillPaymentAppCreator(
                     AutofillPaymentAppFactory.createAppCreator(/*delegate=*/this));
         }
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public PaymentAppFactoryDelegate getPaymentAppFactoryDelegate() {
+        return this;
     }
 
     /** @return Whether the UI was built. */
@@ -595,22 +563,9 @@ public class ChromePaymentRequestService
         }
     }
 
-    @Nullable
-    private static Map<String, PaymentMethodData> getValidatedMethodData(
-            PaymentMethodData[] methodDataList) {
-        // Payment methodData are required.
-        assert methodDataList != null;
-        if (methodDataList.length == 0) return null;
-        Map<String, PaymentMethodData> result = new ArrayMap<>();
-        for (PaymentMethodData methodData : methodDataList) {
-            String methodName = methodData.supportedMethod;
-            if (TextUtils.isEmpty(methodName)) return null;
-            result.put(methodName, methodData);
-        }
-        return result;
-    }
-
-    private void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodDataMap) {
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodDataMap) {
         if (!mIsGooglePayBridgeActivated || methodDataMap == null) return;
         Map<String, PaymentMethodData> result = new ArrayMap<>();
         for (PaymentMethodData methodData : methodDataMap.values()) {
@@ -1278,8 +1233,8 @@ public class ChromePaymentRequestService
 
         mIsHasEnrolledInstrumentResponsePending = false;
 
-        if (CanMakePaymentQuery.canQuery(
-                    mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
+        if (CanMakePaymentQuery.canQuery(mWebContents, mTopLevelOrigin, mPaymentRequestOrigin,
+                    mPaymentRequestService.getQueryForQuota())) {
             mPaymentRequestService.onHasEnrolledInstrument(response
                             ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
                             : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT);

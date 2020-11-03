@@ -4,11 +4,17 @@
 
 package org.chromium.components.payments;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+
+import java.util.Map;
 
 /**
  * The browser part of the PaymentRequest implementation. The browser here can be either the
@@ -26,19 +32,6 @@ public interface BrowserPaymentRequest {
         BrowserPaymentRequest createBrowserPaymentRequest(
                 PaymentRequestService paymentRequestService);
     }
-
-    /**
-     * Initialize the browser part of the {@link PaymentRequest} implementation and validate the raw
-     * payment request data coming from the untrusted mojo.
-     * @param methodData The supported methods specified by the merchant, cannot be null.
-     * @param details The payment details specified by the merchant, cannot be null.
-     * @param googlePayBridgeEligible True when the renderer process deems the current request
-     *         eligible for the skip-to-GPay experimental flow. It is ultimately up to the browser
-     *         process to determine whether to trigger it
-     * @return whether the initialization is successful.
-     */
-    boolean initAndValidate(PaymentMethodData[] methodData, PaymentDetails details,
-            boolean googlePayBridgeEligible);
 
     /**
      * The browser part of the {@link PaymentRequest#show} implementation.
@@ -92,4 +85,49 @@ public interface BrowserPaymentRequest {
      * calling it. This method can be called within itself without causing infinite loop.
      */
     void close();
+
+    /**
+     * Modifies the given method data.
+     * @param methodData A map of method names to PaymentMethodData, could be null. This parameter
+     * could be modified in place.
+     */
+    default void modifyMethodData(@Nullable Map<String, PaymentMethodData> methodData) {}
+
+    /**
+     * Called when queryForQuota is created.
+     * @param queryForQuota The created queryForQuota, which could be modified in place.
+     */
+    default void onQueryForQuotaCreated(Map<String, PaymentMethodData> queryForQuota) {}
+
+    /**
+     * Performs extra validation for the given input and disconnects the mojo pipe if failed.
+     * @param webContents The WebContents that represents the merchant page.
+     * @param methodData A map of the method data specified for the request.
+     * @param details The payment details specified for the request.
+     * @param paymentOptions The payment options specified for the request.
+     * @return Whether this method has disconnected the mojo pipe.
+     */
+    default boolean disconnectIfExtraValidationFails(WebContents webContents,
+            Map<String, PaymentMethodData> methodData, PaymentDetails details,
+            PaymentOptions paymentOptions) {
+        return false;
+    }
+
+    /**
+     * Called when the PaymentRequestSpec is validated.
+     * @param spec The validated PaymentRequestSpec.
+     */
+    default void onSpecValidated(PaymentRequestSpec spec) {}
+
+    /**
+     * Adds the PaymentAppFactory(s) specified by the implementers to the given PaymentAppService.
+     * @param service The PaymentAppService to be added with the factories.
+     */
+    void addPaymentAppFactories(PaymentAppService service);
+
+    /** @return A PaymentAppFactoryDelegate to be used with the PaymentAppService. */
+    PaymentAppFactoryDelegate getPaymentAppFactoryDelegate();
+
+    default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
+            WebContents webContents, PaymentMethodData[] rawMethodData) {}
 }

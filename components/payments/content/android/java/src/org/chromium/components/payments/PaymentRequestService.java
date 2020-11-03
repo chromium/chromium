@@ -8,10 +8,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArrayMap;
 
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.page_info.CertificateChainHelper;
+import org.chromium.components.payments.BrowserPaymentRequest.Factory;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -30,7 +33,10 @@ import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.Origin;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link PaymentRequestService}, {@link MojoPaymentRequestGateKeeper} and
@@ -73,6 +79,16 @@ public class PaymentRequestService {
 
     // mBrowserPaymentRequest is null when it has closed or is uninitiated.
     private BrowserPaymentRequest mBrowserPaymentRequest;
+    /**
+     * A mapping of the payment method names to the corresponding payment method specific data. If
+     * STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT is enabled, then the key "basic-card-payment-options"
+     * also maps to the following payment options:
+     *  - requestPayerEmail
+     *  - requestPayerName
+     *  - requestPayerPhone
+     *  - requestShipping
+     */
+    private HashMap<String, PaymentMethodData> mQueryForQuota;
 
     /**
      * An observer interface injected when running tests to allow them to observe events.
@@ -270,7 +286,14 @@ public class PaymentRequestService {
             instance.close();
             return null;
         }
+        instance.startPaymentAppService();
         return instance;
+    }
+
+    private void startPaymentAppService() {
+        PaymentAppService service = PaymentAppService.getInstance();
+        mBrowserPaymentRequest.addPaymentAppFactories(service);
+        service.create(/*delegate=*/mBrowserPaymentRequest.getPaymentAppFactoryDelegate());
     }
 
     /** Abort the request, used before this class's instantiation. */
@@ -335,9 +358,8 @@ public class PaymentRequestService {
         return sNativeObserverForTest;
     }
 
-    private boolean initAndValidate(BrowserPaymentRequest.Factory factory,
-            PaymentMethodData[] methodData, PaymentDetails details,
-            boolean googlePayBridgeEligible) {
+    private boolean initAndValidate(Factory factory, PaymentMethodData[] rawMethodData,
+            PaymentDetails details, boolean googlePayBridgeEligible) {
         mBrowserPaymentRequest = factory.createBrowserPaymentRequest(this);
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
 
@@ -364,7 +386,78 @@ public class PaymentRequestService {
             return false;
         }
 
-        return mBrowserPaymentRequest.initAndValidate(methodData, details, googlePayBridgeEligible);
+        mBrowserPaymentRequest.onWhetherGooglePayBridgeEligible(
+                googlePayBridgeEligible, mWebContents, rawMethodData);
+        @Nullable
+        Map<String, PaymentMethodData> methodData = getValidatedMethodData(rawMethodData);
+        mBrowserPaymentRequest.modifyMethodData(methodData);
+        if (methodData == null) {
+            mJourneyLogger.setAborted(
+                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                    org.chromium.components.payments.ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                    PaymentErrorReason.USER_CANCEL);
+            return false;
+        }
+        methodData = Collections.unmodifiableMap(methodData);
+
+        mQueryForQuota = new HashMap<>(methodData);
+        mBrowserPaymentRequest.onQueryForQuotaCreated(mQueryForQuota);
+
+        if (!PaymentValidator.validatePaymentDetails(details)) {
+            mJourneyLogger.setAborted(
+                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                    org.chromium.components.payments.ErrorStrings.INVALID_PAYMENT_DETAILS,
+                    PaymentErrorReason.USER_CANCEL);
+            return false;
+        }
+
+        if (mBrowserPaymentRequest.disconnectIfExtraValidationFails(
+                    mWebContents, methodData, details, mPaymentOptions)) {
+            return false;
+        }
+
+        PaymentRequestSpec spec = new PaymentRequestSpec(mPaymentOptions, details,
+                methodData.values(), LocaleUtils.getDefaultLocaleString());
+        if (spec.getRawTotal() == null) {
+            mJourneyLogger.setAborted(
+                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                    org.chromium.components.payments.ErrorStrings.TOTAL_REQUIRED,
+                    PaymentErrorReason.USER_CANCEL);
+            return false;
+        }
+        mBrowserPaymentRequest.onSpecValidated(spec);
+        return true;
+    }
+
+    /**
+     * @return The queryForQuota, a mapping of the payment method names to the corresponding payment
+     *         method specific data
+     */
+    public Map<String, PaymentMethodData> getQueryForQuota() {
+        return mQueryForQuota;
+    }
+
+    /**
+     * @param methodDataList A list of PaymentMethodData.
+     * @return The validated method data, a mapping of method names to its PaymentMethodData(s);
+     *         when the given method data is invalid, returns null.
+     */
+    @Nullable
+    private static Map<String, PaymentMethodData> getValidatedMethodData(
+            PaymentMethodData[] methodDataList) {
+        // Payment methodData are required.
+        assert methodDataList != null;
+        if (methodDataList.length == 0) return null;
+        Map<String, PaymentMethodData> result = new ArrayMap<>();
+        for (PaymentMethodData methodData : methodDataList) {
+            String methodName = methodData.supportedMethod;
+            if (TextUtils.isEmpty(methodName)) return null;
+            result.put(methodName, methodData);
+        }
+        return result;
     }
 
     /**
