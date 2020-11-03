@@ -198,6 +198,12 @@ class InsecureCredentialsManager
   using CredentialPasswordsMap =
       std::map<CredentialView, CredentialMetadata, PasswordCredentialLess>;
 
+  // Recomputes the insecure credentials by making use of information stored in
+  // `compromised_credentials_`, `weak_passwords_` and `presenter_`.
+  // This does not invoke either `NotifyCompromisedCredentialsChanged` or
+  // `NotifyWeakCredentialsChanged`, so that it can be used more generally.
+  void UpdateInsecureCredentials();
+
   // Updates |weak_passwords| set and notifies observers that weak credentials
   // were changed.
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
@@ -209,6 +215,7 @@ class InsecureCredentialsManager
       override;
 
   // SavedPasswordsPresenter::Observer:
+  void OnEdited(const PasswordForm& form) override;
   void OnSavedPasswordsChanged(
       SavedPasswordsPresenter::SavedPasswordsView passwords) override;
 

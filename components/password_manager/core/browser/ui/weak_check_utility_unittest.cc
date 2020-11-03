@@ -23,6 +23,13 @@ using ::testing::ElementsAre;
 
 }  // namespace
 
+TEST(WeakCheckUtilityTest, IsWeak) {
+  EXPECT_TRUE(IsWeak(base::ASCIIToUTF16(kWeakShortPassword)));
+  EXPECT_TRUE(IsWeak(base::ASCIIToUTF16(kWeakLongPassword)));
+  EXPECT_FALSE(IsWeak(base::ASCIIToUTF16(kStrongShortPassword)));
+  EXPECT_FALSE(IsWeak(base::ASCIIToUTF16(kStrongLongPassword)));
+}
+
 TEST(WeakCheckUtilityTest, WeakPasswordsNotFound) {
   base::flat_set<base::string16> passwords = {
       base::ASCIIToUTF16(kStrongShortPassword),

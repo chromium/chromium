@@ -4,7 +4,9 @@
 
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
+#include "base/functional/not_fn.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp"
@@ -54,14 +56,15 @@ int PasswordWeakCheck(base::StringPiece16 password16) {
 
 }  // namespace
 
+IsWeakPassword IsWeak(base::StringPiece16 password) {
+  return IsWeakPassword(PasswordWeakCheck(password) <= kLowSeverityScore);
+}
+
 base::flat_set<base::string16> BulkWeakCheck(
     base::flat_set<base::string16> passwords) {
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.CheckedPasswords",
                                passwords.size());
-  base::EraseIf(passwords, [](const auto& password) {
-    return kLowSeverityScore < PasswordWeakCheck(password);
-  });
-
+  base::EraseIf(passwords, base::not_fn(&IsWeak));
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.WeakPasswords",
                                passwords.size());
   return passwords;
