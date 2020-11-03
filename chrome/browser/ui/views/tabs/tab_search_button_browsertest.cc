@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -52,6 +53,15 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest,
     return browser_view()->GetTabSearchButton();
   }
 
+  void RunUntilBubbleWidgetDestroyed() {
+    ASSERT_NE(nullptr, tab_search_button()->bubble_for_testing());
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+    ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -61,11 +71,11 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, CreateAndClose) {
   views::test::ButtonTestApi(tab_search_button()).NotifyClick(GetDummyEvent());
   ASSERT_NE(nullptr, tab_search_button()->bubble_for_testing());
 
-  // Close the tab search bubble widget, the bubble should be cleared from the
-  // TabSearchButton.
   tab_search_button()->bubble_for_testing()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
-  ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
+  ASSERT_TRUE(tab_search_button()->bubble_for_testing()->IsClosed());
+
+  RunUntilBubbleWidgetDestroyed();
 }
 
 IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleVisible) {
@@ -85,11 +95,11 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleVisible) {
   // The bubble should be visible after being shown.
   EXPECT_TRUE(tab_search_button()->IsBubbleVisible());
 
-  // Close the tab search bubble widget, the bubble should be cleared from the
-  // TabSearchButton.
   tab_search_button()->bubble_for_testing()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
-  ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
+  ASSERT_TRUE(tab_search_button()->bubble_for_testing()->IsClosed());
+
+  RunUntilBubbleWidgetDestroyed();
 }
 
 IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, BubbleNotVisibleIncognito) {
@@ -113,11 +123,11 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleKeyboardShortcut) {
   // Accelerator keys should have created the tab search bubble.
   ASSERT_NE(nullptr, tab_search_button()->bubble_for_testing());
 
-  // Close the tab search bubble widget, the bubble should be cleared from the
-  // TabSearchButton.
   tab_search_button()->bubble_for_testing()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
-  ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
+  ASSERT_TRUE(tab_search_button()->bubble_for_testing()->IsClosed());
+
+  RunUntilBubbleWidgetDestroyed();
 }
 #endif
 
