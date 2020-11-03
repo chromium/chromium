@@ -2000,6 +2000,25 @@
       },
     },
 
+    'gpu_angle_end2end_with_retry_gtests': {
+      'angle_end2end_tests': {
+        'args': [
+          'angle_end2end_tests',
+          '--gtest_filter=-*Vulkan_SwiftShader*',
+          '--bot-mode',
+          '--flaky-retries=2',
+        ],
+        # Linux has issues with creating too many windows at once.
+        'linux_args': [
+          '--max-processes=4',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'use_isolated_scripts_api': True,
+      },
+    },
+
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
       'angle_unittests': {
         'args': [
@@ -5569,7 +5588,7 @@
     ],
 
     'gpu_win_angle_amd_gtests': [
-      'gpu_angle_end2end_gtests',
+      'gpu_angle_end2end_with_retry_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
     ],
