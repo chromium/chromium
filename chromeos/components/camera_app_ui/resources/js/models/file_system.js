@@ -146,16 +146,11 @@ export async function getEntries() {
 }
 
 /**
- * Returns an URL for a picture given by the file |entry|. Optionally, if
- * |limit| is specified, the file would be truncated if it's larger than it.
+ * Returns an URL for a picture given by the file |entry|.
  * @param {!AbstractFileEntry} entry The file entry of the picture.
- * @param {{limit: (number|undefined)}=} options
  * @return {!Promise<string>} Promise for the result.
  */
-export async function pictureURL(entry, {limit = Infinity} = {}) {
-  let file = await entry.file();
-  if (file.size > limit) {
-    file = file.slice(0, limit);
-  }
+export async function pictureURL(entry) {
+  const file = await entry.file();
   return URL.createObjectURL(file);
 }
