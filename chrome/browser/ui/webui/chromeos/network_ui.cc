@@ -37,6 +37,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -502,6 +503,14 @@ void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
   localized_strings->SetString(
       "networkLogsDebuggingUnknown",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN));
+
+  // Network Diagnostics
+  localized_strings->SetString(
+      "NetworkDiagnosticsRunAll",
+      l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_RUN_ALL));
+  localized_strings->SetString(
+      "NetworkDiagnosticsSendFeedback",
+      l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
 }
 
 NetworkUI::NetworkUI(content::WebUI* web_ui)

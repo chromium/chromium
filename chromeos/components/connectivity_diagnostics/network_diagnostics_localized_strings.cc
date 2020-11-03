@@ -31,8 +31,6 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsFailed", IDS_NETWORK_DIAGNOSTICS_FAILED},
     {"NetworkDiagnosticsNotRun", IDS_NETWORK_DIAGNOSTICS_NOT_RUN},
     {"NetworkDiagnosticsRun", IDS_NETWORK_DIAGNOSTICS_RUN},
-    {"NetworkDiagnosticsRunAll", IDS_NETWORK_DIAGNOSTICS_RUN_ALL},
-    {"NetworkDiagnosticsSendFeedback", IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK},
     {"SignalStrengthProblem_NotFound",
      IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_NOT_FOUND},
     {"SignalStrengthProblem_Weak",

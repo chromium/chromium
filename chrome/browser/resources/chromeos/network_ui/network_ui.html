@@ -17,6 +17,10 @@
 <dom-module id="network-ui">
   <template>
     <style>
+      .button-group > cr-button {
+        margin-inline-start: 10px;
+      }
+
       .tabpanel > div {
         margin-bottom: 10px;
       }
@@ -96,7 +100,15 @@
         <h2>$i18n{networkHealthLabel}</h2>
         <network-health-summary></network-health-summary>
         <h2>$i18n{networkDiagnosticsLabel}</h2>
-        <network-diagnostics
+        <div class="button-group">
+          <cr-button on-click="onRunAllRoutinesClick_">
+            [[i18n('NetworkDiagnosticsRunAll')]]
+          </cr-button>
+          <cr-button on-click="onSendFeedbackReportClick_">
+            [[i18n('NetworkDiagnosticsSendFeedback')]]
+          </cr-button>
+        </div>
+        <network-diagnostics id="network-diagnostics"
             on-open-feedback-dialog="onOpenFeedbackDialog_">
         </network-diagnostics>
       </div>

@@ -116,23 +116,23 @@ Polymer({
         diagnosticsMojom.NetworkDiagnosticsRoutines.getRemote();
   },
 
-  /** @private */
-  onRunAllRoutinesClick_() {
+  /**
+   * Runs all supported network diagnostics routines.
+   * @public
+   */
+  runAllRoutines() {
     for (const routine of this.routines_) {
       this.runRoutine_(routine.type);
     }
   },
 
   /**
-   * @param {!Event} event
-   * @private
+   * Gets the network diagnostics routine results and organizes them into a
+   * stringified object that is returned.
+   * @return {!string} The network diagnostics routine results
+   * @public
    */
-  onRunRoutineClick_(event) {
-    this.runRoutine_(event.model.index);
-  },
-
-  /** @private */
-  onSendFeedbackReportClick_() {
+  getResults() {
     const results = {};
     for (const routine of this.routines_) {
       if (routine.result) {
@@ -148,7 +148,15 @@ Polymer({
         results[name] = result;
       }
     }
-    this.fire('open-feedback-dialog', JSON.stringify(results, undefined, 2));
+    return JSON.stringify(results, undefined, 2);
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onRunRoutineClick_(event) {
+    this.runRoutine_(event.model.index);
   },
 
   /**

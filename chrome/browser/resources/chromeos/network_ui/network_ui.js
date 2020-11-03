@@ -200,13 +200,34 @@ Polymer({
   },
 
   /**
+   * Returns and typecasts the network diagnostics element
+   * @returns {!NetworkDiagnosticsElement}
+   * @private
+   */
+  getNetworkDiagnosticsElement_() {
+    return /** @type {!NetworkDiagnosticsElement} */ (
+        this.$$('#network-diagnostics'));
+  },
+
+  /**
    * Handles requests to open the feedback report dialog. The provided string
    * in the event will be sent as a part of the feedback report.
    * @param {!Event<string>} event
    * @private
    */
-  onOpenFeedbackDialog_(event) {
-    chrome.send('OpenFeedbackDialog', [event.detail]);
+  onSendFeedbackReportClick_(event) {
+    const results = this.getNetworkDiagnosticsElement_().getResults();
+    chrome.send('OpenFeedbackDialog', [results]);
+  },
+
+  /**
+   * Handles requests to open the feedback report dialog. The provided string
+   * in the event will be sent as a part of the feedback report.
+   * @param {!Event<string>} event
+   * @private
+   */
+  onRunAllRoutinesClick_(event) {
+    this.getNetworkDiagnosticsElement_().runAllRoutines();
   },
 
   /**
