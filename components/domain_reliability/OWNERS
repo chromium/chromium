@@ -1,7 +1,5 @@
 file://net/OWNERS
 file://net/network_error_logging/OWNERS
 
-per-file quic_error_mapping*=zhongyi@chromium.org
-
 # COMPONENT: Internals>Network>ReportingAndNEL
 # TEAM: net-dev@chromium.org
