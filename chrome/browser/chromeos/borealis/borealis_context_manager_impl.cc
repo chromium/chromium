@@ -7,10 +7,16 @@
 #include <ostream>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 
 namespace {
+
+// We use a hard-coded name. When multi-instance becomes a feature we'll
+// need to determine the name instead.
+constexpr char kBorealisVmName[] = "borealis";
 
 std::ostream& operator<<(std::ostream& stream,
                          borealis::BorealisContextManager::Status status) {
@@ -33,18 +39,19 @@ std::ostream& operator<<(std::ostream& stream,
 namespace borealis {
 
 BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
-    : profile_(profile), context_(profile_) {}
+    : profile_(profile) {}
 
 BorealisContextManagerImpl::~BorealisContextManagerImpl() = default;
 
 void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
-  if (is_borealis_running_) {
+  if (context_ && task_queue_.empty()) {
     std::move(callback).Run(GetResult());
     return;
   }
   AddCallback(std::move(callback));
-  if (!is_borealis_starting_) {
-    is_borealis_starting_ = true;
+  if (!context_) {
+    context_ = base::WrapUnique(new BorealisContext(profile_));
+    context_->set_vm_name(kBorealisVmName);
     task_queue_ = GetTasks();
     NextTask();
   }
@@ -52,15 +59,12 @@ void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
 
 base::queue<std::unique_ptr<BorealisTask>>
 BorealisContextManagerImpl::GetTasks() {
-  // We use a hard-coded name. When multi-instance becomes a feature we'll
-  // need to determine the name instead.
-  context_.set_vm_name("borealis");
   base::queue<std::unique_ptr<BorealisTask>> task_queue;
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
   task_queue.push(std::make_unique<StartBorealisVm>());
-  task_queue.push(std::make_unique<AwaitBorealisStartup>(context_.profile(),
-                                                         context_.vm_name()));
+  task_queue.push(
+      std::make_unique<AwaitBorealisStartup>(profile_, kBorealisVmName));
   return task_queue;
 }
 
@@ -70,21 +74,18 @@ void BorealisContextManagerImpl::AddCallback(ResultCallback callback) {
 
 void BorealisContextManagerImpl::NextTask() {
   if (task_queue_.empty()) {
-    context_.set_borealis_running(true);
-    is_borealis_running_ = true;
     startup_status_ = Status::kSuccess;
     OnQueueComplete();
     return;
   }
-  current_task_ = std::move(task_queue_.front());
-  task_queue_.pop();
-  current_task_->Run(&context_,
-                     base::BindOnce(&BorealisContextManagerImpl::TaskCallback,
-                                    weak_factory_.GetWeakPtr()));
+  task_queue_.front()->Run(
+      context_.get(), base::BindOnce(&BorealisContextManagerImpl::TaskCallback,
+                                     weak_factory_.GetWeakPtr()));
 }
 
 void BorealisContextManagerImpl::TaskCallback(Status status,
                                               std::string error) {
+  task_queue_.pop();
   startup_status_ = status;
   if (startup_status_ == Status::kSuccess) {
     NextTask();
@@ -97,7 +98,6 @@ void BorealisContextManagerImpl::TaskCallback(Status status,
 }
 
 void BorealisContextManagerImpl::OnQueueComplete() {
-  is_borealis_starting_ = false;
   while (!callback_queue_.empty()) {
     ResultCallback callback = std::move(callback_queue_.front());
     callback_queue_.pop();
@@ -107,7 +107,7 @@ void BorealisContextManagerImpl::OnQueueComplete() {
 
 BorealisContextManager::Result BorealisContextManagerImpl::GetResult() {
   if (startup_status_ == Status::kSuccess) {
-    return BorealisContextManager::Result(&context_);
+    return BorealisContextManager::Result(context_.get());
   }
   return BorealisContextManager::Result(startup_status_, startup_error_);
 }

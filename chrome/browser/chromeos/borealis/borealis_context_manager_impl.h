@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_CONTEXT_MANAGER_IMPL_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_CONTEXT_MANAGER_IMPL_H_
 
+#include <memory>
+
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
@@ -41,16 +43,12 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   // error if it doesn't).
   BorealisContextManager::Result GetResult();
 
-  bool is_borealis_running_ = false;
-  bool is_borealis_starting_ = false;
-
   Profile* profile_ = nullptr;
   BorealisContextManager::Status startup_status_ = Status::kSuccess;
   std::string startup_error_;
-  BorealisContext context_;
+  std::unique_ptr<BorealisContext> context_;
   base::queue<ResultCallback> callback_queue_;
   base::queue<std::unique_ptr<BorealisTask>> task_queue_;
-  std::unique_ptr<BorealisTask> current_task_;
 
   base::WeakPtrFactory<BorealisContextManagerImpl> weak_factory_{this};
 };

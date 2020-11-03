@@ -125,8 +125,11 @@ TEST_F(BorealisContextManagerTest, NoTasksImpliesSuccess) {
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/0, /*success=*/true);
   EXPECT_CALL(callback_expectation, Callback(testing::_))
-      .WillOnce(testing::Invoke(
-          [](BorealisContextManager::Result result) { result.Ok(); }));
+      .WillOnce(testing::Invoke([](BorealisContextManager::Result result) {
+        EXPECT_TRUE(result.Ok());
+        // Even with no tasks, the context will give the VM a name.
+        EXPECT_EQ(result.Success().vm_name(), "borealis");
+      }));
   context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
 }
