@@ -30,7 +30,8 @@ class InSessionAuthDialog {
   InSessionAuthDialog(
       uint32_t auth_methods,
       aura::Window* parent_window,
-      const AuthDialogContentsView::AuthMethodsMetadata& auth_metadata);
+      const AuthDialogContentsView::AuthMethodsMetadata& auth_metadata,
+      const UserAvatar& avatar);
   InSessionAuthDialog(const InSessionAuthDialog&) = delete;
   InSessionAuthDialog& operator=(const InSessionAuthDialog&) = delete;
   ~InSessionAuthDialog();

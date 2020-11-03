@@ -18,6 +18,7 @@ class Label;
 
 namespace ash {
 
+class AnimatedRoundedImageView;
 class LoginPasswordView;
 class LoginPinView;
 class LoginPinInputView;
@@ -41,7 +42,8 @@ class AuthDialogContentsView : public views::View {
   };
 
   AuthDialogContentsView(uint32_t auth_methods,
-                         const AuthMethodsMetadata& auth_metadata);
+                         const AuthMethodsMetadata& auth_metadata,
+                         const UserAvatar& avatar);
   AuthDialogContentsView(const AuthDialogContentsView&) = delete;
   AuthDialogContentsView& operator=(const AuthDialogContentsView&) = delete;
   ~AuthDialogContentsView() override;
@@ -56,6 +58,9 @@ class AuthDialogContentsView : public views::View {
 
   // views::View:
   void AddedToWidget() override;
+
+  // Add a view for user avatar.
+  void AddAvatarView(const UserAvatar& avatar);
 
   // Add a view for dialog title.
   void AddTitleView();
@@ -96,6 +101,9 @@ class AuthDialogContentsView : public views::View {
 
   // Layout for |container_|.
   views::BoxLayout* main_layout_ = nullptr;
+
+  // User avatar to indicate this is an OS dialog.
+  AnimatedRoundedImageView* avatar_view_ = nullptr;
 
   // Title of the auth dialog.
   views::Label* title_ = nullptr;

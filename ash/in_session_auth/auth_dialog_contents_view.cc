@@ -38,6 +38,7 @@ namespace {
 const char kTitle[] = "Verify it's you";
 
 const int kContainerPreferredWidth = 512;
+const int kSpacingAfterAvatar = 18;
 const int kSpacingAfterTitle = 16;
 
 const int kBorderTopDp = 24;
@@ -47,6 +48,7 @@ const int kBorderRightDp = 24;
 
 const int kTitleFontSizeDeltaDp = 4;
 
+constexpr int kAvatarSizeDp = 36;
 constexpr int kFingerprintIconSizeDp = 28;
 constexpr int kFingerprintIconTopSpacingDp = 20;
 constexpr int kSpacingBetweenFingerprintIconAndLabelDp = 15;
@@ -257,7 +259,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
 
 AuthDialogContentsView::AuthDialogContentsView(
     uint32_t auth_methods,
-    const AuthMethodsMetadata& auth_metadata)
+    const AuthMethodsMetadata& auth_metadata,
+    const UserAvatar& avatar)
     : auth_methods_(auth_methods), auth_metadata_(auth_metadata) {
   DCHECK(auth_methods_ & kAuthPassword);
 
@@ -275,6 +278,8 @@ AuthDialogContentsView::AuthDialogContentsView(
   main_layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  AddAvatarView(avatar);
+  AddVerticalSpacing(kSpacingAfterAvatar);
   AddTitleView();
   AddVerticalSpacing(kSpacingAfterTitle);
   if (auth_methods_ & kAuthPin) {
@@ -310,6 +315,14 @@ void AuthDialogContentsView::AddedToWidget() {
         base::BindOnce(&AuthDialogContentsView::OnFingerprintAuthComplete,
                        weak_factory_.GetWeakPtr()));
   }
+}
+
+void AuthDialogContentsView::AddAvatarView(const UserAvatar& avatar) {
+  avatar_view_ =
+      container_->AddChildView(std::make_unique<AnimatedRoundedImageView>(
+          gfx::Size(kAvatarSizeDp, kAvatarSizeDp),
+          kAvatarSizeDp / 2 /*corner_radius*/));
+  avatar_view_->SetImage(avatar.image);
 }
 
 void AuthDialogContentsView::AddTitleView() {

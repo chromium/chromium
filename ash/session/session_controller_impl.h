@@ -94,9 +94,14 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Gets the user sessions in LRU order with the active session being first.
   const UserSessions& GetUserSessions() const;
 
-  // Convenience helper to gets the user session at a given index. Returns
+  // Convenience helper to get the user session at a given index. Returns
   // nullptr if no user session is found for the index.
   const UserSession* GetUserSession(UserIndex index) const;
+
+  // Convenience helper to get the user session with the given account id.
+  // Returns nullptr if no user session is found for the account id.
+  const UserSession* GetUserSessionByAccountId(
+      const AccountId& account_id) const;
 
   // Gets the primary user session.
   const UserSession* GetPrimaryUserSession() const;

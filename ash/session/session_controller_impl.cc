@@ -134,6 +134,19 @@ const UserSession* SessionControllerImpl::GetUserSession(
   return user_sessions_[index].get();
 }
 
+const UserSession* SessionControllerImpl::GetUserSessionByAccountId(
+    const AccountId& account_id) const {
+  auto it =
+      std::find_if(user_sessions_.begin(), user_sessions_.end(),
+                   [&account_id](const std::unique_ptr<UserSession>& session) {
+                     return session->user_info.account_id == account_id;
+                   });
+  if (it == user_sessions_.end())
+    return nullptr;
+
+  return (*it).get();
+}
+
 const UserSession* SessionControllerImpl::GetPrimaryUserSession() const {
   auto it = std::find_if(user_sessions_.begin(), user_sessions_.end(),
                          [this](const std::unique_ptr<UserSession>& session) {
