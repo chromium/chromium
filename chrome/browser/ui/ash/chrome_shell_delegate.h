@@ -42,7 +42,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       mojo::PendingReceiver<
           chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)
       override;
-  media_session::MediaSessionService* GetMediaSessionService() override;
+  media_session::mojom::MediaSessionService* GetMediaSessionService() override;
   std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate(
       ash::NearbyShareController* controller) const override;
 

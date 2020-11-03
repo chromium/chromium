@@ -24,7 +24,8 @@ aura::Window* ShellDelegate::CreateBrowserForTabDrop(
   return nullptr;
 }
 
-media_session::MediaSessionService* ShellDelegate::GetMediaSessionService() {
+media_session::mojom::MediaSessionService*
+ShellDelegate::GetMediaSessionService() {
   return nullptr;
 }
 

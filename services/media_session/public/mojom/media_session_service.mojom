@@ -1,0 +1,21 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_session.mojom;
+
+import "services/media_session/public/mojom/audio_focus.mojom";
+import "services/media_session/public/mojom/media_controller.mojom";
+
+// The main interface to the Media Session service. Privileged and bound only by
+// the browser process.
+interface MediaSessionService {
+  // Binds an AudioFocusManager endpoint in the service.
+  BindAudioFocusManager(pending_receiver<AudioFocusManager> receiver);
+
+  // Binds an endpoint for debugging the AudioFocusManager.
+  BindAudioFocusManagerDebug(pending_receiver<AudioFocusManagerDebug> receiver);
+
+  // Binds a MediaControllerManager endpoint in the service.
+  BindMediaControllerManager(pending_receiver<MediaControllerManager> receiver);
+};
