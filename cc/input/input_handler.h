@@ -35,7 +35,6 @@ class LatencyInfo;
 
 namespace cc {
 
-class EventMetrics;
 class CompositorDelegateForInput;
 class ScrollElasticityHelper;
 
@@ -328,13 +327,18 @@ class CC_EXPORT InputHandler {
   virtual std::unique_ptr<SwapPromiseMonitor>
   CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) = 0;
 
-  // During the lifetime of the returned EventsMetricsManager::ScopedMonitor, if
-  // SetNeedsOneBeginImplFrame() or SetNeedsRedraw() are called on
-  // LayerTreeHostImpl or a scroll animation is updated, |event_metrics| will be
-  // saved for reporting event latency metrics. It is allowed to pass nullptr as
-  // |event_metrics| in which case the return value would also be nullptr.
+  // Returns a new instance of `EventsMetricsManager::ScopedMonitor` to monitor
+  // the scope of handling an event. If `done_callback` is not a null callback,
+  // it will be called when the scope ends. If During the lifetime of the scoped
+  // monitor, `SetNeedsOneBeginImplFrame()` or `SetNeedsRedraw()` are called on
+  // `LayerTreeHostImpl` or a scroll animation is updated, the callback will be
+  // called in the end with `handled` argument set to true, denoting that the
+  // event was handled and the client should return `EventMetrics` associated
+  // with the event if it is interested in reporting event latency metrics for
+  // it.
   virtual std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(const EventMetrics* event_metrics) = 0;
+  GetScopedEventMetricsMonitor(
+      EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) = 0;
 
   virtual ScrollElasticityHelper* CreateScrollElasticityHelper() = 0;
 

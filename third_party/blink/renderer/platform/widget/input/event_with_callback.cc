@@ -86,9 +86,15 @@ void EventWithCallback::RunCallbacks(
            attribution, std::move(oldest_event.metrics_));
   original_events_.pop_front();
 
-  // If the event was handled on compositor thread, ack other events with
-  // coalesced latency to avoid redundant tracking. If not, the event should
-  // be handle on main thread, use the original latency instead.
+  // If the event was handled on the compositor thread, ack other events with
+  // coalesced latency to avoid redundant tracking. `cc::EventMetrics` objects
+  // will also be nullptr in this case because `TakeMetrics()` function is
+  // already called and deleted them. This is fine since no further processing
+  // and metrics reporting will be done on the events.
+  //
+  // On the other hand, if the event was not handled, original events should be
+  // handled on the main thread. So, original latencies and `cc::EventMetrics`
+  // should be used.
   //
   // We overwrite the trace_id to ensure proper flow events along the critical
   // path.
@@ -109,6 +115,24 @@ void EventWithCallback::RunCallbacks(
                  : nullptr,
              attribution, std::move(coalesced_event.metrics_));
   }
+}
+
+std::unique_ptr<cc::EventMetrics> EventWithCallback::TakeMetrics() {
+  auto it = original_events_.begin();
+
+  // Scroll events extracted from the matrix multiplication have no original
+  // events and we don't report metrics for them.
+  if (it == original_events_.end())
+    return nullptr;
+
+  // Throw away all original metrics except for the first one as they are not
+  // useful anymore.
+  auto first = it++;
+  for (; it != original_events_.end(); it++)
+    it->metrics_ = nullptr;
+
+  // Return metrics for the first original event for reporting purposes.
+  return std::move(first->metrics_);
 }
 
 EventWithCallback::OriginalEventWithCallback::OriginalEventWithCallback(

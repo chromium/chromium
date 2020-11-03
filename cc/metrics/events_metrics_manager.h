@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
+#include "base/callback.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -28,6 +28,15 @@ class CC_EXPORT EventsMetricsManager {
   // nested.
   class ScopedMonitor {
    public:
+    // Type of the callback function that is called after a scoped monitor goes
+    // out of scope. `handled` specifies whether the corresponding event was
+    // handled in which case the function should return its corresponding
+    // `EventMetrics` object for reporting purposes. Since calling this callback
+    // denotes the end of event processing, clients can use this to set relevant
+    // timestamps to the metrics object, before potentially returning it.
+    using DoneCallback =
+        base::OnceCallback<std::unique_ptr<EventMetrics>(bool handled)>;
+
     ScopedMonitor() = default;
     virtual ~ScopedMonitor() = 0;
 
@@ -42,14 +51,16 @@ class CC_EXPORT EventsMetricsManager {
   EventsMetricsManager& operator=(const EventsMetricsManager&) = delete;
 
   // Called by clients when they start handling an event. Destruction of the
-  // scoped monitor indicates the end of event handling. |event_metrics| is
-  // allowed to be nullptr, which means the client is not interested in
-  // reporting metrics for this specific events.
+  // scoped monitor indicates the end of event handling which ends in calling
+  // `done_callback`. `done_callback` is allowed to be a null callback, which
+  // means the client is not interested in reporting metrics for the event being
+  // handled in this specific scope.
   std::unique_ptr<ScopedMonitor> GetScopedMonitor(
-      const EventMetrics* event_metrics);
+      ScopedMonitor::DoneCallback done_callback);
 
   // Called by clients when a frame needs to be produced. If any scoped monitor
-  // is active at this time, its corresponding event metrics would be saved.
+  // is active at this time, its corresponding event metrics would be marked to
+  // be saved when it goes out of scope.
   void SaveActiveEventMetrics();
 
   // Empties the list of saved EventMetrics objects, returning them to the
@@ -61,15 +72,17 @@ class CC_EXPORT EventsMetricsManager {
   }
 
  private:
-  void OnScopedMonitorEnded();
+  class ScopedMonitorImpl;
 
-  // Stack of active, potentially nested, event metrics
-  std::vector<const EventMetrics*> active_events_;
+  // Called when the most nested scoped monitor is destroyed. If the monitored
+  // metrics need to be saved it will be passed in as `metrics`.
+  void OnScopedMonitorEnded(std::unique_ptr<EventMetrics> metrics);
 
-  // List of saved event metrics.
+  // Stack of active, potentially nested, scoped monitors.
+  std::vector<ScopedMonitorImpl*> active_scoped_monitors_;
+
+  // List of event metrics saved for reporting.
   std::vector<EventMetrics> saved_events_;
-
-  base::WeakPtrFactory<EventsMetricsManager> weak_factory_{this};
 };
 
 }  // namespace cc

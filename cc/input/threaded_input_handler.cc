@@ -801,9 +801,9 @@ ThreadedInputHandler::CreateLatencyInfoSwapPromiseMonitor(
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
 ThreadedInputHandler::GetScopedEventMetricsMonitor(
-    const EventMetrics* event_metrics) {
+    EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) {
   return compositor_delegate_.GetImplDeprecated().GetScopedEventMetricsMonitor(
-      event_metrics);
+      std::move(done_callback));
 }
 
 ScrollElasticityHelper* ThreadedInputHandler::CreateScrollElasticityHelper() {

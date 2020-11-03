@@ -83,8 +83,12 @@ std::unique_ptr<WebInputEvent> CreateGestureScrollPinch(
 
 class MockInputHandler : public cc::InputHandler {
  public:
-  MockInputHandler() {}
-  ~MockInputHandler() override {}
+  MockInputHandler() = default;
+  ~MockInputHandler() override = default;
+
+  MockInputHandler(const MockInputHandler&) = delete;
+  MockInputHandler& operator=(const MockInputHandler&) = delete;
+
   base::WeakPtr<InputHandler> AsWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -122,7 +126,8 @@ class MockInputHandler : public cc::InputHandler {
   }
 
   std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(const cc::EventMetrics* event_metrics) override {
+  GetScopedEventMetricsMonitor(
+      cc::EventsMetricsManager::ScopedMonitor::DoneCallback) override {
     return nullptr;
   }
 
@@ -175,7 +180,6 @@ class MockInputHandler : public cc::InputHandler {
 
  private:
   bool is_scrolling_root_ = true;
-  DISALLOW_COPY_AND_ASSIGN(MockInputHandler);
 
   base::WeakPtrFactory<MockInputHandler> weak_ptr_factory_{this};
 };
@@ -1959,7 +1963,6 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
         TimeForInputEvents(), WebGestureDevice::kTouchpad);
     gsb->data.scroll_begin.scrollable_area_element_id = 0;
     gsb->data.scroll_begin.main_thread_hit_tested = false;
-    ;
     gsb->data.scroll_begin.delta_x_hint = 0;
     gsb->data.scroll_begin.delta_y_hint = 10;
     gsb->data.scroll_begin.pointer_count = 0;

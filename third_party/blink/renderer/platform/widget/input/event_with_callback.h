@@ -82,10 +82,12 @@ class PLATFORM_EXPORT EventWithCallback {
                                     : original_events_.front().metrics_.get();
   }
 
+  // Removes metrics objects from all original events and returns the first one
+  // for latency reporting purposes.
+  std::unique_ptr<cc::EventMetrics> TakeMetrics();
+
  private:
   friend class test::InputHandlerProxyEventQueueTest;
-
-  void SetTickClockForTesting(std::unique_ptr<base::TickClock> tick_clock);
 
   std::unique_ptr<WebCoalescedInputEvent> event_;
   OriginalEventList original_events_;

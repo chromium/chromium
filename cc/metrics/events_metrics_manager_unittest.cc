@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/stl_util.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,6 +16,24 @@
 #include "ui/events/types/scroll_input_type.h"
 
 namespace cc {
+namespace {
+
+std::unique_ptr<EventMetrics> CloneMetrics(const EventMetrics& metrics) {
+  return std::make_unique<EventMetrics>(metrics);
+}
+
+EventsMetricsManager::ScopedMonitor::DoneCallback CreateSimpleDoneCallback(
+    std::unique_ptr<EventMetrics> metrics) {
+  return base::BindOnce(
+      [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+        std::unique_ptr<EventMetrics> result =
+            handled ? std::move(metrics) : nullptr;
+        return result;
+      },
+      std::move(metrics));
+}
+
+}  // namespace
 
 #define EXPECT_SCOPED(statements) \
   {                               \
@@ -93,7 +112,8 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
   for (auto& event : events) {
     {
-      auto monitor = manager_.GetScopedMonitor(event.first.get());
+      auto monitor = manager_.GetScopedMonitor(
+          CreateSimpleDoneCallback(std::move(event.first)));
       if (event.second == Behavior::kSaveInsideScope)
         manager_.SaveActiveEventMetrics();
       // Ending the scope destroys the |monitor|.
@@ -124,13 +144,13 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
   struct {
     // Metrics to use for the outer scope.
-    const EventMetrics* outer_metrics;
+    std::unique_ptr<EventMetrics> outer_metrics;
 
     // Whether to save the outer scope metrics before starting the inner scope.
     bool save_outer_metrics_before_inner;
 
     // Metrics to use for the inner scope.
-    const EventMetrics* inner_metrics;
+    std::unique_ptr<EventMetrics> inner_metrics;
 
     // Whether to save the inner scope metrics.
     bool save_inner_metrics;
@@ -143,9 +163,9 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
   } configs[] = {
       // Config #0.
       {
-          /*outer_metrics=*/events[0].get(),
+          /*outer_metrics=*/CloneMetrics(*events[0]),
           /*save_outer_metrics_before_inner=*/true,
-          /*inner_metrics=*/events[1].get(),
+          /*inner_metrics=*/CloneMetrics(*events[1]),
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
           /*expected_saved_metrics=*/{*events[0], *events[1]},
@@ -153,9 +173,9 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
       // Config #1.
       {
-          /*outer_metrics=*/events[0].get(),
+          /*outer_metrics=*/CloneMetrics(*events[0]),
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/events[1].get(),
+          /*inner_metrics=*/CloneMetrics(*events[1]),
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/true,
           /*expected_saved_metrics=*/{*events[0], *events[1]},
@@ -163,9 +183,9 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
       // Config #2.
       {
-          /*outer_metrics=*/events[0].get(),
+          /*outer_metrics=*/CloneMetrics(*events[0]),
           /*save_outer_metrics_before_inner=*/true,
-          /*inner_metrics=*/events[1].get(),
+          /*inner_metrics=*/CloneMetrics(*events[1]),
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/true,
           /*expected_saved_metrics=*/{*events[0], *events[1]},
@@ -173,7 +193,7 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
       // Config #3.
       {
-          /*outer_metrics=*/events[0].get(),
+          /*outer_metrics=*/CloneMetrics(*events[0]),
           /*save_outer_metrics_before_inner=*/false,
           /*inner_metrics=*/nullptr,
           /*save_inner_metrics=*/false,
@@ -185,7 +205,7 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
       {
           /*outer_metrics=*/nullptr,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/events[0].get(),
+          /*inner_metrics=*/CloneMetrics(*events[0]),
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
           /*expected_saved_metrics=*/{*events[0]},
@@ -195,11 +215,13 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
   for (size_t i = 0; i < base::size(configs); i++) {
     auto& config = configs[i];
     {
-      auto outer_monitor = manager_.GetScopedMonitor(config.outer_metrics);
+      auto outer_monitor = manager_.GetScopedMonitor(
+          CreateSimpleDoneCallback(std::move(config.outer_metrics)));
       if (config.save_outer_metrics_before_inner)
         manager_.SaveActiveEventMetrics();
       {
-        auto inner_monitor = manager_.GetScopedMonitor(config.inner_metrics);
+        auto inner_monitor = manager_.GetScopedMonitor(
+            CreateSimpleDoneCallback(std::move(config.inner_metrics)));
         if (config.save_inner_metrics)
           manager_.SaveActiveEventMetrics();
       }

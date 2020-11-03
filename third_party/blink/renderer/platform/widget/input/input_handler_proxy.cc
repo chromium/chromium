@@ -445,13 +445,8 @@ void InputHandlerProxy::DispatchSingleInputEvent(
 
   WebInputEventAttribution attribution =
       PerformEventAttribution(event_with_callback->event());
-  InputHandlerProxy::EventDisposition disposition;
-  {
-    auto scoped_event_monitor = input_handler_->GetScopedEventMetricsMonitor(
-        event_with_callback->metrics());
-    disposition =
-        RouteToTypeSpecificHandler(event_with_callback.get(), attribution);
-  }
+  InputHandlerProxy::EventDisposition disposition =
+      RouteToTypeSpecificHandler(event_with_callback.get(), attribution);
 
   const WebInputEvent& event = event_with_callback->event();
   const WebGestureEvent::Type type = event.GetType();
@@ -616,6 +611,19 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     EventWithCallback* event_with_callback,
     const WebInputEventAttribution& original_attribution) {
   DCHECK(input_handler_);
+
+  cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
+  if (event_with_callback->metrics()) {
+    done_callback = base::BindOnce(
+        [](EventWithCallback* event, bool handled) {
+          std::unique_ptr<cc::EventMetrics> result =
+              handled ? event->TakeMetrics() : nullptr;
+          return result;
+        },
+        event_with_callback);
+  }
+  auto scoped_event_monitor =
+      input_handler_->GetScopedEventMetricsMonitor(std::move(done_callback));
 
   const WebInputEvent& event = event_with_callback->event();
   if (event.IsGestureScroll() &&

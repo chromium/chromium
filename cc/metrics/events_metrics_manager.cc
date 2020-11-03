@@ -12,22 +12,34 @@
 #include "base/stl_util.h"
 
 namespace cc {
-namespace {
 
-// A `ScopedMonitor` implementation that takes a callback and runs it upon
-// destruction.
-class ScopedMonitorImpl : public EventsMetricsManager::ScopedMonitor {
+class EventsMetricsManager::ScopedMonitorImpl
+    : public EventsMetricsManager::ScopedMonitor {
  public:
-  explicit ScopedMonitorImpl(base::OnceClosure done_callback)
-      : done_callback_runner_(std::move(done_callback)) {}
+  ScopedMonitorImpl(EventsMetricsManager* manager, DoneCallback done_callback)
+      : manager_(manager), done_callback_(std::move(done_callback)) {
+    DCHECK_NE(manager, nullptr);
+  }
+
+  ~ScopedMonitorImpl() override {
+    std::unique_ptr<EventMetrics> metrics;
+    if (!done_callback_.is_null()) {
+      const bool handled = save_metrics_;
+      metrics = std::move(done_callback_).Run(handled);
+
+      // If `handled` is false, the callback should return nullptr.
+      DCHECK(handled || !metrics);
+    }
+    manager_->OnScopedMonitorEnded(std::move(metrics));
+  }
+
+  void set_save_metrics() { save_metrics_ = true; }
 
  private:
-  // Holds a callback closure that is run automatically when the scoped monitor
-  // is destroyed.
-  base::ScopedClosureRunner done_callback_runner_;
+  EventsMetricsManager* const manager_;
+  DoneCallback done_callback_;
+  bool save_metrics_ = false;
 };
-
-}  // namespace
 
 EventsMetricsManager::ScopedMonitor::~ScopedMonitor() = default;
 
@@ -35,26 +47,20 @@ EventsMetricsManager::EventsMetricsManager() = default;
 EventsMetricsManager::~EventsMetricsManager() = default;
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-EventsMetricsManager::GetScopedMonitor(const EventMetrics* event_metrics) {
-  active_events_.push_back(event_metrics);
-  return std::make_unique<ScopedMonitorImpl>(base::BindOnce(
-      &EventsMetricsManager::OnScopedMonitorEnded, weak_factory_.GetWeakPtr()));
+EventsMetricsManager::GetScopedMonitor(
+    ScopedMonitor::DoneCallback done_callback) {
+  auto monitor =
+      std::make_unique<ScopedMonitorImpl>(this, std::move(done_callback));
+  active_scoped_monitors_.push_back(monitor.get());
+  return monitor;
 }
 
 void EventsMetricsManager::SaveActiveEventMetrics() {
-  if (active_events_.size() > 0 && active_events_.back()) {
-    // TODO(crbug.com/1054009): It is fine to make a copy of active EventMetrics
-    // object here as we are not going to change it later. However, the plan is
-    // to add timestamp of when the processing is done to this object. Since end
-    // of the processing happens after this code, we can't simply make a copy
-    // here. In that case, here we can just mark the event for saving and do the
-    // actual copy when the scoped monitor is destroyed which happens after the
-    // event processing is done.
-    saved_events_.push_back(*active_events_.back());
-
-    // The items will be popped from the stack when the scoped monitor is ended,
-    // but replace it nullptr here to avoid reporting it multiple times.
-    active_events_.back() = nullptr;
+  if (active_scoped_monitors_.size() > 0) {
+    // Here we just set the flag to save the active metrics. The actual saving
+    // happens when the scoped monitor is destroyed to give clients opportunity
+    // to use/update the metrics object until the end of their processing.
+    active_scoped_monitors_.back()->set_save_metrics();
   }
 }
 
@@ -64,9 +70,13 @@ std::vector<EventMetrics> EventsMetricsManager::TakeSavedEventsMetrics() {
   return result;
 }
 
-void EventsMetricsManager::OnScopedMonitorEnded() {
-  DCHECK_GT(active_events_.size(), 0u);
-  active_events_.pop_back();
+void EventsMetricsManager::OnScopedMonitorEnded(
+    std::unique_ptr<EventMetrics> metrics) {
+  DCHECK_GT(active_scoped_monitors_.size(), 0u);
+  active_scoped_monitors_.pop_back();
+
+  if (metrics)
+    saved_events_.push_back(*metrics);
 }
 
 }  // namespace cc

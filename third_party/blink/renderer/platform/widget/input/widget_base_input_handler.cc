@@ -339,8 +339,29 @@ void WidgetBaseInputHandler::HandleInputEvent(
       ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
   cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
       &swap_latency_info, widget_->LayerTreeHost()->GetSwapPromiseManager());
-  auto scoped_event_metrics_monitor =
-      widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(metrics.get());
+  cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
+  if (metrics) {
+    done_callback = base::BindOnce(
+        [](const cc::EventMetrics& metrics, bool handled) {
+          std::unique_ptr<cc::EventMetrics> result;
+          if (handled) {
+            // We are done processing the event and should return its metrics
+            // object for reporting purposes. However, since there might be some
+            // injected scroll events caused by this event, we need the metrics
+            // object of this event as a basis to create metrics objects for
+            // those injected scroll events. Therefore, we return a copy of the
+            // metrics object here instead of moving out of it, and keep the
+            // original metrics object to be used for creating metrics object
+            // for injected scroll events, if necessary.
+            result = std::make_unique<cc::EventMetrics>(metrics);
+          }
+          return result;
+        },
+        *metrics);
+  }
+  auto event_metrics_monitor =
+      widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
+          std::move(done_callback));
 
   bool prevent_default = false;
   bool show_virtual_keyboard_for_mouse = false;
@@ -429,7 +450,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   // Handling |input_event| is finished and further down, we might start
   // handling injected scroll events. So, stop monitoring EventMetrics for
   // |input_event| to avoid nested monitors.
-  scoped_event_metrics_monitor = nullptr;
+  event_metrics_monitor = nullptr;
 
   LogAllPassiveEventListenersUma(input_event, processed);
 
@@ -664,8 +685,23 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
       std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
           gesture_event->GetTypeAsUiEventType(), scroll_update_type, time_stamp,
           gesture_event->GetScrollInputType());
-      auto scoped_event_metrics_monitor =
-          widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(metrics.get());
+      cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
+      if (metrics) {
+        // Since we don't need `metrics` for this event beyond this point (i.e.
+        // we don't intend to add further breakdowns to the metrics while
+        // processing the event, at least for now), it is safe to move the
+        // metrics object to the callback.
+        done_callback = base::BindOnce(
+            [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
+              std::unique_ptr<cc::EventMetrics> result =
+                  handled ? std::move(metrics) : nullptr;
+              return result;
+            },
+            std::move(metrics));
+      }
+      auto event_metrics_monitor =
+          widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
+              std::move(done_callback));
       widget_->client()->HandleInputEvent(
           WebCoalescedInputEvent(*gesture_event, scrollbar_latency_info));
     }

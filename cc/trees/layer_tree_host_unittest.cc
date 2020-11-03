@@ -8988,9 +8988,19 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
         ui::ET_GESTURE_SCROLL_UPDATE,
         EventMetrics::ScrollUpdateType::kContinued, base::TimeTicks::Now(),
         ui::ScrollInputType::kWheel);
-    auto scoped_event_monitor =
-        layer_tree_host()->GetScopedEventMetricsMonitor(metrics.get());
-    layer_tree_host()->SetNeedsAnimate();
+    {
+      auto done_callback = base::BindOnce(
+          [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+            std::unique_ptr<EventMetrics> result =
+                handled ? std::move(metrics) : nullptr;
+            return result;
+          },
+          std::move(metrics));
+      auto scoped_event_monitor =
+          layer_tree_host()->GetScopedEventMetricsMonitor(
+              std::move(done_callback));
+      layer_tree_host()->SetNeedsAnimate();
+    }
     EXPECT_SCOPED(VerifyMainSavedEventsMetricsCountOnMain(1));
   }
 
