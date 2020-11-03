@@ -96,6 +96,7 @@ public class QualityEnforcerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1145181")
     public void notifiedWhenLaunch404() throws TimeoutException {
         launch(mTestPage404);
         mCallbackHelper.waitForFirst();
