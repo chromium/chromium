@@ -28,8 +28,8 @@ void RecordWorkerClientFound(bool found) {
 
 // Helper function to add |client_frame_node| as a client of |worker_node| on
 // the PM sequence.
-void ConnectClientOnGraph(WorkerNodeImpl* worker_node,
-                          FrameNodeImpl* client_frame_node) {
+void ConnectClientFrameOnGraph(WorkerNodeImpl* worker_node,
+                               FrameNodeImpl* client_frame_node) {
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&WorkerNodeImpl::AddClientFrame,
@@ -38,8 +38,8 @@ void ConnectClientOnGraph(WorkerNodeImpl* worker_node,
 
 // Helper function to remove |client_frame_node| as a client of |worker_node|
 // on the PM sequence.
-void DisconnectClientOnGraph(WorkerNodeImpl* worker_node,
-                             FrameNodeImpl* client_frame_node) {
+void DisconnectClientFrameOnGraph(WorkerNodeImpl* worker_node,
+                                  FrameNodeImpl* client_frame_node) {
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&WorkerNodeImpl::RemoveClientFrame,
@@ -48,8 +48,8 @@ void DisconnectClientOnGraph(WorkerNodeImpl* worker_node,
 
 // Helper function to add |client_worker_node| as a client of |worker_node| on
 // the PM sequence.
-void ConnectClientOnGraph(WorkerNodeImpl* worker_node,
-                          WorkerNodeImpl* client_worker_node) {
+void ConnectClientWorkerOnGraph(WorkerNodeImpl* worker_node,
+                                WorkerNodeImpl* client_worker_node) {
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&WorkerNodeImpl::AddClientWorker,
@@ -58,8 +58,8 @@ void ConnectClientOnGraph(WorkerNodeImpl* worker_node,
 
 // Helper function to remove |client_worker_node| as a client of |worker_node|
 // on the PM sequence.
-void DisconnectClientOnGraph(WorkerNodeImpl* worker_node,
-                             WorkerNodeImpl* client_worker_node) {
+void DisconnectClientWorkerOnGraph(WorkerNodeImpl* worker_node,
+                                   WorkerNodeImpl* client_worker_node) {
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&WorkerNodeImpl::RemoveClientWorker,
@@ -505,7 +505,7 @@ void WorkerWatcher::ConnectFrameClient(
 
   RecordWorkerClientFound(true);
 
-  ConnectClientOnGraph(worker_node, frame_node);
+  ConnectClientFrameOnGraph(worker_node, frame_node);
 
   // Keep track of the workers that this frame is a client to.
   if (AddChildWorker(client_render_frame_host_id, worker_node)) {
@@ -550,7 +550,7 @@ void WorkerWatcher::DisconnectFrameClient(
     return;
   }
 
-  DisconnectClientOnGraph(worker_node, frame_node);
+  DisconnectClientFrameOnGraph(worker_node, frame_node);
 
   // Remove |worker_node| from the set of workers that this frame is a client
   // of.
@@ -563,8 +563,8 @@ void WorkerWatcher::ConnectDedicatedWorkerClient(
     blink::DedicatedWorkerToken client_dedicated_worker_token) {
   DCHECK(worker_node);
 
-  ConnectClientOnGraph(worker_node,
-                       GetDedicatedWorkerNode(client_dedicated_worker_token));
+  ConnectClientWorkerOnGraph(
+      worker_node, GetDedicatedWorkerNode(client_dedicated_worker_token));
 
   // Remember that |worker_node| is a child worker of this dedicated worker.
   bool inserted = dedicated_worker_child_workers_[client_dedicated_worker_token]
@@ -590,7 +590,7 @@ void WorkerWatcher::DisconnectDedicatedWorkerClient(
   if (child_workers.empty())
     dedicated_worker_child_workers_.erase(it);
 
-  DisconnectClientOnGraph(
+  DisconnectClientWorkerOnGraph(
       worker_node, GetDedicatedWorkerNode(client_dedicated_worker_token));
 }
 
@@ -599,8 +599,8 @@ void WorkerWatcher::ConnectSharedWorkerClient(
     blink::SharedWorkerToken client_shared_worker_token) {
   DCHECK(worker_node);
 
-  ConnectClientOnGraph(worker_node,
-                       GetSharedWorkerNode(client_shared_worker_token));
+  ConnectClientWorkerOnGraph(worker_node,
+                             GetSharedWorkerNode(client_shared_worker_token));
 
   // Remember that |worker_node| is a child worker of this shared worker.
   bool inserted = shared_worker_child_workers_[client_shared_worker_token]
@@ -625,8 +625,8 @@ void WorkerWatcher::DisconnectSharedWorkerClient(
   if (child_workers.empty())
     shared_worker_child_workers_.erase(it);
 
-  DisconnectClientOnGraph(worker_node,
-                          GetSharedWorkerNode(client_shared_worker_token));
+  DisconnectClientWorkerOnGraph(
+      worker_node, GetSharedWorkerNode(client_shared_worker_token));
 }
 
 void WorkerWatcher::ConnectAllServiceWorkerClients(

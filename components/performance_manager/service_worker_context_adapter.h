@@ -123,6 +123,15 @@ class ServiceWorkerContextAdapter
   // has exited.
   void OnRenderProcessExited(int64_t version_id);
 
+  // Adds a registration to |worker_process_host| that will result in
+  // |OnRenderProcessExited| with |version_id| when it exits.
+  void AddRunningServiceWorker(int64_t version_id,
+                               content::RenderProcessHost* worker_process_host);
+
+  // Removes a registration made by |AddRunningServiceWorker| if one exists,
+  // returns true if a registration existed, false otherwise.
+  bool MaybeRemoveRunningServiceWorker(int64_t version_id);
+
   ScopedObserver<content::ServiceWorkerContext,
                  content::ServiceWorkerContextObserver>
       scoped_underlying_context_observer_{this};
