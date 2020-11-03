@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/commander/commander_handler.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "ui/views/widget/widget_observer.h"
 
 class CommanderWebView;
 
@@ -35,7 +36,8 @@ struct CommanderViewModel;
 class CommanderFrontendViews : public commander::CommanderFrontend,
                                public CommanderHandler::Delegate,
                                public BrowserListObserver,
-                               public content::NotificationObserver {
+                               public content::NotificationObserver,
+                               public views::WidgetObserver {
  public:
   explicit CommanderFrontendViews(commander::CommanderBackend* backend);
   ~CommanderFrontendViews() override;
@@ -59,6 +61,10 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
+
+  // views::WidgetObserver overrides
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
  private:
   // Receives view model updates from |backend_|.

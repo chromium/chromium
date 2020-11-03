@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/commander/commander_backend.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -28,8 +29,21 @@
 #endif
 
 namespace {
-// TODO(lgrey): Temporary
-constexpr gfx::Size kDefaultSize(400, 30);
+constexpr gfx::Size kDefaultSize(512, 48);
+constexpr int kTopContainerOverlapMargin = 12;
+
+//
+void AnchorToBrowser(gfx::Rect* bounds, Browser* browser) {
+  DCHECK(browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  gfx::Rect top_container_bounds =
+      browser_view->top_container()->GetBoundsInScreen();
+
+  bounds->set_x(top_container_bounds.x() +
+                (top_container_bounds.width() - bounds->width()) / 2);
+  bounds->set_y(top_container_bounds.bottom() - kTopContainerOverlapMargin);
+}
+
 }  // namespace
 
 // A small shim to handle passing keyboard events back up to the browser.
@@ -101,8 +115,9 @@ void CommanderFrontendViews::Show(Browser* browser) {
   views::View* parent = BrowserView::GetBrowserViewForBrowser(browser_);
   widget_delegate_ = std::make_unique<views::WidgetDelegate>();
   widget_delegate_->SetCanActivate(true);
-
-  widget_ = new ThemeCopyingWidget(parent->GetWidget());
+  views::Widget* parent_widget = parent->GetWidget();
+  parent_widget->AddObserver(this);
+  widget_ = new ThemeCopyingWidget(parent_widget);
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = widget_delegate_.get();
@@ -123,7 +138,11 @@ void CommanderFrontendViews::Show(Browser* browser) {
 
   web_view_ptr_ = widget_->SetContentsView(std::move(web_view_));
 
-  widget_->CenterWindow(kDefaultSize);
+  gfx::Rect bounds;
+  bounds.set_size(kDefaultSize);
+  AnchorToBrowser(&bounds, browser_);
+  widget_->SetBounds(bounds);
+
   widget_->Show();
 
   web_view_ptr_->RequestFocus();
@@ -133,6 +152,8 @@ void CommanderFrontendViews::Show(Browser* browser) {
 void CommanderFrontendViews::Hide() {
   DCHECK(is_showing());
 
+  BrowserView::GetBrowserViewForBrowser(browser_)->GetWidget()->RemoveObserver(
+      this);
   BrowserList::RemoveObserver(this);
   backend_->Reset();
   show_requested_ = false;
@@ -160,6 +181,18 @@ void CommanderFrontendViews::Observe(
   if (is_showing())
     Hide();
   web_view_->SetWebContents(nullptr);
+}
+
+void CommanderFrontendViews::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  DCHECK(browser_);
+  DCHECK(is_showing());
+  DCHECK(widget ==
+         BrowserView::GetBrowserViewForBrowser(browser_)->GetWidget());
+  gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
+  AnchorToBrowser(&bounds, browser_);
+  widget_->SetBounds(bounds);
 }
 
 void CommanderFrontendViews::OnTextChanged(const base::string16& text) {
