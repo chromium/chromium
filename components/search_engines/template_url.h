@@ -115,6 +115,10 @@ class TemplateURLRef {
       // is fluent in reading.  This acts as an alternate set of languages
       // to consider translating into.  The languages are ordered by
       // fluency, and encoded as a comma-separated list of BCP 47 languages.
+      // The |related_searches_stamp| string contains an information that
+      // indicates experiment status and server processing results so that
+      // can be logged in GWS Sawmill logs for offline analysis for the
+      // Related Searches MVP experiment.
       ContextualSearchParams(int version,
                              int contextual_cards_version,
                              std::string home_country,
@@ -123,7 +127,8 @@ class TemplateURLRef {
                              bool is_exact_search,
                              std::string source_lang,
                              std::string target_lang,
-                             std::string fluent_languages);
+                             std::string fluent_languages,
+                             std::string related_searches_stamp);
       ContextualSearchParams(const ContextualSearchParams& other);
       ~ContextualSearchParams();
 
@@ -164,6 +169,11 @@ class TemplateURLRef {
       // Alternate target languages that the user is fluent in, encoded in a
       // single string.
       std::string fluent_languages;
+
+      // Experiment arm and processing information for the Related Searches
+      // experiment. The value is an arbitrary string that starts with a
+      // schema version number.
+      std::string related_searches_stamp;
     };
 
     // Estimates dynamic memory usage.
