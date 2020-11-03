@@ -103,6 +103,10 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_ && controller_->IsWidgetVisibleForTesting();
   }
 
+  bool IsWidgetActive() {
+    return GetCaptionWidget() && GetCaptionWidget()->IsActive();
+  }
+
   void DestroyController() { controller_.reset(nullptr); }
 
   void ClickButton(views::Button* button) {
@@ -1013,5 +1017,21 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   }
   EXPECT_EQ("a ", GetVirtualChildrenText()[8]);
 }
+
+#if !defined(OS_MAC)
+// Tests are flaky on Mac: Mac browsertests do not have an activation policy so
+// the widget activation may not work as expected.
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       BubbleDeactivatedWhenHidden) {
+  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_FALSE(IsWidgetActive());
+  OnPartialTranscription("Cows can detect odors up to 6 miles away.");
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_TRUE(IsWidgetActive());
+  ClickButton(GetCloseButton());
+  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_FALSE(IsWidgetActive());
+}
+#endif
 
 }  // namespace captions

@@ -244,7 +244,7 @@ gfx::Rect CaptionBubble::GetBubbleBounds() {
 
 void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
                                           const gfx::Rect& new_bounds) {
-  DCHECK(GetWidget());
+  DCHECK_EQ(widget, GetWidget());
   gfx::Rect widget_bounds = GetWidget()->GetWindowBoundsInScreen();
   gfx::Rect anchor_rect = GetAnchorView()->GetBoundsInScreen();
   if (latest_bounds_ == widget_bounds && latest_anchor_bounds_ == anchor_rect) {
@@ -257,12 +257,10 @@ void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
     return;
   }
 
-  // Check that the widget which changed size is our widget. It's possible for
-  // this to be called when another widget resizes.
-  // Also check that our widget is visible. If it is not visible then
+  // Check that our widget is visible. If it is not visible then
   // the user has not explicitly moved it (because the user can't see it),
   // so we should take no action.
-  if (widget != GetWidget() || !GetWidget()->IsVisible())
+  if (!GetWidget()->IsVisible())
     return;
 
   // The widget has moved within the window. Recalculate the desired ratio
@@ -633,17 +631,33 @@ void CaptionBubble::UpdateBubbleVisibility() {
     if (GetWidget()->IsVisible())
       GetWidget()->Hide();
   } else if (!model_->GetFullText().empty() || model_->HasError()) {
-    // Show the widget if it has text or an error to display. Only show the
-    // widget if it isn't already visible. Always calling Widget::Show() will
-    // mean the widget gets focus each time.
+    // Show the widget if it has text or an error to display.
     if (!GetWidget()->IsVisible()) {
-      GetWidget()->Show();
+      GetWidget()->ShowInactive();
       GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
           IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
     }
   } else if (GetWidget()->IsVisible()) {
     // No text and no error. Hide it.
     GetWidget()->Hide();
+  }
+}
+
+void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
+                                              bool visible) {
+  DCHECK_EQ(widget, GetWidget());
+  // Ensure that the widget is only activated when it is visible.
+  // TODO(crbug.com/1144201): Investigate whether Hide() should always
+  // deactivate widgets, and if so, remove this.
+  if (visible) {
+#if !defined(OS_MAC)
+    // On MacOS browsertests, which do not have an activation policy, the widget
+    // might already be activated.
+    DCHECK(!widget->IsActive());
+#endif
+    widget->Activate();
+  } else {
+    widget->Deactivate();
   }
 }
 

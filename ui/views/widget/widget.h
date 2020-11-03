@@ -625,7 +625,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Hides the widget.
   void Hide();
 
-  // Like Show(), but does not activate the window.
+  // Like Show(), but does not activate the window. Tests may be flaky on Mac:
+  // Mac browsertests do not have an activation policy so the widget may be
+  // activated.
   void ShowInactive();
 
   // Activates the widget, assuming it already exists and is visible.

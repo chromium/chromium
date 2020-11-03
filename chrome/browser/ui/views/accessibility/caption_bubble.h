@@ -82,6 +82,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   gfx::Rect GetBubbleBounds() override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnFocus() override;
