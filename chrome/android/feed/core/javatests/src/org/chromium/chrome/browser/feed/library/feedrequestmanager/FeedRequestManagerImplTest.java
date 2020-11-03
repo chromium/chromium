@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed.library.feedrequestmanager;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -244,11 +246,17 @@ public class FeedRequestManagerImplTest {
     }
 
     @Test
-    public void testTriggerRefresh_setNoticeCardPrefAndRecordHistogram() throws Exception {
+    public void testTriggerRefresh_setNoticeCardPrefAndRecordBothHistograms() throws Exception {
+        MetricsUtils.HistogramDelta obsoleteNoticeCardNotFulfilledDelta =
+                new MetricsUtils.HistogramDelta(
+                        "ContentSuggestions.Feed.NoticeCardFulfilled", 0 /*false*/);
+        MetricsUtils.HistogramDelta obsoleteNoticeCardFulfilledDelta =
+                new MetricsUtils.HistogramDelta(
+                        "ContentSuggestions.Feed.NoticeCardFulfilled", 1 /*true*/);
         MetricsUtils.HistogramDelta noticeCardNotFulfilledDelta = new MetricsUtils.HistogramDelta(
-                "ContentSuggestions.Feed.NoticeCardFulfilled", 0 /*false*/);
+                "ContentSuggestions.Feed.NoticeCardFulfilled2", 0 /*false*/);
         MetricsUtils.HistogramDelta noticeCardFulfilledDelta = new MetricsUtils.HistogramDelta(
-                "ContentSuggestions.Feed.NoticeCardFulfilled", 1 /*true*/);
+                "ContentSuggestions.Feed.NoticeCardFulfilled2", 1 /*true*/);
 
         // Skip the read of the int that determines the length of the encoded proto. This is to
         // avoid having to encode the length which is a feature we don't want to test here.
@@ -282,16 +290,25 @@ public class FeedRequestManagerImplTest {
         mFakeNetworkClient.addResponse(
                 new HttpResponse(200, Response.getDefaultInstance().toByteArray()));
         mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+        assertThat(obsoleteNoticeCardNotFulfilledDelta.getDelta()).isEqualTo(1);
+        assertThat(obsoleteNoticeCardFulfilledDelta.getDelta()).isEqualTo(1);
         assertThat(noticeCardNotFulfilledDelta.getDelta()).isEqualTo(1);
         assertThat(noticeCardFulfilledDelta.getDelta()).isEqualTo(1);
     }
 
     @Test
-    public void testLoadMore_dontSetNoticeCardPrefAndDontRecordHistogram() throws Exception {
+    public void testLoadMore_dontSetNoticeCardPrefAndOnlyRecordObsoleteHistogram()
+            throws Exception {
+        MetricsUtils.HistogramDelta obsoleteNoticeCardNotFulfilledDelta =
+                new MetricsUtils.HistogramDelta(
+                        "ContentSuggestions.Feed.NoticeCardFulfilled", 0 /*false*/);
+        MetricsUtils.HistogramDelta obsoleteNoticeCardFulfilledDelta =
+                new MetricsUtils.HistogramDelta(
+                        "ContentSuggestions.Feed.NoticeCardFulfilled", 1 /*true*/);
         MetricsUtils.HistogramDelta noticeCardNotFulfilledDelta = new MetricsUtils.HistogramDelta(
-                "ContentSuggestions.Feed.NoticeCardFulfilled", 0 /*false*/);
+                "ContentSuggestions.Feed.NoticeCardFulfilled2", 0 /*false*/);
         MetricsUtils.HistogramDelta noticeCardFulfilledDelta = new MetricsUtils.HistogramDelta(
-                "ContentSuggestions.Feed.NoticeCardFulfilled", 1 /*true*/);
+                "ContentSuggestions.Feed.NoticeCardFulfilled2", 1 /*true*/);
 
         // Skip the read of the int that determines the length of the encoded proto. This is to
         // avoid having to encode the length which is a feature we don't want to test here.
@@ -306,18 +323,36 @@ public class FeedRequestManagerImplTest {
                 mApplicationInfo, mFakeMainThreadRunner, mFakeBasicLoggingApi,
                 mFakeTooltipSupportedApi);
 
-        mFakeNetworkClient.addResponse(
-                new HttpResponse(200, Response.getDefaultInstance().toByteArray()));
+        mFakeThreadUtils.enforceMainThread(false);
+
+        // Trigger a load more with a notice card in the query response.
+        Response response =
+                Response.newBuilder()
+                        .setExtension(FeedResponse.feedResponse,
+                                FeedResponse.newBuilder()
+                                        .addServerCapabilities(
+                                                Capability.REPORT_FEED_USER_ACTIONS_NOTICE_CARD)
+                                        .build())
+                        .build();
+        mFakeNetworkClient.addResponse(new HttpResponse(200, response.toByteArray()));
         StreamToken token =
                 StreamToken.newBuilder()
                         .setNextPageToken(ByteString.copyFrom("abc", Charset.defaultCharset()))
                         .build();
-        mFakeThreadUtils.enforceMainThread(false);
         mRequestManager.loadMore(token, ConsistencyToken.getDefaultInstance(), input -> {});
 
-        verify(mPrefService, never()).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
+        // Trigger a load more without a notice card in the query response.
+        mFakeNetworkClient.addResponse(
+                new HttpResponse(200, Response.getDefaultInstance().toByteArray()));
+        mRequestManager.loadMore(token, ConsistencyToken.getDefaultInstance(), input -> {});
+
+        // Verify that only the obsolete histograms were recorded.
         assertThat(noticeCardNotFulfilledDelta.getDelta()).isEqualTo(0);
         assertThat(noticeCardFulfilledDelta.getDelta()).isEqualTo(0);
+        assertThat(obsoleteNoticeCardNotFulfilledDelta.getDelta()).isEqualTo(1);
+        assertThat(obsoleteNoticeCardFulfilledDelta.getDelta()).isEqualTo(1);
+        // Verify that no attempts were made to update the notice card presence pref.
+        verify(mPrefService, never()).setBoolean(eq(Pref.LAST_FETCH_HAD_NOTICE_CARD), anyBoolean());
     }
 
     @Test
