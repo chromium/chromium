@@ -46,8 +46,20 @@ class AssistantToggleButton extends LinearLayout {
             addView(rightContentView);
         }
 
-        setOnClickListener(unusedView
-                -> mToggleButton.setChecked(isCheckbox ? !mToggleButton.isChecked() : true));
+        View.OnClickListener clickListener = unusedView
+                -> mToggleButton.setChecked(isCheckbox ? !mToggleButton.isChecked() : true);
+
+        setOnClickListener(clickListener);
+        // If a view contains a url (ClickableSpan) and is contained in a LinearLayout, the
+        // OnClickListener of the LinearLayout will not extend to the contained view. To avoid this,
+        // we specifically set the listener on the subview as well.
+        if (leftContentView != null) {
+            leftContentView.setOnClickListener(clickListener);
+        }
+        if (rightContentView != null) {
+            rightContentView.setOnClickListener(clickListener);
+        }
+
         mToggleButton.setOnCheckedChangeListener(
                 (unusedView, isChecked) -> onCheckedChanged.onResult(isChecked));
     }

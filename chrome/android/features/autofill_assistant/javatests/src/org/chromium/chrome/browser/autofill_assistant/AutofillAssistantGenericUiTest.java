@@ -1988,6 +1988,12 @@ public class AutofillAssistantGenericUiTest {
         modelValues.add((ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
                                 .setIdentifier("option_e_toggled")
                                 .setValue(ValueProto.newBuilder().setBooleans(
+                                        BooleanList.newBuilder().addValues(true)))
+                                .build());
+        // Check box is initially unselected
+        modelValues.add((ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
+                                .setIdentifier("option_f_toggled")
+                                .setValue(ValueProto.newBuilder().setBooleans(
                                         BooleanList.newBuilder().addValues(false)))
                                 .build());
 
@@ -2038,7 +2044,9 @@ public class AutofillAssistantGenericUiTest {
                                                         "group_b", "option_d_view",
                                                         "option_d_toggled"),
                                                 createCheckBoxView("Optional option E",
-                                                        "option_e_view", "option_e_toggled")))))
+                                                        "option_e_view", "option_e_toggled"),
+                                                createCheckBoxView("Optional option F",
+                                                        "option_f_view", "option_f_toggled")))))
                         .setInteractions(
                                 InteractionsProto.newBuilder().addAllInteractions(interactions))
                         .setModel(ModelProto.newBuilder().addAllValues(modelValues))
@@ -2051,7 +2059,7 @@ public class AutofillAssistantGenericUiTest {
                                                    .addAllOutputModelIdentifiers(Arrays.asList(
                                                            "option_a_toggled", "option_b_toggled",
                                                            "option_c_toggled", "option_d_toggled",
-                                                           "option_e_toggled")))
+                                                           "option_e_toggled", "option_f_toggled")))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 (SupportedScriptProto) SupportedScriptProto.newBuilder()
@@ -2081,6 +2089,9 @@ public class AutofillAssistantGenericUiTest {
                 .check(matches(isChecked()));
         onView(allOf(withClassName(is(CheckBox.class.getName())),
                        hasSibling(withText("Optional option E"))))
+                .check(matches(isChecked()));
+        onView(allOf(withClassName(is(CheckBox.class.getName())),
+                       hasSibling(withText("Optional option F"))))
                 .check(matches(isNotChecked()));
 
         onView(withText("Option A")).perform(click());
@@ -2093,7 +2104,8 @@ public class AutofillAssistantGenericUiTest {
 
         // Selecting an already checked check box inverts its value.
         onView(withText("Optional option E")).perform(click());
-        onView(withText("Optional option E")).perform(click());
+
+        onView(withText("Optional option F")).perform(click());
 
         int numNextActionsCalled = testService.getNextActionsCounter();
         onView(withText("Done")).perform(click());
@@ -2105,7 +2117,7 @@ public class AutofillAssistantGenericUiTest {
                 processedActions.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
         ShowGenericUiProto.Result result = processedActions.get(0).getShowGenericUiResult();
         List<ModelProto.ModelValue> resultModelValues = result.getModel().getValuesList();
-        assertThat(resultModelValues, iterableWithSize(5));
+        assertThat(resultModelValues, iterableWithSize(6));
         assertThat(resultModelValues,
                 containsInAnyOrder((ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
                                            .setIdentifier("option_a_toggled")
@@ -2131,6 +2143,11 @@ public class AutofillAssistantGenericUiTest {
                                 .setIdentifier("option_e_toggled")
                                 .setValue(ValueProto.newBuilder().setBooleans(
                                         BooleanList.newBuilder().addValues(false)))
+                                .build(),
+                        (ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
+                                .setIdentifier("option_f_toggled")
+                                .setValue(ValueProto.newBuilder().setBooleans(
+                                        BooleanList.newBuilder().addValues(true)))
                                 .build()));
     }
 
