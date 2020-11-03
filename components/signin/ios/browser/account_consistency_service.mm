@@ -449,7 +449,7 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
           /*last_access_time=*/base::Time(),
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::LAX_MODE,
-          net::COOKIE_PRIORITY_DEFAULT);
+          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(

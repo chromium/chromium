@@ -52,8 +52,8 @@ class SiteDataCountingHelperTest : public testing::Test {
           net::CanonicalCookie::CreateSanitizedCookie(
               url, "name", "A=1", url.host(), url.path(), creation_time,
               base::Time(), creation_time, url.SchemeIsCryptographic(), false,
-              net::CookieSameSite::NO_RESTRICTION,
-              net::COOKIE_PRIORITY_DEFAULT);
+              net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+              false);
       net::CookieOptions options;
       options.set_include_httponly();
       cookie_manager->SetCanonicalCookie(

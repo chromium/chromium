@@ -68,10 +68,10 @@ class SessionCleanupCookieStoreTest : public testing::Test {
                  const std::string& domain,
                  const std::string& path,
                  base::Time creation) {
-    store_->AddCookie(net::CanonicalCookie(name, value, domain, path, creation,
-                                           creation, base::Time(), false, false,
-                                           net::CookieSameSite::NO_RESTRICTION,
-                                           net::COOKIE_PRIORITY_DEFAULT));
+    store_->AddCookie(net::CanonicalCookie(
+        name, value, domain, path, creation, creation, base::Time(), false,
+        false, net::CookieSameSite::NO_RESTRICTION,
+        net::COOKIE_PRIORITY_DEFAULT, false));
   }
 
   void DestroyStore() {

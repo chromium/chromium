@@ -220,7 +220,7 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
   net::CanonicalCookie cookie1("TestCookie1", "20", "google.com", "/",
                                base::Time::Now(), base::Time(), base::Time(),
                                true, true, net::CookieSameSite::NO_RESTRICTION,
-                               net::COOKIE_PRIORITY_HIGH);
+                               net::COOKIE_PRIORITY_HIGH, /*same_party=*/true);
   cookie_manager->SetCanonicalCookie(
       cookie1, net::cookie_util::SimulatedCookieSource(cookie1, "https"),
       options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {
@@ -239,7 +239,7 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
   net::CanonicalCookie cookie2("TestCookie2", "10", "gmail.google.com", "/",
                                base::Time(), base::Time::Max(), base::Time(),
                                false, true, net::CookieSameSite::LAX_MODE,
-                               net::COOKIE_PRIORITY_HIGH);
+                               net::COOKIE_PRIORITY_HIGH, false);
   cookie_manager->SetCanonicalCookie(
       cookie2, net::cookie_util::SimulatedCookieSource(cookie2, "https"),
       options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {

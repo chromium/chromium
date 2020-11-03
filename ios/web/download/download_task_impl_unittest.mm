@@ -548,7 +548,7 @@ TEST_F(DownloadTaskImplTest, Cookie) {
       /*last_access=*/now,
       /*secure=*/false,
       /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
-      net::COOKIE_PRIORITY_DEFAULT);
+      net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
   cookie_store_.SetAllCookies({expected_cookie});
 
   // Start the download and make sure that all cookie from BrowserState were

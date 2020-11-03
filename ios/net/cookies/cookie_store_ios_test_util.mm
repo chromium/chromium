@@ -51,7 +51,8 @@ void TestPersistentCookieStore::RunLoadedCallback() {
           base::Time(),  // last accessed
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT));
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          false /* same_party */));
   cookies.push_back(std::move(bad_canonical_cookie));
   std::move(loaded_callback_).Run(std::move(cookies));
 }

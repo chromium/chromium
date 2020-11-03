@@ -411,6 +411,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       break;
   }
 
+  // TODO(crbug.com/1144181): Add support for SameParty attribute.
   // clang-format off
   std::unique_ptr<net::CanonicalCookie> cc(
       net::CanonicalCookie::CreateSanitizedCookie(
@@ -431,7 +432,8 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
               *parsed_args_->details.http_only :
               false,
           same_site,
-          net::COOKIE_PRIORITY_DEFAULT));
+          net::COOKIE_PRIORITY_DEFAULT,
+          /*same_party=*/false));
   // clang-format on
   if (!cc) {
     // Return error through callbacks so that the proper error message

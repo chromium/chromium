@@ -146,11 +146,12 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     same_site = net::CookieSameSite::NO_RESTRICTION;
   }
 
+  // TODO(crbug.com/1144187): Add support for SameParty attribute.
   return net::CanonicalCookie::CreateSanitizedCookie(
       cookie_url, name.Utf8(), value.Utf8(), domain.Utf8(), path.Utf8(),
       base::Time() /*creation*/, expires, base::Time() /*last_access*/,
       true /*secure*/, false /*http_only*/, same_site,
-      net::CookiePriority::COOKIE_PRIORITY_DEFAULT);
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, false /*same_party*/);
 }
 
 const KURL DefaultCookieURL(ExecutionContext* execution_context) {

@@ -320,9 +320,10 @@ std::unique_ptr<net::CanonicalCookie> MakeCookieFromProtocolValues(
   else if (priority == Network::CookiePriorityEnum::Low)
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
+  // TODO(crbug.com/1142606): Add SameParty to DevTools cookie structures.
   return net::CanonicalCookie::CreateSanitizedCookie(
       url, name, value, normalized_domain, path, base::Time(), expiration_date,
-      base::Time(), secure, http_only, css, cp);
+      base::Time(), secure, http_only, css, cp, /*same_party=*/false);
 }
 
 std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,

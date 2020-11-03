@@ -96,9 +96,10 @@ net::CanonicalCookie CanonicalCookieFromSystemCookie(
       base::SysNSStringToUTF8([cookie path]), ceation_time,
       base::Time::FromDoubleT([[cookie expiresDate] timeIntervalSince1970]),
       base::Time(), [cookie isSecure], [cookie isHTTPOnly], same_site,
-      // When iOS begins to support 'Priority' attribute, pass it
-      // through here.
-      net::COOKIE_PRIORITY_DEFAULT, net::CookieSourceScheme::kUnset));
+      // When iOS begins to support 'Priority' and 'SameParty' attributes, pass
+      // them through here.
+      net::COOKIE_PRIORITY_DEFAULT, false /* SameParty */,
+      net::CookieSourceScheme::kUnset));
 }
 
 void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,

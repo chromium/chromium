@@ -27,9 +27,12 @@ const char kSigninCookieName[] = "SAPISID";
 void AddSigninCookie(Profile* profile) {
   DCHECK(profile);
   net::CanonicalCookie cookie(
-      kSigninCookieName, std::string(), ".google.com", "/", base::Time(),
-      base::Time(), base::Time(), /*secure=*/true, false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
+      kSigninCookieName, std::string(), ".google.com", "/",
+      /*creation=*/base::Time(),
+      /*expires=*/base::Time(), /*last_access=*/base::Time(), /*secure=*/true,
+      /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_DEFAULT,
+      /*same_party=*/false);
 
   network::mojom::CookieManager* cookie_manager =
       content::BrowserContext::GetDefaultStoragePartition(profile)

@@ -125,7 +125,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
         base::Time::Now() + before_expiration,
         /*last_access=*/base::Time::Now(), is_secure.value_or(true),
         is_http_only.value_or(true), samesite_mode,
-        net::StringToCookiePriority(priority ? *priority : "medium"));
+        net::StringToCookiePriority(priority ? *priority : "medium"),
+        /*sameparty=*/false);
     if (new_cookie.IsCanonical()) {
       cookies_.push_back(std::move(new_cookie));
     } else {

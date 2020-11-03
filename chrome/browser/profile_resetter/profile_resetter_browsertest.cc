@@ -100,7 +100,8 @@ void RemoveCookieTester::AddCookie(const std::string& host,
   net::CanonicalCookie cookie(
       name, value, host, "/", base::Time(), base::Time(), base::Time(),
       true /* secure*/, false /* http only*/,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
+      false /* same_party */);
   cookie_manager_->SetCanonicalCookie(
       cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"), options,
       base::BindOnce(&RemoveCookieTester::SetCanonicalCookieCallback,

@@ -40,7 +40,7 @@ void CreateCookieForTest(
   net::CanonicalCookie cookie(cookie_name, "1", cookie_domain, "/",
                               base::Time(), base::Time(), base::Time(),
                               is_cookie_secure, false, same_site,
-                              net::COOKIE_PRIORITY_LOW);
+                              net::COOKIE_PRIORITY_LOW, false);
   GetCookieManager(browser_context)
       ->SetCanonicalCookie(
           cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),

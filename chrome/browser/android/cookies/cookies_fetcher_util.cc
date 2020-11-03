@@ -48,7 +48,7 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
-        i->Priority(), static_cast<int>(i->SourceScheme()));
+        i->Priority(), i->IsSameParty(), static_cast<int>(i->SourceScheme()));
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
   }
 
@@ -88,6 +88,7 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jboolean httponly,
     jint same_site,
     jint priority,
+    jboolean same_party,
     jint source_scheme) {
   // TODO(https://crbug.com/1060940): Update to cover all OTR profiles.
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
@@ -108,7 +109,7 @@ static void JNI_CookiesFetcher_RestoreCookies(
           base::Time::FromDeltaSinceWindowsEpoch(
               base::TimeDelta::FromMicroseconds(last_access)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
-          static_cast<net::CookiePriority>(priority),
+          static_cast<net::CookiePriority>(priority), same_party,
           static_cast<net::CookieSourceScheme>(source_scheme));
   if (!cookie)
     return;

@@ -50,6 +50,7 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_OVERWRITE_HTTP_ONLY = 13,
     EXCLUDE_INVALID_DOMAIN = 14,
     EXCLUDE_INVALID_PREFIX = 15,
+    EXCLUDE_INVALID_SAMEPARTY = 16,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS

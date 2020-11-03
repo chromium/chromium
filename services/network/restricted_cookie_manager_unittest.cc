@@ -241,11 +241,11 @@ class RestrictedCookieManagerTest
                         const char* path,
                         bool secure = true) {
     CHECK(SetCanonicalCookie(
-        net::CanonicalCookie(name, value, domain, path, base::Time(),
-                             base::Time(), base::Time(), /* secure = */ secure,
-                             /* httponly = */ false,
-                             net::CookieSameSite::NO_RESTRICTION,
-                             net::COOKIE_PRIORITY_DEFAULT),
+        net::CanonicalCookie(
+            name, value, domain, path, base::Time(), base::Time(), base::Time(),
+            /* secure = */ secure,
+            /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
         "https", /* can_modify_httponly = */ true));
   }
 
@@ -255,11 +255,11 @@ class RestrictedCookieManagerTest
                                 const char* domain,
                                 const char* path) {
     CHECK(SetCanonicalCookie(
-        net::CanonicalCookie(name, value, domain, path, base::Time(),
-                             base::Time(), base::Time(), /* secure = */ true,
-                             /* httponly = */ true,
-                             net::CookieSameSite::NO_RESTRICTION,
-                             net::COOKIE_PRIORITY_DEFAULT),
+        net::CanonicalCookie(
+            name, value, domain, path, base::Time(), base::Time(), base::Time(),
+            /* secure = */ true,
+            /* httponly = */ true, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
         "https", /* can_modify_httponly = */ true));
   }
 
@@ -569,7 +569,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie) {
           "new-name", "new-value", "example.com", "/", base::Time(),
           base::Time(), base::Time(), /* secure = */ true,
           /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT),
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       GURL("https://example.com/test/"), GURL("https://example.com"),
       url::Origin::Create(GURL("https://example.com"))));
 
@@ -593,7 +593,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieHttpOnly) {
                     "new-name", "new-value", "example.com", "/", base::Time(),
                     base::Time(), base::Time(), /* secure = */ true,
                     /* httponly = */ true, net::CookieSameSite::NO_RESTRICTION,
-                    net::COOKIE_PRIORITY_DEFAULT),
+                    net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
                 GURL("https://example.com/test/"), GURL("https://example.com"),
                 url::Origin::Create(GURL("https://example.com"))));
 
@@ -640,7 +640,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromWrongOrigin) {
           "new-name", "new-value", "not-example.com", "/", base::Time(),
           base::Time(), base::Time(), /* secure = */ true,
           /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT),
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       GURL("https://not-example.com/test/"), GURL("https://example.com"),
       url::Origin::Create(GURL("https://example.com"))));
   ASSERT_TRUE(received_bad_message());
@@ -657,7 +657,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromOpaqueOrigin) {
           "new-name", "new-value", "not-example.com", "/", base::Time(),
           base::Time(), base::Time(), /* secure = */ true,
           /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT),
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       GURL("https://example.com/test/"), GURL("https://example.com"),
       url::Origin::Create(GURL("https://example.com"))));
   ASSERT_TRUE(received_bad_message());
@@ -670,7 +670,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
           "new-name", "new-value", "not-example.com", "/", base::Time(),
           base::Time(), base::Time(), /* secure = */ true,
           /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT),
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       GURL("https://example.com/test/"), GURL("https://example.com"),
       url::Origin::Create(GURL("https://example.com"))));
   ASSERT_TRUE(received_bad_message());
@@ -832,14 +832,14 @@ TEST_P(RestrictedCookieManagerTest, SameSiteCookiesSpecialScheme) {
           "strict-cookie", "1", "example.com", "/", base::Time(), base::Time(),
           base::Time(), /* secure = */ false,
           /* httponly = */ false, net::CookieSameSite::STRICT_MODE,
-          net::COOKIE_PRIORITY_DEFAULT),
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       https_url, chrome_url, https_origin));
   EXPECT_TRUE(sync_service_->SetCanonicalCookie(
-      net::CanonicalCookie("lax-cookie", "1", "example.com", "/", base::Time(),
-                           base::Time(), base::Time(), /* secure = */ false,
-                           /* httponly = */ false,
-                           net::CookieSameSite::LAX_MODE,
-                           net::COOKIE_PRIORITY_DEFAULT),
+      net::CanonicalCookie(
+          "lax-cookie", "1", "example.com", "/", base::Time(), base::Time(),
+          base::Time(), /* secure = */ false,
+          /* httponly = */ false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       https_url, chrome_url, https_origin));
 
   auto options = mojom::CookieManagerGetOptions::New();
@@ -858,14 +858,14 @@ TEST_P(RestrictedCookieManagerTest, SameSiteCookiesSpecialScheme) {
           "strict-cookie", "2", "example.com", "/", base::Time(), base::Time(),
           base::Time(), /* secure = */ false,
           /* httponly = */ false, net::CookieSameSite::STRICT_MODE,
-          net::COOKIE_PRIORITY_DEFAULT),
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       http_url, chrome_url, http_origin));
   EXPECT_FALSE(sync_service_->SetCanonicalCookie(
-      net::CanonicalCookie("lax-cookie", "2", "example.com", "/", base::Time(),
-                           base::Time(), base::Time(), /* secure = */ false,
-                           /* httponly = */ false,
-                           net::CookieSameSite::LAX_MODE,
-                           net::COOKIE_PRIORITY_DEFAULT),
+      net::CanonicalCookie(
+          "lax-cookie", "2", "example.com", "/", base::Time(), base::Time(),
+          base::Time(), /* secure = */ false,
+          /* httponly = */ false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
       http_url, chrome_url, http_origin));
 
   options = mojom::CookieManagerGetOptions::New();
@@ -885,12 +885,12 @@ TEST_P(RestrictedCookieManagerTest, SameSiteCompatPairWarning_AppliedOnGet) {
       "name", "value", "example.com", "/", base::Time(), base::Time(),
       base::Time(), /* secure = */ true,
       /* httponly = */ false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_DEFAULT)));
+      net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
   ASSERT_TRUE(EnsureSetCanonicalCookie(net::CanonicalCookie(
       "name_legacy", "value", "example.com", "/", base::Time(), base::Time(),
       base::Time(), /* secure = */ true,
       /* httponly = */ false, net::CookieSameSite::UNSPECIFIED,
-      net::COOKIE_PRIORITY_DEFAULT)));
+      net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
 
   // Get cookies from the RestrictedCookieManager in a same-site context (should
   // not trigger warnings).
@@ -992,12 +992,12 @@ TEST_P(RestrictedCookieManagerTest, SameSiteCompatPairWarning_HttpOnly) {
       "name", "value", "example.com", "/", base::Time(), base::Time(),
       base::Time(), /* secure = */ true,
       /* httponly = */ true, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_DEFAULT)));
+      net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
   ASSERT_TRUE(EnsureSetCanonicalCookie(net::CanonicalCookie(
       "name_legacy", "value", "example.com", "/", base::Time(), base::Time(),
       base::Time(), /* secure = */ true,
       /* httponly = */ false, net::CookieSameSite::UNSPECIFIED,
-      net::COOKIE_PRIORITY_DEFAULT)));
+      net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false)));
 
   // Get cookies from the RestrictedCookieManager in a cross-site context.
   {

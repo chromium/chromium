@@ -131,6 +131,7 @@ struct CanonicalCookie {
   CookieSameSite site_restrictions = NO_RESTRICTION;
   CookiePriority priority = MEDIUM;
   CookieSourceScheme source_scheme = kUnset;
+  bool same_party = false;
 };
 
 struct CookieInclusionStatus {

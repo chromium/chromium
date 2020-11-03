@@ -90,7 +90,7 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
     return CanonicalCookie(base::StringPrintf("Cookie_%d", cookie_num), "1",
                            domain_name, "/", t, t, t, false, false,
                            CookieSameSite::NO_RESTRICTION,
-                           COOKIE_PRIORITY_DEFAULT);
+                           COOKIE_PRIORITY_DEFAULT, false);
   }
 
   void SetUp() override {

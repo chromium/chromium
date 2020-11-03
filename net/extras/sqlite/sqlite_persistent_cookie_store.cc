@@ -885,14 +885,14 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
         "SELECT creation_utc, host_key, name, value, encrypted_value, path, "
         "expires_utc, is_secure, is_httponly, samesite, "
         "last_access_utc, has_expires, is_persistent, priority, "
-        "source_scheme "
+        "source_scheme, is_same_party "
         "FROM cookies WHERE host_key = ?"));
   } else {
     smt.Assign(db()->GetCachedStatement(
         SQL_FROM_HERE,
         "SELECT creation_utc, host_key, name, value, encrypted_value, path, "
         "expires_utc, is_secure, is_httponly, samesite, last_access_utc, "
-        "has_expires, is_persistent, priority, source_scheme "
+        "has_expires, is_persistent, priority, source_scheme, is_same_party "
         "FROM cookies WHERE host_key = ? AND is_persistent = 1"));
   }
   del_smt.Assign(db()->GetCachedStatement(
@@ -973,6 +973,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
             static_cast<DBCookieSameSite>(smt.ColumnInt(9))),  // samesite
         DBCookiePriorityToCookiePriority(
             static_cast<DBCookiePriority>(smt.ColumnInt(13))),  // priority
+        smt.ColumnBool(15),                                     // is_same_party
         DBToCookieSourceScheme(smt.ColumnInt(14)));             // source_scheme
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
@@ -1299,8 +1300,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_smt.BindInt(14, static_cast<int>(po->cc().SourceScheme()));
           // TODO(crbug.com/1141135): Record port number of the cookie.
           add_smt.BindInt(15, kDefaultUnknownPort);
-          // TODO(crbug.com/1142606): Record SameParty attribute of the cookie.
-          add_smt.BindBool(16, false);
+          add_smt.BindBool(16, po->cc().IsSameParty());
           if (!add_smt.Run()) {
             DLOG(WARNING) << "Could not add a cookie to the DB.";
             RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ADD);

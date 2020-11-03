@@ -149,6 +149,9 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   static net::CookieSourceScheme source_scheme(const net::CanonicalCookie& c) {
     return c.SourceScheme();
   }
+  static bool same_party(const net::CanonicalCookie& c) {
+    return c.IsSameParty();
+  }
 
   static bool Read(network::mojom::CanonicalCookieDataView cookie,
                    net::CanonicalCookie* out);

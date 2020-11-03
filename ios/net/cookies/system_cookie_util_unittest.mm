@@ -43,7 +43,8 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
       base::Time(),  // creation
       expires,
       base::Time(),  // last_access
-      secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT);
+      secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
   // Convert it to system cookie.
   NSHTTPCookie* system_cookie =
       SystemCookieFromCanonicalCookie(canonical_cookie);
@@ -191,7 +192,8 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
       base::Time(),  // last_access
       false,         // secure
       false,         // httponly
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
   // Convert it to system cookie.
   NSHTTPCookie* system_cookie =
       SystemCookieFromCanonicalCookie(bad_canonical_cookie);
@@ -208,7 +210,8 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
                            false,         // secure
                            false,         // httponly
                            net::CookieSameSite::UNSPECIFIED,
-                           net::COOKIE_PRIORITY_DEFAULT),
+                           net::COOKIE_PRIORITY_DEFAULT,
+                           false /* same_party */),
       net::CanonicalCookie("name2", "value2", "domain2", "path2/",
                            base::Time(),  // creation
                            expire_date,
@@ -216,7 +219,8 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
                            false,         // secure
                            false,         // httponly
                            net::CookieSameSite::UNSPECIFIED,
-                           net::COOKIE_PRIORITY_DEFAULT),
+                           net::COOKIE_PRIORITY_DEFAULT,
+                           false /* same_party */),
   };
 
   NSArray<NSHTTPCookie*>* system_cookies =

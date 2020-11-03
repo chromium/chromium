@@ -57,7 +57,7 @@ bool SetGaiaCookieForProfile(Profile* profile) {
                               "/", base::Time(), base::Time(), base::Time(),
                               /*secure=*/true, false,
                               net::CookieSameSite::NO_RESTRICTION,
-                              net::COOKIE_PRIORITY_DEFAULT);
+                              net::COOKIE_PRIORITY_DEFAULT, false);
 
   bool success = false;
   base::RunLoop loop;

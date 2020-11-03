@@ -31,6 +31,11 @@ import javax.crypto.CipherOutputStream;
 /**
  * Responsible for fetching, (de)serializing, and restoring cookies between the CookieJar and an
  * encrypted file storage.
+ *
+ * These methods are used for incognito only. Incognito cookies are kept separately from other
+ * profiles' cookies, and are normally not persisted (on most platforms). However, on Android we
+ * serialize and store them to avoid logging the user out of their accounts being used in incognito,
+ * if the app is killed e.g. while in the background.
  */
 public class CookiesFetcher {
     /** The default file name for the encrypted cookies storage. */
@@ -126,7 +131,7 @@ public class CookiesFetcher {
                             cookie.getDomain(), cookie.getPath(), cookie.getCreationDate(),
                             cookie.getExpirationDate(), cookie.getLastAccessDate(),
                             cookie.isSecure(), cookie.isHttpOnly(), cookie.getSameSite(),
-                            cookie.getPriority(), cookie.sourceScheme());
+                            cookie.getPriority(), cookie.isSameParty(), cookie.sourceScheme());
                 }
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -169,9 +174,9 @@ public class CookiesFetcher {
     @CalledByNative
     private static CanonicalCookie createCookie(String name, String value, String domain,
             String path, long creation, long expiration, long lastAccess, boolean secure,
-            boolean httpOnly, int sameSite, int priority, int sourceScheme) {
+            boolean httpOnly, int sameSite, int priority, boolean sameParty, int sourceScheme) {
         return new CanonicalCookie(name, value, domain, path, creation, expiration, lastAccess,
-                secure, httpOnly, sameSite, priority, sourceScheme);
+                secure, httpOnly, sameSite, priority, sameParty, sourceScheme);
     }
 
     @CalledByNative
@@ -227,6 +232,6 @@ public class CookiesFetcher {
         void persistCookies();
         void restoreCookies(String name, String value, String domain, String path, long creation,
                 long expiration, long lastAccess, boolean secure, boolean httpOnly, int sameSite,
-                int priority, int sourceScheme);
+                int priority, boolean sameParty, int sourceScheme);
     }
 }

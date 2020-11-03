@@ -275,7 +275,8 @@ bool SetGaiaCookieForProfile(Profile* profile) {
   net::CanonicalCookie cookie(
       "SAPISID", std::string(), "." + google_url.host(), "/", base::Time(),
       base::Time(), base::Time(), true /* secure */, false /* httponly */,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
   bool success = false;
   base::RunLoop loop;
   base::OnceCallback<void(net::CookieAccessResult)> callback =

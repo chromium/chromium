@@ -87,15 +87,18 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
       CanonicalCookie("SID", "vAlUe1", ".google.ru", "/", time_now, time_now,
                       expiration_time, /*is_secure=*/true,
                       /*is_http_only=*/false, net::CookieSameSite::UNSPECIFIED,
-                      net::CookiePriority::COOKIE_PRIORITY_HIGH),
+                      net::CookiePriority::COOKIE_PRIORITY_HIGH,
+                      /*is_same_party=*/false),
       CanonicalCookie("SAPISID", "vAlUe2", "google.com", "/", time_now,
                       time_now, expiration_time, /*is_secure=*/false,
                       /*is_http_only=*/true, net::CookieSameSite::LAX_MODE,
-                      net::CookiePriority::COOKIE_PRIORITY_HIGH),
+                      net::CookiePriority::COOKIE_PRIORITY_HIGH,
+                      /*is_same_party=*/false),
       CanonicalCookie("HSID", "vAlUe4", "", "/", time_now, time_now, time_now,
                       /*is_secure=*/true, /*is_http_only=*/true,
                       net::CookieSameSite::STRICT_MODE,
-                      net::CookiePriority::COOKIE_PRIORITY_HIGH)};
+                      net::CookiePriority::COOKIE_PRIORITY_HIGH,
+                      /*is_same_party=*/false)};
 
   EXPECT_EQ((int)result.cookies().size(), 3);
 

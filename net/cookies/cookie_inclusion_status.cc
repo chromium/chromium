@@ -226,6 +226,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
     base::StrAppend(&out, {"EXCLUDE_INVALID_DOMAIN, "});
   if (HasExclusionReason(EXCLUDE_INVALID_PREFIX))
     base::StrAppend(&out, {"EXCLUDE_INVALID_PREFIX, "});
+  if (HasExclusionReason(EXCLUDE_INVALID_SAMEPARTY))
+    base::StrAppend(&out, {"EXCLUDE_INVALID_SAMEPARTY, "});
 
   // Add warning
   if (!ShouldWarn()) {

@@ -23,9 +23,10 @@ bool SerializeAndDeserializeEnum(NativeType in, NativeType* out) {
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
-  net::CanonicalCookie original(
-      "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(), false,
-      false, net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW);
+  net::CanonicalCookie original("A", "B", "x.y", "/path", base::Time(),
+                                base::Time(), base::Time(), false, false,
+                                net::CookieSameSite::NO_RESTRICTION,
+                                net::COOKIE_PRIORITY_LOW, false);
 
   net::CanonicalCookie copied;
 
@@ -43,6 +44,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   EXPECT_EQ(original.IsHttpOnly(), copied.IsHttpOnly());
   EXPECT_EQ(original.SameSite(), copied.SameSite());
   EXPECT_EQ(original.Priority(), copied.Priority());
+  EXPECT_EQ(original.IsSameParty(), copied.IsSameParty());
 
   // Serializer returns false if cookie is non-canonical.
   // Example is non-canonical because of newline in name.
@@ -50,7 +52,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   original = net::CanonicalCookie("A\n", "B", "x.y", "/path", base::Time(),
                                   base::Time(), base::Time(), false, false,
                                   net::CookieSameSite::NO_RESTRICTION,
-                                  net::COOKIE_PRIORITY_LOW);
+                                  net::COOKIE_PRIORITY_LOW, false);
 
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
       &original, &copied));
@@ -119,7 +121,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   net::CanonicalCookie original_cookie(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
       /* secure = */ true, /* http_only = */ false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW, false);
 
   net::CookieWithAccessResult original = {original_cookie,
                                           net::CookieAccessResult()};
@@ -140,6 +142,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());
+  EXPECT_EQ(original.cookie.IsSameParty(), copied.cookie.IsSameParty());
   EXPECT_EQ(original.access_result.effective_same_site,
             copied.access_result.effective_same_site);
   EXPECT_EQ(original.access_result.status, copied.access_result.status);
@@ -149,7 +152,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieAndLineWithAccessResult) {
   net::CanonicalCookie original_cookie(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
       /* secure = */ true, /* http_only = */ false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW, false);
 
   net::CookieAndLineWithAccessResult original(original_cookie, "cookie-string",
                                               net::CookieAccessResult());
@@ -299,7 +302,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   net::CanonicalCookie original_cookie(
       "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(),
       /* secure = */ false, /* http_only = */ false,
-      net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_LOW);
+      net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_LOW, false);
 
   net::CookieChangeInfo original(
       original_cookie,

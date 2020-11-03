@@ -108,7 +108,8 @@ void AndroidSmsAppSetupControllerImpl::SetUpApp(const GURL& app_url,
       base::Time::Now() /* creation_time */, base::Time() /* expiration_time */,
       base::Time::Now() /* last_access_time */,
       !net::IsLocalhost(app_url) /* secure */, false /* http_only */,
-      net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
   // TODO(crbug.com/1069974): The cookie source url must be faked here because
   // otherwise, this would fail to set a secure cookie if |app_url| is insecure.
   // Consider instead to use url::Replacements to force the scheme to be https.
@@ -327,7 +328,8 @@ void AndroidSmsAppSetupControllerImpl::SetMigrationCookie(
       base::Time::Now() /* creation_time */, base::Time() /* expiration_time */,
       base::Time::Now() /* last_access_time */,
       !net::IsLocalhost(app_url) /* secure */, false /* http_only */,
-      net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
   // TODO(crbug.com/1069974): The cookie source url must be faked here because
   // otherwise, this would fail to set a secure cookie if |app_url| is insecure.
   // Consider instead to use url::Replacements to force the scheme to be https.

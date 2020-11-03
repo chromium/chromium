@@ -27,12 +27,13 @@ class CanonicalCookie {
     private final boolean mHttpOnly;
     private final int mSameSite;
     private final int mPriority;
+    private final boolean mSameParty;
     private final int mSourceScheme;
 
     /** Constructs a CanonicalCookie */
     CanonicalCookie(String name, String value, String domain, String path, long creation,
             long expiration, long lastAccess, boolean secure, boolean httpOnly, int sameSite,
-            int priority, int sourceScheme) {
+            int priority, boolean sameParty, int sourceScheme) {
         mName = name;
         mValue = value;
         mDomain = domain;
@@ -44,6 +45,7 @@ class CanonicalCookie {
         mHttpOnly = httpOnly;
         mSameSite = sameSite;
         mPriority = priority;
+        mSameParty = sameParty;
         mSourceScheme = sourceScheme;
     }
 
@@ -60,6 +62,11 @@ class CanonicalCookie {
     /** @return SameSite enum */
     int getSameSite() {
         return mSameSite;
+    }
+
+    /** @return True if the cookie has the SameParty attribute. */
+    boolean isSameParty() {
+        return mSameParty;
     }
 
     /** @return True if the cookie is secure. */
@@ -110,7 +117,7 @@ class CanonicalCookie {
     // Note incognito state cannot persist across app installs since the encryption key is stored
     // in the activity state bundle. So the version here is more of a guard than a real version
     // used for format migrations.
-    private static final int SERIALIZATION_VERSION = 20191105;
+    private static final int SERIALIZATION_VERSION = 20201029;
 
     static void saveListToStream(DataOutputStream out, CanonicalCookie[] cookies)
             throws IOException {
@@ -164,8 +171,6 @@ class CanonicalCookie {
     }
 
     private void saveToStream(DataOutputStream out) throws IOException {
-        // URL is no longer included. Keep for backward compatability.
-        out.writeUTF("");
         out.writeUTF(mName);
         out.writeUTF(mValue);
         out.writeUTF(mDomain);
@@ -177,14 +182,23 @@ class CanonicalCookie {
         out.writeBoolean(mHttpOnly);
         out.writeInt(mSameSite);
         out.writeInt(mPriority);
+        out.writeBoolean(mSameParty);
         out.writeInt(mSourceScheme);
     }
 
     private static CanonicalCookie createFromStream(DataInputStream in) throws IOException {
-        // URL is no longer included. Keep for backward compatability.
-        in.readUTF();
-        return new CanonicalCookie(in.readUTF(), in.readUTF(), in.readUTF(), in.readUTF(),
-                in.readLong(), in.readLong(), in.readLong(), in.readBoolean(), in.readBoolean(),
-                in.readInt(), in.readInt(), in.readInt());
+        return new CanonicalCookie(in.readUTF(), // name
+                in.readUTF(), // value
+                in.readUTF(), // domain
+                in.readUTF(), // path
+                in.readLong(), // creation
+                in.readLong(), // expiration
+                in.readLong(), // last access
+                in.readBoolean(), // secure
+                in.readBoolean(), // httponly
+                in.readInt(), // samesite
+                in.readInt(), // priority
+                in.readBoolean(), // sameparty
+                in.readInt()); // source scheme
     }
 }

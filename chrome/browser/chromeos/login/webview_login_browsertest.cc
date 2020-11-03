@@ -132,7 +132,8 @@ void InjectCookie(content::StoragePartition* storage_partition) {
   net::CanonicalCookie cookie(
       kTestCookieName, kTestCookieValue, kTestCookieHost, "/", base::Time(),
       base::Time(), base::Time(), true /* secure */, false /* httponly*/,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM);
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
+      false /* same_party */);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
