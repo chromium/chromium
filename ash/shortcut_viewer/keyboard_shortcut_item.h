@@ -91,14 +91,15 @@ struct KSV_EXPORT KeyboardShortcutItem {
   //     the |shortcut_key_codes|.
   //  4. For ksv items not in the two accelerator_tables, we will provide the
   //     |shortcut_key_codes| and |accelerator_ids| will be empty.
+  // As of writing, this vector never has more than 1 accelerator in it.
   std::vector<AcceleratorId> accelerator_ids;
 
   // The VKEY codes of the key and each modifier comprising the shortcut. These
   // are translated to text or icons representing each key, and substituted into
   // the shortcut-message template string, to display to the user.
-  // For example of shortcut "Alt + left arrow", |shortcut_key_codes| will be
-  // {ui::VKEY_LMENU, ui::VKEY_LEFT}. ui::VKEY_LMENU indicates to display a text
-  // "Alt" and ui::VKEY_LEFT insidcates to display an icon of "left arrow".
+  // For example, for the shortcut "Alt + left arrow", |shortcut_key_codes| will
+  // be {ui::VKEY_LMENU, ui::VKEY_UNKNOWN, ui::VKEY_LEFT} representing "Alt",
+  // the separator and a left arrow respectively.
   // Note that the modifier is converted to ui::KeyboardCode so that there is
   // only one enum type to deal with.
   std::vector<ui::KeyboardCode> shortcut_key_codes;

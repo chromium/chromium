@@ -1445,7 +1445,7 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
         // Only use the first |accelerator_id| because the modifiers are the
         // same even if it is a grouped accelerators.
         const AcceleratorId& accelerator_id = item.accelerator_ids[0];
-        // Insert |shortcut_key_codes| by the order of CTLR, ALT, SHIFT, SEARCH,
+        // Insert |shortcut_key_codes| by the order of CTRL, ALT, SHIFT, SEARCH,
         // and then key, to be consistent with how we describe it in the
         // |shortcut_message_id| associated string template.
         for (auto modifier : {ui::EF_CONTROL_DOWN, ui::EF_ALT_DOWN,

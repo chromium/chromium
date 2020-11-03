@@ -28,7 +28,7 @@ GetKeyboardShortcutItemList();
 
 base::string16 GetStringForCategory(ShortcutCategory category);
 
-// Returns the string of a DomeKey for a given VKEY. VKEY needs to be mapped to
+// Returns the string of a DomKey for a given VKEY. VKEY needs to be mapped to
 // a physical key |dom_code| and then the |dom_code| needs to be mapped to a
 // meaning or character of |dom_key| based on the corresponding keyboard layout.
 // Returns empty string if the |dom_key| IsDeadKey or has no mapped meaning or
