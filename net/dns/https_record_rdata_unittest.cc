@@ -37,6 +37,26 @@ TEST(HttpsRecordRdataTest, ParsesAlias) {
   EXPECT_EQ(alias_rdata->alias_name(), "chromium.org");
 }
 
+TEST(HttpsRecordRdataTest, ParseAliasWithEmptyName) {
+  const char kRdata[] =
+      // Priority: 0 for alias record
+      "\000\000"
+      // Alias name: ""
+      "\000";
+
+  std::unique_ptr<HttpsRecordRdata> rdata =
+      HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
+  ASSERT_TRUE(rdata);
+
+  AliasFormHttpsRecordRdata expected("");
+  EXPECT_TRUE(rdata->IsEqual(&expected));
+
+  EXPECT_TRUE(rdata->IsAlias());
+  AliasFormHttpsRecordRdata* alias_rdata = rdata->AsAliasForm();
+  ASSERT_TRUE(alias_rdata);
+  EXPECT_TRUE(alias_rdata->alias_name().empty());
+}
+
 TEST(HttpsRecordRdataTest, IgnoreAliasParams) {
   const char kRdata[] =
       // Priority: 0 for alias record

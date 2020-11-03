@@ -175,9 +175,7 @@ const ServiceFormHttpsRecordRdata* HttpsRecordRdata::AsServiceForm() const {
 }
 
 AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
-    : alias_name_(std::move(alias_name)) {
-  DCHECK(!alias_name_.empty());
-}
+    : alias_name_(std::move(alias_name)) {}
 
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
