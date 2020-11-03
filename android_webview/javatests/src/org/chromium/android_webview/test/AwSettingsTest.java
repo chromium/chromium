@@ -2554,6 +2554,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Navigation"})
+    @DisabledTest(message = "https://crbug.com/1144938")
     public void testAssetUrl() throws Throwable {
         // Note: this text needs to be kept in sync with the contents of the html file referenced
         // below.
@@ -3202,6 +3203,7 @@ public class AwSettingsTest {
     @DisableHardwareAccelerationForTest
     @LargeTest
     @Feature({"AndroidWebView", "Preferences"})
+    @DisabledTest(message = "https://crbug.com/1144945")
     public void testMediaPlaybackWithoutUserGesture() throws Throwable {
         Assert.assertTrue(VideoTestUtil.runVideoTest(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule, false, WAIT_TIMEOUT_MS));
@@ -3211,6 +3213,7 @@ public class AwSettingsTest {
     @DisableHardwareAccelerationForTest
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @DisabledTest(message = "https://crbug.com/1144945")
     public void testMediaPlaybackWithUserGesture() throws Throwable {
         // Wait for 5 second to see if video played.
         Assert.assertFalse(VideoTestUtil.runVideoTest(
@@ -3289,6 +3292,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @DisabledTest(message = "https://crbug.com/1144935")
     public void testAllowMixedMode() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient() {
             @Override
