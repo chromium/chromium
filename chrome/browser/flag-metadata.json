@@ -1370,6 +1370,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-cros-ime-service-decoder",
+    "owners": [ "essential-inputs-team@google.com" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "enable-cros-language-settings-update",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 90

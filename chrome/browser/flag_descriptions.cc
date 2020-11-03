@@ -4229,6 +4229,11 @@ const char kImeMozcProtoDescription[] =
     "Enable Japanese IME to use protobuf as interactive message format to "
     "replace JSON";
 
+const char kImeServiceDecoderName[] = "ChromeOS IME Service Decoder";
+const char kImeServiceDecoderDescription[] =
+    "Controls whether ChromeOS system IME works with the NaCl decoders or "
+    "the decoders loaded in the IME service.";
+
 const char kImeServiceSandboxName[] = "Use CrOS 'ime' sandbox";
 const char kImeServiceSandboxDescription[] =
     "Controls whether the IME service on CrOS uses the 'ime' sandbox.";

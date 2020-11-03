@@ -2469,6 +2469,9 @@ extern const char kImeInputLogicMozcDescription[];
 extern const char kImeMozcProtoName[];
 extern const char kImeMozcProtoDescription[];
 
+extern const char kImeServiceDecoderName[];
+extern const char kImeServiceDecoderDescription[];
+
 extern const char kImeServiceSandboxName[];
 extern const char kImeServiceSandboxDescription[];
 

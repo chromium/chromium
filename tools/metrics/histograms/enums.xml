@@ -44230,6 +44230,7 @@ from previous Chrome versions.
   <int value="434033638" label="PwaPersistentNotification:disabled"/>
   <int value="434530296"
       label="HappinessTrackingSurveysForDesktopMigration:disabled"/>
+  <int value="436249288" label="ImeMojoDecoder:disabled"/>
   <int value="436682243" label="TabGroupsAndroid:disabled"/>
   <int value="439525862" label="GlobalMediaControlsForCast:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
@@ -44680,6 +44681,7 @@ from previous Chrome versions.
   <int value="885186849" label="finch-seed-expiration-age"/>
   <int value="885971656" label="EnablePlayStoreAppSearch:enabled"/>
   <int value="886907524" label="autoplay-policy"/>
+  <int value="886990840" label="ImeMojoDecoder:enabled"/>
   <int value="887011602" label="enable-spelling-auto-correct"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
