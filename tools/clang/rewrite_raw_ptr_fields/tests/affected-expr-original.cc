@@ -4,6 +4,7 @@
 
 #include <stdint.h>  // for uintptr_t
 
+#include <string>
 #include <tuple>    // for std::tie
 #include <utility>  // for std::swap
 

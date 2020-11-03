@@ -485,6 +485,30 @@ const clang::FieldDecl* GetExplicitDecl(const clang::FieldDecl* field_decl) {
   return field_decl;
 }
 
+// Given:
+//   template <typename T>
+//   class MyTemplate {
+//     T field;  // This is an explicit field declaration.
+//   };
+//   void foo() {
+//     // This creates implicit template specialization for MyTemplate,
+//     // including an implicit |field| declaration.
+//     MyTemplate<int> v;
+//     v.field = 123;
+//   }
+// and
+//   innerMatcher that will match the explicit |T field| declaration (but not
+//   necessarily the implicit template declarations),
+// hasExplicitFieldDecl(innerMatcher) will match both explicit and implicit
+// field declarations.
+//
+// For example, |member_expr_matcher| below will match |v.field| in the example
+// above, even though the type of |v.field| is |int|, rather than |T| (matched
+// by substTemplateTypeParmType()):
+//   auto explicit_field_decl_matcher =
+//       fieldDecl(hasType(substTemplateTypeParmType()));
+//   auto member_expr_matcher = memberExpr(member(fieldDecl(
+//       hasExplicitFieldDecl(explicit_field_decl_matcher))))
 AST_MATCHER_P(clang::FieldDecl,
               hasExplicitFieldDecl,
               clang::ast_matchers::internal::Matcher<clang::FieldDecl>,
@@ -698,6 +722,68 @@ AST_MATCHER_P(clang::QualType,
   }
 
   return false;
+}
+
+// forEachInitExprWithFieldDecl matches InitListExpr if it
+// 1) evaluates to a RecordType
+// 2) has a InitListExpr + FieldDecl pair that matches the submatcher args.
+//
+// forEachInitExprWithFieldDecl is based on and very similar to the builtin
+// forEachArgumentWithParam matcher.
+AST_MATCHER_P2(clang::InitListExpr,
+               forEachInitExprWithFieldDecl,
+               clang::ast_matchers::internal::Matcher<clang::Expr>,
+               init_expr_matcher,
+               clang::ast_matchers::internal::Matcher<clang::FieldDecl>,
+               field_decl_matcher) {
+  const clang::InitListExpr& init_list_expr = Node;
+  const clang::Type* type = init_list_expr.getType()
+                                .getDesugaredType(Finder->getASTContext())
+                                .getTypePtrOrNull();
+  if (!type)
+    return false;
+  const clang::CXXRecordDecl* record_decl = type->getAsCXXRecordDecl();
+  if (!record_decl)
+    return false;
+
+  bool is_matching = false;
+  clang::ast_matchers::internal::BoundNodesTreeBuilder result;
+  const std::vector<const clang::FieldDecl*> field_decls(
+      record_decl->field_begin(), record_decl->field_end());
+  for (unsigned i = 0; i < init_list_expr.getNumInits(); i++) {
+    const clang::Expr* expr = init_list_expr.getInit(i);
+
+    const clang::FieldDecl* field_decl = nullptr;
+    if (const clang::ImplicitValueInitExpr* implicit_value_init_expr =
+            clang::dyn_cast<clang::ImplicitValueInitExpr>(expr)) {
+      continue;  // Do not match implicit value initializers.
+    } else if (const clang::DesignatedInitExpr* designated_init_expr =
+                   clang::dyn_cast<clang::DesignatedInitExpr>(expr)) {
+      // Nested designators are unsupported by C++.
+      if (designated_init_expr->size() != 1)
+        break;
+      expr = designated_init_expr->getInit();
+      field_decl = designated_init_expr->getDesignator(0)->getField();
+    } else {
+      if (i >= field_decls.size())
+        break;
+      field_decl = field_decls[i];
+    }
+
+    clang::ast_matchers::internal::BoundNodesTreeBuilder field_matches(
+        *Builder);
+    if (field_decl_matcher.matches(*field_decl, Finder, &field_matches)) {
+      clang::ast_matchers::internal::BoundNodesTreeBuilder expr_matches(
+          field_matches);
+      if (init_expr_matcher.matches(*expr, Finder, &expr_matches)) {
+        result.addMatch(expr_matches);
+        is_matching = true;
+      }
+    }
+  }
+
+  *Builder = std::move(result);
+  return is_matching;
 }
 
 // Rewrites |SomeClass* field| (matched as "affectedFieldDecl") into
@@ -1064,16 +1150,30 @@ int main(int argc, const char* argv[]) {
                           &overlapping_field_decl_writer);
 
   // Matches fields initialized with a non-nullptr value in a constexpr
-  // constructor.  See also the testcase in tests/gen-constexpr-ctor-test.cc.
-  auto constexpr_ctor_initialized_field_matcher = cxxConstructorDecl(allOf(
-      isConstexpr(),
-      forEachConstructorInitializer(allOf(
-          forField(field_decl_matcher), withInitializer(unless(ignoringImplicit(
-                                            cxxNullPtrLiteralExpr())))))));
-  FilteredExprWriter constexpr_ctor_initialized_field_writer(
-      &output_helper, "constexpr-ctor-initializer");
-  match_finder.addMatcher(constexpr_ctor_initialized_field_matcher,
-                          &constexpr_ctor_initialized_field_writer);
+  // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
+  auto non_nullptr_expr_matcher =
+      expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
+  auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
+      allOf(isConstexpr(), forEachConstructorInitializer(allOf(
+                               forField(field_decl_matcher),
+                               withInitializer(non_nullptr_expr_matcher)))));
+  FilteredExprWriter constexpr_ctor_field_initializer_writer(
+      &output_helper, "constexpr-ctor-field-initializer");
+  match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
+                          &constexpr_ctor_field_initializer_writer);
+
+  // Matches constexpr initializer list expressions that initialize a rewritable
+  // field with a non-nullptr value.  For more details and rationale see the
+  // testcases in tests/gen-constexpr-test.cc.
+  auto constexpr_var_initializer_matcher = varDecl(
+      allOf(isConstexpr(),
+            hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
+                non_nullptr_expr_matcher,
+                hasExplicitFieldDecl(field_decl_matcher)))))));
+  FilteredExprWriter constexpr_var_initializer_writer(
+      &output_helper, "constexpr-var-initializer");
+  match_finder.addMatcher(constexpr_var_initializer_matcher,
+                          &constexpr_var_initializer_writer);
 
   // See the doc comment for the isInMacroLocation matcher
   // and the testcases in tests/gen-macro-test.cc.
