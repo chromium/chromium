@@ -91,7 +91,6 @@ class FullscreenController;
 class HTMLPlugInElement;
 class PageScaleConstraintsSet;
 class WebDevToolsAgentImpl;
-class WebInputMethodController;
 class WebLocalFrame;
 class WebLocalFrameImpl;
 class WebSettingsImpl;
@@ -440,12 +439,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
     return *chrome_client_.Get();
   }
 
-  // Returns the currently active WebInputMethodController which is the one
-  // corresponding to the focused frame. It will return nullptr if there is no
-  // focused frame, or if the there is one but it belongs to a different local
-  // root.
-  WebInputMethodController* GetActiveWebInputMethodController() const;
-
   bool ShouldZoomToLegibleScale(const Element&);
 
   // Allows main frame updates to occur if they were previously blocked. They
@@ -539,19 +532,13 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
   void BeginFrame(base::TimeTicks last_frame_time);
-  void BeginUpdateLayers();
-  void EndUpdateLayers();
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason);
   void ThemeChanged();
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&);
   WebInputEventResult DispatchBufferedTouchEvents();
-  void SetCursorVisibilityState(bool is_visible);
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
-  void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
-                                       cc::ElementId scroll_latched_element_id);
-  void SendScrollEndEventFromImplSide(cc::ElementId scroll_latched_element_id);
   void MouseCaptureLost();
   void SetFocus(bool enable) override;
 
@@ -864,9 +851,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // of this AssociatedRemote and the lifetime of the main RemoteFrame.
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost>
       remote_main_frame_host_remote_;
-
-  // Set when a measurement begins, reset when the measurement is taken.
-  base::Optional<base::TimeTicks> update_layers_start_time_;
 
   base::Optional<mojom::blink::ScreenOrientation> screen_orientation_override_;
 

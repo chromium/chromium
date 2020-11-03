@@ -1589,6 +1589,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "</body>"
       "</html>");
   ClearState();
+  GetWidgetInputHandler()->SetFocus(true);
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
   ExecuteJavaScriptForTests(
@@ -1635,6 +1636,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "</body>"
       "</html>");
   ClearState();
+  GetWidgetInputHandler()->SetFocus(true);
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
   ExecuteJavaScriptForTests(
@@ -1680,6 +1682,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "</body>"
       "</html>");
   ClearState();
+  GetWidgetInputHandler()->SetFocus(true);
   // Create an EditContext with control and selection bounds and set input
   // panel policy to auto.
   ExecuteJavaScriptForTests(

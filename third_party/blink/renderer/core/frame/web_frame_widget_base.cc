@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
@@ -589,6 +590,13 @@ void WebFrameWidgetBase::SendScrollEndEventFromImplSide(
     target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
 }
 
+WebInputMethodController*
+WebFrameWidgetBase::GetActiveWebInputMethodController() const {
+  WebLocalFrameImpl* local_frame =
+      WebLocalFrameImpl::FromFrame(FocusedLocalFrameInWidget());
+  return local_frame ? local_frame->GetInputMethodController() : nullptr;
+}
+
 gfx::PointF WebFrameWidgetBase::ViewportToRootFrame(
     const gfx::PointF& point_in_viewport) const {
   return GetPage()->GetVisualViewport().ViewportToRootFrame(
@@ -1070,6 +1078,22 @@ WebFrameWidgetBase::GetBeginMainFrameMetrics() {
       .GetBeginMainFrameMetrics();
 }
 
+void WebFrameWidgetBase::BeginUpdateLayers() {
+  if (LocalRootImpl())
+    update_layers_start_time_.emplace(base::TimeTicks::Now());
+}
+
+void WebFrameWidgetBase::EndUpdateLayers() {
+  if (LocalRootImpl()) {
+    DCHECK(update_layers_start_time_);
+    LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().RecordSample(
+        LocalFrameUkmAggregator::kUpdateLayers,
+        update_layers_start_time_.value(), base::TimeTicks::Now());
+    probe::LayerTreeDidChange(LocalRootImpl()->GetFrame());
+  }
+  update_layers_start_time_.reset();
+}
+
 void WebFrameWidgetBase::RecordStartOfFrameMetrics() {
   if (!LocalRootImpl())
     return;
@@ -1171,6 +1195,10 @@ WebTextInputType WebFrameWidgetBase::GetTextInputType() {
   if (!controller)
     return WebTextInputType::kWebTextInputTypeNone;
   return controller->TextInputType();
+}
+
+void WebFrameWidgetBase::SetCursorVisibilityState(bool is_visible) {
+  GetPage()->SetIsCursorVisible(is_visible);
 }
 
 void WebFrameWidgetBase::ApplyViewportChangesForTesting(
@@ -1335,6 +1363,10 @@ void WebFrameWidgetBase::AckPendingWindowRect() {
 
 bool WebFrameWidgetBase::IsHidden() const {
   return widget_base_->is_hidden();
+}
+
+WebString WebFrameWidgetBase::GetLastToolTipTextForTesting() const {
+  return GetPage()->GetChromeClient().GetLastToolTipTextForTesting();
 }
 
 void WebFrameWidgetBase::AutoscrollStart(const gfx::PointF& position) {

@@ -3151,6 +3151,7 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotDismissHandles) {
 
   WebString target = WebString::FromUTF8("target");
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  static_cast<WebView*>(web_view)->SetFocus(true);
   WebInputMethodController* active_input_method_controller =
       frame->FrameWidget()->GetActiveWebInputMethodController();
   EXPECT_TRUE(TapElementById(WebInputEvent::Type::kGestureTap, target));

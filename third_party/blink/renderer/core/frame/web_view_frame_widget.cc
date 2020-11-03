@@ -86,14 +86,6 @@ void WebViewFrameWidget::DidBeginMainFrame() {
   PageWidgetDelegate::DidBeginFrame(*main_frame->GetFrame());
 }
 
-void WebViewFrameWidget::BeginUpdateLayers() {
-  web_view_->BeginUpdateLayers();
-}
-
-void WebViewFrameWidget::EndUpdateLayers() {
-  web_view_->EndUpdateLayers();
-}
-
 void WebViewFrameWidget::BeginCommitCompositorFrame() {
   commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
 }
@@ -125,10 +117,6 @@ void WebViewFrameWidget::UpdateLifecycle(WebLifecycleUpdate requested_update,
   web_view_->UpdateLifecycle(requested_update, reason);
 }
 
-void WebViewFrameWidget::ThemeChanged() {
-  web_view_->ThemeChanged();
-}
-
 WebInputEventResult WebViewFrameWidget::HandleInputEvent(
     const WebCoalescedInputEvent& event) {
   return web_view_->HandleInputEvent(event);
@@ -136,10 +124,6 @@ WebInputEventResult WebViewFrameWidget::HandleInputEvent(
 
 WebInputEventResult WebViewFrameWidget::DispatchBufferedTouchEvents() {
   return web_view_->DispatchBufferedTouchEvents();
-}
-
-void WebViewFrameWidget::SetCursorVisibilityState(bool is_visible) {
-  web_view_->SetCursorVisibilityState(is_visible);
 }
 
 void WebViewFrameWidget::ApplyViewportChanges(
@@ -150,16 +134,6 @@ void WebViewFrameWidget::ApplyViewportChanges(
 void WebViewFrameWidget::RecordManipulationTypeCounts(
     cc::ManipulationInfo info) {
   web_view_->RecordManipulationTypeCounts(info);
-}
-void WebViewFrameWidget::SendOverscrollEventFromImplSide(
-    const gfx::Vector2dF& overscroll_delta,
-    cc::ElementId scroll_latched_element_id) {
-  web_view_->SendOverscrollEventFromImplSide(overscroll_delta,
-                                             scroll_latched_element_id);
-}
-void WebViewFrameWidget::SendScrollEndEventFromImplSide(
-    cc::ElementId scroll_latched_element_id) {
-  web_view_->SendScrollEndEventFromImplSide(scroll_latched_element_id);
 }
 
 void WebViewFrameWidget::MouseCaptureLost() {
@@ -221,10 +195,6 @@ void WebViewFrameWidget::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
       frame_view->ConvertToRootFrame(focus));
 }
 
-WebString WebViewFrameWidget::GetLastToolTipTextForTesting() const {
-  return GetPage()->GetChromeClient().GetLastToolTipTextForTesting();
-}
-
 void WebViewFrameWidget::EnableDeviceEmulation(
     const DeviceEmulationParams& parameters) {
   if (!device_emulator_) {
@@ -247,11 +217,6 @@ void WebViewFrameWidget::DisableDeviceEmulation() {
 
 void WebViewFrameWidget::DidDetachLocalFrameTree() {
   web_view_->DidDetachLocalMainFrame();
-}
-
-WebInputMethodController*
-WebViewFrameWidget::GetActiveWebInputMethodController() const {
-  return web_view_->GetActiveWebInputMethodController();
 }
 
 bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {

@@ -128,11 +128,6 @@ class WebWidget {
   virtual void UpdateLifecycle(WebLifecycleUpdate requested_update,
                                DocumentUpdateReason reason) {}
 
-  // Called to inform the WebWidget of a change in theme.
-  // Implementors that cache rendered copies of widgets need to re-render
-  // on receiving this message
-  virtual void ThemeChanged() {}
-
   // Do a hit test at given point and return the WebHitTestResult.
   virtual WebHitTestResult HitTestResultAt(const gfx::PointF&) = 0;
 

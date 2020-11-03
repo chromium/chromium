@@ -65,12 +65,9 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void Resize(const gfx::Size& size_with_dsf) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  void ThemeChanged() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
-  void SetCursorVisibilityState(bool is_visible) override;
   void MouseCaptureLost() override;
-  WebString GetLastToolTipTextForTesting() const override;
 
   // blink::mojom::FrameWidget
   void EnableDeviceEmulation(const DeviceEmulationParams& parameters) override;
@@ -78,7 +75,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   // WebFrameWidget overrides:
   void DidDetachLocalFrameTree() override;
-  WebInputMethodController* GetActiveWebInputMethodController() const override;
   bool ScrollFocusedEditableElementIntoView() override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
   void SetZoomLevelForTesting(double zoom_level) override;
@@ -112,16 +108,9 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   // WidgetBaseClient overrides:
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
-  void BeginUpdateLayers() override;
-  void EndUpdateLayers() override;
   void DidBeginMainFrame() override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
   void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
-  void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      cc::ElementId scroll_latched_element_id) override;
-  void SendScrollEndEventFromImplSide(
-      cc::ElementId scroll_latched_element_id) override;
   void BeginCommitCompositorFrame() override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void FocusChanged(bool enabled) override;

@@ -362,22 +362,6 @@ bool WebFrameWidgetImpl::ShouldHandleImeEvents() {
   return LocalRootImpl();
 }
 
-void WebFrameWidgetImpl::BeginUpdateLayers() {
-  if (LocalRootImpl())
-    update_layers_start_time_.emplace(base::TimeTicks::Now());
-}
-
-void WebFrameWidgetImpl::EndUpdateLayers() {
-  if (LocalRootImpl()) {
-    DCHECK(update_layers_start_time_);
-    LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator().RecordSample(
-        LocalFrameUkmAggregator::kUpdateLayers,
-        update_layers_start_time_.value(), base::TimeTicks::Now());
-    probe::LayerTreeDidChange(LocalRootImpl()->GetFrame());
-  }
-  update_layers_start_time_.reset();
-}
-
 void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
   if (LocalRootImpl()) {
     commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
@@ -408,13 +392,6 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   PageWidgetDelegate::UpdateLifecycle(*GetPage(), *LocalRootImpl()->GetFrame(),
                                       requested_update, reason);
   View()->UpdatePagePopup();
-}
-
-void WebFrameWidgetImpl::ThemeChanged() {
-  LocalFrameView* view = LocalRootImpl()->GetFrameView();
-
-  WebRect damaged_rect(0, 0, size_->width(), size_->height());
-  view->InvalidateRect(damaged_rect);
 }
 
 WebHitTestResult WebFrameWidgetImpl::HitTestResultAt(const gfx::PointF& point) {
@@ -535,18 +512,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
                                               LocalRootImpl()->GetFrame());
 }
 
-void WebFrameWidgetImpl::SetCursorVisibilityState(bool is_visible) {
-  GetPage()->SetIsCursorVisible(is_visible);
-}
-
 void WebFrameWidgetImpl::DidDetachLocalFrameTree() {}
-
-WebInputMethodController*
-WebFrameWidgetImpl::GetActiveWebInputMethodController() const {
-  WebLocalFrameImpl* local_frame =
-      WebLocalFrameImpl::FromFrame(FocusedLocalFrameInWidget());
-  return local_frame ? local_frame->GetInputMethodController() : nullptr;
-}
 
 bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
