@@ -977,6 +977,85 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.PerformActions(actions)
     self.assertEquals(1, len(self._driver.FindElements('tag name', 'br')))
 
+  def testActionsMouseTripleClick(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'var div = document.getElementsByTagName("div")[0];'
+        'div.style["width"] = "100px";'
+        'div.style["height"] = "100px";'
+        'window.click_counts = [];'
+        'div.addEventListener("click", event => {'
+        '  window.click_counts.push(event.detail);'
+        '});'
+        'return div;')
+    actions = ({"actions": [{
+      "type":"pointer",
+      "actions":[{"type": "pointerMove", "x": 10, "y": 10},
+                 {"type": "pointerDown", "button": 0},
+                 {"type": "pointerUp", "button": 0},
+                 {"type": "pointerDown", "button": 0},
+                 {"type": "pointerUp", "button": 0},
+                 {"type": "pointerDown", "button": 0},
+                 {"type": "pointerUp", "button": 0}],
+      "parameters": {"pointerType": "mouse"},
+      "id": "pointer1"}]})
+    self._driver.PerformActions(actions)
+    click_counts = self._driver.ExecuteScript('return window.click_counts')
+    self.assertEquals(3, len(click_counts))
+    self.assertEquals(1, click_counts[0])
+    self.assertEquals(2, click_counts[1])
+    self.assertEquals(3, click_counts[2])
+
+  def testActionsMouseResetCountOnOtherButton(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'var div = document.getElementsByTagName("div")[0];'
+        'div.style["width"] = "100px";'
+        'div.style["height"] = "100px";'
+        'div.addEventListener("dblclick", function() {'
+        '  var div = document.getElementsByTagName("div")[0];'
+        '  div.innerHTML="new<br>";'
+        '});'
+        'return div;')
+    actions = ({"actions": [{
+      "type":"pointer",
+      "actions":[{"type": "pointerMove", "x": 10, "y": 10},
+                 {"type": "pointerDown", "button": 0},
+                 {"type": "pointerUp", "button": 0},
+                 {"type": "pointerDown", "button": 1},
+                 {"type": "pointerUp", "button": 1}],
+      "parameters": {"pointerType": "mouse"},
+      "id": "pointer1"}]})
+    self._driver.PerformActions(actions)
+    self.assertEquals(0, len(self._driver.FindElements('tag name', 'br')))
+
+  def testActionsMouseResetCountOnMove(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'var div = document.getElementsByTagName("div")[0];'
+        'div.style["width"] = "100px";'
+        'div.style["height"] = "100px";'
+        'div.addEventListener("dblclick", function() {'
+        '  var div = document.getElementsByTagName("div")[0];'
+        '  div.innerHTML="new<br>";'
+        '});'
+        'return div;')
+    actions = ({"actions": [{
+      "type":"pointer",
+      "actions":[{"type": "pointerMove", "x": 10, "y": 10},
+                 {"type": "pointerDown", "button": 0},
+                 {"type": "pointerUp", "button": 0},
+                 {"type": "pointerMove", "x": 30, "y": 10},
+                 {"type": "pointerDown", "button": 0},
+                 {"type": "pointerUp", "button": 0}],
+      "parameters": {"pointerType": "mouse"},
+      "id": "pointer1"}]})
+    self._driver.PerformActions(actions)
+    self.assertEquals(0, len(self._driver.FindElements('tag name', 'br')))
+
   def testActionsMouseDrag(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/drag.html'))
     target = self._driver.FindElement('css selector', '#target')

@@ -20,6 +20,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/test/chromedriver/basic_types.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -417,17 +418,18 @@ Status ElementInViewCenter(Session* session,
   return Status(kOk);
 }
 
-int GetMouseClickCount(float x,
+int GetMouseClickCount(int last_click_count,
+                       float x,
                        float y,
                        float last_x,
                        float last_y,
-                       int click_count,
+                       int button_id,
+                       int last_button_id,
                        const base::TimeTicks& timestamp,
                        const base::TimeTicks& last_mouse_click_time) {
   const int kDoubleClickTimeMS = 500;
   const int kDoubleClickRange = 4;
-
-  if (click_count == 0)
+  if (last_click_count == 0)
     return 1;
 
   base::TimeDelta time_difference = timestamp - last_mouse_click_time;
@@ -440,7 +442,16 @@ int GetMouseClickCount(float x,
   if (std::abs(y - last_y) > kDoubleClickRange / 2)
     return 1;
 
-  return click_count + 1;
+  if (last_button_id != button_id)
+    return 1;
+
+#if !defined(OS_MAC) && !defined(OS_WIN)
+  // On Mac and Windows, we keep increasing the click count, but on the other
+  // platforms, we reset the count to 1 when it is greater than 3.
+  if (last_click_count >= 3)
+    return 1;
+#endif
+  return last_click_count + 1;
 }
 
 const char kLandscape[] = "landscape";
@@ -1549,6 +1560,7 @@ Status ExecutePerformActions(Session* session,
   std::map<std::string, gfx::Point> action_locations;
   std::map<std::string, bool> has_touch_start;
   std::map<std::string, int> buttons;
+  std::map<std::string, int> last_pressed_buttons;
   std::map<std::string, std::string> button_type;
   int viewport_width = 0, viewport_height = 0;
   int init_x = 0, init_y = 0;
@@ -1619,10 +1631,12 @@ Status ExecutePerformActions(Session* session,
 
             std::string pointer_type;
             action->GetString("pointerType", &pointer_type);
-            if (pointer_type == "mouse" || pointer_type == "pen")
+            if (pointer_type == "mouse" || pointer_type == "pen") {
               buttons[id] = input_state->FindKey("pressed")->GetInt();
-            else if (pointer_type == "touch")
+              last_pressed_buttons[id] = buttons[id];
+            } else if (pointer_type == "touch") {
               has_touch_start[id] = false;
+            }
           }
         }
 
@@ -1719,6 +1733,8 @@ Status ExecutePerformActions(Session* session,
                 event.delta_x = delta_x;
                 event.delta_y = delta_y;
                 buttons[id] |= StringToModifierMouseButton(button_type[id]);
+                last_pressed_buttons[id] =
+                    StringToModifierMouseButton(button_type[id]);
                 session->mouse_position = WebPoint(event.x, event.y);
                 dispatch_wheel_events.push_back(event);
                 Status status = web_view->DispatchMouseEvents(
@@ -1771,10 +1787,14 @@ Status ExecutePerformActions(Session* session,
                 if (event.type == kPressedMouseEventType) {
                   base::TimeTicks timestamp = base::TimeTicks::Now();
                   event.click_count = GetMouseClickCount(
-                      event.x, event.y, session->mouse_position.x,
-                      session->mouse_position.y, session->click_count,
-                      timestamp, session->mouse_click_timestamp);
+                      session->click_count, event.x, event.y,
+                      session->mouse_position.x, session->mouse_position.y,
+                      StringToModifierMouseButton(button_type[id]),
+                      last_pressed_buttons[id], timestamp,
+                      session->mouse_click_timestamp);
                   buttons[id] |= StringToModifierMouseButton(button_type[id]);
+                  last_pressed_buttons[id] =
+                      StringToModifierMouseButton(button_type[id]);
                   session->mouse_position = WebPoint(event.x, event.y);
                   session->click_count = event.click_count;
                   session->mouse_click_timestamp = timestamp;
@@ -1793,8 +1813,8 @@ Status ExecutePerformActions(Session* session,
                       action_input_states[j]->FindKey("pressed")->GetInt() &
                           ~(1 << event.button));
                 } else if (event.type == kMovedMouseEventType) {
-                  if (!(action_input_states[j]->FindKey("pressed")->GetInt() |
-                        (1 << event.button))) {
+                  if (action_input_states[j]->FindKey("pressed")->GetInt() ==
+                      0) {
                     pressure = 0;
                   }
                 }
