@@ -18,9 +18,8 @@
         android:id="@+id/page_info_url_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
         android:gravity="center"
-        android:paddingVertical="@dimen/page_info_popup_padding_vertical"
+        android:minHeight="48dp"
         android:paddingHorizontal="@dimen/page_info_popup_padding_sides">
 
         <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
@@ -30,6 +29,7 @@
             android:drawablePadding="@dimen/page_info_popup_button_padding_sides"
             android:includeFontPadding="false"
             android:lineSpacingExtra="6dp"
+            android:paddingVertical="@dimen/page_info_popup_padding_vertical"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             app:drawableHeight="@dimen/page_info_favicon_size"
             app:drawableWidth="@dimen/page_info_favicon_size" />
@@ -42,6 +42,7 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="6dp"
+            android:paddingVertical="@dimen/page_info_popup_padding_vertical"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:visibility="gone" />
