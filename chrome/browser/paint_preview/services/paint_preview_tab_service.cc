@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -95,6 +97,13 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
                                         content::WebContents* contents,
                                         FinishedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If the system is under memory pressure don't try to capture.
+  auto* memory_monitor = base::MemoryPressureMonitor::Get();
+  if (memory_monitor &&
+      memory_monitor->GetCurrentPressureLevel() >=
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE)
+    return;
 
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created

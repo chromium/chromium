@@ -165,6 +165,23 @@ public class PlayerFrameBitmapState {
         cancelUnrequiredPendingRequests();
     }
 
+    /**
+     * Releases and deletes all out-of-viewport tiles.
+     */
+    void releaseNotVisibleTiles() {
+        if (mBitmapMatrix == null || mVisibleBitmaps == null) return;
+
+        for (int row = 0; row < mBitmapMatrix.length; row++) {
+            for (int col = 0; col < mBitmapMatrix[row].length; col++) {
+                CompressibleBitmap bitmap = mBitmapMatrix[row][col];
+                if (!mVisibleBitmaps[row][col] && bitmap != null) {
+                    bitmap.destroy();
+                    mBitmapMatrix[row][col] = null;
+                }
+            }
+        }
+    }
+
     private void requestBitmapForAdjacentTiles(int row, int col) {
         if (mBitmapMatrix == null) return;
 

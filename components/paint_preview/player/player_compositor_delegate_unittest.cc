@@ -782,4 +782,37 @@ TEST_F(PlayerCompositorDelegateTest, Timeout) {
   env.RunUntilIdle();
 }
 
+TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressure) {
+  auto* service = GetBaseService();
+  auto file_manager = service->GetFileManager();
+  auto key = file_manager->CreateKey(1U);
+  {
+    // This test skips setting up files as the fakes don't use them. In normal
+    // execution the files are required by the service or no bitmap will be
+    // created.
+    base::RunLoop loop;
+    PlayerCompositorDelegateImpl player_compositor_delegate;
+    player_compositor_delegate.SetExpectedStatus(CompositorStatus::NO_CAPTURE);
+    player_compositor_delegate.InitializeWithFakeServiceForTest(
+        service, GURL(), key,
+        base::BindOnce(
+            [](base::OnceClosure quit, int compositor_status) {
+              EXPECT_EQ(compositor_status,
+                        static_cast<int>(
+                            CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+              std::move(quit).Run();
+            },
+            loop.QuitClosure()),
+        base::TimeDelta::Max(), kMaxParallelRequests,
+        CreateCompositorService());
+    env.RunUntilIdle();
+    EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
+
+    player_compositor_delegate.OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    loop.Run();
+  }
+  env.RunUntilIdle();
+}
+
 }  // namespace paint_preview

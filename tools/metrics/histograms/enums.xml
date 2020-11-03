@@ -71645,6 +71645,7 @@ would be helpful to identify which type is being sent.
   <int value="10" label="Capture Expired"/>
   <int value="11" label="No Capture"/>
   <int value="12" label="Timed Out"/>
+  <int value="13" label="Stopped Due To Memory Pressure"/>
 </enum>
 
 <enum name="TabbedPaintPreviewExitCause">

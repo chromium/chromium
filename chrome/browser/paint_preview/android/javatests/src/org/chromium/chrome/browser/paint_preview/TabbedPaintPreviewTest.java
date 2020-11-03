@@ -315,6 +315,9 @@ public class TabbedPaintPreviewTest {
         }
 
         @Override
+        public void setOnMemoryPressure(Runnable runnable) {}
+
+        @Override
         public int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
                 Callback<Bitmap> bitmapCallback, Runnable errorCallback) {
             new Handler().postDelayed(() -> {

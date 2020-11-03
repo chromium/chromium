@@ -33,6 +33,7 @@ public class PlayerFrameBitmapStateController {
         mViewport = viewport;
         mContentSize = contentSize;
         mCompositorDelegate = compositorDelegate;
+        mCompositorDelegate.setOnMemoryPressure(this::onMemoryPressure);
         mMediatorDelegate = mediatorDelegate;
         mTaskRunner = taskRunner;
     }
@@ -51,6 +52,13 @@ public class PlayerFrameBitmapStateController {
     @VisibleForTesting
     void swapForTest() {
         swap(mLoadingBitmapState);
+    }
+
+    void onMemoryPressure() {
+        if (mVisibleBitmapState == null) return;
+
+        mVisibleBitmapState.releaseNotVisibleTiles();
+        stateUpdated(mVisibleBitmapState);
     }
 
     /**

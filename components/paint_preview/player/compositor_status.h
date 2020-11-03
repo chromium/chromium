@@ -26,6 +26,7 @@ enum class CompositorStatus : int {
   CAPTURE_EXPIRED,
   NO_CAPTURE,
   TIMED_OUT,
+  STOPPED_DUE_TO_MEMORY_PRESSURE,
   COUNT,
 };
 

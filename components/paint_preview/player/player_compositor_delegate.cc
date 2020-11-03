@@ -161,6 +161,10 @@ void PlayerCompositorDelegate::InitializeInternal(
   compositor_error_ = std::move(compositor_error);
   paint_preview_service_ = paint_preview_service;
   key_ = key;
+  memory_pressure_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE,
+      base::BindRepeating(&PlayerCompositorDelegate::OnMemoryPressure,
+                          weak_factory_.GetWeakPtr()));
 
   paint_preview_compositor_client_ =
       paint_preview_compositor_service_->CreateCompositor(
@@ -231,6 +235,20 @@ std::vector<const GURL*> PlayerCompositorDelegate::OnClick(
     it->second->HitTest(rect, &urls);
 
   return urls;
+}
+
+void PlayerCompositorDelegate::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    if (compositor_error_) {
+      std::move(compositor_error_)
+          .Run(static_cast<int>(
+              CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+    }
+    paint_preview_compositor_client_.reset();
+    paint_preview_compositor_service_.reset();
+  }
 }
 
 void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(

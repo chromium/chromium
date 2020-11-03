@@ -158,6 +158,18 @@ void PlayerCompositorDelegateAndroid::OnCompositorReady(
       j_scroll_offsets, j_subframe_count, j_subframe_ids, j_subframe_rects);
 }
 
+void PlayerCompositorDelegateAndroid::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  // Don't handle the critical case leave that to the base class implementation
+  // which should kill the preview.
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    Java_PlayerCompositorDelegateImpl_onModerateMemoryPressure(
+        base::android::AttachCurrentThread(), java_ref_);
+  }
+  PlayerCompositorDelegate::OnMemoryPressure(memory_pressure_level);
+}
+
 // static
 void PlayerCompositorDelegateAndroid::CompositeResponseFramesToVectors(
     const base::flat_map<base::UnguessableToken, mojom::FrameDataPtr>& frames,

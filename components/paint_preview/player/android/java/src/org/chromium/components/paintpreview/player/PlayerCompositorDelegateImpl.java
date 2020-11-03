@@ -26,6 +26,7 @@ import org.chromium.url.GURL;
 class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     private CompositorListener mCompositorListener;
     private long mNativePlayerCompositorDelegate;
+    private Runnable mOnMemoryPressureRunnable;
 
     PlayerCompositorDelegateImpl(NativePaintPreviewServiceProvider service, GURL url,
             String directoryKey, @NonNull CompositorListener compositorListener,
@@ -46,6 +47,18 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects) {
         mCompositorListener.onCompositorReady(rootFrameGuid, frameGuids, frameContentSize,
                 scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects);
+    }
+
+    @CalledByNative
+    void onModerateMemoryPressure() {
+        if (mOnMemoryPressureRunnable == null) return;
+
+        mOnMemoryPressureRunnable.run();
+    }
+
+    @Override
+    public void setOnMemoryPressure(Runnable runnable) {
+        mOnMemoryPressureRunnable = runnable;
     }
 
     @Override
