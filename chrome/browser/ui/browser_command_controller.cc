@@ -1065,7 +1065,7 @@ void BrowserCommandController::InitCommandState() {
 
   const bool enable_tab_search_commands =
       base::FeatureList::IsEnabled(features::kTabSearch) &&
-      browser_->is_type_normal() && !browser_->profile()->IsIncognitoProfile();
+      browser_->is_type_normal();
   command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH,
                                         enable_tab_search_commands);
   command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH_CLOSE,
