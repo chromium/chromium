@@ -39,6 +39,13 @@ TEST(TokenizedStringTest, Empty) {
 
 TEST(TokenizedStringTest, Basic) {
   {
+    base::string16 text(base::UTF8ToUTF16("a"));
+    TokenizedString tokens(text);
+    EXPECT_EQ(base::UTF8ToUTF16("a{0,1}"), GetContent(tokens));
+    TokenizedString token_words(text, TokenizedString::Mode::kWords);
+    EXPECT_EQ(base::UTF8ToUTF16("a{0,1}"), GetContent(token_words));
+  }
+  {
     base::string16 text(base::UTF8ToUTF16("ScratchPad"));
     TokenizedString tokens(text);
     EXPECT_EQ(base::UTF8ToUTF16("scratch{0,7} pad{7,10}"), GetContent(tokens));

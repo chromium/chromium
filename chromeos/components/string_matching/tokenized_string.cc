@@ -98,7 +98,7 @@ void TokenizedString::TokenizeWords() {
   }
 
   // Generate the last token.
-  if (end - start > 1) {
+  if (end - start >= 1) {
     tokens_.emplace_back(base::i18n::ToLower(text_.substr(start, end - start)));
     mappings_.emplace_back(start, end);
   }
