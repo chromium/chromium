@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Сырсөзүңүздү уюмуңуз тарабынан башкарылбаган сайтка киргиздиңиз. Аккаунтуңузду коргоо үчүн сырсөзүңүздү башка колдонмолор менен сайттарда колдонбоңуз.</translation>
 <translation id="1263231323834454256">Окуу тизмеси</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Бул түзмөктө сакталбай турган аракеттер:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Бул терезеде каралган баракчалар
+          <ph name="LIST_ITEM" />Cookie файлдары жана сайттын маалыматы
+          <ph name="LIST_ITEM" />Аккаунттун маалыматы (<ph name="LINK_BEGIN" />чыгуу<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Алып кетүү ыкмасы</translation>
 <translation id="1281476433249504884">6-төшөгүч</translation>
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">Кыстармаланды</translation>
 <translation id="3209034400446768650">Барак төлөм өндүрүшү мүмкүн</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> сайтындагы аракеттериңиз көзөмөлдөнүүдө</translation>
+<translation id="3212623355668894776">Көрүлгөн вебсайттарды бул түзмөктөн өчүрүү үчүн Конок режиминдеги бардык терезелерди жабыңыз.</translation>
 <translation id="3215092763954878852">WebAuthn'ди колдонуу мүмкүн эмес</translation>
 <translation id="3218181027817787318">Окшош</translation>
 <translation id="3225919329040284222">Сервер кыналган күтүүлөргө дал келбеген тастыктама тапшырды. Бул күтүүлөр сиздин коопсуздугуңузду камсыз кылган ишенимдүү вебсайттарда камтылган.</translation>
@@ -915,6 +924,7 @@
 <translation id="4658638640878098064">Жогорку сол жагын илмек менен бекитүү</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
+<translation id="4675657451653251260">Конок режиминде Chrome'догу профилдин маалыматы көрүнбөйт. Сырсөздөр жана төлөм ыкмалары сыяктуу Google аккаунтуңуздагы маалыматты көрүү үчүн аккаунтуңузга <ph name="LINK_BEGIN" />кириңиз<ph name="LINK_END" />.</translation>
 <translation id="467662567472608290">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасында каталар бар. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> атайын мүмкүнчүлүктөрдү иштетүүгө уруксат суроодо</translation>
 <translation id="467809019005607715">Google Slides</translation>
@@ -942,6 +952,12 @@
 <translation id="4761104368405085019">Микрофонуңузду колдонуңуз</translation>
 <translation id="4764776831041365478"><ph name="URL" /> дарегиндеги веб-баракча убактылуу иштебейт же жаңы веб дарекке биротоло көчүрүлгөн окшойт.</translation>
 <translation id="4766713847338118463">Төмөн жагын эки жолу илмек менен бекитүү</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Бул түзмөктө сактала турган колдонмолор:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Бул терезеден жүктөлүп алынган файлдар
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Белгисиз ката кетти.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Калкыма терезе бөгөттөлгөн}other{# калкыма терезе бөгөттөлгөн}}</translation>
 <translation id="4780366598804516005">1-электрондук каттар кутусу</translation>
@@ -1396,6 +1412,7 @@
 <translation id="6587923378399804057">Сиз көчүргөн шилтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> түзмөгүңүз башкарылган жок</translation>
 <translation id="6596325263575161958">Шифрлөө параметрлери</translation>
+<translation id="6596892391065203054">Бул мазмунду басып чыгаруу аракети администраторуңуз тарабынан бөгөттөлгөн.</translation>
 <translation id="6604181099783169992">Кыймыл же жарык сенсорлору</translation>
 <translation id="6609880536175561541">Prc7 (Конверт)</translation>
 <translation id="6612358246767739896">Корголгон мазмун</translation>
@@ -1879,11 +1896,21 @@
 <translation id="8559762987265718583">Түзмөгүңүздүн күнү жана убакыты (<ph name="DATE_AND_TIME" />) туура эмес болгондуктан, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> менен купуя туташуу мүмкүн болбой жатат.</translation>
 <translation id="8564182942834072828">Өзүнчө документ/Иреттелбеген көчүрмөлөр</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Бул түзмөктө сакталбай турган аракеттер:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Бул терезеде каралган баракчалар
+          <ph name="LIST_ITEM" />Cookie файлдары жана сайттын маалыматы
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Карталарды тезирээк ырастоо үчүн Touch ID функциясын колдонуу</translation>
 <translation id="858637041960032120">Телефон номерин кошуу</translation>
 <translation id="8589998999637048520">Мыкты сапат</translation>
 <translation id="860043288473659153">Карта ээсинин аты</translation>
 <translation id="8606726445206553943">MIDI түзмөктөрүңүздү колдонуңуз</translation>
+<translation id="8612761427948161954">Салам, <ph name="USERNAME" />,
+        <ph name="BR" />
+        Конок катары серептеп жатасыз</translation>
 <translation id="861775596732816396">Өлчөмү: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Дал келген сырсөздөр жок. Бардык сакталган сырсөздөрдү көрсөтүү.</translation>
@@ -2022,6 +2049,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> колдоого алынбаган протоколду колдонуп жатат.</translation>
 <translation id="9191834167571392248">Төмөнкү сол жагын тешүү</translation>
+<translation id="9199905725844810519">Басып чыгаруу бөгөттөлгөн</translation>
 <translation id="9205078245616868884">Дайын-даректериңиз купуя сөз айкашы менен шифрленген. Шайкештирип баштоо үчүн аны киргизиңиз.</translation>
 <translation id="9207861905230894330">Макала кошулбай койду.</translation>
 <translation id="9213433120051936369">Көрүнүшүн ыңгайлаштыруу</translation>

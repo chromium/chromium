@@ -80,6 +80,14 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Olyan webhelyen adta meg a jelszavát, amelyet nem az Ön szervezete kezel. Fiókja védelme érdekében ne használja fel újra a jelszót más alkalmazásokban és webhelyeken.</translation>
 <translation id="1263231323834454256">Olvasási lista</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Ami nem marad meg ezen az eszközön:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Az oldalak, melyeket ebben az ablakban nyit meg
+          <ph name="LIST_ITEM" />Sütik és webhelyadatok
+          <ph name="LIST_ITEM" />Fiókadatok (<ph name="LINK_BEGIN" />kijelentkezés<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Átvételi mód</translation>
 <translation id="1281476433249504884">1. kötegelő</translation>
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
@@ -551,6 +559,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3209034400446768650">Az oldal díjat számíthat fel</translation>
 <translation id="3212581601480735796">Figyelik a(z) <ph name="HOSTNAME" /> webhelyen végzett tevékenységeit</translation>
+<translation id="3212623355668894776">Zárja be mindegyik Vendég ablakot, hogy böngészési tevékenységei törlődjenek az eszközről.</translation>
 <translation id="3215092763954878852">Hiba történt a WebAuthn használata során</translation>
 <translation id="3218181027817787318">Relatív</translation>
 <translation id="3225919329040284222">A szerver tanúsítványa nem felel meg a beépített elvárásoknak. Ezek a beépített elvárások bizonyos nagy biztonságú webhelyekre vonatkoznak az Ön védelme érdekében.</translation>
@@ -912,6 +921,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4658638640878098064">Kapocs balra fent</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtuális valóság</translation>
+<translation id="4675657451653251260">Vendég módban a Chrome-profilok adatai nem láthatók. <ph name="LINK_BEGIN" />Bejelentkezés<ph name="LINK_END" /> után hozzáférhet Google-fiókja adataihoz (például a jelszavakhoz és a fizetési módokhoz).</translation>
 <translation id="467662567472608290">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa hibákat tartalmaz. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="4677585247300749148">A(z) <ph name="URL" /> kisegítő lehetőségekkel kapcsolatos eseményekre szeretne válaszolni</translation>
 <translation id="467809019005607715">Google Diák</translation>
@@ -939,6 +949,12 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4761104368405085019">Mikrofon használata</translation>
 <translation id="4764776831041365478">A <ph name="URL" /> weboldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
 <translation id="4766713847338118463">Kettő kapocs alul</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Ami megmarad ezen az eszközön:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />A fájlok, melyeket ebben az ablakban tölt le
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Ismeretlen hiba történt.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Előugró ablak letiltva}other{# előugró ablak letiltva}}</translation>
 <translation id="4780366598804516005">1. postaláda</translation>
@@ -1393,6 +1409,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
 <translation id="6596325263575161958">Titkosítási lehetőségek</translation>
+<translation id="6596892391065203054">Ennek a tartalomnak a nyomtatását letiltotta a rendszergazda.</translation>
 <translation id="6604181099783169992">Mozgás- és fényérzékelők</translation>
 <translation id="6609880536175561541">Prc7 (boríték)</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
@@ -1876,12 +1893,22 @@ További részletek:
 <translation id="8559762987265718583">Nem hozható létre privát kapcsolat a következővel: <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, mert az eszköz dátum- és időbeállítása helytelen (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Különálló dokumentumok/Nem szétválogatott másolatok</translation>
 <translation id="8564985650692024650">A Chromium azt javasolja, hogy adjon meg új <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Ami nem marad meg ezen az eszközön:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Az oldalak, melyeket ebben az ablakban nyit meg
+          <ph name="LIST_ITEM" />Sütik és webhelyadatok
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">A Touch ID használata a kártyák gyorsabb ellenőrzése érdekében</translation>
 <translation id="858637041960032120">Szám hozzáadása
 </translation>
 <translation id="8589998999637048520">Legjobb minőség</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>
 <translation id="8606726445206553943">MIDI-eszközök használata</translation>
+<translation id="8612761427948161954">Üdvözöljük, <ph name="USERNAME" />!
+        <ph name="BR" />
+        Jelenleg vendégként használja a böngészőt.</translation>
 <translation id="861775596732816396">Méret: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nincs egyező jelszó. Az összes mentett jelszó megjelenítése.</translation>
@@ -2020,6 +2047,7 @@ További részletek:
 <translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9183425211371246419">A(z) <ph name="HOST_NAME" /> egy nem támogatott protokollt használ.</translation>
 <translation id="9191834167571392248">Lyuk balra lent</translation>
+<translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
 <translation id="9205078245616868884">Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="9207861905230894330">A cikk hozzáadása sikertelen.</translation>
 <translation id="9213433120051936369">Megjelenés személyre szabása</translation>

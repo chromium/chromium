@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Створити вкладку.</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1154690515305205900">Помилка створення посилання на виділений текст.</translation>
+<translation id="1157749421655780457">Дозволити доступ до геоданих…</translation>
 <translation id="1165039591588034296">Помилка</translation>
 <translation id="1172898394251786223">Наступне поле</translation>
 <translation id="1176932207622159128">Помилка збереження</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Нічого немає</translation>
 <translation id="1692118695553449118">Синхронізацію ввімкнено</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">Використовуйте свої поточні геодані</translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
 <translation id="1746815479209538200">Щоб переглядати веб-сторінки, додайте нову вкладку.</translation>
 <translation id="1752547299766512813">Зберігати паролі</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
 <translation id="5083464117946352670">Невідомий розмір файлу.</translation>
+<translation id="5090832849094901128">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться.</translation>
 <translation id="5094827893301452931">Твіт опубліковано.</translation>
 <translation id="5118764316110575523">Вимк.</translation>
 <translation id="5127805178023152808">Синхронізацію вимкнено</translation>

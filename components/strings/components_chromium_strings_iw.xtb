@@ -28,12 +28,12 @@
           <ph name="PROXIES_TITLE" />
           ולבדוק שהתצורה שלך מוגדרת לאפשרות "ללא שרת proxy‏" או "ישיר".</translation>
 <translation id="6613594504749178791">‏השינויים שביצעת ייכנסו לתוקף בפעם הבאה שתפעיל מחדש את Chromium‏.</translation>
-<translation id="7861509383340276692">‏עבור אל
+<translation id="7861509383340276692">‏יש להיכנס אל
         תפריט Chromium &gt;
         <ph name="SETTINGS_TITLE" />
         &gt;
         <ph name="ADVANCED_TITLE" />
-        ובטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
+        ולבטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
         אם פעולה זו אינה פותרת את הבעיה, מומלץ לבחור שוב באפשרות זו
         לקבלת ביצועים משופרים.</translation>
 <translation id="8187289872471304532">‏עבור אל

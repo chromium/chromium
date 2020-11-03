@@ -242,7 +242,7 @@
 <translation id="1264337193001759725">Para ver los registros de IU de la red, consulta: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Idioma de traducción:</translation>
 <translation id="126768002343224824">16x</translation>
-<translation id="1270369111467284986">Se sospecha que es un portal cautivo.</translation>
+<translation id="1270369111467284986">Se sospecha que hay un portal cautivo.</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1272293450992660632">Los valores del PIN no coinciden.</translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se inscribió el dispositivo. Si deseas inscribirte en un dominio diferente, primero tendrás que realizar el proceso de recuperación del dispositivo.</translation>

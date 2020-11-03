@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Ստեղծել նոր ներդիր:</translation>
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1154690515305205900">Չհաջողվեց ստեղծել նշված տեքստի հղումը։</translation>
+<translation id="1157749421655780457">Թույլատրել տեղորոշումը…</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1172898394251786223">Հաջորդ դաշտը</translation>
 <translation id="1176932207622159128">Չհաջողվեց պահել պատկերը</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Տարրեր չկան</translation>
 <translation id="1692118695553449118">Համաժամացումը միացված է</translation>
 <translation id="1700629756560807968">Ընտրվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> էջանիշ</translation>
+<translation id="1715940067130687605">Ընթացիկ տեղադրության մասին տվյալների օգտագործում</translation>
 <translation id="1740468249224277719">Կրկնակի հպեք՝ տեղադրելու համար:</translation>
 <translation id="1746815479209538200">Կայքէջեր այցելելու համար ավելացրեք նոր ներդիր:</translation>
 <translation id="1752547299766512813">Պահել գաղտնաբառերը</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">Եղավ</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
 <translation id="5083464117946352670">Չհաջողվեց որոշել ֆայլի չափը:</translation>
+<translation id="5090832849094901128">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։</translation>
 <translation id="5094827893301452931">Twitter-ում տարածումն ավարտվեց:</translation>
 <translation id="5118764316110575523">Անջատված է</translation>
 <translation id="5127805178023152808">Համաժամացումն անջատված է</translation>

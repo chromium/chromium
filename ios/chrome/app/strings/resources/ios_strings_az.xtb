@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Yeni panel yaradın.</translation>
 <translation id="1145536944570833626">Mövcud datanı silin.</translation>
 <translation id="1154690515305205900">Vurğulanmış mətnə keçid yaratmaq olmur.</translation>
+<translation id="1157749421655780457">Məkana icazə verin...</translation>
 <translation id="1165039591588034296">Xəta</translation>
 <translation id="1172898394251786223">Növbəti sahə</translation>
 <translation id="1176932207622159128">Təsvir Saxlanıla Bilmir</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Element yoxdur</translation>
 <translation id="1692118695553449118">Sinxronizasiya aktivdir</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seçildi</translation>
+<translation id="1715940067130687605">Cari məkandan istifadə edin.</translation>
 <translation id="1740468249224277719">Yükləmək üçün iki dəfə tıklayın.</translation>
 <translation id="1746815479209538200">Vebdə axtarış etmək üçün yeni tab açın.</translation>
 <translation id="1752547299766512813">Parolları Yadda saxlayın</translation>
@@ -374,6 +376,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
 <translation id="5083464117946352670">Fayl ölçüsünü müəyyənləşdirmək olmur.</translation>
+<translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
 <translation id="5118764316110575523">Deaktiv</translation>
 <translation id="5127805178023152808">Sinx deaktivdir</translation>

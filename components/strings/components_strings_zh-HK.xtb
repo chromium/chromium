@@ -557,7 +557,7 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3209034400446768650">網頁可能會收取費用</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上進行的活動正受監控</translation>
-<translation id="3212623355668894776">只要關閉所有訪客視窗，您的瀏覽活動就會從此裝置刪除。</translation>
+<translation id="3212623355668894776">只要關閉所有訪客視窗，您的瀏覽活動就會從此裝置中刪除。</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
 <translation id="3218181027817787318">相對</translation>
 <translation id="3225919329040284222">伺服器提供的憑證與內置的預期條件不符。我們在特定高安全性的網站內置了這些預期條件，以保護您的資料安全無虞。</translation>

@@ -49,6 +49,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1346748346194534595">Phải</translation>
 <translation id="1351937230027495976">Thu gọn menu</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
+<translation id="1390105199421505038">Xóa hộp thoại tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Đang bật</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1419738280318246476">Mở khóa thiết bị để thực hiện hành động đối với thông báo</translation>
@@ -369,6 +370,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4477892968187500306">Thiết bị này có thể chứa những ứng dụng mà Google chưa xác minh.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Thiết bị được hủy ghép nối</translation>
+<translation id="4485060137115666462">Khi bạn nhấp chuột phải hoặc nhấn và giữ, Trợ lý sẽ hiển thị các thông tin như định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị cho nội dung bạn chọn.</translation>
 <translation id="4505050298327493054">Không gian làm việc đang hoạt động.</translation>
 <translation id="4506458088675900627">Cử chỉ mở/đóng chế độ Tổng quan bằng bàn di chuột đã thay đổi</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
@@ -597,6 +599,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6803622936009808957">Không thể phản chiếu màn hình do không tìm thấy độ phân giải được hỗ trợ. Thay vào đó, đã chuyển sang chế độ màn hình mở rộng.</translation>
 <translation id="6818242057446442178">Lùi một từ</translation>
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>
+<translation id="6850010208275816200">Ứng dụng hiện tại đang ở chế độ toàn màn hình. Nếu ứng dụng yêu cầu bạn nhập mật khẩu, trước tiên, hãy thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> giây</translation>
 <translation id="6857811139397017780">Kích hoạt <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
@@ -646,6 +649,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7398254312354928459">Đã chuyển kết nối mạng</translation>
 <translation id="7405710164030118432">Để mở khóa thiết bị này, hãy nhập mã truy cập Family Link dành cho cha mẹ của bạn</translation>
 <translation id="741244894080940828">chuyển đổi</translation>
+<translation id="7413851974711031813">Nhấn phím Escape để đóng</translation>
 <translation id="742594950370306541">Máy ảnh đang được sử dụng.</translation>
 <translation id="742608627846767349">Xin chào!</translation>
 <translation id="743058460480092004">Máy ảnh và micrô đang được sử dụng.</translation>

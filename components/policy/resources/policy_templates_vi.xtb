@@ -922,6 +922,11 @@ Nếu bạn đặt chính sách này thành False, thì màn hình bảo vệ qu
 Khi bạn đặt chính sách này, người dùng sẽ không thể ghi đè giá trị.
 
 Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền riêng tư sẽ tắt lúc ban đầu nhưng người dùng vẫn có thể kiểm soát.</translation>
+<translation id="2421677964966613267">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web không thể chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />.
+
+      Nếu bạn không đặt chính sách này, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tùy chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+      Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng truy cập vào https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuy nhiên, kể từ phiên bản M85, các mẫu có ký tự đại diện "*" và "[*.]" trong máy chủ sẽ không được hỗ trợ trong chính sách này nữa.</translation>
 <translation id="2423255396068675416">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng có thể chạy <ph name="PRODUCT_CROSTINI_NAME" /> miễn là <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> và <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> đều được đặt thành Bật. Việc đặt chính sách này thành Tắt sẽ tắt <ph name="PRODUCT_CROSTINI_NAME" /> đối với người dùng. Khi bạn đổi chính sách này thành Tắt, chính sách sẽ được áp dụng cho các vùng chứa <ph name="PRODUCT_CROSTINI_NAME" /> mới đang khởi động, chứ không phải các vùng chứa đã chạy.</translation>
 <translation id="2424098959650060417">Kiểm soát những máy in trong <ph name="BULK_PRINTERS_POLICY_NAME" /> mà người dùng có thể sử dụng.
 
@@ -1430,6 +1435,9 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="3096595567015595053">Danh sách plugin được kích hoạt</translation>
 <translation id="3101501961102569744">Chọn cách chỉ định cài đặt máy chủ proxy</translation>
 <translation id="3101709781009526431">Ngày và giờ</translation>
+<translation id="3110248563985502478">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Khi bạn đặt chính sách này thành Bật, các trình bổ trợ lỗi thời sẽ được dùng như trình bổ trợ thông thường. Khi bạn đặt chính sách này thành Tắt, các trình bổ trợ lỗi thời sẽ không được sử dụng.
+
+      Khi bạn không đặt chính sách này, người dùng sẽ được yêu cầu cấp quyền để chạy các trình bổ trợ lỗi thời.</translation>
 <translation id="3117676313396757089">Cảnh báo: DHE sẽ bị xóa hoàn toàn khỏi <ph name="PRODUCT_NAME" /> sau phiên bản 57 (khoảng tháng 3 năm 2017) và chính sách này sẽ ngừng hoạt động sau đó.
 
       Nếu chính sách này không được đặt hoặc được đặt thành false thì bộ mã hóa DHE trong TLS sẽ không được bật. Ngoài ra, chính sách có thể được đặt thành true để bật bộ mã hóa DHE và duy trì khả năng tương thích với các máy chủ lỗi thời. Đây là một biện pháp tạm thời và cần phải định cấu hình lại máy chủ.
@@ -2283,6 +2291,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4363057787588706121">Cho phép hợp nhất các chính sách trong danh sách thuộc các nguồn khác nhau</translation>
 <translation id="4363101430102811068">Bật tùy chọn phát hiện rò rỉ thông tin đăng nhập đã nhập</translation>
 <translation id="436581050240847513">Báo cáo giao diện mạng thiết bị</translation>
+<translation id="4368848648036709662">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web có thể chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />.
+
+      Nếu bạn không đặt chính sách này, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tùy chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
+
+      Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng truy cập vào https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuy nhiên, kể từ phiên bản M85, các mẫu có ký tự đại diện "*" và "[*.]" trong máy chủ sẽ không được hỗ trợ trong chính sách này nữa.</translation>
 <translation id="4372704773119750918">Không cho phép người dùng doanh nghiệp là một phần của đa cấu hình (chính hoặc phụ)</translation>
 <translation id="4377599627073874279">Cho phép tất cả các trang web hiển thị tất cả hình ảnh</translation>
 <translation id="437791893267799639">Chưa đặt chính sách, không cho phép di chuyển dữ liệu và ARC</translation>

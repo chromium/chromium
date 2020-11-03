@@ -24,7 +24,7 @@
 <translation id="1637811476055996098">בחר קבצים</translation>
 <translation id="1650423536718072820">ציטוט</translation>
 <translation id="1727886345390570319">הסתרה של תפריט הכתוביות</translation>
-<translation id="1729654308190250600">הזן ערך נדרש בשדה של כתובת האימייל.</translation>
+<translation id="1729654308190250600">יש להזין ערך בשדה של כתובת האימייל.</translation>
 <translation id="1758486001363313524">אחר...</translation>
 <translation id="1774577460079229490"><ph name="TYPE" /> הנוכחי</translation>
 <translation id="1787192514241997742">משך כולל: <ph name="REMAINING_TIME" /></translation>
@@ -69,7 +69,7 @@
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2746543609216772311">על הערך להיות <ph name="MINIMUM_DATE_OR_TIME" /> ומעלה.</translation>
 <translation id="2759744352195237655">לחצן קופץ</translation>
-<translation id="2761667185364618470">סמן תיבה זו אם אתה רוצה להמשיך.</translation>
+<translation id="2761667185364618470">יש לסמן את התיבה הזאת כדי להמשיך.</translation>
 <translation id="2838616441696617235">שלב</translation>
 <translation id="2844350028562914727">פרטים</translation>
 <translation id="2896972712917208084">קבוצת לחצני בחירה</translation>
@@ -77,7 +77,7 @@
 <translation id="2940813599313844715">אובייקט</translation>
 <translation id="3040011195152428237">קישור</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3075154866155599887">הזן ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
+<translation id="3075154866155599887">יש להזין ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
 <translation id="3078740164268491126">טבלה</translation>
 <translation id="3086746722712840547">note</translation>
 <translation id="310520048233152454">הזן כתובת אתר.</translation>
@@ -153,7 +153,7 @@
 <translation id="5406322316791861025">ספרה</translation>
 <translation id="5453733299334684579">פריט בעץ</translation>
 <translation id="5466621249238537318">בחר קובץ אחד או יותר.</translation>
-<translation id="5468998798572797635">צא ממסך מלא</translation>
+<translation id="5468998798572797635">יציאה ממסך מלא</translation>
 <translation id="5516424706154626233">בוחר תאריכים</translation>
 <translation id="5537725057119320332">העברה</translation>
 <translation id="5546461542133609677">ביטול השתקה</translation>
@@ -170,7 +170,7 @@
 <translation id="5888666972993069672">מתבצעת העברה אל <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="591047860372322273">תיבת חיפוש</translation>
 <translation id="5916664084637901428">פועל</translation>
-<translation id="5939518447894949180">אפס</translation>
+<translation id="5939518447894949180">איפוס</translation>
 <translation id="5966707198760109579">שבוע</translation>
 <translation id="5987525920412732405">לחצן קביעת ערך</translation>
 <translation id="6011459053400940133">מחוון עוצמת קול</translation>
@@ -215,7 +215,7 @@
 <translation id="6981594929165378967">הוספה</translation>
 <translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (אתה משתמש כרגע בתו אחד).</translation>
 <translation id="7034405885550056553">הצעה</translation>
-<translation id="709897737746224366">התאם את הפורמט המבוקש.</translation>
+<translation id="709897737746224366">יש להתאים את הפורמט המבוקש.</translation>
 <translation id="7118469954320184356">אין תיאור זמין.</translation>
 <translation id="7139483182332611405">הקדמה</translation>
 <translation id="7214187073215825913">פרטי תוכן</translation>
@@ -267,7 +267,7 @@
 <translation id="8415319359811155763">חלק</translation>
 <translation id="8433900881053900389">סרגל כלים</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> קבצים</translation>
-<translation id="8451268428117625855">בחר קובץ.</translation>
+<translation id="8451268428117625855">יש לבחור קובץ.</translation>
 <translation id="8461852803063341183">לחצן בחירה</translation>
 <translation id="8474886197722836894">הקדשה</translation>
 <translation id="8531739829932800271">שגיאת דפוס</translation>

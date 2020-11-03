@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ai introdus parola pe un site care nu este gestionat de organizația ta. Pentru a proteja contul, nu folosi aceeași parolă pentru alte aplicații și site-uri.</translation>
 <translation id="1263231323834454256">Lista de lectură</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Activități care nu vor fi păstrate pe acest dispozitiv:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />paginile pe care le vezi în această fereastră;
+          <ph name="LIST_ITEM" />cookie-uri și date privind site-urile;
+          <ph name="LIST_ITEM" />informații despre cont (<ph name="LINK_BEGIN" />deconectarea<ph name="LINK_END" />).
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Metodă de preluare</translation>
 <translation id="1281476433249504884">Receptorul de hârtie 1</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
@@ -553,6 +561,7 @@
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3209034400446768650">Pagina poate percepe o taxă</translation>
 <translation id="3212581601480735796">Activitatea ta de pe <ph name="HOSTNAME" /> este monitorizată</translation>
+<translation id="3212623355668894776">Închide toate ferestrele pentru invitați pentru ca activitatea ta de navigare să se șteargă de pe acest dispozitiv.</translation>
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
 <translation id="3218181027817787318">Relativă</translation>
 <translation id="3225919329040284222">Serverul a prezentat un certificat care nu se potrivește cu așteptările încorporate. Aceste așteptări sunt incluse pentru anumite site-uri web, cu un grad sporit de securitate, pentru a vă proteja.</translation>
@@ -914,6 +923,7 @@
 <translation id="4658638640878098064">Capsare în stânga sus</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
+<translation id="4675657451653251260">În modul pentru invitați, nu vei vedea alte informații ale profilului Chrome. Poți să te <ph name="LINK_BEGIN" />conectezi<ph name="LINK_END" /> pentru a accesa informațiile contului Google, cum ar fi parolele și metodele de plată.</translation>
 <translation id="467662567472608290">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate conține erori. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> dorește să răspundă evenimentelor de accesibilitate</translation>
 <translation id="467809019005607715">Prezentări Google</translation>
@@ -941,6 +951,12 @@
 <translation id="4761104368405085019">Utilizează microfonul</translation>
 <translation id="4764776831041365478">Pagina web de la <ph name="URL" /> poate fi temporar nefuncțională sau a fost mutată definitiv la o nouă adresă web.</translation>
 <translation id="4766713847338118463">Capsare dublă în partea de jos</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Activități care vor fi păstrate pe acest dispozitiv:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />toate fișierele pe care le descarci în această fereastră.
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">A apărut o eroare necunoscută.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fereastră pop-up blocată}few{# ferestre pop-up blocate}other{# de ferestre pop-up blocate}}</translation>
 <translation id="4780366598804516005">Căsuța de e-mail 1</translation>
@@ -1395,6 +1411,7 @@
 <translation id="6587923378399804057">Linkul copiat de tine</translation>
 <translation id="6591833882275308647">Dispozitivul <ph name="DEVICE_TYPE" /> nu este gestionat</translation>
 <translation id="6596325263575161958">Opțiuni de criptare</translation>
+<translation id="6596892391065203054">Printarea acestui conținut a fost blocată de administrator.</translation>
 <translation id="6604181099783169992">Senzori de mișcare sau de lumină</translation>
 <translation id="6609880536175561541">Prc7 (Plic)</translation>
 <translation id="6612358246767739896">Conținut protejat</translation>
@@ -1878,12 +1895,22 @@ Detalii suplimentare:
 <translation id="8559762987265718583">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora dispozitivului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>
 <translation id="8564182942834072828">Documente separate/Copii necolaționate</translation>
 <translation id="8564985650692024650">Chromium îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Activități care nu vor fi păstrate pe acest dispozitiv:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />paginile pe care le vezi în această fereastră;
+          <ph name="LIST_ITEM" />cookie-uri și date privind site-urile.
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Folosește Touch ID ca să confirmi cardurile mai rapid</translation>
 <translation id="858637041960032120">Adăugați telefon
 </translation>
 <translation id="8589998999637048520">Calitate optimă</translation>
 <translation id="860043288473659153">Nume titular de card</translation>
 <translation id="8606726445206553943">Folosească dispozitive MIDI</translation>
+<translation id="8612761427948161954">Salut, <ph name="USERNAME" />!
+        <ph name="BR" />
+        Navighezi ca invitat</translation>
 <translation id="861775596732816396">Mărimea 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
@@ -2022,6 +2049,7 @@ Detalii suplimentare:
 <translation id="9183302530794969518">Documente Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> folosește un protocol neacceptat.</translation>
 <translation id="9191834167571392248">Perforare în stânga jos</translation>
+<translation id="9199905725844810519">Printarea este blocată</translation>
 <translation id="9205078245616868884">Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
 <translation id="9207861905230894330">Articolul nu a fost adăugat.</translation>
 <translation id="9213433120051936369">Personalizează aspectul</translation>

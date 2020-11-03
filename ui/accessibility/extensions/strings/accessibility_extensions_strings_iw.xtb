@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1287053896835709737">צהוב או שחור</translation>
-<translation id="1408730541890277710">‏החלף תמונות בטקסט alt שלהן.</translation>
+<translation id="1408730541890277710">החלפת תמונות בטקסט החלופי שלהן.</translation>
 <translation id="145360476452865422">מדיניות בנושא אנימציה:</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1588438908519853928">רגיל</translation>
@@ -18,7 +18,7 @@
 <translation id="2648340354586434750">‏יש ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
 <translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שתוכל לבחור טקסט באמצעות המקלדת.</translation>
 <translation id="2808027189040546825">שלב 1: בוחרים את השורה המכילה את הכוכבים העמומים ביותר:</translation>
-<translation id="2965611304828530558">‏&lt;p&gt;כשאתה מגיע לקישור או לבקרה, מתבצע מיקוד אוטומטי בהם.   הקש על ‎&lt;span class='key'&gt;Enter&lt;/span&gt;‎ כדי ללחוץ על קישור או על לחצן. ‎&lt;/p&gt; &lt;p&gt;‎   כאשר בקרה ממוקדת (כגון תיבת טקסט או תיבת רשימה) לוכדת מקשי חצים, הקש על ‎&lt;span class='key'&gt;Esc&lt;/span&gt;‎ ולאחר מכן על מקש החץ שמאלה או ימינה, כדי להמשיך דפדוף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎   לחלופין, הקש על ‎&lt;span class='key'&gt;Tab&lt;/span&gt;‎ כדי לעבור לבקרה הבאה הניתנת למיקוד. ‎&lt;/p&gt;‎</translation>
+<translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לפקד, מתבצע מיקוד אוטומטי בהם. יש להקיש על ‎&lt;span class='key'&gt;Enter&lt;/span&gt;‎ כדי ללחוץ על קישור או על לחצן. ‎&lt;/p&gt; &lt;p&gt;‎כאשר פקד ממוקד (כגון תיבת טקסט או תיבת רשימה) לוכד מקשי חצים, יש להקיש על ‎&lt;span class='key'&gt;Esc&lt;/span&gt;‎ ולאחר מכן על מקש החץ שמאלה או ימינה, כדי להמשיך דפדוף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎לחלופין, אפשר להקיש על ‎&lt;span class='key'&gt;Tab&lt;/span&gt;‎ כדי לעבור לפקד הבא הניתן למיקוד. ‎&lt;/p&gt;‎</translation>
 <translation id="3252573918265662711">הגדרות</translation>
 <translation id="3410969471888629217">לא לזכור את ההתאמות האישיות של האתר</translation>
 <translation id="3435896845095436175">הפעלה</translation>
@@ -29,7 +29,7 @@
 <translation id="4388820049312272371">הדגשת מיקום הסמן באמצעות הבהוב מהיר.</translation>
 <translation id="4394049700291259645">השבתה</translation>
 <translation id="4769065380738716500">‏תמונות הוחלפו על-ידי טקסט ה-alt שלהן.</translation>
-<translation id="4896660567607030658">אין משוב, פשוט הצג את הסמן.</translation>
+<translation id="4896660567607030658">אין משוב, פשוט להציג את הסמן.</translation>
 <translation id="4937901943818762779">אפשר תמונות המכילות אנימציה, אך רק פעם אחת.</translation>
 <translation id="4949131196216960195">‏כדי להפעיל דפדוף עם סמן יש להקיש על &lt;span class='key'&gt;חיפוש&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (מקש הגברת הבהירות או F7). כדי להשבית אותו יש להקיש עליו שוב.</translation>
 <translation id="4954450790315188152">כאשר 'דפדוף עם סמן' מופעל:</translation>
@@ -44,7 +44,7 @@
 <translation id="5631241868147802353">ברירת מחדל של ערכת צבעים:</translation>
 <translation id="5650358096585648000">משוב חזותי</translation>
 <translation id="5710185147685935461">שנה או הפוך את ערכת הצבעים כך שדפי אינטרנט יהיו קלים לקריאה.</translation>
-<translation id="5939518447894949180">אפס</translation>
+<translation id="5939518447894949180">איפוס</translation>
 <translation id="595639123821853262">גווני אפור הפוכים</translation>
 <translation id="6017514345406065928">ירוק</translation>
 <translation id="6050189528197190982">גווני אפור</translation>

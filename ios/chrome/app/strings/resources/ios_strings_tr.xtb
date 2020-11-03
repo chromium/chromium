@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Yeni sekme oluştur.</translation>
 <translation id="1145536944570833626">Mevcut verileri silin.</translation>
 <translation id="1154690515305205900">Vurgulanan metne bağlantı oluşturulamadı.</translation>
+<translation id="1157749421655780457">Konum erişimine izin ver...</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1172898394251786223">Sonraki alan</translation>
 <translation id="1176932207622159128">Görüntü Kaydedilemiyor</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Öğe yok</translation>
 <translation id="1692118695553449118">Senkronizasyon açık.</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> yer işareti seçildi</translation>
+<translation id="1715940067130687605">Geçerli Konumunuzu Kullanın.</translation>
 <translation id="1740468249224277719">Yüklemek için iki kez dokunun.</translation>
 <translation id="1746815479209538200">Web'e göz atmak için yeni bir sekme ekleyin.</translation>
 <translation id="1752547299766512813">Şifreleri Kaydet</translation>
@@ -374,6 +376,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5059136629401106827">Tamam</translation>
 <translation id="5062321486222145940">Google Drive'ı yükle</translation>
 <translation id="5083464117946352670">Dosya boyutu belirlenemiyor.</translation>
+<translation id="5090832849094901128">Bu şifre kaldırıldığında <ph name="WEBSITE" /> üzerindeki hesabınız silinmez.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
 <translation id="5118764316110575523">Kapalı</translation>
 <translation id="5127805178023152808">Senkronizasyon kapalı</translation>

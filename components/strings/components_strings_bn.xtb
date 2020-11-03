@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">আপনার প্রতিষ্ঠানের নয় এমন একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্টের সুরক্ষার জন্য অন্যান্য অ্যাপ এবং সাইটগুলিতে আপনার এই পাসওয়ার্ডটি ব্যবহার করবেন না।</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        যেসব অ্যাক্টিভিটি এই ডিভাইসে সেভ করা হবে না:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />এই উইন্ডোতে আপনি যেসব পৃষ্ঠা দেখেন
+          <ph name="LIST_ITEM" />কুকি এবং সাইট ডেটা
+          <ph name="LIST_ITEM" />অ্যাকাউন্টের তথ্য (<ph name="LINK_BEGIN" />সাইন-আউট করুন<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">পিক-আপের পদ্ধতি</translation>
 <translation id="1281476433249504884">স্ট্যাকার ১</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
@@ -556,6 +564,7 @@
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3209034400446768650">পৃষ্ঠাটির মাধ্যমে টাকা চার্জ করা হতে পারে</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />-এ আপনার অ্যাক্টিভিটি মনিটর করা হচ্ছে</translation>
+<translation id="3212623355668894776">সব গেস্ট উইন্ডো বন্ধ করে দিন যাতে এই ডিভাইস থেকে আপনার ব্রাউজিং অ্যাক্টিভিটি মুছে যায়।</translation>
 <translation id="3215092763954878852">WebAuthn ব্যবহার করা যায়নি</translation>
 <translation id="3218181027817787318">রিলেটিভ</translation>
 <translation id="3225919329040284222">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপনা করেছে যা বিল্ট-ইন প্রত্যাশাগুলির সাথে মেলে না৷ এই প্রত্যাশাগুলি আপনাকে সুরক্ষিত করতে কিছু নিশ্চিত, উচ্চ সুরক্ষার ওয়েবসাইটের জন্য অন্তর্ভুক্ত৷</translation>
@@ -917,6 +926,7 @@
 <translation id="4658638640878098064">উপরে বাঁদিকে স্টেপল করুন</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
+<translation id="4675657451653251260">গেস্ট মোডে আপনি কোনও Chrome প্রোফাইলের তথ্য দেখতে পাবেন না। আপনি পাসওয়ার্ড এবং পেমেন্ট পদ্ধতির মতো নিজের Google অ্যাকাউন্টের তথ্য অ্যাক্সেস করার জন্য <ph name="LINK_BEGIN" />সাইন-ইন<ph name="LINK_END" /> করতে পারেন।</translation>
 <translation id="467662567472608290">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেটে কিছু ত্রুটি আছে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="4677585247300749148"><ph name="URL" /> অ্যাক্সেসযোগ্যতা ইভেন্টে প্রতিক্রিয়া দিয়ে চায়</translation>
 <translation id="467809019005607715">Google স্লাইড্স</translation>
@@ -944,6 +954,12 @@
 <translation id="4761104368405085019">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4764776831041365478"><ph name="URL" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন থাকতে পারে অথবা এটি স্থায়ীভাবে কোনো নতুন ওয়েব অ্যাড্রেসে সরানো হয়ে থাকতে পারে৷</translation>
 <translation id="4766713847338118463">নিচে ডুয়াল স্টেপল</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        আপনার যেসব অ্যাক্টিভিটি এই ডিভাইসেই সেভ করা হয়:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />এই উইন্ডোতে আপনি যেসব ফাইল ডাউনলোড করেন
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">একটি অজানা ত্রুটি ঘটেছে৷</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ ব্লক করা হয়েছে}one{#টি পপ-আপ ব্লক করা হয়েছে}other{#টি পপ-আপ ব্লক করা হয়েছে}}</translation>
 <translation id="4780366598804516005">মেলবক্স ১</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">আপনার কপি করা লিঙ্ক</translation>
 <translation id="6591833882275308647">আপনার <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়নি</translation>
 <translation id="6596325263575161958">এনক্রিপশন বিকল্পগুলি</translation>
+<translation id="6596892391065203054">আপনার অ্যাডমিনিস্ট্রেটর এই কন্টেন্ট প্রিন্ট করা বন্ধ রেখেছে।</translation>
 <translation id="6604181099783169992">মোশন বা হাল্কা সেন্সর</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6612358246767739896">সুরক্ষিত কন্টেন্ট</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার ডিভাইসের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="8564182942834072828">আলাদা ডকুমেন্ট/সংগ্রহ না করা কপি</translation>
 <translation id="8564985650692024650">Chromium-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        যেসব অ্যাক্টিভিটি এই ডিভাইসে সেভ করা হবে না:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />এই উইন্ডোতে আপনি যেসব পৃষ্ঠা দেখেন
+          <ph name="LIST_ITEM" />কুকি এবং সাইট ডেটা
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">কার্ড আরও দ্রুত কনফার্ম করতে টাচ আইডি ব্যবহার করুন</translation>
 <translation id="858637041960032120">ফোননম্বর জুড়ুন</translation>
 <translation id="8589998999637048520">সেরা কোয়ালিটি</translation>
 <translation id="860043288473659153">কার্ডধারকের নাম</translation>
 <translation id="8606726445206553943">আপনার MIDI ডিভাইসসমূহ ব্যবহার করুন</translation>
+<translation id="8612761427948161954">হাই <ph name="USERNAME" />,
+        <ph name="BR" />
+        আপনি গেস্ট হিসেবে ব্রাউজ করছেন</translation>
 <translation id="861775596732816396">সাইজ ৪</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Google দস্তাবেজ</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> একটি অসমর্থিত প্রোটোকল ব্যবহার করে।</translation>
 <translation id="9191834167571392248">নিচে বাঁদিকে পাঞ্চ করুন</translation>
+<translation id="9199905725844810519">প্রিন্টিং ব্লক করা আছে</translation>
 <translation id="9205078245616868884">আপনার ডেটা আপনার সিঙ্ক পাসফ্রেজ দিয়ে এনক্রিপ্ট করা হয়েছে। সিঙ্ক শুরু করার জন্য এটি লিখুন।</translation>
 <translation id="9207861905230894330">নিবন্ধ যোগ করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="9213433120051936369">কেমন দেখাবে তা কাস্টমাইজ করুন</translation>

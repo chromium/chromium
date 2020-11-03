@@ -49,6 +49,7 @@
 <translation id="1346748346194534595">Праворуч</translation>
 <translation id="1351937230027495976">Згорнути меню</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="1390105199421505038">Вікно видалення облікового запису <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1391102559483454063">Увімкнено</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1419738280318246476">Щоб виконати дію зі сповіщенням, розблокуйте пристрій</translation>
@@ -369,6 +370,7 @@
 <translation id="4477892968187500306">На цьому пристрої можуть бути додатки, які не були перевірені Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Відключені пристрої</translation>
+<translation id="4485060137115666462">Натисніть вибраний контент правою кнопкою миші або втримуйте його, і Асистент покаже визначення чи переклад терміна, конвертує одиницю тощо.</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
 <translation id="4506458088675900627">Змінився жест запуску режиму огляду й виходу з нього</translation>
 <translation id="4513946894732546136">Відгуки</translation>
@@ -597,6 +599,7 @@
 <translation id="6803622936009808957">Не вдалося дублювати зображення екранів, оскільки не знайдено підтримувані значення роздільної здатності. Натомість запущено режим розширеного робочого столу.</translation>
 <translation id="6818242057446442178">Назад на одне слово</translation>
 <translation id="6820676911989879663">Зробіть перерву!</translation>
+<translation id="6850010208275816200">Поточний додаток розгорнуто на весь екран. Якщо з'явиться запит пароля, спершу вийдіть із цього режиму.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6857811139397017780">Активувати <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
@@ -646,6 +649,7 @@
 <translation id="7398254312354928459">З’єднання з мережею змінено</translation>
 <translation id="7405710164030118432">Щоб розблокувати пристрій, введіть код доступу батьків із Family Link</translation>
 <translation id="741244894080940828">конвертація</translation>
+<translation id="7413851974711031813">Щоб закрити, натисніть клавішу Escape</translation>
 <translation id="742594950370306541">Камера використовується.</translation>
 <translation id="742608627846767349">Доброго ранку!</translation>
 <translation id="743058460480092004">Камера та мікрофон використовуються.</translation>

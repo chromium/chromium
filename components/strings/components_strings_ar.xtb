@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">لقد أدخلتَ كلمة المرور في موقع إلكتروني لا تديره مؤسستك. ينصح بعدم استخدام كلمة المرور مجددًا في التطبيقات ومواقع الويب الأخرى لحماية حسابك.</translation>
 <translation id="1263231323834454256">قائمة القراءة</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        النشاطات التي لن يتم حفظها على هذا الجهاز:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />الصفحات التي تعرضها في هذه النافذة
+          <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات الموقع الإلكتروني
+          <ph name="LIST_ITEM" />معلومات الحساب (<ph name="LINK_BEGIN" />تسجيل الخروج<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">طريقة الاستلام</translation>
 <translation id="1281476433249504884">المكدِّس 1</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3209034400446768650">إمكانية تحصيل الصفحة للرسوم</translation>
 <translation id="3212581601480735796">تتم مراقبة نشاطك على <ph name="HOSTNAME" /></translation>
+<translation id="3212623355668894776">عند إغلاق جميع نوافذ الضيف، سيتم حذف نشاط التصفّح من هذا الجهاز.</translation>
 <translation id="3215092763954878852">‏تعذّر استخدام WebAuthn</translation>
 <translation id="3218181027817787318">نسبي</translation>
 <translation id="3225919329040284222">قدم الخادم شهادة لا تتطابق مع التوقعات المضمّنة. تم تضمين هذه التوقعات للحصول على مواقع إلكترونية موثوقة وآمنة جدًا لتوفير الحماية لك.</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">وضع دبوس أعلى اليسار</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4670064810192446073">الواقع الافتراضي</translation>
+<translation id="4675657451653251260">‏لن تظهر لك أي معلومات عن الملف الشخصي في Chrome في "وضع الضيف". ويمكنك <ph name="LINK_BEGIN" />تسجيل الدخول<ph name="LINK_END" /> للوصول إلى معلومات حسابك على Google مثل كلمات المرور وطرق الدفع.</translation>
 <translation id="467662567472608290">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان تحتوي على أخطاء. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="4677585247300749148">يريد <ph name="URL" /> الاستجابة لأحداث إمكانية الوصول.</translation>
 <translation id="467809019005607715">‏العروض التقديمية من Google</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
 <translation id="4764776831041365478">قد تكون صفحة الويب على العنوان <ph name="URL" /> غير متاحة مؤقتًا أو قد يكون تم نقلها نهائيًا إلى عنوان ويب جديد.</translation>
 <translation id="4766713847338118463">وضع دبوسَين بالأسفل</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        نشاطك الذي سيتم حفظه على هذا الجهاز:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />أي ملفات تنزِّلها في هذه النافذة
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">حدث خطأ غير محدّد.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{تم حظر نافذة منبثقة}zero{تم حظر # نافذة منبثقة}two{تم حظر نافذتين منبثقتين (#)}few{تم حظر # نوافذ منبثقة}many{تم حظر # نافذةً منبثقةً}other{تم حظر # نافذة منبثقة}}</translation>
 <translation id="4780366598804516005">صندوق البريد الإلكتروني 1</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">الرابط الذي نسخته</translation>
 <translation id="6591833882275308647">لا تتم إدارة <ph name="DEVICE_TYPE" /></translation>
 <translation id="6596325263575161958">خيارات التشفير</translation>
+<translation id="6596892391065203054">حظر المشرف إمكانية طباعة هذا المحتوى.</translation>
 <translation id="6604181099783169992">أجهزة استشعار الإضاءة والحركة</translation>
 <translation id="6609880536175561541">‏Prc7 (مغلف)</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>
@@ -1880,12 +1897,22 @@
 <translation id="8559762987265718583">تعذر إنشاء اتصال خاص بـ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> نظرًا لأن التاريخ والوقت للجهاز (<ph name="DATE_AND_TIME" />) غير صحيحين.</translation>
 <translation id="8564182942834072828">مستندات مفصولة/نُسخ مفصولة</translation>
 <translation id="8564985650692024650">‏يُوصي Chromium بإعادة تحديد كلمة المرور <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+         النشاطات التي لن يتم حفظها على هذا الجهاز:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />الصفحات التي تعرضها في هذه النافذة
+          <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات الموقع الإلكتروني
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">استخدام رقم التعريف باللمس للتأكد من البطاقات بشكلٍ أسرع</translation>
 <translation id="858637041960032120">إضافة رقم هاتف
 </translation>
 <translation id="8589998999637048520">أفضل جودة</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
 <translation id="8606726445206553943">‏استخدام أجهزة MIDI</translation>
+<translation id="8612761427948161954">مرحبًا <ph name="USERNAME" />،
+        <ph name="BR" />
+        أنت تتصفّح في "وضع الضيف".</translation>
 <translation id="861775596732816396">الحجم 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ما مِن كلمات مرور مطابقة. يمكنك عرض جميع كلمات المرور المحفوظة.</translation>
@@ -2024,6 +2051,7 @@
 <translation id="9183302530794969518">‏مستندات Google</translation>
 <translation id="9183425211371246419">يستخدم <ph name="HOST_NAME" /> بروتوكول غير مدعوم.</translation>
 <translation id="9191834167571392248">عمل ثقب أسفل اليسار</translation>
+<translation id="9199905725844810519">تم حظر الطباعة</translation>
 <translation id="9205078245616868884">يتم ترميز بياناتك باستخدام عبارة مرور المزامنة. أدخلها لبدء المزامنة.</translation>
 <translation id="9207861905230894330">تعذّرت إضافة مقالة.</translation>
 <translation id="9213433120051936369">تخصيص المظهر</translation>

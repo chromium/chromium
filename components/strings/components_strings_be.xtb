@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль у іншых праграмах і на іншых сайтах.</translation>
 <translation id="1263231323834454256">Спіс чытання</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        На гэтай прыладзе не будуць захоўвацца:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />старонкі, якія вы праглядаеце ў гэтым акне;
+          <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
+          <ph name="LIST_ITEM" />інфармацыя пра ўліковы запіс (<ph name="LINK_BEGIN" />выйсці<ph name="LINK_END" />).
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Спосаб прыняцця</translation>
 <translation id="1281476433249504884">Укладчык 1</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3209034400446768650">На старонцы могуць спаганяцца грошы</translation>
 <translation id="3212581601480735796">Вашы дзеянні на <ph name="HOSTNAME" /> адсочваюцца</translation>
+<translation id="3212623355668894776">Каб інфармацыя пра вашы дзеянні ў браўзеры была выдалена з гэтай прылады, закрыйце ўсе гасцявыя вокны.</translation>
 <translation id="3215092763954878852">Не ўдалося выкарыстаць WebAuthn</translation>
 <translation id="3218181027817787318">Адносны</translation>
 <translation id="3225919329040284222">Сервер падаў сертыфікат, які не адпавядае ўбудаваным патрабаванням. Гэтыя патрабаванні ўключаны ў мэтах вашай бяспекі – ім адпавядаюць надзейныя вэб-сайты з высокім узроўнем бяспекі.</translation>
@@ -915,6 +924,7 @@
 <translation id="4658638640878098064">Скаба зверху злева</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
+<translation id="4675657451653251260">У гасцявым рэжыме вы не будзеце бачыць звестак профілю Chrome. Каб атрымаць доступ да інфармацыі пра свой Уліковы запіс Google (напрыклад, да пароляў і спосабаў аплаты), <ph name="LINK_BEGIN" />увайдзіце<ph name="LINK_END" /> ў яго.</translation>
 <translation id="467662567472608290">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: у сертыфікаце ёсць памылкі. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> запытвае дазвол адказваць на падзеі функцый спецыяльных магчымасцей</translation>
 <translation id="467809019005607715">Прэзентацыі Google</translation>
@@ -942,6 +952,12 @@
 <translation id="4761104368405085019">Выкарыстоўваць мікрафон</translation>
 <translation id="4764776831041365478">Магчыма, вэб-старонка па адрасе <ph name="URL" /> часова недаступная або была перамешчана на новы вэб-адрас.</translation>
 <translation id="4766713847338118463">Дзве скабы знізу</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        На гэтай прыладзе будуць захаваны:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />любыя файлы, спампаваныя вамі з выкарыстаннем гэтага акна.
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Узнікла невядомая памылка.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Усплывальнае акно заблакіравана}one{# усплывальнае акно заблакіравана}few{# выплыўныя акны заблакіравана}many{# выплыўных акон заблакіравана}other{# выплыўнога акна заблакіравана}}</translation>
 <translation id="4780366598804516005">Паштовая скрынка 1</translation>
@@ -1396,6 +1412,7 @@
 <translation id="6587923378399804057">Скапіраваная вамі спасылка</translation>
 <translation id="6591833882275308647">Прылада <ph name="DEVICE_TYPE" /> не знаходзіцца пад кіраваннем</translation>
 <translation id="6596325263575161958">Параметры шыфравання</translation>
+<translation id="6596892391065203054">Магчымасць друкавання гэтага змесціва заблакіравана адміністратарам.</translation>
 <translation id="6604181099783169992">Датчыкі руху або святла</translation>
 <translation id="6609880536175561541">Prc7 (канверт)</translation>
 <translation id="6612358246767739896">Абароненае змесціва</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583">Памылка прыватнага падключэння да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />: дата і час на вашай прыладзе (<ph name="DATE_AND_TIME" />) няправільныя.</translation>
 <translation id="8564182942834072828">Асобныя дакументы, неразабраныя копіі</translation>
 <translation id="8564985650692024650">Chromium рэкамендуе скінуць пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, калі вы карысталіся ім на іншых сайтах.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        На гэтай прыладзе не будуць захоўвацца:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />старонкі, якія вы праглядаеце ў гэтым акне;
+          <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў.
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Выкарыстоўваць Touch ID для хутчэйшага пацвярджэння картак</translation>
 <translation id="858637041960032120">Дадайце нумар тэлефона</translation>
 <translation id="8589998999637048520">Найлепшая якасць</translation>
 <translation id="860043288473659153">Імя ўладальніка карткі</translation>
 <translation id="8606726445206553943">Выкарыстоўваць прылады MIDI</translation>
+<translation id="8612761427948161954">Вітаем, <ph name="USERNAME" />!
+        <ph name="BR" />
+        Вы выкарыстоўваеце браўзер як госць</translation>
 <translation id="861775596732816396">Памер 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Пароль для гэтага сайта не знойдзены. Паказаць усе захаваныя паролі.</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> выкарыстоўвае пратакол, які не падтрымліваецца.</translation>
 <translation id="9191834167571392248">Дзірка знізу злева</translation>
+<translation id="9199905725844810519">Друкаванне заблакіравана</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>

@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ви ввели пароль на сайті, яким не керує ваша організація. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="1263231323834454256">Список читання</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Дії, інформація про які не залишиться на пристрої:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сторінки, переглянуті в цьому вікні;
+          <ph name="LIST_ITEM" />файли cookie та дані сайтів;
+          <ph name="LIST_ITEM" />дані облікового запису (<ph name="LINK_BEGIN" />вийти<ph name="LINK_END" />).
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Спосіб отримання</translation>
 <translation id="1281476433249504884">Накопичувач 1</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
@@ -553,6 +561,7 @@
 <translation id="3207960819495026254">Створено закладку</translation>
 <translation id="3209034400446768650">На сторінці може стягуватися плата</translation>
 <translation id="3212581601480735796">Ваші дії на сайті <ph name="HOSTNAME" /> відстежуються</translation>
+<translation id="3212623355668894776">Закрийте всі вікна в режимі гостя, щоб видалити історію дій у веб-переглядачі з пристрою.</translation>
 <translation id="3215092763954878852">Не вдалося скористатися веб-автентифікацією</translation>
 <translation id="3218181027817787318">Відносна</translation>
 <translation id="3225919329040284222">Сервер надав сертифікат, який не відповідає очікуваним вбудованим параметрам. Ці очікувані параметри встановлено для певних веб-сайтів із високим рівнем безпеки, щоб захистити вас.</translation>
@@ -914,6 +923,7 @@
 <translation id="4658638640878098064">Скріпити вгорі ліворуч</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
+<translation id="4675657451653251260">У режимі гостя ви не зможете переглядати інформацію в профілях Chrome. Ви можете <ph name="LINK_BEGIN" />ввійти<ph name="LINK_END" />, щоб отримати доступ до даних в обліковому записі Google (як-от паролі чи способи оплати).</translation>
 <translation id="467662567472608290">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Його сертифікат безпеки містить помилки. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="4677585247300749148">Сайт <ph name="URL" /> хоче реагувати на використання спеціальних можливостей</translation>
 <translation id="467809019005607715">Google Презентації</translation>
@@ -941,6 +951,12 @@
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
 <translation id="4764776831041365478">Веб-сторінка за адресою <ph name="URL" /> може бути тимчасово недоступною або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="4766713847338118463">Двічі скріпити внизу</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Дії, інформація про які залишиться на пристрої:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />файли, які ви завантажуєте в цьому вікні.
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Виникла невідома помилка.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Спливаюче вікно заблоковано}one{# спливаюче вікно заблоковано}few{# спливаючі вікна заблоковано}many{# спливаючих вікон заблоковано}other{# спливаючого вікна заблоковано}}</translation>
 <translation id="4780366598804516005">Поштова скринька 1</translation>
@@ -1395,6 +1411,7 @@
 <translation id="6587923378399804057">Скопійоване посилання</translation>
 <translation id="6591833882275308647">Пристроєм <ph name="DEVICE_TYPE" /> не керує адміністратор</translation>
 <translation id="6596325263575161958">Параметри шифрування</translation>
+<translation id="6596892391065203054">Адміністратор заблокував можливість друкувати цей контент.</translation>
 <translation id="6604181099783169992">Датчики руху чи світла</translation>
 <translation id="6609880536175561541">Prc7 (конверт)</translation>
 <translation id="6612358246767739896">Захищений вміст</translation>
@@ -1878,12 +1895,22 @@
 <translation id="8559762987265718583">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на пристрої встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Окремі документи/непідібрані копії</translation>
 <translation id="8564985650692024650">Chromium радить скинути пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, якщо ви застосовували його на інших сайтах.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Дії, інформація про які не залишиться на пристрої:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сторінки, переглянуті в цьому вікні;
+          <ph name="LIST_ITEM" />файли cookie та дані сайтів.
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Використовувати Touch ID, щоб швидше підтверджувати картки</translation>
 <translation id="858637041960032120">Додати тел.номер
 </translation>
 <translation id="8589998999637048520">Найкраща якість</translation>
 <translation id="860043288473659153">Ім’я та прізвище власника картки</translation>
 <translation id="8606726445206553943">Використовувати ваші пристрої MIDI</translation>
+<translation id="8612761427948161954">Вітаємо, <ph name="USERNAME" />!
+        <ph name="BR" />
+        Ви переглядаєте в гостьовому режимі</translation>
 <translation id="861775596732816396">Розмір 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Пароль для цього сайту не знайдено. Показати всі збережені паролі.</translation>
@@ -2022,6 +2049,7 @@
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9183425211371246419">Протокол, який використовує хост <ph name="HOST_NAME" />, не підтримується.</translation>
 <translation id="9191834167571392248">Пробити отвір унизу ліворуч</translation>
+<translation id="9199905725844810519">Друк заблоковано</translation>
 <translation id="9205078245616868884">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб почати синхронізацію.</translation>
 <translation id="9207861905230894330">Не вдалося додати статтю.</translation>
 <translation id="9213433120051936369">Налаштувати оформлення</translation>

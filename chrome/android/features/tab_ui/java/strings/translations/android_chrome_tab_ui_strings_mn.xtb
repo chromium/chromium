@@ -32,7 +32,7 @@
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> таб бүхий <ph name="TITLE_OF_GROUP" /> бүлгийг хаах</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
-<translation id="6510648526783655549">Tab зурвасыг хаах</translation>
+<translation id="6510648526783655549">Tab мессежийг хаах</translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
 <translation id="6840760312327750441">Табуудыг бүлэглэхийн тулд таб дээр хүрээд, удаан дарна уу. Тэгээд уг табыг нөгөө рүү нь чирж зөөнө үү.</translation>
@@ -47,10 +47,10 @@
 <translation id="7966321538264951561">Зөвлөмжийг үл хэрэгсэх.</translation>
 <translation id="814503310257431685">Бүгдийг харах</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
-<translation id="8304833501377495048">Tab зурвасыг дахин харуулахгүй байх уу?</translation>
+<translation id="8304833501377495048">Tab мессежийг дахин харуулахгүй байх уу?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг дэлгэх.</translation>
-<translation id="8749939518995770034">Tab зурвасыг хаасан</translation>
+<translation id="8749939518995770034">Tab мессежийг хаасан</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
 <translation id="959682366969460160">Зохион байгуулалттай болох</translation>

@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">조직에서 관리하지 않는 사이트에 내 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
 <translation id="1263231323834454256">읽기 목록</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        기기에 저장되지 않는 활동 내역:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />이 창에서 접속하는 페이지
+          <ph name="LIST_ITEM" />쿠키 및 사이트 데이터
+          <ph name="LIST_ITEM" />계정 정보(<ph name="LINK_BEGIN" />로그아웃<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">픽업 방법</translation>
 <translation id="1281476433249504884">스태커 1</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -549,6 +557,7 @@
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3209034400446768650">페이지에서 요금을 청구할 수 있음</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />에서의 활동이 모니터링되고 있음</translation>
+<translation id="3212623355668894776">게스트 창을 모두 닫으면 기기에서 탐색 활동이 삭제됩니다.</translation>
 <translation id="3215092763954878852">WebAuthn을 사용할 수 없음</translation>
 <translation id="3218181027817787318">상대</translation>
 <translation id="3225919329040284222">서버가 내장된 기대치와 일치하지 않는 인증서를 전달했습니다. 이러한 기대치는 사용자를 보호하기 위해 보안이 엄격한 특정 웹사이트에 포함됩니다.</translation>
@@ -905,6 +914,7 @@
 <translation id="4658638640878098064">왼쪽 상단 스테이플</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">가상 현실</translation>
+<translation id="4675657451653251260">게스트 모드에서는 Chrome 프로필 정보를 볼 수 없습니다. 비밀번호 및 결제 수단과 같은 Google 계정 정보를 보려면 <ph name="LINK_BEGIN" />로그인<ph name="LINK_END" />하세요.</translation>
 <translation id="467662567472608290">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서에 오류가 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4677585247300749148"><ph name="URL" />에서 접근성 이벤트에 응답하려고 합니다</translation>
 <translation id="467809019005607715">Google 프레젠테이션</translation>
@@ -932,6 +942,12 @@
 <translation id="4761104368405085019">마이크 사용</translation>
 <translation id="4764776831041365478"><ph name="URL" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
 <translation id="4766713847338118463">하단 듀얼 스테이플</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        기기에 저장되는 활동 내역:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />이 창에서 다운로드하는 모든 파일
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{팝업 1개 차단됨}other{팝업 #개 차단됨}}</translation>
 <translation id="4780366598804516005">메일박스 1</translation>
@@ -1386,6 +1402,7 @@
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
+<translation id="6596892391065203054">관리자가 이 콘텐츠의 인쇄를 차단했습니다.</translation>
 <translation id="6604181099783169992">모션 또는 조도 센서</translation>
 <translation id="6609880536175561541">Prc7(봉투)</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
@@ -1868,11 +1885,21 @@
 <translation id="8559762987265718583">기기의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="8564182942834072828">별도 문서/모으지 않은 사본</translation>
 <translation id="8564985650692024650">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        기기에 저장되지 않는 활동 내역:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />이 창에서 접속하는 페이지
+          <ph name="LIST_ITEM" />쿠키 및 사이트 데이터
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Touch ID를 사용하여 빠르게 카드 확인</translation>
 <translation id="858637041960032120">번호 추가</translation>
 <translation id="8589998999637048520">고품질 순</translation>
 <translation id="860043288473659153">카드 명의자 이름</translation>
 <translation id="8606726445206553943">MIDI 기기를 사용합니다.</translation>
+<translation id="8612761427948161954"><ph name="USERNAME" />님, 안녕하세요.
+        <ph name="BR" />
+        게스트로 탐색 중입니다</translation>
 <translation id="861775596732816396">크기 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">일치하는 비밀번호가 없습니다. 저장된 비밀번호를 모두 표시합니다.</translation>
@@ -2011,6 +2038,7 @@
 <translation id="9183302530794969518">Google 문서</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />에서 지원되지 않는 프로토콜을 사용합니다.</translation>
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
+<translation id="9199905725844810519">인쇄가 차단됨</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>

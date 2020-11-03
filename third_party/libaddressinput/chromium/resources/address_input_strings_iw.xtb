@@ -23,7 +23,7 @@
 <translation id="6271429879296260742">‏קוד PIN</translation>
 <translation id="6282194474023008486">מיקוד</translation>
 <translation id="6327653052522436195">עיר</translation>
-<translation id="6403469950615936250">פורמט המיקוד הזה אינו מזוהה. דוגמה למיקוד חוקי: <ph name="EXAMPLE" />. אינך יודע מה המיקוד? תוכל לגלות <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" />.</translation>
+<translation id="6403469950615936250">פורמט המיקוד הזה אינו מזוהה. דוגמה למיקוד חוקי: <ph name="EXAMPLE" />. <ph name="BEGIN_LINK" />לבירור המיקוד שלך<ph name="END_LINK" />.</translation>
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> אינו מזוהה כערך מוכר עבור השדה הזה.</translation>
 <translation id="6768780634682399515">Eircode</translation>
 <translation id="6777217372746654521">נראה שהכתובת הזו מכילה תיבת דואר. השתמש בכתובת רחוב או בניין.</translation>

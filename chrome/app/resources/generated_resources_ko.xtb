@@ -1145,6 +1145,7 @@
 <translation id="2307462900900812319">네트워크 설정</translation>
 <translation id="230927227160767054">이 페이지에서 서비스 핸들러를 설치하려 합니다.</translation>
 <translation id="2309620859903500144">모션 센서 또는 조도 센서 액세스가 차단된 사이트입니다.</translation>
+<translation id="2311497964614110326">어시스턴트로 더 빠르고 정확한 답변 받기</translation>
 <translation id="2312219318583366810">페이지 URL</translation>
 <translation id="2314165183524574721">현재 공개 범위가 숨김으로 설정되어 있음</translation>
 <translation id="2314774579020744484">페이지 번역 시 사용하는 언어</translation>
@@ -1258,6 +1259,7 @@
 <translation id="2440604414813129000">소스 보기(&amp;O)</translation>
 <translation id="244231003699905658">잘못된 주소입니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="2442916515643169563">텍스트 음영</translation>
+<translation id="2444469058037141906">명령어를 말하거나 입력하세요</translation>
 <translation id="2445081178310039857">확장 프로그램 루트 디렉터리가 필요합니다.</translation>
 <translation id="2445484935443597917">새 프로필 만들기</translation>
 <translation id="2448312741937722512">유형</translation>
@@ -2174,6 +2176,7 @@
 <translation id="3514373592552233661">두 개 이상의 네트워크를 사용할 수 있는 경우 기본 설정된 네트워크가 다른 알려진 네트워크보다 우선 사용됩니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
 <translation id="3518985090088779359">동의하고 계속</translation>
+<translation id="3519564332031442870">인쇄 백엔드 서비스</translation>
 <translation id="3521606918211282604">디스크 크기 변경</translation>
 <translation id="3523642406908660543">사이트에서 플러그인을 사용하여 내 컴퓨터에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="3524965460886318643">활동 내보내기</translation>
@@ -2689,6 +2692,7 @@
 <translation id="4088095054444612037">그룹 공유 승인</translation>
 <translation id="4089235344645910861">설정이 저장되었으며, 동기화가 시작되었습니다.</translation>
 <translation id="4090103403438682346">인증 액세스 서비스 사용</translation>
+<translation id="4090811767089219951">여기에서도 Google 어시스턴트를 사용할 수 있습니다</translation>
 <translation id="4090947011087001172"><ph name="SITE" />의 사이트 권한을 재설정하시겠습니까?</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="4093955363990068916">로컬 파일:</translation>
@@ -2955,6 +2959,7 @@
 <translation id="4441124369922430666">컴퓨터를 켤 때 이 앱을 자동으로 시작하시겠습니까?</translation>
 <translation id="4441147046941420429">계속하려면 기기에서 보안 키를 제거한 후 다시 삽입하고 터치하세요.</translation>
 <translation id="444134486829715816">펼치기...</translation>
+<translation id="4441928470323187829">관리자가 고정함</translation>
 <translation id="4442424173763614572">DNS 조회 실패</translation>
 <translation id="4443536555189480885">도움말(&amp;H)</translation>
 <translation id="4444304522807523469">USB나 로컬 네트워크에 포함된 문서 스캐너에 액세스</translation>
@@ -3678,6 +3683,7 @@
 <translation id="5315873049536339193">주소</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
+<translation id="5320112320661303273">이미 다른 기기에서 어시스턴트를 설정한 것 같습니다. 다음 설정을 켜면 어시스턴트를 더욱 유용하게 활용할 수 있습니다.</translation>
 <translation id="532247166573571973">서버 접속이 불가능할 수 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5324300749339591280">앱 목록</translation>
 <translation id="5324780743567488672">사용자 위치를 사용하여 자동으로 시간대 설정</translation>
@@ -5495,6 +5501,7 @@
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">배터린 잔량이 부족하여(<ph name="BATTERY_PERCENT" />%) 업데이트할 수 없음</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
+<translation id="7478362879637727630">이 Chrome Education 기기를 교육 계정에 등록해야 합니다. 새 계정으로 가입하려면 https://g.co/workspace/edusignup 페이지로 이동하세요.</translation>
 <translation id="7478485216301680444">키오스크 애플리케이션을 설치할 수 없습니다.</translation>
 <translation id="7479221278376295180">저장용량 사용량 개요</translation>
 <translation id="7481312909269577407">앞으로</translation>
@@ -5619,6 +5626,7 @@
 <translation id="7632948528260659758">다음 키오스크 앱을 업데이트하지 못했습니다.</translation>
 <translation id="7633724038415831385">이번에만 업데이트를 기다리시면 됩니다. Chromebook에서는 소프트웨어 업데이트가 백그라운드에서 이루어집니다.</translation>
 <translation id="7634566076839829401">문제가 발생했습니다. 다시 시도해 주세요.</translation>
+<translation id="7635048370253485243">관리자가 고정함</translation>
 <translation id="763632859238619983">모든 사이트에서 결제 핸들러 설치 허용 안함</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
 <translation id="7638605456503525968">직렬 포트</translation>

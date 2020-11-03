@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">ایجاد برگه جدید</translation>
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1154690515305205900">نمی‌توان پیوند به نوشتار برجسته‌شده را ایجاد کرد.</translation>
+<translation id="1157749421655780457">مجاز کردن مکان…</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1172898394251786223">فیلد بعدی</translation>
 <translation id="1176932207622159128">ذخیره تصویر ممکن نشد</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">هیچ موردی وجود ندارد</translation>
 <translation id="1692118695553449118">همگام‌سازی روشن است</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
+<translation id="1715940067130687605">استفاده از مکان کنونی شما.</translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
 <translation id="1746815479209538200">برای مرور وب، برگه جدیدی اضافه کنید.</translation>
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">خوب</translation>
 <translation id="5062321486222145940">‏نصب Google Drive</translation>
 <translation id="5083464117946352670">تعیین اندازه فایل ممکن نیست.</translation>
+<translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
 <translation id="5094827893301452931">‏Tweet انجام شد.</translation>
 <translation id="5118764316110575523">خاموش</translation>
 <translation id="5127805178023152808">همگام‌سازی خاموش است</translation>

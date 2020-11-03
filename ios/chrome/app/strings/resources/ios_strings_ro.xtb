@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Creează o filă nouă.</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1154690515305205900">Nu se poate crea un link spre textul evidențiat.</translation>
+<translation id="1157749421655780457">Permite accesul la locație...</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1172898394251786223">Următorul câmp</translation>
 <translation id="1176932207622159128">Imaginea nu s-a salvat</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Niciun element</translation>
 <translation id="1692118695553449118">Sincronizarea este activată</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selectate</translation>
+<translation id="1715940067130687605">Folosește locația actuală.</translation>
 <translation id="1740468249224277719">Atinge de două ori pentru a instala.</translation>
 <translation id="1746815479209538200">Pentru a naviga pe web, adaugă o filă nouă.</translation>
 <translation id="1752547299766512813">Salvează parole</translation>
@@ -374,6 +376,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalează Google Drive</translation>
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>
+<translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet finalizat.</translation>
 <translation id="5118764316110575523">Dezactivat</translation>
 <translation id="5127805178023152808">Sincronizarea este dezactivată</translation>

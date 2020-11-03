@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Стварыць новую ўкладку.</translation>
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1154690515305205900">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
+<translation id="1157749421655780457">Дазволіць выкарыстанне месцазнаходжання...</translation>
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1172898394251786223">Наступнае поле</translation>
 <translation id="1176932207622159128">Не ўдалося захаваць відарыс</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Няма элементаў</translation>
 <translation id="1692118695553449118">Сінхранізацыя ўключана</translation>
 <translation id="1700629756560807968">Выбрана: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">Выкарыстанне вашага бягучага месцазнаходжання</translation>
 <translation id="1740468249224277719">Каб усталяваць, націсніце двойчы.</translation>
 <translation id="1746815479209538200">Для прагляду змесціва ў інтэрнэце дадайце новую ўкладку.</translation>
 <translation id="1752547299766512813">Захоўваць паролі</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
 <translation id="5083464117946352670">Не ўдалося вызначыць памер файла.</translation>
+<translation id="5090832849094901128">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца.</translation>
 <translation id="5094827893301452931">Твіт апублікаваны.</translation>
 <translation id="5118764316110575523">Выключана</translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>

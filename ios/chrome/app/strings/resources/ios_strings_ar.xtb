@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">إنشاء علامة تبويب جديدة.</translation>
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
 <translation id="1154690515305205900">لا يمكن إنشاء رابط للنص المحدَّد.</translation>
+<translation id="1157749421655780457">السماح بتحديد الموقع الجغرافي</translation>
 <translation id="1165039591588034296">خطأ</translation>
 <translation id="1172898394251786223">الحقل التالي</translation>
 <translation id="1176932207622159128">يتعذر حفظ الصورة</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">لا توجد عناصر</translation>
 <translation id="1692118695553449118">المزامنة ممكنة</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715940067130687605">استخدام موقعك الجغرافي الحالي</translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
 <translation id="1746815479209538200">لتصفُّح الويب، يمكنك إضافة علامة تبويب جديدة.</translation>
 <translation id="1752547299766512813">حفظ كلمات المرور</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">حسنًا</translation>
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
 <translation id="5083464117946352670">تعذر تحديد حجم الملف.</translation>
+<translation id="5090832849094901128">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">‏اكتملت مشاركة Tweet.</translation>
 <translation id="5118764316110575523">غير مفعَّل</translation>
 <translation id="5127805178023152808">المزامنة غير مفعّلة</translation>

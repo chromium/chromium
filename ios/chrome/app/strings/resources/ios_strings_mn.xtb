@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Шинэ чихтэй хуудас үүсгэнэ үү.</translation>
 <translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1154690515305205900">Тодруулсан текстийн холбоосыг үүсгэх боломжгүй.</translation>
+<translation id="1157749421655780457">Байршлыг зөвшөөрөх...</translation>
 <translation id="1165039591588034296">Алдаа</translation>
 <translation id="1172898394251786223">Дараагийн талбар</translation>
 <translation id="1176932207622159128">Зургийг хадгалж чадахгүй байна</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Ямар ч зүйл алга</translation>
 <translation id="1692118695553449118">Тохиргоо асаалттай байна.</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> сонгогдсон</translation>
+<translation id="1715940067130687605">Одоогийн байршлаа ашиглана уу.</translation>
 <translation id="1740468249224277719">Суулгахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1746815479209538200">Вебийг хөтлөхийн тулд шинэ чихтэй хуудас нэмнэ үү.</translation>
 <translation id="1752547299766512813">Нууц үг хадгалах</translation>
@@ -373,6 +375,7 @@
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5083464117946352670">Файлын хэмжээг тодорхойлж чадахгүй байна.</translation>
+<translation id="5090832849094901128">Энэ нууц үгийг устгаснаар таны <ph name="WEBSITE" /> дээрх бүртгэлийг устгахгүй.</translation>
 <translation id="5094827893301452931">Жиргэж дууссан.</translation>
 <translation id="5118764316110575523">Унтраалттай</translation>
 <translation id="5127805178023152808">Тохиргоог унтраасан байна</translation>
@@ -502,7 +505,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6434591244308415567">Алдаа гарлаа. Дараа дахин оролдоно уу.</translation>
 <translation id="6439338047467462846">Бүгдийг зөвшөөрөх</translation>
 <translation id="6445051938772793705">Улс</translation>
-<translation id="6445981559479772097">Зурвас илгээгдсэн.</translation>
+<translation id="6445981559479772097">Мессеж илгээгдсэн.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">Огт шалгаж байгаагүй.</translation>
 <translation id="6464071786529933911">Нууцлалын шинэ чихтэй хуудсанд нээх</translation>
@@ -727,7 +730,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8985320356172329008">Google-д дараахаар нэвтэрсэн</translation>
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
-<translation id="9039373489628511875">Зурвасын өргөн</translation>
+<translation id="9039373489628511875">Мессежийн өргөн</translation>
 <translation id="9055772144595778347">Нэвтэрч чадахгүй байна</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9079935439869366234">Бүгдийг уншаагүй гэж тэмдэглэх</translation>

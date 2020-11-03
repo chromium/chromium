@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Təşkilatınızın idarə etmədiyi saytda parolunuzu daxil etdiniz. Hesabınızı qorumaq üçün digər tətbiq və saytlarda parolunuzdan təkrar istifadə etməyin.</translation>
 <translation id="1263231323834454256">Oxu siyahısı</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Bu cihazda saxlanmayacaq fəaliyyət:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bu pəncərədə baxdığınız səhifələr
+          <ph name="LIST_ITEM" />Kukilər və sayt datası
+          <ph name="LIST_ITEM" />Hesab məlumatı (<ph name="LINK_BEGIN" />çıxış<ph name="LINK_END" />)
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Götürmə Üsulu</translation>
 <translation id="1281476433249504884">Yığıcı 1</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
@@ -553,6 +561,7 @@
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3209034400446768650">Səhifədə pul çıxıla bilər</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> hostundakı fəaliyyətinizə nəzarət edilir</translation>
+<translation id="3212623355668894776">Baxış datasının bu cihazdan silinməsi üçün bütün Qonaq pəncərələrini bağlayın.</translation>
 <translation id="3215092763954878852">WebAuthn istifadə edilmədi</translation>
 <translation id="3218181027817787318">Nisbi</translation>
 <translation id="3225919329040284222">Serverin təqdim etdiyi sertifikat daxili gözləntilərə uyğun deyil.</translation>
@@ -911,6 +920,7 @@
 <translation id="4658638640878098064">Yuxarı soldan ştapel vurun</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
+<translation id="4675657451653251260">Qonaq rejimində Chrome profili məlumatını görməyəcəksiniz. Parollar və ödəniş metodları kimi Google hesabı məlumatlarına giriş üçün <ph name="LINK_BEGIN" />daxil ola<ph name="LINK_END" /> bilərsiniz.</translation>
 <translation id="467662567472608290">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatında xətalar var. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> əlçatımlılıq tədbirlərinə cavab vermək istəyir</translation>
 <translation id="467809019005607715">Google Slayd</translation>
@@ -938,6 +948,12 @@
 <translation id="4761104368405085019">Mikrofon işlədin</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ünvanındakı səhifə müvəqqəti olaraq deaktiv ola və ya həmişəlik olaraq yeni ünvana köçə bilər.</translation>
 <translation id="4766713847338118463">Aşağıdan qoşa ştapel vurun</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Bu cihazda saxlanacaq fəaliyyətiniz:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bu pəncərədə endirdiyiniz fayllar
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Naməlum xəta baş verdi.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popap bloklandı}other{# popap bloklandı}}</translation>
 <translation id="4780366598804516005">Poçt qutusu 1</translation>
@@ -1392,6 +1408,7 @@
 <translation id="6587923378399804057">Kopyalanmış link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> idarə edilmir</translation>
 <translation id="6596325263575161958">Şifrələmə variantları</translation>
+<translation id="6596892391065203054">Bu məzmunun çap edilməsi administratorunuz tərəfindən bloklanıb.</translation>
 <translation id="6604181099783169992">Hərəkət və İşıq Sensorları</translation>
 <translation id="6609880536175561541">Prc7 (Zərf)</translation>
 <translation id="6612358246767739896">Qorunan kontent</translation>
@@ -1875,11 +1892,21 @@
 <translation id="8559762987265718583">Cihazınızın tarixi və vaxtı (<ph name="DATE_AND_TIME" />) yanlış olduğundan, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeninə şəxsi bağlantı yaradıla bilməz.</translation>
 <translation id="8564182942834072828">Ayrıca sənədlər/Sıralanmamış nüsxələr</translation>
 <translation id="8564985650692024650">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parolunuzu sıfırlamağı tövsiyə edir.</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Bu cihazda saxlanmayacaq fəaliyyət:
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Bu pəncərədə baxdığınız səhifələr
+          <ph name="LIST_ITEM" />Kukilər və sayt datası
+<ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Kartları daha sürətli təsdiqləmək üçün Toxunuş İD'si istifadə edin</translation>
 <translation id="858637041960032120">Telefon nömrəsi əlavə edin</translation>
 <translation id="8589998999637048520">Ən yüksək keyfiyyət</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
 <translation id="8606726445206553943">MIDI cihazlarınızı istifadə edin</translation>
+<translation id="8612761427948161954">Salam, <ph name="USERNAME" />,
+        <ph name="BR" />
+        Qonaq kimi baxırsınız</translation>
 <translation id="861775596732816396">Ölçü 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
@@ -2018,6 +2045,7 @@
 <translation id="9183302530794969518">Google Sənəd</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> dəstəklənməyən protokol istifadə edir.</translation>
 <translation id="9191834167571392248">Aşağı soldan deşik açın</translation>
+<translation id="9199905725844810519">Çap funksiyası bloklanıb</translation>
 <translation id="9205078245616868884">Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="9207861905230894330">Məqalə əlavə etmək olmadı.</translation>
 <translation id="9213433120051936369">Görünüşü fərdiləşdirin</translation>

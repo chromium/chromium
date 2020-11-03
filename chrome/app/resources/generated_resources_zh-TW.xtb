@@ -1145,6 +1145,7 @@
 <translation id="2307462900900812319">設定網路</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">這個網站已遭封鎖，無法存取你的動作感應器或光源感應器。</translation>
+<translation id="2311497964614110326">透過 Google 助理迅速取得更好的答案</translation>
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前的瀏覽權限設為「隱藏」</translation>
 <translation id="2314774579020744484">翻譯網頁內容所使用的語言</translation>
@@ -1257,6 +1258,7 @@
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">位址無效。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
+<translation id="2444469058037141906">只需說出或輸入要查詢的資訊</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
 <translation id="2445484935443597917">建立新的個人資料</translation>
 <translation id="2448312741937722512">類型</translation>
@@ -1877,7 +1879,7 @@
 <translation id="3158033540161634471">設定指紋</translation>
 <translation id="3159493096109238499">米色</translation>
 <translation id="3159978855457658359">編輯裝置名稱</translation>
-<translation id="3160194132051443473">「<ph name="CURRENTKEY" />」已指派。請再次按下「<ph name="CURRENTKEY" />」鍵以移除指派並離開。</translation>
+<translation id="3160194132051443473">「<ph name="CURRENTKEY" />」已指派。請再次按下「<ph name="CURRENTKEY" />」鍵移除指派並離開。</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (使用硬體加密金鑰)</translation>
 <translation id="3161522574479303604">所有語言</translation>
 <translation id="3162853326462195145">學校帳戶</translation>
@@ -2173,6 +2175,7 @@
 <translation id="3514373592552233661">如有多個可用網路，慣用網路的優先使用順序高於其他已知網路</translation>
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
 <translation id="3518985090088779359">接受並繼續</translation>
+<translation id="3519564332031442870">列印後端服務</translation>
 <translation id="3521606918211282604">變更磁碟大小</translation>
 <translation id="3523642406908660543">在網站要使用外掛程式存取你的電腦時，必須先詢問你 (建議使用)</translation>
 <translation id="3524965460886318643">匯出活動</translation>
@@ -2689,6 +2692,7 @@
 <translation id="4088095054444612037">接受群組邀請</translation>
 <translation id="4089235344645910861">設定儲存完畢，已開始同步處理。</translation>
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
+<translation id="4090811767089219951">Google 助理也可以回答這類問題</translation>
 <translation id="4090947011087001172">要重設 <ph name="SITE" /> 的網站權限嗎？</translation>
 <translation id="4093865285251893588">個人資料圖片</translation>
 <translation id="4093955363990068916">本機檔案：</translation>
@@ -2955,6 +2959,7 @@
 <translation id="4441124369922430666">你要在裝置開機時自動啟動這個應用程式嗎？</translation>
 <translation id="4441147046941420429">如要繼續，請將安全金鑰從裝置上移除，然後重新插入並輕觸安全金鑰</translation>
 <translation id="444134486829715816">展開...</translation>
+<translation id="4441928470323187829">已由系統管理員固定</translation>
 <translation id="4442424173763614572">DNS 查詢失敗</translation>
 <translation id="4443536555189480885">說明(&amp;H)</translation>
 <translation id="4444304522807523469">存取透過 USB 附加或是在區域網路上的文件掃描器</translation>
@@ -3678,6 +3683,7 @@
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
+<translation id="5320112320661303273">你似乎已在其他裝置上設定 Google 助理。開啟下列設定即可運用 Google 助理的更多功能。</translation>
 <translation id="532247166573571973">無法連上伺服器，請稍後再試。</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置資訊設定時區</translation>
@@ -5495,6 +5501,7 @@
 <translation id="7475671414023905704">Netscape 遺失密碼網址</translation>
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
+<translation id="7478362879637727630">你必須將這部 Chrome Education 裝置註冊至教育版帳號。如要註冊新帳號，請前往 https://g.co/workspace/edusignup。</translation>
 <translation id="7478485216301680444">無法安裝 Kiosk 應用程式。</translation>
 <translation id="7479221278376295180">儲存空間使用量總覽</translation>
 <translation id="7481312909269577407">往前</translation>
@@ -5619,6 +5626,7 @@
 <translation id="7632948528260659758">下列 Kiosk 應用程式更新失敗：</translation>
 <translation id="7633724038415831385">只有這一次需要等待更新。Chromebook 上的軟體更新會在背景中執行。</translation>
 <translation id="7634566076839829401">發生錯誤，請再試一次。</translation>
+<translation id="7635048370253485243">已由系統管理員固定</translation>
 <translation id="763632859238619983">禁止任何網站安裝付款處理常式</translation>
 <translation id="7636919061354591437">安裝到這部裝置</translation>
 <translation id="7638605456503525968">序列埠</translation>
@@ -6667,7 +6675,7 @@
 <translation id="8814319344131658221">系統會根據你的語言偏好設定，提供可使用拼字檢查的語言</translation>
 <translation id="8814644416678422095">硬碟</translation>
 <translation id="8814687660896548945">系統正在掃描封存檔案，請稍候...</translation>
-<translation id="8814987898367958792">請再按一次「<ph name="CURRENTKEY" />」鍵以確認並離開。</translation>
+<translation id="8814987898367958792">請再按一次「<ph name="CURRENTKEY" />」鍵確認並離開。</translation>
 <translation id="881782782501875829">新增通訊埠號碼</translation>
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>

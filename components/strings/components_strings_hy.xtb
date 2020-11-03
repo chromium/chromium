@@ -80,6 +80,14 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Դուք մուտքագրել եք գաղտնաբառը մի կայքում, որը չի կառավարվում ձեր կազմակերպության կողմից: Ձեր հաշիվը պաշտպանելու համար խորհուրդ ենք տալիս չօգտագործել այդ գաղտնաբառը այլ հավելվածներում և կայքերում:</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
+<translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
+        Այս սարքում չեն պահվի՝
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />էջերը, որոնք դիտում եք այս պատուհանում,
+          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
+          <ph name="LIST_ITEM" />հաշվի տվյալները (<ph name="LINK_BEGIN" />դուրս գալ<ph name="LINK_END" />)։
+        <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Ստացման եղանակը</translation>
 <translation id="1281476433249504884">Շեղջիչ 1</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
@@ -555,6 +563,7 @@
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3209034400446768650">Այս էջը կարող է գումար գանձել ձեզնից</translation>
 <translation id="3212581601480735796">Ձեր գործողությունները <ph name="HOSTNAME" /> կայքում հետագծվում են</translation>
+<translation id="3212623355668894776">Այս սարքից դիտարկիչում արված ձեր գործողությունները ջնջելու համար փակեք հյուրի ռեժիմում բացված բոլոր պատուհանները։</translation>
 <translation id="3215092763954878852">Չհաջողվեց օգտագործել WebAuthn-ը</translation>
 <translation id="3218181027817787318">Հարաբերական</translation>
 <translation id="3225919329040284222">Սերվերի կողմից ներկայացված վկայագիրը չի համապատասխանում ներկառուցված հարաչափերին: Այս հարաչափերը ձեզ պաշտպանելու նպատակով ներառված են բարձր անվտանգության որոշակի վեբկայքերի համար:</translation>
@@ -916,6 +925,7 @@
 <translation id="4658638640878098064">Ամրակ վերևի ձախ կողմում</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
+<translation id="4675657451653251260">Հյուրի ռեժիմում դուք չեք տեսնի Chrome-ի պրոֆիլի տեղեկությունները։ <ph name="LINK_BEGIN" />Մուտք գործեք<ph name="LINK_END" />՝ ձեր տեղեկությունները, օրինակ՝ գաղտնաբառերն ու վճարման եղանակները օգտագործելու համար։</translation>
 <translation id="467662567472608290">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը սխալներ է պարունակում: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="4677585247300749148"><ph name="URL" /> կայքն ուզում է օգտագործել հատուկ գործողությունները</translation>
 <translation id="467809019005607715">Google Սլայդներ</translation>
@@ -943,6 +953,12 @@
 <translation id="4761104368405085019">Օգտագործել խոսափողը</translation>
 <translation id="4764776831041365478">Հնարավոր է, <ph name="URL" />-ի վեբէջը ժամանակավորապես ծանրաբեռնված է կամ մշտապես տեղափոխվել է նոր հասցեով:</translation>
 <translation id="4766713847338118463">Երկու ամրակ ներքևում</translation>
+<translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
+        Այս սարքում կպահվեն՝
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ֆայլերը, որոնք ներբեռնում եք այս պատուհանում։
+        <ph name="END_LIST" /></translation>
 <translation id="4771973620359291008">Անհայտ սխալ է տեղի ունեցել:</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ելնող պատուհանն արգելափակված է}one{# ելնող պատուհան արգելափակված է}other{# ելնող պատուհան արգելափակված է}}</translation>
 <translation id="4780366598804516005">Փոստարկղ 1</translation>
@@ -1397,6 +1413,7 @@
 <translation id="6587923378399804057">Ձեր պատճենած հղումը</translation>
 <translation id="6591833882275308647">Ձեր <ph name="DEVICE_TYPE" /> սարքը չի կառավարվում</translation>
 <translation id="6596325263575161958">Գաղտնագրման ընտրանքներ</translation>
+<translation id="6596892391065203054">Ձեր ադմինիստրատորն արգելափակել է այս բովանդակության տպումը։</translation>
 <translation id="6604181099783169992">Շարժման և լուսավորության տվիչներ</translation>
 <translation id="6609880536175561541">Prc7 (ծրար)</translation>
 <translation id="6612358246767739896">Պաշտպանված բովանդակություն</translation>
@@ -1880,11 +1897,21 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-ի հետ կապակցում չի կարող հաստատվել, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ է:</translation>
 <translation id="8564182942834072828">Մի քանի փաստաթուղթ/չառանձնացված պատճեններ</translation>
 <translation id="8564985650692024650">Խորհուրդ ենք տալիս վերակայել <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ի ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
+<translation id="856887218454489335"><ph name="BEGIN_BOLD" />
+        Այս սարքում չեն պահվի՝
+        <ph name="END_BOLD" />
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />էջերը, որոնք դիտում եք այս պատուհանում,
+          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները։
+        <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Օգտագործել Touch ID-ն՝ քարտերն ավելի արագ հաստատելու համար</translation>
 <translation id="858637041960032120">Ավելացնել հեռախոսահամար</translation>
 <translation id="8589998999637048520">Լավագույն որակ</translation>
 <translation id="860043288473659153">Քարտապանի անունը</translation>
 <translation id="8606726445206553943">Օգտագործել ձեր MIDI սարքերը</translation>
+<translation id="8612761427948161954">Ողջույն, <ph name="USERNAME" />։
+        <ph name="BR" />
+        Դուք օգտագործում եք հյուրի ռեժիմը։</translation>
 <translation id="861775596732816396">Չափ 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Համընկնող գաղտնաբառեր չկան։ Ցուցադրել բոլոր պահված գաղտնաբառերը։</translation>
@@ -2023,6 +2050,7 @@
 <translation id="9183302530794969518">Google Փաստաթղթեր</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />-ն օգտագործում է չաջակցվող հաղորդակարգ:</translation>
 <translation id="9191834167571392248">Անցք ներքևի ձախ կողմում</translation>
+<translation id="9199905725844810519">Տպումն արգելափակված է</translation>
 <translation id="9205078245616868884">Ձեր տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Համաժամացման համար մուտքագրեք անցաբառը:</translation>
 <translation id="9207861905230894330">Չհաջողվեց ավելացնել հոդվածը:</translation>
 <translation id="9213433120051936369">Անհատականացրեք արտաքին տեսքը</translation>

@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">Créer un onglet.</translation>
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1154690515305205900">Impossible de créer un lien vers le texte mis en évidence.</translation>
+<translation id="1157749421655780457">Autoriser l'accès à la position</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1172898394251786223">Champ suivant</translation>
 <translation id="1176932207622159128">Enreg. image imposs.</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">Aucun élément</translation>
 <translation id="1692118695553449118">La synchronisation est activée</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> sélectionnés</translation>
+<translation id="1715940067130687605">Utiliser votre position actuelle.</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour lancer l'installation.</translation>
 <translation id="1746815479209538200">Pour naviguer sur le Web, ajoutez un nouvel onglet.</translation>
 <translation id="1752547299766512813">Enr. mots passe</translation>
@@ -374,6 +376,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
 <translation id="5083464117946352670">Imposs. déterm. taille fichier</translation>
+<translation id="5090832849094901128">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Gazouillis terminé.</translation>
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5127805178023152808">La synchronisation est désactivée</translation>

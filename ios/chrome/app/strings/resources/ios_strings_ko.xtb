@@ -19,6 +19,7 @@
 <translation id="1125564390852150847">새 탭 만들기</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1154690515305205900">강조표시된 텍스트로 연결되는 링크를 생성할 수 없습니다.</translation>
+<translation id="1157749421655780457">위치 권한 허용...</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1172898394251786223">다음 필드</translation>
 <translation id="1176932207622159128">이미지를 저장할 수 없음</translation>
@@ -82,6 +83,7 @@
 <translation id="1690731385917361335">항목 없음</translation>
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 선택됨</translation>
+<translation id="1715940067130687605">현재 위치 사용</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
 <translation id="1746815479209538200">웹을 탐색하려면 새 탭을 추가하세요.</translation>
 <translation id="1752547299766512813">비밀번호 저장</translation>
@@ -374,6 +376,7 @@
 <translation id="5059136629401106827">확인</translation>
 <translation id="5062321486222145940">Google 드라이브 설치</translation>
 <translation id="5083464117946352670">파일 크기를 알 수 없습니다.</translation>
+<translation id="5090832849094901128">비밀번호를 삭제해도 <ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="5094827893301452931">Tweet이 완료되었습니다.</translation>
 <translation id="5118764316110575523">사용 안함</translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>
@@ -515,7 +518,7 @@
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 삭제함</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> 사이트를 신뢰한다면 다른 사이트의 저장된 비밀번호를 사용할 수 있습니다.
 
-하지만 모든 사이트에 고유한 비밀번호를 사용하는 것이 좋습니다.</translation>
+하지만 사이트마다 고유한 비밀번호를 사용하는 것이 좋습니다.</translation>
 <translation id="651505212789431520">동기화를 취소하시겠습니까? 언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="6561262006871132942">확대</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
