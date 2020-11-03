@@ -724,17 +724,17 @@
   {
     "name": "cryptauth-v2-device-activity-status",
     "owners": [ "khorimoto", "nohle", "themaxli" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 93
   },
   {
     "name": "cryptauth-v2-devicesync",
     "owners": [ "khorimoto", "nohle" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 93
   },
   {
     "name": "cryptauth-v2-enrollment",
     "owners": [ "khorimoto", "nohle" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 93
   },
   {
     "name": "cups-ipp-printing-backend",
@@ -889,7 +889,7 @@
   {
     "name": "disable-cryptauth-v1-devicesync",
     "owners": [ "khorimoto", "nohle" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "disable-explicit-dma-fences",
