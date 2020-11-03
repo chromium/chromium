@@ -65,6 +65,7 @@ class ReportScheduler {
     virtual void OnBrowserVersionUploaded() = 0;
 
     // Extension request
+    virtual void StartWatchingExtensionRequestIfNeeded() = 0;
     virtual void StopWatchingExtensionRequest() = 0;
     virtual void OnExtensionRequestUploaded() = 0;
 
@@ -93,8 +94,6 @@ class ReportScheduler {
   void SetReportUploaderForTesting(std::unique_ptr<ReportUploader> uploader);
 
   void OnDMTokenUpdated();
-
-  Delegate* GetDelegateForTesting();
 
  private:
   // Observes CloudReportingEnabled policy.

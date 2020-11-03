@@ -3430,6 +3430,8 @@ static_library("browser") {
       "enterprise/reporting/extension_request/extension_request_observer_factory.h",
       "enterprise/reporting/extension_request/extension_request_policy_handler.cc",
       "enterprise/reporting/extension_request/extension_request_policy_handler.h",
+      "enterprise/reporting/extension_request/extension_request_report_throttler.cc",
+      "enterprise/reporting/extension_request/extension_request_report_throttler.h",
       "enterprise/reporting/prefs.cc",
       "enterprise/reporting/prefs.h",
       "enterprise/reporting/profile_report_generator_desktop.cc",
