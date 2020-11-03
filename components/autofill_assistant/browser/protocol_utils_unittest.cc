@@ -5,7 +5,9 @@
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
 #include "base/macros.h"
+#include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -17,6 +19,8 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pair;
+using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAreArray;
 
@@ -319,6 +323,37 @@ TEST_F(ProtocolUtilsTest, ParseActionsUpdateScriptListFullFeatured) {
   EXPECT_THAT(scripts, SizeIs(1));
   EXPECT_THAT("a", Eq(scripts[0]->handle.path));
   EXPECT_THAT("name", Eq(scripts[0]->handle.chip.text));
+}
+
+TEST_F(ProtocolUtilsTest, ParseTriggerScriptsParseError) {
+  std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
+  EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts("invalid", &trigger_scripts));
+  EXPECT_TRUE(trigger_scripts.empty());
+}
+
+TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
+  GetTriggerScriptsResponseProto proto;
+
+  TriggerScriptProto trigger_script_1;
+  *trigger_script_1.mutable_trigger_condition()->mutable_selector() =
+      ToSelectorProto("fake_element_1");
+  TriggerScriptProto trigger_script_2;
+  trigger_script_2.set_on_trigger_condition_no_longer_true(
+      TriggerScriptProto::CANCEL_SESSION);
+
+  *proto.add_trigger_scripts() = trigger_script_1;
+  *proto.add_trigger_scripts() = trigger_script_2;
+
+  std::string proto_str;
+  proto.SerializeToString(&proto_str);
+
+  std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
+  EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts));
+  EXPECT_THAT(
+      trigger_scripts,
+      ElementsAre(
+          Pointee(Property(&TriggerScript::AsProto, Eq(trigger_script_1))),
+          Pointee(Property(&TriggerScript::AsProto, Eq(trigger_script_2)))));
 }
 
 }  // namespace

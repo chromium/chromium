@@ -73,4 +73,8 @@ bool TriggerScript::EvaluateTriggerConditions(
                                   dynamic_trigger_conditions);
 }
 
+TriggerScriptProto TriggerScript::AsProto() const {
+  return proto_;
+}
+
 }  // namespace autofill_assistant

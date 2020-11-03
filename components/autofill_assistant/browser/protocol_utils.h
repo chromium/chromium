@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
 
 class GURL;
 
@@ -73,6 +74,12 @@ class ProtocolUtils {
                            std::vector<std::unique_ptr<Action>>* actions,
                            std::vector<std::unique_ptr<Script>>* scripts,
                            bool* should_update_scripts);
+
+  // Parse trigger scripts from the given |response| and insert them into
+  // |trigger_scripts|. Returns false if parsing failed, else true.
+  static bool ParseTriggerScripts(
+      const std::string& response,
+      std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts);
 
  private:
   // To avoid instantiate this class by accident.

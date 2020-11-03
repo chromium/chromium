@@ -26,6 +26,8 @@ class TriggerScript {
       const StaticTriggerConditions& static_trigger_conditions,
       const DynamicTriggerConditions& dynamic_trigger_conditions) const;
 
+  TriggerScriptProto AsProto() const;
+
  private:
   friend class TriggerScriptTest;
 

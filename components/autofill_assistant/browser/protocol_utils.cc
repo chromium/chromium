@@ -286,4 +286,23 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
   return true;
 }
 
+// static
+bool ProtocolUtils::ParseTriggerScripts(
+    const std::string& response,
+    std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts) {
+  DCHECK(trigger_scripts);
+
+  GetTriggerScriptsResponseProto response_proto;
+  if (!response_proto.ParseFromString(response)) {
+    LOG(ERROR) << "Failed to parse trigger scripts response";
+    return false;
+  }
+
+  for (const auto& trigger_script_proto : response_proto.trigger_scripts()) {
+    trigger_scripts->emplace_back(
+        std::make_unique<TriggerScript>(trigger_script_proto));
+  }
+  return true;
+}
+
 }  // namespace autofill_assistant
