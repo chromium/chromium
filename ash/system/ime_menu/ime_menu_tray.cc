@@ -146,8 +146,7 @@ class ImeTitleView : public views::View, public views::ButtonListener {
     title_label->SetBorder(
         views::CreateEmptyBorder(0, kMenuEdgeEffectivePadding, 1, 0));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER,
-                             true /* use_unified_theme */);
+    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
     style.SetupLabel(title_label);
 
     AddChildView(title_label);
@@ -288,7 +287,7 @@ class ImeMenuListView : public ImeListView {
   };
 
   explicit ImeMenuListView(std::unique_ptr<Delegate> delegate)
-      : ImeListView(delegate.get(), true /* use_unified_theme */) {
+      : ImeListView(delegate.get()) {
     set_should_focus_ime_after_selection_with_keyboard(true);
     delegate_ = std::move(delegate);
   }

@@ -30,10 +30,7 @@ class ImeListView : public TrayDetailedView {
     HIDE_SINGLE_IME
   };
 
-  // The former uses default for |use_unified_theme|.
   explicit ImeListView(DetailedViewDelegate* delegate);
-  ImeListView(DetailedViewDelegate* delegate, bool use_unified_theme);
-
   ~ImeListView() override;
 
   // Initializes the contents of a newly-instantiated ImeListView.
@@ -103,16 +100,14 @@ class ImeListView : public TrayDetailedView {
   std::string last_selected_item_id_;
 
   // True if the last item is selected with keyboard.
-  bool last_item_selected_with_keyboard_;
+  bool last_item_selected_with_keyboard_ = false;
 
   // True if focus should be requested after switching IMEs with keyboard in
   // order to trigger spoken feedback with ChromeVox enabled.
-  bool should_focus_ime_after_selection_with_keyboard_;
+  bool should_focus_ime_after_selection_with_keyboard_ = false;
 
   // The item view of the current selected IME.
-  views::View* current_ime_view_;
-
-  const bool use_unified_theme_;
+  views::View* current_ime_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ImeListView);
 };

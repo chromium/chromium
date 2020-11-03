@@ -65,8 +65,8 @@ class LocaleItem : public ActionableView {
 
     auto* display_name_view = TrayPopupUtils::CreateDefaultLabel();
     display_name_view->SetText(display_name);
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL,
-                             true /* use_unified_theme */);
+    TrayPopupItemStyle style(
+        TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
     style.SetupLabel(display_name_view);
 
     display_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);

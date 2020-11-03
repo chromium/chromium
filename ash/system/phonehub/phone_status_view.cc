@@ -125,8 +125,7 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
   phone_model_->AddObserver(this);
 
   phone_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER,
-                           true /* use_unified_theme */);
+  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
   style.SetupLabel(phone_name_label_);
   phone_name_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
   AddView(TriView::Container::START, phone_name_label_);

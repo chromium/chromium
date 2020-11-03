@@ -104,8 +104,7 @@ class TitleView : public views::View {
         new views::Label(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     AddChildView(title_label);
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE,
-                             true /* use_unified_theme */);
+    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE);
     style.SetupLabel(title_label);
     layout_ptr->SetFlexForView(title_label, 1);
     help_button_ = new TopShortcutButton(

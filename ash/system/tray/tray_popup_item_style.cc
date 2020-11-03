@@ -6,7 +6,6 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/native_theme/native_theme.h"
@@ -21,13 +20,9 @@ constexpr int kDisabledAlpha = 0x61;
 }  // namespace
 
 // static
-SkColor TrayPopupItemStyle::GetIconColor(ColorStyle color_style,
-                                         bool use_unified_theme) {
-  const SkColor kBaseIconColor =
-      use_unified_theme
-          ? AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)
-          : gfx::kChromeIconGrey;
+SkColor TrayPopupItemStyle::GetIconColor(ColorStyle color_style) {
+  const SkColor kBaseIconColor = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   switch (color_style) {
     case ColorStyle::ACTIVE:
       return kBaseIconColor;
@@ -43,13 +38,7 @@ SkColor TrayPopupItemStyle::GetIconColor(ColorStyle color_style,
 }
 
 TrayPopupItemStyle::TrayPopupItemStyle(FontStyle font_style)
-    : TrayPopupItemStyle(font_style, true) {}
-
-TrayPopupItemStyle::TrayPopupItemStyle(FontStyle font_style,
-                                       bool use_unified_theme)
-    : font_style_(font_style),
-      color_style_(ColorStyle::ACTIVE),
-      use_unified_theme_(use_unified_theme) {
+    : font_style_(font_style), color_style_(ColorStyle::ACTIVE) {
   if (font_style_ == FontStyle::SYSTEM_INFO)
     color_style_ = ColorStyle::INACTIVE;
 }
@@ -57,11 +46,8 @@ TrayPopupItemStyle::TrayPopupItemStyle(FontStyle font_style,
 TrayPopupItemStyle::~TrayPopupItemStyle() = default;
 
 SkColor TrayPopupItemStyle::GetTextColor() const {
-  const SkColor kBaseTextColor =
-      use_unified_theme_
-          ? AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorPrimary)
-          : SkColorSetA(SK_ColorBLACK, 0xDE);
+  const SkColor kBaseTextColor = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
 
   switch (color_style_) {
     case ColorStyle::ACTIVE:
@@ -79,7 +65,7 @@ SkColor TrayPopupItemStyle::GetTextColor() const {
 }
 
 SkColor TrayPopupItemStyle::GetIconColor() const {
-  return GetIconColor(color_style_, use_unified_theme_);
+  return GetIconColor(color_style_);
 }
 
 void TrayPopupItemStyle::SetupLabel(views::Label* label) const {
@@ -89,8 +75,7 @@ void TrayPopupItemStyle::SetupLabel(views::Label* label) const {
   const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
   switch (font_style_) {
     case FontStyle::TITLE:
-      label->SetFontList(base_font_list.Derive(use_unified_theme_ ? 8 : 1,
-                                               gfx::Font::NORMAL,
+      label->SetFontList(base_font_list.Derive(8, gfx::Font::NORMAL,
                                                gfx::Font::Weight::MEDIUM));
       break;
     case FontStyle::SMALL_TITLE:

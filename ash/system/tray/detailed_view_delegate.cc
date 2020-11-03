@@ -131,8 +131,7 @@ TriView* DetailedViewDelegate::CreateTitleRow(int string_id) {
 
   auto* label = TrayPopupUtils::CreateDefaultLabel();
   label->SetText(l10n_util::GetStringUTF16(string_id));
-  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::TITLE,
-                           true /* use_unified_theme */);
+  TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::TITLE);
   style.SetupLabel(label);
   tri_view->AddView(TriView::Container::CENTER, label);
 
@@ -182,8 +181,7 @@ HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
     ViewClickListener* listener,
     const gfx::VectorIcon& icon,
     const base::string16& text) {
-  HoverHighlightView* item =
-      new HoverHighlightView(listener, true /* use_unified_theme */);
+  HoverHighlightView* item = new HoverHighlightView(listener);
   if (icon.is_empty())
     item->AddLabelRow(text);
   else
