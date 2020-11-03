@@ -58,8 +58,8 @@ namespace chromeos {
 namespace {
 
 using ReloadKeyCallback =
-    base::Callback<void(const scoped_refptr<PublicKey>& public_key,
-                        const scoped_refptr<PrivateKey>& private_key)>;
+    base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
+                            const scoped_refptr<PrivateKey>& private_key)>;
 
 bool IsOwnerInTests(const std::string& user_id) {
   if (user_id.empty() ||
@@ -78,13 +78,14 @@ void LoadPrivateKeyByPublicKeyOnWorkerThread(
     const scoped_refptr<OwnerKeyUtil>& owner_key_util,
     crypto::ScopedPK11Slot public_slot,
     crypto::ScopedPK11Slot private_slot,
-    const ReloadKeyCallback& callback) {
+    ReloadKeyCallback callback) {
   std::vector<uint8_t> public_key_data;
   scoped_refptr<PublicKey> public_key;
   if (!owner_key_util->ImportPublicKey(&public_key_data)) {
     scoped_refptr<PrivateKey> private_key;
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(callback, public_key, private_key));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), public_key, private_key));
     return;
   }
   public_key = new PublicKey();
@@ -106,13 +107,13 @@ void LoadPrivateKeyByPublicKeyOnWorkerThread(
         public_key->data(), public_slot.get()));
   }
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(callback, public_key, private_key));
+      FROM_HERE, base::BindOnce(std::move(callback), public_key, private_key));
 }
 
 void ContinueLoadPrivateKeyOnIOThread(
     const scoped_refptr<OwnerKeyUtil>& owner_key_util,
     const std::string username_hash,
-    const ReloadKeyCallback& callback,
+    ReloadKeyCallback callback,
     crypto::ScopedPK11Slot private_slot) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -127,19 +128,23 @@ void ContinueLoadPrivateKeyOnIOThread(
       FROM_HERE,
       base::BindOnce(&LoadPrivateKeyByPublicKeyOnWorkerThread, owner_key_util,
                      crypto::GetPublicSlotForChromeOSUser(username_hash),
-                     std::move(private_slot), callback));
+                     std::move(private_slot), std::move(callback)));
 }
 
 void LoadPrivateKeyOnIOThread(const scoped_refptr<OwnerKeyUtil>& owner_key_util,
                               const std::string username_hash,
-                              const ReloadKeyCallback& callback) {
+                              ReloadKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   crypto::EnsureNSSInit();
 
-  auto continue_load_private_key_callback =
-      base::Bind(&ContinueLoadPrivateKeyOnIOThread, owner_key_util,
-                 username_hash, callback);
+  // TODO(crbug.com/1007635): Consider changing the
+  // `crypto::GetPrivateSlotForChromeOSUser()` signature so that, instead of
+  // returning the private slot when available synchronously, it always calls
+  // the callback. This would avoid needing `base::AdaptCallbackForRepeating()`.
+  auto continue_load_private_key_callback = base::AdaptCallbackForRepeating(
+      base::BindOnce(&ContinueLoadPrivateKeyOnIOThread, owner_key_util,
+                     username_hash, std::move(callback)));
 
   crypto::ScopedPK11Slot private_slot = crypto::GetPrivateSlotForChromeOSUser(
       username_hash, continue_load_private_key_callback);
@@ -703,9 +708,10 @@ void OwnerSettingsServiceChromeOS::OnPostKeypairLoadedActions() {
   has_pending_fixups_ = true;
 }
 
-void OwnerSettingsServiceChromeOS::ReloadKeypairImpl(const base::Callback<
-    void(const scoped_refptr<PublicKey>& public_key,
-         const scoped_refptr<PrivateKey>& private_key)>& callback) {
+void OwnerSettingsServiceChromeOS::ReloadKeypairImpl(
+    base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
+                            const scoped_refptr<PrivateKey>& private_key)>
+        callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // The profile may not be fully created yet: abort, and wait till it is. The
@@ -723,7 +729,7 @@ void OwnerSettingsServiceChromeOS::ReloadKeypairImpl(const base::Callback<
       FROM_HERE,
       base::BindOnce(&LoadPrivateKeyOnIOThread, owner_key_util_,
                      ProfileHelper::GetUserIdHashFromProfile(profile_),
-                     callback));
+                     std::move(callback)));
 }
 
 void OwnerSettingsServiceChromeOS::StorePendingChanges() {

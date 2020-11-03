@@ -148,8 +148,8 @@ bool OwnerSettingsService::SetString(const std::string& setting,
 }
 
 void OwnerSettingsService::ReloadKeypair() {
-  ReloadKeypairImpl(base::BindRepeating(&OwnerSettingsService::OnKeypairLoaded,
-                                        as_weak_ptr()));
+  ReloadKeypairImpl(
+      base::BindOnce(&OwnerSettingsService::OnKeypairLoaded, as_weak_ptr()));
 }
 
 void OwnerSettingsService::OnKeypairLoaded(

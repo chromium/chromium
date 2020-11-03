@@ -45,7 +45,7 @@
 //   LargeObjectList my_stuff;
 //   ... fill my_stuff with lots of LargeObjects ...
 //   some_loop->PostTask(
-//       FROM_HERE, base::Bind(&ProcessStuff, MakeImmutable(&my_stuff)));
+//       FROM_HERE, base::BindOnce(&ProcessStuff, MakeImmutable(&my_stuff)));
 //
 // The last line, which resets my_stuff to a default-initialized
 // state, incurs only the cost of a swap of LargeObjectLists, which is

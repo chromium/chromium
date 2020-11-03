@@ -18,7 +18,7 @@ Timer::~Timer() {
 
 void Timer::Start(base::TimeDelta initial_delay,
                   base::TimeDelta delay,
-                  const base::Closure& user_task) {
+                  const base::RepeatingClosure& user_task) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   delay_ = delay;

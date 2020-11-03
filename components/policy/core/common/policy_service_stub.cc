@@ -26,7 +26,7 @@ bool PolicyServiceStub::IsInitializationComplete(PolicyDomain domain) const {
   return true;
 }
 
-void PolicyServiceStub::RefreshPolicies(base::Closure callback) {
+void PolicyServiceStub::RefreshPolicies(base::OnceClosure callback) {
   if (!callback.is_null())
     std::move(callback).Run();
 }

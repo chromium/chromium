@@ -17,18 +17,18 @@
 
 // This is a helper utility for Bind()ing callbacks to a given TaskRunner.
 // The typical use is when |a| (of class |A|) wants to hand a callback such as
-// base::Bind(&A::AMethod, a) to |b|, but needs to ensure that when |b| executes
-// the callback, it does so on a specific TaskRunner (for example, |a|'s current
-// MessageLoop).
+// base::BindOnce(&A::AMethod, a) to |b|, but needs to ensure that when |b|
+// executes the callback, it does so on a specific TaskRunner (for example,
+// |a|'s current MessageLoop).
 //
 // Typical usage: request to be called back on the current sequence:
-// other->StartAsyncProcessAndCallMeBack(
-//    BindToTaskRunner(my_task_runner_, base::Bind(&MyClass::MyMethod, this)));
+// other->StartAsyncProcessAndCallMeBack(BindToTaskRunner(
+//     my_task_runner_, base::BindOnce(&MyClass::MyMethod, this)));
 //
-// Note that like base::Bind(), BindToTaskRunner() can't bind non-constant
-// references, and that *unlike* base::Bind(), BindToTaskRunner() makes copies
-// of its arguments, and thus can't be used with arrays. Note that the callback
-// is always posted to the target TaskRunner.
+// Note that like base::Bind{Once,Repeating}(), BindToTaskRunner() can't bind
+// non-constant references, and that *unlike* base::Bind{Once,Repeating}(),
+// BindToTaskRunner() makes copies of its arguments, and thus can't be used with
+// arrays. Note that the callback is always posted to the target TaskRunner.
 //
 // As a convenience, you can use BindToCurrentSequence() to bind to the
 // TaskRunner for the current sequence (i.e.

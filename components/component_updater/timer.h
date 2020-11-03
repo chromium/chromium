@@ -20,7 +20,7 @@ class Timer {
 
   void Start(base::TimeDelta initial_delay,
              base::TimeDelta delay,
-             const base::Closure& user_task);
+             const base::RepeatingClosure& user_task);
 
   void Stop();
 
@@ -32,7 +32,7 @@ class Timer {
   base::OneShotTimer timer_;
 
   base::TimeDelta delay_;
-  base::Closure user_task_;
+  base::RepeatingClosure user_task_;
 
   DISALLOW_COPY_AND_ASSIGN(Timer);
 };

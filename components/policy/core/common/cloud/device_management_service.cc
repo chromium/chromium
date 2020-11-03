@@ -103,7 +103,7 @@ bool FailedWithProxy(const std::string& mime_type,
 
 // While these are declared as constexpr in the header file, they also need to
 // be defined here so that references can be retrieved when needed.  For
-// example, setting one of these constants as an argument to base::Bind()
+// example, setting one of these constants as an argument to base::BindOnce()
 // requires such a reference.
 const int DeviceManagementService::kSuccess;
 const int DeviceManagementService::kInvalidArgument;

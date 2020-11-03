@@ -362,8 +362,8 @@ void UkmService::RegisterPrefs(PrefRegistrySimple* registry) {
 void UkmService::StartInitTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "UkmService::StartInitTask";
-  metrics_providers_.AsyncInit(base::Bind(&UkmService::FinishedInitTask,
-                                          self_ptr_factory_.GetWeakPtr()));
+  metrics_providers_.AsyncInit(base::BindOnce(&UkmService::FinishedInitTask,
+                                              self_ptr_factory_.GetWeakPtr()));
 }
 
 void UkmService::FinishedInitTask() {

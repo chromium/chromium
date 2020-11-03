@@ -251,7 +251,7 @@ class ModelTypeWorker : public UpdateHandler,
 //     base::MakeRefCounted<GetLocalChangesRequest>(cancelation_signal_);
 // model_type_processor_->GetLocalChanges(
 //     max_entries,
-//     base::Bind(&GetLocalChangesRequest::SetResponse, request));
+//     base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
 // request->WaitForResponseOrCancelation();
 // CommitRequestDataList response;
 // if (!request->WasCancelled())

@@ -300,7 +300,7 @@ void CastSocketImpl::OnConnectTimeout() {
 void CastSocketImpl::ResetConnectLoopCallback() {
   DCHECK(connect_loop_callback_.IsCancelled());
   connect_loop_callback_.Reset(
-      base::Bind(&CastSocketImpl::DoConnectLoop, base::Unretained(this)));
+      base::BindOnce(&CastSocketImpl::DoConnectLoop, base::Unretained(this)));
 }
 
 void CastSocketImpl::PostTaskToStartConnectLoop(int result) {

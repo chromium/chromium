@@ -126,9 +126,10 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
                        const scoped_refptr<PrivateKey>& private_key);
 
   // Platform-specific keypair loading algorithm.
-  virtual void ReloadKeypairImpl(const base::Callback<
-      void(const scoped_refptr<PublicKey>& public_key,
-           const scoped_refptr<PrivateKey>& private_key)>& callback) = 0;
+  virtual void ReloadKeypairImpl(
+      base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
+                              const scoped_refptr<PrivateKey>& private_key)>
+          callback) = 0;
 
   // Plafrom-specific actions which should be performed when keypair is loaded.
   virtual void OnPostKeypairLoadedActions() = 0;

@@ -406,7 +406,7 @@ class CastSocketImpl : public CastSocket {
   // The callback signature is based on net::CompletionCallback, which passes
   // operation result codes as byte counts in the success case, or as
   // net::Error enum values for error cases.
-  base::CancelableCallback<void(int)> connect_loop_callback_;
+  base::CancelableOnceCallback<void(int)> connect_loop_callback_;
 
   // Cast message formatting and parsing layer.
   std::unique_ptr<CastTransport> transport_;
