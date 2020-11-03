@@ -30133,6 +30133,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3717" label="CSSPseudoHostContextCompoundList"/>
   <int value="3718" label="CSSPseudoHostDynamicSpecificity"/>
   <int value="3719" label="GetCurrentBrowsingContextMedia"/>
+  <int value="3720" label="MouseEventRelativePositionForInlineElement"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

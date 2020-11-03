@@ -491,6 +491,12 @@ void MouseEvent::ComputeRelativePosition() {
     FloatPoint local_pos = layout_object->AbsoluteToLocalFloatPoint(
         FloatPoint(AbsoluteLocation()));
 
+    if (layout_object->IsInline()) {
+      UseCounter::Count(
+          target_node->GetDocument(),
+          WebFeature::kMouseEventRelativePositionForInlineElement);
+    }
+
     // Adding this here to address crbug.com/570666. Basically we'd like to
     // find the local coordinates relative to the padding box not the border
     // box.
