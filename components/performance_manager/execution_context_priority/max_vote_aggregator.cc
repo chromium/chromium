@@ -33,7 +33,9 @@ void MaxVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
   channel_ = std::move(channel);
 }
 
-VoteReceipt MaxVoteAggregator::SubmitVote(VoterId voter_id, const Vote& vote) {
+VoteReceipt MaxVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
+                                          voting::VoterId<Vote> voter_id,
+                                          const Vote& vote) {
   DCHECK(vote.IsValid());
   DCHECK(channel_.IsValid());
 
@@ -42,7 +44,7 @@ VoteReceipt MaxVoteAggregator::SubmitVote(VoterId voter_id, const Vote& vote) {
   // be added.
 
   // Add the new vote.
-  VoteData& vote_data = vote_data_map_[vote.execution_context()];
+  VoteData& vote_data = vote_data_map_[vote.context()];
   auto accepted_vote = AcceptedVote(this, voter_id, vote);
   auto receipt = accepted_vote.IssueReceipt();
   if (vote_data.AddVote(std::move(accepted_vote), next_vote_id_++))
@@ -52,7 +54,8 @@ VoteReceipt MaxVoteAggregator::SubmitVote(VoterId voter_id, const Vote& vote) {
   return receipt;
 }
 
-VoteReceipt MaxVoteAggregator::ChangeVote(VoteReceipt receipt,
+VoteReceipt MaxVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
+                                          VoteReceipt receipt,
                                           AcceptedVote* old_vote,
                                           const Vote& new_vote) {
   DCHECK(receipt.HasVote(old_vote));
@@ -69,7 +72,8 @@ VoteReceipt MaxVoteAggregator::ChangeVote(VoteReceipt receipt,
   return receipt;
 }
 
-void MaxVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
+void MaxVoteAggregator::VoteInvalidated(util::PassKey<AcceptedVote>,
+                                        AcceptedVote* vote) {
   DCHECK(!vote->IsValid());
   auto it = GetVoteData(vote);
   VoteData& vote_data = it->second;
@@ -85,6 +89,13 @@ void MaxVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
     vote_data_map_.erase(it);
 }
 
+MaxVoteAggregator::StampedVote::StampedVote() = default;
+MaxVoteAggregator::StampedVote::StampedVote(AcceptedVote&& vote,
+                                            uint32_t vote_id)
+    : vote(std::move(vote)), vote_id(vote_id) {}
+MaxVoteAggregator::StampedVote::StampedVote(StampedVote&&) = default;
+MaxVoteAggregator::StampedVote::~StampedVote() = default;
+
 MaxVoteAggregator::VoteDataMap::iterator MaxVoteAggregator::GetVoteData(
     AcceptedVote* vote) {
   // The vote being retrieved should have us as its consumer, and we should
@@ -94,7 +105,7 @@ MaxVoteAggregator::VoteDataMap::iterator MaxVoteAggregator::GetVoteData(
   DCHECK(channel_.IsValid());
 
   // Find the votes associated with this execution context.
-  auto it = vote_data_map_.find(vote->vote().execution_context());
+  auto it = vote_data_map_.find(vote->vote().context());
   DCHECK(it != vote_data_map_.end());
   return it;
 }
@@ -160,7 +171,7 @@ void MaxVoteAggregator::VoteData::UpstreamVote(VotingChannel* channel) {
 
   // Change our existing vote, or create a new one as necessary.
   if (receipt_.HasVote()) {
-    receipt_.ChangeVote(vote.priority(), vote.reason());
+    receipt_.ChangeVote(vote.value(), vote.reason());
   } else {
     receipt_ = channel->SubmitVote(vote);
   }

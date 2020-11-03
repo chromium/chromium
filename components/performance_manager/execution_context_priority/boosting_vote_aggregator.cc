@@ -167,6 +167,10 @@ void BoostingVoteAggregator::ActiveLayers::SetInactive(uint32_t layer_bit) {
   active_layers_ &= ~layer_bit;
 }
 
+BoostingVoteAggregator::NodeData::NodeData() = default;
+BoostingVoteAggregator::NodeData::NodeData(NodeData&& rhs) = default;
+BoostingVoteAggregator::NodeData::~NodeData() = default;
+
 base::TaskPriority BoostingVoteAggregator::NodeData::GetEffectivePriorityLevel()
     const {
   if (IsActive(PriorityToBit(base::TaskPriority::HIGHEST)))
@@ -187,7 +191,7 @@ void BoostingVoteAggregator::NodeData::DecrementEdgeCount() {
 
 VoteReceipt BoostingVoteAggregator::NodeData::SetIncomingVote(
     VoteConsumer* consumer,
-    VoterId voter_id,
+    voting::VoterId<Vote> voter_id,
     const Vote& vote) {
   incoming_ = AcceptedVote(consumer, voter_id, vote);
   return incoming_.IssueReceipt();
@@ -251,7 +255,7 @@ BoostingVoteAggregator::~BoostingVoteAggregator() {
 
 VotingChannel BoostingVoteAggregator::GetVotingChannel() {
   DCHECK(nodes_.empty());
-  DCHECK_EQ(kInvalidVoterId, input_voter_id_);
+  DCHECK_EQ(voting::kInvalidVoterId<Vote>, input_voter_id_);
   DCHECK_GT(1u, factory_.voting_channels_issued());
   auto channel = factory_.BuildVotingChannel();
   input_voter_id_ = channel.voter_id();
@@ -266,7 +270,7 @@ void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
 }
 
 bool BoostingVoteAggregator::IsSetup() const {
-  return input_voter_id_ != kInvalidVoterId && channel_.IsValid();
+  return input_voter_id_ != voting::kInvalidVoterId<Vote> && channel_.IsValid();
 }
 
 void BoostingVoteAggregator::SubmitBoostingVote(
@@ -390,22 +394,23 @@ void BoostingVoteAggregator::CancelBoostingVote(
   }
 }
 
-VoteReceipt BoostingVoteAggregator::SubmitVote(VoterId voter_id,
+VoteReceipt BoostingVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
+                                               voting::VoterId<Vote> voter_id,
                                                const Vote& vote) {
   DCHECK(IsSetup());
   DCHECK_EQ(input_voter_id_, voter_id);
   DCHECK(vote.IsValid());
 
   // Store the vote.
-  auto node_data_it = FindOrCreateNodeData(vote.execution_context());
+  auto node_data_it = FindOrCreateNodeData(vote.context());
   VoteReceipt receipt =
       node_data_it->second.SetIncomingVote(this, voter_id, vote);
 
   NodeDataPtrSet changes;
 
   // Update the reachability tree for the new vote if necessary.
-  if (vote.priority() != base::TaskPriority::LOWEST) {
-    uint32_t layer_bit = PriorityToBit(vote.priority());
+  if (vote.value() != base::TaskPriority::LOWEST) {
+    uint32_t layer_bit = PriorityToBit(vote.value());
     OnVoteAdded(layer_bit, &(*node_data_it), &changes);
   }
 
@@ -414,12 +419,13 @@ VoteReceipt BoostingVoteAggregator::SubmitVote(VoterId voter_id,
   return receipt;
 }
 
-VoteReceipt BoostingVoteAggregator::ChangeVote(VoteReceipt receipt,
+VoteReceipt BoostingVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
+                                               VoteReceipt receipt,
                                                AcceptedVote* old_vote,
                                                const Vote& new_vote) {
   // Remember the old and new priorities before committing any changes.
-  base::TaskPriority old_priority = old_vote->vote().priority();
-  base::TaskPriority new_priority = new_vote.priority();
+  base::TaskPriority old_priority = old_vote->vote().value();
+  base::TaskPriority new_priority = new_vote.value();
 
   // Update the vote in place.
   auto node_data_it = GetNodeDataByVote(old_vote);
@@ -447,9 +453,10 @@ VoteReceipt BoostingVoteAggregator::ChangeVote(VoteReceipt receipt,
   return receipt;
 }
 
-void BoostingVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
+void BoostingVoteAggregator::VoteInvalidated(util::PassKey<AcceptedVote>,
+                                             AcceptedVote* vote) {
   auto node_data_it = GetNodeDataByVote(vote);
-  base::TaskPriority old_priority = vote->vote().priority();
+  base::TaskPriority old_priority = vote->vote().value();
 
   NodeDataPtrSet changes;
 
@@ -501,7 +508,7 @@ BoostingVoteAggregator::GetNodeDataByVote(AcceptedVote* vote) {
   DCHECK(vote->voter_id() == input_voter_id_);
   DCHECK(IsSetup());
 
-  auto it = nodes_.find(vote->vote().execution_context());
+  auto it = nodes_.find(vote->vote().context());
   DCHECK(it != nodes_.end());
   DCHECK_EQ(vote, &it->second.incoming());
   return it;
@@ -537,7 +544,7 @@ const char* BoostingVoteAggregator::GetVoteReason(
   // preferentially use that reason.
   if (node_data.HasIncomingVote()) {
     const Vote& incoming = node_data.incoming().vote();
-    if (priority == incoming.priority()) {
+    if (priority == incoming.value()) {
       // This node will not have an active incoming edge in this case.
       DCHECK(GetActiveInboundEdge(layer_bit, node) == reverse_edges_.end());
       return incoming.reason();

@@ -62,36 +62,41 @@ VotingChannel ExecutionContextPriorityDecorator::GetVotingChannel() {
   return channel;
 }
 
-VoteReceipt ExecutionContextPriorityDecorator::SubmitVote(VoterId voter_id,
-                                                          const Vote& vote) {
+VoteReceipt ExecutionContextPriorityDecorator::SubmitVote(
+    util::PassKey<VotingChannel>,
+    voting::VoterId<Vote> voter_id,
+    const Vote& vote) {
   DCHECK_EQ(voter_id_, voter_id);
-  const auto* execution_context = vote.execution_context();
+  const auto* execution_context = vote.context();
   auto* accepted_vote =
       ExecutionContextPriorityAccess::GetAcceptedVote(execution_context);
   DCHECK(!accepted_vote->IsValid());
   *accepted_vote = AcceptedVote(this, voter_id, vote);
   SetPriorityAndReason(execution_context,
-                       PriorityAndReason(vote.priority(), vote.reason()));
+                       PriorityAndReason(vote.value(), vote.reason()));
   return accepted_vote->IssueReceipt();
 }
 
 VoteReceipt ExecutionContextPriorityDecorator::ChangeVote(
+    util::PassKey<AcceptedVote>,
     VoteReceipt receipt,
     AcceptedVote* old_vote,
     const Vote& new_vote) {
-  const auto* execution_context = new_vote.execution_context();
+  const auto* execution_context = new_vote.context();
   auto* accepted_vote =
       ExecutionContextPriorityAccess::GetAcceptedVote(execution_context);
   DCHECK_EQ(accepted_vote, old_vote);
   DCHECK(accepted_vote->IsValid());
   accepted_vote->UpdateVote(new_vote);
-  SetPriorityAndReason(execution_context, PriorityAndReason(new_vote.priority(),
-                                                            new_vote.reason()));
+  SetPriorityAndReason(execution_context,
+                       PriorityAndReason(new_vote.value(), new_vote.reason()));
   return receipt;
 }
 
-void ExecutionContextPriorityDecorator::VoteInvalidated(AcceptedVote* vote) {
-  const auto* execution_context = vote->vote().execution_context();
+void ExecutionContextPriorityDecorator::VoteInvalidated(
+    util::PassKey<AcceptedVote>,
+    AcceptedVote* vote) {
+  const auto* execution_context = vote->vote().context();
   auto* accepted_vote =
       ExecutionContextPriorityAccess::GetAcceptedVote(execution_context);
   DCHECK_EQ(accepted_vote, vote);

@@ -4,13 +4,16 @@
 
 #include "components/performance_manager/public/execution_context_priority/boosting_vote_aggregator.h"
 
-#include "components/performance_manager/test_support/execution_context_priority.h"
+#include "components/performance_manager/test_support/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
 
 namespace {
+
+using DummyVoter = voting::test::DummyVoter<Vote>;
+using DummyVoteConsumer = voting::test::DummyVoteConsumer<Vote>;
 
 // Some dummy execution contexts.
 const ExecutionContext* kExecutionContext0 =
@@ -74,10 +77,10 @@ class BoostingVoteAggregatorTest : public testing::Test {
   }
 
   // The id of |agg_| as seen by its upstream |consumer_|.
-  VoterId voter_id_ = 0;
-  test::DummyVoteConsumer consumer_;
+  voting::VoterId<Vote> voter_id_;
+  DummyVoteConsumer consumer_;
   TestBoostingVoteAggregator agg_;
-  test::DummyVoter voter_;
+  DummyVoter voter_;
 };
 
 }  // namespace

@@ -5,7 +5,7 @@
 #include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 
 #include "base/rand_util.h"
-#include "components/performance_manager/test_support/execution_context_priority.h"
+#include "components/performance_manager/test_support/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -21,6 +21,9 @@ using VoteData = MaxVoteAggregatorTestAccess::VoteData;
 using StampedVote = MaxVoteAggregatorTestAccess::StampedVote;
 
 namespace {
+
+using DummyVoter = voting::test::DummyVoter<Vote>;
+using DummyVoteConsumer = voting::test::DummyVoteConsumer<Vote>;
 
 // Some dummy execution contexts.
 const ExecutionContext* kExecutionContext0 =
@@ -62,7 +65,7 @@ const char* RandReason() {
   return kReason2;
 }
 
-class FakeVoteConsumer : public test::DummyVoteConsumer {
+class FakeVoteConsumer : public DummyVoteConsumer {
  public:
   FakeVoteConsumer() = default;
   ~FakeVoteConsumer() override = default;
@@ -70,7 +73,10 @@ class FakeVoteConsumer : public test::DummyVoteConsumer {
  protected:
   // Deliberately override VoteInvalidated so that this consumer silently
   // ignores these notifications.
-  void VoteInvalidated(AcceptedVote* vote) override { return; }
+  void VoteInvalidated(util::PassKey<AcceptedVote>,
+                       AcceptedVote* vote) override {
+    return;
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakeVoteConsumer);
@@ -85,10 +91,11 @@ TEST(MaxVoteAggregatorTest, StampedVoteCast) {
 }
 
 TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
-  // Build a simple consumer/voter chain so that we generate an actual VoterId.
+  // Build a simple consumer/voter chain so that we generate an actual
+  // voting::VoterId.
   FakeVoteConsumer consumer;
-  test::DummyVoter voter;
-  VoterId voter_id = 0;
+  DummyVoter voter;
+  voting::VoterId<Vote> voter_id;
   {
     auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
     voter_id = channel.voter_id();
@@ -140,15 +147,14 @@ TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
         auto& vote = vd.GetVoteForTesting(index);
         auto priority = RandPriority();
         auto* reason = RandReason();
-        while (priority == vote.vote().priority() &&
+        while (priority == vote.vote().value() &&
                reason == vote.vote().reason()) {
           priority = RandPriority();
           reason = RandReason();
         }
 
         // Update the vote.
-        vote.UpdateVote(
-            Vote(vote.vote().execution_context(), priority, reason));
+        vote.UpdateVote(Vote(vote.vote().context(), priority, reason));
         vd.UpdateVote(index, next_vote_id++);
       } break;
 
@@ -180,13 +186,13 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   //         / |  \
   //        /  |   \
   //  voter0 voter1 voter2
-  test::DummyVoteConsumer consumer;
+  DummyVoteConsumer consumer;
   MaxVoteAggregator agg;
-  test::DummyVoter voter0;
-  test::DummyVoter voter1;
-  test::DummyVoter voter2;
+  DummyVoter voter0;
+  DummyVoter voter1;
+  DummyVoter voter2;
 
-  VoterId agg_id = kInvalidVoterId;
+  voting::VoterId<Vote> agg_id = voting::kInvalidVoterId<Vote>;
   {
     auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
     agg_id = channel.voter_id();

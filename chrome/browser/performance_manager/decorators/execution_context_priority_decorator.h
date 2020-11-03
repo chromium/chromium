@@ -25,17 +25,21 @@ class ExecutionContextPriorityDecorator : public GraphOwnedDefaultImpl,
 
  protected:
   // VoteConsumer implementation:
-  VoteReceipt SubmitVote(VoterId voter_id, const Vote& vote) override;
-  VoteReceipt ChangeVote(VoteReceipt receipt,
+  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
+                         voting::VoterId<Vote> voter_id,
+                         const Vote& vote) override;
+  VoteReceipt ChangeVote(util::PassKey<AcceptedVote>,
+                         VoteReceipt receipt,
                          AcceptedVote* old_vote,
                          const Vote& new_vote) override;
-  void VoteInvalidated(AcceptedVote* vote) override;
+  void VoteInvalidated(util::PassKey<AcceptedVote>,
+                       AcceptedVote* vote) override;
 
   // Our VotingChannelFactory for providing VotingChannels to our input voters.
   VotingChannelFactory factory_;
 
   // The ID of the only voting channel we've vended.
-  VoterId voter_id_ = kInvalidVoterId;
+  voting::VoterId<Vote> voter_id_ = voting::kInvalidVoterId<Vote>;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExecutionContextPriorityDecorator);

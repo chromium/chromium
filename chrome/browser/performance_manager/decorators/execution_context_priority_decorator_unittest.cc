@@ -10,8 +10,8 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
-#include "components/performance_manager/test_support/execution_context_priority.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "components/performance_manager/test_support/voting.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +22,9 @@ namespace {
 
 using execution_context::ExecutionContextRegistry;
 using testing::_;
+
+using DummyVoter = voting::test::DummyVoter<Vote>;
+using DummyVoteConsumer = voting::test::DummyVoteConsumer<Vote>;
 
 class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
  public:
@@ -63,7 +66,7 @@ TEST_F(ExecutionContextPriorityDecoratorTest, VotesForwardedToGraph) {
   auto* execution_context =
       execution_context_registry->GetExecutionContextForFrameNode(frame.get());
 
-  test::DummyVoter voter;
+  DummyVoter voter;
   voter.SetVotingChannel(ecpd->GetVotingChannel());
 
   MockFrameNodeObserver obs;
@@ -82,11 +85,11 @@ TEST_F(ExecutionContextPriorityDecoratorTest, VotesForwardedToGraph) {
 
   // Update the vote with a new priority and expect that to propagate.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame.get(), _));
-  receipt.ChangeVote(base::TaskPriority::HIGHEST, test::DummyVoter::kReason);
+  receipt.ChangeVote(base::TaskPriority::HIGHEST, DummyVoter::kReason);
   testing::Mock::VerifyAndClear(&obs);
   EXPECT_EQ(base::TaskPriority::HIGHEST,
             frame->priority_and_reason().priority());
-  EXPECT_EQ(test::DummyVoter::kReason, frame->priority_and_reason().reason());
+  EXPECT_EQ(DummyVoter::kReason, frame->priority_and_reason().reason());
 
   // Cancel the existing vote and expect it to go back to the default.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame.get(), _));

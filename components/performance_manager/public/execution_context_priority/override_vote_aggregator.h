@@ -32,21 +32,25 @@ class OverrideVoteAggregator : public VoteConsumer {
 
  protected:
   // VoteConsumer implementation:
-  VoteReceipt SubmitVote(VoterId voter_id, const Vote& vote) override;
-  VoteReceipt ChangeVote(VoteReceipt receipt,
-                         AcceptedVote* vote,
-                         const Vote& old_vote) override;
-  void VoteInvalidated(AcceptedVote* vote) override;
+  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
+                         voting::VoterId<Vote> voter_id,
+                         const Vote& vote) override;
+  VoteReceipt ChangeVote(util::PassKey<AcceptedVote>,
+                         VoteReceipt receipt,
+                         AcceptedVote* old_vote,
+                         const Vote& new_vote) override;
+  void VoteInvalidated(util::PassKey<AcceptedVote>,
+                       AcceptedVote* vote) override;
 
  private:
   // This is move-only because all of its members are move-only.
   struct VoteData {
-    VoteData() = default;
+    VoteData();
     VoteData(const VoteData& rhs) = delete;
-    VoteData(VoteData&& rhs) = default;
+    VoteData(VoteData&& rhs);
     VoteData& operator=(const VoteData& rhs) = delete;
     VoteData& operator=(VoteData&& rhs) = default;
-    ~VoteData() = default;
+    ~VoteData();
 
     // Each of these IsValid if a vote has been emitted for this execution
     // context, otherwise !IsValid. At least one of the votes must be valid,
@@ -70,8 +74,8 @@ class OverrideVoteAggregator : public VoteConsumer {
 
   // Our two input voters. We'll only accept votes from these voters otherwise
   // we'll DCHECK.
-  VoterId override_voter_id_ = kInvalidVoterId;
-  VoterId default_voter_id_ = kInvalidVoterId;
+  voting::VoterId<Vote> override_voter_id_ = voting::kInvalidVoterId<Vote>;
+  voting::VoterId<Vote> default_voter_id_ = voting::kInvalidVoterId<Vote>;
 
   // Our channel for upstreaming our votes.
   VotingChannel channel_;

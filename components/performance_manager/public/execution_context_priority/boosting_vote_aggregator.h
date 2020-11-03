@@ -119,19 +119,19 @@ class BoostingVoteAggregator : public VoteConsumer {
   // direct Vote for that node, or as an input or output of a BoostedVote.
   class NodeData : public ActiveLayers {
    public:
-    NodeData() = default;
+    NodeData();
     NodeData(const NodeData& rhs) = delete;
-    NodeData(NodeData&& rhs) = default;
+    NodeData(NodeData&& rhs);
     NodeData& operator=(const NodeData& rhs) = delete;
     NodeData& operator=(NodeData&& rhs) = default;
-    ~NodeData() = default;
+    ~NodeData();
 
     const AcceptedVote& incoming() const { return incoming_; }
     const VoteReceipt& receipt() const { return receipt_; }
 
     // For modifying |incoming_|.
     VoteReceipt SetIncomingVote(VoteConsumer* consumer,
-                                VoterId voter_id,
+                                voting::VoterId<Vote> voter_id,
                                 const Vote& vote);
     void UpdateIncomingVote(const Vote& vote) { incoming_.UpdateVote(vote); }
 
@@ -267,11 +267,15 @@ class BoostingVoteAggregator : public VoteConsumer {
   void CancelBoostingVote(const BoostingVote* boosting_vote);
 
   // VoteConsumer implementation:
-  VoteReceipt SubmitVote(VoterId voter_id, const Vote& vote) override;
-  VoteReceipt ChangeVote(VoteReceipt receipt,
+  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
+                         voting::VoterId<Vote> voter_id,
+                         const Vote& vote) override;
+  VoteReceipt ChangeVote(util::PassKey<AcceptedVote>,
+                         VoteReceipt receipt,
                          AcceptedVote* old_vote,
                          const Vote& new_vote) override;
-  void VoteInvalidated(AcceptedVote* vote) override;
+  void VoteInvalidated(util::PassKey<AcceptedVote>,
+                       AcceptedVote* vote) override;
 
   // Helper functions for enumerating over incoming and outgoing edges.
   // |function| should accept a single input parameter that is a
@@ -361,7 +365,7 @@ class BoostingVoteAggregator : public VoteConsumer {
 
   // Our input voter. We'll only accept votes from this voter otherwise we'll
   // DCHECK.
-  VoterId input_voter_id_ = kInvalidVoterId;
+  voting::VoterId<Vote> input_voter_id_ = voting::kInvalidVoterId<Vote>;
 
   // Our channel for upstreaming our votes.
   VotingChannel channel_;

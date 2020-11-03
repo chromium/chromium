@@ -31,11 +31,15 @@ class MaxVoteAggregator : public VoteConsumer {
 
  protected:
   // VoteConsumer implementation:
-  VoteReceipt SubmitVote(VoterId voter_id, const Vote& vote) override;
-  VoteReceipt ChangeVote(VoteReceipt receipt,
+  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
+                         voting::VoterId<Vote> voter_id,
+                         const Vote& vote) override;
+  VoteReceipt ChangeVote(util::PassKey<AcceptedVote>,
+                         VoteReceipt receipt,
                          AcceptedVote* old_vote,
                          const Vote& new_vote) override;
-  void VoteInvalidated(AcceptedVote* vote) override;
+  void VoteInvalidated(util::PassKey<AcceptedVote>,
+                       AcceptedVote* vote) override;
 
  private:
   friend class MaxVoteAggregatorTestAccess;
@@ -44,19 +48,18 @@ class MaxVoteAggregator : public VoteConsumer {
   // order votes by the order in which they were received. This ensures that
   // votes upstreamed by this aggregator remain as stable as possible.
   struct StampedVote {
-    StampedVote() = default;
-    StampedVote(AcceptedVote&& vote, uint32_t vote_id)
-        : vote(std::move(vote)), vote_id(vote_id) {}
-    StampedVote(StampedVote&&) = default;
+    StampedVote();
+    StampedVote(AcceptedVote&& vote, uint32_t vote_id);
+    StampedVote(StampedVote&&);
     StampedVote(const StampedVote&) = delete;
-    ~StampedVote() = default;
+    ~StampedVote();
 
     StampedVote& operator=(StampedVote&&) = default;
     StampedVote& operator=(const StampedVote&) = delete;
 
     bool operator<(const StampedVote& rhs) const {
-      if (vote.vote().priority() != rhs.vote.vote().priority())
-        return vote.vote().priority() < rhs.vote.vote().priority();
+      if (vote.vote().value() != rhs.vote.vote().value())
+        return vote.vote().value() < rhs.vote.vote().value();
       // Higher |vote_id| values are of lower priority.
       return vote_id > rhs.vote_id;
     }

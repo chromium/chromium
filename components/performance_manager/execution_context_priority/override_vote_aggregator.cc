@@ -13,7 +13,7 @@ OverrideVoteAggregator::~OverrideVoteAggregator() = default;
 
 VotingChannel OverrideVoteAggregator::GetOverrideVotingChannel() {
   DCHECK(vote_data_map_.empty());
-  DCHECK_EQ(kInvalidVoterId, override_voter_id_);
+  DCHECK_EQ(voting::kInvalidVoterId<Vote>, override_voter_id_);
   DCHECK_GT(2u, factory_.voting_channels_issued());
   auto channel = factory_.BuildVotingChannel();
   override_voter_id_ = channel.voter_id();
@@ -22,7 +22,7 @@ VotingChannel OverrideVoteAggregator::GetOverrideVotingChannel() {
 
 VotingChannel OverrideVoteAggregator::GetDefaultVotingChannel() {
   DCHECK(vote_data_map_.empty());
-  DCHECK_EQ(kInvalidVoterId, default_voter_id_);
+  DCHECK_EQ(voting::kInvalidVoterId<Vote>, default_voter_id_);
   DCHECK_GT(2u, factory_.voting_channels_issued());
   auto channel = factory_.BuildVotingChannel();
   default_voter_id_ = channel.voter_id();
@@ -37,16 +37,18 @@ void OverrideVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
 }
 
 bool OverrideVoteAggregator::IsSetup() const {
-  return override_voter_id_ != kInvalidVoterId &&
-         default_voter_id_ != kInvalidVoterId && channel_.IsValid();
+  return override_voter_id_ != voting::kInvalidVoterId<Vote> &&
+         default_voter_id_ != voting::kInvalidVoterId<Vote> &&
+         channel_.IsValid();
 }
 
-VoteReceipt OverrideVoteAggregator::SubmitVote(VoterId voter_id,
+VoteReceipt OverrideVoteAggregator::SubmitVote(util::PassKey<VotingChannel>,
+                                               voting::VoterId<Vote> voter_id,
                                                const Vote& vote) {
   DCHECK(vote.IsValid());
   DCHECK(IsSetup());
 
-  VoteData& vote_data = vote_data_map_[vote.execution_context()];
+  VoteData& vote_data = vote_data_map_[vote.context()];
   if (voter_id == override_voter_id_) {
     DCHECK(!vote_data.override_vote.IsValid());
     vote_data.override_vote = AcceptedVote(this, voter_id, vote);
@@ -62,7 +64,8 @@ VoteReceipt OverrideVoteAggregator::SubmitVote(VoterId voter_id,
   }
 }
 
-VoteReceipt OverrideVoteAggregator::ChangeVote(VoteReceipt receipt,
+VoteReceipt OverrideVoteAggregator::ChangeVote(util::PassKey<AcceptedVote>,
+                                               VoteReceipt receipt,
                                                AcceptedVote* old_vote,
                                                const Vote& new_vote) {
   DCHECK(receipt.HasVote(old_vote));
@@ -84,7 +87,8 @@ VoteReceipt OverrideVoteAggregator::ChangeVote(VoteReceipt receipt,
   return receipt;
 }
 
-void OverrideVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
+void OverrideVoteAggregator::VoteInvalidated(util::PassKey<AcceptedVote>,
+                                             AcceptedVote* vote) {
   DCHECK(!vote->IsValid());
   auto it = GetVoteData(vote);
   VoteData& vote_data = it->second;
@@ -116,6 +120,10 @@ void OverrideVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
     UpstreamVote(other->vote(), &vote_data);
 }
 
+OverrideVoteAggregator::VoteData::VoteData() = default;
+OverrideVoteAggregator::VoteData::VoteData(VoteData&& rhs) = default;
+OverrideVoteAggregator::VoteData::~VoteData() = default;
+
 OverrideVoteAggregator::VoteDataMap::iterator
 OverrideVoteAggregator::GetVoteData(AcceptedVote* vote) {
   // The vote being retrieved should have us as its consumer, and have been
@@ -126,7 +134,7 @@ OverrideVoteAggregator::GetVoteData(AcceptedVote* vote) {
          vote->voter_id() == default_voter_id_);
   DCHECK(IsSetup());
 
-  auto it = vote_data_map_.find(vote->vote().execution_context());
+  auto it = vote_data_map_.find(vote->vote().context());
   DCHECK(it != vote_data_map_.end());
   return it;
 }
@@ -135,7 +143,7 @@ void OverrideVoteAggregator::UpstreamVote(const Vote& vote,
                                           VoteData* vote_data) {
   // Change our existing vote, or create a new one as necessary.
   if (vote_data->receipt.HasVote())
-    vote_data->receipt.ChangeVote(vote.priority(), vote.reason());
+    vote_data->receipt.ChangeVote(vote.value(), vote.reason());
   else
     vote_data->receipt = channel_.SubmitVote(vote);
 }

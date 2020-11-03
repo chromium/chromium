@@ -4,11 +4,14 @@
 
 #include "components/performance_manager/public/execution_context_priority/override_vote_aggregator.h"
 
-#include "components/performance_manager/test_support/execution_context_priority.h"
+#include "components/performance_manager/test_support/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
+
+using DummyVoter = voting::test::DummyVoter<Vote>;
+using DummyVoteConsumer = voting::test::DummyVoteConsumer<Vote>;
 
 // Some dummy execution contexts.
 const ExecutionContext* kDummyExecutionContext =
@@ -33,12 +36,12 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   //        /     \
   //   voter0     voter1
   // (override) (default)
-  test::DummyVoteConsumer consumer;
+  DummyVoteConsumer consumer;
   OverrideVoteAggregator agg;
-  test::DummyVoter voter0;
-  test::DummyVoter voter1;
+  DummyVoter voter0;
+  DummyVoter voter1;
 
-  VoterId agg_id = kInvalidVoterId;
+  voting::VoterId<Vote> agg_id = voting::kInvalidVoterId<Vote>;
   {
     auto channel = consumer.voting_channel_factory_.BuildVotingChannel();
     agg_id = channel.voter_id();
@@ -57,7 +60,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(0, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Canceling the default vote should clear all votes.
   voter1.receipts_.clear();
@@ -75,7 +78,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Submitting an override vote should override it and propagate to the
   // consumer. This should update the existing vote in place.
@@ -86,7 +89,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Canceling the override vote should drop back to using the default vote.
   // This will again reuse the existing upstream vote.
@@ -97,7 +100,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Changing the default vote should propagate, as there's no override vote.
   voter1.receipts_[0].ChangeVote(kDefaultPriority, kReason);
@@ -110,14 +113,14 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
                            kReason);
 
   // Changing back should also propagate.
-  voter1.receipts_[0].ChangeVote(kDefaultPriority, test::DummyVoter::kReason);
+  voter1.receipts_[0].ChangeVote(kDefaultPriority, DummyVoter::kReason);
   EXPECT_EQ(0u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Submitting an override vote should override it and propagate to the
   // consumer.
@@ -128,7 +131,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Canceling the default vote should do nothing.
   voter1.receipts_.clear();
@@ -138,7 +141,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Submitting another default vote should do nothing.
   voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
@@ -148,7 +151,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Changing the default vote should do nothing.
   voter1.receipts_.back().ChangeVote(kDefaultPriority, kReason);
@@ -157,7 +160,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
-                           test::DummyVoter::kReason);
+                           DummyVoter::kReason);
 
   // Changing the override vote should change the upstream vote.
   voter0.receipts_.back().ChangeVote(kOverridePriority, kReason);

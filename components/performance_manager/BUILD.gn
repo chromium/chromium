@@ -125,6 +125,7 @@ static_library("performance_manager") {
     "public/render_process_host_proxy.h",
     "public/v8_memory/v8_detailed_memory.h",
     "public/v8_memory/web_memory.h",
+    "public/voting/voting.h",
     "public/web_contents_proxy.h",
     "registered_objects.h",
     "render_frame_host_proxy.cc",
@@ -247,6 +248,7 @@ source_set("unit_tests") {
     "v8_memory/v8_memory_test_helpers.cc",
     "v8_memory/v8_memory_test_helpers.h",
     "v8_memory/web_memory_aggregator_unittest.cc",
+    "voting_unittest.cc",
     "web_contents_proxy_unittest.cc",
     "worker_watcher_unittest.cc",
   ]
