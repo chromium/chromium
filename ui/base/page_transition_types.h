@@ -111,6 +111,10 @@ enum PageTransition {
   // Any of the core values above can be augmented by one or more qualifiers.
   // These qualifiers further define the transition.
 
+  // TODO(https://crbug.com/1141501): this is for an experiment, and will be
+  // removed once data is collected from experiment.
+  PAGE_TRANSITION_FROM_API_2 = 0x00400000,
+
   // A managed user attempted to visit a URL but was blocked.
   PAGE_TRANSITION_BLOCKED = 0x00800000,
 

@@ -36,6 +36,7 @@ static_library("browser") {
     "history_db_task.h",
     "history_service.cc",
     "history_service.h",
+    "history_service_observer.cc",
     "history_service_observer.h",
     "history_types.cc",
     "history_types.h",

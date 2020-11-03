@@ -406,4 +406,10 @@ const base::Feature kMaybeElideToRegistrableDomain{
     "OmniboxUIExperimentElideToRegistrableDomain",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// NOTE: while this is enabled by default, CCT visits are only tagged with the
+// necessary transition type if the intent launching CCT supplies the
+// appropriate parameter.
+const base::Feature kHideVisitsFromCct{"OmniboxHideVisitsFromCct",
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace omnibox

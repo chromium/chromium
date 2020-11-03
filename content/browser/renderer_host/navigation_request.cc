@@ -1155,8 +1155,9 @@ NavigationRequest::NavigationRequest(
     bool is_renderer_initiated = !browser_initiated_;
     Referrer referrer(*common_params_->referrer);
     GetContentClient()->browser()->OverrideNavigationParams(
-        source_site_instance_.get(), &common_params_->transition,
-        &is_renderer_initiated, &referrer, &common_params_->initiator_origin);
+        controller->GetWebContents(), source_site_instance_.get(),
+        &common_params_->transition, &is_renderer_initiated, &referrer,
+        &common_params_->initiator_origin);
     common_params_->referrer =
         blink::mojom::Referrer::New(referrer.url, referrer.policy);
     browser_initiated_ = !is_renderer_initiated;

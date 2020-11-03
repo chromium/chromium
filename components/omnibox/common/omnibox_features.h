@@ -108,6 +108,11 @@ extern const base::Feature kRevealSteadyStateUrlPathQueryAndRefOnHover;
 extern const base::Feature kHideSteadyStateUrlPathQueryAndRefOnInteraction;
 extern const base::Feature kMaybeElideToRegistrableDomain;
 
+// Experiment to control whether visits from CCT are hidden.
+// TODO(https://crbug.com/1141501): this is for an experiment, and will be
+// removed once data is collected from experiment.
+extern const base::Feature kHideVisitsFromCct;
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

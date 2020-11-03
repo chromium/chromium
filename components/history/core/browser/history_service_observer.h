@@ -39,6 +39,12 @@ class HistoryServiceObserver {
   virtual void OnURLsModified(HistoryService* history_service,
                               const URLRows& changed_urls) {}
 
+  // TODO(https://crbug.com/1141501): this is for an experiment, and will be
+  // removed once data is collected from experiment.
+  virtual void OnURLsModified(HistoryService* history_service,
+                              const URLRows& changed_urls,
+                              UrlsModifiedReason reason);
+
   // Called when one or more URLs are deleted.
   //
   // |deletion_info| describes the urls that have been removed from history.

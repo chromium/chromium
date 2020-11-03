@@ -158,6 +158,10 @@ class HistoryDatabase : public DownloadDatabase,
   // visit id wasn't found.
   SegmentID GetSegmentID(VisitID visit_id);
 
+  // TODO(https://crbug.com/1141501): this is for an experiment, and will be
+  // removed once data is collected from experiment.
+  bool GetVisitsForUrl2(URLID url_id, VisitVector* visits) override;
+
   // Retrieves/Updates early expiration threshold, which specifies the earliest
   // known point in history that may possibly to contain visits suitable for
   // early expiration (AUTO_SUBFRAMES).

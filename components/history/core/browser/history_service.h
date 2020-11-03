@@ -616,7 +616,8 @@ class HistoryService : public KeyedService {
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. |changed_urls| contains the list of affects URLs.
-  void NotifyURLsModified(const URLRows& changed_urls);
+  void NotifyURLsModified(const URLRows& changed_urls,
+                          UrlsModifiedReason reason);
 
   // Notify all HistoryServiceObservers registered that URLs have been deleted.
   // |deletion_info| describes the urls that have been removed from history.

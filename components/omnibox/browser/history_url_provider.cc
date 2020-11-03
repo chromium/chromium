@@ -33,7 +33,9 @@
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_terms_data.h"
@@ -746,6 +748,8 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
 
   if (search_url_database_) {
     const URLPrefixes& prefixes = URLPrefix::GetURLPrefixes();
+    const bool hide_visits_from_cct =
+        base::FeatureList::IsEnabled(omnibox::kHideVisitsFromCct);
     for (auto i(prefixes.begin()); i != prefixes.end(); ++i) {
       if (params->cancel_flag.IsSet())
         return;  // Canceled in the middle of a query, give up.
@@ -762,6 +766,12 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
                                 !backend, &url_matches);
       for (history::URLRows::const_iterator j(url_matches.begin());
            j != url_matches.end(); ++j) {
+        if (hide_visits_from_cct && backend) {
+          history::VisitVector visits;
+          if (db->GetVisitsForUrl2(j->id(), &visits) &&
+              URLIndexPrivateData::ShouldExcludeBecauseOfCctVisits(visits))
+            continue;
+        }
         const GURL& row_url = j->url();
         const URLPrefix* best_prefix = URLPrefix::BestURLPrefix(
             base::UTF8ToUTF16(row_url.spec()), base::string16());

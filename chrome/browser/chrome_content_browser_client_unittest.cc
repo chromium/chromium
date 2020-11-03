@@ -342,7 +342,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   // The origin is a placeholder to test that |initiator_origin| is set to
   // base::nullopt and is not meant to represent what would happen in practice.
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(site_instance.get(), &transition,
+  client.OverrideNavigationParams(nullptr, site_instance.get(), &transition,
                                   &is_renderer_initiated, &referrer,
                                   &initiator_origin);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
@@ -355,7 +355,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(site_instance.get(), &transition,
+  client.OverrideNavigationParams(nullptr, site_instance.get(), &transition,
                                   &is_renderer_initiated, &referrer,
                                   &initiator_origin);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
@@ -367,7 +367,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   site_instance = content::SiteInstance::CreateForURL(
       browser()->profile(), GURL("chrome://new-tab-page"));
   transition = ui::PAGE_TRANSITION_TYPED;
-  client.OverrideNavigationParams(site_instance.get(), &transition,
+  client.OverrideNavigationParams(nullptr, site_instance.get(), &transition,
                                   &is_renderer_initiated, &referrer,
                                   &initiator_origin);
   EXPECT_TRUE(
@@ -377,7 +377,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   site_instance = content::SiteInstance::CreateForURL(
       browser()->profile(), GURL("https://www.example.com"));
   transition = ui::PAGE_TRANSITION_LINK;
-  client.OverrideNavigationParams(site_instance.get(), &transition,
+  client.OverrideNavigationParams(nullptr, site_instance.get(), &transition,
                                   &is_renderer_initiated, &referrer,
                                   &initiator_origin);
   EXPECT_TRUE(
