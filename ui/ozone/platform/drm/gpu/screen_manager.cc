@@ -173,17 +173,54 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
       std::make_unique<CrtcController>(drm, crtc, connector), gfx::Point()));
 }
 
-void ScreenManager::RemoveDisplayController(const scoped_refptr<DrmDevice>& drm,
-                                            uint32_t crtc) {
-  HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
-  if (it != controllers_.end()) {
-    bool is_mirrored = (*it)->IsMirrored();
-    (*it)->RemoveCrtc(drm, crtc);
-    if (!is_mirrored) {
-      controllers_.erase(it);
-      UpdateControllerToWindowMapping();
+void ScreenManager::RemoveDisplayControllers(
+    const CrtcsWithDrmList& controllers_to_remove) {
+  // Split them to different lists unique to each DRM Device.
+  base::flat_map<scoped_refptr<DrmDevice>, CrtcsWithDrmList>
+      controllers_for_drm_devices;
+  for (const auto& controller : controllers_to_remove) {
+    auto drm = controller.second;
+    auto it = controllers_for_drm_devices.find(drm);
+    if (it == controllers_for_drm_devices.end()) {
+      controllers_for_drm_devices.insert(
+          std::make_pair(drm, CrtcsWithDrmList()));
+    }
+    controllers_for_drm_devices[drm].emplace_back(controller);
+  }
+
+  bool should_update_controllers_to_window_mapping = false;
+  for (const auto& controllers_on_drm : controllers_for_drm_devices) {
+    CrtcsWithDrmList controllers_to_remove = controllers_on_drm.second;
+
+    CommitRequest commit_request;
+    auto drm = controllers_on_drm.first;
+    for (const auto& controller : controllers_to_remove) {
+      uint32_t crtc_id = controller.first;
+      auto it = FindDisplayController(drm, crtc_id);
+      if (it == controllers_.end())
+        continue;
+
+      bool is_mirrored = (*it)->IsMirrored();
+
+      std::unique_ptr<CrtcController> crtc = (*it)->RemoveCrtc(drm, crtc_id);
+      if (crtc->is_enabled()) {
+        commit_request.push_back(CrtcCommitRequest::DisableCrtcRequest(
+            crtc->crtc(), crtc->connector()));
+      }
+
+      if (!is_mirrored) {
+        controllers_.erase(it);
+        should_update_controllers_to_window_mapping = true;
+      }
+    }
+    if (!commit_request.empty()) {
+      drm->plane_manager()->Commit(std::move(commit_request),
+                                   DRM_MODE_ATOMIC_ALLOW_MODESET);
     }
   }
+
+  if (should_update_controllers_to_window_mapping)
+    UpdateControllerToWindowMapping();
 }
 
 base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(

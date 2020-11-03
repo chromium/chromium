@@ -31,6 +31,9 @@ class DrmWindow;
 // Responsible for keeping track of active displays and configuring them.
 class ScreenManager {
  public:
+  using CrtcsWithDrmList =
+      std::vector<std::pair<uint32_t, const scoped_refptr<DrmDevice>>>;
+
   struct ControllerConfigParams {
     ControllerConfigParams(int64_t display_id,
                            scoped_refptr<DrmDevice> drm,
@@ -60,10 +63,9 @@ class ScreenManager {
                             uint32_t crtc,
                             uint32_t connector);
 
-  // Remove a display controller from the list of active controllers. The
-  // controller is removed since it was disconnected.
-  void RemoveDisplayController(const scoped_refptr<DrmDevice>& drm,
-                               uint32_t crtc);
+  // Remove display controllers from the list of active controllers. The
+  // controllers are removed since they were disconnected.
+  void RemoveDisplayControllers(const CrtcsWithDrmList& controllers_to_remove);
 
   // Enables/Disables the display controller based on if a mode exists.
   base::flat_map<int64_t, bool> ConfigureDisplayControllers(

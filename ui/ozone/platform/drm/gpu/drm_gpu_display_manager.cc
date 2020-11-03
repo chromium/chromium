@@ -336,15 +336,18 @@ DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) {
 void DrmGpuDisplayManager::NotifyScreenManager(
     const std::vector<std::unique_ptr<DrmDisplay>>& new_displays,
     const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const {
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
   for (const auto& old_display : old_displays) {
     auto it = std::find_if(new_displays.begin(), new_displays.end(),
                            DisplayComparator(old_display.get()));
 
     if (it == new_displays.end()) {
-      screen_manager_->RemoveDisplayController(old_display->drm(),
-                                               old_display->crtc());
+      controllers_to_remove.emplace_back(old_display->crtc(),
+                                         old_display->drm());
     }
   }
+  if (!controllers_to_remove.empty())
+    screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   for (const auto& new_display : new_displays) {
     auto it = std::find_if(old_displays.begin(), old_displays.end(),

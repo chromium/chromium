@@ -299,8 +299,38 @@ TEST_F(ScreenManagerTest, CheckControllerAfterItIsRemoved) {
 
   EXPECT_TRUE(screen_manager_->GetDisplayController(GetPrimaryBounds()));
 
-  screen_manager_->RemoveDisplayController(drm_, kPrimaryCrtc);
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
+
+  controllers_to_remove.emplace_back(kPrimaryCrtc, drm_);
+  screen_manager_->RemoveDisplayControllers(controllers_to_remove);
   EXPECT_FALSE(screen_manager_->GetDisplayController(GetPrimaryBounds()));
+}
+
+TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingRemoved) {
+  InitializeDrmStateWithDefault(drm_.get());
+
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
+                                        kSecondaryConnector);
+
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  controllers_to_enable.emplace_back(
+      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      GetSecondaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
+  controllers_to_remove.emplace_back(kPrimaryCrtc, drm_);
+  controllers_to_remove.emplace_back(kSecondaryCrtc, drm_);
+  screen_manager_->RemoveDisplayControllers(controllers_to_remove);
+
+  EXPECT_FALSE(screen_manager_->GetDisplayController(GetPrimaryBounds()));
+  EXPECT_FALSE(screen_manager_->GetDisplayController(GetSecondaryBounds()));
 }
 
 TEST_F(ScreenManagerTest, CheckDuplicateConfiguration) {
@@ -517,7 +547,9 @@ TEST_F(ScreenManagerTest, MonitorGoneInMirrorMode) {
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
 
-  screen_manager_->RemoveDisplayController(drm_, kSecondaryCrtc);
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
+  controllers_to_remove.emplace_back(kSecondaryCrtc, drm_);
+  screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   ui::HardwareDisplayController* controller =
       screen_manager_->GetDisplayController(GetPrimaryBounds());
@@ -855,7 +887,9 @@ TEST_F(ScreenManagerTest, ShouldDissociateWindowOnControllerRemoval) {
 
   EXPECT_TRUE(screen_manager_->GetWindow(window_id)->GetController());
 
-  screen_manager_->RemoveDisplayController(drm_, kPrimaryCrtc);
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
+  controllers_to_remove.emplace_back(kPrimaryCrtc, drm_);
+  screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   EXPECT_FALSE(screen_manager_->GetWindow(window_id)->GetController());
 
@@ -1063,7 +1097,9 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
 
   // Disconnect first display. Second display moves to origin.
   {
-    screen_manager.RemoveDisplayController(drm_device1, kCrtc1);
+    ScreenManager::CrtcsWithDrmList controllers_to_remove;
+    controllers_to_remove.emplace_back(kCrtc1, drm_device1);
+    screen_manager.RemoveDisplayControllers(controllers_to_remove);
 
     ScreenManager::ControllerConfigsList controllers_to_enable;
     std::unique_ptr<drmModeModeInfo> secondary_mode =

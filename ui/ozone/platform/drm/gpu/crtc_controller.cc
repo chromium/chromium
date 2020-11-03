@@ -36,13 +36,6 @@ CrtcController::~CrtcController() {
         plane->set_in_use(false);
       }
     }
-
-    // Disable CRTC controller.
-    CommitRequest commit_request;
-    commit_request.push_back(
-        CrtcCommitRequest::DisableCrtcRequest(crtc_, connector_));
-    drm_->plane_manager()->Commit(std::move(commit_request),
-                                  DRM_MODE_ATOMIC_ALLOW_MODESET);
   }
 }
 
