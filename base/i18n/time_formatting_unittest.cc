@@ -296,7 +296,7 @@ TEST(TimeFormattingTest, TimeDurationFormat) {
   i18n::SetICUDefaultLocale("da");
   EXPECT_EQ(ASCIIToUTF16("15 timer og 42 minutter"),
             TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("15 t. og 42 min."),
+  EXPECT_EQ(ASCIIToUTF16("15 t og 42 min."),
             TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));
   EXPECT_EQ(ASCIIToUTF16("15 t og 42 m"),
             TimeDurationFormatString(delta, DURATION_WIDTH_NARROW));
@@ -311,7 +311,9 @@ TEST(TimeFormattingTest, TimeDurationFormat) {
   string16 fa_short = UTF8ToUTF16(
       u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a\u060c\u200f \u06f4\u06f2 \u062f"
       u8"\u0642\u06cc\u0642\u0647");
-  string16 fa_narrow = UTF8ToUTF16(u8"\u06F1\u06F5h \u06F4\u06F2m");
+  string16 fa_narrow = UTF8ToUTF16(
+      u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a \u06f4\u06f2 \u062f\u0642\u06cc"
+      u8"\u0642\u0647");
   string16 fa_numeric = UTF8ToUTF16(u8"\u06f1\u06f5:\u06f4\u06f2");
   EXPECT_EQ(fa_wide, TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
   EXPECT_EQ(fa_short, TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));

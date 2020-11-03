@@ -14,7 +14,7 @@ Date locale string: 02.04.2020, 20:02:00
 
 Set locale to zh-CN
 Detected locale: zh-CN
-Date locale string: 2020/4/2下午8:02:00
+Date locale string: 2020/4/2 下午8:02:00
 
 Tried to set override from another session, got error:
 Another locale override is already in effect
