@@ -452,14 +452,6 @@ AnimationTimeline* ComputeTimeline(Element* element,
                                    const StyleNameOrKeyword& timeline_name,
                                    StyleRuleScrollTimeline* rule,
                                    AnimationTimeline* existing_timeline) {
-  // TODO(crbug.com/1141836): Implement sticky timelines properly. For now just
-  // ignore animation-timeline whenever a regular (non-CSS) ScrollTimeline is
-  // present.
-  if (existing_timeline && existing_timeline->IsScrollTimeline() &&
-      !existing_timeline->IsCSSScrollTimeline()) {
-    return existing_timeline;
-  }
-
   if (timeline_name.IsKeyword()) {
     if (timeline_name.GetKeyword() == CSSValueID::kAuto)
       return &element->GetDocument().Timeline();
@@ -733,7 +725,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             toggle_pause_state ? animation->Paused() : animation->Playing();
 
         AnimationTimeline* timeline = existing_animation->Timeline();
-        if (!is_animation_style_change) {
+        if (!is_animation_style_change && !animation->GetIgnoreCSSTimeline()) {
           timeline = ComputeTimeline(&element, timeline_name,
                                      scroll_timeline_rule, timeline);
         }
@@ -909,8 +901,10 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
         effect->SetModel(entry.effect->Model());
       effect->UpdateSpecifiedTiming(entry.effect->SpecifiedTiming());
     }
-    if (entry.animation->timeline() != entry.timeline)
+    if (entry.animation->timeline() != entry.timeline) {
       entry.animation->setTimeline(entry.timeline);
+      To<CSSAnimation>(*entry.animation).ResetIgnoreCSSTimeline();
+    }
 
     running_animations_[entry.index]->Update(entry);
   }

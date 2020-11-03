@@ -50,6 +50,7 @@ class CORE_EXPORT CSSAnimation : public Animation {
   void pause(ExceptionState& = ASSERT_NO_EXCEPTION) override;
   void play(ExceptionState& = ASSERT_NO_EXCEPTION) override;
   void reverse(ExceptionState& = ASSERT_NO_EXCEPTION) override;
+  void setTimeline(AnimationTimeline*) override;
   void setStartTime(base::Optional<double>, ExceptionState&) override;
 
   // When set, subsequent changes to animation-play-state no longer affect the
@@ -57,6 +58,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // https://drafts.csswg.org/css-animations-2/#interaction-between-animation-play-state-and-web-animations-API
   bool getIgnoreCSSPlayState() { return ignore_css_play_state_; }
   void resetIgnoreCSSPlayState() { ignore_css_play_state_ = false; }
+  bool GetIgnoreCSSTimeline() const { return ignore_css_timeline_; }
+  void ResetIgnoreCSSTimeline() { ignore_css_timeline_ = false; }
   void Trace(blink::Visitor* visitor) const override {
     Animation::Trace(visitor);
     visitor->Trace(owning_element_);
@@ -96,6 +99,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // When set, the web-animation API is overruling the animation-play-state
   // style.
   bool ignore_css_play_state_;
+  // When set, changes to the 'animation-timeline' property will be ignored.
+  bool ignore_css_timeline_;
   // The owning element of an animation refers to the element or pseudo-element
   // whose animation-name property was applied that generated the animation
   // The spec: https://drafts.csswg.org/css-animations-2/#owning-element-section

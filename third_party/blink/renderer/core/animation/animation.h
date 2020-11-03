@@ -199,7 +199,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   double playbackRate() const;
   void setPlaybackRate(double, ExceptionState& = ASSERT_NO_EXCEPTION);
   AnimationTimeline* timeline() { return timeline_; }
-  void setTimeline(AnimationTimeline* timeline);
+  virtual void setTimeline(AnimationTimeline* timeline);
   Document* GetDocument() const;
 
   base::Optional<double> startTime() const;
