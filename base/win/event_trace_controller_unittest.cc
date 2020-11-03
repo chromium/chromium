@@ -139,8 +139,7 @@ TEST_F(EtwTraceControllerTest, Initialize) {
 TEST_F(EtwTraceControllerTest, StartRealTimeSession) {
   EtwTraceController controller;
 
-  HRESULT hr =
-      controller.StartRealtimeSession(session_name_.c_str(), 100 * 1024);
+  HRESULT hr = controller.StartRealtimeSession(session_name_.c_str(), 1024);
   if (hr == E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
     return;
@@ -186,8 +185,7 @@ TEST_F(EtwTraceControllerTest, DISABLED_EnableDisable) {
   EXPECT_EQ(0u, provider.session_handle());
 
   EtwTraceController controller;
-  HRESULT hr =
-      controller.StartRealtimeSession(session_name_.c_str(), 100 * 1024);
+  HRESULT hr = controller.StartRealtimeSession(session_name_.c_str(), 1024);
   if (hr == E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
     return;
