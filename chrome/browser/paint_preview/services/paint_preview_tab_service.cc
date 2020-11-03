@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
+#include "content/public/browser/render_process_host.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_ANDROID)
@@ -109,6 +110,9 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
       base::BindOnce(&PaintPreviewTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
                      contents->GetMainFrame()->GetFrameTreeNodeId(),
+                     content::GlobalFrameRoutingId(
+                       contents->GetMainFrame()->GetProcess()->GetID(),
+                       contents->GetMainFrame()->GetRoutingID()),
                      std::move(callback)));
 }
 
@@ -228,6 +232,7 @@ void PaintPreviewTabService::CaptureTabInternal(
     int tab_id,
     const DirectoryKey& key,
     int frame_tree_node_id,
+    content::GlobalFrameRoutingId frame_routing_id,
     FinishedCallback callback,
     const base::Optional<base::FilePath>& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -237,7 +242,9 @@ void PaintPreviewTabService::CaptureTabInternal(
   }
   auto* contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!contents) {
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id);
+  if (!contents || !rfh || contents->IsBeingDestroyed() ||
+      contents->GetMainFrame() != rfh || !rfh->IsCurrent()) {
     std::move(callback).Run(Status::kWebContentsGone);
     return;
   }

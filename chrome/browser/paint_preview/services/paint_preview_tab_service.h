@@ -113,6 +113,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   void CaptureTabInternal(int tab_id,
                           const DirectoryKey& key,
                           int frame_tree_node_id,
+                          content::GlobalFrameRoutingId frame_routing_id,
                           FinishedCallback callback,
                           const base::Optional<base::FilePath>& file_path);
 

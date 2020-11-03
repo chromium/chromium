@@ -275,6 +275,7 @@ void PaintPreviewClient::CapturePaintPreview(
     const PaintPreviewParams& params,
     content::RenderFrameHost* render_frame_host,
     PaintPreviewCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (base::Contains(all_document_data_, params.inner.document_guid)) {
     std::move(callback).Run(params.inner.document_guid,
                             mojom::PaintPreviewStatus::kGuidCollision, {});
