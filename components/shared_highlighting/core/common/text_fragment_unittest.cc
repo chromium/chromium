@@ -146,5 +146,39 @@ TEST(TextFragmentTest, FragmentToEscapedStringAllWithSpecialCharacters) {
       test_fragment.ToEscapedString());
 }
 
+TEST(TextFragmentTest, FromValue) {
+  const char text_start[] = "test text start, * - &";
+  const char text_end[] = "test text end, * - &";
+  const char prefix[] = "prefix, * - &";
+  const char suffix[] = "suffix, * - &";
+
+  base::Value fragment_value = base::Value(base::Value::Type::DICTIONARY);
+
+  // Empty value cases.
+  EXPECT_FALSE(TextFragment::FromValue(&fragment_value).has_value());
+  EXPECT_FALSE(TextFragment::FromValue(nullptr).has_value());
+  base::Value string_value = base::Value(base::Value::Type::STRING);
+  EXPECT_FALSE(TextFragment::FromValue(&string_value).has_value());
+
+  fragment_value.SetStringKey(kFragmentTextStartKey, text_start);
+  fragment_value.SetStringKey(kFragmentTextEndKey, text_end);
+  fragment_value.SetStringKey(kFragmentPrefixKey, prefix);
+  fragment_value.SetStringKey(kFragmentSuffixKey, suffix);
+
+  base::Optional<TextFragment> opt_fragment =
+      TextFragment::FromValue(&fragment_value);
+  EXPECT_TRUE(opt_fragment.has_value());
+  TextFragment fragment = opt_fragment.value();
+  EXPECT_EQ(text_start, fragment.text_start());
+  EXPECT_EQ(text_end, fragment.text_end());
+  EXPECT_EQ(prefix, fragment.prefix());
+  EXPECT_EQ(suffix, fragment.suffix());
+
+  // Testing the case where the dictionary value doesn't have a text start
+  // value.
+  ASSERT_TRUE(fragment_value.RemoveKey(kFragmentTextStartKey));
+  EXPECT_FALSE(TextFragment::FromValue(&fragment_value).has_value());
+}
+
 }  // namespace
 }  // namespace shared_highlighting

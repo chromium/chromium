@@ -33,6 +33,12 @@ class TextFragment {
   static base::Optional<TextFragment> FromEscapedString(
       std::string escaped_string);
 
+  // Returns a TextFragment instance created from a dictionary |value|
+  // containing the right set of values. The values stored in |value| must be
+  // already unescaped.
+  // Returns |base::nullopt| if parsing failed.
+  static base::Optional<TextFragment> FromValue(const base::Value* value);
+
   const std::string text_start() const { return text_start_; }
   const std::string text_end() const { return text_end_; }
   const std::string prefix() const { return prefix_; }
@@ -41,10 +47,10 @@ class TextFragment {
   // Converts the current fragment to its escaped URL parameter format:
   // text=[prefix-,]textStart[,textEnd][,-suffix]
   // Returns an empty string if |text_start| does not have a value.
-  std::string ToEscapedString();
+  std::string ToEscapedString() const;
 
   // Converts the current fragment to a dictionary Value.
-  base::Value ToValue();
+  base::Value ToValue() const;
 
  private:
   // Values of a fragment, stored unescaped.

@@ -7,6 +7,7 @@
 #import <Availability.h>
 
 #include "base/check.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/screen_time/features.h"
@@ -14,6 +15,8 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
+#import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "url/gurl.h"
@@ -26,7 +29,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface BrowserContainerCoordinator ()
+@interface BrowserContainerCoordinator () <LinkToTextConsumer>
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 // Redefine property as readwrite.
@@ -41,6 +44,8 @@
     OverlayContainerCoordinator* webContentAreaOverlayContainerCoordinator;
 // The coodinator that manages ScreenTime.
 @property(nonatomic, strong) ChromeCoordinator* screenTimeCoordinator;
+// The handler for activity services commands.
+@property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
 @end
 
 @implementation BrowserContainerCoordinator
@@ -67,12 +72,12 @@
   self.mediator = [[BrowserContainerMediator alloc]
                 initWithWebStateList:self.browser->GetWebStateList()
       webContentAreaOverlayPresenter:overlayPresenter];
-
-  id<ActivityServiceCommands> activityServiceHandler = HandlerForProtocol(
+  self.activityServiceHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ActivityServiceCommands);
+
   self.linkToTextMediator = [[LinkToTextMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
-                   handler:activityServiceHandler];
+                  consumer:self];
   self.viewController.linkToTextDelegate = self.linkToTextMediator;
   self.mediator.consumer = self.viewController;
 
@@ -91,6 +96,23 @@
   self.mediator = nil;
   self.linkToTextMediator = nil;
   [super stop];
+}
+
+#pragma mark - LinkToTextConsumer
+
+- (void)generatedPayload:(LinkToTextPayload*)payload {
+  DCHECK(payload);
+  ShareHighlightCommand* command =
+      [[ShareHighlightCommand alloc] initWithURL:payload.URL
+                                           title:payload.title
+                                    selectedText:payload.selectedText
+                                      sourceView:payload.sourceView
+                                      sourceRect:payload.sourceRect];
+  [self.activityServiceHandler shareHighlight:command];
+}
+
+- (void)linkGenerationFailed {
+  // TODO(crbug.com/1136043): Show an alert.
 }
 
 #pragma mark - Private methods

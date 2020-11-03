@@ -18,6 +18,7 @@ include_rules = [
   "+components/enterprise",
   "+components/error_page/common",
   "+components/favicon/core",
+  "+components/shared_highlighting/core/common",
   "+components/favicon/ios",
   "+components/favicon_base",
   "+components/feature_engagement",
