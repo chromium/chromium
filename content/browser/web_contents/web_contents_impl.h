@@ -1822,10 +1822,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // See getter above.
   bool is_being_destroyed_;
 
-  // Keep track of whether this WebContents is currently iterating over its list
-  // of observers, during which time it should not be deleted.
-  bool is_notifying_observers_;
-
   // Indicates whether we should notify about disconnection of this
   // WebContentsImpl. This is used to ensure disconnection notifications only
   // happen if a connection notification has happened and that they happen only
