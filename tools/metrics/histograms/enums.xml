@@ -52632,6 +52632,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="36" label="CrOS SystemPriority level=CriticalWarning"/>
   <int value="37" label="CrOS SystemPriority level=CriticalWarning pinned"/>
   <int value="38" label="Other"/>
+  <int value="39" label="PhoneHub priority=-2"/>
+  <int value="40" label="PhoneHub priority=-1"/>
+  <int value="41" label="PhoneHub priority=0"/>
+  <int value="42" label="PhoneHub priority=1"/>
+  <int value="43" label="PhoneHub priority=2"/>
 </enum>
 
 <enum name="NotifierType">
@@ -52640,6 +52645,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Web Page"/>
   <int value="3" label="System Component"/>
   <int value="4" label="Crostini"/>
+  <int value="5" label="Phone Hub"/>
 </enum>
 
 <enum name="NotifyResult">

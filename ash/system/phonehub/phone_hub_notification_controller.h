@@ -66,6 +66,9 @@ class ASH_EXPORT PhoneHubNotificationController
   void SendInlineReply(int64_t notification_id,
                        const base::string16& inline_reply_text);
 
+  // Logs the number of PhoneHub notifications.
+  void LogNotificationCount();
+
   // Creates or updates a ChromeOS notification for the given PhoneHub
   // notification data.
   void CreateOrUpdateNotification(

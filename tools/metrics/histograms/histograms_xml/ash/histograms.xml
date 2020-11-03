@@ -1097,6 +1097,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Ash.PhoneHub.NotificationCount" units="notifications"
+    expires_after="2021-10-31">
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    The number of PhoneHub notifications, logged each time a notification is
+    added or removed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>

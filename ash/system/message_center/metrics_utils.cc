@@ -186,10 +186,29 @@ NotificationTypeDetailed GetNotificationTypeForWeb(
   return require_interaction ? WEB_REQUIRE_INTERACTION : WEB;
 }
 
+NotificationTypeDetailed GetNotificationTypeForPhoneHub(
+    const message_center::Notification& notification) {
+  int priority = notification.rich_notification_data().priority;
+  switch (priority) {
+    case -2:
+      return PHONEHUB_PRIORITY_MINUS_TWO;
+    case -1:
+      return PHONEHUB_PRIORITY_MINUS_ONE;
+    case 0:
+      return PHONEHUB_PRIORITY_ZERO;
+    case 1:
+      return PHONEHUB_PRIORITY_ONE;
+    case 2:
+      return PHONEHUB_PRIORITY_TWO;
+    default:
+      NOTREACHED();
+      return OTHER;
+  }
+}
+
 NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification) {
   message_center::NotifierType notifier_type = notification.notifier_id().type;
-
   switch (notifier_type) {
     case message_center::NotifierType::APPLICATION:
       return GetNotificationTypeForChromeApp(notification);
@@ -199,6 +218,8 @@ NotificationTypeDetailed GetNotificationType(
       return GetNotificationTypeForWeb(notification);
     case message_center::NotifierType::SYSTEM_COMPONENT:
       return GetNotificationTypeForCros(notification);
+    case message_center::NotifierType::PHONE_HUB:
+      return GetNotificationTypeForPhoneHub(notification);
     case message_center::NotifierType::CROSTINI_APPLICATION:
     default:
       return OTHER;
@@ -242,6 +263,20 @@ void LogClickedActionButton(const std::string& notification_id, bool is_popup) {
   } else {
     UMA_HISTOGRAM_ENUMERATION(
         "Notifications.Cros.Actions.Tray.ClickedActionButton", type.value());
+  }
+}
+
+void LogInlineReplySent(const std::string& notification_id, bool is_popup) {
+  auto type = GetNotificationType(notification_id);
+  if (!type.has_value())
+    return;
+
+  if (is_popup) {
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.Popup.InlineReplySent", type.value());
+  } else {
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.Tray.InlineReplySent", type.value());
   }
 }
 

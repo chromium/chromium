@@ -26,7 +26,8 @@ enum class NotifierType : int {
   WEB_PAGE = 2,
   SYSTEM_COMPONENT = 3,
   CROSTINI_APPLICATION = 4,
-  kMaxValue = CROSTINI_APPLICATION,
+  PHONE_HUB = 5,
+  kMaxValue = PHONE_HUB,
 };
 
 // A struct that identifies the source of notifications. For example, a web page
