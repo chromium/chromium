@@ -24,7 +24,6 @@
 namespace ash {
 
 using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogInterstitialScreenEvent;
 using phone_hub_metrics::Screen;
 
 ConnectionErrorView::ConnectionErrorView(
@@ -54,8 +53,8 @@ ConnectionErrorView::ConnectionErrorView(
       IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_DESCRIPTION));
 
   if (error == ErrorStatus::kReconnecting) {
-    LogInterstitialScreenEvent(Screen::kReconnecting,
-                               InterstitialScreenEvent::kShown);
+    phone_hub_metrics::LogInterstitialScreenEvent(
+        Screen::kReconnecting, InterstitialScreenEvent::kShown);
     return;
   }
 
@@ -90,8 +89,8 @@ ConnectionErrorView::ConnectionErrorView(
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));
 
-  LogInterstitialScreenEvent(Screen::kConnectionError,
-                             InterstitialScreenEvent::kShown);
+  phone_hub_metrics::LogInterstitialScreenEvent(
+      Screen::kConnectionError, InterstitialScreenEvent::kShown);
 }
 
 ConnectionErrorView::~ConnectionErrorView() = default;
@@ -104,7 +103,7 @@ phone_hub_metrics::Screen ConnectionErrorView::GetScreenForMetrics() const {
 
 void ConnectionErrorView::ButtonPressed(InterstitialScreenEvent event,
                                         base::RepeatingClosure callback) {
-  LogInterstitialScreenEvent(GetScreenForMetrics(), event);
+  LogInterstitialScreenEvent(event);
   std::move(callback).Run();
 }
 

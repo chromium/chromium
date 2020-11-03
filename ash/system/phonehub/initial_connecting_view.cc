@@ -21,7 +21,6 @@
 namespace ash {
 
 using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogInterstitialScreenEvent;
 using phone_hub_metrics::Screen;
 
 InitialConnectingView::InitialConnectingView() {
@@ -40,8 +39,7 @@ InitialConnectingView::InitialConnectingView() {
   content_view_->SetDescription(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION));
 
-  LogInterstitialScreenEvent(GetScreenForMetrics(),
-                             InterstitialScreenEvent::kShown);
+  LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 }
 
 InitialConnectingView::~InitialConnectingView() = default;

@@ -17,4 +17,9 @@ phone_hub_metrics::Screen PhoneHubContentView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kInvalid;
 }
 
+void PhoneHubContentView::LogInterstitialScreenEvent(
+    phone_hub_metrics::InterstitialScreenEvent event) {
+  phone_hub_metrics::LogInterstitialScreenEvent(GetScreenForMetrics(), event);
+}
+
 }  // namespace ash

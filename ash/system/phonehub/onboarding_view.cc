@@ -35,7 +35,6 @@
 namespace ash {
 
 using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogInterstitialScreenEvent;
 using phone_hub_metrics::Screen;
 
 // OnboardingMainView ---------------------------------------------------------
@@ -95,14 +94,12 @@ class OnboardingMainView : public PhoneHubInterstitialView {
   }
 
   void GetStartedButtonPressed() {
-    LogInterstitialScreenEvent(GetScreenForMetrics(),
-                               InterstitialScreenEvent::kConfirm);
+    LogInterstitialScreenEvent(InterstitialScreenEvent::kConfirm);
     onboarding_ui_tracker_->HandleGetStarted();
   }
 
   void DismissButtonPressed() {
-    LogInterstitialScreenEvent(GetScreenForMetrics(),
-                               InterstitialScreenEvent::kDismiss);
+    LogInterstitialScreenEvent(InterstitialScreenEvent::kDismiss);
     parent_view_->ShowDismissPrompt();
   }
 
@@ -148,8 +145,7 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
   }
 
   void ButtonPressed() {
-    LogInterstitialScreenEvent(GetScreenForMetrics(),
-                               InterstitialScreenEvent::kConfirm);
+    LogInterstitialScreenEvent(InterstitialScreenEvent::kConfirm);
 
     Shell::GetPrimaryRootWindowController()
         ->GetStatusAreaWidget()
@@ -178,8 +174,7 @@ OnboardingView::OnboardingView(
   main_view_ = AddChildView(
       std::make_unique<OnboardingMainView>(onboarding_ui_tracker_, this));
 
-  LogInterstitialScreenEvent(GetScreenForMetrics(),
-                             InterstitialScreenEvent::kShown);
+  LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 }
 
 OnboardingView::~OnboardingView() = default;
@@ -195,8 +190,7 @@ Screen OnboardingView::GetScreenForMetrics() const {
 void OnboardingView::ShowDismissPrompt() {
   DCHECK(main_view_);
 
-  LogInterstitialScreenEvent(GetScreenForMetrics(),
-                             InterstitialScreenEvent::kShown);
+  LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 
   RemoveChildView(main_view_);
   main_view_ = AddChildView(

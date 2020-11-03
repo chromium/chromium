@@ -25,7 +25,6 @@
 namespace ash {
 
 using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogInterstitialScreenEvent;
 using phone_hub_metrics::Screen;
 
 BluetoothDisabledView::BluetoothDisabledView() {
@@ -67,8 +66,7 @@ BluetoothDisabledView::BluetoothDisabledView() {
   confirm->SetID(PhoneHubViewID::kBluetoothDisabledConfirmButton);
   content_view_->AddButton(std::move(confirm));
 
-  LogInterstitialScreenEvent(GetScreenForMetrics(),
-                             InterstitialScreenEvent::kShown);
+  LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 }
 
 BluetoothDisabledView::~BluetoothDisabledView() = default;
@@ -78,15 +76,13 @@ phone_hub_metrics::Screen BluetoothDisabledView::GetScreenForMetrics() const {
 }
 
 void BluetoothDisabledView::LearnMoreButtonPressed() {
-  LogInterstitialScreenEvent(GetScreenForMetrics(),
-                             InterstitialScreenEvent::kLearnMore);
+  LogInterstitialScreenEvent(InterstitialScreenEvent::kLearnMore);
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
       GURL(kLearnMoreUrl), /*from_user_interaction=*/true);
 }
 
 void BluetoothDisabledView::ConfirmButtonPressed() {
-  LogInterstitialScreenEvent(GetScreenForMetrics(),
-                             InterstitialScreenEvent::kConfirm);
+  LogInterstitialScreenEvent(InterstitialScreenEvent::kConfirm);
   Shell::GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->phone_hub_tray()

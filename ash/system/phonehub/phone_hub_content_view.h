@@ -25,6 +25,9 @@ class ASH_EXPORT PhoneHubContentView : public views::View {
 
  protected:
   PhoneHubContentView();
+
+  void LogInterstitialScreenEvent(
+      phone_hub_metrics::InterstitialScreenEvent event);
 };
 
 }  // namespace ash

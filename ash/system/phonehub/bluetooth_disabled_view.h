@@ -23,7 +23,7 @@ class ASH_EXPORT BluetoothDisabledView : public PhoneHubContentView {
   BluetoothDisabledView& operator=(const BluetoothDisabledView&) = delete;
   ~BluetoothDisabledView() override;
 
-  // PhoneHubInterstitialView:
+  // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
 
  private:
