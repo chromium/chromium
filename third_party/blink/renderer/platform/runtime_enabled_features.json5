@@ -703,7 +703,7 @@
     },
     {
       name: "DisallowDocumentAccess",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "DisplayCutoutAPI",
