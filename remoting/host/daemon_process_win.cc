@@ -27,7 +27,6 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/branding.h"
@@ -39,7 +38,6 @@
 #include "remoting/host/pairing_registry_delegate_win.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/host/switches.h"
-#include "remoting/host/win/etw_trace_consumer.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/unprivileged_process_delegate.h"
@@ -49,8 +47,6 @@ using base::win::ScopedHandle;
 using base::TimeDelta;
 
 namespace {
-
-constexpr char kEtwTracingThreadName[] = "ETW Trace Consumer";
 
 // Duplicates |key| and returns the value that can be sent over IPC.
 IPC::PlatformFileForTransit GetRegistryKeyForTransit(
@@ -92,10 +88,6 @@ class DaemonProcessWin : public DaemonProcess {
       int session_id,
       const IPC::ChannelHandle& desktop_pipe) override;
 
-  // Creates an ETW trace consumer which listens for logged events from our
-  // host processes.  Tracing stops when |etw_trace_consumer_| is destroyed.
-  void StartEtwLogging();
-
  protected:
   // DaemonProcess implementation.
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
@@ -129,8 +121,6 @@ class DaemonProcessWin : public DaemonProcess {
   base::win::RegKey pairing_registry_privileged_key_;
   base::win::RegKey pairing_registry_unprivileged_key_;
 
-  std::unique_ptr<EtwTraceConsumer> etw_trace_consumer_;
-
   DISALLOW_COPY_AND_ASSIGN(DaemonProcessWin);
 };
 
@@ -144,7 +134,8 @@ DaemonProcessWin::DaemonProcessWin(
       ipc_support_(io_task_runner->task_runner(),
                    mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST) {}
 
-DaemonProcessWin::~DaemonProcessWin() = default;
+DaemonProcessWin::~DaemonProcessWin() {
+}
 
 void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
   // Obtain the handle of the network process.
@@ -241,14 +232,9 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
     base::OnceClosure stopped_callback) {
-  auto daemon_process = std::make_unique<DaemonProcessWin>(
-      caller_task_runner, io_task_runner, std::move(stopped_callback));
-
-  // Initialize our ETW logger first so we can capture any subsequent events.
-  daemon_process->StartEtwLogging();
-
+  std::unique_ptr<DaemonProcessWin> daemon_process(new DaemonProcessWin(
+      caller_task_runner, io_task_runner, std::move(stopped_callback)));
   daemon_process->Initialize();
-
   return std::move(daemon_process);
 }
 
@@ -392,17 +378,6 @@ bool DaemonProcessWin::OpenPairingRegistry() {
   pairing_registry_privileged_key_.Set(privileged.Take());
   pairing_registry_unprivileged_key_.Set(unprivileged.Take());
   return true;
-}
-
-void DaemonProcessWin::StartEtwLogging() {
-  DCHECK(!etw_trace_consumer_);
-
-  // TODO(joedow): Add some registry keys to control the behavior here.
-  // This will most likely include trace levels and output files/locations.
-  etw_trace_consumer_ = EtwTraceConsumer::Create(AutoThread::CreateWithType(
-      kEtwTracingThreadName, caller_task_runner(), base::MessagePumpType::IO));
-
-  LOG_IF(ERROR, !etw_trace_consumer_) << "Failed to create EtwTraceConsumer.";
 }
 
 }  // namespace remoting
