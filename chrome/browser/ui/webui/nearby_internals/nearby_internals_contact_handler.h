@@ -48,7 +48,8 @@ class NearbyInternalsContactHandler
   // NearbyShareContactManager::Observer:
   void OnContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts) override;
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      uint32_t num_unreachable_contacts_filtered_out) override;
   void OnContactsUploaded(bool did_contacts_change_since_last_upload) override;
 
   // Message handler callback that requests a contacts download from the contact

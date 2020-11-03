@@ -249,7 +249,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadRequested() {
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
-    std::vector<nearbyshare::proto::ContactRecord> contacts) {
+    std::vector<nearbyshare::proto::ContactRecord> contacts,
+    uint32_t num_unreachable_contacts_filtered_out) {
   contact_downloader_.reset();
 
   NS_LOG(VERBOSE) << __func__ << ": Nearby Share download of "
@@ -261,8 +262,10 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 
   // Notify observers that the contact list was downloaded.
   std::set<std::string> allowed_contact_ids = GetAllowedContacts();
-  NotifyContactsDownloaded(allowed_contact_ids, contacts);
-  NotifyMojoObserverContactsDownloaded(allowed_contact_ids, contacts);
+  NotifyContactsDownloaded(allowed_contact_ids, contacts,
+                           num_unreachable_contacts_filtered_out);
+  NotifyMojoObserverContactsDownloaded(allowed_contact_ids, contacts,
+                                       num_unreachable_contacts_filtered_out);
 
   std::vector<nearbyshare::proto::Contact> contacts_to_upload =
       ContactRecordsToContacts(GetAllowedContacts(), contacts);
@@ -341,7 +344,8 @@ bool NearbyShareContactManagerImpl::SetAllowlist(
 
 void NearbyShareContactManagerImpl::NotifyMojoObserverContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    uint32_t num_unreachable_contacts_filtered_out) {
   if (observers_set_.empty()) {
     return;
   }
@@ -353,6 +357,7 @@ void NearbyShareContactManagerImpl::NotifyMojoObserverContactsDownloaded(
   // Notify mojo remotes.
   for (auto& remote : observers_set_) {
     remote->OnContactsDownloaded(allowed_contact_ids_vector,
-                                 ProtoToMojo(contacts));
+                                 ProtoToMojo(contacts),
+                                 num_unreachable_contacts_filtered_out);
   }
 }

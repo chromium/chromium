@@ -73,7 +73,8 @@ cr.define('nearby_share', function() {
 
     completeDownload() {
       this.observer_.onContactsDownloaded(
-          this.allowedContacts_, this.contactRecords || []);
+          this.allowedContacts_, this.contactRecords || [],
+          /*num_unreachable_contacts_filtered_out=*/ 3);
     }
   }
   // #cr_define_end

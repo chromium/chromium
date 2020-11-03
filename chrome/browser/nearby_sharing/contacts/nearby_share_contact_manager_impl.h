@@ -89,14 +89,16 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   std::set<std::string> GetAllowedContacts() const;
   void OnContactsDownloadRequested();
   void OnContactsDownloadSuccess(
-      std::vector<nearbyshare::proto::ContactRecord> contacts);
+      std::vector<nearbyshare::proto::ContactRecord> contacts,
+      uint32_t num_unreachable_contacts_filtered_out);
   void OnContactsDownloadFailure();
   void OnContactsUploadFinished(const std::string& contact_upload_hash,
                                 bool success);
   bool SetAllowlist(const std::set<std::string>& new_allowlist);
   void NotifyMojoObserverContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts);
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      uint32_t num_unreachable_contacts_filtered_out);
 
   PrefService* pref_service_ = nullptr;
   NearbyShareClientFactory* http_client_factory_ = nullptr;

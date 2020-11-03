@@ -146,7 +146,8 @@ interface DownloadContactsObserver {
   //    array may be empty if the user has no contacts (in which case
   //    |allowed_contacts| will also be empty).
   OnContactsDownloaded(array<string> allowed_contacts,
-                       array<ContactRecord> contacts);
+                       array<ContactRecord> contacts,
+                       uint32 num_unreachable_contacts_filtered_out);
 
   // Notifies the observer that contacts have failed to download.
   // NOTE: At the moment we don't provide a specific reason as to why this

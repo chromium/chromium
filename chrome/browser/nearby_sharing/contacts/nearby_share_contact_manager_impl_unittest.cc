@@ -30,6 +30,7 @@
 
 namespace {
 
+const uint32_t kTestNumUnreachableContactsFilteredOut = 123;
 const char kTestContactIdPrefix[] = "id_";
 const char kTestContactEmailPrefix[] = "email_";
 const char kTestContactPhonePrefix[] = "phone_";
@@ -68,6 +69,7 @@ std::vector<nearbyshare::proto::ContactRecord> TestContactRecordList(
     contact.set_id(GetTestContactId(i));
     contact.set_image_url("https://google.com");
     contact.set_person_name("John Doe");
+    contact.set_is_reachable(true);
     // only one of these fields should be set...
     switch ((i % 3)) {
       case 0:
@@ -117,9 +119,12 @@ class TestDownloadContactsObserver
  public:
   void OnContactsDownloaded(
       const std::vector<std::string>& allowed_contacts,
-      std::vector<nearby_share::mojom::ContactRecordPtr> contacts) override {
+      std::vector<nearby_share::mojom::ContactRecordPtr> contacts,
+      uint32_t num_unreachable_contacts_filtered_out) override {
     allowed_contacts_ = allowed_contacts;
     contacts_ = std::move(contacts);
+    num_unreachable_contacts_filtered_out_ =
+        num_unreachable_contacts_filtered_out;
     on_contacts_downloaded_called_ = true;
   }
 
@@ -129,6 +134,7 @@ class TestDownloadContactsObserver
 
   std::vector<std::string> allowed_contacts_;
   std::vector<nearby_share::mojom::ContactRecordPtr> contacts_;
+  uint32_t num_unreachable_contacts_filtered_out_;
   bool on_contacts_downloaded_called_ = false;
   bool on_contacts_download_failed_called_ = false;
   mojo::Receiver<nearby_share::mojom::DownloadContactsObserver> receiver_{this};
@@ -147,6 +153,7 @@ class NearbyShareContactManagerImplTest
   struct ContactsDownloadedNotification {
     std::set<std::string> allowed_contact_ids;
     std::vector<nearbyshare::proto::ContactRecord> contacts;
+    uint32_t num_unreachable_contacts_filtered_out;
   };
   struct ContactsUploadedNotification {
     bool did_contacts_change_since_last_upload;
@@ -209,7 +216,8 @@ class NearbyShareContactManagerImplTest
     size_t num_upload_contacts_calls =
         local_device_data_manager_.upload_contacts_calls().size();
 
-    latest_downloader()->Succeed(contacts);
+    latest_downloader()->Succeed(contacts,
+                                 kTestNumUnreachableContactsFilteredOut);
 
     VerifyDownloadNotificationSent(
         /*initial_num_notifications=*/num_download_notifications,
@@ -304,7 +312,8 @@ class NearbyShareContactManagerImplTest
   // NearbyShareContactManager::Observer:
   void OnContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts) override {
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      uint32_t num_unreachable_contacts_filtered_out) override {
     ContactsDownloadedNotification notification;
     notification.allowed_contact_ids = allowed_contact_ids;
     notification.contacts = contacts;

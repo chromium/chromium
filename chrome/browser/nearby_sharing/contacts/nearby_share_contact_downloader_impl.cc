@@ -130,7 +130,9 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
                   << " contacts succeeded.";
   RecordContactDownloadMetrics(contacts_, current_page_number_);
 
+  // Remove device contacts if the feature flag is disabled.
   if (!base::FeatureList::IsEnabled(features::kNearbySharingDeviceContacts)) {
+    size_t initial_num_contacts = contacts_.size();
     contacts_.erase(
         std::remove_if(
             contacts_.begin(), contacts_.end(),
@@ -139,9 +141,26 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
                      nearbyshare::proto::ContactRecord::DEVICE_CONTACT;
             }),
         contacts_.end());
+    NS_LOG(VERBOSE) << __func__ << ": Removed "
+                    << initial_num_contacts - contacts_.size()
+                    << " device contacts.";
   }
 
-  Succeed(std::move(contacts_));
+  // Remove unreachable contacts.
+  size_t initial_num_contacts = contacts_.size();
+  contacts_.erase(
+      std::remove_if(contacts_.begin(), contacts_.end(),
+                     [](const nearbyshare::proto::ContactRecord& contact) {
+                       return !contact.is_reachable();
+                     }),
+      contacts_.end());
+  uint32_t num_unreachable_contacts_filtered_out =
+      initial_num_contacts - contacts_.size();
+  NS_LOG(VERBOSE) << __func__ << ": Removed "
+                  << num_unreachable_contacts_filtered_out
+                  << " unreachable contacts.";
+
+  Succeed(std::move(contacts_), num_unreachable_contacts_filtered_out);
 }
 
 void NearbyShareContactDownloaderImpl::OnListContactPeopleFailure(

@@ -42,9 +42,11 @@ void NearbyShareContactManager::SetAllowedContacts(
 
 void NearbyShareContactManager::NotifyContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    uint32_t num_unreachable_contacts_filtered_out) {
   for (auto& observer : observers_) {
-    observer.OnContactsDownloaded(allowed_contact_ids, contacts);
+    observer.OnContactsDownloaded(allowed_contact_ids, contacts,
+                                  num_unreachable_contacts_filtered_out);
   }
 }
 

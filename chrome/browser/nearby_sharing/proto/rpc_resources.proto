@@ -80,7 +80,7 @@ message Contact {
 }
 
 // A contact record from People backend.
-// NextId=6
+// NextId=7
 message ContactRecord {
   // The type of the ContactRecord.
   enum Type {
@@ -109,6 +109,9 @@ message ContactRecord {
 
   // The type of the ContactRecord.
   Type type = 5;
+
+  // True if the contact record is WPS reachable.
+  bool is_reachable = 6;
 }
 
 // A ShareTarget is a potential destination of a share.

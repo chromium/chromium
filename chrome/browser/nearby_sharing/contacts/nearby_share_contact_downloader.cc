@@ -40,12 +40,14 @@ void NearbyShareContactDownloader::Run() {
 }
 
 void NearbyShareContactDownloader::Succeed(
-    std::vector<nearbyshare::proto::ContactRecord> contacts) {
+    std::vector<nearbyshare::proto::ContactRecord> contacts,
+    uint32_t num_unreachable_contacts_filtered_out) {
   DCHECK(was_run_);
   DCHECK(success_callback_);
   RecordSuccessMetrics(contacts);
 
-  std::move(success_callback_).Run(std::move(contacts));
+  std::move(success_callback_)
+      .Run(std::move(contacts), num_unreachable_contacts_filtered_out);
 }
 
 void NearbyShareContactDownloader::Fail() {

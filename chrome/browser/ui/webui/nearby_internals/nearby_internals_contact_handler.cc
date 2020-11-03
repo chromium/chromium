@@ -32,6 +32,8 @@ const char kContactMessageTimeKey[] = "time";
 const char kContactMessageContactsChangedKey[] = "contactsChanged";
 const char kContactMessageAllowedIdsKey[] = "allowedIds";
 const char kContactMessageContactRecordKey[] = "contactRecords";
+const char kContactMessageNumUnreachableContactsKey[] =
+    "numUnreachableContacts";
 
 // Converts Contact to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
@@ -42,7 +44,8 @@ base::Value ContactMessageToDictionary(
     base::Optional<bool> did_contacts_change_since_last_upload,
     const base::Optional<std::set<std::string>>& allowed_contact_ids,
     const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
-        contacts) {
+        contacts,
+    base::Optional<uint32_t> num_unreachable_contacts_filtered_out) {
   base::Value dictionary(base::Value::Type::DICTIONARY);
 
   dictionary.SetKey(kContactMessageTimeKey, GetJavascriptTimestamp());
@@ -69,6 +72,10 @@ base::Value ContactMessageToDictionary(
 
     dictionary.SetStringKey(kContactMessageContactRecordKey,
                             FormatAsJSON(base::Value(std::move(contact_list))));
+  }
+  if (num_unreachable_contacts_filtered_out.has_value()) {
+    dictionary.SetIntKey(kContactMessageNumUnreachableContactsKey,
+                         *num_unreachable_contacts_filtered_out);
   }
   return dictionary;
 }
@@ -125,18 +132,22 @@ void NearbyInternalsContactHandler::HandleDownloadContacts(
 
 void NearbyInternalsContactHandler::OnContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    uint32_t num_unreachable_contacts_filtered_out) {
   FireWebUIListener("contacts-updated",
                     ContactMessageToDictionary(
                         /*did_contacts_change_since_last_upload=*/base::nullopt,
-                        allowed_contact_ids, contacts));
+                        allowed_contact_ids, contacts,
+                        num_unreachable_contacts_filtered_out));
 }
 
 void NearbyInternalsContactHandler::OnContactsUploaded(
     bool did_contacts_change_since_last_upload) {
   FireWebUIListener(
       "contacts-updated",
-      ContactMessageToDictionary(did_contacts_change_since_last_upload,
-                                 /*allowed_contact_ids=*/base::nullopt,
-                                 /*contacts=*/base::nullopt));
+      ContactMessageToDictionary(
+          did_contacts_change_since_last_upload,
+          /*allowed_contact_ids=*/base::nullopt,
+          /*contacts=*/base::nullopt,
+          /*num_unreachable_contacts_filtered_out=*/base::nullopt));
 }

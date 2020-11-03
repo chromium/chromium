@@ -18,7 +18,8 @@
 class NearbyShareContactDownloader {
  public:
   using SuccessCallback = base::OnceCallback<void(
-      std::vector<nearbyshare::proto::ContactRecord> contacts)>;
+      std::vector<nearbyshare::proto::ContactRecord> contacts,
+      uint32_t num_unreachable_contacts_filtered_out)>;
   using FailureCallback = base::OnceClosure;
 
   // |device_id|: The ID used by the Nearby server to differentiate multiple
@@ -41,7 +42,8 @@ class NearbyShareContactDownloader {
   virtual void OnRun() = 0;
 
   // Invokes the success callback with the input parameters.
-  void Succeed(std::vector<nearbyshare::proto::ContactRecord> contacts);
+  void Succeed(std::vector<nearbyshare::proto::ContactRecord> contacts,
+               uint32_t num_unreachable_contacts_filtered_out);
 
   // Invokes the failure callback.
   void Fail();

@@ -38,7 +38,8 @@ class NearbyShareContactManager : public nearby_share::mojom::ContactManager {
    public:
     virtual void OnContactsDownloaded(
         const std::set<std::string>& allowed_contact_ids,
-        const std::vector<nearbyshare::proto::ContactRecord>& contacts) = 0;
+        const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+        uint32_t num_unreachable_contacts_filtered_out) = 0;
     virtual void OnContactsUploaded(
         bool did_contacts_change_since_last_upload) = 0;
   };
@@ -87,7 +88,8 @@ class NearbyShareContactManager : public nearby_share::mojom::ContactManager {
 
   void NotifyContactsDownloaded(
       const std::set<std::string>& allowed_contact_ids,
-      const std::vector<nearbyshare::proto::ContactRecord>& contacts);
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+      uint32_t num_unreachable_contacts_filtered_out);
   void NotifyContactsUploaded(bool did_contacts_change_since_last_upload);
 
  private:
