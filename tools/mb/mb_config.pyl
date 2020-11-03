@@ -2102,7 +2102,7 @@
     ],
 
     'lacros_on_linux_release_bot': [
-      'lacros_on_linux', 'release_bot',
+      'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_release_trybot': [

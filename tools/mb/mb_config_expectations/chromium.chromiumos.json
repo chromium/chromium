@@ -124,6 +124,7 @@
   },
   "linux-lacros-builder-rel": {
     "gn_args": {
+      "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
       "is_component_build": false,
       "is_debug": false,
@@ -136,6 +137,7 @@
   },
   "linux-lacros-tester-rel": {
     "gn_args": {
+      "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
       "is_component_build": false,
       "is_debug": false,
