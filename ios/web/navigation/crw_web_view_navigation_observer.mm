@@ -15,6 +15,7 @@
 #import "ios/web/navigation/crw_web_view_navigation_observer_delegate.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
+#import "ios/web/navigation/error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/web_client.h"
@@ -247,8 +248,9 @@ using web::wk_navigation_util::IsPlaceholderUrl;
   // 4) When a SafeBrowsing warning is displayed after
   //    decidePolicyForNavigationAction but before a provisional navigation
   //    starts, and the user clicks the "Go Back" link on the warning page.
+  // 5) When the user is reloading an error page.
   //
-  // If |isLoading| is NO, then it must be case 2, 3, or 4. If the last
+  // If |isLoading| is NO, then it must be case 2, 3, 4 or 5. If the last
   // committed URL (_documentURL) matches the current URL, assume that it is
   // case 4 if a SafeBrowsing warning is currently displayed and case 3
   // otherwise. If the URL does not match, assume it is a non-document-changing
@@ -266,6 +268,12 @@ using web::wk_navigation_util::IsPlaceholderUrl;
   // window.location.href will match the previous URL at this stage, not the web
   // view's current URL.
   if (!self.webView.loading) {
+    if ([ErrorPageHelper isErrorPageFileURL:URL] &&
+        self.documentURL ==
+            [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:URL]) {
+      // Case 5: reloading an error page.
+      return;
+    }
     if (self.documentURL == URL) {
       if (!web::IsSafeBrowsingWarningDisplayedInWebView(self.webView))
         return;

@@ -1002,7 +1002,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // webView has the file URL.
   BOOL isErrorPage =
       base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      context && context->IsLoadingErrorPage();
+      [ErrorPageHelper isErrorPageFileURL:webViewURL];
 
   // When loading an error page that is a placeholder (legacy), the webViewURL
   // should be used as it is the actual URL we want to load.
