@@ -46,10 +46,29 @@ class ExternalWebAppManagerBrowserTest
     return WebAppProvider::Get(browser()->profile())->registrar();
   }
 
+  void SyncEmptyConfigs() {
+    std::vector<base::Value> app_configs;
+    ExternalWebAppManager::SetConfigsForTesting(&app_configs);
+
+    base::RunLoop run_loop;
+    WebAppProvider::Get(browser()->profile())
+        ->external_web_app_manager_for_testing()
+        .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
+            [&](std::map<GURL, InstallResultCode> install_results,
+                std::map<GURL, bool> uninstall_results) {
+              EXPECT_EQ(install_results.size(), 0u);
+              EXPECT_EQ(uninstall_results.size(), 0u);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    ExternalWebAppManager::SetConfigsForTesting(nullptr);
+  }
+
   // Mocks "icon.png" as available in the config's directory.
   base::Optional<InstallResultCode> SyncDefaultAppConfig(
       const GURL& install_url,
-      std::string app_config_string) {
+      base::StringPiece app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
     ExternalWebAppManager::SetConfigDirForTesting(&test_config_dir);
 
@@ -412,6 +431,52 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
                              /*x=*/0, /*y=*/0),
             SK_ColorBLUE);
+}
+
+const char kOnlyForNewUsersInstallUrl[] = "https://example.org/";
+const char kOnlyForNewUsersConfig[] = R"({
+    "app_url": "https://example.org/",
+    "launch_container": "window",
+    "user_type": ["unmanaged"],
+    "only_for_new_users": true,
+    "only_use_offline_manifest": true,
+    "offline_manifest": {
+      "name": "Test",
+      "start_url": "https://example.org/",
+      "scope": "https://example.org/",
+      "display": "standalone",
+      "icon_any_pngs": ["icon.png"]
+    }
+  })";
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       PRE_OnlyForNewUsersWithNewUser) {
+  // New user should have the app installed.
+  EXPECT_EQ(SyncDefaultAppConfig(GURL(kOnlyForNewUsersInstallUrl),
+                                 kOnlyForNewUsersConfig),
+            InstallResultCode::kSuccessOfflineOnlyInstall);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       OnlyForNewUsersWithNewUser) {
+  // App should persist after user stops being a new user.
+  EXPECT_EQ(SyncDefaultAppConfig(GURL(kOnlyForNewUsersInstallUrl),
+                                 kOnlyForNewUsersConfig),
+            InstallResultCode::kSuccessAlreadyInstalled);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       PRE_OnlyForNewUsersWithOldUser) {
+  // Simulate running Chrome without the configs present.
+  SyncEmptyConfigs();
+}
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       OnlyForNewUsersWithOldUser) {
+  // This instance of Chrome should be considered not a new user after the
+  // previous PRE_ launch and sync.
+  EXPECT_EQ(SyncDefaultAppConfig(GURL(kOnlyForNewUsersInstallUrl),
+                                 kOnlyForNewUsersConfig),
+            base::nullopt);
 }
 
 #endif  // defined(OS_CHROMEOS)

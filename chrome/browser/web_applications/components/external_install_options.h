@@ -76,6 +76,10 @@ struct ExternalInstallOptions {
   // uninstalled it.
   bool override_previous_user_uninstall = false;
 
+  // Whether the app should only be installed if the user is using Chrome for
+  // the first time.
+  bool only_for_new_users = false;
+
   // This must only be used by pre-installed default or system apps that are
   // valid PWAs if loading the real service worker is too costly to verify
   // programmatically.

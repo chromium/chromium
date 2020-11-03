@@ -1928,6 +1928,11 @@ const char kWebAppsDailyMetricsDate[] = "web_apps.daily_metrics_date";
 // Dictionary that maps web app URLs to Chrome extension IDs.
 const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 
+// A string representing the last version of Chrome preinstalled web apps were
+// synchronised for.
+const char kWebAppsLastPreinstallSynchronizeVersion[] =
+    "web_apps.last_preinstall_synchronize_version";
+
 // Dictionary that maps web app ID to a dictionary of various preferences.
 // Used only in the new web applications system to store app preferences which
 // outlive the app installation and uninstallation.

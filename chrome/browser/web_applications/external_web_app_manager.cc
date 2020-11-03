@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -36,6 +37,9 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -147,6 +151,12 @@ const char* ExternalWebAppManager::kHistogramDisabledCount =
 const char* ExternalWebAppManager::kHistogramConfigErrorCount =
     "WebApp.Preinstalled.ConfigErrorCount";
 
+void ExternalWebAppManager::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterStringPref(prefs::kWebAppsLastPreinstallSynchronizeVersion,
+                               "");
+}
+
 void ExternalWebAppManager::SkipStartupForTesting() {
   g_skip_startup_for_testing_ = true;
 }
@@ -251,9 +261,22 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
   // same as being disabled).
   int enabled_count = parsed_configs.options_list.size();
 
+  bool is_new_user = IsNewUser();
+
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
-        // Remove if any blocked by admin policy.
+        // Remove if only for new users, user isn't new and app was not
+        // installed previously.
+        if (options.only_for_new_users && !is_new_user) {
+          bool was_previously_installed =
+              ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
+                  .LookupAppId(options.install_url)
+                  .has_value();
+          if (!was_previously_installed)
+            return true;
+        }
+
+        // Remove if any apps to replace are blocked by admin policy.
         for (const AppId& app_id : options.uninstall_and_replace) {
           if (extensions::IsExtensionBlockedByPolicy(profile_, app_id)) {
             ++parsed_configs.disabled_count;
@@ -262,13 +285,13 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
           }
         }
 
-        // Keep if any installed.
+        // Keep if any apps to replace are installed.
         for (const AppId& app_id : options.uninstall_and_replace) {
           if (extensions::IsExtensionInstalled(profile_, app_id))
             return false;
         }
 
-        // Remove if any previously uninstalled.
+        // Remove if any apps to replace were previously uninstalled.
         for (const AppId& app_id : options.uninstall_and_replace) {
           if (extensions::IsExternalExtensionUninstalled(profile_, app_id))
             return true;
@@ -303,6 +326,12 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
     PendingAppManager::SynchronizeCallback callback,
     std::map<GURL, InstallResultCode> install_results,
     std::map<GURL, bool> uninstall_results) {
+  // Note that we are storing the Chrome version instead of a "has synchronised"
+  // bool in order to do version update specific logic in the future.
+  profile_->GetPrefs()->SetString(
+      prefs::kWebAppsLastPreinstallSynchronizeVersion,
+      version_info::GetMajorVersionNumber());
+
   RecordExternalAppInstallResultCode("Webapp.InstallResult.Default",
                                      install_results);
   if (callback) {
@@ -337,6 +366,20 @@ base::FilePath ExternalWebAppManager::GetConfigDir() {
 #endif
 
   return dir;
+}
+
+bool ExternalWebAppManager::IsNewUser() {
+  PrefService* prefs = profile_->GetPrefs();
+  std::string last_version =
+      prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
+  if (!last_version.empty())
+    return false;
+  // It's not enough to check whether the last_version string has been set
+  // because users have been around before this pref was introduced (M88). We
+  // distinguish those users via the presence of any
+  // ExternallyInstalledWebAppPrefs which would have been set by past default
+  // app installs. Remove this after a few Chrome versions have passed.
+  return ExternallyInstalledWebAppPrefs(prefs).HasNoApps();
 }
 
 }  //  namespace web_app

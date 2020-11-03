@@ -177,6 +177,14 @@ base::Optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
   return base::nullopt;
 }
 
+bool ExternallyInstalledWebAppPrefs::HasNoApps() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const base::DictionaryValue* dict =
+      pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs);
+  return dict->DictEmpty();
+}
+
 base::Optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

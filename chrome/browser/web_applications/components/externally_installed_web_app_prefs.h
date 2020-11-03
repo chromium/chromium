@@ -54,6 +54,7 @@ class ExternallyInstalledWebAppPrefs {
               const AppId& app_id,
               ExternalInstallSource install_source);
   base::Optional<AppId> LookupAppId(const GURL& url) const;
+  bool HasNoApps() const;
 
   // Returns an id if there is a placeholder app for |url|. Note that nullopt
   // does not mean that there is no app for |url| just that there is no

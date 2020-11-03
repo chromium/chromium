@@ -18,6 +18,10 @@ namespace base {
 class FilePath;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 class Profile;
 
 namespace web_app {
@@ -44,6 +48,8 @@ class ExternalWebAppManager {
   static const char* kHistogramEnabledCount;
   static const char* kHistogramDisabledCount;
   static const char* kHistogramConfigErrorCount;
+
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static void SkipStartupForTesting();
   static void SetConfigDirForTesting(const base::FilePath* config_dir);
@@ -83,6 +89,10 @@ class ExternalWebAppManager {
       std::map<GURL, bool> uninstall_results);
 
   base::FilePath GetConfigDir();
+
+  // Returns whether this is the first time we've deployed default apps on this
+  // profile.
+  bool IsNewUser();
 
   PendingAppManager* pending_app_manager_ = nullptr;
   Profile* const profile_;

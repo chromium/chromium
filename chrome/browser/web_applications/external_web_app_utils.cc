@@ -36,6 +36,10 @@ constexpr char kAppUrl[] = "app_url";
 // on Chrome OS.
 constexpr char kHideFromUser[] = "hide_from_user";
 
+// kOnlyForNewUsers is an optional boolean. If set and true we will not install
+// the app for users that have already run Chrome before.
+constexpr char kOnlyForNewUsers[] = "only_for_new_users";
+
 // kCreateShortcuts is an optional boolean which controls whether OS
 // level shortcuts are created. On Chrome OS this controls whether the app is
 // pinned to the shelf.
@@ -218,6 +222,16 @@ ExternalConfigParseResult ParseConfig(FileUtilsWrapper& file_utils,
   if (!options.install_url.is_valid()) {
     LOG(ERROR) << file << " had an invalid " << kAppUrl;
     return Result::Error();
+  }
+
+  // only_for_new_users
+  value = app_config.FindKey(kOnlyForNewUsers);
+  if (value) {
+    if (!value->is_bool()) {
+      LOG(ERROR) << file << " had an invalid " << kOnlyForNewUsers;
+      return Result::Error();
+    }
+    options.only_for_new_users = value->GetBool();
   }
 
   // hide_from_user
