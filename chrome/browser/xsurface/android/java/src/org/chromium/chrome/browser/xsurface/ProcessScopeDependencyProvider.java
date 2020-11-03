@@ -12,6 +12,14 @@ import androidx.annotation.Nullable;
  * Provides application-level dependencies for an external surface.
  */
 public interface ProcessScopeDependencyProvider {
+    /**
+     * Resolves a library name such as "foo" to an absolute path. The library name should be in the
+     * same format given to System.loadLibrary().
+     */
+    public interface LibraryResolver {
+        String resolvePath(String libName);
+    }
+
     /** @return the context associated with the application. */
     @Nullable
     default Context getContext() {
@@ -63,4 +71,13 @@ public interface ProcessScopeDependencyProvider {
      * @param delayMs The delay before executing the task in milliseconds.
      */
     default void postTask(int taskType, Runnable task, long delayMs) {}
+
+    /**
+     * Returns a LibraryResolver to be used for resolving native library paths. If null is
+     * returned, the default library loading mechanism should be used.
+     */
+    @Nullable
+    default LibraryResolver getLibraryResolver() {
+        return null;
+    }
 }

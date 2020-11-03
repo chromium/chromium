@@ -216,10 +216,16 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             implements ProcessScopeDependencyProvider {
         private Context mContext;
         private ImageFetchClient mImageFetchClient;
+        private LibraryResolver mLibraryResolver;
 
         FeedProcessScopeDependencyProvider() {
             mContext = createFeedContext(ContextUtils.getApplicationContext());
             mImageFetchClient = new FeedImageFetchClient();
+            if (BundleUtils.isIsolatedSplitInstalled(mContext, FEED_SPLIT_NAME)) {
+                mLibraryResolver = (libName) -> {
+                    return BundleUtils.getNativeLibraryPath(libName);
+                };
+            }
         }
 
         @Override
@@ -282,6 +288,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
                     return;
             }
             PostTask.postDelayedTask(traits, task, delayMs);
+        }
+
+        @Override
+        public LibraryResolver getLibraryResolver() {
+            return mLibraryResolver;
         }
     }
 
