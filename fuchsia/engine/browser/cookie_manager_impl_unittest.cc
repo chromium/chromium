@@ -21,6 +21,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -59,9 +60,14 @@ class CookieManagerImplTest : public testing::Test {
  protected:
   network::mojom::NetworkContext* GetNetworkContext() {
     if (!network_context_.is_bound()) {
+      network::mojom::NetworkContextParamsPtr params =
+          network::mojom::NetworkContextParams::New();
+      // Use a dummy CertVerifier that always passes cert verification, since
+      // these unittests don't need to test CertVerifier behavior.
+      params->cert_verifier_params =
+          network::FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
       network_service_->CreateNetworkContext(
-          network_context_.BindNewPipeAndPassReceiver(),
-          network::mojom::NetworkContextParams::New());
+          network_context_.BindNewPipeAndPassReceiver(), std::move(params));
       network_context_.reset_on_disconnect();
     }
     return network_context_.get();

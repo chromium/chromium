@@ -24,6 +24,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -331,6 +332,10 @@ ConnectionFactoryImplTest::ConnectionFactoryImplTest()
       network_service_(network::NetworkService::CreateForTesting()) {
   network::mojom::NetworkContextParamsPtr params =
       network::mojom::NetworkContextParams::New();
+  // Use a dummy CertVerifier that always passes cert verification, since
+  // these unittests don't need to test CertVerifier behavior.
+  params->cert_verifier_params =
+      network::FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
   // Use a fixed proxy config, to avoid dependencies on local network
   // configuration.
   params->initial_proxy_config = net::ProxyConfigWithAnnotation::CreateDirect();

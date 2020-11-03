@@ -669,6 +669,8 @@ class NetworkServiceWithUDPSocketLimit : public NetworkServiceBrowserTest {
     mojo::Remote<network::mojom::NetworkContext> network_context;
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
+    context_params->cert_verifier_params = GetCertVerifierParams(
+        network::mojom::CertVerifierCreationParams::New());
     GetNetworkService()->CreateNetworkContext(
         network_context.BindNewPipeAndPassReceiver(),
         std::move(context_params));

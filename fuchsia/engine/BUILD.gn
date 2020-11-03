@@ -344,6 +344,7 @@ test("web_engine_unittests") {
     "//mojo/core/embedder",
     "//services/media_session/public/mojom",
     "//services/network:network_service",
+    "//services/network:test_support",
     "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",

@@ -34,6 +34,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_network_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,6 +130,10 @@ class DriveApiRequestsTest : public testing::Test {
         network_service_remote.BindNewPipeAndPassReceiver());
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
+    // Use a dummy CertVerifier that always passes cert verification, since
+    // these unittests don't need to test CertVerifier behavior.
+    context_params->cert_verifier_params =
+        network::FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
     network_service_remote->CreateNetworkContext(
         network_context_.BindNewPipeAndPassReceiver(),
         std::move(context_params));

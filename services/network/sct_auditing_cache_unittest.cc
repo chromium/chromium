@@ -21,6 +21,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context_client.h"
 
 #include "services/network/test/test_url_loader_factory.h"
@@ -49,10 +50,16 @@ class SCTAuditingCacheTest : public testing::Test {
 
  protected:
   void InitNetworkContext() {
+    mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
+    // Use a dummy CertVerifier that always passes cert verification, since
+    // these unittests don't need to test CertVerifier behavior.
+    params->cert_verifier_params =
+        FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
+
     network_context_ = std::make_unique<NetworkContext>(
         network_service_.get(),
         network_context_remote_.BindNewPipeAndPassReceiver(),
-        mojom::NetworkContextParams::New());
+        std::move(params));
 
     // A NetworkContextClient is needed for embedder notifications to work.
     mojo::PendingRemote<network::mojom::NetworkContextClient>

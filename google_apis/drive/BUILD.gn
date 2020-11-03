@@ -84,6 +84,7 @@ source_set("drive_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
