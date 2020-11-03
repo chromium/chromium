@@ -140,6 +140,10 @@ public class ScreenshotCoordinator {
      * @param onSuccess. Runnable to run on success.
      */
     protected void retryInstallEditor(Runnable onSuccess) {
+        if (mImageEditorModuleProvider == null) {
+            // If the module does not exist, nothing to do.
+            return;
+        }
         installEditor(false, onSuccess);
     }
 
