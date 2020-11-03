@@ -73,6 +73,43 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
   return subset_data;
 }
 
+sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
+  ImageSerializationContext* context =
+      reinterpret_cast<ImageSerializationContext*>(ctx);
+
+  // If there already exists encoded data and it is of a reasonable size use it
+  // directly.
+  sk_sp<SkData> encoded_data = image->refEncodedData();
+  if (!encoded_data) {
+    const SkImageInfo& image_info = image->imageInfo();
+    // If encoding the image will result in it exceeding the allowable size,
+    // effectively delete it by providing no data.
+    if (context->max_representation_size != 0 &&
+        image_info.computeMinByteSize() > context->max_representation_size) {
+      return SkData::MakeEmpty();
+    }
+
+    encoded_data = image->encodeToData();
+  }
+
+  // If encoding fails then no-op.
+  if (!encoded_data)
+    return SkData::MakeEmpty();
+
+  // Ensure the encoded data fits in the restrictions if they are present.
+  if ((context->remaining_image_size == std::numeric_limits<uint64_t>::max() ||
+       context->remaining_image_size >= encoded_data->size()) &&
+      (context->max_representation_size == 0 ||
+       encoded_data->size() < context->max_representation_size)) {
+    if (context->remaining_image_size != std::numeric_limits<uint64_t>::max())
+      context->remaining_image_size -= encoded_data->size();
+
+    return encoded_data;
+  }
+
+  return SkData::MakeEmpty();
+}
+
 // Deserializes a clip rect for a subframe within the main SkPicture. These
 // represent subframes and require special decoding as they are custom data
 // rather than a valid SkPicture.
@@ -155,14 +192,24 @@ sk_sp<SkPicture> MakeEmptyPicture() {
 }
 
 SkSerialProcs MakeSerialProcs(PictureSerializationContext* picture_ctx,
-                              TypefaceSerializationContext* typeface_ctx) {
+                              TypefaceSerializationContext* typeface_ctx,
+                              ImageSerializationContext* image_ctx) {
   SkSerialProcs procs;
   procs.fPictureProc = SerializePictureAsRectData;
   procs.fPictureCtx = picture_ctx;
   procs.fTypefaceProc = SerializeTypeface;
   procs.fTypefaceCtx = typeface_ctx;
+
   // TODO(crbug/1008875): find a consistently smaller and low-memory overhead
   // image downsampling method to use as fImageProc.
+  //
+  // At present this uses the native representation, but skips serializing if
+  // loading to a bitmap for encoding might cause an OOM.
+  if (image_ctx->max_representation_size > 0 ||
+      image_ctx->remaining_image_size != std::numeric_limits<uint64_t>::max()) {
+    procs.fImageProc = SerializeImage;
+    procs.fImageCtx = image_ctx;
+  }
   return procs;
 }
 

@@ -84,7 +84,8 @@ bool WriteSkp(sk_sp<SkPicture> skp,
       skp_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE));
   TypefaceUsageMap typeface_map;
   TypefaceSerializationContext tctx(&typeface_map);
-  auto procs = MakeSerialProcs(pctx, &tctx);
+  ImageSerializationContext ictx;
+  auto procs = MakeSerialProcs(pctx, &tctx, &ictx);
   skp->serialize(&wstream, &procs);
   wstream.Close();
   if (wstream.DidWriteFail()) {

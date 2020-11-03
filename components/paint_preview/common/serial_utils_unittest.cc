@@ -5,7 +5,12 @@
 #include "components/paint_preview/common/serial_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -35,10 +40,13 @@ TEST(PaintPreviewSerialUtils, TestTransformedPictureProcs) {
 
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
 
-  SkSerialProcs serial_procs = MakeSerialProcs(&picture_ctx, &typeface_ctx);
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
 
   DeserializationContext deserial_ctx;
   SkDeserialProcs deserial_procs = MakeDeserialProcs(&deserial_ctx);
@@ -63,10 +71,13 @@ TEST(PaintPreviewSerialUtils, TestSerialPictureNotInMap) {
 
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
 
-  SkSerialProcs serial_procs = MakeSerialProcs(&picture_ctx, &typeface_ctx);
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
 
   auto pic = MakeEmptyPicture();
   EXPECT_EQ(serial_procs.fPictureProc(pic.get(), serial_procs.fPictureCtx),
@@ -87,10 +98,13 @@ TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
       usage_map.insert(std::make_pair(typeface->uniqueID(), std::move(usage)))
           .second);
   TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
 
-  SkSerialProcs serial_procs = MakeSerialProcs(&picture_ctx, &typeface_ctx);
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
 
   EXPECT_NE(
       serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx),
@@ -104,10 +118,13 @@ TEST(PaintPreviewSerialUtils, TestSerialNoTypefaceInMap) {
   auto typeface = SkTypeface::MakeDefault();
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
 
-  SkSerialProcs serial_procs = MakeSerialProcs(&picture_ctx, &typeface_ctx);
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
   EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
 
   EXPECT_NE(
       serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx),
@@ -117,6 +134,97 @@ TEST(PaintPreviewSerialUtils, TestSerialNoTypefaceInMap) {
   EXPECT_NE(
       serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx),
       nullptr);
+}
+
+TEST(PaintPreviewSerialUtils, TestImageContextLimitBudget) {
+  SkBitmap bitmap1;
+  bitmap1.allocN32Pixels(1, 19);
+  SkCanvas canvas1(bitmap1);
+  SkPaint paint;
+  paint.setStyle(SkPaint::kFill_Style);
+  paint.setColor(SK_ColorRED);
+  canvas1.drawRect(SkRect::MakeWH(1, 4), paint);
+  SkPictureRecorder recorder;
+  SkCanvas* canvas = recorder.beginRecording(SkRect::MakeWH(40, 40));
+  canvas->drawBitmap(bitmap1, 0, 0);
+  canvas->drawBitmap(bitmap1, 0, 0);
+  canvas->drawBitmap(bitmap1, 0, 0);
+  auto pic = recorder.finishRecordingAsPicture();
+
+  PictureSerializationContext picture_ctx;
+  TypefaceUsageMap usage_map;
+  TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
+  ictx.remaining_image_size = 200;
+
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
+  EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
+
+  sk_sp<SkData> data = pic->serialize(&serial_procs);
+  EXPECT_NE(data, nullptr);
+  SkDeserialProcs deserial_procs;
+  size_t deserialized_images = 0;
+  deserial_procs.fImageCtx = &deserialized_images;
+  deserial_procs.fImageProc = [](const void* data, size_t length,
+                                 void* ctx) -> sk_sp<SkImage> {
+    if (length > 0U) {
+      size_t* images = reinterpret_cast<size_t*>(ctx);
+      *images += 1;
+    }
+    return nullptr;
+  };
+  SkPicture::MakeFromData(data.get(), &deserial_procs);
+  EXPECT_EQ(deserialized_images, 2U);
+}
+
+TEST(PaintPreviewSerialUtils, TestImageContextLimitSize) {
+  SkBitmap bitmap1;
+  bitmap1.allocN32Pixels(1, 19);
+  SkCanvas canvas1(bitmap1);
+  SkPaint paint;
+  paint.setStyle(SkPaint::kFill_Style);
+  paint.setColor(SK_ColorRED);
+  canvas1.drawRect(SkRect::MakeWH(1, 4), paint);
+  SkBitmap bitmap2;
+  bitmap2.allocN32Pixels(20, 20);
+  SkCanvas canvas2(bitmap2);
+  canvas2.drawRect(SkRect::MakeWH(20, 5), paint);
+  SkPictureRecorder recorder;
+  SkCanvas* canvas = recorder.beginRecording(SkRect::MakeWH(40, 40));
+  canvas->drawBitmap(bitmap1, 0, 0);
+  canvas->drawBitmap(bitmap2, 0, 0);
+  auto pic = recorder.finishRecordingAsPicture();
+
+  PictureSerializationContext picture_ctx;
+  TypefaceUsageMap usage_map;
+  TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
+  ictx.max_representation_size = 200;
+
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
+  EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
+  EXPECT_EQ(serial_procs.fImageCtx, &ictx);
+
+  sk_sp<SkData> data = pic->serialize(&serial_procs);
+  EXPECT_NE(data, nullptr);
+  SkDeserialProcs deserial_procs;
+  size_t deserialized_images = 0;
+  deserial_procs.fImageCtx = &deserialized_images;
+  deserial_procs.fImageProc = [](const void* data, size_t length,
+                                 void* ctx) -> sk_sp<SkImage> {
+    if (length > 0U) {
+      size_t* images = reinterpret_cast<size_t*>(ctx);
+      *images += 1;
+    }
+    return nullptr;
+  };
+  SkPicture::MakeFromData(data.get(), &deserial_procs);
+  EXPECT_EQ(deserialized_images, 1U);
 }
 
 }  // namespace paint_preview

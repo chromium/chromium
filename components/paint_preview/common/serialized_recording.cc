@@ -25,7 +25,8 @@ bool SerializeSkPicture(sk_sp<const SkPicture> skp,
                         SkWStream* out_stream) {
   TypefaceSerializationContext typeface_context(tracker->GetTypefaceUsageMap());
   auto serial_procs = MakeSerialProcs(tracker->GetPictureSerializationContext(),
-                                      &typeface_context);
+                                      &typeface_context,
+                                      tracker->GetImageSerializationContext());
 
   skp->serialize(out_stream, &serial_procs);
   out_stream->flush();

@@ -243,6 +243,9 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     max_capture_size = base::nullopt;
   } else {
     max_capture_size = params->max_capture_size;
+    auto* image_ctx = tracker->GetImageSerializationContext();
+    image_ctx->remaining_image_size = params->max_capture_size;
+    image_ctx->max_representation_size = params->max_capture_size;
   }
 
   // This cannot be done async if the recording contains a GPU accelerated

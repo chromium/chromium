@@ -52,6 +52,18 @@ struct TypefaceSerializationContext {
   base::flat_set<SkFontID> finished;  // Should be empty on first use.
 };
 
+struct ImageSerializationContext {
+  // The remaining memory budget for images. This is ignored if the value is the
+  // max value of uint64_t.
+  uint64_t remaining_image_size{std::numeric_limits<uint64_t>::max()};
+
+  // The maximum size of the representation for serialization. Images
+  // that are larger than this when encoded or will need to be inflated to a
+  // bitmap larger than this are skipped to avoid OOMs. If this value is 0 image
+  // procs are skipped and the default behavior is used.
+  uint64_t max_representation_size{0};
+};
+
 // Maps a content ID to a clip rect.
 using DeserializationContext = base::flat_map<uint32_t, gfx::Rect>;
 
@@ -81,7 +93,8 @@ sk_sp<SkPicture> MakeEmptyPicture();
 // Creates a SkSerialProcs object. The object *does not* copy |picture_ctx| or
 // |typeface_ctx| so they must outlive the use of the returned object.
 SkSerialProcs MakeSerialProcs(PictureSerializationContext* picture_ctx,
-                              TypefaceSerializationContext* typeface_ctx);
+                              TypefaceSerializationContext* typeface_ctx,
+                              ImageSerializationContext* image_ctx);
 
 // Creates a SkDeserialProcs object. The object *does not* copy |ctx| so |ctx|
 // must outlive the use of the returned object. |ctx| will be filled as pictures
