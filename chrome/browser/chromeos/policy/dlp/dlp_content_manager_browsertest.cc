@@ -4,12 +4,20 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -20,6 +28,9 @@ namespace policy {
 namespace {
 const DlpContentRestrictionSet kScreenshotRestricted(
     DlpContentRestriction::kScreenshot);
+const DlpContentRestrictionSet kPrivacyScreenEnforced(
+    DlpContentRestriction::kPrivacyScreen);
+const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint);
 const DlpContentRestrictionSet kVideoCaptureRestricted(
     DlpContentRestriction::kVideoCapture);
 }  // namespace
@@ -210,6 +221,76 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   run_loop.RunUntilIdle();
 
   browser2->window()->Close();
+}
+
+class DlpContentManagerPolicyBrowserTest : public PolicyTest {
+ public:
+  DlpContentManagerPolicyBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDataLeakPreventionPolicy);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
+                       GetRestrictionSetForURL) {
+  const std::string kAllowedUrl = "https://example.com";
+  const std::string kUrl1 = "https://example1.com";
+  const std::string kUrl2 = "https://example2.com";
+  const std::string kUrl3 = "https://example3.com";
+
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls1(base::Value::Type::LIST);
+  src_urls1.Append(kUrl1);
+  base::Value restrictions1(base::Value::Type::LIST);
+  restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls1),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions1)));
+
+  base::Value src_urls2(base::Value::Type::LIST);
+  src_urls2.Append(kUrl2);
+  base::Value restrictions2(base::Value::Type::LIST);
+  restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kPrivacyScreenRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #2", "Block", std::move(src_urls2),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions2)));
+
+  base::Value src_urls3(base::Value::Type::LIST);
+  src_urls3.Append(kUrl3);
+  base::Value restrictions3(base::Value::Type::LIST);
+  restrictions3.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kPrintingRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #3", "Block", std::move(src_urls3),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions3)));
+
+  PolicyMap policies;
+  policies.Set(key::kDataLeakPreventionRulesList, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(rules),
+               nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_EQ(kScreenshotRestricted,
+            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl1)));
+  EXPECT_EQ(kPrivacyScreenEnforced,
+            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl2)));
+  EXPECT_EQ(kPrintRestricted,
+            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl3)));
+  EXPECT_EQ(
+      DlpContentRestrictionSet(),
+      DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kAllowedUrl)));
 }
 
 }  // namespace policy

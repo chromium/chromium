@@ -91,6 +91,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
                            VideoCaptureStoppedWhenNonConfidentialWindowResized);
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
                            VideoCaptureNotStoppedWhenConfidentialWindowHidden);
+  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerPolicyBrowserTest,
+                           GetRestrictionSetForURL);
   friend class DlpContentManagerTest;
   friend class DlpContentTabHelper;
   friend class MockDlpContentManager;
