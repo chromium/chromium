@@ -5029,6 +5029,7 @@
 
     'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts': [
       'gpu_angle_perf_smoke_isolated_scripts',
+      'gpu_angle_restricted_trace_gold_isolated_scripts',
       'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
 
@@ -5510,6 +5511,13 @@
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
+    ],
+
+    'gpu_fyi_win_nvidia_release_x64_isolated_scripts': [
+      'gpu_angle_perf_smoke_isolated_scripts',
+      'gpu_angle_restricted_trace_gold_isolated_scripts',
+      'gpu_command_buffer_perf_passthrough_isolated_scripts',
+      'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
 
     'gpu_fyi_win_optional_gtests': [
