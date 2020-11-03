@@ -79,6 +79,9 @@ include_rules = [
   "+mojo/core/embedder/embedder.h",
   "+mojo/public/cpp/system",
 
+  # Background tracing support
+  "+services/tracing/public/cpp",
+
   "+storage/browser/quota",
   "+storage/common/quota",
 

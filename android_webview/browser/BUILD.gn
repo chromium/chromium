@@ -170,6 +170,8 @@ source_set("browser") {
     "tracing/aw_tracing_controller.h",
     "tracing/aw_tracing_delegate.cc",
     "tracing/aw_tracing_delegate.h",
+    "tracing/background_tracing_field_trial.cc",
+    "tracing/background_tracing_field_trial.h",
   ]
 
   deps = [

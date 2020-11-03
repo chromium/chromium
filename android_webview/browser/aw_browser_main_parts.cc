@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
+#include "android_webview/browser/tracing/background_tracing_field_trial.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_resource.h"
@@ -141,6 +142,8 @@ void AwBrowserMainParts::PostCreateThreads() {
   heap_profiling::Mode mode = heap_profiling::GetModeForStartup();
   if (mode != heap_profiling::Mode::kNone)
     heap_profiling::Supervisor::GetInstance()->Start(base::NullCallback());
+
+  SetupBackgroundTracingFieldTrial();
 }
 
 }  // namespace android_webview
