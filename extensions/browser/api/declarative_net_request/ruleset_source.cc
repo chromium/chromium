@@ -148,8 +148,8 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
     dnr_api::Rule parsed_rule;
     base::string16 parse_error;
 
-    if (dnr_api::Rule::Populate(rules_list[i], &parsed_rule, &parse_error) &&
-        parse_error.empty()) {
+    if (dnr_api::Rule::Populate(rules_list[i], &parsed_rule, &parse_error)) {
+      DCHECK(parse_error.empty());
       if (result.rules.size() == rule_limit) {
         result.rule_parse_warnings.push_back(
             CreateInstallWarning(json_path, kRuleCountExceeded));
