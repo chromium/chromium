@@ -161,6 +161,8 @@ void BorealisInstallerImpl::OnDlcInstallationCompleted(
   // At this point, the Borealis DLC installation has failed.
   InstallationResult result = InstallationResult::kDlcUnknown;
 
+  // TODO(b/172284265): Handle the case where a device update is required before
+  // a DLC can be installed.
   if (install_result.error == dlcservice::kErrorInternal) {
     LOG(ERROR) << "Something went wrong internally with DlcService.";
     result = InstallationResult::kDlcInternal;
