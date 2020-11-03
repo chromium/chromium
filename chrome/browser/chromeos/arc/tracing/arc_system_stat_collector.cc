@@ -9,12 +9,14 @@
 #include <unistd.h>
 
 #include "base/bind.h"
+#include "base/cpu.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -244,10 +246,22 @@ struct ArcSystemStatCollector::SystemReadersContext {
       LOG(ERROR) << "Failed to open mem info file: " << kMemoryInfoPath;
     }
 
-    context->system_readers[SystemReader::kGemInfo].reset(
-        open(kGemInfoPath, O_RDONLY));
-    if (!context->system_readers[SystemReader::kGemInfo].is_valid()) {
-      LOG(ERROR) << "Failed to open gem info file: " << kGemInfoPath;
+    // Reading i915_gem_objects on Intel platform with kernel 5.4 is slow and is
+    // prohibited. Also it changes reporting format.
+    // TODO(b/170397975): Update if i915_gem_objects reading time is improved.
+    const bool is_newer_kernel =
+        base::StartsWith(base::SysInfo::KernelVersion(), "5.");
+    const bool is_intel_cpu = base::CPU().vendor_name() == "GenuineIntel";
+
+    if (!is_newer_kernel || !is_intel_cpu) {
+      context->system_readers[SystemReader::kGemInfo].reset(
+          open(kGemInfoPath, O_RDONLY));
+      if (!context->system_readers[SystemReader::kGemInfo].is_valid()) {
+        LOG(ERROR) << "Failed to open gem info file: " << kGemInfoPath;
+      }
+    } else {
+      LOG(ERROR) << "Reading gem info from: " << kGemInfoPath
+                 << " is disabled.";
     }
 
     const base::FilePath& cpu_temp_path = GetCpuTemperaturePathOnFileThread();
