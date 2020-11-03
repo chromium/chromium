@@ -420,11 +420,6 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
             ::switches::kEnableCrashReporterForTesting)) {
       command_line->AppendSwitch(::switches::kEnableCrashReporterForTesting);
     }
-    // Pass WebView's force little cores flag to renderer process.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ::switches::kWebViewForceLittleCores)) {
-      command_line->AppendSwitch(::switches::kWebViewForceLittleCores);
-    }
   }
 }
 

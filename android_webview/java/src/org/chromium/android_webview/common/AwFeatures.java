@@ -14,6 +14,9 @@ public final class AwFeatures {
     public static final String WEBVIEW_CONNECTIONLESS_SAFE_BROWSING =
             "WebViewConnectionlessSafeBrowsing";
 
+    public static final String WEBVIEW_CPU_AFFINITY_RESTRICT_TO_LITTLE_CORES =
+            "WebViewCpuAffinityRestrictToLittleCores";
+
     public static final String WEBVIEW_DISPLAY_CUTOUT = "WebViewDisplayCutout";
 
     public static final String WEBVIEW_EXTRA_HEADERS_SAME_DOMAIN_ONLY =

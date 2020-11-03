@@ -300,10 +300,6 @@ void AwMainDelegate::PreSandboxStartup() {
 
   if (process_type == switches::kRendererProcess) {
     InitResourceBundleRendererSide();
-    if (command_line.HasSwitch(switches::kWebViewForceLittleCores)) {
-      content::EnforceProcessCpuAffinity(
-          base::CpuAffinityMode::kLittleCoresOnly);
-    }
   }
 
   EnableCrashReporter(process_type);
@@ -373,6 +369,15 @@ void AwMainDelegate::PostFieldTrialInitialization() {
 
   ALLOW_UNUSED_LOCAL(is_canary_dev);
   ALLOW_UNUSED_LOCAL(is_browser_process);
+
+  // Enable LITTLE-cores only mode if the feature is enabled, but only for child
+  // processes, as the browser process is shared with the hosting app.
+  if (!is_browser_process &&
+      base::FeatureList::IsEnabled(
+          android_webview::features::
+              kWebViewCpuAffinityRestrictToLittleCores)) {
+    content::EnforceProcessCpuAffinity(base::CpuAffinityMode::kLittleCoresOnly);
+  }
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
