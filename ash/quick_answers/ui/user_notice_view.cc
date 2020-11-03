@@ -89,10 +89,10 @@ std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
 // underlying label.
 class CustomizedLabelButton : public views::MdTextButton {
  public:
-  CustomizedLabelButton(views::ButtonListener* listener,
+  CustomizedLabelButton(PressedCallback callback,
                         const base::string16& text,
                         const SkColor color)
-      : MdTextButton(listener, text) {
+      : MdTextButton(std::move(callback), text) {
     SetCustomPadding(kButtonInsets);
     SetEnabledTextColors(color);
     label()->SetLineHeight(kLineHeightDip);
@@ -205,25 +205,6 @@ std::vector<views::View*> UserNoticeView::GetFocusableViews() {
   return focusable_views;
 }
 
-void UserNoticeView::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  if (sender == accept_button_) {
-    // When user notice is acknowledged, QuickAnswersView will be
-    // displayed instead of dismissing the menu.
-    event_handler_->set_dismiss_anchor_menu_on_view_closed(false);
-    ui_controller_->OnAcceptButtonPressed();
-    return;
-  }
-  if (sender == settings_button_) {
-    ui_controller_->OnManageSettingsButtonPressed();
-    return;
-  }
-  if (sender == dogfood_button_) {
-    ui_controller_->OnDogfoodButtonPressed();
-    return;
-  }
-}
-
 void UserNoticeView::UpdateAnchorViewBounds(
     const gfx::Rect& anchor_view_bounds) {
   anchor_view_bounds_ = anchor_view_bounds;
@@ -300,7 +281,9 @@ void UserNoticeView::InitButtonBar() {
 
   // Manage-Settings button.
   auto settings_button = std::make_unique<CustomizedLabelButton>(
-      this,
+      base::BindRepeating(
+          &QuickAnswersUiController::OnManageSettingsButtonPressed,
+          base::Unretained(ui_controller_)),
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON),
       kSettingsButtonTextColor);
@@ -310,7 +293,15 @@ void UserNoticeView::InitButtonBar() {
   settings_button_ = button_bar->AddChildView(std::move(settings_button));
 
   auto accept_button = std::make_unique<CustomizedLabelButton>(
-      this,
+      base::BindRepeating(
+          [](QuickAnswersPreTargetHandler* handler,
+             QuickAnswersUiController* controller) {
+            // When user notice is acknowledged, QuickAnswersView will be
+            // displayed instead of dismissing the menu.
+            handler->set_dismiss_anchor_menu_on_view_closed(false);
+            controller->OnAcceptButtonPressed();
+          },
+          event_handler_.get(), ui_controller_),
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_ACCEPT_BUTTON),
       kAcceptButtonTextColor);
@@ -351,7 +342,9 @@ void UserNoticeView::AddDogfoodButton() {
           views::BoxLayout::Orientation::kVertical,
           gfx::Insets(kDogfoodButtonMarginDip)));
   layout->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
-  auto dogfood_button = std::make_unique<views::ImageButton>(/*listener=*/this);
+  auto dogfood_button = std::make_unique<views::ImageButton>(
+      base::BindRepeating(&QuickAnswersUiController::OnDogfoodButtonPressed,
+                          base::Unretained(ui_controller_)));
   dogfood_button->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
       gfx::CreateVectorIcon(kDogfoodIcon, kDogfoodButtonSizeDip,

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/quick_answers/ui/quick_answers_focus_search.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,7 +27,7 @@ namespace quick_answers {
 // |intent_type| and |intent_text| are used to generate the notice title
 // including predicted intent information. Fallback to title without intent
 // information if any of these two strings are empty.
-class UserNoticeView : public views::View, public views::ButtonListener {
+class UserNoticeView : public views::View {
  public:
   UserNoticeView(const gfx::Rect& anchor_view_bounds,
                  const base::string16& intent_type,
@@ -47,9 +46,6 @@ class UserNoticeView : public views::View, public views::ButtonListener {
   void OnFocus() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   void UpdateAnchorViewBounds(const gfx::Rect& anchor_view_bounds);
 

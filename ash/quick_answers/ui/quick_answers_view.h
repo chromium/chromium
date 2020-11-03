@@ -31,8 +31,7 @@ class QuickAnswersUiController;
 class QuickAnswersPreTargetHandler;
 
 // A bubble style view to show QuickAnswer.
-class ASH_EXPORT QuickAnswersView : public views::Button,
-                                    public views::ButtonListener {
+class ASH_EXPORT QuickAnswersView : public views::Button {
  public:
   QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                    const std::string& title,
@@ -51,9 +50,6 @@ class ASH_EXPORT QuickAnswersView : public views::Button,
 
   // views::Button:
   void StateChanged(views::Button::ButtonState old_state) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();

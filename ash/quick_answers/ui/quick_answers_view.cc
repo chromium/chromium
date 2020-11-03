@@ -132,7 +132,8 @@ View* AddHorizontalUiElements(
 QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                                    const std::string& title,
                                    QuickAnswersUiController* controller)
-    : Button(this),
+    : Button(base::BindRepeating(&QuickAnswersView::SendQuickAnswersQuery,
+                                 base::Unretained(this))),
       anchor_view_bounds_(anchor_view_bounds),
       controller_(controller),
       title_(title),
@@ -221,22 +222,6 @@ void QuickAnswersView::StateChanged(views::Button::ButtonState old_state) {
     SetBackgroundState(hovered);
 }
 
-void QuickAnswersView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  if (sender == dogfood_button_) {
-    controller_->OnDogfoodButtonPressed();
-    return;
-  }
-  if (sender == retry_label_) {
-    controller_->OnRetryLabelPressed();
-    return;
-  }
-  if (sender == this) {
-    SendQuickAnswersQuery();
-    return;
-  }
-}
-
 void QuickAnswersView::SetButtonNotifyActionToOnPress(views::Button* button) {
   DCHECK(button);
   button->button_controller()->set_notify_action(
@@ -283,7 +268,9 @@ void QuickAnswersView::ShowRetryView() {
   // Add retry label.
   retry_label_ =
       description_container->AddChildView(std::make_unique<views::LabelButton>(
-          /*listener=*/this, base::UTF8ToUTF16(kDefaultRetryStr)));
+          base::BindRepeating(&QuickAnswersUiController::OnRetryLabelPressed,
+                              base::Unretained(controller_)),
+          base::UTF8ToUTF16(kDefaultRetryStr)));
   retry_label_->SetEnabledTextColors(gfx::kGoogleBlue600);
   retry_label_->SetRequestFocusOnPress(true);
   SetButtonNotifyActionToOnPress(retry_label_);
@@ -308,7 +295,9 @@ void QuickAnswersView::AddDogfoodButton() {
           views::BoxLayout::Orientation::kVertical,
           gfx::Insets(kDogfoodButtonMarginDip)));
   layout->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
-  auto dogfood_button = std::make_unique<views::ImageButton>(/*listener=*/this);
+  auto dogfood_button = std::make_unique<views::ImageButton>(
+      base::BindRepeating(&QuickAnswersUiController::OnDogfoodButtonPressed,
+                          base::Unretained(controller_)));
   dogfood_button->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
       gfx::CreateVectorIcon(kDogfoodIcon, kDogfoodButtonSizeDip,
