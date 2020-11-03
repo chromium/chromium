@@ -32,11 +32,9 @@ class CAPTURE_EXPORT PixelBufferPool {
   // Creates a new buffer from the pool, or returns null if |max_buffers_| would
   // be exceeded. The underlying buffers may be recycled.
   //
-  // The caller owns the returned buffer and is responsible for calling
-  // CFRelease() after they are done using it. This returns the underlying
-  // buffer to the pool. In order to free memory, you must both release all
-  // buffers and call Flush() or delete the pool. It is safe for a buffer to
-  // outlive its pool.
+  // Freeing all buffer references returns the underlying buffer to the pool. In
+  // order to free memory, you must both release all buffers and call Flush() or
+  // delete the pool. It is safe for a buffer to outlive its pool.
   base::ScopedCFTypeRef<CVPixelBufferRef> CreateBuffer();
 
   // Frees the memory of any released buffers returned to the pool.

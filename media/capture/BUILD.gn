@@ -173,6 +173,8 @@ component("capture_lib") {
       "video/mac/pixel_buffer_pool_mac.h",
       "video/mac/pixel_buffer_transferer_mac.cc",
       "video/mac/pixel_buffer_transferer_mac.h",
+      "video/mac/sample_buffer_transformer_mac.cc",
+      "video/mac/sample_buffer_transformer_mac.h",
       "video/mac/video_capture_device_avfoundation_legacy_mac.h",
       "video/mac/video_capture_device_avfoundation_legacy_mac.mm",
       "video/mac/video_capture_device_avfoundation_mac.h",
@@ -473,6 +475,7 @@ test("capture_unittests") {
     sources += [
       "video/mac/pixel_buffer_pool_mac_unittest.mm",
       "video/mac/pixel_buffer_transferer_mac_unittest.mm",
+      "video/mac/sample_buffer_transformer_mac_unittest.mm",
       "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
       "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
       "video/mac/test/pixel_buffer_test_utils_mac.cc",

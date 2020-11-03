@@ -76,6 +76,13 @@ bool YuvsIOSurfaceIsSingleColor(IOSurfaceRef io_surface,
                                 uint8_t g,
                                 uint8_t b);
 
+// True if all pixels of the pixel buffer are the specified RGB color, within
+// some margin of error.
+bool PixelBufferIsSingleColor(CVPixelBufferRef pixel_buffer,
+                              uint8_t r,
+                              uint8_t g,
+                              uint8_t b);
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_MAC_TEST_PIXEL_BUFFER_TEST_UTILS_MAC_H_

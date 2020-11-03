@@ -4,6 +4,8 @@
 
 #include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
 
+#include "media/capture/video/mac/pixel_buffer_pool_mac.h"
+#include "media/capture/video/mac/pixel_buffer_transferer_mac.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 
@@ -130,6 +132,11 @@ std::unique_ptr<ByteArrayPixelBuffer> CreateYuvsPixelBufferFromArgbBuffer(
     int width,
     int height,
     const std::vector<uint8_t>& argb_buffer) {
+  // These utility methods don't work well with widths that aren't multiples of
+  // 16. There could be assumptions about memory alignment, or there could
+  // simply be a loss of information in the YUVS <-> ARGB conversions since YUVS
+  // is packed. Either way, the pixels may change, so we avoid these widths.
+  DCHECK(width % 16 == 0);
   std::unique_ptr<ByteArrayPixelBuffer> result =
       std::make_unique<ByteArrayPixelBuffer>();
   size_t yuvs_stride = GetYuvsStride(width);
@@ -162,6 +169,11 @@ std::vector<uint8_t> CreateArgbBufferFromYuvsIOSurface(
   DCHECK(io_surface);
   size_t width = IOSurfaceGetWidth(io_surface);
   size_t height = IOSurfaceGetHeight(io_surface);
+  // These utility methods don't work well with widths that aren't multiples of
+  // 16. There could be assumptions about memory alignment, or there could
+  // simply be a loss of information in the YUVS <-> ARGB conversions since YUVS
+  // is packed. Either way, the pixels may change, so we avoid these widths.
+  DCHECK(width % 16 == 0);
   size_t argb_stride = GetArgbStride(width);
   size_t yuvs_stride = GetYuvsStride(width);
   uint8_t* pixels = static_cast<uint8_t*>(IOSurfaceGetBaseAddress(io_surface));
@@ -179,6 +191,32 @@ bool YuvsIOSurfaceIsSingleColor(IOSurfaceRef io_surface,
                                 uint8_t b) {
   return ArgbBufferIsSingleColor(CreateArgbBufferFromYuvsIOSurface(io_surface),
                                  r, g, b);
+}
+
+bool PixelBufferIsSingleColor(CVPixelBufferRef pixel_buffer,
+                              uint8_t r,
+                              uint8_t g,
+                              uint8_t b) {
+  OSType pixel_format = CVPixelBufferGetPixelFormatType(pixel_buffer);
+  base::ScopedCFTypeRef<CVPixelBufferRef> yuvs_pixel_buffer;
+  if (pixel_format == kPixelFormatYuvs) {
+    // The pixel buffer is already YUVS, so we know how to check its color.
+    yuvs_pixel_buffer.reset(pixel_buffer, base::scoped_policy::RETAIN);
+  } else {
+    // Convert to YUVS. We only know how to check the color of YUVS.
+    yuvs_pixel_buffer =
+        PixelBufferPool::Create(kPixelFormatYuvs,
+                                CVPixelBufferGetWidth(pixel_buffer),
+                                CVPixelBufferGetHeight(pixel_buffer), 1)
+            ->CreateBuffer();
+    PixelBufferTransferer transferer;
+    bool transfer_success =
+        transferer.TransferImage(pixel_buffer, yuvs_pixel_buffer);
+    DCHECK(transfer_success);
+  }
+  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(yuvs_pixel_buffer);
+  DCHECK(io_surface);
+  return YuvsIOSurfaceIsSingleColor(io_surface, r, g, b);
 }
 
 }  // namespace media
