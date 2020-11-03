@@ -164,7 +164,7 @@ class SafetyCheckProperties {
             case UpdatesState.CHECKING:
                 return UpdateStatus.CHECKING;
             case UpdatesState.UPDATED:
-                return UpdateStatus.UPDATING;
+                return UpdateStatus.UPDATED;
             case UpdatesState.OUTDATED:
                 return UpdateStatus.OUTDATED;
             case UpdatesState.OFFLINE:

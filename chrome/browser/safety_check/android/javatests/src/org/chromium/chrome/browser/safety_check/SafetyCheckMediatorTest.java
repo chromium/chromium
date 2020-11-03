@@ -24,8 +24,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -33,6 +36,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
@@ -46,7 +50,17 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.PASSWORD_CHECK})
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class SafetyCheckMediatorTest {
+    private static final String SAFETY_CHECK_INTERACTIONS_HISTOGRAM =
+            "Settings.SafetyCheck.Interactions";
+    private static final String SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM =
+            "Settings.SafetyCheck.PasswordsResult";
+    private static final String SAFETY_CHECK_SAFE_BROWSING_RESULT_HISTOGRAM =
+            "Settings.SafetyCheck.SafeBrowsingResult";
+    private static final String SAFETY_CHECK_UPDATES_RESULT_HISTOGRAM =
+            "Settings.SafetyCheck.UpdatesResult";
+
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
@@ -95,6 +109,16 @@ public class SafetyCheckMediatorTest {
                 .postDelayed(any(Runnable.class), anyLong());
         // User is always signed in unless the test specifies otherwise.
         when(mBridge.userSignedIn()).thenReturn(true);
+        // Reset the histogram count.
+        ShadowRecordHistogram.reset();
+    }
+
+    @Test
+    public void testStartInteractionRecorded() {
+        mMediator.performSafetyCheck();
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_INTERACTIONS_HISTOGRAM, SafetyCheckInteractions.STARTED));
     }
 
     @Test
@@ -110,6 +134,9 @@ public class SafetyCheckMediatorTest {
 
         mMediator.performSafetyCheck();
         assertEquals(UpdatesState.UPDATED, mModel.get(UPDATES_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_UPDATES_RESULT_HISTOGRAM, UpdateStatus.UPDATED));
     }
 
     @Test
@@ -125,6 +152,9 @@ public class SafetyCheckMediatorTest {
 
         mMediator.performSafetyCheck();
         assertEquals(UpdatesState.OUTDATED, mModel.get(UPDATES_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_UPDATES_RESULT_HISTOGRAM, UpdateStatus.OUTDATED));
     }
 
     @Test
@@ -138,6 +168,10 @@ public class SafetyCheckMediatorTest {
 
         mMediator.performSafetyCheck();
         assertEquals(SafeBrowsingState.ENABLED_STANDARD, mModel.get(SAFE_BROWSING_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_SAFE_BROWSING_RESULT_HISTOGRAM,
+                        SafeBrowsingStatus.ENABLED_STANDARD));
     }
 
     @Test
@@ -151,6 +185,9 @@ public class SafetyCheckMediatorTest {
 
         mMediator.performSafetyCheck();
         assertEquals(SafeBrowsingState.DISABLED, mModel.get(SAFE_BROWSING_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_SAFE_BROWSING_RESULT_HISTOGRAM, SafeBrowsingStatus.DISABLED));
     }
 
     @Test
@@ -166,6 +203,9 @@ public class SafetyCheckMediatorTest {
         mMediator.onCompromisedCredentialsFetchCompleted();
         mMediator.onSavedPasswordsFetchCompleted();
         assertEquals(PasswordsState.ERROR, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.ERROR));
     }
 
     @Test
@@ -183,6 +223,9 @@ public class SafetyCheckMediatorTest {
         mMediator.onCompromisedCredentialsFetchCompleted();
         mMediator.onSavedPasswordsFetchCompleted();
         assertEquals(PasswordsState.NO_PASSWORDS, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.NO_PASSWORDS));
     }
 
     @Test
@@ -200,6 +243,9 @@ public class SafetyCheckMediatorTest {
         mMediator.onCompromisedCredentialsFetchCompleted();
         mMediator.onSavedPasswordsFetchCompleted();
         assertEquals(PasswordsState.SAFE, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.SAFE));
     }
 
     @Test
@@ -219,6 +265,10 @@ public class SafetyCheckMediatorTest {
         mMediator.onSavedPasswordsFetchCompleted();
         assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
         assertEquals(numLeaks, mModel.get(COMPROMISED_PASSWORDS));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM,
+                        PasswordsStatus.COMPROMISED_EXIST));
     }
 
     @Test
@@ -422,6 +472,10 @@ public class SafetyCheckMediatorTest {
 
         mMediator.onPasswordCheckStatusChanged(PasswordCheckUIStatus.IDLE);
         assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM,
+                        PasswordsStatus.COMPROMISED_EXIST));
     }
 
     @Test
@@ -443,6 +497,10 @@ public class SafetyCheckMediatorTest {
 
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM,
+                        PasswordsStatus.COMPROMISED_EXIST));
     }
 
     @Test
@@ -466,6 +524,9 @@ public class SafetyCheckMediatorTest {
 
         mMediator.onCompromisedCredentialsFetchCompleted();
         assertEquals(PasswordsState.ERROR, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.ERROR));
     }
 
     @Test
@@ -481,5 +542,8 @@ public class SafetyCheckMediatorTest {
         // The results of the previous check should be ignored.
         mMediator.onSavedPasswordsFetchCompleted();
         assertEquals(PasswordsState.SIGNED_OUT, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.SIGNED_OUT));
     }
 }
