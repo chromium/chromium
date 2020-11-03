@@ -1498,6 +1498,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   net::NetModule::SetResourceProvider(ChromeNetResourceProvider);
   media::SetLocalizedStringProvider(ChromeMediaLocalizedStringProvider);
 
+#if !defined(OS_ANDROID)
   // In unittest mode, this will do nothing.  In normal mode, this will create
   // the global IntranetRedirectDetector instance, which will promptly go to
   // sleep for seven seconds (to avoid slowing startup), and wake up afterwards
@@ -1510,6 +1511,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This can't be created in the BrowserProcessImpl constructor because it
   // needs to read prefs that get set after that runs.
   browser_process_->intranet_redirect_detector();
+#endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
   if (parsed_command_line().HasSwitch(switches::kDebugPrint)) {

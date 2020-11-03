@@ -12,6 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -25,6 +26,11 @@ class SimpleURLLoader;
 }
 
 class PrefRegistrySimple;
+
+#if !(defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
+      defined(OS_CHROMEOS))
+#error "IntranetRedirectDetector should only be built on Desktop platforms."
+#endif
 
 // This object is responsible for determining whether the user is on a network
 // that redirects requests for intranet hostnames to another site, and if so,

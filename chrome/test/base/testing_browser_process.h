@@ -108,7 +108,9 @@ class TestingBrowserProcess : public BrowserProcess {
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
   NotificationUIManager* notification_ui_manager() override;
   NotificationPlatformBridge* notification_platform_bridge() override;
+#if !defined(OS_ANDROID)
   IntranetRedirectDetector* intranet_redirect_detector() override;
+#endif
   void CreateDevToolsProtocolHandler() override;
   void CreateDevToolsAutoOpener() override;
   bool IsShuttingDown() override;

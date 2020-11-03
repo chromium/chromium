@@ -158,7 +158,9 @@ class BrowserProcessImpl : public BrowserProcess,
   printing::PrintPreviewDialogController* print_preview_dialog_controller()
       override;
   printing::BackgroundPrintingManager* background_printing_manager() override;
+#if !defined(OS_ANDROID)
   IntranetRedirectDetector* intranet_redirect_detector() override;
+#endif
   const std::string& GetApplicationLocale() override;
   void SetApplicationLocale(const std::string& actual_locale) override;
   DownloadStatusUpdater* download_status_updater() override;
@@ -215,7 +217,6 @@ class BrowserProcessImpl : public BrowserProcess,
   void CreateWatchdogThread();
   void CreateProfileManager();
   void CreateIconManager();
-  void CreateIntranetRedirectDetector();
   void CreateNotificationPlatformBridge();
   void CreateNotificationUIManager();
   void CreatePrintPreviewDialogController();
@@ -300,7 +301,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<NotificationUIManager> notification_ui_manager_;
 #endif
 
+#if !defined(OS_ANDROID)
   std::unique_ptr<IntranetRedirectDetector> intranet_redirect_detector_;
+#endif
 
   std::unique_ptr<StatusTray> status_tray_;
 

@@ -46,7 +46,6 @@
 #include "chrome/browser/download/download_status_updater.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 #include "chrome/browser/icon_manager.h"
-#include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
@@ -160,6 +159,7 @@
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
+#include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -824,12 +824,15 @@ printing::BackgroundPrintingManager*
 #endif
 }
 
+#if !defined(OS_ANDROID)
 IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!intranet_redirect_detector_)
-    CreateIntranetRedirectDetector();
+    intranet_redirect_detector_ = std::make_unique<IntranetRedirectDetector>();
+
   return intranet_redirect_detector_.get();
 }
+#endif
 
 const std::string& BrowserProcessImpl::GetApplicationLocale() {
 #if !defined(OS_CHROMEOS)
@@ -1193,11 +1196,6 @@ void BrowserProcessImpl::CreateIconManager() {
   DCHECK(!created_icon_manager_ && !icon_manager_);
   created_icon_manager_ = true;
   icon_manager_ = std::make_unique<IconManager>();
-}
-
-void BrowserProcessImpl::CreateIntranetRedirectDetector() {
-  DCHECK(!intranet_redirect_detector_);
-  intranet_redirect_detector_ = std::make_unique<IntranetRedirectDetector>();
 }
 
 void BrowserProcessImpl::CreateNotificationPlatformBridge() {
