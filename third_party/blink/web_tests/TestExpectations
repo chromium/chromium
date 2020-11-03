@@ -5959,6 +5959,11 @@ crbug.com/1097005 http/tests/devtools/console/console-object-preview.js [ Pass F
 crbug.com/1097005 http/tests/devtools/console/console-preserve-scroll.js [ Pass Failure Crash Timeout ]
 crbug.com/1097005 http/tests/devtools/console/console-search.js [ Pass Failure Crash Timeout ]
 
+crbug.com/1143648 http/tests/devtools/security/origin-view-ct-compliance.js [ Pass Failure ]
+crbug.com/1143648 http/tests/devtools/security/origin-view-noncryptographic-secure-origin.js [ Pass Failure ]
+crbug.com/1143648 http/tests/devtools/security/origin-view-then-interstitial.js [ Pass Failure ]
+crbug.com/1143648 http/tests/devtools/security/security-details-updated-with-security-state.js [ Pass Failure ]
+
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Pass Failure ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Pass Failure ]
 
