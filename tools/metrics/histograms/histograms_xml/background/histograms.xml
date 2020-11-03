@@ -189,9 +189,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundMode.OnStartup.AutoLaunchState"
-    enum="AutoLaunchState" expires_after="2020-11-01">
-  <owner>gab@chromium.org</owner>
+    enum="AutoLaunchState" expires_after="2021-03-30">
   <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     Logged during BackgroundModeManager's initialization. Indicates the
     AutoLaunchState the current browser process was launched in.
@@ -199,9 +199,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
-    enum="BooleanEnabled" expires_after="2020-11-01">
-  <owner>gab@chromium.org</owner>
+    enum="BooleanEnabled" expires_after="2021-03-30">
   <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     Logged during BackgroundModeManager's initialization. Indicates the state of
     the kBackgroundModeEnabled pref on startup.
