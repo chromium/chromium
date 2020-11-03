@@ -146,6 +146,8 @@ void VisibilityMetricsLogger::ProcessClientUpdate(Client* client,
   client_visibility_[client] = info;
   DCHECK(!was_visible || visible_client_count_ > 0);
 
+  bool any_client_was_visible = visible_client_count_ > 0;
+
   if (!was_visible && is_visible) {
     ++visible_client_count_;
   } else if (was_visible && !is_visible) {
@@ -157,6 +159,18 @@ void VisibilityMetricsLogger::ProcessClientUpdate(Client* client,
   } else if (was_visible_web && !is_visible_web) {
     --visible_webcontent_client_count_;
   }
+
+  bool any_client_is_visible = visible_client_count_ > 0;
+  if (on_visibility_changed_callback_ &&
+      any_client_was_visible != any_client_is_visible) {
+    on_visibility_changed_callback_.Run(any_client_is_visible);
+  }
+}
+
+void VisibilityMetricsLogger::SetOnVisibilityChangedCallback(
+    OnVisibilityChangedCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  on_visibility_changed_callback_ = std::move(callback);
 }
 
 void VisibilityMetricsLogger::RecordMetrics() {

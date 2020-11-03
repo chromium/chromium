@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 
@@ -60,6 +61,13 @@ class VisibilityMetricsLogger {
 
   void RecordMetrics();
 
+  // Set a callback that is executed when global visibility changes, i.e. when:
+  //  - false => true: no client was visible and one becomes visible.
+  //  - true => false: >=1 clients were visible and all became hidden.
+  using OnVisibilityChangedCallback =
+      base::RepeatingCallback<void(bool /*visible*/)>;
+  void SetOnVisibilityChangedCallback(OnVisibilityChangedCallback);
+
  private:
   static base::HistogramBase* GetGlobalVisibilityHistogram();
   static base::HistogramBase* GetPerWebViewVisibilityHistogram();
@@ -101,6 +109,8 @@ class VisibilityMetricsLogger {
 
   base::TimeTicks last_update_time_;
   std::map<Client*, VisibilityInfo> client_visibility_;
+
+  OnVisibilityChangedCallback on_visibility_changed_callback_;
 };
 
 }  // namespace android_webview

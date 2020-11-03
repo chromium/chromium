@@ -211,6 +211,7 @@ source_set("browser") {
     "//components/page_load_metrics/browser",
     "//components/policy/content/",
     "//components/policy/core/browser",
+    "//components/power_metrics",
     "//components/pref_registry",
     "//components/prefs",
     "//components/printing/browser",
