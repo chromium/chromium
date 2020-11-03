@@ -195,8 +195,15 @@ std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
   if (!alias_name.has_value())
     return nullptr;
 
-  if (reader.remaining() != 0)
-    return nullptr;
+  // Ignore any params.
+  base::Optional<uint16_t> last_param_key;
+  while (reader.remaining() > 0) {
+    uint16_t param_key;
+    base::StringPiece param_value;
+    if (!ReadNextServiceParam(last_param_key, reader, &param_key, &param_value))
+      return nullptr;
+    last_param_key = param_key;
+  }
 
   return std::make_unique<AliasFormHttpsRecordRdata>(
       std::move(alias_name).value());
