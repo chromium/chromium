@@ -48,7 +48,9 @@ WidgetDelegate::Params::Params() = default;
 WidgetDelegate::Params::~Params() = default;
 
 WidgetDelegate::WidgetDelegate()
-    : client_view_factory_(
+    : widget_initializing_callbacks_(std::make_unique<ClosureVector>()),
+      widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
+      client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
       non_client_frame_view_factory_(
           base::BindOnce(&CreateDefaultNonClientFrameView)),
@@ -184,10 +186,16 @@ bool WidgetDelegate::GetSavedWindowPlacement(
 
 void WidgetDelegate::WidgetInitializing(Widget* widget) {
   widget_ = widget;
+  for (auto&& callback : *widget_initializing_callbacks_)
+    std::move(callback).Run();
+  widget_initializing_callbacks_.reset();
   OnWidgetInitializing();
 }
 
 void WidgetDelegate::WidgetInitialized() {
+  for (auto&& callback : *widget_initialized_callbacks_)
+    std::move(callback).Run();
+  widget_initialized_callbacks_.reset();
   OnWidgetInitialized();
 }
 
@@ -360,6 +368,18 @@ void WidgetDelegate::SetHasWindowSizeControls(bool has_controls) {
   SetCanMaximize(has_controls);
   SetCanMinimize(has_controls);
   SetCanResize(has_controls);
+}
+
+void WidgetDelegate::RegisterWidgetInitializingCallback(
+    base::OnceClosure callback) {
+  DCHECK(widget_initializing_callbacks_);
+  widget_initializing_callbacks_->emplace_back(std::move(callback));
+}
+
+void WidgetDelegate::RegisterWidgetInitializedCallback(
+    base::OnceClosure callback) {
+  DCHECK(widget_initialized_callbacks_);
+  widget_initialized_callbacks_->emplace_back(std::move(callback));
 }
 
 void WidgetDelegate::RegisterWindowWillCloseCallback(

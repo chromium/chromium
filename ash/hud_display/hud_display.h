@@ -7,7 +7,6 @@
 
 #include "base/sequence_checker.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 namespace hud_display {
@@ -18,7 +17,7 @@ class HUDHeaderView;
 class HUDSettingsView;
 
 // HUDDisplayView class can be used to display a system monitoring overview.
-class HUDDisplayView : public views::WidgetDelegateView {
+class HUDDisplayView : public views::View {
  public:
   METADATA_HEADER(HUDDisplayView);
 
@@ -27,10 +26,6 @@ class HUDDisplayView : public views::WidgetDelegateView {
   HUDDisplayView& operator=(const HUDDisplayView&) = delete;
 
   ~HUDDisplayView() override;
-
-  // WidgetDelegate:
-  views::ClientView* CreateClientView(views::Widget* widget) override;
-  void OnWidgetInitialized() override;
 
   // Destroys global instance.
   static void Destroy();

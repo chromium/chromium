@@ -353,6 +353,8 @@ class VIEWS_EXPORT WidgetDelegate {
   // SetCanMinimize, and SetCanResize.
   void SetHasWindowSizeControls(bool has_controls);
 
+  void RegisterWidgetInitializingCallback(base::OnceClosure callback);
+  void RegisterWidgetInitializedCallback(base::OnceClosure callback);
   void RegisterWindowWillCloseCallback(base::OnceClosure callback);
   void RegisterWindowClosingCallback(base::OnceClosure callback);
   void RegisterDeleteDelegateCallback(base::OnceClosure callback);
@@ -381,6 +383,11 @@ class VIEWS_EXPORT WidgetDelegate {
   std::string internal_name() const { return params_.internal_name; }
 
  private:
+  // We're using a vector of OnceClosures instead of a OnceCallbackList because
+  // most of the clients of WidgetDelegate don't have a convenient place to
+  // store the CallbackLists' subscription objects.
+  using ClosureVector = std::vector<base::OnceClosure>;
+
   friend class Widget;
 
   void SetContentsViewImpl(View* contents);
@@ -400,9 +407,14 @@ class VIEWS_EXPORT WidgetDelegate {
   // Managed by Widget. Ensures |this| outlives its Widget.
   bool can_delete_this_ = true;
 
-  std::vector<base::OnceClosure> window_will_close_callbacks_;
-  std::vector<base::OnceClosure> window_closing_callbacks_;
-  std::vector<base::OnceClosure> delete_delegate_callbacks_;
+  // The first two are stored as unique_ptrs to make it easier to check in the
+  // registration methods whether a callback is being registered too late in the
+  // WidgetDelegate's lifecycle.
+  std::unique_ptr<ClosureVector> widget_initializing_callbacks_;
+  std::unique_ptr<ClosureVector> widget_initialized_callbacks_;
+  ClosureVector window_will_close_callbacks_;
+  ClosureVector window_closing_callbacks_;
+  ClosureVector delete_delegate_callbacks_;
 
   ClientViewFactory client_view_factory_;
   NonClientFrameViewFactory non_client_frame_view_factory_;

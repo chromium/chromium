@@ -26,6 +26,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 namespace hud_display {
@@ -70,12 +71,27 @@ class HTClientView : public views::ClientView {
 BEGIN_METADATA(HTClientView, views::ClientView)
 END_METADATA
 
+std::unique_ptr<views::ClientView> MakeClientView(views::Widget* widget) {
+  auto view = std::make_unique<HUDDisplayView>();
+  auto* weak_view = view.get();
+  return std::make_unique<HTClientView>(weak_view, widget, view.release());
+}
+
+void InitializeFrameView(views::WidgetDelegate* delegate) {
+  auto* frame_view = delegate->GetWidget()->non_client_view()->frame_view();
+  // TODO(oshima): support component type with TYPE_WINDOW_FLAMELESS widget.
+  if (frame_view) {
+    frame_view->SetEnabled(false);
+    frame_view->SetVisible(false);
+  }
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // HUDDisplayView, public:
 
-BEGIN_METADATA(HUDDisplayView, views::WidgetDelegateView)
+BEGIN_METADATA(HUDDisplayView, views::View)
 END_METADATA
 
 // static
@@ -91,8 +107,14 @@ void HUDDisplayView::Toggle() {
     return;
   }
 
+  auto delegate = std::make_unique<views::WidgetDelegate>();
+  delegate->SetClientViewFactory(base::BindOnce(&MakeClientView));
+  delegate->RegisterWidgetInitializedCallback(
+      base::BindOnce(&InitializeFrameView, base::Unretained(delegate.get())));
+  delegate->SetOwnedByWidget(true);
+
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.delegate = new HUDDisplayView();
+  params.delegate = delegate.release();
   params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                       kShellWindowId_OverlayContainer);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -161,19 +183,6 @@ HUDDisplayView::HUDDisplayView() {
 
 HUDDisplayView::~HUDDisplayView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-}
-
-views::ClientView* HUDDisplayView::CreateClientView(views::Widget* widget) {
-  return new HTClientView(this, widget, TransferOwnershipOfContentsView());
-}
-
-void HUDDisplayView::OnWidgetInitialized() {
-  auto* frame_view = GetWidget()->non_client_view()->frame_view();
-  // TODO(oshima): support component type with TYPE_WINDOW_FLAMELESS widget.
-  if (frame_view) {
-    frame_view->SetEnabled(false);
-    frame_view->SetVisible(false);
-  }
 }
 
 // There is only one button.
