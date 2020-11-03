@@ -89,6 +89,14 @@ void ChromeWebContentsHandler::AddNewContents(
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
   const bool browser_created = !browser;
   if (!browser) {
+    // TODO(https://crbug.com/1141608): Remove when root cause is found.
+    if (Browser::GetBrowserCreationStatusForProfile(profile) !=
+        Browser::BrowserCreationStatus::kOk) {
+      NOTREACHED() << "Browser creation status: "
+                   << static_cast<int>(
+                          Browser::GetBrowserCreationStatusForProfile(profile));
+      return;
+    }
     browser = Browser::Create(
         Browser::CreateParams(Browser::TYPE_NORMAL, profile, user_gesture));
   }
