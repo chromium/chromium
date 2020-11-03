@@ -480,6 +480,8 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   HandleBackingStoreFailure(saved_origin);
   // Note: DestroyBackingStore only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
+  //       The blob directory will be deleted when the database is recreated
+  //       the next time it is opened.
   const base::FilePath file_path =
       path_base.Append(indexed_db::GetLevelDBFileName(saved_origin));
   leveldb::Status s =
