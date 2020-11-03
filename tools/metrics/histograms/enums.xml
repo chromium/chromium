@@ -39091,6 +39091,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Dark"/>
 </enum>
 
+<enum name="IOSWidgetKitAction">
+  <int value="0" label="Dino Widget - Game"/>
+  <int value="1" label="Search Widget - Search"/>
+  <int value="2" label="Quick Actions Widget - Search"/>
+  <int value="3" label="Quick Actions Widget - Incognito"/>
+  <int value="4" label="Quick Actions Widget - Voice Search"/>
+  <int value="5" label="Quick Actions Widget - QR Reader"/>
+</enum>
+
 <enum name="IOSWKWebViewLinkPreviewAction">
   <summary>
     This enum is used to track the user actions that occur when previewing links

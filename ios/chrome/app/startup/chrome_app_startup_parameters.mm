@@ -5,6 +5,7 @@
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -21,6 +22,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::UmaHistogramEnumeration;
 
 namespace {
 
@@ -104,6 +107,24 @@ enum SearchExtensionAction {
   SEARCH_EXTENSION_ACTION_COUNT,
 };
 
+// Values of the UMA IOS.WidgetKit.Action histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WidgetKitExtensionAction {
+  ACTION_DINO_WIDGET_GAME = 0,
+  ACTION_SEARCH_WIDGET_SEARCH = 1,
+  ACTION_QUICK_ACTIONS_SEARCH = 2,
+  ACTION_QUICK_ACTIONS_INCOGNITO = 3,
+  ACTION_QUICK_ACTIONS_VOICE_SEARCH = 4,
+  ACTION_QUICK_ACTIONS_QR_READER = 5,
+  kMaxValue = ACTION_QUICK_ACTIONS_QR_READER,
+};
+
+// Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
+void LogWidgetKitAction(WidgetKitExtensionAction action) {
+  UmaHistogramEnumeration("IOS.WidgetKit.Action", action);
+}
+
 }  // namespace
 
 @implementation ChromeAppStartupParameters {
@@ -148,7 +169,7 @@ enum SearchExtensionAction {
     } else if ([completeURL.path isEqual:kWidgetKitActionQRReader]) {
       command = app_group::kChromeAppGroupQRScannerCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionGame]) {
-      // TODO(crbug.com/1138720): log histogram.
+      LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
 
       LogLikelyInterestedDefaultBrowserUserActivity();
 
@@ -487,10 +508,34 @@ enum SearchExtensionAction {
                              [index integerValue]);
   }
   if ([secureSourceApp isEqualToString:kWidgetKitHostSearchWidget]) {
-    // TODO(crbug.com/1138720): log histogram.
+    LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SEARCH_WIDGET_SEARCH);
   }
   if ([secureSourceApp isEqualToString:kWidgetKitHostQuickActionsWidget]) {
-    // TODO(crbug.com/1138720): log histograms.
+    switch (action) {
+      case ACTION_NEW_VOICE_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_VOICE_SEARCH);
+        break;
+
+      case ACTION_NEW_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_SEARCH);
+        break;
+
+      case ACTION_NEW_QR_CODE_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_QR_READER);
+        break;
+
+      case ACTION_NEW_INCOGNITO_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_INCOGNITO);
+        break;
+
+      default:
+        NOTREACHED();
+        break;
+    }
   }
   return params;
 }
