@@ -836,7 +836,6 @@
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="5"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
-    <meta-data android:name="org.chromium.content.browser.REMOTE_MEDIA_PLAYERS" android:value="org.chromium.chrome.browser.media.remote.DefaultMediaRouteController"/>
     <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER" android:value="org.chromium.content_public.browser.SmartClipProvider"/>
     <meta-data android:name="preloaded_fonts" android:resource="@array/chrome_preloaded_google_sans_fonts"/>
     <provider  # DIFF-ANCHOR: a5e78e63

@@ -1166,18 +1166,6 @@ by a child template that "extends" this file.
         </activity>
         {% endif %}
 
-        {% block extra_application_definitions %}
-        <!-- Media route controllers to use for remote playback (cast).
-             This is here, rather than in code, since it varies between upstream and downstream,
-             yet we need this list of classes in the notification service, which belongs upstream
-             and doesn't run the downstream startup code. The Cast code will, for each media element,
-             choose the first MediaRouteController that can play it, so the order of the list can be important.
-             The most specific MediaRouteControllers should be listed first, followed by more generic ones.
-             The downstream manifest replaces this block, and hence replaces the list of media route
-             controllers with its own list. -->
-        <meta-data android:name="org.chromium.content.browser.REMOTE_MEDIA_PLAYERS"
-            android:value="org.chromium.chrome.browser.media.remote.DefaultMediaRouteController"/>
-        {% endblock %}
       {% endmacro %}
       {% if not definitions_in_split %}
       {{ application_definitions() }}
