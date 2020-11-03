@@ -112,7 +112,9 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
       std::vector<base::test::ScopedFeatureList::FeatureAndParams>
           enabled_features)
       : enabled_features_(enabled_features) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features_, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features_,
+        {features::kHappinessTrackingSurveysForDesktopMigration});
   }
 
   HatsServiceBrowserTestBase() = default;

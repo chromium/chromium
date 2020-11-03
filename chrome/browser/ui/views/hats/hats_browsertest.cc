@@ -95,6 +95,11 @@ class TestHatsWebDialog : public HatsWebDialog {
 
 class HatsWebDialogBrowserTest : public InProcessBrowserTest {
  public:
+  HatsWebDialogBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kHappinessTrackingSurveysForDesktopMigration);
+  }
+
   TestHatsWebDialog* Create(Browser* browser,
                             const base::TimeDelta& timeout,
                             const GURL& url = GURL()) {
@@ -102,6 +107,9 @@ class HatsWebDialogBrowserTest : public InProcessBrowserTest {
     hats_dialog->CreateWebDialog(browser);
     return hats_dialog;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that calls ShowUi("default").

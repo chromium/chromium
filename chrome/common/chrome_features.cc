@@ -429,7 +429,7 @@ const base::Feature kHappinessTrackingSurveysForDesktopDemo{
 // version).
 const base::Feature kHappinessTrackingSurveysForDesktopMigration{
     "HappinessTrackingSurveysForDesktopMigration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Settings.
