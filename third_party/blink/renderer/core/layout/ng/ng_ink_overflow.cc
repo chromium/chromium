@@ -386,8 +386,11 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const LayoutRect& ink_overflow) {
-  // Use a zero offset because all offsets are applied to the ink overflow
-  // after it has been computed.
+  // TODO(https://crbug.com/1145160): Reduce code duplication between here and
+  // TextPainterBase::PaintDecorations*.
+
+  // Use a zero offset because all offsets
+  // are applied to the ink overflow after it has been computed.
   PhysicalOffset offset;
   TextDecorationInfo decoration_info(offset, offset, ink_overflow.Width(),
                                      style.GetFontBaseline(), style,
@@ -423,11 +426,15 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     float resolved_thickness = decoration_info.ResolvedThickness();
 
     if (has_underline) {
+      // Don't apply text-underline-offset to overline.
+      Length line_offset =
+          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
+
       const int paint_underline_offset =
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData()->GetFontMetrics(),
-              decoration.UnderlineOffset(), resolved_thickness);
+              decoration_info.FontData()->GetFontMetrics(), line_offset,
+              resolved_thickness);
       decoration_info.SetPerLineData(
           TextDecoration::kUnderline, paint_underline_offset,
           TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
@@ -435,14 +442,17 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           decoration_info.BoundsForLine(TextDecoration::kUnderline));
     }
     if (has_overline) {
+      // Don't apply text-underline-offset to overline.
+      Length line_offset =
+          flip_underline_and_overline ? decoration.UnderlineOffset() : Length();
+
       FontVerticalPositionType position =
           flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
                                       : FontVerticalPositionType::TextTop;
       const int paint_overline_offset =
           decoration_offset.ComputeUnderlineOffsetForUnder(
-              decoration_info.Style().TextUnderlineOffset(),
-              decoration_info.Style().ComputedFontSize(), resolved_thickness,
-              position);
+              line_offset, decoration_info.Style().ComputedFontSize(),
+              resolved_thickness, position);
       decoration_info.SetPerLineData(
           TextDecoration::kOverline, paint_overline_offset,
           -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),

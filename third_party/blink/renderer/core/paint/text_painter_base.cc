@@ -235,11 +235,15 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     context.SetStrokeThickness(resolved_thickness);
 
     if (has_underline && decoration_info.FontData()) {
+      // Don't apply text-underline-offset to overline.
+      Length line_offset =
+          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
+
       const int paint_underline_offset =
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData()->GetFontMetrics(),
-              decoration.UnderlineOffset(), resolved_thickness);
+              decoration_info.FontData()->GetFontMetrics(), line_offset,
+              resolved_thickness);
       decoration_info.SetPerLineData(
           TextDecoration::kUnderline, paint_underline_offset,
           TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
@@ -248,14 +252,17 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     }
 
     if (has_overline && decoration_info.FontData()) {
+      // Don't apply text-underline-offset to overline.
+      Length line_offset =
+          flip_underline_and_overline ? decoration.UnderlineOffset() : Length();
+
       FontVerticalPositionType position =
           flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
                                       : FontVerticalPositionType::TextTop;
       const int paint_overline_offset =
           decoration_offset.ComputeUnderlineOffsetForUnder(
-              decoration_info.Style().TextUnderlineOffset(),
-              decoration_info.Style().ComputedFontSize(), resolved_thickness,
-              position);
+              line_offset, decoration_info.Style().ComputedFontSize(),
+              resolved_thickness, position);
       decoration_info.SetPerLineData(
           TextDecoration::kOverline, paint_overline_offset,
           -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
