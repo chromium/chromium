@@ -95,7 +95,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
         }
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static int toUmaEnumValueFromTaskId(int taskId) {
         switch (taskId) {
             case TaskIds.TEST:
