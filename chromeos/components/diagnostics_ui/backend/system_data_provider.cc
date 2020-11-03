@@ -145,6 +145,7 @@ void PopulateMemoryUsage(const healthd::MemoryInfo& memory_info,
 SystemDataProvider::SystemDataProvider() {
   battery_charge_status_timer_ = std::make_unique<base::RepeatingTimer>();
   battery_health_timer_ = std::make_unique<base::RepeatingTimer>();
+  memory_usage_timer_ = std::make_unique<base::RepeatingTimer>();
   PowerManagerClient::Get()->AddObserver(this);
 }
 
