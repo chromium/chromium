@@ -16354,7 +16354,7 @@
         'per_profile': True,
       },
       'example_value': True,
-      'default_for_enterprise_users': True,
+      'default_for_enterprise_users': False,
       'id': 761,
       'caption': '''Allow Nearby Share to be enabled.''',
       'tags': ['local-data-access', 'google-sharing'],
@@ -16362,7 +16362,7 @@
 
       If this setting is disabled, users will not be allowed to opt in to Nearby Share.
 
-      If this policy is left not set, the default is allowed for both enterprise-managed users and non-managed users.''',
+      If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.''',
     },
     {
       'name': 'BrowserNetworkTimeQueriesEnabled',
