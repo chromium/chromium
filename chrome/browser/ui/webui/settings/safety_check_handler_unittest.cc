@@ -1572,6 +1572,36 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleaner_DisabledByAdmin) {
       "href=\"https://support.google.com/chrome?p=your_administrator\">Your "
       "administrator</a> has disabled Browser's check for harmful software");
 }
+
+TEST_F(SafetyCheckHandlerTest, CheckChromeCleaner_ObserverUpdateLogging) {
+  safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
+  safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetIdleForTesting(
+      safe_browsing::ChromeCleanerController::IdleReason::
+          kReporterFoundNothing);
+  // We expect a user triggering a safety check to log the Chrome cleaner
+  // result.
+  safety_check_->PerformSafetyCheck();
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.ChromeCleanerResult",
+      SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp, 1);
+  // Subsequent Chrome cleaner status updates without the user running safety
+  // check again should not trigger logging.
+  safety_check_->OnIdle(safe_browsing::ChromeCleanerController::IdleReason::
+                            kReporterFoundNothing);
+  safety_check_->OnReporterRunning();
+  safety_check_->OnScanning();
+  safety_check_->OnRebootRequired();
+  safety_check_->OnRebootFailed();
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.ChromeCleanerResult",
+      SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.ChromeCleanerResult",
+      SafetyCheckHandler::ChromeCleanerStatus::kRebootRequired, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.ChromeCleanerResult",
+      SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws, 0);
+}
 #endif
 
 TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {

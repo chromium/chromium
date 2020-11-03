@@ -139,6 +139,20 @@ class SafetyCheckHandler
   base::string16 GetStringForChromeCleanerRan();
   base::string16 GetStringForChromeCleanerRan(base::Time cct_completion_time,
                                               base::Time system_time);
+
+  // safe_browsing::ChromeCleanerController::Observer overrides.
+  void OnIdle(
+      safe_browsing::ChromeCleanerController::IdleReason idle_reason) override;
+  void OnReporterRunning() override;
+  void OnScanning() override;
+  void OnInfected(bool is_powered_by_partner,
+                  const safe_browsing::ChromeCleanerScannerResults&
+                      scanner_results) override;
+  void OnCleaning(bool is_powered_by_partner,
+                  const safe_browsing::ChromeCleanerScannerResults&
+                      scanner_results) override;
+  void OnRebootRequired() override;
+  void OnRebootFailed() override;
 #endif
 
  protected:
@@ -269,22 +283,6 @@ class SafetyCheckHandler
   void OnCompromisedCredentialsChanged(
       password_manager::InsecureCredentialsManager::CredentialsView credentials)
       override;
-
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // safe_browsing::ChromeCleanerController::Observer overrides.
-  void OnIdle(
-      safe_browsing::ChromeCleanerController::IdleReason idle_reason) override;
-  void OnReporterRunning() override;
-  void OnScanning() override;
-  void OnInfected(bool is_powered_by_partner,
-                  const safe_browsing::ChromeCleanerScannerResults&
-                      scanner_results) override;
-  void OnCleaning(bool is_powered_by_partner,
-                  const safe_browsing::ChromeCleanerScannerResults&
-                      scanner_results) override;
-  void OnRebootRequired() override;
-  void OnRebootFailed() override;
-#endif
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override;

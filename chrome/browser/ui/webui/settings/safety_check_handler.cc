@@ -473,6 +473,12 @@ void SafetyCheckHandler::CheckChromeCleaner() {
     // current state.
     safe_browsing::ChromeCleanerController::GetInstance()->AddObserver(this);
   }
+  // Log the current status into metrics.
+  if (chrome_cleaner_status_ != ChromeCleanerStatus::kHidden &&
+      chrome_cleaner_status_ != ChromeCleanerStatus::kChecking) {
+    base::UmaHistogramEnumeration("Settings.SafetyCheck.ChromeCleanerResult",
+                                  chrome_cleaner_status_);
+  }
 }
 #endif
 
@@ -550,11 +556,6 @@ void SafetyCheckHandler::OnChromeCleanerCheckResult(
       GetStringForChromeCleaner(result.status, result.cct_completion_time,
                                 timestamp_delegate_->GetSystemTime()));
   FireWebUIListener(kChromeCleanerEvent, event);
-  if (result.status != ChromeCleanerStatus::kHidden &&
-      result.status != ChromeCleanerStatus::kChecking) {
-    base::UmaHistogramEnumeration("Settings.SafetyCheck.ChromeCleanerResult",
-                                  result.status);
-  }
   chrome_cleaner_status_ = result.status;
   CompleteParentIfChildrenCompleted();
 }
