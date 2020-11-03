@@ -198,10 +198,11 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
       int diameter_size_in_pixel =
           ui_controller_android_utils::GetPixelSizeOrDefault(
               env, jcontext, proto.favicon().diameter_size(), 0);
+      std::string url = proto.favicon().has_website_url()
+                            ? proto.favicon().website_url()
+                            : user_model->GetCurrentURL().spec();
       return Java_AssistantDrawable_createFromFavicon(
-          env,
-          base::android::ConvertUTF8ToJavaString(
-              env, user_model->GetCurrentURL().spec()),
+          env, base::android::ConvertUTF8ToJavaString(env, url),
           diameter_size_in_pixel, proto.favicon().force_monogram());
     }
     case DrawableProto::DRAWABLE_NOT_SET:
