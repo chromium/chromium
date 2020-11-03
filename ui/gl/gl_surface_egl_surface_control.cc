@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -645,7 +646,7 @@ void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
   if (!hang_detection_cb_.IsCancelled())
     return;
 
-  constexpr int kIdleDelaySeconds = 1;
+  constexpr int kIdleDelaySeconds = 5;
   hang_detection_cb_.Reset(
       base::BindOnce(&GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
                          OnTransactionTimeout,
@@ -680,11 +681,15 @@ void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
     ScheduleHangDetection();
     return;
   }
-  // Hang detection logic here.
+
   LOG(ERROR) << "Transaction id " << transaction_id
-             << " haven't received any ack from past 1 second which indicates "
+             << " haven't received any ack from past 5 second which indicates "
                 "it hanged";
-  base::debug::DumpWithoutCrashing();
+
+  // Hang detection logic here. we want to limit the number of dumps to 10% of
+  // the cases to avoid seeing too many instances in crash report.
+  if (base::RandInt(1, 10) == 1)
+    base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace gl
