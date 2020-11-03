@@ -50,7 +50,6 @@ using autofill::FormStructure;
 using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
-using autofill::ValueElementPair;
 using base::TimeDelta;
 using base::TimeTicks;
 

@@ -148,7 +148,7 @@ void BuildCredentialRows(
 
 // Create a vector which contains only the values in |items| and no elements.
 std::vector<base::string16> ToValues(
-    const autofill::ValueElementVector& items) {
+    const password_manager::ValueElementVector& items) {
   std::vector<base::string16> passwords;
   passwords.reserve(items.size());
   for (auto& pair : items)
@@ -177,7 +177,7 @@ std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
     const password_manager::PasswordForm& form) {
   std::vector<base::string16> usernames = {form.username_value};
-  for (const autofill::ValueElementPair& other_possible_username_pair :
+  for (const password_manager::ValueElementPair& other_possible_username_pair :
        form.all_possible_usernames) {
     if (other_possible_username_pair.first != form.username_value)
       usernames.push_back(other_possible_username_pair.first);

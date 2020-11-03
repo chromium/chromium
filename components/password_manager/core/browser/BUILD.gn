@@ -412,10 +412,16 @@ source_set("csv_unittests") {
 # cyclic dependencies.
 source_set("password_form") {
   sources = [
+    "password_form.cc",
     "password_form.h",
     "password_form_forward.h",
   ]
-  deps = [ "//components/autofill/core/common" ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/core/common/mojom:mojo_types_shared",
+    "//url",
+  ]
 }
 
 static_library("password_generator") {

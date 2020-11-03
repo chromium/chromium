@@ -24,7 +24,6 @@ using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
-using autofill::ValueElementPair;
 
 namespace password_manager {
 

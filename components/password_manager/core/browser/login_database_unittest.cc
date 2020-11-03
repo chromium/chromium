@@ -38,8 +38,6 @@
 #include "url/origin.h"
 
 using autofill::GaiaIdHash;
-using autofill::ValueElementPair;
-using autofill::ValueElementVector;
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
 using ::testing::Eq;
@@ -1342,7 +1340,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
 
   form.action = GURL("http://accounts.google.com/login");
   form.password_value = ASCIIToUTF16("my_new_password");
-  form.all_possible_usernames.push_back(autofill::ValueElementPair(
+  form.all_possible_usernames.push_back(ValueElementPair(
       ASCIIToUTF16("my_new_username"), ASCIIToUTF16("new_username_id")));
   form.times_used = 20;
   form.submit_element = ASCIIToUTF16("submit_element");
@@ -1385,7 +1383,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
-  form.all_possible_usernames.push_back(autofill::ValueElementPair(
+  form.all_possible_usernames.push_back(ValueElementPair(
       ASCIIToUTF16("my_new_username"), ASCIIToUTF16("new_username_id")));
   form.times_used = 20;
   form.submit_element = ASCIIToUTF16("submit_element");

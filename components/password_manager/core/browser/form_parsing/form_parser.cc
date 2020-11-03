@@ -804,8 +804,8 @@ void SetFields(const SignificantFields& significant_fields,
 // empty values are ignored.
 std::vector<ProcessedField> ProcessFields(
     const std::vector<FormFieldData>& fields,
-    autofill::ValueElementVector* all_possible_passwords,
-    autofill::ValueElementVector* all_possible_usernames,
+    ValueElementVector* all_possible_passwords,
+    ValueElementVector* all_possible_usernames,
     FormDataParser::Mode mode) {
   DCHECK(all_possible_passwords);
   DCHECK(all_possible_passwords->empty());
@@ -833,7 +833,7 @@ std::vector<ProcessedField> ProcessFields(
     if (!field_value.empty()) {
       std::set<base::StringPiece16>& seen_values =
           is_password ? seen_password_values : seen_username_values;
-      autofill::ValueElementVector* all_possible_fields =
+      ValueElementVector* all_possible_fields =
           is_password ? all_possible_passwords : all_possible_usernames;
       // Only the field name of the first occurrence is added.
       auto insertion = seen_values.insert(field_value);
@@ -889,8 +889,8 @@ bool GetMayUsePrefilledPlaceholder(
 std::unique_ptr<PasswordForm> AssemblePasswordForm(
     const FormData& form_data,
     const SignificantFields& significant_fields,
-    autofill::ValueElementVector all_possible_passwords,
-    autofill::ValueElementVector all_possible_usernames,
+    ValueElementVector all_possible_passwords,
+    ValueElementVector all_possible_usernames,
     const base::Optional<FormPredictions>& form_predictions) {
   if (!significant_fields.HasPasswords() &&
       !significant_fields.is_single_username) {
@@ -942,8 +942,8 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
     return nullptr;
 
   readonly_status_ = ReadonlyPasswordFields::kNoHeuristics;
-  autofill::ValueElementVector all_possible_passwords;
-  autofill::ValueElementVector all_possible_usernames;
+  ValueElementVector all_possible_passwords;
+  ValueElementVector all_possible_usernames;
   std::vector<ProcessedField> processed_fields = ProcessFields(
       form_data.fields, &all_possible_passwords, &all_possible_usernames, mode);
 

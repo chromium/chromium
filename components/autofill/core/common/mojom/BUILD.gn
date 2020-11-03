@@ -72,10 +72,6 @@ mojom("mojo_types") {
           mojom = "autofill.mojom.PasswordGenerationUIData"
           cpp = "::autofill::password_generation::PasswordGenerationUIData"
         },
-        {
-          mojom = "autofill.mojom.ValueElementPair"
-          cpp = "::autofill::ValueElementPair"
-        },
       ]
       traits_headers = [ "autofill_types_mojom_traits.h" ]
       traits_sources = [ "autofill_types_mojom_traits.cc" ]

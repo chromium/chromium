@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 #include <algorithm>
 #include <ostream>
@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
-namespace autofill {
+namespace password_manager {
 
 namespace {
 
@@ -298,4 +298,4 @@ std::ostream& operator<<(std::ostream& os, PasswordForm* form) {
   return os << "&" << *form;
 }
 
-}  // namespace autofill
+}  // namespace password_manager

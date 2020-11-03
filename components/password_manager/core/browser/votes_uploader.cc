@@ -38,7 +38,6 @@ using autofill::FormStructure;
 using autofill::RandomizedEncoder;
 using autofill::ServerFieldType;
 using autofill::ServerFieldTypeSet;
-using autofill::ValueElementPair;
 using password_manager_util::FindFormByUsername;
 
 using Logger = autofill::SavePasswordProgressLogger;

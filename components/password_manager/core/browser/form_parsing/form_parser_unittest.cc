@@ -88,8 +88,8 @@ struct FormParsingTestCase {
   int number_of_all_possible_passwords = -1;
   int number_of_all_possible_usernames = -1;
   // null means no checking
-  const autofill::ValueElementVector* all_possible_passwords = nullptr;
-  const autofill::ValueElementVector* all_possible_usernames = nullptr;
+  const ValueElementVector* all_possible_passwords = nullptr;
+  const ValueElementVector* all_possible_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
   base::Optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
@@ -321,7 +321,7 @@ void CheckPasswordFormFields(const PasswordForm& password_form,
 
 // Checks that in a vector of pairs of string16s, all the first parts of the
 // pairs (which represent element values) are unique.
-void CheckAllValuesUnique(const autofill::ValueElementVector& v) {
+void CheckAllValuesUnique(const ValueElementVector& v) {
   std::set<base::string16> all_values;
   for (const auto& pair : v) {
     auto insertion = all_values.insert(pair.first);
@@ -1429,11 +1429,11 @@ TEST(FormParserTest, Interactability) {
 }
 
 TEST(FormParserTest, AllPossiblePasswords) {
-  const autofill::ValueElementVector kPasswords = {
+  const ValueElementVector kPasswords = {
       {ASCIIToUTF16("a"), ASCIIToUTF16("p1")},
       {ASCIIToUTF16("b"), ASCIIToUTF16("p3")},
   };
-  const autofill::ValueElementVector kUsernames = {
+  const ValueElementVector kUsernames = {
       {ASCIIToUTF16("b"), ASCIIToUTF16("chosen")},
       {ASCIIToUTF16("a"), ASCIIToUTF16("first")},
   };

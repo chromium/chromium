@@ -2746,13 +2746,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       ManagePasswordsUIController::FromWebContents(WebContents())
           ->GetPendingPassword()
           .all_possible_passwords,
-      ElementsAre(autofill::ValueElementPair(
+      ElementsAre(ValueElementPair(
                       base::ASCIIToUTF16("pass1"),
                       base::ASCIIToUTF16("chg_password_wo_username_field")),
-                  autofill::ValueElementPair(
+                  ValueElementPair(
                       base::ASCIIToUTF16("pass2"),
                       base::ASCIIToUTF16("chg_new_password_wo_username_1")),
-                  autofill::ValueElementPair(
+                  ValueElementPair(
                       base::ASCIIToUTF16("pass3"),
                       base::ASCIIToUTF16("chg_new_password_wo_username_2"))));
   bubble_observer.AcceptSavePrompt();

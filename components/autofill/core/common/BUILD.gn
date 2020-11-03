@@ -47,8 +47,6 @@ static_library("common") {
     "gaia_id_hash.h",
     "logging/log_buffer.cc",
     "logging/log_buffer.h",
-    "password_form.cc",
-    "password_form.h",
     "password_form_fill_data.cc",
     "password_form_fill_data.h",
     "password_form_generation_data.h",

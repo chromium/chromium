@@ -63,8 +63,7 @@ const int kCurrentVersionNumber = 28;
 // version can still read/write the current database.
 const int kCompatibleVersionNumber = 28;
 
-base::Pickle SerializeValueElementPairs(
-    const autofill::ValueElementVector& vec) {
+base::Pickle SerializeValueElementPairs(const ValueElementVector& vec) {
   base::Pickle p;
   for (const auto& pair : vec) {
     p.WriteString16(pair.first);
@@ -73,9 +72,8 @@ base::Pickle SerializeValueElementPairs(
   return p;
 }
 
-autofill::ValueElementVector DeserializeValueElementPairs(
-    const base::Pickle& p) {
-  autofill::ValueElementVector ret;
+ValueElementVector DeserializeValueElementPairs(const base::Pickle& p) {
+  ValueElementVector ret;
   base::string16 value;
   base::string16 field_name;
 
@@ -83,7 +81,7 @@ autofill::ValueElementVector DeserializeValueElementPairs(
   while (iterator.ReadString16(&value)) {
     bool name_success = iterator.ReadString16(&field_name);
     DCHECK(name_success);
-    ret.push_back(autofill::ValueElementPair(value, field_name));
+    ret.push_back(ValueElementPair(value, field_name));
   }
   return ret;
 }
