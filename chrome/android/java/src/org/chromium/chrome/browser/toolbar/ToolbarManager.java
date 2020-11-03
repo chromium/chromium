@@ -129,6 +129,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
     private BottomControlsCoordinator mBottomControlsCoordinator;
     private TabModelSelector mTabModelSelector;
@@ -220,6 +221,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param overviewModeBehaviorSupplier Supplier of the overview mode manager for the current
      *                                     profile.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      */
     public ToolbarManager(ChromeActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -235,7 +237,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean shouldShowUpdateBadge,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mBrowserControlsSizer = controlsSizer;
@@ -245,6 +248,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mScrimCoordinator = scrimCoordinator;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
 
         mLocationBarModel = new LocationBarModel(activity);
         mControlContainer = controlContainer;
@@ -683,15 +687,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Enable the bottom controls.
      */
     public void enableBottomControls() {
-        mBottomControlsCoordinator =
-                new BottomControlsCoordinator(mBrowserControlsSizer, mFullscreenManager,
-                        mActivity.findViewById(R.id.bottom_controls_stub), mActivityTabProvider,
-                        mAppThemeColorProvider, mShareDelegateSupplier,
-                        mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
-                        mShowStartSurfaceSupplier, mToolbarTabController::openHomepage,
-                        (reason)
-                                -> setUrlBarFocus(true, reason),
-                        mOverviewModeBehaviorSupplier, mScrimCoordinator);
+        mBottomControlsCoordinator = new BottomControlsCoordinator(mBrowserControlsSizer,
+                mFullscreenManager, mActivity.findViewById(R.id.bottom_controls_stub),
+                mActivityTabProvider, mAppThemeColorProvider, mShareDelegateSupplier,
+                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mShowStartSurfaceSupplier,
+                mToolbarTabController::openHomepage,
+                (reason)
+                        -> setUrlBarFocus(true, reason),
+                mOverviewModeBehaviorSupplier, mScrimCoordinator, mOmniboxFocusStateSupplier);
     }
 
     /**

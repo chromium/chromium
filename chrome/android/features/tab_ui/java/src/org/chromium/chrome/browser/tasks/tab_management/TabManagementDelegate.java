@@ -87,10 +87,12 @@ public interface TabManagementDelegate {
      * @param parentView The parent view of this UI.
      * @param themeColorProvider The {@link ThemeColorProvider} for this UI.
      * @param scrimCoordinator   The {@link ScrimCoordinator} to control scrim view.
+     * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @return The {@link TabGroupUi}.
      */
     TabGroupUi createTabGroupUi(ViewGroup parentView, ThemeColorProvider themeColorProvider,
-            ScrimCoordinator scrimCoordinator);
+            ScrimCoordinator scrimCoordinator,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier);
 
     /**
      * Create the {@link StartSurfaceLayout}.

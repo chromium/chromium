@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -53,6 +54,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabGroupUiToolbarView mToolbarView;
     private final ViewGroup mTabListContainerView;
     private final ScrimCoordinator mScrimCoordinator;
+    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
     private TabListCoordinator mTabStripCoordinator;
@@ -64,10 +66,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      * Creates a new {@link TabGroupUiCoordinator}
      */
     public TabGroupUiCoordinator(ViewGroup parentView, ThemeColorProvider themeColorProvider,
-            ScrimCoordinator scrimCoordinator) {
+            ScrimCoordinator scrimCoordinator,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mContext = parentView.getContext();
         mThemeColorProvider = themeColorProvider;
         mScrimCoordinator = scrimCoordinator;
+        mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
         mToolbarView = (TabGroupUiToolbarView) LayoutInflater.from(mContext).inflate(
                 R.layout.bottom_tab_strip_toolbar, parentView, false);
@@ -118,7 +122,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         mMediator = new TabGroupUiMediator(activity, visibilityController, this, mModel,
                 tabModelSelector, activity,
                 ((ChromeTabbedActivity) activity).getOverviewModeBehaviorSupplier(),
-                mThemeColorProvider, dialogController, activity.getLifecycleDispatcher(), activity);
+                mThemeColorProvider, dialogController, activity.getLifecycleDispatcher(), activity,
+                mOmniboxFocusStateSupplier);
 
         TabGroupUtils.startObservingForCreationIPH();
 
