@@ -41,15 +41,8 @@ PhoneConnectedView::PhoneConnectedView(
       gfx::Insets(0, kBubbleHorizontalSidePaddingDip)));
   layout->SetDefaultFlex(1);
 
-  chromeos::phonehub::NotificationAccessManager* access_manager =
-      phone_hub_manager->GetNotificationAccessManager();
-  bool should_show_notification_setup_ui =
-      !access_manager->HasAccessBeenGranted() &&
-      !access_manager->HasNotificationSetupUiBeenDismissed();
-  if (should_show_notification_setup_ui) {
-    AddChildView(std::make_unique<NotificationOptInView>(
-        bubble_view, phone_hub_manager->GetNotificationAccessManager()));
-  }
+  AddChildView(std::make_unique<NotificationOptInView>(
+      bubble_view, phone_hub_manager->GetNotificationAccessManager()));
 
   setup_layered_view(
       AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));

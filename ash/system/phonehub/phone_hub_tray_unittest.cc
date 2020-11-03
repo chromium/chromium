@@ -218,7 +218,8 @@ TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessHasBeenGranted) {
 
   ClickTrayButton();
 
-  EXPECT_FALSE(notification_opt_in_view());
+  EXPECT_TRUE(notification_opt_in_view());
+  EXPECT_FALSE(notification_opt_in_view()->GetVisible());
 }
 
 TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
@@ -239,6 +240,18 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
       });
 
   ClickOnAndWait(notification_opt_in_view()->set_up_button_for_testing());
+
+  // Simulate that notification access has been granted.
+  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(true);
+
+  // This view should be dismissed.
+  EXPECT_FALSE(notification_opt_in_view()->GetVisible());
+
+  // Simulate that notification access has been revoked by the phone.
+  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(false);
+
+  // This view should show up again.
+  EXPECT_TRUE(notification_opt_in_view()->GetVisible());
 }
 
 TEST_F(PhoneHubTrayTest, HideTrayItemOnUiStateChange) {

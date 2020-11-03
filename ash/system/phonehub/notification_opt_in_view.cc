@@ -59,6 +59,13 @@ NotificationOptInView::NotificationOptInView(
       notification_access_manager_(notification_access_manager) {
   SetID(PhoneHubViewID::kNotificationOptInView);
   InitLayout();
+
+  DCHECK(notification_access_manager_);
+  access_manager_observer_.Add(notification_access_manager_);
+
+  // Checks and updates its visibility upon creation.
+  UpdateVisibility();
+
   LogNotificationOptInEvent(InterstitialScreenEvent::kShown);
 }
 
@@ -77,6 +84,10 @@ void NotificationOptInView::DismissButtonPressed() {
   SetVisible(false);
   bubble_view_->UpdateBubble();
   notification_access_manager_->DismissSetupRequiredUi();
+}
+
+void NotificationOptInView::OnNotificationAccessChanged() {
+  UpdateVisibility();
 }
 
 void NotificationOptInView::InitLayout() {
@@ -140,6 +151,14 @@ void NotificationOptInView::InitLayout() {
           l10n_util::GetStringUTF16(
               IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
           /*paint_background=*/true));
+}
+
+void NotificationOptInView::UpdateVisibility() {
+  DCHECK(notification_access_manager_);
+  const bool should_show =
+      !notification_access_manager_->HasAccessBeenGranted() &&
+      !notification_access_manager_->HasNotificationSetupUiBeenDismissed();
+  SetVisible(should_show);
 }
 
 BEGIN_METADATA(NotificationOptInView, views::View)
