@@ -635,6 +635,10 @@ void WebRuntimeFeatures::EnableGetDisplayMedia(bool enable) {
   RuntimeEnabledFeatures::SetGetDisplayMediaEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableGetCurrentBrowsingContextMedia(bool enable) {
+  RuntimeEnabledFeatures::SetGetCurrentBrowsingContextMediaEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAllowSyncXHRInPageDismissal(bool enable) {
   RuntimeEnabledFeatures::SetAllowSyncXHRInPageDismissalEnabled(enable);
 }

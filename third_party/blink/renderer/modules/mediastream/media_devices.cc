@@ -167,6 +167,16 @@ ScriptPromise MediaDevices::getDisplayMedia(
                               options, exception_state);
 }
 
+ScriptPromise MediaDevices::getCurrentBrowsingContextMedia(
+    ScriptState* script_state,
+    const MediaStreamConstraints* options,
+    ExceptionState& exception_state) {
+  return SendUserMediaRequest(
+      script_state,
+      UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia, options,
+      exception_state);
+}
+
 const AtomicString& MediaDevices::InterfaceName() const {
   return event_target_names::kMediaDevices;
 }

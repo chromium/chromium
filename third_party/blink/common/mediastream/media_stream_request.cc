@@ -20,7 +20,8 @@ bool IsVideoInputMediaType(mojom::MediaStreamType type) {
   return (type == mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
           type == mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE ||
           type == mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
-          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE);
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
 }
 
 bool IsScreenCaptureMediaType(mojom::MediaStreamType type) {
@@ -39,12 +40,14 @@ bool IsDesktopCaptureMediaType(mojom::MediaStreamType type) {
 
 bool IsVideoDesktopCaptureMediaType(mojom::MediaStreamType type) {
   return (type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
           type == mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 }
 
 bool IsTabCaptureMediaType(mojom::MediaStreamType type) {
   return (type == mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
-          type == mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE);
+          type == mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE ||
+          type == mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
 }
 
 bool IsDeviceMediaType(mojom::MediaStreamType type) {

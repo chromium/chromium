@@ -49,6 +49,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature
     kPurgeRendererMemoryWhenBackgrounded;
 BLINK_COMMON_EXPORT extern const base::Feature kRawClipboard;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kRTCGetCurrentBrowsingContextMedia;
 BLINK_COMMON_EXPORT extern const base::Feature kRTCUnifiedPlanByDefault;
 BLINK_COMMON_EXPORT extern const base::Feature kRTCOfferExtmapAllowMixed;
 BLINK_COMMON_EXPORT extern const base::Feature kRTCGpuCodecSupportWaiter;

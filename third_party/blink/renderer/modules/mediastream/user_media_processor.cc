@@ -149,7 +149,9 @@ std::string GetOnTrackStartedLogString(
 void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
   if (user_media_request->MediaRequestType() ==
-      UserMediaRequest::MediaType::kDisplayMedia) {
+          UserMediaRequest::MediaType::kDisplayMedia ||
+      user_media_request->MediaRequestType() ==
+          UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     return;
@@ -186,6 +188,12 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
       UserMediaRequest::MediaType::kDisplayMedia) {
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+    return;
+  } else if (user_media_request->MediaRequestType() ==
+             UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
+    track_controls->requested = true;
+    track_controls->stream_type =
+        MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
     return;
   }
 
@@ -891,8 +899,11 @@ void UserMediaProcessor::SelectVideoContentSettings() {
         failed_constraint_name);
     return;
   }
-  if (current_request_info_->stream_controls()->video.stream_type !=
-      MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+
+  const MediaStreamType stream_type =
+      current_request_info_->stream_controls()->video.stream_type;
+  if (stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
+      stream_type != MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     current_request_info_->stream_controls()->video.device_id =
         settings.device_id();
   }

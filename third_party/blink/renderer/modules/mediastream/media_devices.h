@@ -54,6 +54,10 @@ class MODULES_EXPORT MediaDevices final
                                 const MediaStreamConstraints*,
                                 ExceptionState&);
 
+  ScriptPromise getCurrentBrowsingContextMedia(ScriptState*,
+                                               const MediaStreamConstraints*,
+                                               ExceptionState&);
+
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;

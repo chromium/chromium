@@ -113,6 +113,10 @@ ObserverMethod GetObserverMethodToCall(const blink::MediaStreamDevice& device) {
                  : &MediaStreamCaptureIndicator::Observer::
                        OnIsCapturingWindowChanged;
 
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      // TODO(crbug.com/1136942): Finish wiring getCurrentBrowsingContextMedia.
+      NOTIMPLEMENTED();
+      FALLTHROUGH;
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
       NOTREACHED();
@@ -304,6 +308,10 @@ int& MediaStreamCaptureIndicator::WebContentsDeviceUsage::GetStreamCount(
       return IsDeviceCapturingDisplay(device) ? display_stream_count_
                                               : window_stream_count_;
 
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      // TODO(crbug.com/1136942): Finish wiring getCurrentBrowsingContextMedia.
+      NOTIMPLEMENTED();
+      FALLTHROUGH;
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
       NOTREACHED();

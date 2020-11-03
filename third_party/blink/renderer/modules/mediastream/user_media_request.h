@@ -71,6 +71,7 @@ class MODULES_EXPORT UserMediaRequest final
   enum class MediaType {
     kUserMedia,
     kDisplayMedia,
+    kGetCurrentBrowsingContextMedia,
   };
 
   class Callbacks : public GarbageCollected<Callbacks> {

@@ -912,6 +912,11 @@
       status: "experimental",
     },
     {
+      name: "GetCurrentBrowsingContextMedia",
+      depends_on: ["GetDisplayMedia"],
+      status: {"Android": "", "default": "test"},
+    },
+    {
       name: "GetDisplayMedia",
       status: {
         "Android": "experimental",

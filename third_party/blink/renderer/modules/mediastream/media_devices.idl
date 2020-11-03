@@ -28,4 +28,16 @@
       MeasureAs = GetDisplayMedia
     ] Promise<MediaStream>
     getDisplayMedia(optional MediaStreamConstraints constraints = {});
+
+    // TODO(crbug.com/1136942): Link to the spec after the PR goes through.
+    // Note: The runtime flag GetCurrentBrowsingContextMedia presupposes
+    // the runtime flag GetDisplayMedia.
+    // If (GetCurrentBrowsingContextMedia && !GetDisplayMedia), that's an error,
+    // and permission will be denied.
+    [
+      RuntimeEnabled = GetCurrentBrowsingContextMedia, CallWith = ScriptState,
+      RaisesException,
+      MeasureAs = GetCurrentBrowsingContextMedia
+    ] Promise<MediaStream>
+    getCurrentBrowsingContextMedia(optional MediaStreamConstraints constraints = {});
 };

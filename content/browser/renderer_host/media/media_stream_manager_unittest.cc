@@ -207,9 +207,7 @@ class MediaStreamManagerTest : public ::testing::Test {
             }));
   }
 
-  ~MediaStreamManagerTest() override {
-    audio_manager_->Shutdown();
-  }
+  ~MediaStreamManagerTest() override { audio_manager_->Shutdown(); }
 
   MOCK_METHOD1(Response, void(int index));
   void ResponseCallback(int index,
@@ -445,6 +443,11 @@ TEST_F(MediaStreamManagerTest, MakeAndCancelMediaAccessRequest) {
       OnMediaRequestStateChanged(
           _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
           MEDIA_REQUEST_STATE_CLOSING));
+  EXPECT_CALL(*media_observer_,
+              OnMediaRequestStateChanged(
+                  _, _, _, _,
+                  blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB,
+                  MEDIA_REQUEST_STATE_CLOSING));
   EXPECT_CALL(
       *media_observer_,
       OnMediaRequestStateChanged(
@@ -519,6 +522,11 @@ TEST_F(MediaStreamManagerTest, MakeAndCancelMultipleRequests) {
       OnMediaRequestStateChanged(
           _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
           MEDIA_REQUEST_STATE_CLOSING));
+  EXPECT_CALL(*media_observer_,
+              OnMediaRequestStateChanged(
+                  _, _, _, _,
+                  blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB,
+                  MEDIA_REQUEST_STATE_CLOSING));
   EXPECT_CALL(
       *media_observer_,
       OnMediaRequestStateChanged(

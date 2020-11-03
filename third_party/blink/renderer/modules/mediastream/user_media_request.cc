@@ -357,7 +357,9 @@ UserMediaRequest* UserMediaRequest::Create(
       error_state.ThrowTypeError("Mandatory zoom constraint is not supported");
       return nullptr;
     }
-  } else if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
+  } else if (media_type == UserMediaRequest::MediaType::kDisplayMedia ||
+             media_type ==
+                 UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
     // https://w3c.github.io/mediacapture-screen-share/#mediadevices-additions
     // MediaDevices Additions
     // The user agent MUST reject audio-only requests.

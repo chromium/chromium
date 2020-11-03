@@ -4977,6 +4977,7 @@ interface MediaDevices : EventTarget
     getter ondevicechange
     method constructor
     method enumerateDevices
+    method getCurrentBrowsingContextMedia
     method getDisplayMedia
     method getSupportedConstraints
     method getUserMedia

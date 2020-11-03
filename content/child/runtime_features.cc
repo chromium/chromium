@@ -273,6 +273,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if defined(OS_ANDROID)
     {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},
 #endif
+    {wf::EnableGetCurrentBrowsingContextMedia,
+     blink::features::kRTCGetCurrentBrowsingContextMedia},
     {wf::EnableSignedExchangePrefetchCacheForNavigations,
      features::kSignedExchangePrefetchCacheForNavigations},
     {wf::EnableSignedExchangeSubresourcePrefetch,
