@@ -27,29 +27,53 @@ class NET_EXPORT CookieInclusionStatus {
   enum ExclusionReason {
     EXCLUDE_UNKNOWN_ERROR = 0,
 
-    EXCLUDE_HTTP_ONLY = 1,
-    EXCLUDE_SECURE_ONLY = 2,
-    EXCLUDE_DOMAIN_MISMATCH = 3,
-    EXCLUDE_NOT_ON_PATH = 4,
-    EXCLUDE_SAMESITE_STRICT = 5,
-    EXCLUDE_SAMESITE_LAX = 6,
+    // Statuses applied when accessing a cookie (either sending or setting):
 
-    // The following two are used for the SameSiteByDefaultCookies experiment,
-    // where if the SameSite attribute is not specified, it will be treated as
-    // SameSite=Lax by default.
+    // Cookie was HttpOnly, but the attempted access was through a non-HTTP API.
+    EXCLUDE_HTTP_ONLY = 1,
+    // Cookie was Secure, but the URL was not allowed to access Secure cookies.
+    EXCLUDE_SECURE_ONLY = 2,
+    // The cookie's domain attribute did not match the domain of the URL
+    // attempting access.
+    EXCLUDE_DOMAIN_MISMATCH = 3,
+    // The cookie's path attribute did not match the path of the URL attempting
+    // access.
+    EXCLUDE_NOT_ON_PATH = 4,
+    // The cookie had SameSite=Strict, and the attempted access did not have an
+    // appropriate SameSiteCookieContext.
+    EXCLUDE_SAMESITE_STRICT = 5,
+    // The cookie had SameSite=Lax, and the attempted access did not have an
+    // appropriate SameSiteCookieContext.
+    EXCLUDE_SAMESITE_LAX = 6,
+    // The cookie did not specify a SameSite attribute, and therefore was
+    // treated as if it were SameSite=Lax, and the attempted access did not have
+    // an appropriate SameSiteCookieContext.
     EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX = 7,
-    // This is used if SameSite=None is specified, but the cookie is not
-    // Secure.
+    // The cookie specified SameSite=None, but it was not Secure.
     EXCLUDE_SAMESITE_NONE_INSECURE = 8,
+    // Caller did not allow access to the cookie.
     EXCLUDE_USER_PREFERENCES = 9,
 
-    // Statuses specific to setting cookies
+    // Statuses only applied when creating/setting cookies:
+
+    // Cookie was malformed and could not be stored.
     EXCLUDE_FAILURE_TO_STORE = 10,
+    // Attempted to set a cookie from a scheme that does not support cookies.
     EXCLUDE_NONCOOKIEABLE_SCHEME = 11,
+    // Cookie would have overwritten a Secure cookie, and was not allowed to do
+    // so. (See "Leave Secure Cookies Alone":
+    // https://tools.ietf.org/html/draft-west-leave-secure-cookies-alone-05 )
     EXCLUDE_OVERWRITE_SECURE = 12,
+    // Cookie would have overwritten an HttpOnly cookie, and was not allowed to
+    // do so.
     EXCLUDE_OVERWRITE_HTTP_ONLY = 13,
+    // Cookie was set with an invalid Domain attribute.
     EXCLUDE_INVALID_DOMAIN = 14,
+    // Cookie was set with an invalid __Host- or __Secure- prefix.
     EXCLUDE_INVALID_PREFIX = 15,
+    // Cookie was set with an invalid SameParty attribute in combination with
+    // other attributes. (SameParty is invalid if Secure is not present, or if
+    // SameSite=Strict is present.)
     EXCLUDE_INVALID_SAMEPARTY = 16,
 
     // This should be kept last.
