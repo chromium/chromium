@@ -352,6 +352,10 @@ void CaptureModeController::EndVideoRecording() {
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CaptureModeController::OpenFeedbackDialog() {
+  delegate_->OpenFeedbackDialog();
+}
+
 bool CaptureModeController::IsCaptureAllowed() const {
   const base::Optional<CaptureParams> capture_params = GetCaptureParams();
   if (!capture_params)

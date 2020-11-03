@@ -32,6 +32,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       const gfx::Rect& bounds,
       base::OnceClosure stop_callback) override;
   void StopObservingRestrictedContent() override;
+  void OpenFeedbackDialog() override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_

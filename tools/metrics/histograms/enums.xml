@@ -30243,6 +30243,14 @@ Called by update_feature_policy_enum.py.-->
   <int value="6" label="SadTab Page"/>
   <int value="7" label="Supervised User Interstitial"/>
   <int value="8" label="Assistant"/>
+  <int value="9" label="Desktop Tab Groups"/>
+  <int value="10" label="Media App"/>
+  <int value="11" label="Help App"/>
+  <int value="12" label="Kaleidoscope"/>
+  <int value="13" label="Network Health Page"/>
+  <int value="14" label="Tab Search"/>
+  <int value="15" label="Camera App"/>
+  <int value="16" label="Capture Mode"/>
 </enum>
 
 <enum name="FeedControlsActions">

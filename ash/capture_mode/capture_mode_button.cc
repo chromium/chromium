@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/capture_mode/capture_mode_close_button.h"
+#include "ash/capture_mode/capture_mode_button.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
@@ -13,8 +13,8 @@
 
 namespace ash {
 
-CaptureModeCloseButton::CaptureModeCloseButton(
-    views::Button::PressedCallback callback)
+CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
+                                     const gfx::VectorIcon& icon)
     : ViewWithInkDrop(callback) {
   SetPreferredSize(capture_mode::kButtonSize);
   SetBorder(views::CreateEmptyBorder(capture_mode::kButtonPadding));
@@ -22,7 +22,7 @@ CaptureModeCloseButton::CaptureModeCloseButton(
   const SkColor normal_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
   SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(kCloseButtonIcon, normal_color));
+           gfx::CreateVectorIcon(icon, normal_color));
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   GetViewAccessibility().OverrideIsLeaf(true);
@@ -40,7 +40,7 @@ CaptureModeCloseButton::CaptureModeCloseButton(
                                              capture_mode::kButtonPadding);
 }
 
-BEGIN_METADATA(CaptureModeCloseButton, ViewWithInkDrop<views::ImageButton>)
+BEGIN_METADATA(CaptureModeButton, ViewWithInkDrop<views::ImageButton>)
 END_METADATA
 
 }  // namespace ash

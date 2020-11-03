@@ -186,7 +186,10 @@ void FocusPreviousPane(Browser* browser);
 void ToggleDevToolsWindow(Browser* browser, DevToolsToggleAction action);
 bool CanOpenTaskManager();
 void OpenTaskManager(Browser* browser);
-void OpenFeedbackDialog(Browser* browser, FeedbackSource source);
+void OpenFeedbackDialog(
+    Browser* browser,
+    FeedbackSource source,
+    const std::string& description_template = std::string());
 void ToggleBookmarkBar(Browser* browser);
 void ToggleShowFullURLs(Browser* browser);
 void ShowAppMenu(Browser* browser);

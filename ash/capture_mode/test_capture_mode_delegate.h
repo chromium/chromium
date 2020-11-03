@@ -31,6 +31,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       const gfx::Rect& bounds,
       base::OnceClosure stop_callback) override;
   void StopObservingRestrictedContent() override;
+  void OpenFeedbackDialog() override;
 };
 
 }  // namespace ash

@@ -40,4 +40,6 @@ void TestCaptureModeDelegate::StartObservingRestrictedContent(
 
 void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
 
+void TestCaptureModeDelegate::OpenFeedbackDialog() {}
+
 }  // namespace ash

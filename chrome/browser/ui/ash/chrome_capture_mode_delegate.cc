@@ -15,6 +15,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_service.h"
@@ -103,4 +104,10 @@ void ChromeCaptureModeDelegate::StartObservingRestrictedContent(
 
 void ChromeCaptureModeDelegate::StopObservingRestrictedContent() {
   policy::DlpContentManager::Get()->OnVideoCaptureStopped();
+}
+
+void ChromeCaptureModeDelegate::OpenFeedbackDialog() {
+  chrome::OpenFeedbackDialog(/*browser=*/nullptr,
+                             chrome::kFeedbackSourceCaptureMode,
+                             /*description_template=*/"#ScreenCapture\n\n");
 }

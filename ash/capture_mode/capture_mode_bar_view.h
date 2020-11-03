@@ -16,7 +16,7 @@ class Separator;
 
 namespace ash {
 
-class CaptureModeCloseButton;
+class CaptureModeButton;
 class CaptureModeSourceView;
 class CaptureModeTypeView;
 
@@ -33,7 +33,7 @@ class CaptureModeTypeView;
 //   |  +----------------+  |  ^                 ^  |  ^      |
 //   +--^----------------------|-----------------|-----|------+
 //   ^  |                      +-----------------+     |
-//   |  |                      |                       CaptureModeCloseButton
+//   |  |                      |                       CaptureModeButton
 //   |  |                      CaptureModeSourceView
 //   |  CaptureModeTypeView
 //   |
@@ -52,7 +52,6 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   CaptureModeSourceView* capture_source_view() const {
     return capture_source_view_;
   }
-  CaptureModeCloseButton* close_button() const { return close_button_; }
 
   // Gets the ideal bounds in screen coordinates of the bar of widget on the
   // given |root| window.
@@ -62,15 +61,23 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
+  CaptureModeButton* feedback_button_for_testing() const {
+    return feedback_button_;
+  }
+  CaptureModeButton* close_button_for_testing() const { return close_button_; }
+
  private:
-  void OnButtonPressed();
+  void OnFeedbackButtonPressed();
+  void OnCloseButtonPressed();
 
   // Owned by the views hierarchy.
+  CaptureModeButton* feedback_button_;
+  views::Separator* separator_0_;
   CaptureModeTypeView* capture_type_view_;
   views::Separator* separator_1_;
   CaptureModeSourceView* capture_source_view_;
   views::Separator* separator_2_;
-  CaptureModeCloseButton* close_button_;
+  CaptureModeButton* close_button_;
 };
 
 }  // namespace ash

@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
-#include "ash/capture_mode/capture_mode_close_button.h"
+#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
@@ -160,10 +160,16 @@ class CaptureModeTest : public AshTestBase {
         ->window_toggle_button();
   }
 
-  CaptureModeCloseButton* GetCloseButton() const {
+  CaptureModeButton* GetFeedbackButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->close_button();
+    return GetCaptureModeBarView()->feedback_button_for_testing();
+  }
+
+  CaptureModeButton* GetCloseButton() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    return GetCaptureModeBarView()->close_button_for_testing();
   }
 
   aura::Window* GetDimensionsLabelWindow() const {
@@ -260,6 +266,15 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   EXPECT_FALSE(GetWindowToggleButton()->GetToggled());
 
   ClickOnView(GetCloseButton(), GetEventGenerator());
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, FeedbackButtonExits) {
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_TRUE(controller->IsActive());
+
+  ClickOnView(GetFeedbackButton(), GetEventGenerator());
   EXPECT_FALSE(controller->IsActive());
 }
 

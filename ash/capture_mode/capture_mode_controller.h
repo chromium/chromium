@@ -76,6 +76,9 @@ class ASH_EXPORT CaptureModeController {
 
   void EndVideoRecording();
 
+  // Called when the feedback button on the capture bar is pressed.
+  void OpenFeedbackDialog();
+
  private:
   // Returns true if doing a screen capture is currently allowed, false
   // otherwise.
