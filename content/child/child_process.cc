@@ -20,6 +20,7 @@
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/cpu_time_metrics.h"
 #include "content/common/mojo_core_library_support.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
@@ -54,7 +55,9 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (IsMojoCoreSharedLibraryEnabled()) {
+  const bool is_embedded_in_browser_process =
+      !command_line.HasSwitch(switches::kProcessType);
+  if (IsMojoCoreSharedLibraryEnabled() && !is_embedded_in_browser_process) {
     // If we're in a child process on Linux and dynamic Mojo Core is in use, we
     // expect early process startup code (see ContentMainRunnerImpl::Run()) to
     // have already loaded the library via |mojo::LoadCoreLibrary()|, rendering
