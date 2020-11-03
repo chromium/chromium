@@ -60922,6 +60922,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="In use"/>
 </enum>
 
+<enum name="RadioSignalLevel">
+  <int value="0" label="None or Unknown"/>
+  <int value="1" label="Poor"/>
+  <int value="2" label="Moderate"/>
+  <int value="3" label="Good"/>
+  <int value="4" label="Great"/>
+</enum>
+
 <enum name="RankerModelStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Download Throttled"/>
