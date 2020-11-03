@@ -8,13 +8,11 @@
 #include <string>
 
 #include "ash/public/cpp/login_types.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
 class BoxLayout;
 class Label;
-class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -24,8 +22,7 @@ class LoginPinView;
 
 // Contains the debug views that allows the developer to interact with the
 // AuthDialogController.
-class AuthDialogContentsView : public views::View,
-                               public views::ButtonListener {
+class AuthDialogContentsView : public views::View {
  public:
   // Flags which describe the set of currently visible auth methods.
   enum AuthMethods {
@@ -42,9 +39,6 @@ class AuthDialogContentsView : public views::View,
 
   // views::Views:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   uint32_t auth_methods() const { return auth_methods_; }
 
@@ -74,11 +68,6 @@ class AuthDialogContentsView : public views::View,
 
   // Add a view for action buttons.
   void AddActionButtonsView();
-
-  // Creates a button on the debug row that cannot be focused.
-  views::LabelButton* AddButton(const std::string& text,
-                                int id,
-                                views::View* container);
 
   // Called when the user submits password or PIN.
   void OnAuthSubmit(const base::string16& password);

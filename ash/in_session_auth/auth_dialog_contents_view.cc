@@ -381,25 +381,6 @@ void AuthDialogContentsView::AddActionButtonsView() {
   // TODO(b/156258540): Add a "Need help?" button that links to a HC article.
 }
 
-void AuthDialogContentsView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  // TODO(b/156258540): Add a "Need help?" button that links to a HC article.
-}
-
-views::LabelButton* AuthDialogContentsView::AddButton(const std::string& text,
-                                                      int id,
-                                                      views::View* container) {
-  // Creates a button with |text|.
-  auto button =
-      std::make_unique<views::MdTextButton>(this, base::ASCIIToUTF16(text));
-  button->SetID(id);
-
-  views::LabelButton* view = button.get();
-  container->AddChildView(
-      login_views_utils::WrapViewForPreferredSize(std::move(button)));
-  return view;
-}
-
 void AuthDialogContentsView::OnAuthSubmit(const base::string16& pin) {
   InSessionAuthDialogController::Get()->AuthenticateUserWithPin(
       base::UTF16ToUTF8(pin),
