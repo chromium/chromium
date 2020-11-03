@@ -210,6 +210,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerScheduler::GetTaskRunner(
     case TaskType::kInternalFrameLifecycleControl:
     case TaskType::kInternalFindInPage:
     case TaskType::kInternalHighPriorityLocalFrame:
+    case TaskType::kMainThreadTaskQueueIPCTracking:
     case TaskType::kCount:
       NOTREACHED();
       break;

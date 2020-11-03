@@ -18,6 +18,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/common/scoped_defer_task_posting.h"
+#include "base/task/common/task_annotator.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -230,6 +232,10 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
               .SetShouldMonitorQuiescence(true)
               .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
                                          PrioritisationType::kCompositor))),
+      back_forward_cache_ipc_tracking_task_queue_(helper_.NewTaskQueue(
+          MainThreadTaskQueue::QueueCreationParams(
+              MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages)
+              .SetShouldNotifyObservers(false))),
       compositor_task_queue_enabled_voter_(
           compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter()),
       memory_purge_task_queue_(helper_.NewTaskQueue(
@@ -258,6 +264,10 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   task_runners_.emplace(
       compositor_task_queue_,
       compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter());
+
+  back_forward_cache_ipc_tracking_task_runner_ =
+      back_forward_cache_ipc_tracking_task_queue_->CreateTaskRunner(
+          TaskType::kMainThreadTaskQueueIPCTracking);
 
   RegisterTimeDomain(&non_waking_time_domain_);
 
@@ -751,6 +761,91 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   return task_queue;
 }
 
+bool MainThreadSchedulerImpl::IsIpcTrackingEnabledForAllPages() {
+  for (auto* scheduler : main_thread_only().page_schedulers) {
+    if (!(scheduler->is_stored_in_back_forward_cache() &&
+          scheduler->has_ipc_detection_enabled())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void MainThreadSchedulerImpl::UpdateIpcTracking() {
+  bool should_track = IsIpcTrackingEnabledForAllPages();
+  if (should_track == has_ipc_callback_set_)
+    return;
+
+  has_ipc_callback_set_ = should_track;
+  if (has_ipc_callback_set_) {
+    SetOnIPCTaskPostedWhileInBackForwardCacheIfNeeded();
+  } else {
+    DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
+  }
+}
+
+void MainThreadSchedulerImpl::
+    SetOnIPCTaskPostedWhileInBackForwardCacheIfNeeded() {
+  has_ipc_callback_set_ = true;
+  helper_.DefaultMainThreadTaskQueue()->SetOnIPCTaskPosted(base::BindRepeating(
+      [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+         base::WeakPtr<MainThreadSchedulerImpl> main_thread_scheduler,
+         const base::sequence_manager::Task& task) {
+        // Only log IPC tasks. IPC tasks are only logged currently as IPC
+        // hash can be mapped back to a function name, and IPC tasks may
+        // potentially post sensitive information.
+        if (!task.ipc_hash && !task.ipc_interface_name) {
+          return;
+        }
+        base::ScopedDeferTaskPosting::PostOrDefer(
+            task_runner, FROM_HERE,
+            base::BindOnce(&MainThreadSchedulerImpl::
+                               OnIPCTaskPostedWhileInAllPagesBackForwardCache,
+                           main_thread_scheduler, task.ipc_hash,
+                           task.ipc_interface_name),
+            base::TimeDelta());
+      },
+      back_forward_cache_ipc_tracking_task_runner_, GetWeakPtr()));
+}
+
+void MainThreadSchedulerImpl::OnIPCTaskPostedWhileInAllPagesBackForwardCache(
+    uint32_t ipc_hash,
+    const char* ipc_interface_name) {
+  // As this is a multi-threaded environment, we need to check that all page
+  // schedulers are in the cache before logging. There may be instances where
+  // the scheduler has been unfrozen prior to the IPC tracking handler being
+  // reset.
+  if (!IsIpcTrackingEnabledForAllPages()) {
+    return;
+  }
+
+  // IPC tasks may have an IPC interface name in addition to, or instead of an
+  // IPC hash. IPC hash is known from the mojo Accept method. When IPC hash is
+  // 0, then the IPC hash must be calculated form the IPC interface name
+  // instead.
+  if (!ipc_hash) {
+    // base::HashMetricName produces a uint64; however, the MD5 hash calculation
+    // for an IPC interface name is always calculated as uint32; the IPC hash on
+    // a task is also a uint32. The calculation here is meant to mimic the
+    // calculation used in base::MD5Hash32Constexpr.
+    ipc_hash = static_cast<uint32_t>(
+        base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+            ipc_interface_name));
+  }
+
+  base::UmaHistogramSparse(
+      "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."
+      "MethodHash",
+      static_cast<int32_t>(ipc_hash));
+}
+
+void MainThreadSchedulerImpl::
+    DetachOnIPCTaskPostedWhileInBackForwardCacheHandler() {
+  has_ipc_callback_set_ = false;
+  helper_.DefaultMainThreadTaskQueue()
+      ->DetachOnIPCTaskPostedWhileInBackForwardCache();
+}
+
 // TODO(sreejakshetty): Cleanup NewLoadingTaskQueue.
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewLoadingTaskQueue(
     MainThreadTaskQueue::QueueType queue_type,
@@ -796,6 +891,7 @@ void MainThreadSchedulerImpl::OnShutdownTaskQueue(
   if (task_queue_throttler_)
     task_queue_throttler_->ShutdownTaskQueue(task_queue->GetTaskQueue());
 
+  task_queue.get()->DetachOnIPCTaskPostedWhileInBackForwardCache();
   task_runners_.erase(task_queue.get());
 }
 
@@ -2437,6 +2533,7 @@ void MainThreadSchedulerImpl::AddAgentGroupScheduler(
 void MainThreadSchedulerImpl::AddPageScheduler(
     PageSchedulerImpl* page_scheduler) {
   main_thread_only().page_schedulers.insert(page_scheduler);
+  DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageCreated(
         page_scheduler->GetPageLifecycleState());
@@ -2458,6 +2555,10 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(
         page_scheduler->GetPageLifecycleState());
+  }
+
+  if (IsIpcTrackingEnabledForAllPages()) {
+    SetOnIPCTaskPostedWhileInBackForwardCacheIfNeeded();
   }
 
   base::AutoLock lock(any_thread_lock_);

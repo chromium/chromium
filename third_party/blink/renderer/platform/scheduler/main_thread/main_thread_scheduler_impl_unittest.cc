@@ -29,6 +29,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -3342,6 +3343,68 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
       base::TimeDelta::FromMilliseconds(10));
 
   EXPECT_FALSE(scheduler_->ToString().empty());
+}
+
+TEST_F(MainThreadSchedulerImplTest,
+       LogIpcsPostedToDocumentsInBackForwardCache) {
+  base::HistogramTester histogram_tester;
+
+  // Start recording IPCs immediately.
+  base::FieldTrialParams params;
+  params["delay_before_tracking_ms"] = "0";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
+      params);
+
+  // Store documents inside the back-forward cache. IPCs are only tracked IFF
+  // all pages are in the back-forward cache.
+  PageSchedulerImpl* page_scheduler = page_scheduler_.get();
+  page_scheduler->SetPageBackForwardCached(true);
+  base::RunLoop().RunUntilIdle();
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(1);
+    default_task_runner_->PostTask(FROM_HERE, base::DoNothing());
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // Adding a new page scheduler results in IPCs not being logged, as this
+  // page scheduler is not in the cache.
+  std::unique_ptr<PageSchedulerImpl> page_scheduler1 =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
+  scheduler_->AddPageScheduler(page_scheduler1.get());
+  base::RunLoop().RunUntilIdle();
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(2);
+    default_task_runner_->PostTask(FROM_HERE, base::DoNothing());
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // Removing an un-cached page scheduler results in IPCs being logged, as all
+  // page schedulers are now in the cache.
+  page_scheduler1.reset();
+  base::RunLoop().RunUntilIdle();
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(3);
+    default_task_runner_->PostTask(FROM_HERE, base::DoNothing());
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // When a page is restored from the back-forward cache, IPCs should not be
+  // recorded anymore, as not all pages are in the cache.
+  page_scheduler->SetPageBackForwardCached(false);
+  base::RunLoop().RunUntilIdle();
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(4);
+    default_task_runner_->PostTask(FROM_HERE, base::DoNothing());
+  }
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "BackForwardCache.Experimental."
+          "UnexpectedIPCMessagePostedToCachedFrame.MethodHash"),
+      testing::UnorderedElementsAre(base::Bucket(1, 1), base::Bucket(3, 1)));
 }
 
 void RecordingTimeTestTask(

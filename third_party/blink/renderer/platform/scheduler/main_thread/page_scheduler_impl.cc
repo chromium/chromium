@@ -342,6 +342,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
 
   if (!is_stored_in_back_forward_cache_) {
     set_ipc_posted_handler_task_.Cancel();
+    has_ipc_detection_enabled_ = false;
+    main_thread_scheduler_->UpdateIpcTracking();
     for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
       frame_scheduler->DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
     }
@@ -362,6 +364,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
 
 void PageSchedulerImpl::SetUpIPCTaskDetection() {
   DCHECK(is_stored_in_back_forward_cache_);
+  has_ipc_detection_enabled_ = true;
+  main_thread_scheduler_->UpdateIpcTracking();
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler->SetOnIPCTaskPostedWhileInBackForwardCacheHandler();
   }

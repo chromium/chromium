@@ -141,6 +141,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalFindInPage";
     case TaskType::kInternalHighPriorityLocalFrame:
       return "InternalHighPriorityLocalFrame";
+    case TaskType::kMainThreadTaskQueueIPCTracking:
+      return "MainThreadTaskQueueIPCTracking";
     case TaskType::kCount:
       return "Count";
   }

@@ -71,6 +71,8 @@ class MainThreadSchedulerImplTest;
 class MockPageSchedulerImpl;
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest, ShouldIgnoreTaskForUkm);
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest, Tracing);
+FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
+                     LogIpcsPostedToDocumentsInBackForwardCache);
 }  // namespace main_thread_scheduler_impl_unittest
 class AgentGroupSchedulerImpl;
 class FrameSchedulerImpl;
@@ -231,6 +233,14 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return nullptr;
   }
 
+  // Use a separate task runner so that IPC tasks are not logged via the same
+  // task queue that executes them. Otherwise this would result in an infinite
+  // loop of posting and logging to a single queue.
+  scoped_refptr<base::SingleThreadTaskRunner>
+  BackForwardCacheIpcTrackingTaskRunner() {
+    return back_forward_cache_ipc_tracking_task_runner_;
+  }
+
   // WebThreadScheduler implementation:
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
 
@@ -386,6 +396,13 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
       base::sequence_manager::LazyNow* lazy_now);
 
+  void UpdateIpcTracking();
+  void SetOnIPCTaskPostedWhileInBackForwardCacheIfNeeded();
+  void OnIPCTaskPostedWhileInAllPagesBackForwardCache(
+      uint32_t ipc_hash,
+      const char* ipc_interface_name);
+  void DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
+
   bool IsAudioPlaying() const;
 
   // base::trace_event::TraceLog::EnabledStateObserver implementation:
@@ -464,6 +481,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   FRIEND_TEST_ALL_PREFIXES(
       main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
       Tracing);
+  FRIEND_TEST_ALL_PREFIXES(
+      main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
+      LogIpcsPostedToDocumentsInBackForwardCache);
 
   enum class TimeDomainType {
     kReal,
@@ -771,6 +791,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // have to check this flag during scheduler's destruction.
   bool was_shutdown_ = false;
 
+  bool has_ipc_callback_set_ = false;
+  bool IsIpcTrackingEnabledForAllPages();
+
   // This controller should be initialized before any TraceableVariables
   // because they require one to initialize themselves.
   TraceableVariableController tracing_controller_;
@@ -796,6 +819,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   const scoped_refptr<MainThreadTaskQueue> control_task_queue_;
   const scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   scoped_refptr<MainThreadTaskQueue> virtual_time_control_task_queue_;
+  scoped_refptr<MainThreadTaskQueue>
+      back_forward_cache_ipc_tracking_task_queue_;
   std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
       compositor_task_queue_enabled_voter_;
 
@@ -813,6 +838,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> non_waking_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      back_forward_cache_ipc_tracking_task_runner_;
 
   MemoryPurgeManager memory_purge_manager_;
 

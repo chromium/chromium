@@ -58,6 +58,8 @@ const char* MainThreadTaskQueue::NameForQueueType(
       return "web_scheduling_tq";
     case MainThreadTaskQueue::QueueType::kNonWaking:
       return "non_waking_tq";
+    case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
+      return "ipc_tracking_for_cached_pages_tq";
     case MainThreadTaskQueue::QueueType::kCount:
       NOTREACHED();
       return nullptr;
@@ -89,6 +91,7 @@ bool MainThreadTaskQueue::IsPerFrameTaskQueue(
     case MainThreadTaskQueue::QueueType::kDetached:
     case MainThreadTaskQueue::QueueType::kNonWaking:
     case MainThreadTaskQueue::QueueType::kOther:
+    case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
       return false;
     case MainThreadTaskQueue::QueueType::kCount:
       NOTREACHED();

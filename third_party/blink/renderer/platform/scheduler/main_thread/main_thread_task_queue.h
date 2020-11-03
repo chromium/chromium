@@ -85,9 +85,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     kWebScheduling = 24,
     kNonWaking = 25,
 
+    kIPCTrackingForCachedPages = 26,
+
     // Used to group multiple types when calculating Expected Queueing Time.
     kOther = 23,
-    kCount = 26
+    kCount = 27
   };
 
   // Returns name of the given queue type. Returned string has application

@@ -481,6 +481,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kMainThreadTaskQueueIdle:
     case TaskType::kMainThreadTaskQueueControl:
     case TaskType::kMainThreadTaskQueueMemoryPurge:
+    case TaskType::kMainThreadTaskQueueIPCTracking:
     case TaskType::kCompositorThreadTaskQueueDefault:
     case TaskType::kCompositorThreadTaskQueueInput:
     case TaskType::kWorkerThreadTaskQueueDefault:
@@ -1209,7 +1210,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
 }
 
 void FrameSchedulerImpl::SetOnIPCTaskPostedWhileInBackForwardCacheHandler() {
-  DCHECK(parent_page_scheduler_->IsStoredInBackForwardCache());
+  DCHECK(parent_page_scheduler_->is_stored_in_back_forward_cache());
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     task_queue_and_voter.first->SetOnIPCTaskPosted(base::BindRepeating(
@@ -1229,7 +1230,7 @@ void FrameSchedulerImpl::SetOnIPCTaskPostedWhileInBackForwardCacheHandler() {
                   frame_scheduler, task.ipc_hash, task.ipc_interface_name),
               base::TimeDelta());
         },
-        main_thread_scheduler_->DefaultTaskRunner(),
+        main_thread_scheduler_->BackForwardCacheIpcTrackingTaskRunner(),
         GetInvalidatingOnBFCacheRestoreWeakPtr()));
   }
 }
@@ -1259,7 +1260,7 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
         ipc_interface_name);
   }
 
-  DCHECK(parent_page_scheduler_->IsStoredInBackForwardCache());
+  DCHECK(parent_page_scheduler_->is_stored_in_back_forward_cache());
   base::UmaHistogramSparse(
       "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."
       "MethodHash",

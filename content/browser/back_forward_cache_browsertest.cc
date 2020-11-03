@@ -20,6 +20,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -222,6 +223,15 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
 
   std::string DepictFrameTree(FrameTreeNode* node) {
     return visualizer_.DepictFrameTree(node);
+  }
+
+  bool HistogramContainsIntValue(base::HistogramBase::Sample sample,
+                                 std::vector<base::Bucket> histogram_values) {
+    auto it = std::find_if(histogram_values.begin(), histogram_values.end(),
+                           [sample](const base::Bucket& bucket) {
+                             return bucket.min == static_cast<int>(sample);
+                           });
+    return it != histogram_values.end();
   }
 
   void ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
@@ -2741,29 +2751,44 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Post IPC tasks to the page, testing both mojo remote and associated
   // remote objects.
 
-  // TODO(hbolaria) - implement non-frame-associated tracking, which will be
-  // used by the code below.
+  // Send a message via an associated interface - which will post a task with an
+  // IPC hash and will be routed to the per-thread task queue.
+  base::RunLoop run_loop;
+  rfh_a->RequestTextSurroundingSelection(
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure, const base::string16& str,
+             uint32_t num, uint32_t num2) { quit_closure.Run(); },
+          run_loop.QuitClosure()),
+      1);
+  run_loop.Run();
 
   // Post a non-associated interface. Will be routed to a frame-specific task
   // queue with IPC set in SimpleWatcher.
-  base::RunLoop run_loop;
+  base::RunLoop run_loop2;
   rfh_a->GetHighPriorityLocalFrame()->DispatchBeforeUnload(
       false,
       base::BindOnce([](base::RepeatingClosure quit_closure, bool proceed,
                         base::TimeTicks start_time,
                         base::TimeTicks end_time) { quit_closure.Run(); },
-                     run_loop.QuitClosure()));
-  run_loop.Run();
+                     run_loop2.QuitClosure()));
+  run_loop2.Run();
 
   // 4) Check the histogram.
-  FetchHistogramsFromChildProcesses();
-  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
-      base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-          "blink.mojom.HighPriorityLocalFrame"));
-  histogram_tester_.ExpectUniqueSample(
-      "BackForwardCache.Experimental."
-      "UnexpectedIPCMessagePostedToCachedFrame.MethodHash",
-      sample, 1);
+  std::vector<base::HistogramBase::Sample> samples = {
+      base::HistogramBase::Sample(
+          base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+              "blink.mojom.HighPriorityLocalFrame")),
+      base::HistogramBase::Sample(
+          base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+              "blink.mojom.LocalFrame"))};
+
+  for (base::HistogramBase::Sample sample : samples) {
+    FetchHistogramsFromChildProcesses();
+    EXPECT_TRUE(HistogramContainsIntValue(
+        sample, histogram_tester_.GetAllSamples(
+                    "BackForwardCache.Experimental."
+                    "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
+  }
 }
 
 class MockAppBannerService : public blink::mojom::AppBannerService {

@@ -63,7 +63,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void SetPageVisible(bool page_visible) override;
   void SetPageFrozen(bool) override;
   void SetPageBackForwardCached(bool) override;
-  bool IsStoredInBackForwardCache() { return is_stored_in_back_forward_cache_; }
   void SetKeepActive(bool) override;
   bool IsMainFrameLocal() const override;
   void SetIsMainFrameLocal(bool is_local) override;
@@ -71,6 +70,10 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   base::TimeTicks GetStoredInBackForwardCacheTimestamp() {
     return stored_in_back_forward_cache_timestamp_;
   }
+  bool is_stored_in_back_forward_cache() {
+    return is_stored_in_back_forward_cache_;
+  }
+  bool has_ipc_detection_enabled() { return has_ipc_detection_enabled_; }
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
@@ -133,6 +136,9 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   PageLifecycleState GetPageLifecycleState() const;
 
   void SetUpIPCTaskDetection();
+  // This flag tracks whether or not IPC tasks are tracked if they are posted to
+  // frames or pages that are stored in the back-forward cache
+  bool has_ipc_detection_enabled_ = false;
 
   // Generally UKMs are associated with the main frame of a page, but the
   // implementation allows to request a recorder from any local frame with
