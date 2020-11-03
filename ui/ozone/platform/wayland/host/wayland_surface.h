@@ -9,7 +9,6 @@
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -30,9 +29,6 @@ class WaylandSurface {
   WaylandWindow* root_window() const { return root_window_; }
   wl_surface* surface() const { return surface_.get(); }
   wp_viewport* viewport() const { return viewport_.get(); }
-  zwp_linux_surface_synchronization_v1* surface_sync() const {
-    return surface_sync_.get();
-  }
   int32_t buffer_scale() const { return buffer_scale_; }
   void set_buffer_scale(int32_t scale) { buffer_scale_ = scale; }
 
@@ -50,10 +46,6 @@ class WaylandSurface {
   // the underlying wl_surface must be kept alive with no root window associated
   // (e.g: window/tab dragging sessions).
   void UnsetRootWindow();
-
-  // Sets a non-null in-fence, must be combined with an AttachBuffer() and a
-  // Commit().
-  void SetAcquireFence(const gfx::GpuFenceHandle& acquire_fence);
 
   // Attaches the given wl_buffer to the underlying wl_surface at (0, 0).
   void AttachBuffer(wl_buffer* buffer);
@@ -101,7 +93,6 @@ class WaylandSurface {
   WaylandWindow* root_window_ = nullptr;
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
-  wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
 
   // Transformation for how the compositor interprets the contents of the
   // buffer.

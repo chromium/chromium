@@ -60,7 +60,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
                           PresentationCallback presentation_callback) override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
-  bool SupportsPlaneGpuFences() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
  private:
@@ -89,6 +88,9 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
     bool ready = false;
 
+    // The id of the buffer, which represents this frame.
+    BufferId buffer_id = 0;
+
     // A region of the updated content in a corresponding frame. It's used to
     // advice Wayland which part of a buffer is going to be updated. Passing {0,
     // 0, 0, 0} results in a whole buffer update on the Wayland compositor side.
@@ -110,6 +112,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
   void MaybeSubmitFrames();
 
+  EGLSyncKHR InsertFence(bool implicit);
   void FenceRetired(PendingFrame* frame);
 
   // Sets a flag that skips glFlush step in unittests.
@@ -122,6 +125,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
   std::vector<std::unique_ptr<PendingFrame>> submitted_frames_;
   std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
+  bool has_implicit_external_sync_;
   bool last_swap_buffers_result_ = true;
   bool use_egl_fence_sync_ = true;
 

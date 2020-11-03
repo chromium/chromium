@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -110,7 +109,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   wl::BufferFormatsWithModifiersMap GetSupportedBufferFormats() const;
 
   bool SupportsDmabuf() const;
-  bool SupportsAcquireFence() const;
 
   // ozone::mojom::WaylandBufferManagerHost overrides:
   //
@@ -165,15 +163,10 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // commit will move an entire wl_surface tree from pending state to ready
   // state. This root_surface commit must wait for wl_frame_callback, such that
   // in effect all other surface updates wait for this wl_frame_callback, too.
-  // |access_fence_handle| specifies a gpu fence created by the gpu process.
-  // It's to be waited on before content of the buffer is ready to be read by
-  // Wayland host.
-  bool CommitBufferInternal(
-      WaylandSurface* wayland_surface,
-      uint32_t buffer_id,
-      const gfx::Rect& damage_region,
-      bool wait_for_frame_callback = true,
-      gfx::GpuFenceHandle access_fence_handle = gfx::GpuFenceHandle());
+  bool CommitBufferInternal(WaylandSurface* wayland_surface,
+                            uint32_t buffer_id,
+                            const gfx::Rect& damage_region,
+                            bool wait_for_frame_callback = true);
 
   // Does a wl_surface commit without attaching any buffers. This commit will
   // still wait for previous wl_frame_callback. Similar to above but for

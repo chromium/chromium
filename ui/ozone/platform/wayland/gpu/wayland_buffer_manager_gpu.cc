@@ -44,8 +44,7 @@ void WaylandBufferManagerGpu::Initialize(
     mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host,
     const base::flat_map<::gfx::BufferFormat, std::vector<uint64_t>>&
         buffer_formats_with_modifiers,
-    bool supports_dma_buf,
-    bool supports_acquire_fence) {
+    bool supports_dma_buf) {
   DCHECK(supported_buffer_formats_with_modifiers_.empty());
   supported_buffer_formats_with_modifiers_ = buffer_formats_with_modifiers;
 
@@ -53,7 +52,6 @@ void WaylandBufferManagerGpu::Initialize(
   if (!supports_dma_buf)
     set_gbm_device(nullptr);
 #endif
-  supports_acquire_fence_ = supports_acquire_fence;
 
   BindHostInterface(std::move(remote_host));
 

@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
-#include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -53,27 +52,12 @@ bool WaylandSurface::Initialize() {
     }
   }
 
-  // The server needs to support the linux_explicit_synchronization protocol.
-  if (!connection_->linux_explicit_synchronization_v1()) {
-    LOG(ERROR)
-        << "Server doesn't support zwp_linux_explicit_synchronization_v1.";
-    return true;
-  }
-  surface_sync_.reset(zwp_linux_explicit_synchronization_v1_get_synchronization(
-      connection_->linux_explicit_synchronization_v1(), surface_.get()));
-  DCHECK(surface_sync());
-
   return true;
 }
 
 void WaylandSurface::UnsetRootWindow() {
   DCHECK(surface_);
   root_window_ = nullptr;
-}
-
-void WaylandSurface::SetAcquireFence(const gfx::GpuFenceHandle& acquire_fence) {
-  zwp_linux_surface_synchronization_v1_set_acquire_fence(
-      surface_sync(), acquire_fence.owned_fd.get());
 }
 
 void WaylandSurface::AttachBuffer(wl_buffer* buffer) {

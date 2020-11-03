@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
@@ -69,19 +68,16 @@ class WaylandBufferManagerHost::Surface {
         buffer_manager_(buffer_manager) {}
   ~Surface() = default;
 
-  bool CommitBuffer(
-      uint32_t buffer_id,
-      const gfx::Rect& damage_region,
-      bool wait_for_frame_callback,
-      gfx::GpuFenceHandle access_fence_handle = gfx::GpuFenceHandle()) {
+  bool CommitBuffer(uint32_t buffer_id,
+                    const gfx::Rect& damage_region,
+                    bool wait_for_frame_callback) {
     // The window has already been destroyed.
     if (!wayland_surface_)
       return true;
 
     // This is a buffer-less commit, do not lookup buffers.
     if (buffer_id == kInvalidBufferId) {
-      DCHECK(access_fence_handle.is_null());
-      pending_commits_.push_back({nullptr, wait_for_frame_callback, nullptr});
+      pending_commits_.push_back({nullptr, wait_for_frame_callback});
       MaybeProcessPendingBuffer();
       return true;
     }
@@ -111,9 +107,7 @@ class WaylandBufferManagerHost::Surface {
     if (buffer->attached && !buffer->wl_buffer)
       return false;
 
-    pending_commits_.push_back(
-        {buffer, wait_for_frame_callback,
-         std::make_unique<gfx::GpuFence>(std::move(access_fence_handle))});
+    pending_commits_.push_back({buffer, wait_for_frame_callback});
     MaybeProcessPendingBuffer();
     return true;
   }
@@ -233,14 +227,9 @@ class WaylandBufferManagerHost::Surface {
     // Whether this commit must wait for a wl_frame_callback and setup another
     // wl_frame_callback.
     bool wait_for_callback = false;
-    // Fence to wait on before the |buffer| content is available to read by
-    // Wayland host.
-    std::unique_ptr<gfx::GpuFence> access_fence;
   };
 
-  bool CommitBufferInternal(WaylandBuffer* buffer,
-                            bool wait_for_callback,
-                            const gfx::GpuFenceHandle& access_fence_handle) {
+  bool CommitBufferInternal(WaylandBuffer* buffer, bool wait_for_callback) {
     DCHECK(buffer && wayland_surface_);
 
     // If the same buffer has been submitted again right after the client
@@ -253,7 +242,7 @@ class WaylandBufferManagerHost::Surface {
       // Once the BufferRelease is called, the buffer will be released.
       DCHECK(buffer->released);
       buffer->released = false;
-      AttachBuffer(buffer, access_fence_handle);
+      AttachBuffer(buffer);
     }
 
     // If the client submits the same buffer twice, we need to store it twice,
@@ -289,11 +278,8 @@ class WaylandBufferManagerHost::Surface {
                                                buffer->size);
   }
 
-  void AttachBuffer(WaylandBuffer* buffer,
-                    const gfx::GpuFenceHandle& access_fence_handle) {
+  void AttachBuffer(WaylandBuffer* buffer) {
     DCHECK(wayland_surface_ && configured_);
-    if (!access_fence_handle.is_null())
-      wayland_surface_->SetAcquireFence(access_fence_handle);
     wayland_surface_->AttachBuffer(buffer->wl_buffer.get());
   }
 
@@ -566,19 +552,17 @@ class WaylandBufferManagerHost::Surface {
     //
     // The third case happens if the window hasn't been configured until a
     // request to attach a buffer to its surface is sent.
-    const auto& pending_commit = pending_commits_.front();
+    auto pending_commit = std::move(pending_commits_.front());
     if ((pending_commit.buffer && !pending_commit.buffer->wl_buffer) ||
         (wl_frame_callback_ && pending_commit.wait_for_callback) ||
         !configured_) {
       return;
     }
 
-    auto commit = std::move(pending_commits_.front());
-    pending_commits_.erase(pending_commits_.begin());
-
     // A Commit without attaching buffers only needs to setup wl_frame_callback.
-    if (!commit.buffer) {
-      if (commit.wait_for_callback)
+    if (!pending_commit.buffer) {
+      pending_commits_.erase(pending_commits_.begin());
+      if (pending_commit.wait_for_callback)
         SetupFrameCallback();
       CommitSurface();
       connection_->ScheduleFlush();
@@ -586,8 +570,9 @@ class WaylandBufferManagerHost::Surface {
       return;
     }
 
-    CommitBufferInternal(commit.buffer, commit.wait_for_callback,
-                         commit.access_fence->GetGpuFenceHandle());
+    pending_commits_.erase(pending_commits_.begin());
+    CommitBufferInternal(pending_commit.buffer,
+                         pending_commit.wait_for_callback);
   }
 
   // Widget this helper surface backs and has 1:1 relationship with the
@@ -742,10 +727,6 @@ bool WaylandBufferManagerHost::SupportsDmabuf() const {
          (connection_->drm() && connection_->drm()->SupportsDrmPrime());
 }
 
-bool WaylandBufferManagerHost::SupportsAcquireFence() const {
-  return !!connection_->linux_explicit_synchronization_v1();
-}
-
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(
     mojo::PendingAssociatedRemote<ozone::mojom::WaylandBufferManagerGpu>
         buffer_manager_gpu_associated) {
@@ -826,16 +807,15 @@ bool WaylandBufferManagerHost::CommitBufferInternal(
     WaylandSurface* wayland_surface,
     uint32_t buffer_id,
     const gfx::Rect& damage_region,
-    bool wait_for_frame_callback,
-    gfx::GpuFenceHandle access_fence_handle) {
+    bool wait_for_frame_callback) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   Surface* surface = GetSurface(wayland_surface);
   if (!surface || !ValidateBufferIdFromGpu(buffer_id))
     return false;
 
-  if (!surface->CommitBuffer(buffer_id, damage_region, wait_for_frame_callback,
-                             std::move(access_fence_handle))) {
+  if (!surface->CommitBuffer(buffer_id, damage_region,
+                             wait_for_frame_callback)) {
     error_message_ =
         base::StrCat({"Buffer with ", NumberToString(buffer_id),
                       " id does not exist or failed to be created."});
@@ -881,8 +861,7 @@ void WaylandBufferManagerHost::CommitBuffer(gfx::AcceleratedWidget widget,
     auto* window = connection_->wayland_window_manager()->GetWindow(widget);
     if (!window)
       return;
-    CommitBufferInternal(window->root_surface(), buffer_id, damage_region,
-                         true);
+    CommitBufferInternal(window->root_surface(), buffer_id, damage_region);
   }
 }
 
