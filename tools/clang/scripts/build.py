@@ -784,6 +784,11 @@ def main():
     '-DCOMPILER_RT_BUILD_XRAY=OFF',
   ]
   if sys.platform == 'darwin':
+    # TODO(crbug.com/1145151): Figure out why arm64 causes build errors on
+    # the tot bots, fix that, and always build arm64 in iossim_archs.
+    iossim_archs = 'i386;x86_64'
+    if args.bootstrap:
+      iossim_archs += ';arm64'
     compiler_rt_args.extend([
         '-DCOMPILER_RT_BUILD_BUILTINS=ON',
         '-DCOMPILER_RT_ENABLE_IOS=ON',
@@ -792,7 +797,7 @@ def main():
         # armv7 is A5 and earlier, armv7s is A6+ (2012 and later, before 64-bit
         # iPhones). armv7k is Apple Watch, which we don't need.
         '-DDARWIN_ios_ARCHS=armv7;armv7s;arm64',
-        '-DDARWIN_iossim_ARCHS=i386;x86_64;arm64',
+        '-DDARWIN_iossim_ARCHS=' + iossim_archs,
     ])
     if args.bootstrap:
       # mac/arm64 needs MacOSX11.0.sdk. System Xcode (+ SDK) on the chrome bots
