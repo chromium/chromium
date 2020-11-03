@@ -437,6 +437,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       GenerateFeatureFlag("systemlatinphysicaltyping",
                           base::FeatureList::IsEnabled(
                               chromeos::features::kSystemLatinPhysicalTyping)));
+  features->AppendString(
+      GenerateFeatureFlag("languagesettingsupdate",
+                          base::FeatureList::IsEnabled(
+                              chromeos::features::kLanguageSettingsUpdate)));
 
   results->Set("features", std::move(features));
 
